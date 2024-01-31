@@ -10,7 +10,14 @@ const DashboardConfiguration = (props: any) => {
     const [WebpartConfig, setWebpartConfig] = React.useState<any>([]);
     const [IsOpenPopup, setIsOpenPopup] = React.useState<any>(false);
     const [EditItem, setEditItem] = React.useState<any>(undefined);
-
+    try {
+        $("#spPageCanvasContent").removeClass();
+        $("#spPageCanvasContent").addClass("hundred");
+        $("#workbenchPageContent").removeClass();
+        $("#workbenchPageContent").addClass("hundred");
+    } catch (e) {
+        console.log(e);
+    }
     const LoadAdminConfiguration = async () => {
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
         await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").getAll().then((data: any) => {

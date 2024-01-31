@@ -43,6 +43,7 @@ let headerOptions: any = {
   openTab: true,
   teamsIcon: true
 }
+let backupTableData: any = [];
 let timeSheetConfig: any = {}
 var allSmartInfo: any = [];
 var AllSitesAllTasks: any = [];
@@ -61,13 +62,13 @@ let hasCustomExpanded: any = true
 let hasExpanded: any = true
 let isHeaderNotAvlable: any = false
 let isColumnDefultSortingAsc: any = false;
-let  relevantDocRef: any;
+let relevantDocRef: any;
 let smartInfoRef: any;
-let keyDocRef:any;
+let keyDocRef: any;
 const ProjectManagementMain = (props: any) => {
-relevantDocRef = React.useRef();
+  relevantDocRef = React.useRef();
   smartInfoRef = React.useRef();
-  keyDocRef=React.useRef();
+  keyDocRef = React.useRef();
   const [keydoc, Setkeydoc] = React.useState([]);
   const [FileDirRef, SetFileDirRef] = React.useState('');
   // const [item, setItem] = React.useState({});
@@ -82,8 +83,8 @@ relevantDocRef = React.useRef();
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [AllTasks, setAllTasks] = React.useState([]);
   const rerender = React.useReducer(() => ({}), {})[1]
-  const refreshData = () => setData(() => renderData);
-  const [data, setData] = React.useState([]);
+  const refreshData = () => setProjectTableData(() => renderData);
+  const [ProjectTableData, setProjectTableData] = React.useState([]);
   const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
   const [isOpenCreateTask, setisOpenCreateTask] = React.useState(false);
   const [Masterdata, setMasterdata] = React.useState<any>({});
@@ -387,7 +388,7 @@ relevantDocRef = React.useRef();
           task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime;
         }
       })
-      setData(backupAllTasks);
+      setProjectTableData(backupAllTasks);
       setPageLoader(false)
       if (timeEntryIndex) {
         try {
@@ -507,13 +508,14 @@ relevantDocRef = React.useRef();
   const tagAndCreateCallBack = React.useCallback(() => {
     setIsTaggedCompTask(false)
     setCreateTaskId({ portfolioData: null, portfolioType: null })
-
+    renderData = backupTableData;
+    refreshData()
   }, []);
   const CreateTask = React.useCallback(() => {
     setisOpenCreateTask(false)
   }, []);
   const inlineCallBack = React.useCallback((item: any) => {
-    setData(prevTasks => {
+    setProjectTableData(prevTasks => {
       return prevTasks.map((task: any) => {
         if (task.Id === item.Id && task.siteType === item.siteType) {
           return { ...task, ...item };
@@ -561,7 +563,7 @@ relevantDocRef = React.useRef();
           }
           AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, filterQuery)
         } else {
-          AllProjectTasks =  smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id ne null`)
+          AllProjectTasks = smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, `Project/Id ne null`)
         }
       }
 
@@ -589,7 +591,7 @@ relevantDocRef = React.useRef();
         } catch (error) {
 
         }
-
+        items.TaskTypeValue = ''
         if (items?.TaskCategories?.length > 0) {
           items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
         }
@@ -622,14 +624,15 @@ relevantDocRef = React.useRef();
             taskComponent.push(comp?.Id)
             taskTaggedComponents.push(comp)
           }
+          items.PortfolioTitle = '';
           items.portfolio = items?.Portfolio;
           items.PortfolioTitle = items?.Portfolio?.Title;
           // items["Portfoliotype"] = "Component";
         }
-        if(items?.Project?.Id!=undefined){
+        if (items?.Project?.Id != undefined) {
           items.Project = AllFlatProject?.find((Project: any) => Project?.Id == items?.Project?.Id)
         }
-        
+
 
         items.TeamMembersSearch = "";
         if (items.AssignedTo != undefined) {
@@ -667,7 +670,7 @@ relevantDocRef = React.useRef();
         AllTask.push(items);
       });
       try {
-        
+
         backupAllTasks = globalCommon?.deepCopy(AllTask);
         setAllTasks(backupAllTasks);
       } catch (error) {
@@ -796,7 +799,8 @@ relevantDocRef = React.useRef();
       AllTask = AllTask.filter((item: any) => item?.isTaskPushed !== true);
       allSprints = allSprints.concat(AllTask);
       allBackupSprintAndTask = allSprints
-      setData(allSprints);
+      setProjectTableData(allSprints);
+      backupTableData = allSprints;
       setTaskTaggedPortfolios(taskTaggedComponents)
       setPageLoader(false);
     } catch (error) {
@@ -859,7 +863,7 @@ relevantDocRef = React.useRef();
     }
   };
   const Call = (propsItems: any, type: any) => {
-    if(propsItems?.Id!=undefined){
+    if (propsItems?.Id != undefined) {
       if (propsItems?.DueDate != undefined) {
         propsItems.DisplayDueDate = propsItems.DueDate != null
           ? Moment(propsItems.DueDate).format("DD/MM/YYYY")
@@ -878,8 +882,8 @@ relevantDocRef = React.useRef();
     if (propsItems?.Item_x0020_Type == "Project") {
       setMasterdata(propsItems)
     } else if (propsItems?.Item_x0020_Type == "Sprint") {
-      
-      setData((prev: any) => {
+
+      setProjectTableData((prev: any) => {
         return prev?.map((object: any) => {
           if (object?.Id === propsItems?.Id) {
             return { ...object, ...propsItems };
@@ -903,7 +907,7 @@ relevantDocRef = React.useRef();
 
   const LoadAllSiteAllTasks = async function () {
     try {
-      AllSitesAllTasks = await globalCommon?.loadAllSiteTasks(AllListId, undefined);
+      AllSitesAllTasks = await globalCommon?.loadAllSiteTasks(AllListId);
       return AllSitesAllTasks
     } catch (e) {
       console.log(e)
@@ -981,14 +985,19 @@ relevantDocRef = React.useRef();
     renderData = [];
     renderData = renderData.concat(getData);
     refreshData();
-    if(callback){
+    if (callback) {
       LoadAllSiteTasks();
     }
   }, []);
 
 
   const switchFlatViewData = (data: any) => {
-    let groupedDataItems = globalCommon?.deepCopy(data);
+    let groupedDataItems = [];
+    try {
+      groupedDataItems = JSON.parse(JSON.stringify(data));
+    } catch (e) {
+
+    }
     const flattenedData = flattenData(groupedDataItems);
     hasCustomExpanded = false
     hasExpanded = false
@@ -997,8 +1006,8 @@ relevantDocRef = React.useRef();
     setGroupByButtonClickData(data);
     setclickFlatView(true);
     setFlatViewDataAll(flattenedData)
-    setData(flattenedData);
-    // setData(smartAllFilterData);
+    setProjectTableData(flattenedData);
+    // setProjectTableData(smartAllFilterData);
   }
 
   function flattenData(groupedDataItems: any) {
@@ -1021,7 +1030,7 @@ relevantDocRef = React.useRef();
     hasExpanded = true
     isHeaderNotAvlable = false
     setclickFlatView(false);
-    setData(groupByButtonClickData);
+    setProjectTableData(groupByButtonClickData);
   }
 
   const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
@@ -1066,7 +1075,7 @@ relevantDocRef = React.useRef();
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel   AllListId={AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel AllListId={AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </>
         ),
@@ -1136,7 +1145,7 @@ relevantDocRef = React.useRef();
             href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
           >
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel   AllListId={AllListId} onclickPopup={false} ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel AllListId={AllListId} onclickPopup={false} ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </a>
         ),
@@ -1402,11 +1411,12 @@ relevantDocRef = React.useRef();
         size: 55
       }
     ],
-    [data]
+    [ProjectTableData]
   );
   const filterPotfolioTasks = (portfolio: any, clickedIndex: any, type: any) => {
     let projectData = Masterdata;
     let displayTasks = AllTasks;
+    backupTableData = ProjectTableData;
     if (type == 'Component' || type == 'taskComponent') {
       if (createTaskId?.portfolioData?.Id != portfolio?.Id) {
         setCreateTaskId({ portfolioData: portfolio, portfolioType: 'Component' });
@@ -1418,9 +1428,9 @@ relevantDocRef = React.useRef();
     }
     setSelectedItem(portfolio)
     setMasterdata(projectData);
-    setData(displayTasks);
+    setProjectTableData(displayTasks);
   };
-const  AncCallback = (type: any) => {
+  const AncCallback = (type: any) => {
     switch (type) {
       case 'anc': {
         relevantDocRef?.current?.loadAllSitesDocuments()
@@ -1432,33 +1442,33 @@ const  AncCallback = (type: any) => {
       }
       default: {
         relevantDocRef?.current?.loadAllSitesDocuments()
-           smartInfoRef?.current?.GetResult();
-           keyDocRef?.current?.loadAllSitesDocumentsEmail()
+        smartInfoRef?.current?.GetResult();
+        keyDocRef?.current?.loadAllSitesDocumentsEmail()
         break
       }
     }
   }
 
   const inlineCallBackMasterTask = React.useCallback((item: any) => {
-    item.taggedPortfolios = Masterdata?.taggedPortfolios;
+    item.taggedPortfolios = Masterdata?.taggedPortfolios
     setMasterdata(item);
-
   }, []);
-const contextCall = React.useCallback((data: any, path: any, releventKey: any) => {
-  if (data != null &&  path != null && path != "") {
-    Setkeydoc(data)
-    SetFileDirRef(path)
-  }
-  if (releventKey) {
-    relevantDocRef?.current?.loadAllSitesDocuments()
-   
-  }
-  else if(data==null && path==null && releventKey== false ){
-    keyDocRef?.current?.loadAllSitesDocumentsEmail()
-  }
-},[]) 
+  const contextCall = React.useCallback((data: any, path: any, releventKey: any) => {
+    if (data != null && path != null && path != "") {
+      Setkeydoc(data)
+      SetFileDirRef(path)
+    }
+    if (releventKey) {
+      relevantDocRef?.current?.loadAllSitesDocuments()
+
+    }
+    else if (data == null && path == null && releventKey == false) {
+      keyDocRef?.current?.loadAllSitesDocumentsEmail()
+      relevantDocRef?.current?.loadAllSitesDocuments()
+    }
+  }, [])
   return (
-    <myContextValue.Provider value={{ ...myContextValue,user:AllUser ,ProjectLandingPageDetails: Masterdata,FunctionCall: contextCall,keyDoc: keydoc, FileDirRef: FileDirRef ,closeCompTaskPopup: tagAndCreateCallBack, projectCallBackTask: LoadAllSiteTasks, portfolioCreationCallBack: ComponentServicePopupCallBack, tagProjectFromTable: true }}>
+    <myContextValue.Provider value={{ ...myContextValue, user: AllUser, ProjectLandingPageDetails: Masterdata, FunctionCall: contextCall, keyDoc: keydoc, FileDirRef: FileDirRef, closeCompTaskPopup: tagAndCreateCallBack, projectCallBackTask: LoadAllSiteTasks, portfolioCreationCallBack: ComponentServicePopupCallBack, tagProjectFromTable: true }}>
 
       <div>
         {QueryId != "" ? (
@@ -1747,7 +1757,7 @@ const contextCall = React.useCallback((data: any, path: any, releventKey: any) =
 
                                   </div>
                                 </div>
-           <div className='p-0'> {Masterdata?.Id != undefined && <KeyDocuments ref={relevantDocRef} AllListId={AllListId} Context={props?.Context} siteUrl={AllListId?.siteUrl}  DocumentsListID={AllListId.DocumentsListID}  siteName={"Master Tasks"} folderName={Masterdata?.Title} keyDoc={true}></KeyDocuments>}</div>
+                                <div className='p-0'> {Masterdata?.Id != undefined && <KeyDocuments ref={relevantDocRef} AllListId={AllListId} Context={props?.Context} siteUrl={AllListId?.siteUrl} DocumentsListID={AllListId.DocumentsListID} siteName={"Master Tasks"} folderName={Masterdata?.Title} keyDoc={true}></KeyDocuments>}</div>
                               </div>
                             </div>
                           </section>
@@ -1766,12 +1776,12 @@ const contextCall = React.useCallback((data: any, path: any, releventKey: any) =
                               )}
                             </span>
                           </div>
-                           <div>
-                          <AncTool item={Masterdata} callBack={AncCallback} AllListId={AllListId} Context={props.Context}listName={"Master Tasks"} />
+                          <div>
+                            {Masterdata?.Id != undefined && <AncTool item={Masterdata} callBack={AncCallback} AllListId={AllListId} Context={props.Context} listName={"Master Tasks"} />}
                           </div>
                           <div>{Masterdata?.Id && <SmartInformation ref={smartInfoRef} Id={Masterdata?.Id} AllListId={AllListId} Context={props?.Context} taskTitle={Masterdata?.Title} listName={"Master Tasks"} />}</div>
-                  <div> {Masterdata?.Id != undefined && <RelevantDocuments ref={relevantDocRef} AllListId={AllListId} Context={props?.Context} siteUrl={AllListId?.siteUrl} DocumentsListID={AllListId.DocumentsListID} ID={Masterdata?.Id} siteName={"Master Tasks"} folderName={Masterdata?.Title}Keydoc={true}></RelevantDocuments>}</div>
-                  <div> {Masterdata?.Id != undefined && <RelevantEmail ref={keyDocRef} AllListId={AllListId} Context={props?.Context} siteUrl={AllListId?.siteUrl} DocumentsListID={AllListId?.DocumentsListID} ID={Masterdata?.Id} siteName={"Master Tasks"} folderName={Masterdata?.Title} ></RelevantEmail>}</div>
+                          <div> {Masterdata?.Id != undefined && <RelevantDocuments ref={relevantDocRef} AllListId={AllListId} Context={props?.Context} siteUrl={AllListId?.siteUrl} DocumentsListID={AllListId.DocumentsListID} ID={Masterdata?.Id} siteName={"Master Tasks"} folderName={Masterdata?.Title} Keydoc={true}></RelevantDocuments>}</div>
+                          <div> {Masterdata?.Id != undefined && <RelevantEmail ref={keyDocRef} AllListId={AllListId} Context={props?.Context} siteUrl={AllListId?.siteUrl} DocumentsListID={AllListId?.DocumentsListID} ID={Masterdata?.Id} siteName={"Master Tasks"} folderName={Masterdata?.Title} ></RelevantEmail>}</div>
                         </div>
                       </div>
 
@@ -1780,15 +1790,16 @@ const contextCall = React.useCallback((data: any, path: any, releventKey: any) =
                           <div className="Alltable">
                             <div className="section-event ps-0">
                               <div className="wrapper project-management-Table">
-                                {(data?.length == 0 || data?.length > 0) && <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} updatedSmartFilterFlatView={false}
+                                {(ProjectTableData?.length == 0 || ProjectTableData?.length > 0) && <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} updatedSmartFilterFlatView={false}
                                   projectmngmnt={"projectmngmnt"}
                                   masterTaskData={MasterListData}
+                                  PortfolioFeature={Masterdata?.Item_x0020_Type == "Sprint" ? 'Feature' : ''}
                                   AllSitesTaskData={AllSitesAllTasks}
                                   MasterdataItem={Masterdata}
-                                  PortfolioFeature={Masterdata?.Item_x0020_Type == "Sprint"? 'Feature':''}
-                                  columns={column2} data={data} callBackData={callBackData}
+                                  columns={column2} data={ProjectTableData} callBackData={callBackData}
                                   smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                                   TaskUsers={AllUser} showHeader={true} expendedTrue={false}
+                                  showRestructureButton={true}
                                   showCreationAllButton={true}
                                   flatViewDataAll={flatViewDataAll}
                                   clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
@@ -1862,7 +1873,7 @@ const contextCall = React.useCallback((data: any, path: any, releventKey: any) =
                 AllListId={AllListId}
                 UsedFrom={"ProjectManagement"}
                 TaskUsers={AllUser}
-                data={data}
+                data={ProjectTableData}
               ></CreateWS>
             )}
           </>) : (<div>Project not found</div>)}

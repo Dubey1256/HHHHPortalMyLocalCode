@@ -12,6 +12,7 @@ import _ from "lodash";
 import HtmlEditorCard from "../HtmlEditor/HtmlEditor";
 import Picker from "../EditTaskPopup/SmartMetaDataPicker";
 import { FaLeftLong, FaRightLong } from "react-icons/fa6";
+import PageLoader from "../pageLoader";
 import DatePicker from "react-datepicker";
 import ServiceComponentPortfolioPopup from "../EditTaskPopup/ServiceComponentPortfolioPopup";
 import { TbRuler2Off } from "react-icons/tb";
@@ -42,7 +43,8 @@ const CompareTool = (props: any) => {
     const [categorySearchKey, setCategorySearchKey] = React.useState<any>('');
     const [AllMasterTasksItems, setAllMasterTasksItems] = React.useState<any>({});
     const [selectedData, setSelectedData] = React.useState([]);
-    const [AllCommentModal, setAllCommentModal] = React.useState<any>(false)
+    const [AllCommentModal, setAllCommentModal] = React.useState<any>(false) 
+    const [showLoader, setshowLoader] = React.useState<any>(false)
     const rerender = React.useReducer(() => ({}), {})[1]
     const [ItemRankArray, setItemRankArray]: any = useState([
         { rankTitle: 'Select Item Rank', rank: null },
@@ -59,14 +61,17 @@ const CompareTool = (props: any) => {
 
         let count = 0;
         Items?.map(async (items: any) => {
-            items.subRows =[];
+            items.subRows = [];
             let filter = `((Portfolio/Id eq ${items?.Id}))`
             const Itesm: any = await globalCommon.loadAllSiteTasks(props?.contextValue, filter);
-            items.taggedTasks =[];
+            items.taggedTasks = [];
             if (Itesm?.length > 0) {
+                Itesm.forEach((obj: any) => {
+                    obj.property = 'taggedTasks';
+                })
                 items.taggedTasks = Itesm;
             }
-            if (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature") {
+            if (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature" || items?.Item_x0020_Type === "Project" || items?.Item_x0020_Type === "Sprint") {
                 const select =
                     "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo, TechnicalExplanations, SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,Priority_x0020_Rank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title, Portfolios/Id,Portfolios/ItemType, ClientTime,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Parent,Portfolios,TaskCategories,ClientCategory,Author,Editor,SharewebCategories"
                 await globalCommon.getData(
@@ -77,6 +82,7 @@ const CompareTool = (props: any) => {
                 ).then(async (datas: any) => {
                     count++;
                     datas.forEach((obj: any) => {
+                        obj.property = 'subRows';
                         obj.siteUrl = props?.contextValue?.siteUrl,
                             obj.listId = props?.contextValue?.MasterTaskListID,
                             obj.IconTitle = obj.Item_x0020_Type.charAt(0);
@@ -85,6 +91,7 @@ const CompareTool = (props: any) => {
                     if (Items?.length === count) {
                         setData(Items);
                         setVersionHistory(Items);
+                        setshowLoader(false);
                     }
                 }).catch((err: any) => {
                     console.error(err);
@@ -108,7 +115,7 @@ const CompareTool = (props: any) => {
     const getDataWithFilter = async () => {
         let a: any = [];
         selectedData?.map(async (items: any) => {
-            if (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature") {
+            if (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature" || items?.Item_x0020_Type === "Project" || items?.Item_x0020_Type === "Sprint") {
                 const select =
                     "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,Synonyms,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo,TechnicalExplanations,SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,Priority_x0020_Rank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title,Portfolios/Id,ClientTime,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title,AssignedTo/Title,AssignedTo/Id,TeamMembers/Title,TeamMembers/Id,ResponsibleTeam/Title,ResponsibleTeam/Id&$expand=Parent,Portfolios,TaskCategories,AssignedTo,ClientCategory,TeamMembers,ResponsibleTeam,ClientCategory,Author,Editor"
 
@@ -130,7 +137,9 @@ const CompareTool = (props: any) => {
                         datas[0].PortfolioItem = [];
                         datas[0].ProjectItem = [];
                         datas[0]?.Portfolios?.forEach((obj: any) => {
-                            let dataitem: any = AllMasterTasksItems?.AllData?.filter((master: any) => master.Id === obj.Id)
+                            let dataitem: any = AllMasterTasksItems?.AllData?.filter((master: any) => master.Id === obj.Id);
+                            if(dataitem?.length ===0)
+                             dataitem = AllMasterTasksItems?.ProjectData?.filter((master: any) => master.Id === obj.Id)
                             if (dataitem[0]?.Item_x0020_Type != undefined && dataitem[0]?.Item_x0020_Type === 'Project')
                                 datas[0].ProjectItem.push(obj)
                             else if (dataitem[0]?.Item_x0020_Type != undefined && dataitem[0]?.Item_x0020_Type != 'Project') datas[0].PortfolioItem.push(obj);
@@ -199,7 +208,12 @@ const CompareTool = (props: any) => {
                 .filter(`Portfolios/Id eq ${data[0]?.Id}`)
                 .get();
 
-            data[0].tagDoc = items;//{ EncodedAbsUrl: items.EncodedAbsUrl, Title: items?.Title }
+            if (items?.length > 0) {
+                items.forEach((obj: any) => {
+                    obj.property = 'tagDoc';
+                })
+            }
+            data[0].tagDoc = items;
             console.log(items);
         } catch (error) {
             console.error(error);
@@ -275,7 +289,7 @@ const CompareTool = (props: any) => {
                     selectedDataValue.push(elem?.original)
                 }
             })
-
+            setshowLoader(true);
             setSelectedData(selectedDataValue)
             getTaskUsers();
             SmartMetaDataListInformations();
@@ -321,8 +335,9 @@ const CompareTool = (props: any) => {
         setHistory((prevHistory) => [...prevHistory, _.cloneDeep(data)]);
         const updatedItems = _.cloneDeep(data);
         const indexValue = index == 1 ? 0 : 1
-        if (taggedItems != undefined && (property === 'tagDoc' || property === 'taggedTasks' || property === 'subRows')) {
+        if (taggedItems != undefined && taggedItems?.property === property && (property === 'tagDoc' || property === 'taggedTasks' || property === 'subRows')) {
             const findUnSelected = updatedItems[indexValue][property].filter((obj: any) => taggedItems?.Id != obj.Id);
+
             updatedItems[indexValue][property] = findUnSelected
             if (!IsExistsData(updatedItems[index][property], taggedItems))
                 updatedItems[index][property].unshift(taggedItems);
@@ -351,7 +366,7 @@ const CompareTool = (props: any) => {
         else {
             const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
             if (selectedItems?.length === 0)
-                alert("please select items " + { property })
+                alert("please select items " + property)
         }
 
         setData(updatedItems);
@@ -459,9 +474,9 @@ const CompareTool = (props: any) => {
         setHistory((prevHistory) => [...prevHistory, _.cloneDeep(data)]);
         const updatedItems = _.cloneDeep(data);
         if (updatedItems[autoSearch?.itemIndex][autoSearch?.property] != undefined) {
-            if (autoSearch?.property === "PortfolioItem")
+            if (!IsExistsData(updatedItems[autoSearch?.itemIndex][autoSearch?.property],selectCategoryData) && autoSearch?.property === "PortfolioItem")
                 updatedItems[autoSearch?.itemIndex][autoSearch?.property] = selectCategoryData;
-            else
+            else if(!IsExistsData(updatedItems[autoSearch?.itemIndex][autoSearch?.property],selectCategoryData[0]))
                 updatedItems[autoSearch?.itemIndex][autoSearch?.property].push(selectCategoryData[0]);
         }
         setData(updatedItems);
@@ -722,7 +737,7 @@ const CompareTool = (props: any) => {
     const removeItem = (item: any, index: any, property: any) => {
         const updatedItems = _.cloneDeep(data);
         let items = updatedItems[index][property]?.filter((obj: any) => { item?.Id != obj?.Id });
-        updatedItems[index][property] = items?.length >0? items :[];
+        updatedItems[index][property] = items?.length > 0 ? items : [];
         setData(updatedItems);
     }
     const openCategoryPicker = (item: any, condition: any, taskCategory: any) => {
@@ -847,18 +862,22 @@ const CompareTool = (props: any) => {
     }, [comments])
 
     //Save func
-    const TaggedTaskSavingConfiguration = (item: any) => {
-        let temp1 = item?.TaggedTask?.filter(function (val: any) { return val?.Portfolios?.Id == item.Id })
-
-    }
-    const SaveComponentsItems = async (Item: any) => {
-        if (Item?.TaskComponent?.length > 0) {
-            let allCompo = Item?.TaskComponent?.filter((obj: any) => obj.Portfolios.Id != Item.Id)
-            allCompo.forEach((item: any) => {
-                const postData: any = {
-                    PortfolioId: Item.Id,
+    const TaggeddocumentConfiguration = (Firstitem: any, secondItem: any) => {
+        let PortfoliosIds: any = [];
+        Firstitem?.tagDoc?.forEach((element: any) => {
+            let temp1 = element?.Portfolios?.filter((obj: any) => obj.Id == secondItem.Id)
+            try {
+            if (temp1?.length > 0) {
+                let PortfolioIds: any = [];
+                element?.Portfolios.forEach((elo: any) => {
+                    if (elo?.Id != secondItem.Id)
+                        PortfolioIds.push(elo.Id);
+                })
+                PortfolioIds.push(Firstitem.Id)
+                let postData = {
+                    PortfoliosId: { "results": PortfolioIds },
                 }
-                globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.MasterTaskListID, postData, item.Id)
+                globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.DocumentListID === undefined ? 'D0F88B8F-D96D-4E12-B612-2706BA40FB08' : props?.contextValue?.DocumentListID, postData, element.Id)
                     .then((returnresult) => {
                         console.log(returnresult);
                         // result.smartTime = String(returnresult)
@@ -868,7 +887,63 @@ const CompareTool = (props: any) => {
                         console.error("Error:", error);
                     });
 
-            })
+            }
+        } catch (error) {
+            // Handle the error, you can log it or perform any other actions
+            console.error('Error in the first block:', error);
+        }
+        });
+    }
+    const TaggedTaskSavingConfiguration = (Firstitem: any, secondItem: any) => {
+        let PortfoliosIds: any = [];
+        let taggedtasks = Firstitem?.taggedTasks?.filter((obj: any) => obj?.Portfolio?.Id == secondItem.Id)
+        try {
+            if (taggedtasks?.length > 0) {
+                taggedtasks.forEach((element: any) => {
+                    let postData = {
+                        PortfoliosId: Firstitem.Id,
+                    }
+                    globalCommon.updateItemById(element.siteUrl, element.listId, postData, element.Id)
+                        .then((returnresult) => {
+                            console.log(returnresult);
+                            // result.smartTime = String(returnresult)
+                            // console.log("Final Total Time:", returnresult);
+                        })
+                        .catch((error) => {
+                            console.error("Error:", error);
+                        });
+
+                });
+
+            }
+        } catch (error) {
+            // Handle the error, you can log it or perform any other actions
+            console.error('Error in the first block:', error);
+        }
+    }
+    const SaveComponentsItems = async (FirstItem: any, SecondItem:any) => {
+        if (FirstItem?.subRows?.length > 0) {
+            let allCompo = FirstItem?.subRows?.filter((obj: any) => obj?.Parent?.Id === SecondItem.Id)
+            try {
+                allCompo.forEach((item: any) => {
+                    const postData: any = {
+                        ParentId: FirstItem.Id,
+                    }
+                    globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.MasterTaskListID, postData, item.Id)
+                        .then((returnresult) => {
+                            console.log(returnresult);
+                            // result.smartTime = String(returnresult)
+                            // console.log("Final Total Time:", returnresult);
+                        })
+                        .catch((error) => {
+                            console.error("Error:", error);
+                        });
+
+                })
+            } catch (error) {
+                // Handle the error, you can log it or perform any other actions
+                console.error('Error in the first block:', error);
+            }
         }
     }
     const saveSmartHelp = function (obj: any, Item: any) {
@@ -887,6 +962,7 @@ const CompareTool = (props: any) => {
         //  return SharewebListService.UpdateListItemByListId(GlobalConstants.ADMIN_SITE_URL, GlobalConstants.QUESTIONHELPDESCRIPTION_LISTID, postData, obj.Id);
     }
     const SaveComponent = async (Item: any, type: any) => {
+        try {
         var AssignedToIds: any = [];
         var TeamMembersIds: any = [];
         let ResponsibleTeamIds: any = [];
@@ -1033,6 +1109,10 @@ const CompareTool = (props: any) => {
             .catch((error) => {
                 console.error("Error:", error);
             });
+        } catch (error) {
+            // Handle the error, you can log it or perform any other actions
+            console.error('Error in the first block:', error);
+        }
     }
     const deleteComponent = function (Item: any) {
         return globalCommon.deleteItemById(props?.contextValue?.siteUrl, props?.contextValue?.MasterTaskListID, '', Item.Id);
@@ -1048,20 +1128,24 @@ const CompareTool = (props: any) => {
         if (flag) {
             if (type == 'Keep1') {
                 SaveComponent(data[0], type);
-                TaggedTaskSavingConfiguration(data[0]);
-                SaveComponentsItems(data[0]);
+                TaggedTaskSavingConfiguration(data[0], data[1]);
+                TaggeddocumentConfiguration(data[0], data[1]);
+                SaveComponentsItems(data[0],data[1]);
                 deleteComponent(data[1]);
             } else if (type == 'Keep2') {
                 SaveComponent(data[1], type);
-                TaggedTaskSavingConfiguration(data[1]);
-                SaveComponentsItems(data[1]);
+                TaggedTaskSavingConfiguration(data[1], data[0]);
+                TaggeddocumentConfiguration(data[1], data[0]);
+                SaveComponentsItems(data[1],data[0]);
                 deleteComponent(data[0]);
             } else if (type == 'KeepBoth') {
                 SaveComponent(data[0], '');
-                TaggedTaskSavingConfiguration(data[0]);
-                SaveComponentsItems(data[0]);
-                TaggedTaskSavingConfiguration(data[1]);
-                SaveComponentsItems(data[1]);
+                TaggedTaskSavingConfiguration(data[0], data[1]);
+                TaggeddocumentConfiguration(data[0], data[1]);
+                SaveComponentsItems(data[0],data[1]);
+                TaggedTaskSavingConfiguration(data[1], data[0]);
+                TaggeddocumentConfiguration(data[1], data[0]);
+                SaveComponentsItems(data[1],data[0]);
                 SaveComponent(data[1], type);
             }
         }
@@ -1085,7 +1169,7 @@ const CompareTool = (props: any) => {
                                 </a></Label>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center">
-                                <span><img className="imgWid29" src={`${props?.contextValue?.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/SwitchItem_icon.png`} title="Switch Items" onClick={() => switchItems()} /></span>
+                                <span><img className="imgWid29" src={`${props?.contextValue?.siteUrl}/SiteCollectionImages/ICONS/Shareweb/SwitchItem_icon.png`} title="Switch Items" onClick={() => switchItems()} /></span>
                             </Col>
                             <Col sm="5" md="5" lg="5" className="alignCenter siteColor">
                                 <span className="Dyicons me-1">{data[1]?.Item_x0020_Type.charAt(0)}</span> <Label>
@@ -2080,7 +2164,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Help Information
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Help_x0020_Information", true) }}></span>
                                     </label>
-                                    <textarea className="form-control" rows={3} value={data[0]?.Help_x0020_Information != undefined && data[0]?.Help_x0020_Information != null ? data[0]?.Help_x0020_Information.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
+                                    <textarea className="form-control" rows={3} value={data[0]?.Help_x0020_Information != undefined && data[0]?.Help_x0020_Information != null ? data[0]?.Help_x0020_Information.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1">
@@ -2094,7 +2178,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Help Information
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Help_x0020_Information", true) }}></span>
                                     </label>
-                                    <textarea className="form-control" rows={3} value={data[1]?.Help_x0020_Information != undefined && data[1]?.Help_x0020_Information != null ? data[1]?.Help_x0020_Information.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
+                                    <textarea className="form-control" rows={3} value={data[1]?.Help_x0020_Information != undefined && data[1]?.Help_x0020_Information != null ? data[1]?.Help_x0020_Information.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
 
                                 </div>
                             </Col>
@@ -2108,7 +2192,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Technical Explanations
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "TechnicalExplanations", true) }}></span>
                                     </label>
-                                    <textarea className="form-control" rows={3} value={data[0]?.TechnicalExplanations != null && data[0]?.TechnicalExplanations != undefined ? data[0]?.TechnicalExplanations.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
+                                    <textarea className="form-control" rows={3} value={data[0]?.TechnicalExplanations != null && data[0]?.TechnicalExplanations != undefined ? data[0]?.TechnicalExplanations.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1">
@@ -2122,7 +2206,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Technical Explanations
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "TechnicalExplanations", true) }}></span>
                                     </label>
-                                    <textarea className="form-control" rows={3} value={data[1]?.TechnicalExplanations != null && data[1]?.TechnicalExplanations != undefined ? data[1]?.TechnicalExplanations.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
+                                    <textarea className="form-control" rows={3} value={data[1]?.TechnicalExplanations != null && data[1]?.TechnicalExplanations != undefined ? data[1]?.TechnicalExplanations.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1">
@@ -2135,7 +2219,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Deliverables
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Deliverables", true) }}></span>
                                     </label>
-                                    <textarea className="form-control" rows={3} value={data[0]?.Deliverables != null && data[0]?.Deliverables != undefined ? data[0]?.Deliverables.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
+                                    <textarea className="form-control" rows={3} value={data[0]?.Deliverables != null && data[0]?.Deliverables != undefined ? data[0]?.Deliverables.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1">
@@ -2149,7 +2233,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Deliverables
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Deliverables", true) }}></span>
                                     </label>
-                                    <textarea className="form-control" rows={3} value={data[1]?.Deliverables != undefined && data[1]?.Deliverables != null ? data[1]?.Deliverables.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
+                                    <textarea className="form-control" rows={3} value={data[1]?.Deliverables != undefined && data[1]?.Deliverables != null ? data[1]?.Deliverables.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1">
@@ -2162,7 +2246,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Short Description
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Short_x0020_Description_x0020_On", true) }}></span>
                                     </label>
-                                    <textarea className="form-control" rows={3} value={data[0]?.Short_x0020_Description_x0020_On != null && data[0]?.Short_x0020_Description_x0020_On != undefined ? data[0]?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
+                                    <textarea className="form-control" rows={3} value={data[0]?.Short_x0020_Description_x0020_On != null && data[0]?.Short_x0020_Description_x0020_On != undefined ? data[0]?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1">
@@ -2176,7 +2260,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Short Description
                                         <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Short_x0020_Description_x0020_On", true) }}></span>
                                     </label>
-                                    <textarea className="form-control" rows={3} value={data[1]?.Short_x0020_Description_x0020_On != undefined && data[1]?.Short_x0020_Description_x0020_On != null ? data[1]?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
+                                    <textarea className="form-control" rows={3} value={data[1]?.Short_x0020_Description_x0020_On != undefined && data[1]?.Short_x0020_Description_x0020_On != null ? data[1]?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1">
@@ -2396,6 +2480,7 @@ const CompareTool = (props: any) => {
                         </div>
                     </div>
                 </footer>
+                {showLoader ? <PageLoader/>:''}
             </Panel>
             {
                 categories?.condition && <Picker
@@ -2418,7 +2503,8 @@ const CompareTool = (props: any) => {
                 />
             }
             <Panel onRenderHeader={onRenderCustomHeaderMain2} type={PanelType.medium} isOpen={htmlEditor?.condition} isBlocking={false} onDismiss={closeHtmlEditor}>
-                <HtmlEditorCard
+                
+                <div className="modal-body"><HtmlEditorCard
                     editorValue={
                         htmlEditor?.data != undefined
                             ? htmlEditor?.data
@@ -2426,8 +2512,11 @@ const CompareTool = (props: any) => {
                     }
                     HtmlEditorStateChange={HtmlEditorCallBack}
                 ></HtmlEditorCard>
-                <button onClick={() => { saveEditorData() }}>save</button>
-                <button onClick={closeHtmlEditor}>cancel</button>
+                </div>
+                <footer className="modal-footer mt-2">
+                <button className="btn btn-primary" type="button" onClick={() => { saveEditorData() }}>Save</button>
+                <button className="btn btn-default" type="button" onClick={closeHtmlEditor}>Cancel</button>
+                </footer>
             </Panel>
 
 
@@ -2499,7 +2588,7 @@ const CompareTool = (props: any) => {
                     </footer>
 
                 </div>
-
+                            
             </Panel>
         </>
     );

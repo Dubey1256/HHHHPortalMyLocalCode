@@ -3,8 +3,184 @@ import * as React from "react";
 import pnp, { sp, Web } from "sp-pnp-js";
 import ServiceComponentPortfolioPopup from "../EditTaskPopup/ServiceComponentPortfolioPopup";
 import SelectedTaskUpdateOnPopup from "./selectedTaskUpdateOnPopup";
+import Picker from "../EditTaskPopup/SmartMetaDataPicker";
 
 
+export const addedCreatedDataFromAWT = (itemData: any, dataToPush: any) => {
+    for (let val of itemData) {
+        if (dataToPush?.Portfolio?.Id === val.Id && dataToPush?.ParentTask?.Id === undefined) {
+            const existingIndex = val.subRows?.findIndex((subRow: any) => subRow?.Id === dataToPush?.Id);
+            if (existingIndex !== -1) {
+                val.subRows[existingIndex] = dataToPush;
+            } else {
+                val.subRows = val.subRows || [];
+                val?.subRows?.push(dataToPush);
+            }
+        } else if (dataToPush?.ParentTask?.Id === val.Id && dataToPush?.siteType === val?.siteType) {
+            const existingIndex = val.subRows?.findIndex((subRow: any) => subRow?.Id === dataToPush?.Id && dataToPush?.siteType === subRow?.siteType);
+            if (existingIndex !== -1) {
+                val.subRows[existingIndex] = dataToPush;
+            } else {
+                val.subRows = val.subRows || [];
+                val?.subRows?.push(dataToPush);
+            }
+            return true;
+        } else if (val?.subRows) {
+            if (addedCreatedDataFromAWT(val.subRows, dataToPush)) {
+                return true;
+            }
+        }
+    }
+    return false;
+};
+
+
+export function CategoriesUpdate(taskValue: any) {
+    const [categoriesPopup, setCategoriesPopup] = React.useState(false);
+    const [selectedCategoryData, setSelectedCategoryData] = React.useState([]);
+    const handleDrop = (item: any, event: any) => {
+        if (event === 'categories' && taskValue?.activeCategory?.length > 0) {
+            let postCatItem: any = []
+            taskValue?.activeCategory.map((elem: any) => {
+                postCatItem.push(elem.Id);
+            })
+            UpdateBulkTaskUpdate(taskValue, postCatItem, '');
+        } else if (item && event === 'categories') {
+            let postCatItem: any = []
+            postCatItem.push(item.Id);
+            UpdateBulkTaskUpdate(taskValue, postCatItem, item);
+        }
+    }
+    const UpdateBulkTaskUpdate = async (task: any, postCatItem: any, item: any) => {
+        const updatePromises: Promise<any>[] = [];
+        if (taskValue?.selectedData?.length > 0) {
+            taskValue?.selectedData?.forEach((elem: any) => {
+                const web = new Web(elem?.original?.siteUrl);
+                const updatePromise = web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update({
+                    TaskCategoriesId: { results: postCatItem }
+                });
+                updatePromises.push(updatePromise);
+            });
+        } else {
+            const web = new Web(task?.taskValue?.siteUrl);
+            const updatePromise = web.lists.getById(task?.taskValue?.listId).items.getById(task?.taskValue?.Id).update({
+                TaskCategoriesId: { results: postCatItem }
+            });
+            updatePromises.push(updatePromise);
+        }
+        try {
+            const results = await Promise.all(updatePromises);
+            console.log("All projects updated successfully!", results);
+            let allData = JSON.parse(JSON.stringify(taskValue?.data))
+            let checkBoolian: any = null;
+            if (taskValue?.updatedSmartFilterFlatView != true && taskValue?.clickFlatView != true) {
+                if (taskValue?.selectedData?.length > 0) {
+                    taskValue?.selectedData?.forEach((value: any) => {
+                        if (taskValue?.activeCategory?.length > 0) {
+                            value.original.TaskCategories = taskValue?.activeCategory;
+                        } else {
+                            value.original.TaskCategories = [];
+                            value.original.TaskCategories.push({ Id: item.Id, Title: item.Title });
+                        }
+                        if (value?.original?.TaskCategories?.length > 0) {
+                            value.original.TaskTypeValue = value?.original?.TaskCategories?.map((val: any) => val.Title).join(",")
+                        }
+                        checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
+                    });
+                } else {
+                    if (taskValue?.activeCategory?.length > 0) {
+                        task.taskValue.TaskCategories = taskValue?.activeCategory;
+                    } else {
+                        task.taskValue.TaskCategories = [];
+                        task.taskValue.TaskCategories.push({ Id: item.Id, Title: item.Title });
+                    }
+                    if (task?.taskValue?.TaskCategories?.length > 0) {
+                        task.taskValue.TaskTypeValue = task?.taskValue?.TaskCategories?.map((val: any) => val.Title).join(",")
+                    }
+                    checkBoolian = addedCreatedDataFromAWT(allData, task?.taskValue);
+                }
+                if (checkBoolian) {
+                    taskValue.setData(allData);
+                }
+            } else if (taskValue?.updatedSmartFilterFlatView === true || taskValue?.clickFlatView === true) {
+                let updatedAllData: any = []
+                if (taskValue?.selectedData?.length > 0) {
+                    updatedAllData = taskValue?.data?.map((elem: any) => {
+                        const match = taskValue?.selectedData?.find((match: any) => match?.original?.Id === elem?.Id && match?.original?.siteType === elem?.siteType);
+                        if (match) {
+                            if (taskValue?.activeCategory?.length > 0) {
+                                match.original.TaskCategories = taskValue?.activeCategory;
+                            } else {
+                                match.original.TaskCategories = [];
+                                match.original.TaskCategories.push({ Id: item.Id, Title: item.Title });
+                            }
+                            if (match?.original?.TaskCategories?.length > 0) {
+                                match.original.TaskTypeValue = match?.original?.TaskCategories?.map((val: any) => val.Title).join(",")
+                            }
+                            return match?.original;
+                        } return elem;
+                    });
+                } else {
+                    updatedAllData = taskValue.data.map((elem: any) => {
+                        if (task?.taskValue?.Id === elem?.Id && task?.taskValue?.siteType === elem?.siteType) {
+                            if (taskValue?.activeCategory?.length > 0) {
+                                task.taskValue.TaskCategories = taskValue?.activeCategory;
+                            } else {
+                                task.taskValue.TaskCategories = [];
+                                task.taskValue.TaskCategories.push({ Id: item.Id, Title: item.Title })
+                            }
+                            if (task?.taskValue?.TaskCategories?.length > 0) {
+                                task.taskValue.TaskTypeValue = task?.taskValue?.TaskCategories?.map((val: any) => val.Title).join(",")
+                            }
+                            return task?.taskValue;
+                        } return elem;
+                    });
+                }
+                taskValue.setData((prev: any) => updatedAllData);
+            }
+        } catch (error) {
+            console.error("Error updating projects:", error);
+        }
+    }
+
+    const smartCategoryPopup = React.useCallback(() => {
+        setCategoriesPopup(false);
+    }, []);
+    const SelectCategoryCallBack = React.useCallback((selectCategoryDataCallBack: any) => {
+        setSelectedCategoryData(selectCategoryDataCallBack);
+        setCategoriesPopup(false);
+    }, []);
+
+    return (
+        <>
+            <div className='clearfix px-1 my-3'>
+                <div className="prioritySec d-flex alignCenter">
+                    <span style={{ width: "125px" }} className="">Categories</span>
+                    {taskValue?.categoriesTiles?.length > 0 ? (
+                        taskValue?.categoriesTiles?.map((cat: any) => {
+                            return (
+                                <div style={taskValue?.activeCategory?.some((elem: any) => elem.Id === cat?.Id) ? { border: '1px solid #000066' } : {}} className='priorityTile' onClick={() => taskValue?.selectSubTaskCategory(cat?.Id, cat.Title)} key={cat.Id} onDrop={(e: any) => handleDrop(cat, 'categories')} onDragOver={(e: any) => e.preventDefault()}>
+                                    <a className={taskValue?.activeCategory?.some((elem: any) => elem.Id === cat?.Id) ? "alignCenter isActives justify-content-around subcategoryTask border-0" : "alignCenter justify-content-around subcategoryTask border-0"} title={cat?.Title}>{cat?.Title}</a>
+                                </div>
+                            )
+                        })
+                    ) : (
+                        <>{selectedCategoryData?.length === 0 && <div className="mx-auto text-center">Please click setting to select categories</div>}</>
+                    )}
+                    {selectedCategoryData?.map((item: any) => {
+                        return (
+                            <div style={taskValue?.activeCategory?.some((elem: any) => elem.Id === item?.Id) ? { border: '1px solid #000066' } : {}} className='priorityTile' onClick={() => taskValue?.selectSubTaskCategory(item?.Id, item.Title)} key={item.Id} onDrop={(e: any) => handleDrop(item, 'categories')} onDragOver={(e: any) => e.preventDefault()}>
+                                <a className={taskValue?.activeCategory?.some((elem: any) => elem.Id === item?.Id) ? "alignCenter isActives justify-content-around subcategoryTask border-0" : "alignCenter justify-content-around subcategoryTask border-0"} title={item?.Title}>{item.Title}</a>
+                            </div>
+                        )
+                    })}
+                    <span onClick={() => setCategoriesPopup(true)} title="Categories Items Popup" className="svg__iconbox svg__icon--setting hreflink"></span>
+                </div>
+            </div>
+            {categoriesPopup && <Picker selectedCategoryData={selectedCategoryData} usedFor="Task-Popup" AllListId={taskValue?.ContextValue} CallBack={SelectCategoryCallBack} closePopupCallBack={smartCategoryPopup} />}
+        </>
+    )
+}
 export function DueDateTaskUpdate(taskValue: any) {
     const handleDrop = (destination: any, event: any) => {
         let date = new Date();
@@ -298,7 +474,6 @@ export function PrecentCompleteUpdate(taskValue: any) {
         </>
     )
 }
-
 export function ProjectTaskUpdate(taskValue: any) {
     const [ProjectManagementPopup, setProjectManagementPopup] = React.useState(false);
     const [ProjectData, setProjectData] = React.useState([]);
@@ -480,7 +655,21 @@ export function ProjectTaskUpdate(taskValue: any) {
 const BulkEditingFeature = (props: any) => {
     const [isActive, setIsActive] = React.useState({ priority: false, DueDate: false, PercentComplete: false, Project: false, });
     const [save, setSave] = React.useState<any>({ priority: undefined, DueDate: '', PercentComplete: undefined, Project: {} })
+    const [activeCategory, setActiveCategory] = React.useState([]);
     const [bulkEditingSettingPopup, setBulkEditingSettingPopup] = React.useState(false);
+
+    const selectSubTaskCategory = (Id: any, Title: any) => {
+        let catId: any = [...activeCategory];
+        const index = catId.findIndex((item: any) => item.Id === Id);
+
+        if (index === -1) {
+            catId = [...catId, { Id: Id, Title: Title }];
+        } else {
+            catId = catId.filter((item: any) => item.Id !== Id);
+        }
+        setActiveCategory(catId);
+    };
+
 
     const handleDrop = (destination: any, priority: any) => {
         console.log("dragedTaskdragedTask", props?.dragedTask)
@@ -533,6 +722,7 @@ const BulkEditingFeature = (props: any) => {
         if (eventSetting != 'close') {
             const isActiveDataBackup = { priority: false, DueDate: false, PercentComplete: false, Project: false, }
             const saveBackup: any = { priority: undefined, DueDate: '', PercentComplete: undefined, Project: {} }
+            setActiveCategory([]);
             setSave(saveBackup);
             setIsActive(isActiveDataBackup)
             setBulkEditingSettingPopup(false);
@@ -578,7 +768,7 @@ const BulkEditingFeature = (props: any) => {
                 Project: !isActive.Project ? item : {},
             }));
         }
-    }; 
+    };
 
     return (
         <>
@@ -605,8 +795,10 @@ const BulkEditingFeature = (props: any) => {
             {props?.bulkEditingCongration?.Project && <div>
                 <ProjectTaskUpdate taskValue={props?.dragedTask?.task} data={props?.data} save={save} setActiveTile={setActiveTile} isActive={isActive} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} setData={props?.setData} selectedData={props?.selectedData} ContextValue={props?.ContextValue} projectTiles={props?.projectTiles} />
             </div>}
-
-            {bulkEditingSettingPopup && <SelectedTaskUpdateOnPopup save={save} selectedData={props?.selectedData} isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} columns={props?.columns} data={props?.data} setData={props?.setData} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} ContextValue={props?.ContextValue} masterTaskData={props?.masterTaskData} />}
+            {props?.bulkEditingCongration?.categories && <div>
+                <CategoriesUpdate activeCategory={activeCategory} selectSubTaskCategory={selectSubTaskCategory} taskValue={props?.dragedTask?.task} data={props?.data} save={save} setActiveTile={setActiveTile} isActive={isActive} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} setData={props?.setData} selectedData={props?.selectedData} ContextValue={props?.ContextValue} categoriesTiles={props?.categoriesTiles} />
+            </div>}
+            {bulkEditingSettingPopup && <SelectedTaskUpdateOnPopup activeCategory={activeCategory} precentComplete={props?.precentComplete} priorityRank={props?.priorityRank} AllTaskUser={props?.AllTaskUser} save={save} selectedData={props?.selectedData} isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} columns={props?.columns} data={props?.data} setData={props?.setData} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} ContextValue={props?.ContextValue} masterTaskData={props?.masterTaskData} />}
             {/* {(props?.bulkEditingCongration?.priority || props?.bulkEditingCongration?.dueDate || props?.bulkEditingCongration?.status || props?.bulkEditingCongration?.Project) && <div onClick={(e) => bulkEditingSettingPopupEvent()}><span className="svg__iconbox svg__icon--edit"></span></div>} */}
             <div className='d-flex justify-content-end mx-2 mb-2'>{(props?.bulkEditingCongration?.priority || props?.bulkEditingCongration?.dueDate || props?.bulkEditingCongration?.status || props?.bulkEditingCongration?.Project) && <button onClick={(e) => bulkEditingSettingPopupEvent()} className='btn btn-primary'>Bulk Update</button>}</div>
         </>

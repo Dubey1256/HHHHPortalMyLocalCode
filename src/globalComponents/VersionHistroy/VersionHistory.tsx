@@ -359,7 +359,7 @@ export default function VersionHistory(props: any) {
             })
         }
 
-        if (itm?.Sitestagging != undefined) {
+        if (itm?.Sitestagging != undefined && itm?.Sitestagging != false) {
             try {
                 SitesTaggingArray = JSON.parse(itm?.Sitestagging)
                 SitesTaggingArray?.map((AllSCItem: any) => {
@@ -380,11 +380,11 @@ export default function VersionHistory(props: any) {
 
         return (
             <>
-                {(SitesTaggingArray != undefined && SitesTaggingArray != null) && <dl className={usedFor == "Site-Composition" ? "Sitecomposition" : "Sitecomposition"}>
+                {(SitesTaggingArray != undefined && SitesTaggingArray != null && SitesTaggingArray.length > 0) && <dl className={usedFor == "Site-Composition" ? "Sitecomposition" : "Sitecomposition"}>
                     <div className='dropdown'>
                         <div className="spxdropdown-menu" style={{ display: showComposition ? 'block' : 'none' }}>
                             <ul>
-                                {SitesTaggingArray.map((site: any, indx: any) => {
+                                {SitesTaggingArray?.map((site: any, indx: any) => {
                                     return <li className="Sitelist">
                                         <span>
                                             <img style={{ width: "22px" }} title={site?.Title} src={site?.SiteImages} />

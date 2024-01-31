@@ -169,12 +169,13 @@ const App = (props: any) => {
   const [peoplePickerShow, setPeoplePickerShow] = React.useState(true);
   const [isOpen, setIsOpen] = React.useState(false);
   const [showM, setShowM] = React.useState([]);
-
+  const [IsDisableField, setIsDisableField] = React.useState(false);
   const [newRecurrenceEvent, setNewRecurrenceEvent] = React.useState(false);
   const [editRecurrenceEvent, setEditRecurrenceEvent] = React.useState(false);
   const [returnedRecurrenceInfo, setReturnedRecurrenceInfo] =
     React.useState(null);
   const [recurrenceData, setRecurrenceData] = React.useState(null);
+  const [selectedKey, setselectedKey] = React.useState('daily');
 
   // People picker function start
   const [selectedUsers, setSelectedUsers] = React.useState([]);
@@ -421,8 +422,10 @@ const App = (props: any) => {
     { key: "Un-Planned", text: "Un-Planned" },
     { key: "Restricted Holiday", text: "Restricted Holiday" },
     { key: "LWP", text: "LWP" },
-    { key: "Work From Home", text: "Work From Home" }
- 
+    { key: "Work From Home", text: "Work From Home" },
+    { key: "Company Holiday", text: "Company Holiday" },
+    { key: "National Holiday", text: "National Holiday" }
+
 
   ];
   const Designation = [
@@ -434,6 +437,7 @@ const App = (props: any) => {
     { key: "Design", text: "Design" },
     { key: "HR", text: "HR" },
     { key: "Admin", text: "Admin" },
+    { key: "Management", text: "Management" },
     { key: "JTM (Junior Task Manager)", text: "JTM (Junior Task Manager)" }
   ];
   const openm = () => {
@@ -450,6 +454,7 @@ const App = (props: any) => {
     // setType("");
     sedType("");
     setInputValueReason("");
+    setIsDisableField(false);
     allDay = "false";
     HalfDaye = "false";
     HalfDayT = "false";
@@ -519,17 +524,7 @@ const App = (props: any) => {
     const web = new Web(props.props.siteUrl);
     await web.lists
       .getById(props.props.SmalsusLeaveCalendar)
-      .items.select(
-        "*",
-        "fAllDayEvent",
-        "Author/Title",
-        "Editor/Title",
-        "Employee/Id",
-        "Employee/Title",
-        "HalfDay",
-        "HalfDayTwo",
-        "Color"
-      )
+      .items.select("*", "fAllDayEvent", "Author/Title", "Editor/Title", "Employee/Id", "Employee/Title", "HalfDay", "HalfDayTwo", "Color")
       .top(4999)
       .orderBy("Created", false)
       .expand("Author", "Editor", "Employee")
@@ -554,6 +549,9 @@ const App = (props: any) => {
           localcomp.push(comp);
         });
         compareData.map((item: any) => {
+          item.clickable = true;
+          if (item?.Event_x002d_Type == 'Company Holiday' || item?.Event_x002d_Type == 'National Holiday')
+            item.clickable = false;
           if (item.fAllDayEvent === false) {
             startdate = new Date(item.EventDate);
             startdate.setHours(startdate.getHours() - 13);
@@ -601,6 +599,7 @@ const App = (props: any) => {
             Designation: item.Designation,
             HalfDay: item.HalfDay,
             HalfDayTwo: item.HalfDayTwo,
+            clickable: item?.clickable,
             Color: item.Color
           };
           // const create ={
@@ -642,7 +641,7 @@ const App = (props: any) => {
   };
   const [details, setDetails]: any = React.useState([]);
   const saveEvent = async () => {
-    if (inputValueName?.length > 0 && dType?.length > 0) {
+    if (inputValueName?.length > 0 && (dType?.length > 0 || type == "National Holiday" || type == "Company Holiday")) {
       const chkstartDate = new Date(startDate);
       const chkendDate = new Date(endDate);
       if (chkstartDate > chkendDate) {
@@ -683,16 +682,17 @@ const App = (props: any) => {
             start: startDate,
             end: endDate,
             reason: inputValueReason,
-            type: HalfDaye==true ? "Half Day" : HalfDayT==true ? "Half Day" : type,
+            type: HalfDaye == true ? "Half Day" : HalfDayT == true ? "Half Day" : type,
             loc: location,
             Designation: dType,
-            
-            
+
+
           };
           setDetails(newEvent);
-          let mytitle =
-            newEvent.name + "-" + newEvent.type + "-" + newEvent.title;
-          let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : newEvent.type === "Work From Home" ? "#e0a209" : "";
+          let mytitle = newEvent.name + "-" + newEvent.type + "-" + newEvent.title;
+          if (newEvent != undefined && (newEvent?.type == "National Holiday" || newEvent?.type == "Company Holiday"))
+            mytitle = newEvent.type + "-" + newEvent.title;
+          let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : newEvent.type === "Work From Home" ? "#e0a209" : (newEvent.type === "Company Holiday" || newEvent.type === "National Holiday") ? "#228B22" : "";
 
           let eventData = {
             Title: mytitle,
@@ -771,7 +771,7 @@ const App = (props: any) => {
     if (!editRecurrenceEvent) {
       let mytitle =
         peopleName + "-" + type + "-" + inputValueName;
-      let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : type === "Work From Home" ? "#e0a209" : "";
+      let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : type === "Work From Home" ? "#e0a209" : (type === "Company Holiday" || type === "National Holiday") ? "#228B22" : "";
       const newEventData: IEventData = {
 
         EventType: "1",
@@ -796,7 +796,7 @@ const App = (props: any) => {
     } else if (editRecurrenceEvent) {
       let mytitle =
         peopleName + "-" + type + "-" + inputValueName;
-      let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : type === "Work From Home" ? "#e0a209" : "";
+      let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : type === "Work From Home" ? "#e0a209" : (type === "Company Holiday" || type === "National Holiday") ? "#228B22" : "";
       const editEventData: IEventData = {
         EventType: "1",
         EmployeeId: title_Id,
@@ -1134,7 +1134,7 @@ const App = (props: any) => {
     try {
       const web = new Web(props.props.siteUrl);
 
-      let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : newEvent.Event_x002d_Type === "Work From Home" ? "#e0a209" : "";
+      let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : newEvent.Event_x002d_Type === "Work From Home" ? "#e0a209" : (newEvent.Event_x002d_Type === "Company Holiday" || newEvent.Event_x002d_Type === "National Holiday") ? "#228B22" : "";
       const addEventItem = {
         Title: newEvent.Title,
         Description: newEvent.Description,
@@ -1170,7 +1170,7 @@ const App = (props: any) => {
       const web = new Web(props.props.siteUrl);
       let mytitle =
         editEvent.name + "-" + editEvent.type + "-" + editEvent.title;
-      let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : editEvent.Event_x002d_Type === "Work From Home" ? "#e0a209" : "";
+      let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : editEvent.Event_x002d_Type === "Work From Home" ? "#e0a209" : (editEvent.Event_x002d_Type === "Company Holiday" || editEvent.Event_x002d_Type === "National Holiday") ? "#228B22" : "";
 
       const editEventItem = {
         Title: mytitle,
@@ -1268,15 +1268,15 @@ const App = (props: any) => {
       "Half Day",
       newEvent.type
     );
-   
-  
+
+
     newEvent.title = newEvent.title.replace(
       "fulldayevent",
       newEvent.type
     );
     newEvent.title = newEvent.title.replace("LWP", newEvent.type);
 
-    let mycolors = (newEvent.halfdayevent === true || newEvent.halfdayeventT === true) ? "#6d36c5" : newEvent.type === "Work From Home" ? "#e0a209" : "";
+    let mycolors = (newEvent.halfdayevent === true || newEvent.halfdayeventT === true) ? "#6d36c5" : newEvent.type === "Work From Home" ? "#e0a209" : (newEvent.type === "Company Holiday" || newEvent.type === "National Holiday") ? "#228B22" : "";
 
     await web.lists
       .getById(props.props.SmalsusLeaveCalendar)
@@ -1324,7 +1324,8 @@ const App = (props: any) => {
     setPeoplePickerShow(false);
     setShowRecurrenceSeriesInfo(false);
     setEditRecurrenceEvent(false);
-
+    if (event?.eventType == "Company Holiday" || event?.eventType == "National Holiday")
+      setIsDisableField(true)
     openm();
     if (event.RecurrenceData) {
       setdisab(true);
@@ -1434,8 +1435,24 @@ const App = (props: any) => {
     //   alert("Cant add event in past");
     // }
     // else
+    let IsOpenAddPopup = true;
+    const { start, end } = slotInfo;
+    const eventsInSlot = events.filter((event: any) => event.start >= start && event.end <= end);
+    if (eventsInSlot != undefined && eventsInSlot?.length > 0) {
+      for (let index = 0; index < eventsInSlot.length; index++) {
+        let item = eventsInSlot[index];
+        if (item.clickable == false) {
+          IsOpenAddPopup = false;
+          break;
+        }
+      }
+    }
+    console.log('Events in selected slot:', eventsInSlot);
+    eventsInSlot?.forEach((event: any) => {
 
-    openm();
+    })
+    if (IsOpenAddPopup == true)
+      openm();
     maxD = new Date(8640000000000000);
     setdisab(false);
     setdisabl(true);
@@ -1526,7 +1543,7 @@ const App = (props: any) => {
       HalfDaye = false;
       HalfDayT = true;
       setIsFirstHalfDChecked(HalfDaye)
-     
+
       setIsChecked(allDay);
       //console.log("allDay", allDay);
     } else {
@@ -1675,7 +1692,32 @@ const App = (props: any) => {
       style,
     };
   };
-
+  const HandledLeaveType = (option: any) => {
+    if (option == "Company Holiday" || option == "National Holiday") {
+      setInputValueName(option);
+      setIsChecked(true);
+      allDay = true
+      setIsDisableField(true)
+      setShowRecurrenceSeriesInfo(false);
+      setNewRecurrenceEvent(false);
+      if (option == "National Holiday") {
+        setShowRecurrenceSeriesInfo(true);
+        setNewRecurrenceEvent(true);
+        setselectedKey('yearly')
+      }
+    }
+    else {
+      setInputValueName('');
+      setIsChecked(false);
+      allDay = false
+      setIsDisableField(false)
+      setShowRecurrenceSeriesInfo(false);
+      setNewRecurrenceEvent(false);
+      setRecurrenceData(null)
+      setselectedKey('daily')
+    }
+    setType(option)
+  }
 
   //  If type === work from home 
 
@@ -1799,6 +1841,7 @@ const App = (props: any) => {
                 onChange={people}
                 showtooltip={true}
                 required={true}
+                disabled={IsDisableField}
               ></PeoplePicker>
             </div>
           ) : (
@@ -1820,6 +1863,7 @@ const App = (props: any) => {
                 value={startDate}
                 onSelectDate={(date) => setStartDatefunction(date)}
                 hidden={showRecurrenceSeriesInfo}
+                disabled={IsDisableField}
               />
             </div>
           )}
@@ -1847,6 +1891,7 @@ const App = (props: any) => {
                 minDate={startDate}
                 maxDate={maxD}
                 onSelectDate={(date) => setEndDate(date)}
+                disabled={IsDisableField}
               />
             </div>
           )}
@@ -1873,6 +1918,7 @@ const App = (props: any) => {
                 className="me-1 mt-0 form-check-input"
                 checked={isChecked}
                 onChange={handleCheckboxChange}
+                disabled={IsDisableField}
               />
               All Day Event
             </label>
@@ -1888,6 +1934,7 @@ const App = (props: any) => {
                   className="me-1 form-check-input"
                   checked={isFirstHalfDChecked}
                   onChange={handleHalfDayCheckboxChange}
+                  disabled={IsDisableField}
                 /> First HalfDay
               </label>
               <label className="SpfxCheckRadio">
@@ -1896,6 +1943,7 @@ const App = (props: any) => {
                   className="me-1 form-check-input"
                   checked={isSecondtHalfDChecked}
                   onChange={handleHalfDayCheckboxChangeSecond}
+                  disabled={IsDisableField}
                 /> Second HalfDay
               </label>
 
@@ -1920,6 +1968,7 @@ const App = (props: any) => {
                     inlineLabel
                     label="Recurrence ?"
                     onChange={handleRecurrenceCheck}
+                    disabled={IsDisableField}
                   />
                 </div>
               )}
@@ -1929,9 +1978,10 @@ const App = (props: any) => {
                   display={true}
                   recurrenceData={recurrenceData}
                   startDate={startDate}
-
                   siteUrl={props.props.siteUrl}
                   returnRecurrenceData={returnRecurrenceInfo}
+                  selectedKey={selectedKey}
+                  selectedRecurrenceRule={selectedKey}
                 ></EventRecurrenceInfo>
               )}
             </div>
@@ -1941,6 +1991,7 @@ const App = (props: any) => {
               label="Location"
               value={location}
               onChange={handleInputChangeLocation}
+              disabled={IsDisableField}
             />
           </div>{" "}
           <Dropdown
@@ -1948,7 +1999,7 @@ const App = (props: any) => {
             options={leaveTypes}
             selectedKey={type}
             // defaultSelectedKey="Un-Planned" // Set the defaultSelectedKey to the key of "Planned Leave"
-            onChange={(e, option) => setType(option.key)}
+            onChange={(e, option) => HandledLeaveType(option.key)}
             required // Add the "required" attribute
             errorMessage={type ? "" : "Please select a leave type"} // Display an error message if no type is selected
           />
@@ -1957,12 +2008,14 @@ const App = (props: any) => {
             options={Designation}
             selectedKey={dType}
             onChange={(e, option) => sedType(option.key)}
+            disabled={IsDisableField}
             required
           />
           <div className="col-md-12">
             <ReactQuill
               value={inputValueReason}
               onChange={handleInputChangeReason}
+              readOnly={IsDisableField}
             />
           </div>
         </form>

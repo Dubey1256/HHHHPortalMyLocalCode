@@ -10,8 +10,7 @@ import ImageInformation from '../../EditPopupFiles/ImageInformation';
  let mastertaskdetails:any=[]
  let   copyEditData:any={}
 const EditDocumentpanel = (props: any) => {
- 
-  const [EditdocumentsData, setEditdocumentsData] :any= React.useState();
+ const [EditdocumentsData, setEditdocumentsData] :any= React.useState();
    const [isOpenImageTab, setisOpenImageTab] = React.useState(false);
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = React.useState(false);
   let ItemRank = [
@@ -31,10 +30,7 @@ const EditDocumentpanel = (props: any) => {
         loadSelectedDocuments() 
       }).catch((error:any)=>{
         console.log(error)
-      })
-  
-      
-     
+      })  
     }
   }, [props?.editData!=undefined])
 
@@ -47,9 +43,9 @@ const EditDocumentpanel = (props: any) => {
         .expand('Author,Editor,Portfolios')
         .get()
         .then((Data) => {
-          Data.Title = Data?.Title?.replace('.', "");
+          Data.Title = getUploadedFileName( Data?.Title);
           Data.siteType = 'sp';
-          Data.docTitle = Data?.Title?.replace('.', "");
+          Data.docTitle = getUploadedFileName( Data?.FileLeafRef);
           Data.Item_x002d_Image=Data?.Item_x0020_Cover
            let portfolioData:any=[]
           if (Data.Portfolios != undefined && Data?.Portfolios?.length > 0) {
@@ -79,8 +75,7 @@ const EditDocumentpanel = (props: any) => {
   
   const LoadMasterTaskList = () => {
     return new Promise(function (resolve, reject) {
-
-      let web = new Web(props.AllListId?.siteUrl);
+    let web = new Web(props.AllListId?.siteUrl);
       web.lists
         .getById(props?.AllListId.MasterTaskListID).items
         .select(
@@ -95,7 +90,7 @@ const EditDocumentpanel = (props: any) => {
         ).expand("PortfolioType").top(4999).get()
         .then((dataserviccomponent: any) => {
           console.log(dataserviccomponent)
-          mastertaskdetails = mastertaskdetails.concat(dataserviccomponent);
+          mastertaskdetails = dataserviccomponent;
           resolve(dataserviccomponent)
 
         }).catch((error: any) => {
@@ -168,8 +163,6 @@ const EditDocumentpanel = (props: any) => {
           alert("Document(s) update successfully");
         }
       
-       
-        // setEditdocpanel(false);
         if (props?.Keydoc) {
           props.callbackeditpopup(EditdocumentsData);
         } else {
@@ -208,11 +201,7 @@ const EditDocumentpanel = (props: any) => {
     }
   }
   const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
-    console.log(DataItem)
-    console.log(Type)
-    console.log(EditdocumentsData)
-    console.log(copyEditData)
-    console.log(functionType)
+  
     if (functionType == "Save") {
       let copyPortfoliosData= copyEditData?.Portfolios?.length>0?copyEditData?.Portfolios:[]
       copyPortfoliosData.push(DataItem[0])
@@ -224,6 +213,15 @@ const EditDocumentpanel = (props: any) => {
     }
   }, [])
 
+  const getUploadedFileName = (fileName: any) => {
+    const indexOfLastDot = fileName?.lastIndexOf('.');
+    if (indexOfLastDot !== -1) {
+        const extractedPart = fileName?.substring(0, indexOfLastDot);
+        return extractedPart;
+    }else{
+        return fileName
+    }
+}
 
   const opencomonentservicepopup = () => {
     copyEditData=[]
@@ -277,9 +275,9 @@ const EditDocumentpanel = (props: any) => {
           <Tab eventKey="BASICINFORMATION" title="BASIC INFORMATION" className='p-0'>
 
             <div className='border border-top-0 p-2'>
-              {EditdocumentsData?.Url?.Url && <div className='d-flex'>
+              {EditdocumentsData?.Url?.Url  && <div className='d-flex'>
                 <div className='input-group'><label className='form-label full-width'>URL</label>
-                  <input type='text' className="from-control w-75" value={EditdocumentsData?.Url?.Url} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Url: { ...EditdocumentsData.Url, Url: e.target.value } }))}></input>
+                  <input type='text' className="from-control w-75"  value={EditdocumentsData?.Url?.Url} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Url: { ...EditdocumentsData.Url, Url: e.target.value } }))}></input>
                 </div>
               </div>}
 
@@ -358,7 +356,7 @@ const EditDocumentpanel = (props: any) => {
                 {console.log("footerdiv")}
                 <div><span className='pe-2'>Created</span><span className='pe-2'>{EditdocumentsData?.Created !== null ? moment(EditdocumentsData?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Author?.Title}</a></span></div>
                 <div><span className='pe-2'>Last modified</span><span className='pe-2'>{EditdocumentsData?.Modified !== null ? moment(EditdocumentsData?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Editor?.Title}</a></span></div>
-                <div><span onClick={() => deleteDocumentsData(EditdocumentsData?.Id)} className="alignIcon hreflink svg__icon--trash svg__iconbox"></span>Delete this item</div>
+                <div onClick={() => deleteDocumentsData(EditdocumentsData?.Id)} className="hreflink"><span className="alignIcon hreflink svg__icon--trash svg__iconbox"></span>Delete this item</div>
               </div>
             </div>
 
@@ -379,8 +377,6 @@ const EditDocumentpanel = (props: any) => {
       </Panel>
       {isopencomonentservicepopup &&
         <ServiceComponentPortfolioPopup
-
-          // props={allValue?.componentservicesetdata}
           Dynamic={props.AllListId}
           ComponentType={"Component"}
           Call={ComponentServicePopupCallBack}

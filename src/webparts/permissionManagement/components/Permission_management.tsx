@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Tooltip from "../../../globalComponents/Tooltip";
 import { event } from "jquery";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
-import { Web } from "sp-pnp-js";
+import { Web, sp } from "sp-pnp-js";
 import EditPage from "../../../globalComponents/EditPanelPage/EditPage";
 // import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 
@@ -31,7 +31,7 @@ const Permission_management = (props:any) => {
 
 
   useEffect(() => {
-    taskUserData()
+    taskUserData();
     getData();
   }, []);
 
@@ -124,64 +124,116 @@ const Permission_management = (props:any) => {
     });
   };
 
+  // const fetchRequestDigest = async () => {
+  //   try {
+  //     const response = await props.context.spHttpClient.post(
+  //       `${props.context.pageContext.web.absoluteUrl}/_api/contextinfo`,
+  //       props.context.spHttpClient.configurations.v1
+  //     );
 
-  // const getRequestDigest = async (localizedPath: string): Promise<string> => {
-  //   // Check if 'localizedPath' starts with 'somePrefix'
-  //   const startsWithSomePrefix = /^somePrefix/.test(localizedPath);
-  
-  //   if (startsWithSomePrefix) {
-  //     try {
-  //       // Perform the asynchronous operation
-  //       const response: SPHttpClientResponse = await props.context.spHttpClient.post(
-  //         `${props.context.pageContext.web.absoluteUrl}/_api/contextinfo`,
-  //         SPHttpClient.configurations.v1
-  //       );
-  
-  //       // Parse the response JSON
+  //     if (response.ok) {
   //       const data = await response.json();
-  
-  //       // Return the FormDigestValue
-  //       return data.FormDigestValue;
-  //     } catch (error) {
-  //       console.error('Error while fetching digest:', error);
-  //       // Handle the error or return a default value if needed
-  //       return ''; // or throw error;
+  //       setRequestDigest(data.FormDigestValue);
+  //     } else {
+  //       console.error(`Error fetching request digest: ${response.statusText}`);
   //     }
-  //   } else {
-  //     // Handle the case where localizedPath does not start with 'somePrefix'
-  //     console.warn('localizedPath does not start with "somePrefix"');
-  //     // Return a default value or throw an error, depending on your requirements
-  //     return ''; // or throw new Error('localizedPath does not start with "somePrefix"');
+  //   } catch (error) {
+  //     console.error('An error occurred while fetching request digest:', error);
   //   }
   // };
+
+
+  // const postUser = async (data, url) => {
+  //   try {
+  //     const response = await props.context.spHttpClient.post(
+  //       `${props.context.pageContext.web.absoluteUrl}/_api/web${url}`,
+  //       props.context.spHttpClient.configurations.v1,
+  //       {
+  //         headers: {
+  //           'Accept': 'application/json;odata=nometadata',
+  //           'Content-Type': 'application/json;odata=verbose',
+  //           'X-RequestDigest': requestDigest || '',
+  //         },
+  //         body: JSON.stringify(data),
+  //       }
+  //     );
+
+  //     if (response.ok) {
+  //       // Handle success
+  //       console.log('Success:', await response.json());
+  //       // Update state or perform other actions as needed
+  //     } else {
+  //       // Handle error
+  //       console.error(`Error: ${response.statusText}`);
+  //     }
+  //   } catch (error) {
+  //     // Handle unexpected errors
+  //     console.error('An error occurred:', error);
+  //   }
+  // };
+
+
+
+  // const postUser = async () => {
+  //   var url = "https://hhhhteams.sharepoint.com/sites/HHHH/sp" + "/_api/web/sitegroups(" + id + ")/users";
+  //   var data = {
+  //     "__metadata": {
+  //       "type": "SP.User"
+  //     },
+  //     "LoginName": `i:0#.f|membership|${inputValue.Email}` ,
+  //   };
+
+  //   $.ajax({
+  //     url: url,
+  //     method: "POST",
+  //     headers: {
+  //       "accept": "application/json;odata=verbose",
+  //       "content-Type": "application/json;odata=verbose",
+  //     },
+  //     data: JSON.stringify(data),
+  //     success: function (result) {
+  //       console.log(result);
+  //     },
+  //     error: function (result, status) {
+  //       console.log(result);
+  //       alert("You do not have the necessary rights to access this section");
+  //     }
+  //   });
+  // };
+
   const postUser = async () => {
-    // const digestValue = await getRequestDigest('somePrefixExampleString');
-    var url = "https://hhhhteams.sharepoint.com/sites/HHHH/sp" + "/_api/web/sitegroups(" + id + ")/users";
-    var data = {
-      "__metadata": {
-        "type": "SP.User"
-      },
-      "LoginName": inputValue.LoginName,
+    const webUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/sp";
+    // const id = 1; // Replace with your actual group ID
+    // const inputValue = { Email: "user@example.com" }; // Replace with your actual input value
+
+    try {
+      // Ensure the SPFx context is available
+      const web = new Web(webUrl);
+
+      // Construct the user data
+      // const userData:any = {
+      //   LoginName: `i:0#.f|membership|${inputValue.Email}`
+      // };
+      var data :any = {
+        "LoginName": `i:0#.f|membership|${inputValue.Email}`,
     };
+      // let loginName : any = ;
 
-    $.ajax({
-      url: url,
-      method: "POST",
-      headers: {
-        "accept": "application/json;odata=verbose",
-        "content-Type": "application/json;odata=verbose"
-      },
-      data: JSON.stringify(data),
-      success: function (result) {
-        console.log(result);
-      },
-      error: function (result, status) {
-        console.log(result);
+      // Make the HTTP POST request to add the user to the group
+      await web.siteGroups.getById(id).users.add(data);
+
+      console.log("User added successfully");
+    } catch (error) {
+      console.error(error);
+
+      // Handle unauthorized/forbidden error
+      if (error.status === 403 || error.status === 401) {
         alert("You do not have the necessary rights to access this section");
+      } else {
+        alert("An error occurred while adding the user");
       }
-    });
+    }
   };
-
 
   const checkUser = async () => {
     let newArray: any = [];
@@ -342,8 +394,8 @@ const Permission_management = (props:any) => {
   };
 
   const handleSuggestionClick = (suggestion: any) => {
-    data?.map((items:any)=>{
-      if(items?.Id === suggestion?.AssingedToUserId){
+    suggestions?.map((items:any)=>{
+      if(items?.AssingedToUserId === suggestion?.AssingedToUserId){
         setInputValue(items);
       }
     })
@@ -499,7 +551,7 @@ const changeHeader=(items:any)=>{
         onDismiss={() => { setTruePanel(false) }}
       >
         <div className="modal-body">
-          <div className="text-end hreflink" onClick={() => { setAddUser(true) }} ><span className="svg__iconbox svg__icon--Plus mini" title="Add Document"></span> Add User</div>
+          <div className="text-end hreflink" onClick={() =>setAddUser(true) } ><span className="svg__iconbox svg__icon--Plus mini" title="Add Document"></span> Add User</div>
           <div className="">
             <select value={optionsData} onChange={setSelectOptions}>
               {
@@ -513,7 +565,7 @@ const changeHeader=(items:any)=>{
           </div>
         </div>
         <footer className="text-end">
-          <button className="btn btn-primary">Ok</button>
+          <button className="btn btn-primary">OK</button>
         </footer>
       </Panel>
 
@@ -523,7 +575,6 @@ const changeHeader=(items:any)=>{
         isOpen={addUser}
         isBlocking={false}
         onDismiss={() => { setAddUser(false), setSuggestions([]) }}
-        className="PresetDate"
       >
         <div className="modal-body">
           <div className="input-group">
@@ -593,7 +644,7 @@ const changeHeader=(items:any)=>{
         </div>
 
         <footer className="mt-4 text-end">
-          <button className="btn btn-primary" onClick={() => { setCheckPermission(false), setSuggestions([]) }} >Ok</button>
+          <button className="btn btn-primary" onClick={() => { setCheckPermission(false), setSuggestions([]) }} >OK</button>
         </footer>
       </Panel>
     </>

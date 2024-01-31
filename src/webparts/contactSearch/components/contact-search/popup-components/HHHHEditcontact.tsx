@@ -571,6 +571,7 @@ const HHHHEditComponent = (props: any) => {
                         console.log(error)
 
                     });
+                    callBack();
                 }
                   
             }

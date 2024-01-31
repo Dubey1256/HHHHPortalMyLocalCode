@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import {useEffect } from 'react';
 import "@pnp/sp/sputilities";
-import { IEmailProperties } from "@pnp/sp/sputilities";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import * as Moment from 'moment';
 
@@ -10,8 +9,6 @@ const EmailNotificationMail = (props: any) => {
   useEffect(() => {
     sendEmail(props.emailStatus);
   }, [])
-  console.log(props);
-
   const sendEmail = async (send: any) => {
     let mention_To: any = [];
     mention_To.push(props?.items.TaskCreatorData[0].Email);
@@ -24,78 +21,6 @@ const EmailNotificationMail = (props: any) => {
       console.log(EmailProps);
       await SendEmailFinal(EmailProps);
     }
-    //   props?.items.TaskApprovers.map((ApproverData: any) => {
-    //     props?.AllTaskUser.forEach((val: any) => {
-    //       if (ApproverData.Id == val?.AssingedToUserId) {
-    //         let tempEmail = val?.Approver[0].Name;
-    //         mention_To.push(tempEmail?.substring(18, tempEmail.length))
-    //       }
-
-    //     })
-
-    // })
-
-
-
-    const sendMailToTaskCreatore = () => {
-      if (props?.items.Approvee != undefined) {
-        props?.AllTaskUser.filter((ele: any) => {
-          if (ele?.AssingedToUser?.Id == props?.items?.Approvee?.Id) {
-            mention_To.push(ele?.Email);
-          }
-        })
-
-      }
-      else {
-        mention_To.push(props?.items.TaskCreatorData[0].Email);
-      }
-
-    }
-    const sendMailToTaskApprover = () => {
-      if (props?.items.TaskApprovers != undefined && props?.items.TaskApprovers.length > 0) {
-        props?.items.TaskApprovers.map((ApproverData: any) => {
-
-          if (ApproverData.Company == undefined) {
-            let tempEmail = ApproverData.Name;
-            mention_To.push(tempEmail?.substring(18, tempEmail.length))
-          }
-          else {
-            let tempEmail = ApproverData?.Email;
-            mention_To.push(tempEmail)
-          }
-
-        })
-      }
-    }
-    // let TaskStatus: any = ''
-    // if (props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true) {
-    //   TaskStatus = "Approval";
-    //   sendMailToTaskApprover()
-    // } else {
-    //   if (props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == true) {
-    //     TaskStatus = "Approved";
-    //     sendMailToTaskCreatore();
-    //   } else {
-    //     TaskStatus = "Rejected";
-    //     sendMailToTaskCreatore();
-    //   }
-    // }
-
-    // console.log(mention_To);
-
-    // if (props?.IsEmailCategoryTask != undefined && props?.IsEmailCategoryTask == true) {
-    //   TaskStatus = "Email-Notification (5%)";
-    // }
-    // if (props.statusUpdateMailSendStatus != undefined && props.statusUpdateMailSendStatus == true) {
-    //   if (props?.IsEmailCategoryTask != undefined && props?.IsEmailCategoryTask == true) {
-    //     TaskStatus = "Immediate, Email-Notification (5%)";
-    //   } else {
-    //     TaskStatus = "Immediate (5%)";
-    //   }
-
-    // }
-
-
   }
   const BindHtmlBody = () => {
     let body = document.getElementById('htmlMailBodyEmail')
@@ -129,20 +54,6 @@ const EmailNotificationMail = (props: any) => {
   }
   return (
     <>
-
-      {/* <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
-    <img className="imgWid29 pe-1 mb-1 " src={props?.items?.SiteIcon} />
-        <div><h4>Your Task - {props?.items?.Title} has been completed </h4></div>
-        <div className='emailContent'>
-          <p>Hi {props?.items.TaskCreatorData[0].Title},</p>
-          <p>Task created from your end has been marked to 90%. Please follow the below link to review it.</p><br></br>
-            <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId="+ props?.items?.Id + '&Site=' + props?.items?.siteType}
-                        ><button type='submit' className='btn btn-primary'>Track the Task Status</button></a><br></br>
-          <p>if you want to see all your Tasks of all SharewebTasks click here <a href='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx'>Task Dashboard</a></p>
-          <p>Thanks</p>
-        </div>
-    </div> */}
       <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
         <div style={{ backgroundColor: "#FAFAFA" }}>
           <div style={{ width: "900px", backgroundColor: "#fff", padding: "0px 32px", margin: "0 auto" }}>
@@ -173,8 +84,6 @@ const EmailNotificationMail = (props: any) => {
             </div>
           </div>
          </div>
-         
-
       </div>
     </>
   )
