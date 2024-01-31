@@ -1331,9 +1331,9 @@ const AncTool = (props: any) => {
     return (
         <>
             <div className={ServicesTaskCheck ? "serviepannelgreena mb-3 card addconnect" : "mb-3 card addconnect"}>
-                <CardHeader>
+                <div className='card-header'>
                     <CardTitle className="h5 d-flex justify-content-between align-items-center  mb-0">Add & Connect Tool<span><Tooltip ComponentId='324' /></span></CardTitle>
-                </CardHeader>
+                </div>
                 <CardBody>
                     <Row>
                         <div className="alignCenter gap-2 justify-content-between">
