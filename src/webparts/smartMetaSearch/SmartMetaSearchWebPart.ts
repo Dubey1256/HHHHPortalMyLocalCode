@@ -14,10 +14,16 @@ import { ISmartMetaSearchProps } from './components/ISmartMetaSearchProps';
 
 export interface ISmartMetaSearchWebPartProps {  
   description: string;
-  SmartMetadataListId:string;
+  SmartMetadataListId:'01a34938-8c7e-4ea6-a003-cee649e8c67a';
   ContextValue:any;
-  TaskUserListId:string;
-  PortFolioTypeID: "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
+  TaskUserListId:'b318ba84-e21d-4876-8851-88b94b9dc300';
+  PortFolioTypeID:'c21ab0e4-4984-4ef7-81b5-805efaa3752e';
+  MasterTaskListID:'ec34b38f-0669-480a-910c-f84e92e58adf';
+  TaskTimeSheetListID:'464fb776-e4b3-404c-8261-7d3c50ff343f';
+  DocumentsListID:'d0f88b8f-d96d-4e12-b612-2706ba40fb08'; 
+  TaskTypeID:'21b55c7b-5748-483a-905a-62ef663972dc';
+  TimeEntry:any;
+  SiteCompostion:any
 }
 
 export default class SmartMetaSearchWebPart extends BaseClientSideWebPart<ISmartMetaSearchWebPartProps> {
@@ -34,11 +40,17 @@ export default class SmartMetaSearchWebPart extends BaseClientSideWebPart<ISmart
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        SmartMetadataListId:this.properties.SmartMetadataListId,
+        SmartMetadataListID:this.properties.SmartMetadataListId,
         ContextValue:this.context,
         siteUrl: this.context.pageContext.web.absoluteUrl,
-        PortFolioTypeID:this.properties.PortFolioTypeID,
-        TaskUserListId: this.properties.TaskUserListId,       
+        TaskUsertListID: this.properties.TaskUserListId, 
+        PortFolioTypeID:this.properties.PortFolioTypeID, 
+        MasterTaskListID: this.properties.MasterTaskListID,                                  
+        TaskTimeSheetListID:this.properties.TaskTimeSheetListID,
+        DocumentsListID:this.properties.DocumentsListID,        
+        TaskTypeID:this.properties.TaskTypeID,
+        TimeEntry:this.properties.TimeEntry,
+        SiteCompostion:this.properties.SiteCompostion     
       }
     );
 
@@ -119,17 +131,34 @@ export default class SmartMetaSearchWebPart extends BaseClientSideWebPart<ISmart
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
                 }),
-                PropertyPaneTextField('SmartMetadataListId', {
+                PropertyPaneTextField('SmartMetadataListID', {
                   label:"SmartMetadataListId"
                 }),
-                PropertyPaneTextField('TaskUserListId', {
+                PropertyPaneTextField('TaskUsertListID', {
                   label:"TaskUserListId"
-                }),
+                }),                              
                 PropertyPaneTextField("PortFolioTypeID", {
                   label: "Portfolio Type List",
-                })                              
+                }),
+                PropertyPaneTextField("MasterTaskListID", {
+                  label: "Master Task List",
+                }),
+                PropertyPaneTextField("TaskTypeID", {
+                  label: "Task Type List",
+                }),
+                PropertyPaneTextField("DocumentsListID", {
+                  label: "DocumentsListID",
+                }),
+                PropertyPaneTextField("TaskTimeSheetListID", {
+                  label: "TaskTimeSheetListID",
+                }),
+                PropertyPaneTextField("TimeEntry", {
+                  label: "TimeEntry",
+                }),
+                PropertyPaneTextField("SiteCompostion", {
+                  label: "SiteCompostion",
+                }),
               ]
-
             }
           ]
         }
