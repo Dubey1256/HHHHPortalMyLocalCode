@@ -392,7 +392,14 @@ function TeamPortlioTable(SelectedProp: any) {
                             if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
                                 result.percentCompleteValue = parseInt(result?.PercentComplete);
                             }
-
+                            if (result?.Portfolio != undefined) {
+                                allMasterTaskDataFlatLoadeViewBackup.map((item: any) => {
+                                    if (item.Id === result?.Portfolio?.Id) {
+                                        result.Portfolio = item
+                                        result.PortfolioType = item?.PortfolioType
+                                    }
+                                })
+                            }
                             result.chekbox = false;
                             if (result?.FeedBack && result?.FeedBack != undefined) {
                                 const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
@@ -637,6 +644,14 @@ function TeamPortlioTable(SelectedProp: any) {
 
                             if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
                                 result.percentCompleteValue = parseInt(result?.PercentComplete);
+                            }
+                            if (result?.Portfolio != undefined) {
+                                allMasterTaskDataFlatLoadeViewBackup.map((item: any) => {
+                                    if (item.Id === result?.Portfolio?.Id) {
+                                        result.Portfolio = item
+                                        result.PortfolioType = item?.PortfolioType
+                                    }
+                                })
                             }
 
                             result.chekbox = false;
