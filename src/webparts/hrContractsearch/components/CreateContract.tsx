@@ -298,7 +298,7 @@ const CreateContract = (props: any) => {
                         <div className="col-sm-12 text-end mt-2">
                            {disabled == false && <button type="button" className="btn btn-primary ms-2" onClick={()=>setCreateContactStatus(true)}>Add New Employee</button>}
                            <button type="button" className="btn btn-primary ms-2" onClick={()=>createEmp()}>Create</button>
-                           <button type="button" className="btn btn-default ms-2" onClick={()=>setCreatePopup(false)}>Cancel</button>
+                           <button type="button" className="btn btn-default ms-2" onClick={()=>{setCreatePopup(false); props?.closeContracts()}}>Cancel</button>
                         </div>
                      </div>
                   </footer>

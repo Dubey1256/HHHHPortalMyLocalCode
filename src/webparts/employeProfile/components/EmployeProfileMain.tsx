@@ -299,10 +299,9 @@ const EmployeProfileMain = (props: any) => {
 
         ],
         [contractData]);
-    const callBackData = (data: any) => {
-
-        console.log(data)
-    }
+        const callBackData = () => {
+            setCreateContractPopup(false)
+        }
     return (
 
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName }}>
@@ -530,7 +529,7 @@ const EmployeProfileMain = (props: any) => {
                 </div> : <Information EmployeeData={EmployeeData} siteTaggedHR={siteTaggedHR} />}
                 {EditContactStatus ? <HHHHEditComponent props={EmployeeData} callBack={ClosePopup} /> : null}
             </div>
-            {createContractPopup && <CreateContract callBack={() => {HrContractDetails(urlQuery.get('employeeId')); setCreateContractPopup(false)}} closeContracts={callBackData} AllListId={allListId} updateData={EmployeeData} pageName="Recruiting-Tool" />}
+            {createContractPopup && <CreateContract callBack={() => {HrContractDetails(urlQuery.get('employeeId')); setCreateContractPopup(false)}} closeContracts={() => callBackData()} AllListId={allListId} updateData={EmployeeData} pageName="Recruiting-Tool" />}
         </myContextValue.Provider>
 
     )
