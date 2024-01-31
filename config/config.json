@@ -385,6 +385,14 @@
           "manifest": "./src/webparts/managedashboardconfig/ManagedashboardconfigWebPart.manifest.json"
         }
       ]
+    },
+    "group-by-components-dashboard-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/groupByComponentsDashboard/GroupByComponentsDashboardWebPart.js",
+          "manifest": "./src/webparts/groupByComponentsDashboard/GroupByComponentsDashboardWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -454,6 +462,7 @@
     "LastModifiedViewsWebPartStrings": "lib/webparts/lastModifiedViews/loc/{locale}.js",
     "HrContractProfileWebPartStrings": "lib/webparts/hrContractProfile/loc/{locale}.js",
     "ManagedashboardconfigWebPartStrings": "lib/webparts/managedashboardconfig/loc/{locale}.js",
-    "SMarttaskWebPartStrings": "lib/webparts/sMarttask/loc/{locale}.js"
+    "SMarttaskWebPartStrings": "lib/webparts/sMarttask/loc/{locale}.js",
+    "GroupByComponentsDashboardWebPartStrings": "lib/webparts/groupByComponentsDashboard/loc/{locale}.js"
   }
 }
