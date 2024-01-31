@@ -2912,7 +2912,7 @@ const EditTaskPopup = (Items: any) => {
                         Title: "<p> </p>",
                         Completed: false,
                         isAddComment: false,
-                        isShowComment: false,
+                        isShowComment: false, 
                         isPageType: "",
                     };
                     tempArray.push(tempObject);

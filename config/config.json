@@ -330,6 +330,14 @@
         }
       ]
     },
+    "s-marttask-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/sMarttask/SMarttaskWebPart.js",
+          "manifest": "./src/webparts/sMarttask/SMarttaskWebPart.manifest.json"
+        }
+      ]
+    },
     "hr-contract-profile-web-part": {
       "components": [
         {
@@ -436,6 +444,7 @@
     "HrContractSearchWebPartStrings": "lib/webparts/hrContractSearch/loc/{locale}.js",
     "ContactSearchWebPartStrings": "lib/webparts/contactSearch/loc/{locale}.js",
     "HrContractProfileWebPartStrings": "lib/webparts/hrContractProfile/loc/{locale}.js",
-    "ManagedashboardconfigWebPartStrings": "lib/webparts/managedashboardconfig/loc/{locale}.js"
+    "ManagedashboardconfigWebPartStrings": "lib/webparts/managedashboardconfig/loc/{locale}.js",
+    "SMarttaskWebPartStrings": "lib/webparts/sMarttask/loc/{locale}.js"
   }
 }
