@@ -145,7 +145,7 @@ const RestructuringCom = (props: any, ref: any) => {
         if(props?.projectmngmnt == "projectmngmnt"){
           let typeAlert : boolean = true;
           restructureItem?.map((items: any, length: any) => {
-            if(items?.Item_x0020_Type != 'Sprint'){
+            if(items?.Item_x0020_Type != 'Sprint' && typeAlert){
                if(restructureItem[0].TaskType?.Id == items?.TaskType?.Id && restructureItem[0]?.siteType == items?.siteType && typeAlert){
                 typeAlert = true;
                  }else{
@@ -157,6 +157,7 @@ const RestructuringCom = (props: any, ref: any) => {
                  }
             }else{
                 alert("You are not allowed to restructure this item !")
+                typeAlert = false;
             }
           })
           if(typeAlert && props?.projectmngmnt == "projectmngmnt"){
@@ -2074,8 +2075,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 let checkchild: any = 0;
                 if (items.subRows != undefined) {
                   items.subRows?.map((items: any) => {
-                    if ((props?.queryItems?.Item_x0020_Type == "Feature" || props?.queryItems?.Item_x0020_Type == "SubComponent" || props?.queryItems?.Item_x0020_Type == "Component") && props?.queryItems != undefined && props?.queryItems != null && checkPortfoliosAlrt
-                    ) {
+                    if ((props?.queryItems?.TaskType?.Title == "Activities") && props?.queryItems != undefined && props?.queryItems != null && checkPortfoliosAlrt) {
                       if (items.TaskType?.Id === 3) {
                         topCompo = false;
                         alert("You are not allowed to restructure this item");
@@ -2098,17 +2098,22 @@ const RestructuringCom = (props: any, ref: any) => {
                   });
                 }
 
-                if (props?.queryItems?.Item_x0020_Type == "Feature" && (items?.TaskType?.Id==2 || items?.TaskType?.Id==3) && props?.queryItems != undefined && props?.queryItems != null && checkPortfoliosAlrt && items?.subRows?.length === 0) {
+                if ((props?.queryItems?.Item_x0020_Type == "Feature" || props?.queryItems?.Item_x0020_Type == "SubComponent" || props?.queryItems?.Item_x0020_Type == "Component") && (items?.TaskType?.Id==2 || items?.TaskType?.Id==3) && props?.queryItems != undefined && props?.queryItems != null && checkPortfoliosAlrt && items?.subRows?.length === 0) {
                   topCompo = true;
                   setQuery4TopIcon("Activity");
                   checkPortfoliosAlrt = false;
                 }
-                if ((props?.queryItems?.Item_x0020_Type == "Feature" || props?.queryItems?.Item_x0020_Type == "SubComponent" || props?.queryItems?.Item_x0020_Type == "Component") && (items?.TaskType?.Id==1) && props?.queryItems != undefined && props?.queryItems != null && checkPortfoliosAlrt && items?.subRows?.length === 0) {
+                if ((props?.queryItems?.Item_x0020_Type == "Feature" || props?.queryItems?.Item_x0020_Type == "SubComponent" || props?.queryItems?.Item_x0020_Type == "Component") && (items?.TaskType?.Id==1) && props?.queryItems != undefined && props?.queryItems != null && checkPortfoliosAlrt && items?.subRows?.length > 0) {
                   topCompo = false;
                   setQuery4TopIcon("");
+                  alert('You are not allowed to restructure this item !')
                   checkPortfoliosAlrt = false;
                 }
-
+                if ((props?.queryItems?.Item_x0020_Type == "Feature" || props?.queryItems?.Item_x0020_Type == "SubComponent" || props?.queryItems?.Item_x0020_Type == "Component") && (items?.TaskType?.Id==1) && props?.queryItems != undefined && props?.queryItems != null && checkPortfoliosAlrt && items?.subRows?.length === 0) {
+                  topCompo = true;
+                  setQuery4TopIcon("Task");
+                  checkPortfoliosAlrt = false;
+                }
                 if (checkchild == 3) {
                   if (obj.Item_x0020_Type !== "Task") {
                     obj.isRestructureActive = true;
@@ -4723,57 +4728,28 @@ const RestructuringCom = (props: any, ref: any) => {
     }
   };
 
-  const setRestructure = (item: any, title: any) => {
+  function setRestructure (item: any, title: any) {
     let array: any = [];
-    let data: any = [];
+    let data: any = {};
     item?.map((items: any) => {
       if (items != undefined && title === "SubComponent") {
-        data?.push({
-          Id: items.Id,
-          Item_x0020_Type: "SubComponent",
-          TaskType: items.TaskType,
-          Title: items?.Title,
-          siteIcon: "S",
-        });
+        data ={Item_x0020_Type: "SubComponent",siteIcon: "S",};
       }
       if (items != undefined && title === "Feature") {
-        data?.push({
-          Id: items.Id,
-          Item_x0020_Type: "Feature",
-          TaskType: items.TaskType,
-          Title: items?.Title,
-          siteIcon: "F",
-        });
+        data ={Item_x0020_Type: "Feature",siteIcon: "F",};
       }
       if (items != undefined && title === 3) {
-        data?.push({
-          Id: items.Id,
-          Item_x0020_Type: "Task",
-          TaskType: { Id: 3 },
-          Title: items?.Title,
-          siteIcon: items.siteIcon,
-        });
+        data ={Item_x0020_Type: "Task",TaskType: { Id: 3 ,Title:'Workstream'},};
       }
       if (items != undefined && title === 2) {
-        data?.push({
-          Id: items.Id,
-          Item_x0020_Type: "Task",
-          TaskType: { Id: 2 },
-          Title: items?.Title,
-          siteIcon: items.siteIcon,
-        });
+        data ={Item_x0020_Type: "Task",TaskType: { Id: 2, Title:'Task'},};
       }
       if (items != undefined && title === 1) {
-        data?.push({
-          Id: items.Id,
-          Item_x0020_Type: "Task",
-          TaskType: { Id: 1 },
-          Title: items?.Title,
-          siteIcon: items.siteIcon,
-        });
+        data ={Item_x0020_Type: "Task",TaskType: { Id: 1,Title:'Activities' },};
       }
     });
-    array?.push(...data);
+    let b = item[0];
+    array?.push({...b,...data});
     setRestructureChecked(array);
   };
 
@@ -5946,7 +5922,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                     <input
                       type="radio"
                       className="radio"
-                      name="fav_language"
                       value="Activity"
                       checked={
                         RestructureChecked[0]?.TaskType?.Id == 3
@@ -6082,7 +6057,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <input
                         type="radio"
                         className="radio"
-                        name="fav_language"
                         value="Activity"
                         checked={
                           RestructureChecked[0]?.TaskType?.Id == 3
@@ -6121,7 +6095,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           <input
                             type="radio"
                             className="radio"
-                            name="fav_language"
+                            
                             value="Workstream"
                             checked={
                               RestructureChecked[0]?.TaskType?.Id == 3
@@ -6130,9 +6104,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                                 ? true
                                 : false
                             }
-                            onChange={(e) =>
-                              setRestructure(RestructureChecked, 3)
-                            }
+                            onChange={()=>setRestructure(RestructureChecked, 3)}
                           />
                         </label>
                         <label className="ms-1"> {"Workstream"} </label>
@@ -6852,16 +6824,16 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                     <input
                       type="radio"
                       className="radio"
-                      name="fav_language"
+                     
                       value="Workstream"
                       checked={
                         RestructureChecked[0]?.TaskType?.Id == 3
                           ? true
-                          : RestructureChecked[0]?.TaskType?.Id == 2
+                          : RestructureChecked[0]?.TaskType?.Id == 1
                           ? true
                           : false
                       }
-                      onChange={(e) => setRestructure(RestructureChecked, 1)}
+                      onChange={(e) => setRestructure(RestructureChecked, 3)}
                     />
                     {"Workstream"}
                   </label>

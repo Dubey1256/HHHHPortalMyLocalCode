@@ -23,6 +23,14 @@ const EmployeProfile = (props: any) => {
   const [annouceMents, setAnnouceMents]: any = useState([]);
   const [approverEmail, setApproverEmail]: any = useState([]);
   const [timesheetListConfig, setTimesheetListConfig] = React.useState<any>()
+  try {
+    $("#spPageCanvasContent").removeClass();
+    $("#spPageCanvasContent").addClass("hundred");
+    $("#workbenchPageContent").removeClass();
+    $("#workbenchPageContent").addClass("hundred");
+  } catch (e) {
+    console.log(e);
+  }
   useEffect(() => {
     LoadAdminConfiguration(false)
     loadMasterTask();
@@ -293,6 +301,7 @@ const EmployeProfile = (props: any) => {
     else {
       MakeFinalData()
     }
+
   };
   const callbackFunction = () => {
     LoadAdminConfiguration(true)
