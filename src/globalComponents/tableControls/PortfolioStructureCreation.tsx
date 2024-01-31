@@ -85,6 +85,19 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
         this.getPortfolioType();
         this.LoadSPComponents();
+        let targetDiv: any = document?.querySelector(".ms-Panel-main");
+        if ( this.props?.SelectedItem?.PortfolioType?.Color != undefined) { //Changes Made by Robin
+          setTimeout(() => {
+            if (targetDiv) {
+              // Change the --SiteBlue variable for elements under the targetDiv
+              // $('.ms-Panel-main').css('--SiteBlue', props?.selectedItem?.PortfolioType?.Color);
+              $(".ms-Panel-main").css(
+                "--SiteBlue",
+                this.props?.SelectedItem?.PortfolioType?.Color    //Changes Made by Robin
+              );
+            }
+          }, 1000);
+        }
 
     }
 

@@ -828,17 +828,8 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         <input className='form-control' type="text" defaultValue={memberToUpdate?.Suffix} onChange={(e: any) => setSuffix(e.target.value)} />
                                     </div>
                                 </Col>
-                                <Col md={2}>
-                                    <div className='input-group class-input'>
-                                        <label className='form-label full-width fw-semibold'>User Name:</label>
-                                        <div className="w-100">
-                                        <PeoplePicker  context={context} titleText="" personSelectionLimit={1} showHiddenInUI={false}
-                                            principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => AssignedToUser(items)}
-                                            defaultSelectedUsers={email ? [email] : []} />
-                                            </div>
-                                    </div>
-                                </Col>
-                                <Col md={2}>
+                        
+                                <Col md={3} className='px-1'>
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Group: </label>
                                         <select className='full-width' id="sites" defaultValue={memberToUpdate?.UserGroup?.Id} onChange={(e: any) => setUserGroup(e.target.value)}>
@@ -847,14 +838,14 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         </select>
                                     </div>
                                 </Col>
-                                <Col md={1} sm={2}>
+                                <Col md={1} sm={1}>
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Sort Order: </label>
                                         <input className='form-control' type="text" defaultValue={memberToUpdate?.SortOrder} onChange={(e: any) => setSortOrder(e.target.value)} />
                                     </div>
                                 </Col>
 
-                                <Col md={2} sm={2}>
+                                <Col md={3} sm={3} className=' px-1'>
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Manage Categories: </label>
                                         <select className='full-width' id="sites" defaultValue={memberToUpdate?.TimeCategory} onChange={(e: any) => setUserCategory(e.target.value)}>
@@ -862,7 +853,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                             {uniqueCategories.map((elem: any) => <option value={elem.Title}>{elem.Title}</option>)}
                                         </select>
                                     </div></Col>
-                                    <Col md={2} sm={1}>
+                                    <Col md={2} sm={2}>
                                     <div className='input-group'>
                                         <label className='form-label full-width fw-semibold'>Team: </label>
                                         <select className='full-width' id="sites" defaultValue={memberToUpdate?.Team} onChange={(e: any) => setUserTeam(e.target.value)}
@@ -877,7 +868,18 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         </select>
                                     </div>
                                 </Col>
-                                <Col md={5} className='ps-1 pe-1'>
+                                <Row className='mt-2'>
+                                <Col md={3} className='pe-0 ps-1'>
+                                    <div className='input-group class-input'>
+                                        <label className='form-label full-width fw-semibold'>User Name:</label>
+                                        <div className="w-100">
+                                        <PeoplePicker  context={context} titleText="" personSelectionLimit={1} showHiddenInUI={false}
+                                            principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => AssignedToUser(items)}
+                                            defaultSelectedUsers={email ? [email] : []} />
+                                        </div>
+                                    </div>
+                                </Col>
+                                <Col md={5} className='ps-2' style={{flexBasis:"40%;"}}>
                                     <div className='input-group class-input'>
                                         <label className='form-label full-width fw-semibold'>Approver:</label>
                                         <div className='w-100'>
@@ -893,7 +895,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                             </div>
                                     </div>
                                 </Col>
-                               
+                                </Row>
                             </Row>
 
                             <Row className='mb-2'>
