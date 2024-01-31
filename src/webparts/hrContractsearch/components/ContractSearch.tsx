@@ -239,8 +239,7 @@ let allSite: any = {
     const createContracts=()=>{
         setCreate(true)
     }
-    const closeContracts=(res:any)=>{
-        data.push(res)
+    const closeContracts=()=>{
         setCreate(false)
     }
     const callBack=(res:any)=>{
@@ -262,7 +261,7 @@ let allSite: any = {
         <div className='Alltable'>
         <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true}/>
         </div>
-        {create && <CreateContract callBack={() => {getData(); setCreate(false)}} closeContracts={closeContracts} callback={callBackData} AllListId={props}/>}
+        {create && <CreateContract callBack={() => {getData(); setCreate(false)}} closeContracts={() => closeContracts()} callback={callBackData} AllListId={props}/>}
         {openEdit && <EditContractPopup openPopup={openEdit} closePopup={() => setOpenEdit(false)} props={editData} AllListId={props} callback={callBack}></EditContractPopup>}
         </myContextValue.Provider>
         </>
