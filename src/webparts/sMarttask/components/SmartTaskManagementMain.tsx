@@ -1,11 +1,6 @@
 import * as React from 'react'
 import { Web } from "sp-pnp-js";
-import { ColumnDef } from '@tanstack/react-table'
 import * as globalCommon from "../../../globalComponents/globalCommon";
-import { useDrag, useDrop } from 'react-dnd'
-import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel"
 import PageLoader from '../../../globalComponents/pageLoader';
 export const SmartTaskManagementMain = (props: any) => {
@@ -18,6 +13,7 @@ export const SmartTaskManagementMain = (props: any) => {
     const [taskUsers, setTaskUsers] = React.useState([]);
     const [allSitesTasks, setAllSitesTasks] = React.useState([])
     const [allTaskData, setAllTaskData] = React.useState([]);
+    const [masterData,setMasterData]=React.useState([])
     const [designationNames, setDesignationNames] = React.useState([]);
     const [dataAsDesignation, setdataAsDesignation] = React.useState([]);
     const [uniqueDesignation, setuniqueDesignation] = React.useState("")
@@ -30,6 +26,7 @@ export const SmartTaskManagementMain = (props: any) => {
     React.useEffect(() => {
         SetLoader(true)
         getUsers();
+        getMasterFunction()
         loadSmartListData();
     }, []
     )
@@ -72,7 +69,15 @@ export const SmartTaskManagementMain = (props: any) => {
         }
     };
 
-
+    const getMasterFunction=()=>{
+        try {
+            web.lists.getById(props?.props?.MasterTaskListID).items.select("Id,Title,PortfolioStructureID,ComponentCategory/Id,ComponentCategory/Title,PortfolioType/Id,PortfolioType/Title").expand('PortfolioType,ComponentCategory').getAll().then((masterValue: any) => {
+                setMasterData(masterValue)
+            });
+          } catch (error) {
+            console.error(error)
+          }
+    }
     const loadSmartListData = () => {
 
         let count: number = 0;
@@ -401,7 +406,7 @@ export const SmartTaskManagementMain = (props: any) => {
                                                                 {/* <a data-interception="off" target='_blank' title={workToday.Title} href={`${workToday.baseUrl}/SitePages/Task-Profile.aspx?taskId=${workToday.Id}&Site=${workToday.siteType}`}>
                                                       
                                                       {workToday.TaskIdSmartPriority} </a> */}
-                                                                <ReactPopperTooltipSingleLevel ShareWebId={workToday.TaskIdSmartPriority} row={workToday} AllListId={AllListId} singleLevel={true} />
+                                                                <ReactPopperTooltipSingleLevel ShareWebId={workToday.TaskIdSmartPriority} row={workToday} AllListId={AllListId} singleLevel={true} masterTaskData={masterData} />
                                                             </span>
                                                             : ""
                                                     )
@@ -413,7 +418,7 @@ export const SmartTaskManagementMain = (props: any) => {
                                                     return (
                                                         index < 3 ?
                                                             <span key={index} draggable onDragStart={(e) => dragstart(e, bucketTasks)} onDragOver={(e) => dragOver(e)} onDrop={(e) => dragDrop(e, bucketTasks, "BucketDrop", data?.Id)} className={bucketTasks.higherPriority == true ? "task-label blinkingBackgroundSP" : "task-label"}>
-                                                                    <ReactPopperTooltipSingleLevel ShareWebId={bucketTasks.TaskIdSmartPriority} row={bucketTasks} AllListId={AllListId} singleLevel={true} />
+                                                                    <ReactPopperTooltipSingleLevel ShareWebId={bucketTasks.TaskIdSmartPriority} row={bucketTasks} AllListId={AllListId} singleLevel={true} masterTaskData={masterData} />
                                                             </span>
                                                             : ""
                                                     )

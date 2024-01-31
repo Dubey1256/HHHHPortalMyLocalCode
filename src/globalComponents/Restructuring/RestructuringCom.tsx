@@ -91,7 +91,7 @@ const RestructuringCom = (props: any, ref: any) => {
       recursivelySetRestructureActive(array);
       setCheckItemLength(false);
       props.restructureFunct(false);
-      restructureCallBack(array, false);
+      restructureCallBack(array, false,false);
     }
   }, [props?.restructureItem]);
 
@@ -4487,8 +4487,9 @@ const RestructuringCom = (props: any, ref: any) => {
       }
 
       PortfolioLevel = PortfolioLevel + 1;
+      
 
-      TaskID = props?.queryItems?.TaskID != undefined   ? props?.queryItems?.TaskID + "-" + SiteIconTitle + PortfolioLevel   : "" + SiteIconTitle + PortfolioLevel;
+      TaskID = props?.queryItems?.TaskID != undefined   ? props?.queryItems?.TaskID + "-" + SiteIconTitle + (TaskType == 2 ? restructureItem[0]?.Id :  PortfolioLevel)   : "" + SiteIconTitle + PortfolioLevel;
       if (TaskType == 1) {
         ParentTask = null;
         let web = new Web(restructureItem[0]?.siteUrl);
