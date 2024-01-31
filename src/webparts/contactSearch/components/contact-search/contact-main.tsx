@@ -238,16 +238,36 @@ const ContactMainPage = (props: any) => {
         setCreateContactStatus(false);
         setCreateInstituteStatus(false);
         setEditInstitutionStatus(false);
+        if (allSite?.MainSite == true) {
+           EmployeeDetails();
+            InstitutionDetails();
+        }
+        if (allSite?.GMBHSite || allSite?.HrSite) {
+            HrGmbhEmployeDeatails();
+        }
     }, []);
 
     const addToLocalDBClosePopup = () => {
         setAddToLocalDBStatus(false);
         EmployeeDetails();
         setUserEmails([]);
+        if (allSite?.MainSite == true) {
+            EmployeeDetails();
+             InstitutionDetails();
+         }
+         if (allSite?.GMBHSite || allSite?.HrSite) {
+             HrGmbhEmployeDeatails();
+         }
     }
     const updateUserDtlFunction = useCallback(() => {
-        EmployeeDetails();
-        InstitutionDetails();
+        if (allSite?.MainSite == true) {
+            EmployeeDetails();
+             InstitutionDetails();
+         }
+         if (allSite?.GMBHSite || allSite?.HrSite) {
+             HrGmbhEmployeDeatails();
+         }
+       
     }, [])
     const openInstitutionPopup=(editItems:any)=>{
         setEditInstitutionStatus(true);
