@@ -4,7 +4,15 @@ export interface ISmartMetaSearchProps {
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
-  SmartMetadataListId:string;
+  SmartMetadataListID:string;
   ContextValue:any;
-  TaskUserListId:string;   
+  siteUrl:string;
+  TaskUsertListID:string;   
+  PortFolioTypeID:string;
+  MasterTaskListID:string;
+  DocumentsListID:string;
+  TaskTimeSheetListID:string; 
+  TaskTypeID:string;
+  TimeEntry:any;
+  SiteCompostion:any;  
 }
