@@ -2307,6 +2307,7 @@ function removeHtmlAndNewline(text: any) {
 //// requrired result?.Project?.PriorityRank ////
 //// next Project array it is a lookup columns where project//////
 ///// next result?.TaskCategories ////
+
 export const calculateSmartPriority = (result: any) => {
     let smartPriority = result.SmartPriority;
     if (result?.Project) {
