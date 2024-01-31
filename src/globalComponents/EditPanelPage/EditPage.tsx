@@ -168,8 +168,7 @@ const onRenderCustomCalculateSC = () => {
           <div className="align-items-center d-flex justify-content-between py-2">
             <div>
               <div className="text-left">
-                Created
-                <> {data?.Created != null && data?.Created != undefined ?  moment(data?.Created).format('DD/MM/YYYY') : '' } </>
+                Created<>{data?.Created != null && data?.Created != undefined ?  moment(data?.Created).format('DD/MM/YYYY') : '' }</>
                 by
                 <span className="siteColor">
                   {data?.Author?.Title}
