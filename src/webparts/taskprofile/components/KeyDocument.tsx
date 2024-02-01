@@ -227,10 +227,10 @@ const RelevantDocuments = (props: any, ref: any) => {
                         <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Key Documents<span><Tooltip ComponentId={'1298'} /></span></div>
                     </div>
 
-                    <div className='TableSection'>
+                    <div className='TableSection w-100'>
                         <div className='Alltable'>
                             <div className='smart Key-documents'>
-                                <div style={{ height: "214px", overflow: 'hidden' }}><GlobalCommanTable columns={columns} wrapperHeight="100%" data={copykeyDocument?.length > 0 ? copykeyDocument : keyDocument} callBackData={callBackData} /></div>
+                              <GlobalCommanTable columns={columns} wrapperHeight="100%" data={copykeyDocument?.length > 0 ? copykeyDocument : keyDocument} callBackData={callBackData} />
                             </div>
                         </div>
                     </div>
