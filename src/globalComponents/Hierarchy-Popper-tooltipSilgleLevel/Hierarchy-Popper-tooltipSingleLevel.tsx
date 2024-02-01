@@ -182,7 +182,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     };
 
     const openActivityPopup = (row: any) => {
-        if (row.TaskType == undefined) {
+        if (row?.TaskType?.Title == undefined) {
             setOpenActivity(true)
             row['NoteCall'] = 'Task'
             row['PageType'] = 'ProjectManagement'
