@@ -13,13 +13,14 @@ import * as globalCommon from '../../../globalComponents/globalCommon';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
 import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
+import { Item } from '@pnp/sp/items';
 let AllMetadata: any = []
 let siteConfig: any = []
 let AssignedToUsers: any = []
 let AllClientCategories: any = [];
 let SitesTypes: any = []
 let subCategories: any = []
-let selectedPortfolio: any = [];        
+let selectedPortfolio: any = [];
 let TeamMessagearray: any = [];
 let AllComponents: any = []
 let taskUsers: any = [];
@@ -455,7 +456,7 @@ function CreateTaskComponent(props: any) {
     const loadRelevantTask = async (PortfolioId: any, UrlTask: any, PageTask: any) => {
         let allData: any = [];
         let query = '';
-        query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskID,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/TaskID,ParentTask/Title,ParentTask/Id&$expand=AssignedTo,ParentTask,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc"
+        query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskID,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,FeedBack,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/TaskID,ParentTask/Title,ParentTask/Id&$expand=AssignedTo,ParentTask,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc"
         let PageRelevant = PageRelevantTask;
         let TaskUrlRelevant = TaskUrlRelevantTask;
         let ComponentRelevant = ComponentRelevantTask;
@@ -511,6 +512,12 @@ function CreateTaskComponent(props: any) {
                                 item.CreateDate = moment(item?.Created).format('DD/MM/YYYY');
                                 item.CreatedSearch = item.CreateDate + '' + item.Author;
                                 item.bodys = item.Body != null && item.Body.split('<p><br></p>').join('');
+                                if (item?.FeedBack != undefined) {
+                                    item.descriptionsSearch = globalCommon.descriptionSearchData(item)
+                                } else {
+                                    item.descriptionsSearch = '';
+                                }
+
                                 item.DateModified = item.Modified;
                                 item.ModifiedDate = moment(item?.Modified).format('DD/MM/YYYY');
                                 item.ModifiedSearch = item.ModifiedDate + '' + item.Editor;
@@ -837,11 +844,11 @@ function CreateTaskComponent(props: any) {
                         } else {
                             var siteComp: any = {};
                             siteComp.Title = save?.siteType,
-                            siteComp.localSiteComposition = true;
+                                siteComp.localSiteComposition = true;
                             siteComp.SiteImages = selectedSite?.Item_x005F_x0020_Cover?.Url;
                             siteComp.ClienTimeDescription = 100,
                                 //   siteComp.SiteImages = ,
-                            siteComp.Date = moment(new Date().toLocaleString()).format("MM-DD-YYYY");
+                                siteComp.Date = moment(new Date().toLocaleString()).format("MM-DD-YYYY");
                             postClientTime = [siteComp]
                         }
 
@@ -1389,7 +1396,8 @@ function CreateTaskComponent(props: any) {
                                 >
                                     {row?.original?.Title}
                                 </a>
-                                {row?.original?.Body !== null && row?.original?.Body != undefined ? <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /> : ''}
+                                {row?.original?.descriptionsSearch !== null && row?.original?.descriptionsSearch != '' && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
+                                }
                             </span>
                         </div>
                     </>
@@ -1402,7 +1410,7 @@ function CreateTaskComponent(props: any) {
                 size: 480,
             },
             {
-                accessorFn: (row) => row?.Portfolio,
+                accessorFn: (row) => row?.portfolio?.Title,
                 cell: ({ row }) => (
                     <span>
                         <a className="hreflink"
@@ -1413,7 +1421,7 @@ function CreateTaskComponent(props: any) {
                         </a>
                     </span>
                 ),
-                id: "Portfolio",
+                id: "portfolio",
                 placeholder: "Portfolio",
                 resetColumnFilters: false,
                 resetSorting: false,

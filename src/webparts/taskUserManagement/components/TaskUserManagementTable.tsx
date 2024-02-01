@@ -879,10 +879,10 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         </div>
                                     </div>
                                 </Col>
-                                <Col md={5} className='ps-2' style={{flexBasis:"40%;"}}>
+                                <Col className='ps-2' style={{width:"40%;"}}>
                                     <div className='input-group class-input'>
                                         <label className='form-label full-width fw-semibold'>Approver:</label>
-                                        <div className='w-100'>
+                                        <div>
                                         <PeoplePicker context={context} titleText="" 
                                         // styles={{
                                         //     input: {
