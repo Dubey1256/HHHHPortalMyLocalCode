@@ -980,16 +980,18 @@ const ProjectManagementMain = (props: any) => {
   };
 
   const callBackData1 = React.useCallback((getData: any, topCompoIcon: any, callback: any) => {
-    if(callback){
-       LoadAllSiteTasks();
-      }else{
-        if(callback == undefined){
-          setTopCompoIcon(topCompoIcon);
-          renderData = [];
-          renderData = renderData.concat(getData);
-          refreshData();
-        }}
-    }, []);
+    setTopCompoIcon(topCompoIcon);
+    if (callback) {
+      LoadAllSiteTasks();
+    } else {
+      if (callback == undefined) {
+
+        renderData = [];
+        renderData = renderData.concat(getData);
+        refreshData();
+      }
+    }
+  }, []);
 
 
   const switchFlatViewData = (data: any) => {
