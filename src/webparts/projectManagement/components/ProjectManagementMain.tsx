@@ -980,13 +980,16 @@ const ProjectManagementMain = (props: any) => {
   };
 
   const callBackData1 = React.useCallback((getData: any, topCompoIcon: any, callback: any) => {
-
     setTopCompoIcon(topCompoIcon);
-    renderData = [];
-    renderData = renderData.concat(getData);
-    refreshData();
     if (callback) {
       LoadAllSiteTasks();
+    } else {
+      if (callback == undefined) {
+
+        renderData = [];
+        renderData = renderData.concat(getData);
+        refreshData();
+      }
     }
   }, []);
 

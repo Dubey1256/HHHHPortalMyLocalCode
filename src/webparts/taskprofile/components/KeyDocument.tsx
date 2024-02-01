@@ -54,7 +54,6 @@ const RelevantDocuments = (props: any, ref: any) => {
 
     const callbackeditpopup = React.useCallback((EditdocumentsData: any) => {
         // loadAllSitesDocuments();
-
         console.log(EditdocumentsData)
 
         if (EditdocumentsData != undefined) {
@@ -94,98 +93,89 @@ const RelevantDocuments = (props: any, ref: any) => {
                         setEditdocpanel(false);
                     }
 
+
                 }
             }
-        }else{
-            setEditdocpanel(false);  
         }
 
 
 
     }, [])
-    const columns = useMemo<ColumnDef<any, unknown>[]>(() =>
-        [
-            {
-                accessorKey: "",
-                placeholder: "",
-                hasCheckbox: false,
-                hasCustomExpanded: false,
-                hasExpanded: false,
-                isHeaderNotAvlable: true,
-                size: 10,
-                id: 'Id',
-            },
-            {
-                accessorFn: (row) => row?.Title,
-                cell: ({ row }) => (
-                    <div className='alignCenter columnFixedTitle p-0'>
-                        <><a href={`${row?.original?.EncodedAbsUrl}?web=1`}>
-                            <span className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`} title={row?.original?.File_x0020_Type}></span></a>
-                            <a className='ms-1 wid90' target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.Title} </a>
-                        </>
-                    </div>
-                ),
-                id: 'Title',
-                placeholder: 'File Name',
-                resetColumnFilters: false,
-                header: '',
-                size: 500,
-            },
-            {
-                accessorFn: (row: any) => row?.Modified,
-                cell: ({ row }: any) => (
-                    <div> {row?.original.Modified !== null ? moment(row?.original.Modified).format("DD/MM/YYYY") : ""}
-                        <>
-                            <a href={`${myContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
-                                target="_blank" data-interception="off">
-                                <img title={row?.original?.Author?.Title} className="workmember ms-1" src={(row?.original?.EditorImage)} />
-                            </a>
+    const columns = useMemo<ColumnDef<unknown, unknown>[]>(() =>
+        [{
+            accessorFn: (row: any) => row?.FileLeafRef,
+            cell: ({ row, column, getValue }: any) => (
+                <div className='alignCenter columnFixedTitle p-0'>
+                    {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'aspx' && row?.original?.File_x0020_Type != 'jfif' && <span className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
+                    {row?.original?.File_x0020_Type == 'rar' && <span className="svg__iconbox svg__icon--zip "></span>}
+                    {row?.original?.File_x0020_Type == 'aspx' || row?.original?.File_x0020_Type == 'msg' || row?.original?.File_x0020_Type == 'apk' ? <span className=" svg__iconbox svg__icon--unknownFile "></span> : ''}
+                    {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span className=" svg__iconbox svg__icon--jpeg "></span> : ''}
+                    {row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx' ? <span className=" svg__iconbox svg__icon--docx "></span> : ''}
+                    {row?.original?.File_x0020_Type == 'jfif' ? <span className=" svg__iconbox svg__icon--jpeg "></span> : ''}
+                    <a className='ms-1 wid90' target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.Title} </a>
+                </div>
+            ),
+            id: 'Title',
+            placeholder: 'File Name',
+            resetColumnFilters: false,
+            header: '',
+            size: 500,
+        },
+        {
+            accessorFn: (row: any) => row?.Modified,
+            cell: ({ row }: any) => (
+                <div> {row?.original.Modified !== null ? moment(row?.original.Modified).format("DD/MM/YYYY") : ""}
+                    <>
+                        <a href={`${myContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
+                            target="_blank" data-interception="off">
+                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={(row?.original?.EditorImage)} />
+                        </a>
 
-                        </>
-                    </div>
-                ),
-                id: 'Modified',
-                placeholder: 'Modified',
-                resetColumnFilters: false,
-                header: '',
-                size: 115,
-            },
-            {
-                accessorFn: (row: any) => row?.Created,
-                cell: ({ row }: any) => (
-                    <div>{row?.original.Created !== null ? moment(row?.original.Created).format("DD/MM/YYYY") : ""}
+                    </>
+                </div>
+            ),
+            id: 'Modified',
+            placeholder: 'Modified',
+            resetColumnFilters: false,
+            header: '',
+            size: 115,
+        },
+        {
+            accessorFn: (row: any) => row?.Created,
+            cell: ({ row }: any) => (
+                <div>{row?.original.Created !== null ? moment(row?.original.Created).format("DD/MM/YYYY") : ""}
 
 
-                        <>
-                            <a href={`${myContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
-                                target="_blank" data-interception="off">
-                                <img title={row?.original?.Author?.Title} className="workmember ms-1" src={(row?.original?.UserImage)} />
-                            </a>
+                    <>
+                        <a href={`${myContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                            target="_blank" data-interception="off">
+                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={(row?.original?.UserImage)} />
+                        </a>
 
-                        </>
+                    </>
 
 
-                    </div>
+                </div>
 
-                ),
-                id: 'Created',
-                placeholder: 'Created',
-                resetColumnFilters: false,
-                header: '',
-                size: 115,
-            },
-            {
-                accessorFn: "",
-                cell: ({ row }: any) => (
-                    <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(row?.original)}></span>
+            ),
+            id: 'Created',
+            placeholder: 'Created',
+            resetColumnFilters: false,
+            header: '',
+            size: 115,
+        },
+        {
+            accessorFn: "",
+            cell: ({ row }: any) => (
+                <span  title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(row?.original)}></span>
 
-                ),
-                id: 'CreatedDate',
-                placeholder: '',
-                resetColumnFilters: false,
-                header: '',
-                size: 42,
-            }
+            ),
+            id: 'CreatedDate',
+            placeholder: '',
+            resetColumnFilters: false,
+            header: '',
+            size: 42,
+        }
 
         ], [copykeyDocument?.length > 0 ? copykeyDocument : keyDocument]);
 
@@ -202,6 +192,7 @@ const RelevantDocuments = (props: any, ref: any) => {
 
     };
 
+
     const editDocumentsLink = (editData: any) => {
         copyEditData = [];
         setEditdocpanel(true);
@@ -210,6 +201,7 @@ const RelevantDocuments = (props: any, ref: any) => {
         setEditdocData(editData)
 
     }
+
 
     const callBackData = useCallback((elem: any, getSelectedRowModel: any) => {
         console.log(getSelectedRowModel)
@@ -226,14 +218,48 @@ const RelevantDocuments = (props: any, ref: any) => {
                     <div className='card-header'>
                         <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Key Documents<span><Tooltip ComponentId={'1298'} /></span></div>
                     </div>
+                    {(keyDocument.map((item: any, index: any) => {
+                        return (
+                            <div className='card-body p-1'>
+                                <ul className='d-flex list-none'>
 
-                    <div className='TableSection'>
-                        <div className='Alltable'>
-                            <div className='smart Key-documents'>
-                                <div style={{ height: "214px", overflow: 'hidden' }}><GlobalCommanTable columns={columns} wrapperHeight="100%" data={copykeyDocument?.length > 0 ? copykeyDocument : keyDocument} callBackData={callBackData} /></div>
+                                    <li>
+                                        <a href={item.EncodedAbsUrl}>
+                                            {item?.File_x0020_Type == "pdf" && <span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
+                                            {item?.File_x0020_Type == "docx" && <span className='svg__iconbox svg__icon--docx' title="docx"></span>}
+                                            {item?.File_x0020_Type == "csv" && <span className='svg__iconbox svg__icon--csv' title="csv"></span>}
+                                            {item?.File_x0020_Type == "xlsx" && <span className='svg__iconbox svg__icon--xlsx' title="xlsx"></span>}
+                                            {item?.File_x0020_Type == "jpeg" || item?.File_x0020_Type == "jpg " && <span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span>}
+                                            {item?.File_x0020_Type == "ppt" || item?.File_x0020_Type == "pptx" && <span className='svg__iconbox svg__icon--ppt' title="ppt"></span>}
+                                            {item?.File_x0020_Type == "svg" && <span className='svg__iconbox svg__icon--svg' title="svg"></span>}
+                                            {item?.File_x0020_Type == "zip" && <span className='svg__iconbox svg__icon--zip' title="zip"></span>}
+                                            {item?.File_x0020_Type == "png" && <span className='svg__iconbox svg__icon--png' title="png"></span>}
+                                            {item?.File_x0020_Type == "txt" && <span className='svg__iconbox svg__icon--txt' title="txt"></span>}
+                                            {item?.File_x0020_Type == "smg" && <span className='svg__iconbox svg__icon--smg' title="smg"></span>}
+
+                                        </a>
+
+                                    </li>
+                                </ul>
+
+                            </div>
+                        )
+                    })
+
+                    )
+                        ?
+                        <div className='TableSection w-100' >
+                            <div className='Alltable'>
+                                <div className='smart Key-documents'>
+                                   <GlobalCommanTable columns={columns} wrapperHeight="100%" data={copykeyDocument?.length > 0 ? copykeyDocument : keyDocument} callBackData={callBackData} />
+                                </div>
                             </div>
                         </div>
-                    </div>
+
+
+
+
+                        : ""}
 
                     {copykeyDocument?.length < keyDocument?.length && copykeyDocument?.length > 0 && (
                         <button onClick={ShowData}>

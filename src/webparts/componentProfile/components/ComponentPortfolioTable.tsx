@@ -2101,11 +2101,8 @@ const openCompareTool =()=>{
         <div className="container-fluid p-0">
           <section className="TableSection">
             <div className="container p-0">
-              <div className="Alltable mt-2 ">
-                <div className="col-sm-12 p-0 smart">
-                  <div className="">
-                    <div className="">
-                  
+              <div className="Alltable mt-2  ">
+                <div className="col-sm-12 p-0 smart portfoliotable">
                       <GlobalCommanTable openCompareTool={openCompareTool}  showRestructureButton={true} showCompareButton={true} bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete}
                       AllSitesTaskData={flatviewTasklist} masterTaskData={flatviewmastertask}
                         smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
@@ -2140,8 +2137,6 @@ const openCompareTool =()=>{
                         addActivity={addActivity}
                         showFilterIcon={true} loadFilterTask={FilterAllTask}/>
                          {!loaded && <PageLoader/>}
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -2168,7 +2163,6 @@ const openCompareTool =()=>{
         />
       </Panel>
       {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.NextProp}/>}
-
       <Panel
         onRenderHeader={onRenderCustomHeaderMain}
         type={PanelType.custom}
