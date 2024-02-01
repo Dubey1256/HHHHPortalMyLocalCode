@@ -1331,14 +1331,14 @@ const AncTool = (props: any) => {
     return (
         <>
             <div className={ServicesTaskCheck ? "serviepannelgreena mb-3 card addconnect" : "mb-3 card addconnect"}>
-                <CardHeader>
+                <div className='card-header'>
                     <CardTitle className="h5 d-flex justify-content-between align-items-center  mb-0">Add & Connect Tool<span><Tooltip ComponentId='324' /></span></CardTitle>
-                </CardHeader>
+                </div>
                 <CardBody>
                     <Row>
                         <div className="alignCenter gap-2 justify-content-between">
                             {/* <a className='siteColor' onClick={() => { setModalIsOpen(true) }}> Upload Documents</a>  */}
-                            <div className='text-center' onClick={() => { setModalIsOpen(true) }} >
+                            <div className='text-center w-25' onClick={() => { setModalIsOpen(true) }} >
                                 <svg className="hreflink" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48"  >
                                     <title>Upload Documents</title>
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M10.0391 41V23.5V6H19.4757H28.9121L33.5299 10.6849L38.1476 15.3699V28.1849V30H35.9414V27.8957V17.0308L31.6544 16.9865L27.3672 16.9424L27.3237 12.5908L27.2801 8.23934L19.7218 8.19621L12.1635 8.15308V23.4995V38.8458L24.0525 38.8033L27.1016 38.7924V39V41H24.0933H10.0391ZM31.8559 14.7915C33.1591 14.7915 34.2255 14.7346 34.2255 14.6649C34.2255 14.5952 33.1591 13.458 31.8559 12.1374L29.4862 9.73654V12.264V14.7915H31.8559ZM16.5759 23.4171V22.3389V21.2607H24.0933H31.6107V22.3389V23.4171H24.0933H16.5759ZM16.5759 27.8957V26.8175V25.7393H24.0933H31.6107V26.8175V27.8957H24.0933H16.5759ZM16.5759 32.2085V31.1303V30.0521H24.0933H31.6107V31.1303V32.2085H24.0933H16.5759Z" />
@@ -1346,7 +1346,7 @@ const AncTool = (props: any) => {
                                 </svg>
                                 <a className='d-block hreflink f-11 mt-1'>Upload Documents</a>
                             </div>
-                            <div className='text-center' onClick={() => { setUploadEmailModal(true) }}>
+                            <div className='text-center w-25 px-2' onClick={() => { setUploadEmailModal(true) }}>
                                 <svg className="hreflink" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48"  >
                                     <title>Upload Email</title>
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M3.73609 11.5681C3.68578 11.7002 3.66678 17.3809 3.69423 24.1921L3.74396 36.5761L24.048 36.6251L44.352 36.6739V24.0011V11.3281H24.09C8.05724 11.3281 3.80886 11.3782 3.73609 11.5681ZM41.28 13.9197C41.28 13.9723 37.3923 15.9595 32.6407 18.3357L24.0013 22.6563L15.4567 18.3853C10.7571 16.0362 6.91196 14.049 6.91196 13.9691C6.91196 13.8894 14.6448 13.8241 24.096 13.8241C33.5472 13.8241 41.28 13.8671 41.28 13.9197ZM15.2634 21.0712L24 25.4382L32.7365 21.0712C37.5415 18.6692 41.5591 16.7041 41.6645 16.7041C41.7889 16.7041 41.856 19.7613 41.856 25.4411V34.178L24.048 34.1291L6.23996 34.0801L6.18985 25.6321C6.14281 17.7048 6.1693 16.7041 6.42543 16.7041C6.48111 16.7041 10.4584 18.6692 15.2634 21.0712Z" />
@@ -1354,7 +1354,7 @@ const AncTool = (props: any) => {
                                     <path d="M41.4 28H39.6V31.6H36V33.4H39.6V37H41.4V33.4H45V31.6H41.4V28Z" />
                                 </svg><a className='d-block hreflink f-11 mt-1'>Upload Email</a></div>
                             {/* {/ <a className='siteColor' onClick={() => { setUploadEmailModal(true) }}> Upload Email</a> /} */}
-                            <div className='text-center' onClick={() => { setFileNamePopup(true) }}>
+                            <div className='text-center w-25' onClick={() => { setFileNamePopup(true) }}>
                                 <svg className="hreflink" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48"  >
                                     <title>Create New Online File</title>
                                     <rect width="48" height="48" fill="white" />
@@ -1363,7 +1363,7 @@ const AncTool = (props: any) => {
                                     <path d="M40.3999 30H38.6V33.6H35V35.3999H38.6V39H40.3999V35.3999H44V33.6H40.3999V30Z" stroke-width="0.2" />
                                 </svg><a className='d-block hreflink f-11  mt-1'>Create New Online File</a></div>
                             {/* {/ <a className='siteColor' onClick={() => { setFileNamePopup(true) }}> Create New Online File</a> /} */}
-                            <div className='text-center' onClick={() => { setRemark(true) }}>
+                            <div className='text-center w-25' onClick={() => { setRemark(true) }}>
                                 <svg className="hreflink" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48"  >
                                     <title>Add SmartNotes</title>
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M9 23.5V40H19.9177H28.7609V37.9373H19.9189H11.0769V23.5V9.06249H18.3462H25.6154V13.1875V17.3125H29.7692H33.9231V21.4237V29.3325H36V21.7232V15.8513L31.5432 11.4256L27.0863 7H18.0432H9V23.5ZM30.0866 12.901L32.4515 15.25H30.0719H27.6923V12.901C27.6923 11.6091 27.699 10.5521 27.707 10.5521C27.7152 10.5521 28.7859 11.6091 30.0866 12.901Z" stroke-width="0.2" />
