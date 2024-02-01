@@ -893,7 +893,7 @@ let ID: any;
         return (
             <>
                 <div className="subheading siteColor">Add Question</div>
-                <Tooltip ComponentId="1626" />
+                <Tooltip ComponentId="1000" />
             </>
         );
     };
@@ -901,7 +901,7 @@ let ID: any;
         return (
             <>
                 <div className="subheading siteColor">Add Help</div>
-                <Tooltip ComponentId="1626" />
+                <Tooltip ComponentId="1000" />
             </>
         );
     };
@@ -909,7 +909,7 @@ let ID: any;
         return (
             <>
                 <div className="subheading siteColor">Edit Question</div>
-                <Tooltip ComponentId="1626" />
+                <Tooltip ComponentId="1000" />
             </>
         );
     };
@@ -917,7 +917,7 @@ let ID: any;
         return (
             <>
                 <div className="subheading siteColor">Edit Help</div>
-                <Tooltip ComponentId="1626" />
+                <Tooltip ComponentId="1000" />
             </>
         );
     };
