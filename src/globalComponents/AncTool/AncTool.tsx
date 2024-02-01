@@ -21,6 +21,7 @@ import ConnectExistingDoc from './ConnectExistingDoc';
 import MsgReader from "@kenjiuno/msgreader"
 import { Items } from '@pnp/sp/items';
 import { AttachFile } from '@material-ui/icons';
+import PageLoader from '../pageLoader';
 let backupExistingFiles: any = [];
 let backupCurrentFolder: any = [];
 let AllFilesAndFolderBackup: any = [];
@@ -59,7 +60,9 @@ const AncTool = (props: any) => {
     const [ShowExistingDoc, setShowExistingDoc] = React.useState(false)
     const [editSmartInfo, setEditSmartInfo] = React.useState(false)
     const [folderExist, setFolderExist] = React.useState(false);
+    const [createNewFile, setCreateNewFile] = React.useState(false);
     const [Item, setItem]: any = React.useState({});
+    const [pageLoaderActive, setPageLoader] = React.useState(false)
     const [renamedFileName, setRenamedFileName]: any = React.useState('');
     const [LinkToDocTitle, setLinkToDocTitle]: any = React.useState('');
     const [LinkToDocUrl, setLinkToDocUrl]: any = React.useState('');
@@ -162,11 +165,11 @@ const AncTool = (props: any) => {
         let currentPath: any = `${rootSiteName}${path}`;
         for (let File = 0; File < AllFilesAndFolderBackup.length; File++) {
             if (AllFilesAndFolderBackup[File]?.FileLeafRef == title && AllFilesAndFolderBackup[File]?.FileSystemObjectType == 1 && AllFilesAndFolderBackup[File]?.EncodedAbsUrl?.toLowerCase() == currentPath?.toLowerCase()) {
-                setFolderExist(true) 
+                setFolderExist(true)
 
             }
             else {
-                setFolderExist(false) 
+                setFolderExist(false)
             }
         }
 
@@ -397,7 +400,7 @@ const AncTool = (props: any) => {
             <>
                 <div className='subheading'>
                     {/* <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} /> */}
-                        Upload Email
+                    Upload Email
                 </div>
                 <Tooltip ComponentId="7641" />
                 {/* <Tooltip ComponentId="528" /> */}
@@ -468,7 +471,7 @@ const AncTool = (props: any) => {
             size: ''
         }
         let filetype = '';
-
+        setPageLoader(true)
         setTimeout(async () => {
             if (renamedFileName?.length > 0 && selectedFile.name?.length > 0) {
                 filetype = getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name)
@@ -549,6 +552,7 @@ const AncTool = (props: any) => {
 
 
                     const uploadFile = async (fileToUpload: any) => {
+                        setPageLoader(true)
                         return new Promise<void>(function (myResolve, myReject) {
                             let fileItems: any;
                             let web = new Web(props?.AllListId?.siteUrl);
@@ -574,7 +578,7 @@ const AncTool = (props: any) => {
                                                         link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
                                                         size: fileSize
                                                     }
-                                                     taggedDocument.link = `${file?.EncodedAbsUrl}?web=1`;
+                                                    taggedDocument.link = `${file?.EncodedAbsUrl}?web=1`;
                                                     // Update the document file here
                                                     let postData = {
                                                         [siteColName]: { "results": resultArray },
@@ -604,9 +608,12 @@ const AncTool = (props: any) => {
                                                             pathGenerator();
                                                             cancelPathFolder()
                                                             taggedDocument.tagged = true;
+                                                            setPageLoader(false)
                                                             setUploadedDocDetails(taggedDocument);
                                                             setRenamedFileName('')
                                                             return file;
+                                                        }).catch((e) => {
+                                                            setPageLoader(false)
                                                         })
 
                                                     console.log("File uploaded successfully.", file);
@@ -652,9 +659,12 @@ const AncTool = (props: any) => {
                                                                 myResolve()
                                                                 pathGenerator();
                                                                 taggedDocument.tagged = true;
+                                                                setPageLoader(false)
                                                                 setUploadedDocDetails(taggedDocument);
                                                                 setRenamedFileName('')
                                                                 return file;
+                                                            }).catch((e) => {
+                                                                setPageLoader(false)
                                                             })
 
                                                         console.log("File uploaded successfully.", file);
@@ -706,9 +716,9 @@ const AncTool = (props: any) => {
                 PortfoliosId: { "results": file?.PortfoliosId != undefined ? file?.PortfoliosId : [] }
             }
             let itemType = 'Task';
-            if(props?.item?.Item_x0020_Type != undefined){
+            if (props?.item?.Item_x0020_Type != undefined) {
                 itemType = props?.item?.Item_x0020_Type
-            }else if(props?.item?.TaskType?.Id != undefined){
+            } else if (props?.item?.TaskType?.Id != undefined) {
                 itemType = props?.item?.TaskType?.Title
             }
             await web.lists.getByTitle('Documents').items.getById(file.Id)
@@ -732,9 +742,9 @@ const AncTool = (props: any) => {
                 PostData.PortfoliosId = { "results": file?.PortfoliosId != undefined ? file?.PortfoliosId : [] };
             }
             let itemType = 'Task';
-            if(props?.item?.Item_x0020_Type != undefined){
+            if (props?.item?.Item_x0020_Type != undefined) {
                 itemType = props?.item?.Item_x0020_Type
-            }else if(props?.item?.TaskType?.Id != undefined){
+            } else if (props?.item?.TaskType?.Id != undefined) {
                 itemType = props?.item?.TaskType?.Title
             }
             let web = new Web(props?.AllListId?.siteUrl);
@@ -761,6 +771,7 @@ const AncTool = (props: any) => {
         setCreateNewDocType('docx')
         let jsonResult = await GlobalFunction.docxUint8Array();
         setNewlyCreatedFile(jsonResult)
+        setCreateNewFile(renamedFileName?.length > 0 ? true : false)
     }
     async function createBlankExcelXlsx() {
         const workbook = new ExcelJS.Workbook();
@@ -768,6 +779,7 @@ const AncTool = (props: any) => {
         worksheet.addRow([]);
         const buffer = await workbook.xlsx.writeBuffer();
         setCreateNewDocType('xlsx')
+        setCreateNewFile(renamedFileName?.length > 0 ? true : false)
         setNewlyCreatedFile(buffer)
     }
     async function createBlankPowerPointPptx() {
@@ -777,6 +789,7 @@ const AncTool = (props: any) => {
 
         await pptx.stream().then((file: any) => {
             setNewlyCreatedFile(file)
+            setCreateNewFile(renamedFileName?.length > 0 ? true : false)
             setFileNamePopup(true);
         })
     }
@@ -791,6 +804,8 @@ const AncTool = (props: any) => {
         }
         let isFolderAvailable = folderExist;
         let fileName = ''
+        setPageLoader(true)
+        setCreateNewFile(false)
         if (isFolderAvailable == false) {
             try {
                 if (tasktypecopy != undefined && tasktypecopy != '') {
@@ -853,10 +868,13 @@ const AncTool = (props: any) => {
                                             file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
                                             setAllReadytagged([...AllReadytagged, ...[file]])
                                             taggedDocument.tagged = true;
+                                            setPageLoader(false)
                                             pathGenerator()
                                             cancelNewCreateFile()
                                             props?.callBack();
                                             return file;
+                                        }).catch((e) => {
+                                            setPageLoader(false)
                                         })
                                     console.log("File uploaded successfully.", file);
                                 }
@@ -1274,10 +1292,13 @@ const AncTool = (props: any) => {
                                             file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
                                             setAllReadytagged([...AllReadytagged, ...[file]])
                                             taggedDocument.tagged = true;
+                                            setPageLoader(false)
                                             pathGenerator()
                                             cancelNewCreateFile()
                                             props?.callBack();
                                             return file;
+                                        }).catch((e) => {
+                                            setPageLoader(false)
                                         })
                                     console.log("File uploaded successfully.", file);
                                 }
@@ -1327,7 +1348,15 @@ const AncTool = (props: any) => {
         const truncatedFileName = trimmedFileName.substring(0, 100);
         return truncatedFileName;
     }
-
+    const changeFileName =(e:any)=>{
+        setRenamedFileName(e.target.value); 
+        if(e?.target?.value?.length>0){
+            setCreateNewFile(createNewDocType?.length > 0 ? true : false)
+        }else{
+            setCreateNewFile(false)
+        }
+        
+    }
     return (
         <>
             <div className={ServicesTaskCheck ? "serviepannelgreena mb-3 card addconnect" : "mb-3 card addconnect"}>
@@ -1720,13 +1749,13 @@ const AncTool = (props: any) => {
                                         </div>
                                     </div>
                                     <div className="col-sm-12 mt-2 p-0">
-                                        <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Enter File Name' className='full-width' />
+                                        <input type="text" onChange={(e) => { changeFileName(e) }} value={renamedFileName} placeholder='Enter File Name' className='full-width' />
                                     </div>
                                 </div>
                                 <footer className='text-end p-2'>
 
 
-                                    <button className="btn btn-primary" disabled={renamedFileName?.length > 0 ? false : true} onClick={() => { CreateNewAndTag() }}>Create</button>
+                                    <button className="btn btn-primary" disabled={!createNewFile} onClick={() => { CreateNewAndTag() }}>Create</button>
                                     <button className='btn btn-default ms-1' onClick={() => cancelNewCreateFile()}>Cancel</button>
                                 </footer>
                             </div>
@@ -1869,6 +1898,7 @@ const AncTool = (props: any) => {
                     }
                 </div>
             </Panel>
+            {pageLoaderActive ? <PageLoader /> : ''}
         </>
     )
 }
