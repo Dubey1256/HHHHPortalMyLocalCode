@@ -903,28 +903,37 @@ const GroupByDashboard = (SelectedProp: any) => {
 
     return (
         <>
-            <section className="Tabl1eContentSection row taskprofilepagegreen">
-                <div className="container-fluid p-0">
-                    <section className="TableSection">
-                        <div className="container p-0">
-                            <div className="Alltable mt-2 ">
-                                <div className="col-sm-12 p-0 smart">
-                                    <div>
+            <div>
+                <section className="ContentSection">
+                    <div className="col-sm-12 clearfix">
+                        <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
+                            <div>GroupByComponents-Dashboard</div>
+                        </h2>
+                    </div>
+                </section>
+                <section className="Tabl1eContentSection row taskprofilepagegreen">
+                    <div className="container-fluid p-0">
+                        <section className="TableSection">
+                            <div className="container p-0">
+                                <div className="Alltable mt-2 ">
+                                    <div className="col-sm-12 p-0 smart">
                                         <div>
-                                            <GlobalCommanTable hideAddActivityBtn={true} hideShowingTaskCountToolTip={true} showRestructureButton={true} showCompareButton={true} openCompareTool={openCompareTool} columnSettingIcon={true}
-                                                masterTaskData={allMasterTaskDataFlatLoadeViewBackup} precentComplete={precentComplete} AllMasterTasksData={AllMasterTasksData}
-                                                ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1}
-                                                data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem}
-                                                taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true}
-                                                showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} />
+                                            <div>
+                                                <GlobalCommanTable hideAddActivityBtn={true} hideShowingTaskCountToolTip={true} showRestructureButton={true} showCompareButton={true} openCompareTool={openCompareTool} columnSettingIcon={true}
+                                                    masterTaskData={allMasterTaskDataFlatLoadeViewBackup} precentComplete={precentComplete} AllMasterTasksData={AllMasterTasksData}
+                                                    ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1}
+                                                    data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem}
+                                                    taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true}
+                                                    showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </section>
-                </div>
-            </section>
+                        </section>
+                    </div>
+                </section>
+            </div>
             <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={AddStructureCallBackCall} >
                 <PortfolioStructureCreationCard
                     CreatOpen={CreateOpenCall}
