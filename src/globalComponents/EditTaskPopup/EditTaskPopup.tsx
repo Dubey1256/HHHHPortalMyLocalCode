@@ -2780,6 +2780,8 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.SiteIcon = Items?.Items?.SiteIcon;
                                     dataEditor.data.DisplayCreateDate =
                                         Items?.Items?.DisplayCreateDate;
+                                        dataEditor.data.DisplayDueDate = Moment(EditData?.DueDate).format("DD/MM/YYYY");
+                                    dataEditor.data.PercentComplete = EditData.PercentComplete;
                                     dataEditor.data.FeedBack = JSON.stringify(
                                         dataEditor.data.FeedBack
                                     );
