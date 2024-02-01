@@ -1614,7 +1614,7 @@ let ID: any;
             // Update the state with the newly added item
             setSmartHelpDetails([...SmartHelpDetails, newItem]);
             setIsOpenPopup(false);
-            let smartHelpDetails = await web.lists.getById(RequireData.SmartHelpListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title").expand("Components").getAll();
+            let smartHelpDetails = await web.lists.getById(RequireData.SmartHelpListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title, Created, Modified, Author/Id, Author/Title, Editor/Id, Editor/Title").expand("Components, Author, Editor").getAll();
             setSmartHelpDetails(smartHelpDetails)
             setQuestion("")
             setChoice("");
@@ -1633,7 +1633,7 @@ let ID: any;
                 // Title: `${CompoenetItem[0].Title} - ${help}`,
                 Title: help,
                 ComponentsId: { "results": [componentId] },
-                Permission: choice,
+                Permission: choice, 
                 Body: PostQuestionDescription || (EditData?.PostQuestionDescription || ""),
             };
             await web.lists.getById(RequireData.SmartHelpListID).items.add(newItem);
@@ -1641,7 +1641,7 @@ let ID: any;
             // Update the state with the newly added item
             setSmartHelpDetails([...SmartHelpDetails, newItem]);
             setOpenPopup(false);
-            let smartHelpDetails = await web.lists.getById(RequireData.SmartHelpListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title").expand("Components").getAll();
+            let smartHelpDetails = await web.lists.getById(RequireData.SmartHelpListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title, Created, Modified, Author/Id, Author/Title, Editor/Id, Editor/Title").expand("Components, Author, Editor").getAll();
             setSmartHelpDetails(smartHelpDetails)
             setHelp("")
             setChoice("");
@@ -2602,7 +2602,7 @@ let ID: any;
                 console.log(i);
 
                 // Fetch the updated data and set it to SmartHelpDetails
-                const updatedSmartHelpDetails = await web.lists.getById(RequireData.SmartHelpListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title").expand("Components").getAll();
+                const updatedSmartHelpDetails = await web.lists.getById(RequireData.SmartHelpListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title, Created, Modified, Author/Id, Author/Title, Editor/Id, Editor/Title").expand("Components, Author, Editor").getAll();
                 setSmartHelpDetails(updatedSmartHelpDetails);
                 setQuestion("");
                 setChoice("");
@@ -2625,7 +2625,7 @@ let ID: any;
                 console.log(i);
 
                 // Fetch the updated data and set it to SmartHelpDetails
-                const updatedSmartHelpDetails = await web.lists.getById(RequireData.SmartHelpListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title").expand("Components").getAll();
+                const updatedSmartHelpDetails = await web.lists.getById(RequireData.SmartHelpListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title, Created, Modified, Author/Id, Author/Title, Editor/Id, Editor/Title").expand("Components, Author, Editor").getAll();
                 setSmartHelpDetails(updatedSmartHelpDetails);
                 setHelp("");
                 setChoice("");
