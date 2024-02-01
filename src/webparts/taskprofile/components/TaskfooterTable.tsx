@@ -61,6 +61,7 @@ let childRefdata: any;
 let TasksItem: any = [];
 let AllTasksData: any = [];
 let BulkTaskUpdate: any[] = [];
+let smartmetaDetailsall:any[] = [];
 function IndeterminateCheckbox(
   {
     indeterminate,
@@ -147,15 +148,17 @@ function TasksTable(props: any) {
   // IsUpdated = props.props.Portfolio_x0020_Type;
   IsUpdated = props.props.PortfolioType;
 
+
   const GetSmartmetadata = async () => {
 
     //  var metadatItem: any = []
     let smartmetaDetails: any = [];
     let AllSiteName: any = [];
-    var select: any = 'Id,Title,IsVisible,ParentID,SmartSuggestions,Color_x0020_Tag,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title&$expand=Parent'
+    var select: any = 'Id,Title,IsVisible,ParentID,SmartSuggestions,Configurations,Color_x0020_Tag,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title&$expand=Parent'
     smartmetaDetails = await globalCommon.getData(props?.AllListId?.siteUrl, props?.AllListId?.SmartMetadataListID, select);
     setAllClientCategory(smartmetaDetails?.filter((metadata: any) => metadata?.TaxType == 'Client Category'));
     console.log(smartmetaDetails);
+    smartmetaDetailsall = smartmetaDetails;
     setsmartmetaDetails(smartmetaDetails)
 
     smartmetaDetails.forEach((newtest: any) => {
@@ -221,7 +224,124 @@ function TasksTable(props: any) {
 
 
   }
+// Loadsmarttime
 
+const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: any): Promise<number> => {
+  let FinalTotalTime: number = 0;
+  let AllTimeSpentDetails: any[] = [];
+  let filteres: string;
+  let TimeSheetlistId: any;
+  let siteUrl: any;
+  let listName: any;
+
+  // Get the list Name
+  let TimesheetConfiguration: any[] = [];
+  if (smartmetaDetailsall.length > 0) {
+    smartmetaDetailsall.forEach((itemss: any) => {
+      if (itemss.Title == items.siteType && itemss.TaxType == 'Sites') {
+        TimesheetConfiguration = JSON.parse(itemss.Configurations);
+      }
+    });
+
+    TimesheetConfiguration?.forEach((val: any) => {
+      TimeSheetlistId = val.TimesheetListId;
+      siteUrl = val.siteUrl;
+      listName = val.TimesheetListName;
+    });
+  }
+
+  if (items.siteType === "Offshore Tasks") {
+    const siteType = "OffshoreTasks";
+    filteres = `Task${siteType}/Id eq ${items.Id}`;
+  } else {
+    filteres = `Task${items.siteType}/Id eq ${items.Id}`;
+  }
+
+  const select =
+    "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,Author/Id,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle&$filter=" + filteres;
+
+  let count = 0;
+  let allurls: { Url: string }[] = [];
+
+  if (items.siteType === "Migration" || items.siteType === "ALAKDigital") {
+    allurls = [
+      {
+        Url:
+          "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('9ed5c649-3b4e-42db-a186-778ba43c5c93')/items?$select=" + select,
+      },
+    ];
+  } else if (items.siteType === "SH") {
+    allurls = [
+      { Url: `${items.siteUrl}/_api/web/lists/getbyTitle('TaskTimesheet')/items?$select=${select}` },
+    ];
+  } else {
+    if (listName !== undefined) {
+      allurls = [
+        { Url: `${items.siteUrl}/_api/web/lists/getbyTitle('${listName}')/items?$select=${select}` },
+      ];
+    }
+  }
+
+  for (const item of allurls) {
+    try {
+      const response = await $.ajax({
+        url: item.Url,
+        method: "GET",
+        headers: {
+          Accept: "application/json; odata=verbose",
+        },
+      });
+
+      count++;
+      let tempArray: any[] = [];
+
+      if (response.d.results !== undefined && response.d.results.length > 0) {
+        AllTimeSpentDetails = AllTimeSpentDetails.concat(response.d.results);
+
+        AllTimeSpentDetails.forEach((item: any) => {
+          if (item.AdditionalTimeEntry !== null) {
+            const data = JSON.parse(item.AdditionalTimeEntry);
+
+            if (data !== undefined && data.length > 0) {
+              data.forEach((timeData: any) => {
+                tempArray.push(timeData);
+              });
+            }
+          }
+        });
+      }
+
+      let TotalTimeData: number = 0;
+
+      if (tempArray.length > 0) {
+        tempArray.forEach((tempItem: any) => {
+          if (typeof tempItem.TaskTimeInMin === "string") {
+            const timeValue = Number(tempItem.TaskTimeInMin);
+
+            if (timeValue > 0) {
+              TotalTimeData += timeValue;
+            }
+          } else {
+            if (tempItem.TaskTimeInMin > 0) {
+              TotalTimeData += tempItem.TaskTimeInMin;
+            }
+          }
+        });
+      }
+
+      if (TotalTimeData > 0) {
+        FinalTotalTime = TotalTimeData / 60;
+      }
+    } catch (error) {
+      // console.error("Error:", error);
+    }
+  }
+
+  // console.log(FinalTotalTime);
+  return FinalTotalTime;
+};
+
+// Loadsmarttimeend
   const GetIconImageUrl = (siteType: any, siteUrl: any, undefined: any) => {
     let siteIcon = '';
     siteIconAllTask?.map((items: any) => {
@@ -345,6 +465,7 @@ function TasksTable(props: any) {
                       }
                     });
                   }
+                
                   if (
                     result.ResponsibleTeam != undefined &&
                     result?.ResponsibleTeam?.length > 0
@@ -412,10 +533,26 @@ function TasksTable(props: any) {
 
                 if (allworkstreamTasks != undefined && allworkstreamTasks?.length > 0) {
                   allworkstreamTasks.forEach((obj: any) => {
+                    SmartTimeData(obj)
+                    .then((returnresult) => {
+                      obj.smartTime = String(returnresult)
+                      // console.log("Final Total Time:", returnresult);
+                    })
+                    .catch((error) => {
+                      console.error("Error:", error);
+                    });
                     if (obj.Id != undefined) {
                       AllTasks.forEach((task: any) => {
                         if (task?.ParentTask != undefined && obj?.Id === task?.ParentTask?.Id && task?.siteType == props?.props?.siteType) {
                           obj.subRows = obj?.subRows != undefined ? obj?.subRows : []
+                          SmartTimeData(task)
+                          .then((returnresult) => {
+                            task.smartTime = String(returnresult)
+                            // console.log("Final Total Time:", returnresult);
+                          })
+                          .catch((error) => {
+                            console.error("Error:", error);
+                          });
                           obj.subRows.push(task)
                         }
 
@@ -720,7 +857,7 @@ function TasksTable(props: any) {
           <div>
             {row?.original?.SiteIcon != undefined &&
               <a className="hreflink" title="Show All Child" data-toggle="modal">
-                <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
+                <img className={row?.original?.TaskType?.Title === "Workstream"?"icon-sites-img ml20 me-1":row?.original?.TaskType?.Title === "Task"?"ml-12 workmember ml20 me-1":""} src={row?.original?.SiteIcon}></img>
               </a>
             }
             {getValue()}
@@ -907,13 +1044,23 @@ function TasksTable(props: any) {
         header: "",
         size: 129
       },
-
+      {
+        accessorFn: (row) => row?.smartTime,
+        cell: ({ row }) => (
+          <span> {row?.original?.smartTime}</span>
+        ),
+        id: "smartTime",
+        placeholder: "Smart Time",
+        header: "",
+        resetColumnFilters: false,
+        size: 49,
+      },
       {
         cell: ({ row, getValue }) => (
           <>
 
-            <a className='time-icons' onClick={(e) => EditData(e, row?.original)} >
-              <span title='Time' className="svg__iconbox svg__icon--clock"></span>
+            <a onClick={(e) => EditData(e, row?.original)} >
+              <span title='Time' className="svg__iconbox svg__icon--clock mt-1"></span>
             </a>
 
             {getValue()}
@@ -950,7 +1097,7 @@ function TasksTable(props: any) {
                 </span>)}
 
 
-              <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
+              <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="ml-auto svg__iconbox svg__icon--edit"></span>
 
             </a>
             {getValue()}
