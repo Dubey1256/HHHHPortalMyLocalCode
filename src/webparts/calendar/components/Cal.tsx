@@ -1694,27 +1694,27 @@ const App = (props: any) => {
   };
   const HandledLeaveType = (option: any) => {
     if (option == "Company Holiday" || option == "National Holiday") {
-      setInputValueName(option);
+      //setInputValueName(option);
       setIsChecked(true);
       allDay = true
       setIsDisableField(true)
       setShowRecurrenceSeriesInfo(false);
       setNewRecurrenceEvent(false);
-      if (option == "National Holiday") {
-        setShowRecurrenceSeriesInfo(true);
-        setNewRecurrenceEvent(true);
-        setselectedKey('yearly')
-      }
+      // if (option == "National Holiday") {
+      //   setShowRecurrenceSeriesInfo(true);
+      //   setNewRecurrenceEvent(true);
+      //   setselectedKey('yearly')
+      // }
     }
     else {
       setInputValueName('');
       setIsChecked(false);
       allDay = false
       setIsDisableField(false)
-      setShowRecurrenceSeriesInfo(false);
-      setNewRecurrenceEvent(false);
-      setRecurrenceData(null)
-      setselectedKey('daily')
+      // setShowRecurrenceSeriesInfo(false);
+      // setNewRecurrenceEvent(false);
+      // setRecurrenceData(null)
+      // setselectedKey('daily')
     }
     setType(option)
   }
