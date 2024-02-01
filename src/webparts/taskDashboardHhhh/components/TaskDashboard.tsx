@@ -1706,7 +1706,16 @@ const TaskDashboard = (props: any) => {
                }
                var subject = "Daily Timesheet - " + currentLoginUser + ' - '+  currentDate  +  ' - ' + (updatedCategoryTime.today) + ' hours '
                weeklyTimeReport.map((item: any) => {
-                 
+                item.ClientCategories = ''
+                item.ClientCategory.forEach((val: any, index: number) => {
+                    item.ClientCategories += val.Title;
+            
+                    // Add a comma only if it's not the last item
+                    if (index < item.ClientCategory.length - 1) {
+                        item.ClientCategories += ', ';
+                    }
+                });
+                  
                      
                 text =
                 '<tr>' +
@@ -1717,7 +1726,7 @@ const TaskDashboard = (props: any) => {
                 + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.TaskTime + '</td>'
                 + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;text-align:center">' + item?.Description + '</td>'
                 + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:120px;text-align:center">' + (item?.SmartPriority !== undefined ? item?.SmartPriority : '')+ '</td>'
-                + '<td style="border:1px solid #ccc;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:130px;text-align:center">' + (item?.ClientCategory == undefined || item?.ClientCategory.length == 0?'':item?.ClientCategory.Title) + '</td>'
+                + '<td style="border:1px solid #ccc;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:130px;text-align:center">' + item.ClientCategories + '</td>'
                
             body1.push(text);
 
