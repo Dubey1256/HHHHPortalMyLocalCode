@@ -5073,9 +5073,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                 <span className="Dyicons me-1 ms-1">
                   {newItemBackUp?.SiteIconTitle}
                 </span>
-              ) : (
+              ) : 
                 <img className="workmember me-1 ms-1" src={newItemBackUp?.SiteIcon} />
-              )}
+              }
               {newItemBackUp?.Title}
             </div>
             <label className="fw-bold form-label full-width"> Old: </label>
@@ -5088,22 +5088,21 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                       <div className="reStuTile">
-                      <div className="text-center">
+                      <div className="alignCenter">
                       {obj?.Title != "Others" ? (
                           obj?.siteIcon?.length === 1 ? (
                             <div className="Dyicons">
                               {obj.siteIcon}
                             </div>
-                          ) : (
-                            
-                              <img className="workmember" src={obj?.siteIcon} />
-                          
-                          )
-                        ) : (
+                          ) : 
+                           <img className="workmember" src={obj?.siteIcon} />
+                         ) : (
                           ""
                         )}
-                    <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
-
+                        <span className="mx-2">
+                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                        </span>
+                    
                       <a
                         data-interception="off"
                         target="_blank"
@@ -5141,21 +5140,21 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenter">
                         {obj?.newSubChild?.siteIcon === "S" ||
                             obj?.newSubChild?.siteIcon === "F" ? (
                               <span className="Dyicons me-1">
                                 {obj?.newSubChild?.siteIcon}
                               </span>
-                            ) : (
-                              <span className="mx-1">
+                            ) : 
                                 <img
                                   className="workmember"
                                   src={obj?.newSubChild?.siteIcon}
                                 />
-                              </span>
-                            )}
+                            }
+                        <span className="mx-2">
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                        </span>
                           <a
                             className=""
                             data-interception="off"
@@ -5194,22 +5193,23 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenter">
                         {obj?.newSubChild?.newFeatChild?.siteIcon ===
                             "F" ? (
                               <span className="Dyicons me-1">
                                 {obj?.newSubChild?.newFeatChild?.siteIcon}
                               </span>
                             ) : (
-                              <span className="mx-1">
                                 <img
                                   className="workmember"
                                   src={obj?.newSubChild?.newFeatChild?.siteIcon}
                                 />
-                              </span>
                             )}
-                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.TaskID} row={obj?.newSubChild?.newFeatChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
-                          
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.TaskID} row={obj?.newSubChild?.newFeatChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                         
+                              </span>
+                         
                           <a
                             className=""
                             data-interception="off"
@@ -5249,7 +5249,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenter">
                         <img
                               className="workmember"
                               src={
@@ -5257,8 +5257,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                                   ?.siteIcon
                               }
                             />
-                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
+                            </span>
+                        
                           <a
                             data-interception="off"
                             target="_blank"
@@ -5302,7 +5305,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenter">
                         <img
                               className="workmember"
                               src={
@@ -5310,8 +5313,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                                   ?.newWrkChild?.siteIcon
                               }
                             />
-                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
+                            </span>
+                        
                           <a
                             data-interception="off"
                             target="_blank"
@@ -5357,7 +5363,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenter">
                         <img
                               className="workmember"
                               src={
@@ -5365,8 +5371,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                                   ?.newWrkChild?.newTskChild?.siteIcon
                               }
                             />
-                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
+                            </span>
+                       
                           <a
                             data-interception="off"
                             target="_blank"
@@ -5417,20 +5426,21 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
-                      <div className="text-center">
+                      <div className="alignCenter">
                     {obj?.Title != "Others" ? (
                           obj?.siteIcon?.length === 1 ? (
                             <span className="Dyicons">{obj?.siteIcon}</span>
                           ) : (
-                            <span>
                               <img className="workmember" src={obj?.siteIcon} />
-                            </span>
                           )
                         ) : (
                           ""
                         )}
-                    <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
-                         
+                        <span className="mx-2">
+                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                     
+                        </span>
+                        
                       <a
                         data-interception="off"
                         target="_blank"
@@ -5465,22 +5475,23 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenter">
                         {obj?.newSubChild?.siteIcon === "S" ||
                             obj?.newSubChild?.siteIcon === "F" ? (
                               <span className="Dyicons">
                                 {obj?.newSubChild?.siteIcon}
                               </span>
                             ) : (
-                              <span className="mx-1">
                                 <img
                                   className="workmember"
                                   src={obj?.newSubChild?.siteIcon}
                                 />
-                              </span>
                             )}
-                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
+                            </span>
+                        
                           <a
                             data-interception="off"
                             target="_blank"
@@ -5515,22 +5526,23 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenter">
                         {obj?.newSubChild?.newFeatChild?.siteIcon ===
                             "F"  ? (
                               <span className="Dyicons">
                                 {obj?.newSubChild?.newFeatChild?.siteIcon}
                               </span>
                             ) : (
-                              <span className="mx-1">
                                 <img
                                   className="workmember"
                                   src={obj?.newSubChild?.newFeatChild?.siteIcon}
                                 />
-                              </span>
                             )}
-                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.TaskID} row={obj?.newSubChild?.newFeatChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.TaskID} row={obj?.newSubChild?.newFeatChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
+                            </span>
+                       
                           <a
                             data-interception="off"
                             target="_blank"
@@ -5566,7 +5578,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenter">
                         <img
                               className="workmember"
                               src={
@@ -5574,8 +5586,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                                   ?.siteIcon
                               }
                             />
-                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
+                            </span>
+                        
                           <a
                             data-interception="off"
                             target="_blank"
@@ -5615,7 +5630,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenter">
                         <img
                               className="workmember"
                               src={
@@ -5623,8 +5638,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                                   ?.newWrkChild?.siteIcon
                               }
                             />
-                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
-                         
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                        
+                            </span>
+                        
                           <a
                             data-interception="off"
                             target="_blank"
@@ -5646,14 +5664,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                                       ?.newWrkChild?.siteType
                                 : ""
                             }
-                            className=""
                           >
-                            {/* <div className="alignCenter">{obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.TaskID}</div> */}
-                           
-                            {/* {
-                              obj?.newSubChild?.newFeatChild?.newActChild
-                                ?.newWrkChild?.Title
-                            } */}
                           </a></div></div>
                         </div>
                       </>
@@ -5666,7 +5677,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenter">
                         <img
                               className="workmember"
                               src={
@@ -5674,8 +5685,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                                   ?.newWrkChild?.newTskChild?.siteIcon
                               }
                             />
-                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
+                            </span>
+                       
                           <a
                             data-interception="off"
                             target="_blank"
@@ -5700,12 +5714,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             }
                             className=""
                           >
-                            <div className="alignCenter">{obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild?.TaskID}</div>
                           
-                            {/* {
-                              obj?.newSubChild?.newFeatChild?.newActChild
-                                ?.newWrkChild?.newTskChild?.Title
-                            } */}
                           </a></div></div>
                         </div>
                       </>
@@ -5713,7 +5722,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       ""
                     )}
                     {RestructureChecked?.map((items: any) => (
-                      <span>
+                      <div className="reStuMainTiles">
                         <a
                           data-interception="off"
                           target="_blank"
@@ -5733,18 +5742,19 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         
                           {newItemBackUp?.Item_x0020_Type === "Component" && (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature") ?  <span className="Dyicons"> S </span> : 
                           (newItemBackUp?.Item_x0020_Type == "SubComponent" && (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature") ? <span className="Dyicons">F</span> : 
-                          items?.Item_x0020_Type === "Task" ? <span><img className="workmember" src={items?.siteIcon} /> </span>
+                          items?.Item_x0020_Type === "Task" ? <img className="workmember" src={items?.siteIcon} /> 
                            : 
                             "")
                           }
+                          <span className="mx-2">
                             {
                             newItemBackUp?.Item_x0020_Type != "Task" ?
                             (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ? items?.TaskID : (newItemBackUp?.TaskType?.Id == 2 ? items?.Id : ``) ) : (newItemBackUp?.TaskType?.Id == 1 ? (items?.TaskType?.Id == 2 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) :
                              (`${items?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-W`) : ('') }`)) : (newItemBackUp?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) : ''))
-                          }
+                          }</span>
                           {items?.Title}
                         </a>
-                      </span>
+                      </div>
                     ))}
                   </div>
                 );
@@ -5964,12 +5974,10 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   {newItemBackUp?.SiteIconTitle}
                 </span>
               ) : (
-                <span>
                   <img
                     className="workmember"
                     src={newItemBackUp?.SiteIcon}
                   />
-                </span>
               )}
 
               {newItemBackUp?.Item_x0020_Type != "Task" ? (
@@ -6182,14 +6190,17 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
-                    <div className="text-center">
+                    <div className="alignCenter">
                     {
                           <div className="Dyicons">
                               {obj.Item_x0020_Type == 'Project' ? "P" : "S"}
                             </div>
                             }
-                    <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
-                         
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                     
+                            </span>
+                       
                       <a
                         data-interception="off"
                         target="_blank"
@@ -6215,13 +6226,16 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenter">
                         {
                               <span className="Dyicons me-1">
                                 {obj?.newSubChild?.Item_x0020_Type == 'Project' ? "P" : "S"}
                               </span>}
-                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                              <span className="mx-2">
+                              <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
+                              </span>
+                       
                           <a
                             className=""
                             data-interception="off"
@@ -6254,10 +6268,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
-                    <div className="text-center">
+                    <div className="alignCenter">
                     <span className="Dyicons">{obj?.Item_x0020_Type == 'Project' ? "P" : "S"}</span>
+                    <span className="mx-2">
                     <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
-                         
+                      
+                    </span>
+                      
                       <a
                         data-interception="off"
                         target="_blank"
@@ -6275,12 +6292,15 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenterr">
                         <span className="Dyicons">
                                 {obj?.newSubChild?.Item_x0020_Type == 'Project' ? "P" : "S"}
                               </span>
-                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                              <span className="mx-2">
+                              <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
+                              </span>
+                        
                           <a
                             data-interception="off"
                             target="_blank"
@@ -6288,11 +6308,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                                     "/SitePages/Project-Management.aspx?ProjectId" +
                                     obj?.newSubChild?.Id
                             }
-                            className=""
                           >
-                        {/* <div className="alignCenter">{obj?.newSubChild?.TaskID}</div> */}
-                            
-                            {/* {obj?.newSubChild?.Title} */}
                           </a></div>
                           </div>
                         </div>
@@ -6301,7 +6317,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       ""
                     )}
                     {RestructureChecked?.map((items: any) => (
-                      <span>
+                      <div className="reStuMainTiles">
                         <a
                           data-interception="off"
                           target="_blank"
@@ -6313,12 +6329,12 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         >
                           
                           <span className="Dyicons">{newItemBackUp != undefined && newItemBackUp != null ? "X" : "P"}</span>
-                 <div className="alignCenter">{`${newItemBackUp?.TaskID}-X${newItemBackUp?.subRows?.length+1}`}</div>
+                          <div className="alignCenter ms-1 me-2">{`${newItemBackUp?.TaskID}-X${newItemBackUp?.subRows?.length+1}`}</div>
                           
                          
                           {items?.Title}
                         </a>
-                      </span>
+                      </div>
                     ))}
                   </div>
                 );
@@ -6457,16 +6473,18 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
-                    <div className="text-center">
+                    <div className="alignCenter">
                     {  obj?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons">X</div> : <span>
+                            <div className="Dyicons">X</div> :
                             <img
                             className="workmember"
                               src={obj?.SiteIcon}
-                            />
-                          </span>)}
-                    <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
-                         
+                            />)}
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                     
+                            </span>
+                        
                       <a
                         data-interception="off"
                         target="_blank"
@@ -6493,15 +6511,17 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenter">
                         {  obj?.newSubChild?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.newSubChild?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons">X</div> : <span>
+                            <div className="Dyicons">X</div> :
                             <img className="workmember"
                               src={obj?.newSubChild?.SiteIcon}
-                            />
-                          </span>)}
-                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                            />)}
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
+                            </span>
+                        
                           <a
                             className=""
                             data-interception="off"
@@ -6532,15 +6552,17 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenter">
                         {  obj?.newSubChild?.feature?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons">X</div> : <span>
+                            <div className="Dyicons">X</div> : 
                             <img className="workmember"
                               src={obj?.newSubChild?.feature?.SiteIcon}
-                            />
-                          </span>)}
-                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.feature?.TaskID} row={obj?.newSubChild?.feature} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                            />)}
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.feature?.TaskID} row={obj?.newSubChild?.feature} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
+                            </span>
+                        
                           <a
                             data-interception="off"
                             target="_blank"
@@ -6572,15 +6594,17 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenter">
                         {  obj?.newSubChild?.feature?.activity?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons">X</div> : <span>
+                            <div className="Dyicons">X</div> :
                             <img className="workmember"
                               src={obj?.newSubChild?.feature?.activity?.SiteIcon}
-                            />
-                          </span>)}
-                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.feature?.activity?.TaskID} row={obj?.newSubChild?.feature?.activity} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                            />)}
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.feature?.activity?.TaskID} row={obj?.newSubChild?.feature?.activity} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
+                            </span>
+                       
                           <a
                             data-interception="off"
                             target="_blank"
@@ -6592,10 +6616,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                               obj?.newSubChild?.feature?.activity?.Id + "&Site=" + obj?.newSubChild?.feature?.activity?.siteType
                             }
                             className=""
-                          >
-                            {/* <div className="alignCenter">{obj?.newSubChild?.feature?.activity?.TaskID}</div> */}
-                      
-                            {obj?.newSubChild?.feature?.activity?.Title}
+                          > {obj?.newSubChild?.feature?.activity?.Title}
                           </a></div>
                           </div>
                         </div>
@@ -6617,16 +6638,18 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
-                    <div className="text-center">
+                    <div className="alignCenter">
                     {  obj?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons">X</div> : <span>
+                            <div className="Dyicons">X</div> :
                             <img
                             className="workmember"
                               src={obj?.SiteIcon}
-                            />
-                          </span>)}
-                    <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
-                         
+                            />)}
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                     
+                            </span>
+                       
                       <a
                         data-interception="off"
                         target="_blank"
@@ -6644,16 +6667,17 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenter">
                         {  obj?.newSubChild?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.newSubChild?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons">X</div> : <span>
+                            <div className="Dyicons">X</div> : 
                             <img className="workmember"
                               src={obj?.newSubChild?.SiteIcon}
-                            />
-                          </span>)}
-                            
-                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                            />)}
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
+                            </span>
+                        
                           <a
                             data-interception="off"
                             target="_blank"
@@ -6673,15 +6697,17 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenter">
                         {  obj?.newSubChild?.feature?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons">X</div> : <span>
+                            <div className="Dyicons">X</div> : 
                             <img className="workmember"
                               src={obj?.newSubChild?.feature?.SiteIcon}
-                            />
-                          </span>)}
-                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.feature?.TaskID} row={obj?.newSubChild?.feature} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                            />)}
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.feature?.TaskID} row={obj?.newSubChild?.feature} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
+                            </span>
+                        
                           <a
                             data-interception="off"
                             target="_blank"
@@ -6711,16 +6737,18 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="text-center">
+                        <div className="alignCenter">
                         {  obj?.newSubChild?.feature?.activity?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ? 
-                            <div className="Dyicons">X</div> : <span>
+                            <div className="Dyicons">X</div> :
                             <img
                             className="workmember"
                               src={obj?.newSubChild?.feature?.activity?.SiteIcon}
-                            />
-                          </span>)}
-                        <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.feature?.activity?.TaskID} row={obj?.newSubChild?.feature?.activity} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                            />)}
+                            <span className="mx-2">
+                            <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.feature?.activity?.TaskID} row={obj?.newSubChild?.feature?.activity} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
+                            </span>
+                       
                           <a
                             data-interception="off"
                             target="_blank"
@@ -6732,10 +6760,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                               obj?.newSubChild?.feature?.activity?.Id + "&Site=" + obj?.newSubChild?.feature?.activity?.siteType
                             }
                             className=""
-                          >
-                            {/* <div className="alignCenter">{obj?.newSubChild?.feature?.activity?.TaskID}</div> */}
-                       
-                            {obj?.newSubChild?.feature?.activity?.Title}
+                          > {obj?.newSubChild?.feature?.activity?.Title}
                           </a></div>
                           </div>
                         </div>
@@ -6744,7 +6769,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       ""
                     )}
                     {RestructureChecked?.map((items: any) => (
-                      <span>
+                      <div className="reStuMainTiles">
                         <a
                           data-interception="off"
                           target="_blank"
@@ -6754,16 +6779,19 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                             items?.Id + "&Site=" + items?.siteType
                           }
                         >
-                          {items?.TaskID}
-                            <span>
+                          
+                        
                                 <img
                                  className="workmember"
                                   src={items?.SiteIcon}
-                                /></span>
-                         
+                                />
+                                <span className="mx-2">
+                                {items?.TaskID}
+                                </span>
+                        
                           {items?.Title}
                         </a>
-                      </span>
+                      </div>
                     ))}
 
 
