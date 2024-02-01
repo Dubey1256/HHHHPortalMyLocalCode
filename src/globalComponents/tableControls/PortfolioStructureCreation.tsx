@@ -40,6 +40,7 @@ export interface IStructureCreationState {
     PortfolioTypeId: any,
     defaultPortfolioType: any,
     disablebutton:boolean
+    ButtonClicked:any;
 }
 
 const dragItem: any = {}
@@ -50,6 +51,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         this.state = {
             isModalOpen: false,
             disablebutton: false,
+            ButtonClicked:false,
             AllFilteredAvailableComoponent: [],
             Portfolio_x0020_Type: 'Component',
             textTitle: '',
@@ -83,6 +85,19 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
         this.getPortfolioType();
         this.LoadSPComponents();
+        let targetDiv: any = document?.querySelector(".ms-Panel-main");
+        if ( this.props?.SelectedItem?.PortfolioType?.Color != undefined) { //Changes Made by Robin
+          setTimeout(() => {
+            if (targetDiv) {
+              // Change the --SiteBlue variable for elements under the targetDiv
+              // $('.ms-Panel-main').css('--SiteBlue', props?.selectedItem?.PortfolioType?.Color);
+              $(".ms-Panel-main").css(
+                "--SiteBlue",
+                this.props?.SelectedItem?.PortfolioType?.Color    //Changes Made by Robin
+              );
+            }
+          }, 1000);
+        }
 
     }
 
@@ -214,7 +229,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
         return isFolderExists;
     }
-
+   
     private async GetFolderID(folderName: any) {
         let web = new Web(this.state.PropValue.siteUrl);
         let folderDeatils = [];
@@ -247,11 +262,14 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     private CreateOpenType = '';
     private IconUrl = '';
     private GetportfoliofeatureIdCount = 0;
-
+   
     CreateFolder = async (Type: any) => {
-
+        this.setState({
+            ButtonClicked: true
+        })
         await this.LoadPortfolioitemParentId(undefined, undefined, undefined);
         this.LoadSPComponents();
+       
         let folderURL = '';
         if (this.Portfolio_x0020_Type == 'Component') {
             folderURL = (this.state.webServerRelativeUrl + '/Documents/COMPONENT-PORTFOLIO').toLowerCase();
@@ -269,7 +287,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             let isFolderExists = await this.GetOrCreateFolder(this.folderName);
             if (isFolderExists) {
                 await this.GetFolderID(this.folderName);
-                this.createComponent(Type);
+               
+                 this.createComponent(Type);
+                
             }
         }
 
@@ -789,7 +809,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                 >
                                     Create & Open
                                 </button>
-                                <button type="button" className="btn btn-default" onClick={() => this.CreateFolder('Create')}
+                                <button type="button" disabled={this.state.ButtonClicked} className="btn btn-default" onClick={() => this.CreateFolder('Create')}
                                 >
                                     Create
                                 </button>

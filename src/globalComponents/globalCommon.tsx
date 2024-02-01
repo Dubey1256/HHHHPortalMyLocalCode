@@ -31,12 +31,12 @@ export const docxUint8Array = async () => {
     return result
 }
 export const SendTeamMessage = async (mention_To: any, txtComment: any, Context: any) => {
-    let currentUser:any={}
+    let currentUser: any = {}
     try {
         let pageContent = await pageContext()
         let web = new Web(pageContent?.WebFullUrl);
         //let currentUser = await web.currentUser?.get()
-         currentUser.Email =  Context.pageContext._legacyPageContext.userPrincipalName
+        currentUser.Email = Context.pageContext._legacyPageContext.userPrincipalName
         // if (currentUser) {
         //     if (currentUser.Email?.length > 0) {
         //     } else {
@@ -1806,7 +1806,7 @@ export const getPortfolio = async (type: any) => {
 
 
 // ********************* This is for the Getting All Component And Service Portfolio Data ********************
-export const GetServiceAndComponentAllData = async (Props: any) => {
+export const GetServiceAndComponentAllData = async (Props?: any | null, filter?: any | null) => {
     var ComponentsData: any = [];
     var AllPathGeneratedData: any = [];
     let AllPathGeneratedProjectdata: any = [];
@@ -1818,8 +1818,12 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
         AllMasterTaskData = await web.lists
             .getById(Props.MasterTaskListID)
             .items
-            .select("ID", "Id", "Title", "PortfolioLevel","FeatureType/Title","FeatureType/Id", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate", "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id", "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id")
-            .expand("Parent", "PortfolioType", "FeatureType","AssignedTo", "Author", "ClientCategory", "TeamMembers", "ResponsibleTeam")
+            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate",
+                "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "Help_x0020_Information", "PriorityRank",
+                "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id",
+                "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "Deliverables",
+                "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "FeatureType/Title", "FeatureType/Id")
+            .expand("Parent", "PortfolioType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "FeatureType", "ResponsibleTeam").filter(filter != null ? filter : '')
             .getAll();
 
         // console.log("all Service and Coponent data form global Call=======", AllMasterTaskData);
@@ -1883,14 +1887,51 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
             result.FeatureTypeTitle = ''
-            if(result?.FeatureType?.Id!=undefined){
+            if (result?.FeatureType?.Id != undefined) {
                 result.FeatureTypeTitle = result?.FeatureType?.Title
-            }   
+            }
 
 
             result.descriptionsSearch = '';
+            result.commentsSearch = "";
+            result.descriptionsDeliverablesSearch = '';
+            result.descriptionsHelpInformationSarch = '';
+            result.descriptionsShortDescriptionSearch = '';
+            result.descriptionsTechnicalExplanationsSearch = '';
+            result.descriptionsBodySearch = '';
+            result.descriptionsAdminNotesSearch = '';
+            result.descriptionsValueAddedSearch = '';
+            result.descriptionsIdeaSearch = '';
+            result.descriptionsBackgroundSearch = '';
             try {
                 result.descriptionsSearch = portfolioSearchData(result)
+                if (result?.Deliverables != undefined) {
+                    result.descriptionsDeliverablesSearch = `${removeHtmlAndNewline(result.Deliverables)}`;
+                }
+                if (result.Help_x0020_Information != undefined) {
+                    result.descriptionsHelpInformationSarch = `${removeHtmlAndNewline(result?.Help_x0020_Information)}`;
+                }
+                if (result.Short_x0020_Description_x0020_On != undefined) {
+                    result.descriptionsShortDescriptionSearch = ` ${removeHtmlAndNewline(result.Short_x0020_Description_x0020_On)} `;
+                }
+                if (result.TechnicalExplanations != undefined) {
+                    result.descriptionsTechnicalExplanationsSearch = `${removeHtmlAndNewline(result.TechnicalExplanations)}`;
+                }
+                if (result.Body != undefined) {
+                    result.descriptionsBodySearch = `${removeHtmlAndNewline(result.Body)}`;
+                }
+                if (result.AdminNotes != undefined) {
+                    result.descriptionsAdminNotesSearch = `${removeHtmlAndNewline(result.AdminNotes)}`;
+                }
+                if (result.ValueAdded != undefined) {
+                    result.descriptionsValueAddedSearch = `${removeHtmlAndNewline(result.ValueAdded)}`;
+                }
+                if (result.Idea != undefined) {
+                    result.descriptionsIdeaSearch = `${removeHtmlAndNewline(result.Idea)}`;
+                }
+                if (result.Background != undefined) {
+                    result.descriptionsBackgroundSearch = `${removeHtmlAndNewline(result.Background)}`;
+                }
                 result.commentsSearch = result?.Comments != null && result?.Comments != undefined ? result.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
             } catch (error) {
 
@@ -1956,11 +1997,9 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             //         result.ClientCategory.push(categoryData);
             //     })
             // }
-
             if (result?.Item_x0020_Type != undefined) {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
-
             if (result.Item_x0020_Type == 'Component' && Props?.projectSelection != true) {
                 const groupedResult = componentGrouping(result, AllMasterTaskData)
                 AllPathGeneratedData = [...AllPathGeneratedData, ...groupedResult?.PathArray];
@@ -2169,8 +2208,8 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
 
     }
 }
-export const loadAllSiteTasks = async (allListId?: any | undefined, filter?: any | undefined) => {
-    let query = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+export const loadAllSiteTasks = async (allListId?: any|null, filter?: any|null) => {
+    let query = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,EstimatedTimeDescription,ClientActivityJson,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
     if (filter != undefined) {
         query += `&$filter=${filter}`
     }
@@ -2189,10 +2228,9 @@ export const loadAllSiteTasks = async (allListId?: any | undefined, filter?: any
                     task.SmartPriority;
                     task.TaskTypeValue = '';
                     task.projectPriorityOnHover = '';
-                    task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
                     task.taskPriorityOnHover = task?.PriorityRank;
                     task.showFormulaOnHover;
-
+                    task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
                     if (task.PercentComplete != undefined) {
                         task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
                     }
@@ -2230,7 +2268,6 @@ export const loadAllSiteTasks = async (allListId?: any | undefined, filter?: any
                         task.IsSCProtected = false;
                         task.IsSCProtectedStatus = "";
                     }
-                    task["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
                     task.portfolioItemsSearch = site.Title;
                     task.TaskID = GetTaskId(task);
                 })
@@ -2309,6 +2346,7 @@ function removeHtmlAndNewline(text: any) {
 //// requrired result?.Project?.PriorityRank ////
 //// next Project array it is a lookup columns where project//////
 ///// next result?.TaskCategories ////
+
 export const calculateSmartPriority = (result: any) => {
     let smartPriority = result.SmartPriority;
     if (result?.Project) {
@@ -2385,10 +2423,23 @@ export const deepCopy = (obj: any, originalReferences = new WeakMap()) => {
     return copy;
 }
 
-export const openUsersDashboard = (siteUrl ?:any|undefined,AssignedUserId?:any|undefined) =>{
-    if(AssignedUserId!=undefined){
-        window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${AssignedUserId}`,'_blank')
-    }else{
-        window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx`,'_blank')
+export const openUsersDashboard = (siteUrl?: any | undefined, AssignedUserId?: any | undefined, AssignedUserTitle?: any | undefined, AllTaskUsers?: any | undefined) => {
+    let AssignedToUserId: any = AssignedUserId
+    if (AllTaskUsers?.length > 0) {
+        let AssignToUserDetail = AllTaskUsers?.find((user: any) => user?.AssingedToUser?.Title === AssignedUserTitle)
+        AssignedToUserId = AssignToUserDetail?.AssingedToUser?.Id
+    }
+    if (AssignedToUserId != undefined) {
+        window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${AssignedToUserId}`, '_blank')
+    } else {
+        window?.open(`${siteUrl}/SitePages/TaskDashboard.aspx`, '_blank')
     }
 }
+
+
+//   use csae for openUsersDashboard function
+// if have the AssignedUserId
+// 1. openUsersDashboard(siteUrl:"Https....................", AssignedUserId:Number )
+
+// if don't have the AssignedUserId
+// 1. openUsersDashboard(siteUrl:"Https....................", AssignedUserId:Undefined,  AssignedUserTitle:"UserName", AllTaskUsers=[alltaskuserData])

@@ -2797,8 +2797,8 @@ const EditTaskPopup = (Items: any) => {
     const MakeUpdateDataJSON = async () => {
         var UploadImageArray: any = [];
         var ApprovalData: any = [];
-        const uniqueObjects = [];
-        const idSet = new Set();
+        // const uniqueObjects = [];
+        // const idSet = new Set();
         if (TaskImages != undefined && TaskImages.length > 0) {
             TaskImages?.map((imgItem: any) => {
                 if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
@@ -2891,13 +2891,13 @@ const EditTaskPopup = (Items: any) => {
             }
         }
         if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
-            for (const obj of SubCommentBoxData) {
-                if (!idSet.has(obj?.Title)) {
-                    idSet.add(obj?.Title);
-                    uniqueObjects.push(obj);
-                }
-            }
-            SubCommentBoxData = uniqueObjects;
+            // for (const obj of SubCommentBoxData) {
+            //     if (!idSet.has(obj?.Title)) {
+            //         idSet.add(obj?.Title);
+            //         uniqueObjects.push(obj);
+            //     }
+            // }
+            // SubCommentBoxData = uniqueObjects;
             if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
                 let message = JSON.parse(EditData.FeedBack);
                 let feedbackArray: any = [];
@@ -4771,6 +4771,7 @@ const EditTaskPopup = (Items: any) => {
                                         taskId={EditData.Id}
                                         listId={Items.Items.listId}
                                         siteUrls={siteUrls}
+                                        RequiredListIds = {AllListIdData}
                                     />
                                 ) : null}
                             </span>
@@ -4913,6 +4914,7 @@ const EditTaskPopup = (Items: any) => {
                                         taskId={EditData.Id}
                                         listId={Items.Items.listId}
                                         siteUrls={siteUrls}
+                                        RequiredListIds = {AllListIdData}
                                     />
                                 ) : null}
                             </span>

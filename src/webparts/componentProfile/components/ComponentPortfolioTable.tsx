@@ -1619,6 +1619,11 @@ const switchGroupbyData = () => {
   const AddStructureCallBackCall = React.useCallback((item) => {
     childRef?.current?.setRowSelection({});
   
+    // Reset the subRows property to an empty array
+    if (item.props?.SelectedItem) {
+      item.props.SelectedItem.subRows = [];
+    }
+  
     if (!isOpenPopup) {
       if (item.CreatedItem !== undefined) {
         item.CreatedItem.forEach((obj: any) => {
@@ -1640,21 +1645,19 @@ const switchGroupbyData = () => {
           }
         });
   
-        // Create a new array with updated items
         copyDtaArray = [
           ...item.props.SelectedItem.subRows,
           ...copyDtaArray.filter((existingItem: any) => existingItem.Id !== item.props.SelectedItem.Id)
         ];
       }
   
-      renderData = copyDtaArray.slice(); // Create a shallow copy of copyDtaArray
+      renderData = copyDtaArray.slice();
   
       if (item?.CreateOpenType === 'CreatePopup') {
         const openEditItem = item?.CreatedItem !== undefined ? item.CreatedItem[0]?.data : item.data;
         setSharewebComponent(openEditItem);
         setIsComponent(true);
       }
-  
       refreshData();
     }
   
@@ -1675,13 +1678,12 @@ const switchGroupbyData = () => {
       item.data.SiteIconTitle = item?.data?.Item_x0020_Type?.charAt(0);
       item.data.TaskID = item.data.PortfolioStructureID;
   
-      // Create a new array with the new item at the beginning
       copyDtaArray = [
         item.data,
         ...copyDtaArray
       ];
   
-      renderData = copyDtaArray.slice(); // Create a shallow copy of copyDtaArray
+      renderData = copyDtaArray.slice();
   
       if (item?.CreateOpenType === 'CreatePopup') {
         const openEditItem = item?.CreatedItem !== undefined ? item.CreatedItem[0]?.data : item.data;
@@ -1693,7 +1695,7 @@ const switchGroupbyData = () => {
     }
   
     setOpenAddStructurePopup(false);
-  }, []);
+  }, [isOpenPopup]);
   
   
 
@@ -2099,32 +2101,9 @@ const openCompareTool =()=>{
         <div className="container-fluid p-0">
           <section className="TableSection">
             <div className="container p-0">
-              <div className="Alltable mt-2 ">
-                <div className="col-sm-12 p-0 smart">
-                  <div className="">
-                    <div className="">
-                      {/* <Loader
-                        loaded={loaded}
-                        lines={13}
-                        length={20}
-                        width={10}
-                        radius={30}
-                        corners={1}
-                        rotate={0}
-                        direction={1}
-                        color={portfolioColor ? portfolioColor : "#000069"}
-                        speed={2}
-                        trail={60}
-                        shadow={false}
-                        hwaccel={false}
-                        className="spinner"
-                        zIndex={2e9}
-                        top="28%"
-                        left="50%"
-                        scale={1.0}
-                        loadedClassName="loadedContent"
-                      /> */}
-                      <GlobalCommanTable openCompareTool={openCompareTool}  bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete}
+              <div className="Alltable mt-2  ">
+                <div className="col-sm-12 p-0 smart portfoliotable">
+                      <GlobalCommanTable openCompareTool={openCompareTool}  showRestructureButton={true} showCompareButton={true} bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete}
                       AllSitesTaskData={flatviewTasklist} masterTaskData={flatviewmastertask}
                         smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                         portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData}
@@ -2158,8 +2137,6 @@ const openCompareTool =()=>{
                         addActivity={addActivity}
                         showFilterIcon={true} loadFilterTask={FilterAllTask}/>
                          {!loaded && <PageLoader/>}
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -2186,7 +2163,6 @@ const openCompareTool =()=>{
         />
       </Panel>
       {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.NextProp}/>}
-
       <Panel
         onRenderHeader={onRenderCustomHeaderMain}
         type={PanelType.custom}

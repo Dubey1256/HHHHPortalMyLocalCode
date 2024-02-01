@@ -129,7 +129,10 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
         return (
             <>
                 <div className='subheading alignCenter'>
-                Edit Institution:- {updateData?.FullName}
+                <img className='workmember' 
+                    src={updateData?.ItemImage != undefined ? updateData?.ItemImage.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg"}
+                     />
+                Edit Institution- {updateData?.FullName}
                      
                 </div>
                 <Tooltip ComponentId='626' />
@@ -140,10 +143,8 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
         return (
             <>
                 <div className='subheading alignCenter'>
-                    <img className='workmember' 
-                    src={updateData?.ItemImage != undefined ? updateData?.ItemImage.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/InstitutionPicture.jpg"}
-                     />Add  Division - 
-                      {updateData?.FullName}
+                   Add  Division  
+                      
                 </div>
                 <Tooltip ComponentId='1064' />
             </>
@@ -307,8 +308,6 @@ let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/GmBH');
     }).catch((error: any) => {
         console.log(error)
     })
-
-
 }
 
 const CreateDivision= async()=>{
@@ -320,14 +319,13 @@ const CreateDivision= async()=>{
         lastName=subString.length==2?subString[1]:""
          FirstName=subString[0]
     }
-    
     try {
         let jointData:any
         let localData:any
             if (myContextData2?.allSite?.GMBHSite || myContextData2?.allSite?.HrSite) {
                 localData= {
                     
-                Title: lastName ,
+                Title: divisionTitle ,
                 FirstName: FirstName,
                 FullName: FirstName + " " + lastName,
                 ItemType: "Division",
@@ -341,7 +339,7 @@ const CreateDivision= async()=>{
                 Site: {
                     results: (myContextData2?.allSite?.GMBHSite?["GMBH"]:["HR"])
                 },
-                Title: lastName ,
+                Title: divisionTitle ,
                 FirstName: FirstName,
                 FullName: FirstName + " " + lastName,
                 ItemType: "Division",
@@ -350,7 +348,7 @@ const CreateDivision= async()=>{
             }else{
                 jointData= {
                     
-                    Title: lastName ,
+                    Title: divisionTitle ,
                     FirstName: FirstName,
                     FullName: FirstName + " " + lastName,
                     ItemType: "Division",
@@ -373,7 +371,7 @@ const CreateDivision= async()=>{
                        Id: newData?.data?.ParentId
                     } 
                     tagdiv.push(newData?.data)
-                    copydivsion.push(newData?.data)
+                   
                     myContextData2?.setDivisionData(copydivsion)
                  
                   setUpdateData({...updateData,Institution:tagdiv})
@@ -671,7 +669,7 @@ return(
                                 return(
                                     <div className='col-sm-12'>
                                     <div className='col-sm-4 block'>
-                                        <a className='wid90'>{division?.FullName}</a>
+                                        <a className='wid90'>{division?.Title}</a>
                                         <span className='svg__iconbox svg__icon--cross light ml-auto clearfix'onClick={()=>DeleteDivision(division)} ></span>
                                     </div>
                                  </div>

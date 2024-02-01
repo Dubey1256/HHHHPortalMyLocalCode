@@ -192,6 +192,7 @@ const RelevantDocuments = (props: any, ref: any) => {
 
     };
 
+
     const editDocumentsLink = (editData: any) => {
         copyEditData = [];
         setEditdocpanel(true);
@@ -200,6 +201,7 @@ const RelevantDocuments = (props: any, ref: any) => {
         setEditdocData(editData)
 
     }
+
 
     const callBackData = useCallback((elem: any, getSelectedRowModel: any) => {
         console.log(getSelectedRowModel)
@@ -246,10 +248,10 @@ const RelevantDocuments = (props: any, ref: any) => {
 
                     )
                         ?
-                        <div className='TableSection'>
+                        <div className='TableSection w-100' >
                             <div className='Alltable'>
                                 <div className='smart Key-documents'>
-                                    <div style={{ height: "214px", overflow: 'hidden' }}><GlobalCommanTable columns={columns} wrapperHeight="100%" data={copykeyDocument?.length > 0 ? copykeyDocument : keyDocument} callBackData={callBackData} /></div>
+                                   <GlobalCommanTable columns={columns} wrapperHeight="100%" data={copykeyDocument?.length > 0 ? copykeyDocument : keyDocument} callBackData={callBackData} />
                                 </div>
                             </div>
                         </div>
