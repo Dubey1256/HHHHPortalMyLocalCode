@@ -54,9 +54,9 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
                 return web.lists.getById(site.listId).items.select(`Id,Title,SharewebTaskLevel1No,SharewebTaskLevel2No,SharewebTaskType/Id,SharewebTaskType/Title,Component/Id,Services/Id,Events/Id,PercentComplete,ComponentId,ServicesId,EventsId,Priority_x0020_Rank,DueDate,Created,TaskID,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/Id,ParentTask/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title`).expand('AssignedTo', 'Author', 'Editor', 'Component', 'Services', 'Events', 'Team_x0020_Members', 'ParentTask', 'SharewebCategories', 'Responsible_x0020_Team', 'SharewebTaskType')
                     .getAll();
             });
+            setloaded(true);
             const success = await Promise.all(allCalls);
             allSitesTask = [];
-            setloaded(true);
             success.forEach((val) => {
                 val.forEach((item: any) => {
                     if (item?.SharewebCategories.length > 0) {
@@ -187,7 +187,7 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
         ], [AllSitesTask]);
     useEffect(() => {
         LoadAllMetaData();
-    });
+    }, []);
     return (
         <>
             <div>
