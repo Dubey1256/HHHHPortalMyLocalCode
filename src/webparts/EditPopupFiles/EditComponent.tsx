@@ -3620,6 +3620,36 @@ let ID: any;
                             <span className="input-group-text" placeholder="Project">
                               <span title="Project" onClick={(e) => openPortfolioPopup("Project")} className="svg__iconbox svg__icon--editBox"></span>
                             </span>
+                            <div className="col-sm-12  inner-tabb">
+                            {filterdata && filterdata.length > 0 ? 
+                            (
+                              <div >
+                                {filterdata?.map((items:any, Index: any)=>
+                                 <div className="block d-flex justify-content-between mb-1" key={Index}>
+                              
+                                  <a
+                                    href={`${SelectD.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${items.Id}`}
+                                    className="wid-90 light"
+                                    data-interception="off"
+                                    target="_blank"
+                                  >
+                                    {items?.Title}
+                                  </a>
+                                  <a className="text-end">
+                                            {" "}
+                                            <span
+                                              className="bg-light svg__icon--cross svg__iconbox"
+                                              onClick={() =>
+                                                DeleteCrossIconData([items?.Id])
+                                              }
+                                            ></span>
+                                          </a>
+                                </div>)}
+                                </div>) : ""
+                  
+                            }
+                          
+                          </div>        
                         </div>
                         <div className="col-sm-12 padding-0 input-group">
                             <label className="full_width">Feature Type </label>
@@ -3641,36 +3671,7 @@ let ID: any;
                               </>)
                             })}
                         </div>
-                            <div className="col-sm-12  inner-tabb">
-                            {filterdata && filterdata.length > 0 ? 
-                            (
-                              <div >
-                                {filterdata?.map((items:any, Index: any)=>
-                                 <div className="block d-flex justify-content-between mb-1" key={Index}>
-                              
-                                  <a
-                                    href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?=${items.Id}`}
-                                    className="wid-90 light"
-                                    data-interception="off"
-                                    target="_blank"
-                                  >
-                                    {items?.Title}
-                                  </a>
-                                  <a className="text-end">
-                                            {" "}
-                                            <span
-                                              className="bg-light svg__icon--cross svg__iconbox"
-                                              onClick={() =>
-                                                DeleteCrossIconData([items?.Id])
-                                              }
-                                            ></span>
-                                          </a>
-                                </div>)}
-                                </div>) : ""
-                  
-                            }
-                          
-                          </div>                                  
+                                                    
                         </div>
 
                        </div>
