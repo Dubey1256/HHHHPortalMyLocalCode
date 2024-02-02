@@ -3,6 +3,7 @@ import { Panel, PanelType } from "office-ui-fabric-react";
 import moment from "moment";
 import ServiceComponentPortfolioPopup from "../EditTaskPopup/ServiceComponentPortfolioPopup";
 import Picker from "../EditTaskPopup/SmartMetaDataPicker";
+import Smartmetadatapickerin from "../Smartmetadatapickerindependent/SmartmetadatapickerSingleORMulti";
 
 const InlineBulkEditingTask = (props: any) => {
     const [editDate, setEditDate]: any = React.useState(undefined);
@@ -12,7 +13,9 @@ const InlineBulkEditingTask = (props: any) => {
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
     const [ProjectManagementPopup, setProjectManagementPopup] = React.useState(false);
     const [categoriesPopup, setCategoriesPopup] = React.useState(false);
+    const [featureTypePopup, setFeatureTypePopup] = React.useState(false);
     const [selectedCategoryData, setSelectedCategoryData] = React.useState([]);
+    const [selectedFeatureType, setSelectedFeatureType] = React.useState([]);
     // const [ProjectData, setProjectData] = React.useState([]);
     const [dueDate, setDueDate] = React.useState({
         editDate: props?.item?.DueDate != undefined ? props?.item?.DueDate : null,
@@ -124,6 +127,9 @@ const InlineBulkEditingTask = (props: any) => {
                         })
                         elem.updatedTaskTypeValue = popupValue?.map((val: any) => val.Title).join(",");
                     }
+                } else if (popupValue?.length > 0 && event === 'FeatureType') {
+                    elem.postFeatureType = { Id: popupValue[0]?.Id, Title: popupValue[0]?.Title }
+                    elem.updatedFeatureTypeTitle = popupValue[0]?.Title;
                 }
             }
             return elem;
@@ -166,6 +172,16 @@ const InlineBulkEditingTask = (props: any) => {
         setSelectedCategoryData(selectCategoryDataCallBack);
         setCategoriesPopup(false);
     }, []);
+
+    const Smartmetadatafeature = React.useCallback((data: any) => {
+        if (data === "Close") {
+            setFeatureTypePopup(false)
+        } else {
+            setFeatureTypePopup(false)
+            updateTaskInlineEditing('FeatureType', data)
+            setSelectedFeatureType(data)
+        }
+    }, [])
     return (
         <>
             <>
@@ -210,6 +226,17 @@ const InlineBulkEditingTask = (props: any) => {
                     <span onClick={() => setCategoriesPopup(true)} title={props?.value} className={props?.className ? props?.className + " hreflink" : "hreflink"}>{props?.value != undefined ? props?.value : <>&nbsp;</>}</span>
                 }
                 {categoriesPopup && <Picker selectedCategoryData={selectedCategoryData} usedFor="Task-Popup" AllListId={props?.ContextValue} CallBack={SelectCategoryCallBack} closePopupCallBack={smartCategoryPopup} />}
+
+                {props?.columnName === "FeatureType" &&
+                    <span onClick={() => setFeatureTypePopup(true)} title={props?.value} style={props?.style} className="hreflink">{props?.value != undefined ? props?.value : <>&nbsp;</>}</span>
+                }
+                {featureTypePopup && <Smartmetadatapickerin
+                    Call={Smartmetadatafeature}
+                    selectedFeaturedata={selectedFeatureType}
+                    AllListId={props?.ContextValue}
+                    TaxType='Feature Type'
+                    usedFor="Single"
+                ></Smartmetadatapickerin>}
 
             </>
             <Panel
