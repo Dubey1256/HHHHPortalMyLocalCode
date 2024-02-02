@@ -1054,6 +1054,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </>
                     }
                     {
+                        items?.customHeaderButtonAvailable === true && items?.customTableHeaderButtons
+                    }
+                    {
                         items?.siteStructureCreation === true &&
                         <button type="button" className="btn btn-primary" title='Add Site-Structure' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Site-Structure")}>Add +</button>
                     }

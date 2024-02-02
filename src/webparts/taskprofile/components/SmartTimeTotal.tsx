@@ -253,16 +253,15 @@ let allTaskUsers:any;
                                     return (
                                         <>
                                             <tr className='for-c0l'>
-                                                <td style={{ width: "20%" }}>
-                                                    <img className='workmember '  src={items?.AuthorImage != undefined && items?.AuthorImage !="" ? items?.AuthorImage:"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}></img>
+                                                <td style={{ width: "170px" }} colSpan={2}>
+                                                    <div className='alignCenter'>
+                                                        <img className='workmember me-2'  src={items?.AuthorImage != undefined && items?.AuthorImage !="" ? items?.AuthorImage:"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}></img>
+                                                        <span className="ms-8">
+                                                            <SmartTooltipComponent items={items}allTaskUsers={allTaskUsers}siteUrl={item?.AllListId?.siteUrl}/>
+                                                        </span>
+                                                    </div>
                                                 </td>
-                                                <td >
-                                                <SmartTooltipComponent items={items}allTaskUsers={allTaskUsers}siteUrl={item?.AllListId?.siteUrl}/>
-                                               
-                                              
-                                                </td>
-                                               
-                                                <td style={{ width: "80%" }} colSpan={2}><span className='px-2'>Total Time</span>{items.hoverTime.toFixed(2)}<span className='mx-1'>{items.hoverTime>1?'hours':'hour'}</span></td>
+                                                <td>Total Time{items.hoverTime.toFixed(2)}<span className='mx-1'>{items.hoverTime>1?'hours':'hour'}</span></td>
                                             </tr>
 
                                             {items?.additionaltime2?.length > 0 && items?.additionaltime2?.map((details: any) => {
@@ -279,7 +278,7 @@ let allTaskUsers:any;
                                     )
                                 }
                                 )}
-                            </tbody>:<div className='p-2'><div className='noTimeEntry'>No Time Entry</div></div>}
+                            </tbody>:<><div className='noData'>No Time Entry</div></>}
 
                         </table>
                         {/* <ReactTooltip id="authorTooltip" /> */}

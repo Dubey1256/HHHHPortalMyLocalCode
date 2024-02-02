@@ -8,8 +8,7 @@ export default class SmartMetaSearch extends React.Component<ISmartMetaSearchPro
   public render(): React.ReactElement<ISmartMetaSearchProps> {
     const {
       description,
-      SmartMetadataListId,
-      TaskUserListId,
+      SmartMetadataListID,
       PortFolioTypeID,
       siteUrl     
     } = this.props;
