@@ -419,6 +419,7 @@ function PortfolioTable(SelectedProp: any) {
                   }
                   //result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
                   //result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+                  result.PortfolioType = SelectedProp?.props?.PortfolioType
                   result.chekbox = false;
                   
                   if (result?.FeedBack != undefined) {
@@ -1925,10 +1926,7 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
     childRef?.current?.setRowSelection({});
   };
   const addActivity = (type: any) => {
-    if (
-      checkedList?.TaskType?.Id == undefined ||
-      checkedList?.TaskTypeId == undefined
-    ) {
+    if (checkedList?.TaskType?.Id == undefined) {
       checkedList.NoteCall = type;
       setActivityPopup(true);
       if (SelectedProp?.props?.PortfolioType?.Color != undefined) {
