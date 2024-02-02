@@ -21,9 +21,10 @@ import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 // import * as Moment from 'moment';
 import * as Moment from 'moment-timezone';
 import { MdEmail } from "react-icons/Md";
- import PageLoader from '../../../globalComponents/pageLoader';
+import PageLoader from '../../../globalComponents/pageLoader';
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import EditPage from '../../../globalComponents/EditPanelPage/EditPage';
+import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 let AllUsers: any = []
 let smartmetaDetails: any = [];
 let AllTasks: any = []
@@ -34,38 +35,38 @@ let DevloperTime: any = 0.00;
 let QATime: any = 0.00;
 let QAMembers: any = 0;
 let DesignMembers: any = 0;
-let QAleaveHours:any = 0;
-let DevelopmentleaveHours:any = 0;
-let DesignMemberleaveHours:any = 0;
+let QAleaveHours: any = 0;
+let DevelopmentleaveHours: any = 0;
+let DesignMemberleaveHours: any = 0;
 let DevelopmentMembers: any = 0;
 let TotalQAMember: any = 0;
 let TotalDesignMember: any = 0;
 let TotalDevelopmentMember: any = 0;
 let DesignTime: any = 0.00;
-let TotleTaskTime:any=0.00
-let leaveUsers:any  = 0.00
+let TotleTaskTime: any = 0.00
+let leaveUsers: any = 0.00
 let checkDate: any = ''
 //var DevloperTime: any = 0
 let isColumnDefultSortingAsc: any = false;
 //var QATime: any = 0
 var FeedBackItemArray: any = [];
-var todayLeaveUsers:any=[]
-var  finalData:any=[]
+var todayLeaveUsers: any = []
+var finalData: any = []
 //var DesignTime: any = 0
 var TotalTime: any = 0
-var CurrentUserId=''
-var StartDatesss:any=''
-var selectDatess:any=''
-let QAhalfdayleave:any = [];
-let developmenthalfdayleave:any = [];
-let designhalfdayleave:any = [];
-let QAfulldayleave:any = [];
-let developmentfulldayleave:any = [];
-let AllMetadata:any=[]
-let componentDetails:any = [];
-let designfulldayleave:any = [];
-const TimeReport = (props:any) => {
-   
+var CurrentUserId = ''
+var StartDatesss: any = ''
+var selectDatess: any = ''
+let QAhalfdayleave: any = [];
+let developmenthalfdayleave: any = [];
+let designhalfdayleave: any = [];
+let QAfulldayleave: any = [];
+let developmentfulldayleave: any = [];
+let AllMetadata: any = []
+let componentDetails: any = [];
+let designfulldayleave: any = [];
+const TimeReport = (props: any) => {
+
     CurrentUserId = props.ContextData.Context.pageContext._legacyPageContext?.userId
     const web = new Web(props.ContextData.Context._pageContext._web.absoluteUrl);
     let GenderSitee = '&$filter=';
@@ -86,25 +87,25 @@ const TimeReport = (props:any) => {
     // const [checkDate, setcheckDate] = React.useState('')
     const [update, setUpdate] = React.useState(0)
     const [loaded, setLoaded] = React.useState(true);
-    const [checkedCustom,setcheckedCustom] = React.useState(false )
+    const [checkedCustom, setcheckedCustom] = React.useState(false)
     const [Editpopup, setEditpopup] = React.useState(false)
-    
+
     var [selectdate, setSelectDate] = React.useState(undefined)
     const [checkedWS, setcheckedWS] = React.useState(false);
     const [headerChange, setHeaderChange]: any = React.useState('');
     const [checkedTask, setcheckedTask] = React.useState(true);
-    const [defaultDate,setDefaultDate] = React.useState()
+    const [defaultDate, setDefaultDate] = React.useState()
     const [post, setPost] = React.useState({ Title: '', ItemRank: '', Body: '' })
-    
+
     React.useEffect(() => {
-    var datteee:any = new Date()
-    // var MyYesterdayDate:any = Moment(datteee).add(-1, 'days').format()
-    setDefaultDate(datteee)
-    GetComponents();
-    GetSmartmetadata();
+        var datteee: any = new Date()
+        // var MyYesterdayDate:any = Moment(datteee).add(-1, 'days').format()
+        setDefaultDate(datteee)
+        GetComponents();
+        GetSmartmetadata();
         showProgressBar();
         GetTaskUsers();
-      
+
 
 
     }, [])
@@ -120,8 +121,8 @@ const TimeReport = (props:any) => {
             .top(4999)
             .get();
         AllUsers = taskUsers;
-        AllUsers?.forEach((val:any)=>{
-            if(val?.Email?.indexOf('trainee') > -1){
+        AllUsers?.forEach((val: any) => {
+            if (val?.Email?.indexOf('trainee') > -1) {
                 AllTrainee.push(val)
             }
         })
@@ -134,7 +135,7 @@ const TimeReport = (props:any) => {
         metadatItem = await web.lists
             .getById(props?.ContextData?.SmartMetadataListID)
             .items
-            .select('Id', 'Title', 'IsVisible', 'ParentID', 'SmartSuggestions','Color_x0020_Tag', 'TaxType', 'Description1', 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
+            .select('Id', 'Title', 'IsVisible', 'ParentID', 'SmartSuggestions', 'Color_x0020_Tag', 'TaxType', 'Description1', 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
             .top(4999)
             .expand('Parent')
             .get()
@@ -156,9 +157,9 @@ const TimeReport = (props:any) => {
 
 
     const GetComponents = async () => {
-       
+
         let web = new Web(props?.ContextData?.siteUrl);
-       
+
         componentDetails = await web.lists
             .getById(props?.ContextData?.MasterTaskListID)
             .items
@@ -198,18 +199,18 @@ const TimeReport = (props:any) => {
             }
             result["TaskID"] = result?.PortfolioStructureID;
 
-          
+
         });
-        
-       
+
+
     };
 
 
 
-    const LoadAllSiteTasks =  () => {
+    const LoadAllSiteTasks = () => {
         var Counter = 0;
         if (smartmetaDetails != undefined && smartmetaDetails.length > 0) {
-        smartmetaDetails.forEach(async (config: any) => {
+            smartmetaDetails.forEach(async (config: any) => {
                 let web = new Web(props?.ContextData.siteUrl);
                 let AllTasksMatches: any = [];
                 AllTasksMatches = await web.lists
@@ -238,7 +239,7 @@ const TimeReport = (props:any) => {
                         item.isDrafted = false;
                         item.flag = true;
                         item.TaskTime = []
-                        item.TimeSpent = 0 
+                        item.TimeSpent = 0
                         item.Components = ''
                         item.SubComponents = ''
                         item.Features = ''
@@ -248,7 +249,7 @@ const TimeReport = (props:any) => {
                         item.PercentComplete = (item.PercentComplete * 100).toFixed(0);
                         item.chekbox = false;
                         item.DueDate = Moment(item.DueDate).format('DD/MM/YYYY')
-        
+
                         if (item?.TaskCategories?.some((category: any) => category.Title.toLowerCase() === "draft")) { item.isDrafted = true; }
                     });
                     AllTasks = AllTasks.concat(AllTasksMatches);
@@ -257,35 +258,35 @@ const TimeReport = (props:any) => {
                             if (result.DueDate == 'Invalid date' || '') {
                                 result.DueDate = result.DueDate.replaceAll("Invalid date", "")
                             }
-                            if(result?.Id == '12590'){
+                            if (result?.Id == '12590') {
                                 console.log('My  Data')
                             }
-                            result.TaskId =  globalCommon.GetTaskId(result);
+                            result.TaskId = globalCommon.GetTaskId(result);
                         })
                         selectType('Today')
                     }
                 }
             });
-            
-           
-        }
-     
 
-   
+
+        }
+
+
+
 
     }
 
     var showProgressBar = () => {
         setLoaded(false);
         $(" #SpfxProgressbar").show();
-      };
-    
-      var showProgressHide = () => {
+    };
+
+    var showProgressHide = () => {
         setLoaded(true);
         $(" #SpfxProgressbar").hide();
-      };
+    };
     const GetMigrationTime = async () => {
-        var selectedDate:any=[]
+        var selectedDate: any = []
         var filteres = `Modified ge '${datess}'`
         var query = "Id,Title,TaskDate,AdditionalTimeEntry,Created,Modified,TaskTime,Modified,SortOrder,AdditionalTimeEntry,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title,TaskALAKDigital/Id,TaskALAKDigital/Title,TaskMigration/Id,TaskMigration/Title&$expand= Category,TimesheetTitle,TaskMigration,TaskALAKDigital&$top=4999&$filter=" + filteres + ""
         await $.ajax({
@@ -317,30 +318,30 @@ const TimeReport = (props:any) => {
     }
 
     var datess = ''
-    var TodayDate =''
+    var TodayDate = ''
     const GeneratedTask = async () => {
         leaveUsers = 0
-         DevloperTime = 0.00;
-QATime = 0.00;
- QAMembers = 0;
- DesignMembers = 0;
- DevelopmentMembers = 0;
- TotalQAMember = 0;
- TotalDesignMember = 0;
- TotalDevelopmentMember = 0;
- StartDatesss=''
- 
- DesignTime = 0.00;
-         QATime = 0.00;
-         DesignTime = 0.00;
-         TotleTaskTime = 0.00
-         if(selectDatess == ''){
+        DevloperTime = 0.00;
+        QATime = 0.00;
+        QAMembers = 0;
+        DesignMembers = 0;
+        DevelopmentMembers = 0;
+        TotalQAMember = 0;
+        TotalDesignMember = 0;
+        TotalDevelopmentMember = 0;
+        StartDatesss = ''
+
+        DesignTime = 0.00;
+        QATime = 0.00;
+        DesignTime = 0.00;
+        TotleTaskTime = 0.00
+        if (selectDatess == '') {
             selectDatess = 'Custom'
-         }
-        
+        }
+
         if (selectDatess == "Yesterday") {
             var datteee = new Date()
-            var MyYesterdayDate:any = Moment(datteee).add(-1, 'days').format()
+            var MyYesterdayDate: any = Moment(datteee).add(-1, 'days').format()
             setDefaultDate(MyYesterdayDate);
             setcheckedCustom(false)
             setcheckedWS(true)
@@ -350,33 +351,33 @@ QATime = 0.00;
             // var final: any = (Moment(myDate).add(-2, 'days').format())
             var final: any = (Moment(myDate).add(-2, 'days').format())
         }
-        if(selectDatess == 'Today'){
-            selectdate=undefined
-            var dat:any = new Date()
+        if (selectDatess == 'Today') {
+            selectdate = undefined
+            var dat: any = new Date()
             setcheckedCustom(false)
             setcheckedWS(false)
             setcheckedTask(true)
             setDefaultDate(dat)
             var myDate = new Date()
-            var Datenew = Moment(myDate).format("DD/MM/YYYY")          
+            var Datenew = Moment(myDate).format("DD/MM/YYYY")
             setSelectDate(myDate)
             var final: any = (Moment(myDate).add(-1, 'days').format())
             //var final: any = (Moment(myDate).format())
         }
-        if(selectDatess == 'Custom') {
+        if (selectDatess == 'Custom') {
             setcheckedWS(false)
             setcheckedTask(false)
             setcheckedCustom(true)
             var myDate = new Date(selectdate)
-            var Datenew = Moment(selectdate).format("DD/MM/YYYY")         
+            var Datenew = Moment(selectdate).format("DD/MM/YYYY")
             // var final: any = (Moment(myDate).add(-1, 'days').format())
             var final: any = (Moment(myDate).format())
         }
-         
+
         datess = new Date(final).toISOString()
         var ccc: any = []
         var selectedDate: any = []
-        AllTime=[]
+        AllTime = []
 
         var filteres = `Modified ge '${datess}'`
         var query = "Id,Title,TaskDate,TaskTime,AdditionalTimeEntry,Modified,Description,TaskOffshoreTasks/Id,TaskOffshoreTasks/Title,Author/Id,AuthorId,Author/Title,TaskKathaBeck/Id,TaskKathaBeck/Title,TaskDE/Title,TaskDE/Id,TaskEI/Title,TaskEI/Id,TaskEPS/Title,TaskEPS/Id,TaskEducation/Title,TaskEducation/Id,TaskHHHH/Title,TaskHHHH/Id,TaskQA/Title,TaskQA/Id,TaskGender/Title,TaskGender/Id,TaskShareweb/Title,TaskShareweb/Id,TaskGruene/Title,TaskGruene/Id&$expand=Author,TaskKathaBeck,TaskDE,TaskEI,TaskEPS,TaskEducation,TaskGender,TaskQA,TaskDE,TaskShareweb,TaskHHHH,TaskGruene,TaskOffshoreTasks&$top=4999&$filter=" + filteres + ""
@@ -389,8 +390,8 @@ QATime = 0.00;
                 "content-Type": "application/json;odata=verbose"
             },
             success: async function (data) {
-        
-               selectedDate = data.d.results;
+
+                selectedDate = data.d.results;
                 await GetMigrationTime()
                 selectedDate?.forEach((time: any) => {
                     if (time.AdditionalTimeEntry != null && time.AdditionalTimeEntry != undefined) {
@@ -398,7 +399,7 @@ QATime = 0.00;
                         AllTime.push(time)
                     }
                 })
-                
+
                 makefinalTask(AllTime);
 
 
@@ -415,11 +416,11 @@ QATime = 0.00;
     var TotalMembersss = 0.00
     var TotalleaveMembersss = 0.00
     var TotalleaveHours = 0;
-    const GetleaveUser=async(selectDate:any)=>{
-        var myData:any=[]
-        var leaveData:any=[]
-        var leaveUser:any=[]        
-        todayLeaveUsers=[]
+    const GetleaveUser = async (selectDate: any) => {
+        var myData: any = []
+        var leaveData: any = []
+        var leaveUser: any = []
+        todayLeaveUsers = []
         // let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
 
         myData = await web.lists
@@ -429,138 +430,138 @@ QATime = 0.00;
             .top(499)
             .expand("Author,Editor,Employee")
             .getAll()
-            console.log(myData);
-           
-            myData?.forEach((val:any)=>{
-                val.EndDate = new Date(val?.EndDate);
-                val?.EndDate.setHours(val?.EndDate.getHours() - 9);
-                    // var TodayDate:any = new Date()
-                    // TodayDate =  Moment(TodayDate).format("DD/MM/YYYY")
-                   //var TodayDate =  selectDate.split("/")  
-                   var itemDate = Moment(val.EventDate)                                    
-                    var TodayDate =  selectDate[2] + selectDate[1] + selectDate[0]
-                    var endDate = Moment(val?.EndDate).format("DD/MM/YYYY")
-                    var eventDate = Moment(val.EventDate).format("DD/MM/YYYY")
-                    const date = val.EndDate
-                    var NewEndDate = endDate.split("/")
-                    var NewEventDate = eventDate.split("/")
+        console.log(myData);
 
-                    
+        myData?.forEach((val: any) => {
+            val.EndDate = new Date(val?.EndDate);
+            val?.EndDate.setHours(val?.EndDate.getHours() - 9);
+            // var TodayDate:any = new Date()
+            // TodayDate =  Moment(TodayDate).format("DD/MM/YYYY")
+            //var TodayDate =  selectDate.split("/")  
+            var itemDate = Moment(val.EventDate)
+            var TodayDate = selectDate[2] + selectDate[1] + selectDate[0]
+            var endDate = Moment(val?.EndDate).format("DD/MM/YYYY")
+            var eventDate = Moment(val.EventDate).format("DD/MM/YYYY")
+            const date = val.EndDate
+            var NewEndDate = endDate.split("/")
+            var NewEventDate = eventDate.split("/")
 
-                    var End = NewEndDate[2] + NewEndDate[1] + NewEndDate[0]
-                    var start = NewEventDate[2] + NewEventDate[1] + NewEventDate[0]
-                    // if(start === End)ss
-                    //  totaltime = stattime - endtime;
- 
-                    if (TodayDate >= start && TodayDate <= End){
-                        var stattime = Moment.tz(itemDate,'Europe/Berlin').format('DD/MM/YYYY HH:MM:SS Z').split(' ')[1].split(':');
-                        var endtime = Moment.tz(val.EndDate,'Europe/Berlin').format('DD/MM/YYYY HH:MM:SS Z').split(' ')[1].split(':'); 
-                        if(val?.fAllDayEvent == true) {
-                            val.totaltime = 8
-                        }
-                        else{
-                            val.totaltime = 8
-                        }
-                        if(val?.HalfDay == true) {
-                            val.totaltime = 4
-                        }
-                       
-                                    
-                        console.log(val)
-                        leaveData.push(val)                       
-                    }
-                                                 
+
+
+            var End = NewEndDate[2] + NewEndDate[1] + NewEndDate[0]
+            var start = NewEventDate[2] + NewEventDate[1] + NewEventDate[0]
+            // if(start === End)ss
+            //  totaltime = stattime - endtime;
+
+            if (TodayDate >= start && TodayDate <= End) {
+                var stattime = Moment.tz(itemDate, 'Europe/Berlin').format('DD/MM/YYYY HH:MM:SS Z').split(' ')[1].split(':');
+                var endtime = Moment.tz(val.EndDate, 'Europe/Berlin').format('DD/MM/YYYY HH:MM:SS Z').split(' ')[1].split(':');
+                if (val?.fAllDayEvent == true) {
+                    val.totaltime = 8
+                }
+                else {
+                    val.totaltime = 8
+                }
+                if (val?.HalfDay == true) {
+                    val.totaltime = 4
+                }
+
+
+                console.log(val)
+                leaveData.push(val)
+            }
+
+        })
+        console.log(leaveData)
+        leaveData?.forEach((val: any) => {
+            var users: any = {}
+            AllUsers?.forEach((item: any) => {
+                if (item?.AssingedToUserId != null && val?.Employee?.Id == item?.AssingedToUserId) {
+                    users['userName'] = item.Title
+                    users['Components'] = ''
+                    users['SubComponents'] = ''
+                    users['Features'] = ''
+                    users['Department'] = item.TimeCategory
+                    users['Effort'] = val.totaltime !== undefined && val.totaltime <= 4 ? val.totaltime : 8
+                    users['Task'] = 'Leave'
+                    users['Comments'] = 'Leave'
+                    users['ClientCategoryy'] = 'Leave'
+                    users['siteType'] = ''
+                    users['Date'] = ''
+                    users['Status'] = ''
+                    todayLeaveUsers.push(users)
+                }
             })
-            console.log(leaveData)
-            leaveData?.forEach((val:any)=>{
-                var users:any={}
-                AllUsers?.forEach((item:any)=>{
-                    if(item?.AssingedToUserId != null && val?.Employee?.Id == item?.AssingedToUserId){
-                        users['userName'] = item.Title
-                        users['Components'] = ''
-                        users['SubComponents'] = ''
-                        users['Features'] = ''
-                        users['Department'] = item.TimeCategory
-                        users['Effort'] = val.totaltime !== undefined && val.totaltime <= 4 ? val.totaltime : 8
-                        users['Task'] = 'Leave'
-                        users['Comments'] = 'Leave'
-                        users['ClientCategoryy'] = 'Leave'
-                        users['siteType'] = ''
-                        users['Date'] = ''
-                        users['Status'] = ''
-                        todayLeaveUsers.push(users)
-                    }
-                })
-            })
-              finalData = todayLeaveUsers.filter((val: any, TaskId: any, array: any) => {
-                 return array.indexOf(val) == TaskId;
-          })
-          var D=[]
-          var De=[]
-          var QAteam=[]
-          AllUsers?.forEach((item:any)=>{
-            if((item?.TimeCategory == 'Development' && item?.Company == 'Smalsus') && (item?.UserGroup?.Title == 'Senior Developer Team' || item?.UserGroup?.Title == 'Mobile Team' || item?.UserGroup?.Title == 'Smalsus Lead Team' ||  item?.UserGroup?.Title == 'Junior Developer Team')){
+        })
+        finalData = todayLeaveUsers.filter((val: any, TaskId: any, array: any) => {
+            return array.indexOf(val) == TaskId;
+        })
+        var D = []
+        var De = []
+        var QAteam = []
+        AllUsers?.forEach((item: any) => {
+            if ((item?.TimeCategory == 'Development' && item?.Company == 'Smalsus') && (item?.UserGroup?.Title == 'Senior Developer Team' || item?.UserGroup?.Title == 'Mobile Team' || item?.UserGroup?.Title == 'Smalsus Lead Team' || item?.UserGroup?.Title == 'Junior Developer Team')) {
                 D.push(item)
             }
-            if((item?.TimeCategory == 'Design'  && item.Company == 'Smalsus') ||  item?.UserGroup?.Title == 'Design Team'){
+            if ((item?.TimeCategory == 'Design' && item.Company == 'Smalsus') || item?.UserGroup?.Title == 'Design Team') {
                 De.push(item)
             }
-            if(item?.TimeCategory == 'QA'  && item.Company == 'Smalsus' &&  item?.UserGroup?.Title != 'Ex Staff'){
+            if (item?.TimeCategory == 'QA' && item.Company == 'Smalsus' && item?.UserGroup?.Title != 'Ex Staff') {
                 QAteam.push(item)
             }
-          })
-            console.log(finalData)
-            var QA:any =[]
-            var Design:any = []
-            var Development:any =[]
-            finalData?.forEach((val:any)=>{
-                if(val?.Department == 'QA'){
-                    QA.push(val)  
-                }
-                if(val?.Department == 'Design'){
-                    Design.push(val)  
-                }
-                if(val?.Department == 'Development'){
-                    Development.push(val)  
-                }
-            })
-            QAMembers = QA.length
-            DesignMembers = Design.length
-            DevelopmentMembers = Development.length
-
-            QAhalfdayleave = QA.filter((x:any)=>x.Effort === 4);
-            developmenthalfdayleave = Development.filter((x:any)=>x.Effort === 4);
-            designhalfdayleave = Design.filter((x:any)=>x.Effort === 4);
-
-            QAfulldayleave = QA.filter((x:any)=>x.Effort === 8);
-            developmentfulldayleave = Development.filter((x:any)=>x.Effort === 8);
-            designfulldayleave = Design.filter((x:any)=>x.Effort === 8);
-
-            if(QAhalfdayleave.length > 0 || developmenthalfdayleave.length>0 || designhalfdayleave.length>0){
-                QAleaveHours = ((QAhalfdayleave.length) * 4) + ((QAfulldayleave.length) * 8);
-                DevelopmentleaveHours = ((developmenthalfdayleave.length) * 4) + ((developmentfulldayleave.length) * 8);
-                DesignMemberleaveHours = ((designhalfdayleave.length) * 4)+((designfulldayleave.length) * 8);
+        })
+        console.log(finalData)
+        var QA: any = []
+        var Design: any = []
+        var Development: any = []
+        finalData?.forEach((val: any) => {
+            if (val?.Department == 'QA') {
+                QA.push(val)
             }
-            else{
-                QAleaveHours = (QA.length) * 8;
-                DevelopmentleaveHours = (Development.length) * 8;
-                DesignMemberleaveHours = (Design.length) * 8;
+            if (val?.Department == 'Design') {
+                Design.push(val)
             }
-            
-            TotalDevelopmentMember = D.length 
-            TotalDesignMember = De.length      
-            TotalQAMember = QAteam.length 
-
-            TotalMembersss = TotalDevelopmentMember + TotalDesignMember + TotalQAMember
-            TotalleaveMembersss = DesignMembers + DevelopmentMembers + QAMembers
-            TotalleaveHours = QAleaveHours+DevelopmentleaveHours+DesignMemberleaveHours
-
-            if(finalData != undefined && finalData.length>0){
-                //  leaveUsers = TotalleaveMembersss * 8
-                leaveUsers = TotalleaveMembersss 
-                
+            if (val?.Department == 'Development') {
+                Development.push(val)
             }
-           
+        })
+        QAMembers = QA.length
+        DesignMembers = Design.length
+        DevelopmentMembers = Development.length
+
+        QAhalfdayleave = QA.filter((x: any) => x.Effort === 4);
+        developmenthalfdayleave = Development.filter((x: any) => x.Effort === 4);
+        designhalfdayleave = Design.filter((x: any) => x.Effort === 4);
+
+        QAfulldayleave = QA.filter((x: any) => x.Effort === 8);
+        developmentfulldayleave = Development.filter((x: any) => x.Effort === 8);
+        designfulldayleave = Design.filter((x: any) => x.Effort === 8);
+
+        if (QAhalfdayleave.length > 0 || developmenthalfdayleave.length > 0 || designhalfdayleave.length > 0) {
+            QAleaveHours = ((QAhalfdayleave.length) * 4) + ((QAfulldayleave.length) * 8);
+            DevelopmentleaveHours = ((developmenthalfdayleave.length) * 4) + ((developmentfulldayleave.length) * 8);
+            DesignMemberleaveHours = ((designhalfdayleave.length) * 4) + ((designfulldayleave.length) * 8);
+        }
+        else {
+            QAleaveHours = (QA.length) * 8;
+            DevelopmentleaveHours = (Development.length) * 8;
+            DesignMemberleaveHours = (Design.length) * 8;
+        }
+
+        TotalDevelopmentMember = D.length
+        TotalDesignMember = De.length
+        TotalQAMember = QAteam.length
+
+        TotalMembersss = TotalDevelopmentMember + TotalDesignMember + TotalQAMember
+        TotalleaveMembersss = DesignMembers + DevelopmentMembers + QAMembers
+        TotalleaveHours = QAleaveHours + DevelopmentleaveHours + DesignMemberleaveHours
+
+        if (finalData != undefined && finalData.length > 0) {
+            //  leaveUsers = TotalleaveMembersss * 8
+            leaveUsers = TotalleaveMembersss
+
+        }
+
     }
     const compareDates = (selectedworkingDate: any) => {
         var flag = false;
@@ -573,7 +574,7 @@ QATime = 0.00;
             var myDate = new Date()
             var Datenew = Moment(myDate).format("DD/MM/YYYY")
         }
-      
+
 
         StartDatesss = Datenew.split("/");
         var selectedStartDate = StartDatesss[2] + '/' + StartDatesss[1] + '/' + StartDatesss[0];
@@ -719,32 +720,32 @@ QATime = 0.00;
         var MyData: any = []
         AllUsers?.forEach((val: any) => {
             SelectedTime?.map((item: any) => {
-               
-                if (item?.AuthorId == val?.AssingedToUserId ) {
+
+                if (item?.AuthorId == val?.AssingedToUserId) {
                     // item.Department = val.TimeCategory
                     // item.Company = val.Company
 
-                    if (val?.UserGroup?.Title == 'Senior Developer Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff' )
+                    if (val?.UserGroup?.Title == 'Senior Developer Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff')
 
-                    item.Department = 'Developer';
+                        item.Department = 'Developer';
 
-                if (val?.UserGroup?.Title == 'Junior Developer Team')
+                    if (val?.UserGroup?.Title == 'Junior Developer Team')
 
-                item.Department = 'Junior Developer';
+                        item.Department = 'Junior Developer';
 
-                if (val?.UserGroup?.Title == 'Design Team')
+                    if (val?.UserGroup?.Title == 'Design Team')
 
-                item.Department = 'Design';
+                        item.Department = 'Design';
 
-                if (val?.UserGroup?.Title == 'QA Team')
+                    if (val?.UserGroup?.Title == 'QA Team')
 
-                item.Department = 'QA';
+                        item.Department = 'QA';
 
                 }
             })
 
         })
-       
+
         AllTasks?.forEach((task: any) => {
             SelectedTime?.forEach((item: any) => {
                 if (item.TaskId === task.Id && item.Task === task.Title && item?.userName != 'Kristina Kovach') {
@@ -763,8 +764,8 @@ QATime = 0.00;
                         item.Title = task.Title
                         item.PriorityRank = task.PriorityRank
                         item.ClientCategory = task?.ClientCategory
-                        task?.ClientCategory?.forEach((cat:any)=>{
-                          item.ClientCategoryy = cat.Title;
+                        task?.ClientCategory?.forEach((cat: any) => {
+                            item.ClientCategoryy = cat.Title;
                         })
                     }
                     if (task?.Portfolio == undefined) {
@@ -780,7 +781,7 @@ QATime = 0.00;
                         item.Title = task.Title
                         item.PriorityRank = task.PriorityRank
                         item.ClientCategory = task?.ClientCategory
-                        task?.ClientCategory?.forEach((cat:any)=>{
+                        task?.ClientCategory?.forEach((cat: any) => {
                             item.ClientCategoryy = cat.Title;
                         })
                     }
@@ -798,7 +799,7 @@ QATime = 0.00;
                         item.Title = task.Title
                         item.PriorityRank = task.PriorityRank
                         item.ClientCategory = task?.ClientCategory
-                        task?.ClientCategory?.forEach((cat:any)=>{
+                        task?.ClientCategory?.forEach((cat: any) => {
                             item.ClientCategoryy = cat.Title;
                         })
                     }
@@ -816,7 +817,7 @@ QATime = 0.00;
                         item.Title = task.Title
                         item.PriorityRank = task.PriorityRank
                         item.ClientCategory = task?.ClientCategory
-                        task?.ClientCategory?.forEach((cat:any)=>{
+                        task?.ClientCategory?.forEach((cat: any) => {
                             item.ClientCategoryy = cat.Title;
                         })
                     }
@@ -826,7 +827,7 @@ QATime = 0.00;
 
 
             })
-           
+
         })
         // const finalData = MyData.filter((val: any, TaskId: any, array: any) => {
         //         return array.indexOf(val) == TaskId;
@@ -845,12 +846,37 @@ QATime = 0.00;
                 }
 
             })
-            TotleTaskTime = QATime + DevloperTime + DesignTime 
+            TotleTaskTime = QATime + DevloperTime + DesignTime
         }
-        finalData?.forEach((items:any)=>{
+        finalData?.forEach((items: any) => {
             MyData.push(items)
         })
-        setData(MyData)
+        // AllUsers.map((item: any) => {
+        //     MyData.map((elem: any) => {
+        //         if (item?.Title === elem?.Title) {
+        //             elem.userName = item
+        //         }
+        //     })
+        // })
+        // AllUsers.forEach((item: any) => {
+        //     MyData.forEach((elem: any) => {
+        //         if (item?.Title === elem?.Title) {
+        //             elem.userName = item; // Assign the entire item object to the userName field in MyData
+        //         }
+        //     });
+        // });
+
+        const updatedData = MyData.map((elem: any) => ({ ...elem }));
+        AllUsers.forEach((user: any) => {
+            updatedData.forEach((dataItem: any) => {
+                if (user?.Title === dataItem?.userName) {
+                    dataItem.userName = user;
+                }
+            });
+        });
+
+        console.log(updatedData)
+        setData(updatedData)
         showProgressHide();
     }
 
@@ -858,7 +884,7 @@ QATime = 0.00;
         selectDatess = Dates;
         if (Dates == 'Today') {
             setcheckedWS(false)
-            setcheckedCustom(false)            
+            setcheckedCustom(false)
             setcheckedTask(true)
             var Todaydate: any = new window.Date();
             setSelectDate(Todaydate)
@@ -880,9 +906,9 @@ QATime = 0.00;
             var Datenew = Moment(Datene).format("DD-MM-YYYY")
             var Daten = Moment(Datene);
             setSelectDate(Daten);
-            checkDate = Datenew;            
+            checkDate = Datenew;
         }
-       
+
         if (Dates == 'Custom') {
             setcheckedWS(false);
             selectdate = undefined;
@@ -895,10 +921,10 @@ QATime = 0.00;
 
 
     }
-    const changeHeader=(items:any)=>{
+    const changeHeader = (items: any) => {
         setHeaderChange(items)
-      }
-    const column:any = React.useMemo<ColumnDef<any, unknown>[]>(
+    }
+    const column: any = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
                 accessorKey: "",
@@ -913,18 +939,18 @@ QATime = 0.00;
             {
                 cell: ({ row, getValue }) => (
                     <div className="alignCenter">
-                       
-                            <div className="alignCenter">
-                                <img title={row?.original?.TaskType?.Title}
-                                 src={row?.original?.SiteIcon}
-                                className="workmember">     
-                                  </img>
-                            </div>
-                       
+
+                        <div className="alignCenter">
+                            <img title={row?.original?.TaskType?.Title}
+                                src={row?.original?.SiteIcon}
+                                className="workmember">
+                            </img>
+                        </div>
+
                         {getValue()}
                     </div>
                 ),
-                accessorKey:'',
+                accessorKey: '',
                 id: "SiteIcon",
                 placeholder: "Sites",
                 header: "",
@@ -946,14 +972,14 @@ QATime = 0.00;
                 // isColumnDefultSortingAsc:true,
                 size: 140,
             },
-        
+
 
             {
                 accessorFn: (row) => row?.Task,
                 cell: ({ row, getValue }) => (
                     <>
                         <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId="+ row?.original?.TaskId + '&Site=' + row?.original?.siteType}
+                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + row?.original?.TaskId + '&Site=' + row?.original?.siteType}
                         >
                             {getValue()}
                         </a>
@@ -964,7 +990,7 @@ QATime = 0.00;
                 header: '',
                 placeholder: "Task",
                 //size: 125,
-               
+
             },
             {
                 cell: ({ row, getValue }) => (
@@ -1028,7 +1054,7 @@ QATime = 0.00;
 
 
             },
-           
+
             {
                 header: '',
                 accessorKey: 'PercentComplete',
@@ -1044,12 +1070,32 @@ QATime = 0.00;
 
             },
             {
+                cell: ({ row }: any) => (
+                    <>
+                        <img title={row.original.userName.Title} className='workmember ' src={`${row.original.userName.Item_x0020_Cover != null && row.original.userName.Item_x0020_Cover.Url != null ? row.original.userName.Item_x0020_Cover.Url : 'https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg'}`} />
+                    </>
+                ),
+                accessorFn: '',
+                canSort: false,
+                placeholder: '',
                 header: '',
-                accessorKey: 'userName',
-                placeholder: "userName",
-                size: 130,
-
+                id: 'userName',
             },
+            // {
+            //     // accessorKey: 'userName',
+            //     cell: ({ row, getValue }) => (
+            //         <>
+            //             {getValue()}
+            //             <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} />
+            //         </>
+            //     ),
+            //     id: "userName",
+            //     header: '',
+            //     accessorFn: (row) => row?.userName,
+            //     placeholder: "userName",
+            //     size: 130,
+
+            // },
             {
                 header: '',
                 accessorKey: 'Department',
@@ -1061,7 +1107,7 @@ QATime = 0.00;
                 accessorFn: (row) => row?.ClientCategory,
                 cell: ({ row }) => (
                     <>
-                        <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata}/>
+                        <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
                     </>
                 ),
                 id: "ClientCategory",
@@ -1199,35 +1245,35 @@ QATime = 0.00;
             </div>
         );
     };
-    
-    const sendEmail=()=>{
-        var body1:any=[]
-        var body2:any=[]
-        var To:any=[]
-        var MyDate:any=''
-        var ApprovalId:any = []
-        var TotlaTime = QATime + DevloperTime + DesignTime 
+
+    const sendEmail = () => {
+        var body1: any = []
+        var body2: any = []
+        var To: any = []
+        var MyDate: any = ''
+        var ApprovalId: any = []
+        var TotlaTime = QATime + DevloperTime + DesignTime
         var TotalMembers = TotalDevelopmentMember + TotalDesignMember + TotalQAMember
         var TotalleaveMembers = DesignMembers + DevelopmentMembers + QAMembers
-        var TotalleaveHours = DesignMemberleaveHours + DevelopmentleaveHours+QAleaveHours;
-        AllUsers?.forEach((items:any)=>{
-            if(CurrentUserId == items.AssingedToUserId){
-                items.Approver?.forEach((val:any)=>{
+        var TotalleaveHours = DesignMemberleaveHours + DevelopmentleaveHours + QAleaveHours;
+        AllUsers?.forEach((items: any) => {
+            if (CurrentUserId == items.AssingedToUserId) {
+                items.Approver?.forEach((val: any) => {
                     ApprovalId.push(val)
                 })
 
             }
 
         })
-        ApprovalId?.forEach((va:any)=>{
-            AllUsers?.forEach((ba:any)=>{
-                if(ba.AssingedToUserId == va.Id){
+        ApprovalId?.forEach((va: any) => {
+            AllUsers?.forEach((ba: any) => {
+                if (ba.AssingedToUserId == va.Id) {
                     To.push(ba?.Email)
                 }
             })
 
         })
-        data?.forEach((item:any)=>{
+        data?.forEach((item: any) => {
             if (item.Components == undefined || item.Components == '') {
                 item.Components = '';
             }
@@ -1250,137 +1296,137 @@ QATime = 0.00;
             if (item.PercentComplete == undefined || item.PercentComplete == '') {
                 item.PercentComplete = '';
             }
-           
+
             if (item.Date != undefined && item.Date != '') {
                 MyDate = item.Date;
             }
-           var text = '<tr>' +
-            '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.Date + '</td>'
-            + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.siteType + '</td>'
-            + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Components + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.SubComponents + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Features + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + `<a href='https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Task-Profile.aspx?taskId=${item.TaskId}&Site=${item.siteType}'>` + '<span style="font-size:11px; font-weight:600">' + item.Task + '</span>' + '</a >' + '</td>'
-            + '<td align="left" style="border: 1px solid #aeabab;padding: 4px">' + item?.Comments + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.PriorityRank + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Effort + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.PercentComplete + '%' + '</td>'
-            + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Status + '</td>'
-            + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item.userName + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Department + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.ClientCategoryy + '</td>'
-            + '</tr>'
-        body1.push(text);
+            var text = '<tr>' +
+                '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.Date + '</td>'
+                + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.siteType + '</td>'
+                + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Components + '</td>'
+                + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.SubComponents + '</td>'
+                + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Features + '</td>'
+                + '<td style="border: 1px solid #aeabab;padding: 4px">' + `<a href='https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Task-Profile.aspx?taskId=${item.TaskId}&Site=${item.siteType}'>` + '<span style="font-size:11px; font-weight:600">' + item.Task + '</span>' + '</a >' + '</td>'
+                + '<td align="left" style="border: 1px solid #aeabab;padding: 4px">' + item?.Comments + '</td>'
+                + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.PriorityRank + '</td>'
+                + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Effort + '</td>'
+                + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.PercentComplete + '%' + '</td>'
+                + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Status + '</td>'
+                + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item.userName + '</td>'
+                + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Department + '</td>'
+                + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.ClientCategoryy + '</td>'
+                + '</tr>'
+            body1.push(text);
         })
         var text2 =
-        '<tr>'
-        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Team' + '</strong>' + '</td>'        
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Total Employees' + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Employees on leave' + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Hours' + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Leave Hours' + '</strong>' + '</td>'
-        + '</tr>'
-        + '<tr>'
-        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Design' + '</td>'        
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TotalDesignMember + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignMembers + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignTime.toFixed(2) + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignMemberleaveHours + '</td>'
-        + '</tr>'
-        + '<tr>'
-        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Development' + '</td>'        
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TotalDevelopmentMember + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevelopmentMembers + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevloperTime.toFixed(2) + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevelopmentleaveHours + '</td>'
-        + '</tr>'
-        + '<tr>'
-        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'QA' + '</td>'        
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + TotalQAMember + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QAMembers + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QATime.toFixed(2) + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QAleaveHours + '</td>'
-        + '</tr>'
-        + '<tr>'
-        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Total' + '</strong>' + '</td>'        
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalMembers.toFixed(2) + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveMembers.toFixed(2)  + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotlaTime.toFixed(2) + '</strong>' + '</td>'
-        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveHours + '</strong>' + '</td>'
-        + '</tr>';
-    body2.push(text2);
+            '<tr>'
+            + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Team' + '</strong>' + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Total Employees' + '</strong>' + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Employees on leave' + '</strong>' + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Hours' + '</strong>' + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Leave Hours' + '</strong>' + '</td>'
+            + '</tr>'
+            + '<tr>'
+            + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Design' + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + TotalDesignMember + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignMembers + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignTime.toFixed(2) + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignMemberleaveHours + '</td>'
+            + '</tr>'
+            + '<tr>'
+            + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Development' + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + TotalDevelopmentMember + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevelopmentMembers + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevloperTime.toFixed(2) + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevelopmentleaveHours + '</td>'
+            + '</tr>'
+            + '<tr>'
+            + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'QA' + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + TotalQAMember + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + QAMembers + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + QATime.toFixed(2) + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + QAleaveHours + '</td>'
+            + '</tr>'
+            + '<tr>'
+            + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Total' + '</strong>' + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalMembers.toFixed(2) + '</strong>' + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveMembers.toFixed(2) + '</strong>' + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotlaTime.toFixed(2) + '</strong>' + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveHours + '</strong>' + '</td>'
+            + '</tr>';
+        body2.push(text2);
 
-    
 
-    var bodyA =
-    '<table cellspacing="0" cellpadding="1" width="30%" style="margin: 0 auto;border-collapse: collapse;">'
-    + '<tbody align="center">' +
-    body2 +
-    '</tbody>' +
-    '</table>'
-var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport.aspx";
-var c = MyDate.split('-');
-var a1 = c[2] + '-' + c[1] + '-' + c[0];
-var ReportDate = new Date(a1)
- var ReportDatetime =Moment(ReportDate).format('DD/MM/YYYY')
-    var body:any =
-                '<p style="text-align: center;margin-bottom: 1px;">' + 'TimeSheet of  date' + '&nbsp;' + '<strong>' + ReportDatetime + '</strong>' + '</p>' +
-                '<p style="text-align: center;margin: 0 auto;">' + '<a  href=' + pageurl + ' >' + 'Online version of timesheet' + '</a >' + '</p>' +
-                '<br>'
 
-                + '</br>' +
-                bodyA +
-                '<br>' + '</br>'
-                + '<table cellspacing="0" cellpadding="1" width="100%" style="border-collapse: collapse;">' +
-                '<thead>' +
-                '<tr style="font-size: 11px;">' +
-                '<th  style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Date' + '</th>'
-                + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Sites' + '</th>'
-                + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "8%" bgcolor="#f5f5f5">' + 'Component' + '</th>'
-                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'SubComponent' + '</th>'
-                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Feature' + '</th>'
-                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Task' + '</th>'
-                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'FullDescription' + '</th>'
-                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Priority' + '</th>'
-                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Effort' + '</th>'
-                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Complete' + '</th>'
-                + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Status' + '</th>'
-                + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "8%" bgcolor="#f5f5f5">' + 'TimeEntryUser' + '</th>'
-                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Designation' + '</th>'
-                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'ClientCategory' + '</th>'
-                + '</thead>' +
-                '<tbody align="center">' +
-                '<tr>' +
-                body1 +
-                '</tr>' +
-                '</tbody>' +
-                '</table>' +
-                '<p>' + '<strong>' + 'Thank You' + '</strong>' + '</p>'
-              var cc:any=[] 
-              var ReplyTo:any = "" 
-            var from:any= undefined
-            var subject = 'TimeSheet :' + ' ' + ReportDatetime;
-            body = body.replaceAll(',', '');
-           sendEmailToUser(from, To, body, subject, ReplyTo, cc);
-            alert('Email sent sucessfully');
+        var bodyA =
+            '<table cellspacing="0" cellpadding="1" width="30%" style="margin: 0 auto;border-collapse: collapse;">'
+            + '<tbody align="center">' +
+            body2 +
+            '</tbody>' +
+            '</table>'
+        var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport.aspx";
+        var c = MyDate.split('-');
+        var a1 = c[2] + '-' + c[1] + '-' + c[0];
+        var ReportDate = new Date(a1)
+        var ReportDatetime = Moment(ReportDate).format('DD/MM/YYYY')
+        var body: any =
+            '<p style="text-align: center;margin-bottom: 1px;">' + 'TimeSheet of  date' + '&nbsp;' + '<strong>' + ReportDatetime + '</strong>' + '</p>' +
+            '<p style="text-align: center;margin: 0 auto;">' + '<a  href=' + pageurl + ' >' + 'Online version of timesheet' + '</a >' + '</p>' +
+            '<br>'
+
+            + '</br>' +
+            bodyA +
+            '<br>' + '</br>'
+            + '<table cellspacing="0" cellpadding="1" width="100%" style="border-collapse: collapse;">' +
+            '<thead>' +
+            '<tr style="font-size: 11px;">' +
+            '<th  style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Date' + '</th>'
+            + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Sites' + '</th>'
+            + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "8%" bgcolor="#f5f5f5">' + 'Component' + '</th>'
+            + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'SubComponent' + '</th>'
+            + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Feature' + '</th>'
+            + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Task' + '</th>'
+            + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'FullDescription' + '</th>'
+            + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Priority' + '</th>'
+            + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Effort' + '</th>'
+            + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Complete' + '</th>'
+            + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Status' + '</th>'
+            + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "8%" bgcolor="#f5f5f5">' + 'TimeEntryUser' + '</th>'
+            + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Designation' + '</th>'
+            + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'ClientCategory' + '</th>'
+            + '</thead>' +
+            '<tbody align="center">' +
+            '<tr>' +
+            body1 +
+            '</tr>' +
+            '</tbody>' +
+            '</table>' +
+            '<p>' + '<strong>' + 'Thank You' + '</strong>' + '</p>'
+        var cc: any = []
+        var ReplyTo: any = ""
+        var from: any = undefined
+        var subject = 'TimeSheet :' + ' ' + ReportDatetime;
+        body = body.replaceAll(',', '');
+        sendEmailToUser(from, To, body, subject, ReplyTo, cc);
+        alert('Email sent sucessfully');
 
     }
-    
-    const sendEmailToUser =(from:any, to:any, body:any, subject:any, ReplyTo:any, cc:any) => {
+
+    const sendEmailToUser = (from: any, to: any, body: any, subject: any, ReplyTo: any, cc: any) => {
         let sp = spfi().using(spSPFx(props.ContextData.Context));
         sp.utility.sendEmail({
-          Body: body,
-          Subject: subject,  
-          To: to,
-          CC:cc,
-          AdditionalHeaders: {
-            "content-type": "text/html"
-          },
+            Body: body,
+            Subject: subject,
+            To: to,
+            CC: cc,
+            AdditionalHeaders: {
+                "content-type": "text/html"
+            },
         }).then(() => {
-          console.log("Email Sent!");
-    
+            console.log("Email Sent!");
+
         }).catch((err) => {
-          console.log(err.message);
+            console.log(err.message);
         });
         // var siteurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP"
         // var urlTemplate = siteurl + "/_api/SP.Utilities.Utility.SendEmail";
@@ -1433,95 +1479,95 @@ var ReportDate = new Date(a1)
 
         // });
     }
-   
+
     return (
         <>
-        <section className='ContentSection'>
-            <div className='row'>
-            <div className="alignCenter">
-          <h2 className="heading">{headerChange != undefined && headerChange != null && headerChange != '' ? headerChange : 'Time-Report'} </h2>
-          <EditPage context={props?.ContextData} changeHeader={changeHeader} />
-        </div>
-                <div className='col-sm-9 pe-0'>
-                    <h6 className='pull-right'><b><a  data-interception="off"
-                    target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport-old.aspx">Old Time Report</a></b>
-                    </h6>
+            <section className='ContentSection'>
+                <div className='row'>
+                    <div className="alignCenter">
+                        <h2 className="heading">{headerChange != undefined && headerChange != null && headerChange != '' ? headerChange : 'Time-Report'} </h2>
+                        <EditPage context={props?.ContextData} changeHeader={changeHeader} />
+                    </div>
+                    <div className='col-sm-9 pe-0'>
+                        <h6 className='pull-right'><b><a data-interception="off"
+                            target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport-old.aspx">Old Time Report</a></b>
+                        </h6>
+                    </div>
                 </div>
-            </div>
-            <div className='row' style={{padding: "0px 2px"}}>
-                <div className='col-6 showDate ps-0'>
-                    <input type='date' value={Moment(selectdate!= undefined?selectdate:defaultDate).format("YYYY-MM-DD")} max="9999-12-31" className='me-2' onChange={(e) => setSelectDate(e.target.value)} />
-                    <label className='SpfxCheckRadio'>
-                        <input type="radio" name="Custom" checked={checkedCustom} onClick={() => selectType('Custom')} className="radio" />Custom
-                    </label>
-                    <label className='SpfxCheckRadio'>
-                        <input type="radio"  name="Yesterday" checked={checkedWS} onClick={() => selectType('Yesterday')} className="radio" />Yesterday
-                    </label>
-                    <label className='SpfxCheckRadio'>
-                        <input type="radio" name="Today" checked={checkedTask} onClick={() => selectType('Today')} className="radio" />Today
-                    </label>
-                    <button className='btnCol btn btn-primary' type="submit" onClick={() => GeneratedTask()}>Generate TimeSheet</button>
+                <div className='row' style={{ padding: "0px 2px" }}>
+                    <div className='col-6 showDate ps-0'>
+                        <input type='date' value={Moment(selectdate != undefined ? selectdate : defaultDate).format("YYYY-MM-DD")} max="9999-12-31" className='me-2' onChange={(e) => setSelectDate(e.target.value)} />
+                        <label className='SpfxCheckRadio'>
+                            <input type="radio" name="Custom" checked={checkedCustom} onClick={() => selectType('Custom')} className="radio" />Custom
+                        </label>
+                        <label className='SpfxCheckRadio'>
+                            <input type="radio" name="Yesterday" checked={checkedWS} onClick={() => selectType('Yesterday')} className="radio" />Yesterday
+                        </label>
+                        <label className='SpfxCheckRadio'>
+                            <input type="radio" name="Today" checked={checkedTask} onClick={() => selectType('Today')} className="radio" />Today
+                        </label>
+                        <button className='btnCol btn btn-primary' type="submit" onClick={() => GeneratedTask()}>Generate TimeSheet</button>
 
 
-                </div>
-                <div className='col-sm-6 pe-0'>
-                    <table className='table table-hover showTime'>
-                        <thead>
-                            <tr>
-                                <th className='border bg-light fw-bold align-middle'>Team</th>
-                                <th className='border fw-bold align-middle'>Total Employees</th>
-                                <th className='border fw-bold align-middle'>Employees on leave</th>
-                                <th className='border fw-bold align-middle'>Hours</th>                                
-                                <th className='border fw-bold align-middle'>Leave Hours</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td className='border bg-light fw-bold'>Design</td>                                
-                                <td className='border'>{TotalDesignMember}</td>
-                                <td className='border'>{DesignMembers}</td>
-                                <td className='border'>{DesignTime.toFixed(2)}</td>
-                                <td className='border'>{DesignMemberleaveHours}</td>
-                            </tr>
-                            <tr>
-                                <td className='border bg-light fw-bold'>Development</td>                                
-                                <td className='border'>{TotalDevelopmentMember}<span  title='Trainee'>({AllTrainee.length}) </span></td>
-                                <td className='border'>{DevelopmentMembers}</td>
-                                <td className='border'>{DevloperTime.toFixed(2)} (0)</td>
-                                <td className='border'>{DevelopmentleaveHours}</td>
-                            </tr>
-                            <tr>
-                                <td className='border bg-light fw-bold'> QA</td>                                
-                                <td className='border'>{TotalQAMember}</td>
-                                <td className='border'>{QAMembers}</td>
-                                <td className='border'>{QATime.toFixed(2)}</td>
-                                <td className='border'>{QAleaveHours}</td>
-                            </tr>
-                           
-                            <tr>
-                                <td className='border bg-light fw-bold'>Total</td>                                
-                                <td className='border fw-bold'>{TotalDevelopmentMember + TotalDesignMember + TotalQAMember}</td>
-                                <td className='border fw-bold'>{leaveUsers}</td>
-                                <td className='border fw-bold'>{TotleTaskTime?.toFixed(2)}</td>
-                                <td className='border fw-bold'>{DesignMemberleaveHours + DevelopmentleaveHours + QAleaveHours}</td>
-                            </tr>
+                    </div>
+                    <div className='col-sm-6 pe-0'>
+                        <table className='table table-hover showTime'>
+                            <thead>
+                                <tr>
+                                    <th className='border bg-light fw-bold align-middle'>Team</th>
+                                    <th className='border fw-bold align-middle'>Total Employees</th>
+                                    <th className='border fw-bold align-middle'>Employees on leave</th>
+                                    <th className='border fw-bold align-middle'>Hours</th>
+                                    <th className='border fw-bold align-middle'>Leave Hours</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td className='border bg-light fw-bold'>Design</td>
+                                    <td className='border'>{TotalDesignMember}</td>
+                                    <td className='border'>{DesignMembers}</td>
+                                    <td className='border'>{DesignTime.toFixed(2)}</td>
+                                    <td className='border'>{DesignMemberleaveHours}</td>
+                                </tr>
+                                <tr>
+                                    <td className='border bg-light fw-bold'>Development</td>
+                                    <td className='border'>{TotalDevelopmentMember}<span title='Trainee'>({AllTrainee.length}) </span></td>
+                                    <td className='border'>{DevelopmentMembers}</td>
+                                    <td className='border'>{DevloperTime.toFixed(2)} (0)</td>
+                                    <td className='border'>{DevelopmentleaveHours}</td>
+                                </tr>
+                                <tr>
+                                    <td className='border bg-light fw-bold'> QA</td>
+                                    <td className='border'>{TotalQAMember}</td>
+                                    <td className='border'>{QAMembers}</td>
+                                    <td className='border'>{QATime.toFixed(2)}</td>
+                                    <td className='border'>{QAleaveHours}</td>
+                                </tr>
 
-                        </tbody>
-                    </table>
+                                <tr>
+                                    <td className='border bg-light fw-bold'>Total</td>
+                                    <td className='border fw-bold'>{TotalDevelopmentMember + TotalDesignMember + TotalQAMember}</td>
+                                    <td className='border fw-bold'>{leaveUsers}</td>
+                                    <td className='border fw-bold'>{TotleTaskTime?.toFixed(2)}</td>
+                                    <td className='border fw-bold'>{DesignMemberleaveHours + DevelopmentleaveHours + QAleaveHours}</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-         </section>
-             <section className='TableContentSection'>
-            <div className='Alltable'>
-            
-             {
-                data?.length >0?
-                <>
-               <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} expandIcon={true} mailSend={sendEmail} showEmailIcon={true}/> </>:
-                <div className="bg-f5f5 mb-2 mt-2">Oops! Time Entries not available (Might be Weekend or Holiday or No data available In this Selected Date).</div>
-             }
-          
-            </div>
+            </section>
+            <section className='TableContentSection'>
+                <div className='Alltable'>
+
+                    {
+                        data?.length > 0 ?
+                            <>
+                                <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} expandIcon={true} mailSend={sendEmail} showEmailIcon={true} /> </> :
+                            <div className="bg-f5f5 mb-2 mt-2">Oops! Time Entries not available (Might be Weekend or Holiday or No data available In this Selected Date).</div>
+                    }
+
+                </div>
             </section>
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
@@ -1623,7 +1669,7 @@ var ReportDate = new Date(a1)
 
             </Panel >
 
-            {!loaded ?<PageLoader/>:""}
+            {!loaded ? <PageLoader /> : ""}
 
         </>
     )

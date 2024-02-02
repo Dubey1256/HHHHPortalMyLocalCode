@@ -1203,7 +1203,7 @@ const ProjectManagementMain = (props: any) => {
         accessorFn: (row) => row?.TaskTypeValue,
         cell: ({ row }) => (
           <>
-            <span>
+            <span className="columnFixedTaskCate">
               <InlineEditingcolumns
                 AllListId={AllListId}
                 callBack={inlineCallBack}

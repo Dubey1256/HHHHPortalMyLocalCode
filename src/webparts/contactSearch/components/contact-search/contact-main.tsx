@@ -107,8 +107,8 @@ const ContactMainPage = (props: any) => {
             let web = new Web(allListId?.siteUrl);
             await web.lists.getById(props?.props?.HHHHInstitutionListId)
                 .items
-               . select("Id","Title","FirstName","Description","Parent/Id","FullName","Company","JobTitle","About","InstitutionType","SocialMediaUrls","ItemType","WorkCity","ItemImage","WorkCountry","WorkAddress","WebPage","CellPhone","HomePhone","Email","SharewebSites","Created","Author/Id","Author/Title","Modified","Editor/Id","Editor/Title")
-                .expand("Author", "Editor","Parent")
+               . select("Id","Title","FirstName","Description","Parent/Id","FullName","Company","JobTitle","About","InstitutionType","SocialMediaUrls","ItemType","WorkCity","ItemImage","WorkCountry","WorkAddress","WebPage","CellPhone","HomePhone","Email","SharewebSites","SmartCountries/Id","SmartCountries/Title","Created","Author/Id","Author/Title","Modified","Editor/Id","Editor/Title")
+                .expand("Author", "Editor","Parent","SmartCountries")
                 .orderBy("Created", true)
                 .getAll().then((data: any) => {
                     let instData = data.filter((instItem: any) => instItem.ItemType == "Institution")
@@ -463,7 +463,7 @@ const ContactMainPage = (props: any) => {
             // }
         ],
         [searchedData]);
-    const Inscolumns = React.useMemo<ColumnDef<unknown, unknown>[]>(() =>
+    const Inscolumns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
         [{
             accessorKey: "",
             placeholder: "",
@@ -502,8 +502,20 @@ const ContactMainPage = (props: any) => {
             id: 'Title',
             size: 150,
         },
+
+        //changes in smart country column by Anupam
         { accessorKey: "WorkCity", placeholder: "City", header: "", size: 80, id:"WorkCity"},
-        { accessorKey: "SmartCountriesIns", placeholder: "Country", header: "", size: 80,id:"SmartCountriesIns" },
+        { 
+            accessorFn: (row: any) => row?.SmartCountries[0]?.Title, 
+            cell: ({ row }: any) => (
+            <span>{row?.original?.SmartCountries[0]?.Title}</span>
+            ),
+
+            placeholder: "Country", 
+            header: "", 
+            size: 80,
+            id:"SmartCountries",
+        },
         { accessorKey: "SitesTagged", placeholder: "Site", header: "", size: 80,id:"SitesTagged" },
        
         {

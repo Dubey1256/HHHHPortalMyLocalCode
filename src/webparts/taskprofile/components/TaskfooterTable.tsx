@@ -638,6 +638,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
 
   //=================== callback function to all the poup handle ================
   const Call = React.useCallback((childItem: any) => {
+    
     AllTasksRendar = [];
     setIsTask(false);
     setRowSelection({});
@@ -648,66 +649,71 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
     }
     var MainId: any = ''
     let ParentTaskId: any;
-    if (childItem != undefined && childItem.data?.ItmesDelete == undefined && childItem[0]?.NewBulkUpdate == undefined) {
-
-
-
+    if (childItem != null && childItem.data?.ItmesDelete == null && childItem?.[0]?.NewBulkUpdate == null) {
+     
       childItem.data['flag'] = true;
-      // childItem.data['SiteIcon']= GetIconImageUrl(childItem.data.siteType,childItem.data.siteUrl,undefined)
-      // childItem.data['TitleNew'] = childItem.data.Title;
-      childItem.data['TaskType'] = { Title: 'Workstream' }
-      if (childItem.data.PortfolioId != undefined) {
-        MainId = childItem.data.PortfolioId
+      childItem.data['TaskType'] = { Title: 'Workstream' };
+    
+      if (childItem.data.PortfolioId != null) {
+        MainId = childItem.data.PortfolioId;
       }
-
-      if (childItem.data.ParentTaskId != undefined && childItem.data.ParentTaskId != "") {
+    
+      if (childItem.data.ParentTaskId != null && childItem.data.ParentTaskId !== "") {
         ParentTaskId = childItem.data.ParentTaskId;
       }
-      // ==========create ws and task======================== 
-      let grouping: any = true;
-      if (childItem.data?.editpopup == undefined && childItem.data?.ItmesDelete == undefined) {
-        finalData?.map((elem: any) => {
+    
+      // ==========create ws and task========================
+      let grouping = true;
+    
+      if (childItem.data?.editpopup == null && childItem.data?.ItmesDelete == null) {
+     
+        finalData?.forEach((elem: any) => {
           if (elem?.Id === ParentTaskId || elem.ID === ParentTaskId) {
-            elem.subRows = elem.subRows == undefined ? [] : elem.subRows
-            elem.subRows.push(childItem.data)
+            elem.subRows = elem.subRows ?? [];
+            elem.subRows.push(childItem.data);
             grouping = false;
           }
-        })
-        if (grouping === true) {
-          AllTasksRendar?.push(childItem.data)
-          finalData = finalData.concat(AllTasksRendar)
-        }
-        else if (grouping === false) {
-          AllTasksRendar = AllTasksRendar?.concat(finalData)
+        });
+    
+        if (grouping) {
+          AllTasksRendar?.push(childItem.data);
+          finalData = finalData.concat(AllTasksRendar);
+        } else {
+          AllTasksRendar = AllTasksRendar?.concat(finalData);
           finalData = [];
-          finalData = finalData?.concat(AllTasksRendar)
+          finalData = finalData?.concat(AllTasksRendar);
         }
       }
-
+    
       //============ update the data to Edit task popup==================
+      if (childItem.data?.editpopup != null && childItem.data?.editpopup == true && childItem.data?.ItmesDelete == null) {
+        
+        finalData?.forEach((ele: any, index: any) => {
 
-      if (childItem.data?.editpopup != undefined && childItem.data?.editpopup == true && childItem.data?.ItmesDelete == undefined) {
-        finalData?.map((ele: any, index: any) => {
-          if (ele.subRows != undefined && ele.subRows?.length > 0) {
-            ele.subRows?.map((sub: any, subindex: any) => {
+          if (ele.subRows != null && ele.subRows?.length > 0) {
+            ele.subRows?.forEach((sub: any, subindex: any) => {
               if (sub.Id == childItem.data.Id) {
-                finalData[index].subRows.splice(subindex, 1, childItem.data);
+                // Update the data without removing existing subRows
+                finalData[index].subRows[subindex] = { ...sub, ...childItem.data };
               }
-            })
+            });
           }
           if (ele.Id == childItem.data.Id) {
-            finalData.splice(index, 1, childItem.data);
+            // Update the data without removing existing data
+           
+            finalData[index] = { ...ele, ...childItem.data };
           }
-        })
-        AllTasksRendar = AllTasksRendar?.concat(finalData)
+        });
+    
+        AllTasksRendar = AllTasksRendar?.concat(finalData);
         finalData = [];
-        finalData = finalData?.concat(AllTasksRendar)
+        finalData = finalData?.concat(AllTasksRendar);
       }
-
-
-      console.log(finalData)
+    
+      console.log(finalData);
       refreshData();
     }
+    
     // ===============Delete the data to Edit task popup====================
 
     if (childItem?.data?.ItmesDelete == true) {
@@ -872,7 +878,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
         cell: ({ row, getValue }) => (
           <div>
             {row?.original?.TitleNew != "Tasks" ?
-              <span className="d-flex">
+              <span className="d-flex hreflink">
                 <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={props?.AllMasterTasks} AllSitesTaskData={props?.AllSiteTasks} AllListId={props.AllListId} />
               </span>
               : ''}
@@ -903,7 +909,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
               <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
-            {row?.original?.descriptionsSearch != '' && <InfoIconsToolTip
+            {row?.original?.descriptionsSearch != '' && <InfoIconsToolTip className="alignIcon"
               Discription={row?.original?.descriptionsSearch}
               row={row?.original}
             />}
@@ -1290,15 +1296,15 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
     }
     // setCheckedList1(array);
   }, []);
-  const callBackData1 = React.useCallback((getData: any, topCompoIcon: any) => {
-    if (getData != undefined && getData?.length > 0) {
+  const callBackData1 = React.useCallback((getData: any, topCompoIcon: any ,checkSelectionItem:any) => {
+    if (getData != undefined && getData?.length > 0 && checkSelectionItem != false) {
+      setTopCompoIcon(topCompoIcon);
       finalData = [];
       finalData = finalData?.concat(getData)
       console.log(finalData)
       refreshData();
-      setTopCompoIcon(topCompoIcon);
-    }
-
+      }
+ 
   }, []);
 
 
