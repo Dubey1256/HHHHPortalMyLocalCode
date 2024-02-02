@@ -1745,7 +1745,7 @@ const inlineEditingcolumns = (props: any) => {
       </Panel>
       {props?.columnName == "TaskCategories" ? (
         <span
-          className="hreflink"
+          className="hreflink text-content"
           title={props?.item?.Categories}
           onClick={() => setTaskCategoriesPopup(true)}
           style={{ display: "block", width: "100%", height: "100%" }}
