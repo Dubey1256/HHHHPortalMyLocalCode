@@ -2,6 +2,7 @@ import { Panel, PanelType } from "office-ui-fabric-react";
 import { Web } from "sp-pnp-js";
 import React, { useState } from "react";
 import * as Moment from "moment";
+import Smartmetadatapickerin from "../../../globalComponents/Smartmetadatapickerindependent/SmartmetadatapickerSingleORMulti";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import TeamConfigurationCard from "../../../globalComponents/TeamConfiguration/TeamConfiguration";
@@ -18,6 +19,7 @@ var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var ApproverIds: any = [];
+let selectedFeateureItem: any;
 let selectedCatTitleVal: any = []
 let AutoCompleteItemsArray: any = [];
 var changeTime: any = 0;
@@ -30,11 +32,13 @@ const inlineEditingcolumns = (props: any) => {
   const [TimeInHours, setTimeInHours] = React.useState(0);
   const [taskStatusInNumber, setTaskStatusInNumber] = React.useState(0);
   const [TimeInMinutes, setTimeInMinutes] = React.useState(0);
+  const [selectedFeatureTypeData, setSelectedFeatureTypeData]: any = React.useState({});
   const [categorySearchKey, setCategorySearchKey] = React.useState("");
   const [CategoriesData, setCategoriesData] = React.useState<any>([]);
   const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
   const [TeamConfig, setTeamConfig] = React.useState();
-  const [onHoldComment, setOnHoldComment]: any = React.useState(false)
+  const [onHoldComment, setOnHoldComment]: any = React.useState(false);
+  const [UpdateFeatureType, setUpdateFeatureType] = React.useState(false)
   const [teamMembersPopup, setTeamMembersPopup] = React.useState(false);
   const [showEditPencil, setShowEditPencil] = React.useState(false);
   const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
@@ -106,7 +110,7 @@ const inlineEditingcolumns = (props: any) => {
   React.useEffect(() => {
     updateItemValues();
 
-  }, [dueDate.editPopup ,TaskStatusPopup,remark,teamMembersPopup, UpdateEstimatedTime,TaskPriorityPopup,taskCategoriesPopup,props?.item?.TaskCategories?.results]);
+  }, [dueDate.editPopup, UpdateFeatureType ,TaskStatusPopup,remark,teamMembersPopup, UpdateEstimatedTime,TaskPriorityPopup,taskCategoriesPopup,props?.item?.TaskCategories?.results]);
   
   React.useEffect(() => {
     updateTaskComments();
@@ -131,6 +135,10 @@ const inlineEditingcolumns = (props: any) => {
         smartMetadataListId = props?.item?.metaDataListId;
       } else {
         smartMetadataListId = props?.AllListId?.SmartMetadataListID;
+      }
+      if (props?.item?.FeatureType?.Id != undefined) {
+        setSelectedFeatureTypeData(props?.item?.FeatureType)
+        selectedFeateureItem = props?.item?.FeatureType;
       }
       if (props?.item?.siteUrl != undefined) {
         siteUrl = props?.item?.siteUrl;
@@ -619,6 +627,10 @@ const inlineEditingcolumns = (props: any) => {
       case 'Priority':
         postData.Priority = priority;
         postData.PriorityRank = priorityRank;
+        if (props?.mypriority != true) {
+          postData.Categories = CategoryTitle;
+          postData.TaskCategoriesId = { results: selectedCategoriesId };
+        }
         break;
 
       case 'Remark':
@@ -635,6 +647,10 @@ const inlineEditingcolumns = (props: any) => {
 
       case 'DueDate':
         postData.DueDate = newDueDate;
+        break;
+
+      case 'FeatureType':
+        postData.FeatureTypeId = selectedFeateureItem?.Id;
         break;
 
       default:
@@ -662,6 +678,9 @@ const inlineEditingcolumns = (props: any) => {
             task.listId = props?.item?.listId;
             task.siteUrl = props?.item?.siteUrl;
             task.AssignedTo = TaskAssignedTo;
+            if (props?.columnName == 'FeatureType') {
+              task.FeatureType = selectedFeateureItem;
+            }
             task.ResponsibleTeam = TaskResponsibleTeam;
             task.TeamMembers = TaskTeamMembers;
             task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
@@ -696,6 +715,11 @@ const inlineEditingcolumns = (props: any) => {
         closeTaskDueDate();
       });
   };
+  const removeFeatureType = () => {
+    selectedFeateureItem = { Id: null }
+    setSelectedFeatureTypeData({});
+    UpdateTaskStatus();
+  }
   const setWorkingMember = (statusId: any) => {
     AllTaskUser?.map((dataTask: any) => {
       if (dataTask.AssingedToUserId == statusId) {
@@ -1140,7 +1164,16 @@ const inlineEditingcolumns = (props: any) => {
     setOnHoldComment(false);
   };
 
-
+  const Smartmetadatafeature = React.useCallback((data: any) => {
+    if (data === "Close") {
+      setUpdateFeatureType(false)
+    } else {
+      setUpdateFeatureType(false)
+      selectedFeateureItem = data[0]
+      setSelectedFeatureTypeData(data[0]);
+      UpdateTaskStatus()
+    }
+  }, [])
 
   return (
     <>
@@ -1285,6 +1318,33 @@ const inlineEditingcolumns = (props: any) => {
             onClick={() => setUpdateEstimatedTime(true)}
           >
             {props?.item?.EstimatedTime}&nbsp;
+          </span>
+        </>
+      ) : (
+        ""
+      )}
+      {props?.columnName == "FeatureType" ? (
+        <>
+          {" "}
+          <span
+
+            className={selectedFeatureTypeData?.Title != undefined ? "sdgergeg" : "hreffwefwlinkerg"}
+            style={{
+              display: "flex",
+              width: "100%",
+              height: "100%",
+              gap: "1px"
+            }}
+          >
+            {UpdateFeatureType != true ? <span style={{overflow:'hidden',display:'inline-block', width:`${selectedFeatureTypeData?.Title != undefined ? '85px':'106px'}`,textOverflow:'ellipsis',whiteSpace:"nowrap"}} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span> : <span style={{overflow:'hidden',display:'inline-block', width:`${selectedFeatureTypeData?.Title != undefined ? '85px':'106px'}`,textOverflow:'ellipsis',whiteSpace:"nowrap"}} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span> }&nbsp;
+            {selectedFeatureTypeData?.Title != undefined ? <a className="pancil-icons hreflink" onClick={() => removeFeatureType()}>
+              <span className="svg__iconbox svg__icon--cross"></span>
+            </a> : ''}
+
+            <a className="pancil-icons hreflink" onClick={() => setUpdateFeatureType(true)}>
+              <span className="svg__iconbox svg__icon--editBox"></span>
+            </a>
+
           </span>
         </>
       ) : (
@@ -1880,6 +1940,15 @@ const inlineEditingcolumns = (props: any) => {
           AllListId={props?.AllListId}
           Call={CategoryCallBack}
         ></Picker>
+      )}
+      {UpdateFeatureType && (
+        <Smartmetadatapickerin
+          Call={Smartmetadatafeature}
+          selectedFeaturedata={selectedFeatureTypeData?.Id != undefined ? selectedFeatureTypeData : []}
+          AllListId={props?.AllListId}
+          TaxType='Feature Type'
+          usedFor="Single"
+        ></Smartmetadatapickerin>
       )}
     </>
   );
