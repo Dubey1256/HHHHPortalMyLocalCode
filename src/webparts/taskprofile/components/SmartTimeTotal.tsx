@@ -255,7 +255,7 @@ let allTaskUsers:any;
                                             <tr className='for-c0l'>
                                                 <td style={{ width: "170px" }} colSpan={2}>
                                                     <div className='alignCenter'>
-                                                        <img className='workmember me-2'  src={items?.AuthorImage != undefined && items?.AuthorImage !="" ? items?.AuthorImage:"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}></img>
+                                                        <img className='workmember'  src={items?.AuthorImage != undefined && items?.AuthorImage !="" ? items?.AuthorImage:"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}></img>
                                                         <span className="ms-8">
                                                             <SmartTooltipComponent items={items}allTaskUsers={allTaskUsers}siteUrl={item?.AllListId?.siteUrl}/>
                                                         </span>
