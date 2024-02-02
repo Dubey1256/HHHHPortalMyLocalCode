@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import GlobalCommanTable from './GlobalCommanTableSmartmetadata';
 import PageLoader from '../../../globalComponents/pageLoader';
+import moment from 'moment';
 export default function DeleteSmartMetadataOpenPopup(props: any) {
     let DeleteItemCallBack: any = props.DeleteItemCallBack
     let smartMetadataItem: any = props.modalInstance;
@@ -53,14 +54,17 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
                 return web.lists.getById(site.listId).items.select(`Id,Title,SharewebTaskLevel1No,SharewebTaskLevel2No,SharewebTaskType/Id,SharewebTaskType/Title,Component/Id,Services/Id,Events/Id,PercentComplete,ComponentId,ServicesId,EventsId,Priority_x0020_Rank,DueDate,Created,TaskID,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/Id,ParentTask/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title`).expand('AssignedTo', 'Author', 'Editor', 'Component', 'Services', 'Events', 'Team_x0020_Members', 'ParentTask', 'SharewebCategories', 'Responsible_x0020_Team', 'SharewebTaskType')
                     .getAll();
             });
+            setloaded(true);
             const success = await Promise.all(allCalls);
             allSitesTask = [];
-            setloaded(true);
             success.forEach((val) => {
                 val.forEach((item: any) => {
                     if (item?.SharewebCategories.length > 0) {
                         item.SharewebCategories.forEach((cate: any) => {
                             if (cate.Id === Item.Id) {
+                                item.Created = item.Created !== null ? moment(item?.Created).format("DD/MM/YYYY") : '';
+                                item.DueDate = item.DueDate !== null ? moment(item?.DueDate).format("DD/MM/YYYY") : '';
+                                item.Modified = item.Modified !== null ? moment(item?.Modified).format("DD/MM/YYYY") : '';
                                 if (item.ComponentId.length > 0) {
                                     item['Portfoliotype'] = 'Component';
                                 } else if (item.ServicesId.length > 0) {
@@ -93,6 +97,9 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
                         })
                     } else {
                         if (item.SharewebCategories[0]?.Id === Item.Id) {
+                            item.Created = item.Created !== null ? moment(item?.Created).format("DD/MM/YYYY") : '';
+                            item.DueDate = item.DueDate !== null ? moment(item?.DueDate).format("DD/MM/YYYY") : '';
+                            item.Modified = item.Modified !== null ? moment(item?.Modified).format("DD/MM/YYYY") : '';
                             if (item.ComponentId.length > 0) {
                                 item['Portfoliotype'] = 'Component';
                             } else if (item.ServicesId.length > 0) {
@@ -180,7 +187,7 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
         ], [AllSitesTask]);
     useEffect(() => {
         LoadAllMetaData();
-    });
+    }, []);
     return (
         <>
             <div>
@@ -198,11 +205,6 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
                             {AllMetadataChilds ? (
                                 <div className="col-sm-12 padL-0">
                                     <h3 className="f-15 mt-5">Item tagged with {smartMetadataItem.Title}</h3>
-                                </div>
-                            ) : ''}
-                            {AllMetadataChilds === undefined ? (
-                                <div className="col-sm-12 padL-0">
-                                    <h3 className="f-15 mt-0">No items tagged. Proceed with deleting.</h3>
                                 </div>
                             ) : ''}
                             <div>

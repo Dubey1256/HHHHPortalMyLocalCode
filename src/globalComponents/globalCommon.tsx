@@ -2053,7 +2053,7 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
 }
 
 
-const componentGrouping = (Portfolio: any, AllProtFolioData: any, path: string = "") => {
+export const componentGrouping = (Portfolio: any, AllProtFolioData: any, path: string = "") => {
     let pathArray: any = [];
     Portfolio.subRows = [];
     let subComFeat = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === Portfolio?.Id);
