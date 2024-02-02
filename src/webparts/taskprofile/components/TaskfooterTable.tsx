@@ -61,6 +61,7 @@ let childRefdata: any;
 let TasksItem: any = [];
 let AllTasksData: any = [];
 let BulkTaskUpdate: any[] = [];
+let smartmetaDetailsall:any[] = [];
 function IndeterminateCheckbox(
   {
     indeterminate,
@@ -147,15 +148,17 @@ function TasksTable(props: any) {
   // IsUpdated = props.props.Portfolio_x0020_Type;
   IsUpdated = props.props.PortfolioType;
 
+
   const GetSmartmetadata = async () => {
 
     //  var metadatItem: any = []
     let smartmetaDetails: any = [];
     let AllSiteName: any = [];
-    var select: any = 'Id,Title,IsVisible,ParentID,SmartSuggestions,Color_x0020_Tag,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title&$expand=Parent'
+    var select: any = 'Id,Title,IsVisible,ParentID,SmartSuggestions,Configurations,Color_x0020_Tag,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title&$expand=Parent'
     smartmetaDetails = await globalCommon.getData(props?.AllListId?.siteUrl, props?.AllListId?.SmartMetadataListID, select);
     setAllClientCategory(smartmetaDetails?.filter((metadata: any) => metadata?.TaxType == 'Client Category'));
     console.log(smartmetaDetails);
+    smartmetaDetailsall = smartmetaDetails;
     setsmartmetaDetails(smartmetaDetails)
 
     smartmetaDetails.forEach((newtest: any) => {
@@ -221,7 +224,124 @@ function TasksTable(props: any) {
 
 
   }
+// Loadsmarttime
 
+const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: any): Promise<number> => {
+  let FinalTotalTime: number = 0;
+  let AllTimeSpentDetails: any[] = [];
+  let filteres: string;
+  let TimeSheetlistId: any;
+  let siteUrl: any;
+  let listName: any;
+
+  // Get the list Name
+  let TimesheetConfiguration: any[] = [];
+  if (smartmetaDetailsall.length > 0) {
+    smartmetaDetailsall.forEach((itemss: any) => {
+      if (itemss.Title == items.siteType && itemss.TaxType == 'Sites') {
+        TimesheetConfiguration = JSON.parse(itemss.Configurations);
+      }
+    });
+
+    TimesheetConfiguration?.forEach((val: any) => {
+      TimeSheetlistId = val.TimesheetListId;
+      siteUrl = val.siteUrl;
+      listName = val.TimesheetListName;
+    });
+  }
+
+  if (items.siteType === "Offshore Tasks") {
+    const siteType = "OffshoreTasks";
+    filteres = `Task${siteType}/Id eq ${items.Id}`;
+  } else {
+    filteres = `Task${items.siteType}/Id eq ${items.Id}`;
+  }
+
+  const select =
+    "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,Author/Id,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle&$filter=" + filteres;
+
+  let count = 0;
+  let allurls: { Url: string }[] = [];
+
+  if (items.siteType === "Migration" || items.siteType === "ALAKDigital") {
+    allurls = [
+      {
+        Url:
+          "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('9ed5c649-3b4e-42db-a186-778ba43c5c93')/items?$select=" + select,
+      },
+    ];
+  } else if (items.siteType === "SH") {
+    allurls = [
+      { Url: `${items.siteUrl}/_api/web/lists/getbyTitle('TaskTimesheet')/items?$select=${select}` },
+    ];
+  } else {
+    if (listName !== undefined) {
+      allurls = [
+        { Url: `${items.siteUrl}/_api/web/lists/getbyTitle('${listName}')/items?$select=${select}` },
+      ];
+    }
+  }
+
+  for (const item of allurls) {
+    try {
+      const response = await $.ajax({
+        url: item.Url,
+        method: "GET",
+        headers: {
+          Accept: "application/json; odata=verbose",
+        },
+      });
+
+      count++;
+      let tempArray: any[] = [];
+
+      if (response.d.results !== undefined && response.d.results.length > 0) {
+        AllTimeSpentDetails = AllTimeSpentDetails.concat(response.d.results);
+
+        AllTimeSpentDetails.forEach((item: any) => {
+          if (item.AdditionalTimeEntry !== null) {
+            const data = JSON.parse(item.AdditionalTimeEntry);
+
+            if (data !== undefined && data.length > 0) {
+              data.forEach((timeData: any) => {
+                tempArray.push(timeData);
+              });
+            }
+          }
+        });
+      }
+
+      let TotalTimeData: number = 0;
+
+      if (tempArray.length > 0) {
+        tempArray.forEach((tempItem: any) => {
+          if (typeof tempItem.TaskTimeInMin === "string") {
+            const timeValue = Number(tempItem.TaskTimeInMin);
+
+            if (timeValue > 0) {
+              TotalTimeData += timeValue;
+            }
+          } else {
+            if (tempItem.TaskTimeInMin > 0) {
+              TotalTimeData += tempItem.TaskTimeInMin;
+            }
+          }
+        });
+      }
+
+      if (TotalTimeData > 0) {
+        FinalTotalTime = TotalTimeData / 60;
+      }
+    } catch (error) {
+      // console.error("Error:", error);
+    }
+  }
+
+  // console.log(FinalTotalTime);
+  return FinalTotalTime;
+};
+
+// Loadsmarttimeend
   const GetIconImageUrl = (siteType: any, siteUrl: any, undefined: any) => {
     let siteIcon = '';
     siteIconAllTask?.map((items: any) => {
@@ -345,6 +465,7 @@ function TasksTable(props: any) {
                       }
                     });
                   }
+                
                   if (
                     result.ResponsibleTeam != undefined &&
                     result?.ResponsibleTeam?.length > 0
@@ -412,10 +533,26 @@ function TasksTable(props: any) {
 
                 if (allworkstreamTasks != undefined && allworkstreamTasks?.length > 0) {
                   allworkstreamTasks.forEach((obj: any) => {
+                    SmartTimeData(obj)
+                    .then((returnresult) => {
+                      obj.smartTime = String(returnresult)
+                      // console.log("Final Total Time:", returnresult);
+                    })
+                    .catch((error) => {
+                      console.error("Error:", error);
+                    });
                     if (obj.Id != undefined) {
                       AllTasks.forEach((task: any) => {
                         if (task?.ParentTask != undefined && obj?.Id === task?.ParentTask?.Id && task?.siteType == props?.props?.siteType) {
                           obj.subRows = obj?.subRows != undefined ? obj?.subRows : []
+                          SmartTimeData(task)
+                          .then((returnresult) => {
+                            task.smartTime = String(returnresult)
+                            // console.log("Final Total Time:", returnresult);
+                          })
+                          .catch((error) => {
+                            console.error("Error:", error);
+                          });
                           obj.subRows.push(task)
                         }
 
@@ -501,6 +638,7 @@ function TasksTable(props: any) {
 
   //=================== callback function to all the poup handle ================
   const Call = React.useCallback((childItem: any) => {
+    
     AllTasksRendar = [];
     setIsTask(false);
     setRowSelection({});
@@ -511,66 +649,71 @@ function TasksTable(props: any) {
     }
     var MainId: any = ''
     let ParentTaskId: any;
-    if (childItem != undefined && childItem.data?.ItmesDelete == undefined && childItem[0]?.NewBulkUpdate == undefined) {
-
-
-
+    if (childItem != null && childItem.data?.ItmesDelete == null && childItem?.[0]?.NewBulkUpdate == null) {
+     
       childItem.data['flag'] = true;
-      // childItem.data['SiteIcon']= GetIconImageUrl(childItem.data.siteType,childItem.data.siteUrl,undefined)
-      // childItem.data['TitleNew'] = childItem.data.Title;
-      childItem.data['TaskType'] = { Title: 'Workstream' }
-      if (childItem.data.PortfolioId != undefined) {
-        MainId = childItem.data.PortfolioId
+      childItem.data['TaskType'] = { Title: 'Workstream' };
+    
+      if (childItem.data.PortfolioId != null) {
+        MainId = childItem.data.PortfolioId;
       }
-
-      if (childItem.data.ParentTaskId != undefined && childItem.data.ParentTaskId != "") {
+    
+      if (childItem.data.ParentTaskId != null && childItem.data.ParentTaskId !== "") {
         ParentTaskId = childItem.data.ParentTaskId;
       }
-      // ==========create ws and task======================== 
-      let grouping: any = true;
-      if (childItem.data?.editpopup == undefined && childItem.data?.ItmesDelete == undefined) {
-        finalData?.map((elem: any) => {
+    
+      // ==========create ws and task========================
+      let grouping = true;
+    
+      if (childItem.data?.editpopup == null && childItem.data?.ItmesDelete == null) {
+     
+        finalData?.forEach((elem: any) => {
           if (elem?.Id === ParentTaskId || elem.ID === ParentTaskId) {
-            elem.subRows = elem.subRows == undefined ? [] : elem.subRows
-            elem.subRows.push(childItem.data)
+            elem.subRows = elem.subRows ?? [];
+            elem.subRows.push(childItem.data);
             grouping = false;
           }
-        })
-        if (grouping === true) {
-          AllTasksRendar?.push(childItem.data)
-          finalData = finalData.concat(AllTasksRendar)
-        }
-        else if (grouping === false) {
-          AllTasksRendar = AllTasksRendar?.concat(finalData)
+        });
+    
+        if (grouping) {
+          AllTasksRendar?.push(childItem.data);
+          finalData = finalData.concat(AllTasksRendar);
+        } else {
+          AllTasksRendar = AllTasksRendar?.concat(finalData);
           finalData = [];
-          finalData = finalData?.concat(AllTasksRendar)
+          finalData = finalData?.concat(AllTasksRendar);
         }
       }
-
+    
       //============ update the data to Edit task popup==================
+      if (childItem.data?.editpopup != null && childItem.data?.editpopup == true && childItem.data?.ItmesDelete == null) {
+        
+        finalData?.forEach((ele: any, index: any) => {
 
-      if (childItem.data?.editpopup != undefined && childItem.data?.editpopup == true && childItem.data?.ItmesDelete == undefined) {
-        finalData?.map((ele: any, index: any) => {
-          if (ele.subRows != undefined && ele.subRows?.length > 0) {
-            ele.subRows?.map((sub: any, subindex: any) => {
+          if (ele.subRows != null && ele.subRows?.length > 0) {
+            ele.subRows?.forEach((sub: any, subindex: any) => {
               if (sub.Id == childItem.data.Id) {
-                finalData[index].subRows.splice(subindex, 1, childItem.data);
+                // Update the data without removing existing subRows
+                finalData[index].subRows[subindex] = { ...sub, ...childItem.data };
               }
-            })
+            });
           }
           if (ele.Id == childItem.data.Id) {
-            finalData.splice(index, 1, childItem.data);
+            // Update the data without removing existing data
+           
+            finalData[index] = { ...ele, ...childItem.data };
           }
-        })
-        AllTasksRendar = AllTasksRendar?.concat(finalData)
+        });
+    
+        AllTasksRendar = AllTasksRendar?.concat(finalData);
         finalData = [];
-        finalData = finalData?.concat(AllTasksRendar)
+        finalData = finalData?.concat(AllTasksRendar);
       }
-
-
-      console.log(finalData)
+    
+      console.log(finalData);
       refreshData();
     }
+    
     // ===============Delete the data to Edit task popup====================
 
     if (childItem?.data?.ItmesDelete == true) {
@@ -720,7 +863,7 @@ function TasksTable(props: any) {
           <div>
             {row?.original?.SiteIcon != undefined &&
               <a className="hreflink" title="Show All Child" data-toggle="modal">
-                <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
+                <img className={row?.original?.TaskType?.Title === "Workstream"?"icon-sites-img ml20 me-1":row?.original?.TaskType?.Title === "Task"?"ml-12 workmember ml20 me-1":""} src={row?.original?.SiteIcon}></img>
               </a>
             }
             {getValue()}
@@ -735,7 +878,7 @@ function TasksTable(props: any) {
         cell: ({ row, getValue }) => (
           <div>
             {row?.original?.TitleNew != "Tasks" ?
-              <span className="d-flex">
+              <span className="d-flex hreflink">
                 <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={props?.AllMasterTasks} AllSitesTaskData={props?.AllSiteTasks} AllListId={props.AllListId} />
               </span>
               : ''}
@@ -766,7 +909,7 @@ function TasksTable(props: any) {
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
               <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
-            {row?.original?.descriptionsSearch != '' && <InfoIconsToolTip
+            {row?.original?.descriptionsSearch != '' && <InfoIconsToolTip className="alignIcon"
               Discription={row?.original?.descriptionsSearch}
               row={row?.original}
             />}
@@ -907,13 +1050,23 @@ function TasksTable(props: any) {
         header: "",
         size: 129
       },
-
+      {
+        accessorFn: (row) => row?.smartTime,
+        cell: ({ row }) => (
+          <span> {row?.original?.smartTime}</span>
+        ),
+        id: "smartTime",
+        placeholder: "Smart Time",
+        header: "",
+        resetColumnFilters: false,
+        size: 49,
+      },
       {
         cell: ({ row, getValue }) => (
           <>
 
-            <a className='time-icons' onClick={(e) => EditData(e, row?.original)} >
-              <span title='Time' className="svg__iconbox svg__icon--clock"></span>
+            <a onClick={(e) => EditData(e, row?.original)} >
+              <span title='Time' className="svg__iconbox svg__icon--clock mt-1"></span>
             </a>
 
             {getValue()}
@@ -950,7 +1103,7 @@ function TasksTable(props: any) {
                 </span>)}
 
 
-              <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
+              <span title='Edit' onClick={(e) => EditItemTaskPopup(row?.original)} className="ml-auto svg__iconbox svg__icon--edit"></span>
 
             </a>
             {getValue()}
@@ -1143,15 +1296,15 @@ function TasksTable(props: any) {
     }
     // setCheckedList1(array);
   }, []);
-  const callBackData1 = React.useCallback((getData: any, topCompoIcon: any) => {
-    if (getData != undefined && getData?.length > 0) {
+  const callBackData1 = React.useCallback((getData: any, topCompoIcon: any ,checkSelectionItem:any) => {
+    if (getData != undefined && getData?.length > 0 && checkSelectionItem != false) {
+      setTopCompoIcon(topCompoIcon);
       finalData = [];
       finalData = finalData?.concat(getData)
       console.log(finalData)
       refreshData();
-      setTopCompoIcon(topCompoIcon);
-    }
-
+      }
+ 
   }, []);
 
 
@@ -1174,10 +1327,8 @@ function TasksTable(props: any) {
     // className={IsUpdated === 'Events' ? 'app component eventpannelorange' : (IsUpdated == 'Service' ? 'app component serviepannelgreena' : 'app component')}
     >
       <div className="Alltable mt-10">
-
-        <div className="col-sm-12 pad0 smart" >
-          <div className="">
-            <div className={`${data?.length > 10 ? "wrapper" : "MinHeight"}`}>
+        <div className="col-sm-12 pad0 smart tableheight" >
+            <div className={`${data?.length > 10 ? "wrapper" : "MinHeight tableheight"}`}>
               <div> <BulkeditTask SelectedTask={BulkTaskUpdate} Call={Call}></BulkeditTask></div>
 
               <GlobalCommanTable
@@ -1206,7 +1357,7 @@ function TasksTable(props: any) {
               />
             </div>
 
-          </div>
+      
         </div>
       </div>
 
