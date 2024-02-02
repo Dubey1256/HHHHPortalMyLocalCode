@@ -15,6 +15,8 @@ import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalCompone
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import PageLoader from "../../../globalComponents/pageLoader";
 import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
+import TrafficLightComponent from "../../../globalComponents/TrafficLightVerification/TrafficLightComponent";
+import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
 
 var filt: any = "";
@@ -408,6 +410,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 cell: ({ row }) => (
                     <>
                         <span>{row?.original?.descriptionsDeliverablesSearch ? row?.original?.descriptionsDeliverablesSearch?.length : ""}</span>
+                        {row?.original?.descriptionsDeliverablesSearch &&<InfoIconsToolTip  row={row?.original}  SingleColumnData={"descriptionsDeliverablesSearch"}/>}
                     </>
                 ),
                 id: "descriptionsDeliverablesSearch",
@@ -422,6 +425,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 cell: ({ row }) => (
                     <>
                         <span>{row?.original?.descriptionsHelpInformationSarch ? row?.original?.descriptionsHelpInformationSarch?.length : ""}</span>
+                        {row?.original?.descriptionsHelpInformationSarch &&<InfoIconsToolTip  row={row?.original}  SingleColumnData={"Help_x0020_Information"}/>}
                     </>
                 ),
                 id: "descriptionsHelpInformationSarch",
@@ -436,6 +440,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 cell: ({ row }) => (
                     <>
                         <span>{row?.original?.descriptionsShortDescriptionSearch ? row?.original?.descriptionsShortDescriptionSearch?.length : ""}</span>
+                        {row?.original?.descriptionsShortDescriptionSearch &&<InfoIconsToolTip  row={row?.original}  SingleColumnData={"Short_x0020_Description_x0020_On"}/>}
                     </>
                 ),
                 id: "descriptionsShortDescriptionSearch",
@@ -450,6 +455,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 cell: ({ row }) => (
                     <>
                         <span>{row?.original?.descriptionsTechnicalExplanationsSearch ? row?.original?.descriptionsTechnicalExplanationsSearch?.length : ""}</span>
+                        {row?.original?.descriptionsTechnicalExplanationsSearch &&<InfoIconsToolTip  row={row?.original}  SingleColumnData={"TechnicalExplanations"}/>}
                     </>
                 ),
                 id: "descriptionsTechnicalExplanationsSearch",
@@ -464,6 +470,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 cell: ({ row }) => (
                     <>
                         <span>{row?.original?.descriptionsBodySearch ? row?.original?.descriptionsBodySearch?.length : ""}</span>
+                        {row?.original?.descriptionsBodySearch &&<InfoIconsToolTip  row={row?.original}  SingleColumnData={"Body"}/>}
                     </>
                 ),
                 id: "descriptionsBodySearch",
@@ -478,6 +485,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 cell: ({ row }) => (
                     <>
                         <span>{row?.original?.descriptionsAdminNotesSearch ? row?.original?.descriptionsAdminNotesSearch?.length : ""}</span>
+                        {row?.original?.descriptionsAdminNotesSearch &&<InfoIconsToolTip  row={row?.original}  SingleColumnData={"AdminNotes"}/>}
                     </>
                 ),
                 id: "descriptionsAdminNotesSearch",
@@ -492,6 +500,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 cell: ({ row }) => (
                     <>
                         <span>{row?.original?.descriptionsValueAddedSearch ? row?.original?.descriptionsValueAddedSearch?.length : ""}</span>
+                        {row?.original?.descriptionsValueAddedSearch &&<InfoIconsToolTip  row={row?.original}  SingleColumnData={"ValueAdded"}/>}
                     </>
                 ),
                 id: "descriptionsValueAddedSearch",
@@ -506,6 +515,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 cell: ({ row }) => (
                     <>
                         <span>{row?.original?.descriptionsIdeaSearch ? row?.original?.descriptionsIdeaSearch?.length : ""}</span>
+                        {row?.original?.descriptionsIdeaSearch &&<InfoIconsToolTip  row={row?.original}  SingleColumnData={"Idea"}/>}
                     </>
                 ),
                 id: "descriptionsIdeaSearch",
@@ -520,6 +530,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 cell: ({ row }) => (
                     <>
                         <span>{row?.original?.descriptionsBackgroundSearch ? row?.original?.descriptionsBackgroundSearch?.length : ""}</span>
+                        {row?.original?.descriptionsBackgroundSearch &&<InfoIconsToolTip  row={row?.original}  SingleColumnData={"Background"}/>}
                     </>
                 ),
                 id: "descriptionsBackgroundSearch",
@@ -530,13 +541,13 @@ const GroupByDashboard = (SelectedProp: any) => {
                 isColumnVisible: true
             },
             {
-                accessorFn: (row) => row?.verified,
+                accessorFn: (row) => row?.HelpInformationVerified,
                 cell: ({ row }) => (
                     <>
-                        <span></span>
+                       <span> <TrafficLightComponent columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>
                     </>
                 ),
-                id: "verified",
+                id: "HelpInformationVerified",
                 placeholder: "verified",
                 header: "",
                 resetColumnFilters: false,
