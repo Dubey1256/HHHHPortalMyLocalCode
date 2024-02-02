@@ -187,7 +187,7 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
         ], [AllSitesTask]);
     useEffect(() => {
         LoadAllMetaData();
-    });
+    }, []);
     return (
         <>
             <div>
