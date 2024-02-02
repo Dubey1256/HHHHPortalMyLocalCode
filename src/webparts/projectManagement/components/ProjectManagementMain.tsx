@@ -1849,6 +1849,7 @@ const ProjectManagementMain = (props: any) => {
                                   clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
                                   flatView={true}
                                   customHeaderButtonAvailable={true}
+                                  bulkEditIcon={true} setData={setProjectTableData} setLoaded={setPageLoader} columnSettingIcon={true}
                                   customTableHeaderButtons={customTableHeaderButtons}
                                   showRestructureButton={true}
                                   switchGroupbyData={switchGroupbyData}
