@@ -244,7 +244,7 @@ let allTaskUsers:any;
             {smartTimeTotal.toFixed(1)}
             <span className='openhoverpopup hoverimg'>
             <span className="svg__iconbox svg__icon--clock dark" onClick={OpenTimeEntry}></span>
-               <div className='hoverpopup overlay'>
+               <div className={additionalTime?.length > 0 ? "hoverpopup overlay" :'hoverpopup overlay blankTooltip'}>
                     <div className='hoverpopuptitle'>{item.props.Title}</div>
                     <div className='hoverpopupbody'>
                         <table className='table mb-0'>
