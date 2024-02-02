@@ -1339,7 +1339,7 @@ const inlineEditingcolumns = (props: any) => {
             {UpdateFeatureType != true ? <span style={{overflow:'hidden',display:'inline-block', width:`${selectedFeatureTypeData?.Title != undefined ? '85px':'106px'}`,textOverflow:'ellipsis',whiteSpace:"nowrap"}} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span> : <span style={{overflow:'hidden',display:'inline-block', width:`${selectedFeatureTypeData?.Title != undefined ? '85px':'106px'}`,textOverflow:'ellipsis',whiteSpace:"nowrap"}} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span> }&nbsp;
             {selectedFeatureTypeData?.Title != undefined ? <a className="pancil-icons hreflink" onClick={() => removeFeatureType()}>
               <span className="svg__iconbox svg__icon--cross"></span>
-            </a> : ''}
+            </a> : '' }
 
             <a className="pancil-icons hreflink" onClick={() => setUpdateFeatureType(true)}>
               <span className="svg__iconbox svg__icon--editBox"></span>
