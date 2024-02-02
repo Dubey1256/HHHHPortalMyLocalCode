@@ -99,7 +99,7 @@ const HHHHEditComponent = (props: any) => {
                         tagDivision=   myContextData2?.divisionData?.filter((divData:any)=>divData?.Parent?.Id==data?.Institution?.Id)
                        }
                        if(tagDivision?.length>0){
-                           data.allTaggedDivision=  tagDivision
+                           data.Division=  tagDivision
                        }
                     setUpdateData(data);
                   
@@ -313,7 +313,6 @@ const HHHHEditComponent = (props: any) => {
                 InstitutionId: (updateData?.Institution != undefined ? updateData?.Institution?.Id : null),
                 Email: (updateData?.Email),
                 Department: (updateData?.Department),
-                DivisionId: (updateData?.Division != undefined ? updateData?.Division?.Id : null), // changes by Anupam
                 WorkPhone: (updateData?.WorkPhone),
                 CellPhone: (updateData?.CellPhone),
                 HomePhone: (updateData?.HomePhone),
@@ -684,2204 +683,928 @@ const HHHHEditComponent = (props: any) => {
         setCreateContractPopup(false);
     },[])
     return (
-      <>
-        <Panel
-          onRenderHeader={onRenderCustomHeadersmartinfo}
-          isOpen={true}
-          type={PanelType.custom}
-          customWidth="1280px"
-          onDismiss={callBack}
-          isBlocking={false}
-        >
-          <div>
-            <div className="modal-body mb-5">
-              <ul
-                className="fixed-Header nav nav-tabs"
-                id="myTab"
-                role="tablist"
-              >
-                <button
-                  className="nav-link active"
-                  id="BASIC-INFORMATION"
-                  data-bs-toggle="tab"
-                  data-bs-target="#BASICINFORMATION"
-                  type="button"
-                  role="tab"
-                  aria-controls="BASICINFORMATION"
-                  aria-selected="true"
-                >
-                  BASIC INFORMATION
-                </button>
-                <button
-                  className="nav-link"
-                  id="IMAGE-INFORMATION"
-                  data-bs-toggle="tab"
-                  data-bs-target="#IMAGEINFORMATION"
-                  type="button"
-                  role="tab"
-                  aria-controls="IMAGEINFORMATION"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    imageta();
-                  }}
-                  aria-selected="true"
-                >
-                  IMAGE INFORMATION
-                </button>
-                {siteTaggedHR && (
-                  <button
-                    className="nav-link"
-                    id="HR-Tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#HR"
-                    type="button"
-                    role="tab"
-                    aria-controls="HR"
-                    aria-selected="true"
-                  >
-                    HR
-                  </button>
-                )}
-                {siteTaggedSMALSUS && (
-                  <button
-                    className="nav-link"
-                    id="SMALSUS-Tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#SMALSUS"
-                    type="button"
-                    role="tab"
-                    aria-controls="SMALSUS"
-                    aria-selected="true"
-                  >
-                    SMALSUS
-                  </button>
-                )}
-              </ul>
+        <>
+            <Panel onRenderHeader={onRenderCustomHeadersmartinfo}
+                isOpen={true}
+                type={PanelType.custom}
+                customWidth="1280px"
+                onDismiss={callBack}
+                isBlocking={false}
+            >
+                <div>
+                    <div className="modal-body mb-5">
+                        <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
 
-              <div
-                className="border border-top-0 clearfix p-3 tab-content "
-                id="myTabContent"
-              >
-                <div
-                  className="tab-pane show active"
-                  id="BASICINFORMATION"
-                  role="tabpanel"
-                  aria-labelledby="BASICINFORMATION"
-                >
-                  <div className="general-section">
-                    <div className="card">
-                      <div className="card-header fw-semibold">General</div>
-                      <div className="card-body">
-                        <div className="user-form-5 row mb-3">
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                First Name{" "}
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={
-                                  updateData ? updateData?.FirstName : null
-                                }
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    FirstName: e.target.value,
-                                  })
-                                }
-                                aria-label="First name"
-                                placeholder="First Name"
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                {" "}
-                                Last Name
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={updateData?.Title}
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    Title: e.target.value,
-                                  })
-                                }
-                                aria-label="Last name"
-                                placeholder="Last name"
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                {" "}
-                                Suffix
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={updateData?.Suffix}
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    Suffix: e.target.value,
-                                  })
-                                }
-                                aria-label="Suffix"
-                                placeholder="Suffix"
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                {" "}
-                                Job Title
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={updateData?.JobTitle}
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    JobTitle: e.target.value,
-                                  })
-                                }
-                                aria-label="JobTitle"
-                                placeholder="Job-Title"
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Site
-                              </label>
-                              <div className="alignCenter">
-                                <label className="SpfxCheckRadio">
-                                  <input
-                                    className="me-1 form-check-input"
-                                    type="checkbox"
-                                    value=""
-                                    checked={
-                                      updateData?.Site?.toString().search(
-                                        "HR"
-                                      ) >= 0
-                                    }
-                                  />
-                                  HR{" "}
-                                </label>
-                                <label className="SpfxCheckRadio">
-                                  <input
-                                    className="me-1 form-check-input"
-                                    type="checkbox"
-                                    checked={
-                                      updateData?.Site?.toString().search(
-                                        "GMBH"
-                                      ) >= 0
-                                    }
-                                  />
-                                  GMBH{" "}
-                                </label>
-                                <label className="SpfxCheckRadio">
-                                  <input
-                                    className="me-1 form-check-input"
-                                    type="checkbox"
-                                    checked={
-                                      updateData?.Site?.toString().search(
-                                        "SMALSUS"
-                                      ) >= 0
-                                    }
-                                  />
-                                  SMALSUS{" "}
-                                </label>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="user-form-4 row mb-3">
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Organization
-                              </label>
-                              {updateData?.Institution?.FullName ? (
-                                <div className="block wid90 alignCenter">
-                                  <a className="hreflink" target="_blank">
-                                    {" "}
-                                    {updateData?.Institution?.FullName}
-                                  </a>
-                                  <span
-                                    className="bg-light svg__icon--cross svg__iconbox hreflink ml-auto"
-                                    onClick={() =>
-                                      setUpdateData({
-                                        ...updateData,
-                                        Institution: undefined,
-                                      })
-                                    }
-                                  ></span>
-                                </div>
-                              ) : (
-                                <input type="text" />
-                              )}
 
-                              <span
-                                className="input-group-text"
-                                title="Select Organisation"
-                              >
-                                <span
-                                  onClick={() => openOrg()}
-                                  className="svg__iconbox svg__icon--editBox"
-                                ></span>
-                              </span>
-                            </div>
-                          </div>
-                          {/* changes in Division field by Anupam */}
-                          <div className="col"> 
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Division
-                              </label>
-                              <select
-                                className="form-control"
-                                value={
-                                    updateData?.Division?.Title
-                                }
-                                onChange={(e) => {
-                                  const selectedDivision =
-                                    updateData?.allTaggedDivision?.find(
-                                      (division: any) =>
-                                        division?.Title === e.target.value
-                                    );
-
-                                  setUpdateData({
-                                    ...updateData,
-                                    Division: selectedDivision,
-                                  });
+                            <button className="nav-link active"
+                                id="BASIC-INFORMATION"
+                                data-bs-toggle="tab"
+                                data-bs-target="#BASICINFORMATION"
+                                type="button"
+                                role="tab"
+                                aria-controls="BASICINFORMATION"
+                                aria-selected="true">BASIC INFORMATION</button>
+                            <button className="nav-link"
+                                id="IMAGE-INFORMATION"
+                                data-bs-toggle="tab"
+                                data-bs-target="#IMAGEINFORMATION"
+                                type="button"
+                                role="tab"
+                                aria-controls="IMAGEINFORMATION"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    imageta()
                                 }}
-                              >
-                                <option>Select Division</option>
-                                {updateData?.allTaggedDivision?.length > 0 &&
-                                  updateData?.allTaggedDivision?.map(
-                                    (division: any, index: number) => {
-                                      return (
-                                        <option
-                                          key={index}
-                                          value={
-                                            division?.Title
-                                          }
-                                        >
-                                          {division?.Title}
-                                        </option>
-                                      );
-                                    }
-                                  )}
-                              </select>
-                            </div>
-                          </div>
-                          <div className="col pad0">
-                            <label className="full_width form-label">
-                              {" "}
-                              D.O.J
-                            </label>
-                            <div>
-                              {" "}
-                              <input
-                                type="date"
-                                value={
-                                  updateData?.DOJ != undefined
-                                    ? moment(updateData?.DOJ).format(
-                                        "YYYY-MM-DD"
-                                      )
-                                    : null
-                                }
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    DOJ: moment(e.target.value).format(
-                                      "YYYY-MM-DD"
-                                    ),
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div className="col pad0">
-                            <label className="full_width form-label">
-                              {" "}
-                              D.O.E
-                            </label>
-                            <div>
-                              <input
-                                type="date"
-                                value={
-                                  updateData?.DOE != undefined
-                                    ? moment(updateData?.DOE).format(
-                                        "YYYY-MM-DD"
-                                      )
-                                    : null
-                                }
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    DOE: moment(e.target.value).format(
-                                      "YYYY-MM-DD"
-                                    ),
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="Social-media-account my-2">
-                    <div className="card">
-                      <div className="card-header fw-semibold">
-                        Social Media Accounts
-                      </div>
-                      <div className="card-body">
-                        <div className="user-form-4 row">
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                LinkedIn
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={
-                                  URLs.length ? URLs[0].LinkedIn : ""
-                                }
-                                aria-label="LinkedIn"
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    LinkedIn: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Twitter
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={
-                                  URLs.length ? URLs[0].Twitter : ""
-                                }
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    Twitter: e.target.value,
-                                  })
-                                }
-                                aria-label="LinkedIn"
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Facebook
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={
-                                  URLs.length ? URLs[0].Facebook : ""
-                                }
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    Facebook: e.target.value,
-                                  })
-                                }
-                                aria-label="LinkedIn"
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Instagram
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={
-                                  URLs.length ? URLs[0].Instagram : ""
-                                }
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    Instagram: e.target.value,
-                                  })
-                                }
-                                aria-label="LinkedIn"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="Contact-details my-2">
-                    <div className="card">
-                      <div className="card-header fw-semibold">Contacts</div>
-                      <div className="card-body">
-                        <div className="user-form-5 row mb-3">
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Business Phone
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={
-                                  updateData?.WorkPhone
-                                    ? updateData?.WorkPhone
-                                    : ""
-                                }
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    WorkPhone: e.target.value,
-                                  })
-                                }
-                                aria-label="Business Phone"
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Mobile-No
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={
-                                  updateData?.CellPhone
-                                    ? updateData?.CellPhone
-                                    : ""
-                                }
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    CellPhone: e.target.value,
-                                  })
-                                }
-                                aria-label="Mobile-No"
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Home-Phone
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={
-                                  updateData?.HomePhone
-                                    ? updateData?.HomePhone
-                                    : ""
-                                }
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    HomePhone: e.target.value,
-                                  })
-                                }
-                                aria-label="Home-Phone"
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                City
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={
-                                  updateData?.WorkCity
-                                    ? updateData?.WorkCity
-                                    : ""
-                                }
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    WorkCity: e.target.value,
-                                  })
-                                }
-                                aria-label="City"
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Address
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={
-                                  updateData?.WorkAddress
-                                    ? updateData?.WorkAddress
-                                    : ""
-                                }
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    WorkAddress: e.target.value,
-                                  })
-                                }
-                                aria-label="Address"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="user-form-5 row mb-3">
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Skpye
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Skpye"
-                                defaultValue={
-                                  updateData?.IM ? updateData?.IM : ""
-                                }
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    IM: e.target.value,
-                                  })
-                                }
-                                aria-label="Skpye"
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Email
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={
-                                  updateData?.Email ? updateData?.Email : ""
-                                }
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    Email: e.target.value,
-                                  })
-                                }
-                                aria-label="Email"
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                WebPage
-                              </label>
+                                aria-selected="true">IMAGE INFORMATION</button>
+                            {siteTaggedHR &&
+                                <button className="nav-link" id="HR-Tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#HR"
+                                    type="button"
+                                    role="tab"
+                                    aria-controls="HR"
+                                    aria-selected="true">HR</button>}
+                            {siteTaggedSMALSUS && <button className="nav-link" id="SMALSUS-Tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#SMALSUS"
+                                type="button"
+                                role="tab"
+                                aria-controls="SMALSUS"
+                                aria-selected="true">SMALSUS</button>}
 
-                              <input
-                                className="form-control"
-                                type="text"
-                                defaultValue={
-                                  updateData?.WebPage
-                                    ? updateData?.WebPage.Url
-                                    : ""
-                                }
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    WebPage: {
-                                      ...updateData.WebPage,
-                                      Url: e.target.value,
-                                    },
-                                  })
-                                }
-                                aria-label="WebPage"
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Zip Code
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={
-                                  updateData?.WorkZip ? updateData?.WorkZip : ""
-                                }
-                                onChange={(e) =>
-                                  setUpdateData({
-                                    ...updateData,
-                                    WorkZip: e.target.value,
-                                  })
-                                }
-                                aria-label="Zip Code"
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Country
-                              </label>
-                              {/* changes in smart countries field by Anupam */}
-                              {updateData?.SmartCountries?.length > 0 ? (
-                                <div className="block wid90 alignCenter">
-                                  <a className="hreflink" target="_blank">
-                                    {updateData?.SmartCountries?.[0]?.Title}
-                                  </a>
-                                  <span
-                                    onClick={() =>
-                                      setUpdateData({
-                                        ...updateData,
-                                        SmartCountries: undefined,
-                                      })
-                                    }
-                                    className="bg-light ml-auto svg__icon--cross svg__iconbox"
-                                  >
-                                  </span>
-                                  <span
-                                className="input-group-text"
-                                title="Smart Category Popup"
-                                >
-                                <span
-                                  onClick={() =>
-                                    openCountry(updateData?.SmartCountries)
-                                  }
-                                  className="svg__iconbox svg__icon--editBox"
-                                ></span>
-                              </span>
-                                </div>
-                              ) : (
-                                <input type="text"></input>
-                              )}
+                        </ul>
 
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="tab-pane"
-                  id="IMAGEINFORMATION"
-                  role="tabpanel"
-                  aria-labelledby="IMAGEINFORMATION"
-                >
-                  <div className="row col-sm-12">
-                    {imagetab && (
-                      <ImagesC
-                        EditdocumentsData={updateData}
-                        setData={setUpdateData}
-                        AllListId={myContextData2?.allListId}
-                        Context={myContextData2?.allListId?.Context}
-                        callBack={imageTabCallBack}
-                      />
-                    )}
-                  </div>
-                </div>
-                <div
-                  className="tab-pane"
-                  id="HR"
-                  role="tabpanel"
-                  aria-labelledby="HR"
-                >
-                  <ul
-                    className="fixed-Header nav nav-tabs"
-                    id="myTab"
-                    role="tablist"
-                  >
-                    <button
-                      className="nav-link active"
-                      id="PERSONALIN-FORMATION1"
-                      data-bs-toggle="tab"
-                      data-bs-target="#PERSONALINFORMATION1"
-                      type="button"
-                      role="tab"
-                      aria-controls="PERSONALINFORMATION1"
-                      aria-selected="true"
-                    >
-                      PERSONAL INFORMATION
-                    </button>
-                    <button
-                      className="nav-link"
-                      id="BANK-INFORMATION1"
-                      data-bs-toggle="tab"
-                      data-bs-target="#BANKINFORMATION1"
-                      type="button"
-                      role="tab"
-                      aria-controls="BANKINFORMATION1"
-                      aria-selected="false"
-                    >
-                      BANK INFORMATION
-                    </button>
-                    <button
-                      className="nav-link"
-                      id="TAX-INFORMATION1"
-                      data-bs-toggle="tab"
-                      data-bs-target="#TAXINFORMATION1"
-                      type="button"
-                      role="tab"
-                      aria-controls="TAXINFORMATION1"
-                      aria-selected="false"
-                    >
-                      TAX INFORMATION
-                    </button>
-                    <button
-                      className="nav-link"
-                      id="SOCIALSECURITY-INFORMATION1"
-                      data-bs-toggle="tab"
-                      data-bs-target="#SOCIALSECURITYINFORMATION1"
-                      type="button"
-                      role="tab"
-                      aria-controls="SOCIALSECURITYINFORMATION1"
-                      aria-selected="false"
-                    >
-                      SOCIAL SECURITY INFORMATION
-                    </button>
-                    <button
-                      className="nav-link"
-                      id="QUALIFICATIONS-Tab1"
-                      data-bs-toggle="tab"
-                      data-bs-target="#QUALIFICATIONS1"
-                      type="button"
-                      role="tab"
-                      aria-controls="QUALIFICATIONS1"
-                      aria-selected="false"
-                    >
-                      QUALIFICATIONS
-                    </button>
-                  </ul>
-                  <div
-                    className="border border-top-0 clearfix p-3 tab-content"
-                    id="myTabContent"
-                  >
-                    <div
-                      className="tab-pane show active"
-                      id="PERSONALINFORMATION1"
-                      role="tabpanel"
-                      aria-labelledby="PERSONALINFORMATION"
-                    >
-                      <div>
-                        <div className="user-form-3 row">
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="form-label full-width">
-                                Federal state
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                id="txtCategories"
-                                placeholder="Search Category Here"
-                                value=""
-                              />
-                              <span
-                                className="input-group-text"
-                                title="Smart Category Popup"
-                              >
-                                <span
-                                  onClick={(e) => selectState(e, HrTagData)}
-                                  className="svg__iconbox svg__icon--editBox"
-                                ></span>
-                              </span>
-                            </div>
-                            {HrTagData?.Fedral_State != undefined &&
-                              HrTagData?.Fedral_State != "" && (
-                                <div className="block w-100">
-                                  <a
-                                    className="hreflink wid90"
-                                    target="_blank"
-                                    data-interception="off"
-                                  ></a>
-                                  <span className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
+
+                        <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
+                            <div className="tab-pane show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
+                                <div className='general-section'>
+                                    <div className="card">
+                                        <div className="card-header fw-semibold">
+                                            General
+                                        </div>
+                                        <div className="card-body">
+                                            <div className="user-form-5 row mb-3">
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className='full-width label-form'>First Name </label>
+                                                        <input type="text" className="form-control" defaultValue={updateData ? updateData?.FirstName : null} onChange={(e) => setUpdateData({ ...updateData, FirstName: e.target.value })} aria-label="First name" placeholder='First Name' />
+                                                    </div>
+                                                </div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form"> Last Name</label>
+                                                        <input type="text" className="form-control" defaultValue={updateData?.Title} onChange={(e) => setUpdateData({ ...updateData, Title: e.target.value })} aria-label="Last name" placeholder='Last name' />
+                                                    </div>
+                                                </div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form"> Suffix</label>
+                                                        <input type="text" className="form-control" defaultValue={updateData?.Suffix} onChange={(e) => setUpdateData({ ...updateData, Suffix: e.target.value })} aria-label="Suffix" placeholder='Suffix' />
+                                                    </div>
+                                                </div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form"> Job Title</label>
+                                                        <input type="text" className="form-control" defaultValue={updateData?.JobTitle} onChange={(e) => setUpdateData({ ...updateData, JobTitle: e.target.value })} aria-label="JobTitle" placeholder='Job-Title' />
+
+                                                    </div></div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Site</label>
+                                                        <div className='alignCenter'>
+                                                            <label className='SpfxCheckRadio'>
+                                                                <input className="me-1 form-check-input" type="checkbox" value="" checked={updateData?.Site?.toString().search("HR") >= 0} />
+                                                                HR </label>
+                                                            <label className='SpfxCheckRadio'>
+                                                                <input className="me-1 form-check-input" type="checkbox" checked={updateData?.Site?.toString().search("GMBH") >= 0} />
+                                                                GMBH </label>
+                                                            <label className='SpfxCheckRadio'>
+                                                                <input className="me-1 form-check-input" type="checkbox" checked={updateData?.Site?.toString().search("SMALSUS") >= 0} />
+                                                                SMALSUS </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div className="user-form-4 row mb-3">
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Organization</label>
+                                                        {updateData?.Institution?.FullName ?
+                                                            <div className="block wid90 alignCenter">
+                                                                <a className="hreflink" target="_blank"> {updateData?.Institution?.FullName}</a>
+                                                                <span className="bg-light svg__icon--cross svg__iconbox hreflink ml-auto" onClick={() => setUpdateData({ ...updateData, Institution: undefined })}></span>
+                                                            </div> : <input type='text' />
+
+                                                        }
+
+                                                        <span className="input-group-text" title="Select Organisation">
+                                                            <span onClick={() => openOrg()} className="svg__iconbox svg__icon--editBox"></span>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Division</label>
+                                                        <select className="form-control"value={updateData?.Department}onChange={(e)=>setUpdateData({ ...updateData,Department:e.target.value})}>
+                                                            <option selected>Select Division</option>
+                                                           {updateData?.Division?.length>0&& updateData?.Division?.map((division:any)=>{
+                                                            return(
+                                                           <option>{division?.Title}</option>
+                                                            )
+                                                           })} 
+                                                            
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div className="col pad0">
+                                                    <label className="full_width form-label"> D.O.J</label>
+                                                    <div> <input type="date" value={updateData?.DOJ != undefined ? moment(updateData?.DOJ).format('YYYY-MM-DD') : null} onChange={(e) => setUpdateData({ ...updateData, DOJ: moment(e.target.value).format('YYYY-MM-DD') })} /></div>
+                                                </div>
+                                                <div className="col pad0">
+                                                    <label className="full_width form-label"> D.O.E</label>
+                                                    <div><input type='date' value={updateData?.DOE != undefined ? moment(updateData?.DOE).format('YYYY-MM-DD') : null} onChange={(e) => setUpdateData({ ...updateData, DOE: moment(e.target.value).format('YYYY-MM-DD') })} /></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                              )}
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Nationality
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={
-                                  HrTagData?.Nationality
-                                    ? HrTagData?.Nationality
-                                    : ""
-                                }
-                                onChange={(e) =>
-                                  setHrTagData({
-                                    ...HrTagData,
-                                    Nationality: e.target.value,
-                                  })
-                                }
-                                placeholder="Enter Nationality"
-                              />
+                                <div className="Social-media-account my-2">
+                                    <div className="card">
+                                        <div className="card-header fw-semibold">
+                                            Social Media Accounts
+                                        </div>
+                                        <div className="card-body">
+                                            <div className="user-form-4 row">
+                                                <div className="col" >
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">LinkedIn</label>
+                                                        <input type="text" className="form-control" defaultValue={URLs.length ? URLs[0].LinkedIn : ""} aria-label="LinkedIn"
+                                                            onChange={(e) => setUpdateData({ ...updateData, LinkedIn: e.target.value })} />
+                                                    </div>
+                                                </div>
+                                                <div className="col" >
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Twitter</label>
+                                                        <input type="text" className="form-control" defaultValue={URLs.length ? URLs[0].Twitter : ""}
+                                                            onChange={(e) => setUpdateData({ ...updateData, Twitter: e.target.value })} aria-label="LinkedIn" />
+                                                    </div>
+                                                </div>
+                                                <div className="col" >
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Facebook</label>
+                                                        <input type="text" className="form-control" defaultValue={URLs.length ? URLs[0].Facebook : ""} onChange={(e) => setUpdateData({ ...updateData, Facebook: e.target.value })} aria-label="LinkedIn" />
+                                                    </div></div>
+                                                <div className="col" >
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Instagram</label>
+                                                        <input type="text" className="form-control" defaultValue={URLs.length ? URLs[0].Instagram : ''}
+                                                            onChange={(e) => setUpdateData({ ...updateData, Instagram: e.target.value })} aria-label="LinkedIn" />
+                                                    </div></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="Contact-details my-2">
+                                    <div className="card">
+                                        <div className="card-header fw-semibold">
+                                            Contacts
+                                        </div>
+                                        <div className="card-body">
+                                            <div className="user-form-5 row mb-3">
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Business Phone</label>
+                                                        <input type="text" className="form-control" defaultValue={updateData?.WorkPhone ? updateData?.WorkPhone : ''} onChange={(e) => setUpdateData({ ...updateData, WorkPhone: e.target.value })} aria-label="Business Phone" />
+                                                    </div></div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Mobile-No</label>
+                                                        <input type="text" className="form-control" defaultValue={updateData?.CellPhone ? updateData?.CellPhone : ''} onChange={(e) => setUpdateData({ ...updateData, CellPhone: e.target.value })} aria-label="Mobile-No" />
+                                                    </div></div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Home-Phone</label>
+                                                        <input type="text" className="form-control" defaultValue={updateData?.HomePhone ? updateData?.HomePhone : ''} onChange={(e) => setUpdateData({ ...updateData, HomePhone: e.target.value })} aria-label="Home-Phone" />
+                                                    </div></div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">City</label>
+                                                        <input type="text" className="form-control" defaultValue={updateData?.WorkCity ? updateData?.WorkCity : ''} onChange={(e) => setUpdateData({ ...updateData, WorkCity: e.target.value })} aria-label="City" />
+                                                    </div></div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Address</label>
+                                                        <input type="text" className="form-control" defaultValue={updateData?.WorkAddress ? updateData?.WorkAddress : ''} onChange={(e) => setUpdateData({ ...updateData, WorkAddress: e.target.value })} aria-label="Address" />
+                                                    </div></div>
+                                            </div>
+                                            <div className="user-form-5 row mb-3">
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Skpye</label>
+                                                        <input type="text" className="form-control" placeholder="Skpye" defaultValue={updateData?.IM ? updateData?.IM : ""}
+                                                            onChange={(e) => setUpdateData({ ...updateData, IM: e.target.value })} aria-label="Skpye" />
+                                                    </div></div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Email</label>
+                                                        <input type="text" className="form-control" defaultValue={updateData?.Email ? updateData?.Email : ""}
+                                                            onChange={(e) => setUpdateData({ ...updateData, Email: e.target.value })} aria-label="Email" />
+                                                    </div></div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">WebPage</label>
+
+                                                        <input className="form-control" type="text" defaultValue={updateData?.WebPage ? updateData?.WebPage.Url : ""} onChange={(e) => setUpdateData({ ...updateData, WebPage: { ...updateData.WebPage, Url: e.target.value } })} aria-label="WebPage" />
+                                                    </div>
+                                                </div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Zip Code</label>
+                                                        <input type="text" className="form-control" defaultValue={updateData?.WorkZip ? updateData?.WorkZip : ""} onChange={(e) => setUpdateData({ ...updateData, WorkZip: e.target.value })} aria-label="Zip Code" />
+                                                    </div></div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Country</label>
+
+                                                        {updateData?.SmartCountries?.length > 0 ? <div className="block wid90 alignCenter">
+                                                            <a className="hreflink" target="_blank">{updateData?.SmartCountries?.[0]?.Title}</a>
+                                                            <span
+                                                                onClick={() => setUpdateData({ ...updateData, SmartCountries: [] })}
+                                                                className="bg-light ml-auto svg__icon--cross svg__iconbox"></span>
+                                                        </div> : <input type='text'></input>}
+
+                                                        <span className="input-group-text" title="Smart Category Popup">
+                                                            <span onClick={() => openCountry(updateData?.SmartCountries)} className="svg__iconbox svg__icon--editBox"></span>
+                                                        </span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Date of Birth
-                              </label>
-                              <input
-                                type="date"
-                                className="form-control"
-                                defaultValue={
-                                  HrTagData?.dateOfBirth
-                                    ? Moment(HrTagData?.dateOfBirth).format(
-                                        "YYYY-MM-DD"
-                                      )
-                                    : ""
-                                }
-                                onChange={(e) =>
-                                  setHrTagData({
-                                    ...HrTagData,
-                                    dateOfBirth: Moment(e.target.value).format(
-                                      "YYYY-MM-DD"
-                                    ),
-                                  })
-                                }
-                              />
+                            <div className="tab-pane" id="IMAGEINFORMATION" role="tabpanel" aria-labelledby="IMAGEINFORMATION">
+                                <div className="row col-sm-12">
+                                    {imagetab && (
+                                        <ImagesC
+                                            EditdocumentsData={updateData}
+                                            setData={setUpdateData}
+                                            AllListId={myContextData2?.allListId}
+                                            Context={myContextData2?.allListId?.Context}
+                                            callBack={imageTabCallBack}
+                                        />
+                                    )}
+                                </div>
                             </div>
-                          </div>
-                        </div>
-                        <div className="user-form-3 row">
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Place of birth
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={HrTagData?.placeOfBirth}
-                                onChange={(e) =>
-                                  setHrTagData({
-                                    ...HrTagData,
-                                    placeOfBirth: e.target.value,
-                                  })
-                                }
-                                placeholder="Enter Place of birth"
-                              />
+                            <div className="tab-pane" id="HR" role="tabpanel" aria-labelledby="HR">
+                                
+                                <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
+                                    <button
+                                        className="nav-link active"
+                                        id="PERSONALIN-FORMATION1"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#PERSONALINFORMATION1"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="PERSONALINFORMATION1"
+                                        aria-selected="true">
+                                        PERSONAL INFORMATION
+                                    </button>
+                                    <button
+                                        className="nav-link"
+                                        id="BANK-INFORMATION1"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#BANKINFORMATION1"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="BANKINFORMATION1"
+                                        aria-selected="false">
+                                        BANK INFORMATION
+                                    </button>
+                                    <button
+                                        className="nav-link"
+                                        id="TAX-INFORMATION1"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#TAXINFORMATION1"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="TAXINFORMATION1"
+                                        aria-selected="false">
+                                        TAX INFORMATION
+                                    </button>
+                                    <button
+                                        className="nav-link"
+                                        id="SOCIALSECURITY-INFORMATION1"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#SOCIALSECURITYINFORMATION1"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="SOCIALSECURITYINFORMATION1"
+                                        aria-selected="false">
+                                        SOCIAL SECURITY INFORMATION
+                                    </button>
+                                    <button
+                                        className="nav-link"
+                                        id="QUALIFICATIONS-Tab1"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#QUALIFICATIONS1"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="QUALIFICATIONS1"
+                                        aria-selected="false">
+                                        QUALIFICATIONS
+                                    </button>
+                                </ul>
+                                <div className="border border-top-0 clearfix p-3 tab-content" id="myTabContent">
+                                    <div className="tab-pane show active" id="PERSONALINFORMATION1" role="tabpanel" aria-labelledby="PERSONALINFORMATION">
+                                        <div>
+                                            <div className='user-form-3 row'>
+                                               
+                                                <div className="col">
+                                                    <div className="input-group">
+                                                        <label className="form-label full-width">Federal state</label>
+                                                        <input type="text" className="form-control" id="txtCategories" placeholder="Search Category Here" value="" />
+                                                        <span className="input-group-text" title="Smart Category Popup">
+                                                            <span onClick={(e) => selectState(e, HrTagData)} className="svg__iconbox svg__icon--editBox"></span>
+                                                        </span>
+                                                    </div>
+                                                    {HrTagData?.Fedral_State!=undefined && HrTagData?.Fedral_State != ''&&<div className="block w-100">
+                                                        <a className="hreflink wid90" target="_blank" data-interception="off"></a>
+                                                        <span className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
+                                                    </div>}
+                                                </div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Nationality</label>
+                                                        <input type="text" className="form-control" defaultValue={HrTagData?.Nationality ? HrTagData?.Nationality : ''} onChange={(e) => setHrTagData({ ...HrTagData, Nationality: e.target.value })} placeholder='Enter Nationality' />
+                                                    </div></div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Date of Birth</label>
+                                                        <input type="date" className="form-control"
+                                                            defaultValue={HrTagData?.dateOfBirth ? Moment(HrTagData?.dateOfBirth).format("YYYY-MM-DD") : ''} onChange={(e) => setHrTagData({ ...HrTagData, dateOfBirth: Moment(e.target.value).format("YYYY-MM-DD") })} />
+                                                    </div></div>
+                                            </div>
+                                            <div className='user-form-3 row'>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Place of birth</label>
+                                                        <input type="text" className="form-control" defaultValue={HrTagData?.placeOfBirth} onChange={(e) => setHrTagData({ ...HrTagData, placeOfBirth: e.target.value })} placeholder='Enter Place of birth' />
+                                                    </div></div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Marital status</label>
+                                                        <select className="form-control" onChange={(e) => setHrTagData({ ...HrTagData, maritalStatus: e.target.value })}>
+                                                            {HrTagData?.maritalStatus ? null :
+                                                                <option selected>Select an Option</option>
+                                                            }
+                                                            <option selected={HrTagData?.maritalStatus == "Single"}>Single</option>
+                                                            <option selected={HrTagData?.maritalStatus == "Married"}>Married</option>
+                                                            <option selected={HrTagData?.maritalStatus == "Divorced"}>Divorced</option>
+                                                            <option selected={HrTagData?.maritalStatus == "Widowed"}>Widowed</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Parenthood</label>
+                                                        <div>
+                                                            <label className='SpfxCheckRadio'><input type="radio" checked={HrTagData?.Parenthood == 'yes'} className='radio' onChange={(e) => setHrTagData({ ...HrTagData, Parenthood: 'yes' })} /> Yes</label>
+                                                            <label className='SpfxCheckRadio'><input type="radio" checked={HrTagData?.Parenthood == 'no'} className='radio' onChange={(e) => setHrTagData({ ...HrTagData, Parenthood: 'no' })} /> No</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div></div>
+                                    <div className="tab-pane" id="BANKINFORMATION1" role="tabpanel" aria-labelledby="BANKINFORMATION1">
+                                            <div className="card-body">
+                                                <div className='user-form-2 row'>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">IBAN</label>
+                                                            <input type="text" className="form-control" placeholder='Enter IBAN' defaultValue={HrTagData?.IBAN ? HrTagData?.IBAN : ''} onChange={(e) => setHrTagData({ ...HrTagData, IBAN: e.target.value })} />
+                                                        </div></div>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">BIC</label>
+                                                            <input type="text" className="form-control" defaultValue={HrTagData?.BIC ? HrTagData?.BIC : ''} placeholder='Enter BIC' onChange={(e) => setHrTagData({ ...HrTagData, BIC: e.target.value })} />
+                                                        </div></div>
+                                                </div>
+                                            </div></div>
+                                    <div className="tab-pane" id="TAXINFORMATION1" role="tabpanel" aria-labelledby="TAXINFORMATION1">
+                                        
+                                            <div className="card-body">
+                                                <div className='user-form-3 row'>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Tax No.
+                                                            </label>
+                                                            <input type="text" className="form-control" placeholder='Enter Tax No.' defaultValue={HrTagData?.taxNo ? HrTagData?.taxNo : ''} onChange={(e) => setHrTagData({ ...HrTagData, taxNo: e.target.value })} />
+                                                        </div></div>
+                                                    <div className="col mx-2">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Tax class</label>
+                                                            <select className="form-control py-1" onChange={(e) => setHrTagData({ ...HrTagData, taxClass: e.target.value })}>
+                                                                {HrTagData?.taxClass ? null :
+                                                                    <option selected>Select an Option</option>
+                                                                }
+                                                                <option selected={HrTagData?.taxClass == "I"}>I</option>
+                                                                <option selected={HrTagData?.taxClass == "II"}>II</option>
+                                                                <option selected={HrTagData?.taxClass == "III"}>III</option>
+                                                                <option selected={HrTagData?.taxClass == "IV"}>IV</option>
+                                                                <option selected={HrTagData?.taxClass == "V"}>V</option>
+                                                                <option selected={HrTagData?.taxClass == "VI"}>VI</option>
+                                                                <option selected={HrTagData?.taxClass == "none"}>None</option>
+                                                            </select>
+                                                        </div>
+                                                        
+                                                    </div>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Child allowance</label>
+                                                            <select className="form-control" onChange={(e) => setHrTagData({ ...HrTagData, childAllowance: e.target.value })}>
+                                                                {HrTagData?.childAllowance ? null :
+                                                                    <option selected>Select an Option</option>
+                                                                }
+                                                                <option selected={HrTagData?.childAllowance == "0.5"}>0.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "1"}>1</option>
+                                                                <option selected={HrTagData?.childAllowance == "1.5"}>1.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "2"}>2</option>
+                                                                <option selected={HrTagData?.childAllowance == "2.5"}>2.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "3"}>3</option>
+                                                                <option selected={HrTagData?.childAllowance == "3.5"}>3.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "4"}>4</option>
+                                                                <option selected={HrTagData?.childAllowance == "4.5"}>4.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "5"}>5</option>
+                                                                <option selected={HrTagData?.childAllowance == "5.5"}>5.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "6"}>6</option>
+                                                                <option selected={HrTagData?.childAllowance == "6.5"}>6.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "7"}>7</option>
+                                                                <option selected={HrTagData?.childAllowance == "7.5"}>7.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "8"}>8</option>
+                                                                <option selected={HrTagData?.childAllowance == "8.5"}>8.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "9"}>9</option>
+                                                                <option selected={HrTagData?.childAllowance == "9.5"}>9.5</option>
+                                                                <option selected={HrTagData?.childAllowance == "none"}>None</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className='user-form-2 row'>
+                                                    
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Monthly tax allowance</label>
+                                                            <input type="number" className="form-control" placeholder='Enter Monthly tax allowance' defaultValue={HrTagData?.monthlyTaxAllowance ? HrTagData?.monthlyTaxAllowance : ''} />
+                                                        </div></div>
+                                                        <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Church tax</label>
+                                                            <div>
+                                                                <label className='SpfxCheckRadio'><input className='radio' type="radio" onChange={(e) => setHrTagData({ ...HrTagData, churchTax: 'yes' })} checked={HrTagData?.churchTax == 'yes'} /> Yes</label>
+                                                                <label className='SpfxCheckRadio'><input className='radio' type="radio" onChange={(e) => setHrTagData({ ...HrTagData, churchTax: 'no' })} checked={HrTagData?.churchTax == 'no'} /> No</label>
+                                                            </div></div>
+                                                    </div>
+
+                                                </div>
+                                            </div></div>
+                                    <div className="tab-pane" id="SOCIALSECURITYINFORMATION1" role="tabpanel" aria-labelledby="SOCIALSECURITYINFORMATION1">
+                                       <div className="card-body">
+                                            <div className='user-form-3 row'>
+
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Health Insurance Type</label>
+                                                        <select className="form-control" onChange={(e) => setHrTagData({ ...HrTagData, healthInsuranceType: e.target.value })}>
+                                                            {HrTagData?.healthInsuranceType ? null :
+                                                                <option selected>Select an Option</option>
+                                                            }
+                                                            <option selected={HrTagData?.healthInsuranceType == "None"}>None</option>
+                                                            <option selected={HrTagData?.healthInsuranceType == "Statutory"}>Statutory</option>
+                                                            <option selected={HrTagData?.healthInsuranceType == "Private"}>Private</option>
+                                                        </select>
+                                                    </div></div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Health Insurance Company
+                                                        </label>
+                                                        <input type="text" className="form-control" placeholder='Enter Company Name' defaultValue={HrTagData?.healthInsuranceCompany ? HrTagData?.healthInsuranceCompany : ''} onChange={(e) => setHrTagData({ ...HrTagData, healthInsuranceCompany: e.target.value })} />
+                                                    </div></div>
+                                                <div className="col">
+                                                    <div className='input-group'>
+                                                        <label className="full-width label-form">Health Insurance No
+                                                        </label>
+                                                        <input type="text" className="form-control" placeholder='Enter Health Insurance No' defaultValue={HrTagData?.insuranceNo ? HrTagData?.insuranceNo : ''} onChange={(e) => setHrTagData({ ...HrTagData, insuranceNo: e.target.value })} />
+                                                    </div></div>
+                                            </div>
+
+                                        </div></div>
+                                    <div className="tab-pane" id="QUALIFICATIONS1" role="tabpanel" aria-labelledby="QUALIFICATIONS1">
+                                       
+                                            <div className='card-body'>
+                                                <div className='user-form-2 row'>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Highest school diploma
+                                                            </label>
+                                                            <input type="text" className="form-control" placeholder='Enter Highest school diploma' defaultValue={HrTagData?.highestSchoolDiploma ? HrTagData?.highestSchoolDiploma : ''} onChange={(e) => setHrTagData({ ...HrTagData, highestSchoolDiploma: e.target.value })} />
+                                                        </div></div>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Highest vocational education
+                                                            </label>
+                                                            <input type="text" className="form-control" placeholder='Enter Highest vocational education' defaultValue={HrTagData?.highestVocationalEducation ? HrTagData?.highestVocationalEducation : ''} onChange={(e) => setHrTagData({ ...HrTagData, highestVocationalEducation: e.target.value })} />
+                                                        </div></div>
+                                                </div>
+                                                <div className='user-form-2 row'>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Other qualifications
+                                                            </label>
+                                                            <input type="text" className="form-control" placeholder='Enter Other qualifications' defaultValue={HrTagData?.otherQualifications ? HrTagData?.otherQualifications : ''} onChange={(e) => setHrTagData({ ...HrTagData, otherQualifications: e.target.value })} />
+                                                        </div></div>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Languages
+                                                            </label>
+                                                            <input type="text" className="form-control" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    </div>
+                                </div>
                             </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Marital status
-                              </label>
-                              <select
-                                className="form-control"
-                                onChange={(e) =>
-                                  setHrTagData({
-                                    ...HrTagData,
-                                    maritalStatus: e.target.value,
-                                  })
-                                }
-                              >
-                                {HrTagData?.maritalStatus ? null : (
-                                  <option selected>Select an Option</option>
-                                )}
-                                <option
-                                  selected={
-                                    HrTagData?.maritalStatus == "Single"
-                                  }
-                                >
-                                  Single
-                                </option>
-                                <option
-                                  selected={
-                                    HrTagData?.maritalStatus == "Married"
-                                  }
-                                >
-                                  Married
-                                </option>
-                                <option
-                                  selected={
-                                    HrTagData?.maritalStatus == "Divorced"
-                                  }
-                                >
-                                  Divorced
-                                </option>
-                                <option
-                                  selected={
-                                    HrTagData?.maritalStatus == "Widowed"
-                                  }
-                                >
-                                  Widowed
-                                </option>
-                              </select>
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Parenthood
-                              </label>
-                              <div>
-                                <label className="SpfxCheckRadio">
-                                  <input
-                                    type="radio"
-                                    checked={HrTagData?.Parenthood == "yes"}
-                                    className="radio"
-                                    onChange={(e) =>
-                                      setHrTagData({
-                                        ...HrTagData,
-                                        Parenthood: "yes",
-                                      })
-                                    }
-                                  />{" "}
-                                  Yes
-                                </label>
-                                <label className="SpfxCheckRadio">
-                                  <input
-                                    type="radio"
-                                    checked={HrTagData?.Parenthood == "no"}
-                                    className="radio"
-                                    onChange={(e) =>
-                                      setHrTagData({
-                                        ...HrTagData,
-                                        Parenthood: "no",
-                                      })
-                                    }
-                                  />{" "}
-                                  No
-                                </label>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      className="tab-pane"
-                      id="BANKINFORMATION1"
-                      role="tabpanel"
-                      aria-labelledby="BANKINFORMATION1"
-                    >
-                      <div className="card-body">
-                        <div className="user-form-2 row">
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                IBAN
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Enter IBAN"
-                                defaultValue={
-                                  HrTagData?.IBAN ? HrTagData?.IBAN : ""
-                                }
-                                onChange={(e) =>
-                                  setHrTagData({
-                                    ...HrTagData,
-                                    IBAN: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                BIC
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                defaultValue={
-                                  HrTagData?.BIC ? HrTagData?.BIC : ""
-                                }
-                                placeholder="Enter BIC"
-                                onChange={(e) =>
-                                  setHrTagData({
-                                    ...HrTagData,
-                                    BIC: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      className="tab-pane"
-                      id="TAXINFORMATION1"
-                      role="tabpanel"
-                      aria-labelledby="TAXINFORMATION1"
-                    >
-                      <div className="card-body">
-                        <div className="user-form-3 row">
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Tax No.
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Enter Tax No."
-                                defaultValue={
-                                  HrTagData?.taxNo ? HrTagData?.taxNo : ""
-                                }
-                                onChange={(e) =>
-                                  setHrTagData({
-                                    ...HrTagData,
-                                    taxNo: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div className="col mx-2">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Tax class
-                              </label>
-                              <select
-                                className="form-control py-1"
-                                onChange={(e) =>
-                                  setHrTagData({
-                                    ...HrTagData,
-                                    taxClass: e.target.value,
-                                  })
-                                }
-                              >
-                                {HrTagData?.taxClass ? null : (
-                                  <option selected>Select an Option</option>
-                                )}
-                                <option selected={HrTagData?.taxClass == "I"}>
-                                  I
-                                </option>
-                                <option selected={HrTagData?.taxClass == "II"}>
-                                  II
-                                </option>
-                                <option selected={HrTagData?.taxClass == "III"}>
-                                  III
-                                </option>
-                                <option selected={HrTagData?.taxClass == "IV"}>
-                                  IV
-                                </option>
-                                <option selected={HrTagData?.taxClass == "V"}>
-                                  V
-                                </option>
-                                <option selected={HrTagData?.taxClass == "VI"}>
-                                  VI
-                                </option>
-                                <option
-                                  selected={HrTagData?.taxClass == "none"}
-                                >
-                                  None
-                                </option>
-                              </select>
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Child allowance
-                              </label>
-                              <select
-                                className="form-control"
-                                onChange={(e) =>
-                                  setHrTagData({
-                                    ...HrTagData,
-                                    childAllowance: e.target.value,
-                                  })
-                                }
-                              >
-                                {HrTagData?.childAllowance ? null : (
-                                  <option selected>Select an Option</option>
-                                )}
-                                <option
-                                  selected={HrTagData?.childAllowance == "0.5"}
-                                >
-                                  0.5
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "1"}
-                                >
-                                  1
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "1.5"}
-                                >
-                                  1.5
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "2"}
-                                >
-                                  2
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "2.5"}
-                                >
-                                  2.5
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "3"}
-                                >
-                                  3
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "3.5"}
-                                >
-                                  3.5
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "4"}
-                                >
-                                  4
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "4.5"}
-                                >
-                                  4.5
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "5"}
-                                >
-                                  5
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "5.5"}
-                                >
-                                  5.5
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "6"}
-                                >
-                                  6
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "6.5"}
-                                >
-                                  6.5
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "7"}
-                                >
-                                  7
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "7.5"}
-                                >
-                                  7.5
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "8"}
-                                >
-                                  8
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "8.5"}
-                                >
-                                  8.5
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "9"}
-                                >
-                                  9
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "9.5"}
-                                >
-                                  9.5
-                                </option>
-                                <option
-                                  selected={HrTagData?.childAllowance == "none"}
-                                >
-                                  None
-                                </option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="user-form-2 row">
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Monthly tax allowance
-                              </label>
-                              <input
-                                type="number"
-                                className="form-control"
-                                placeholder="Enter Monthly tax allowance"
-                                defaultValue={
-                                  HrTagData?.monthlyTaxAllowance
-                                    ? HrTagData?.monthlyTaxAllowance
-                                    : ""
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Church tax
-                              </label>
-                              <div>
-                                <label className="SpfxCheckRadio">
-                                  <input
-                                    className="radio"
-                                    type="radio"
-                                    onChange={(e) =>
-                                      setHrTagData({
-                                        ...HrTagData,
-                                        churchTax: "yes",
-                                      })
-                                    }
-                                    checked={HrTagData?.churchTax == "yes"}
-                                  />{" "}
-                                  Yes
-                                </label>
-                                <label className="SpfxCheckRadio">
-                                  <input
-                                    className="radio"
-                                    type="radio"
-                                    onChange={(e) =>
-                                      setHrTagData({
-                                        ...HrTagData,
-                                        churchTax: "no",
-                                      })
-                                    }
-                                    checked={HrTagData?.churchTax == "no"}
-                                  />{" "}
-                                  No
-                                </label>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      className="tab-pane"
-                      id="SOCIALSECURITYINFORMATION1"
-                      role="tabpanel"
-                      aria-labelledby="SOCIALSECURITYINFORMATION1"
-                    >
-                      <div className="card-body">
-                        <div className="user-form-3 row">
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Health Insurance Type
-                              </label>
-                              <select
-                                className="form-control"
-                                onChange={(e) =>
-                                  setHrTagData({
-                                    ...HrTagData,
-                                    healthInsuranceType: e.target.value,
-                                  })
-                                }
-                              >
-                                {HrTagData?.healthInsuranceType ? null : (
-                                  <option selected>Select an Option</option>
-                                )}
-                                <option
-                                  selected={
-                                    HrTagData?.healthInsuranceType == "None"
-                                  }
-                                >
-                                  None
-                                </option>
-                                <option
-                                  selected={
-                                    HrTagData?.healthInsuranceType ==
-                                    "Statutory"
-                                  }
-                                >
-                                  Statutory
-                                </option>
-                                <option
-                                  selected={
-                                    HrTagData?.healthInsuranceType == "Private"
-                                  }
-                                >
-                                  Private
-                                </option>
-                              </select>
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Health Insurance Company
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Enter Company Name"
-                                defaultValue={
-                                  HrTagData?.healthInsuranceCompany
-                                    ? HrTagData?.healthInsuranceCompany
-                                    : ""
-                                }
-                                onChange={(e) =>
-                                  setHrTagData({
-                                    ...HrTagData,
-                                    healthInsuranceCompany: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Health Insurance No
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Enter Health Insurance No"
-                                defaultValue={
-                                  HrTagData?.insuranceNo
-                                    ? HrTagData?.insuranceNo
-                                    : ""
-                                }
-                                onChange={(e) =>
-                                  setHrTagData({
-                                    ...HrTagData,
-                                    insuranceNo: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      className="tab-pane"
-                      id="QUALIFICATIONS1"
-                      role="tabpanel"
-                      aria-labelledby="QUALIFICATIONS1"
-                    >
-                      <div className="card-body">
-                        <div className="user-form-2 row">
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Highest school diploma
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Enter Highest school diploma"
-                                defaultValue={
-                                  HrTagData?.highestSchoolDiploma
-                                    ? HrTagData?.highestSchoolDiploma
-                                    : ""
-                                }
-                                onChange={(e) =>
-                                  setHrTagData({
-                                    ...HrTagData,
-                                    highestSchoolDiploma: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Highest vocational education
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Enter Highest vocational education"
-                                defaultValue={
-                                  HrTagData?.highestVocationalEducation
-                                    ? HrTagData?.highestVocationalEducation
-                                    : ""
-                                }
-                                onChange={(e) =>
-                                  setHrTagData({
-                                    ...HrTagData,
-                                    highestVocationalEducation: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="user-form-2 row">
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Other qualifications
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Enter Other qualifications"
-                                defaultValue={
-                                  HrTagData?.otherQualifications
-                                    ? HrTagData?.otherQualifications
-                                    : ""
-                                }
-                                onChange={(e) =>
-                                  setHrTagData({
-                                    ...HrTagData,
-                                    otherQualifications: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div className="col">
-                            <div className="input-group">
-                              <label className="full-width label-form">
-                                Languages
-                              </label>
-                              <input type="text" className="form-control" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="tab-pane"
-                  id="SMALSUS"
-                  role="tabpanel"
-                  aria-labelledby="SMALSUS"
-                >
-                  <div>
-                    {/* <div className="card-header">
+                            <div className="tab-pane" id="SMALSUS" role="tabpanel" aria-labelledby="SMALSUS">
+                                <div>
+                                    {/* <div className="card-header">
                                         <button className={SmalsusBtnStatus.personalInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeSmalsusTabBtnStatus(e, "personal-info")}>PERSONAL INFORMATION</button>
                                         <button className={SmalsusBtnStatus.bankInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeSmalsusTabBtnStatus(e, "bank-info")}>BANK INFORMATION</button>
                                         <button className={SmalsusBtnStatus.taxInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeSmalsusTabBtnStatus(e, "tax-info")}>TAX INFORMATION</button>
                                         <button className={SmalsusBtnStatus.socialSecurityInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeSmalsusTabBtnStatus(e, "social-security-info")}>SOCIAL SECURITY INFORMATION</button>
                                         <button className={SmalsusBtnStatus.qualificationInfo ? 'hr-tab-btn-active' : 'hr-tab-btn'} onClick={(e) => changeSmalsusTabBtnStatus(e, "qualification-info")}>QUALIFICATIONS</button>
                                     </div> */}
-                    <ul
-                      className="fixed-Header nav nav-tabs"
-                      id="myTab"
-                      role="tablist"
-                    >
-                      <button
-                        className="nav-link active"
-                        id="PERSONALIN-FORMATION"
-                        data-bs-toggle="tab"
-                        data-bs-target="#PERSONALINFORMATION"
-                        type="button"
-                        role="tab"
-                        aria-controls="PERSONALINFORMATION"
-                        aria-selected="true"
-                      >
-                        PERSONAL INFORMATION
-                      </button>
-                      <button
-                        className="nav-link"
-                        id="BANK-INFORMATION"
-                        data-bs-toggle="tab"
-                        data-bs-target="#BANKINFORMATION"
-                        type="button"
-                        role="tab"
-                        aria-controls="BANKINFORMATION"
-                        aria-selected="false"
-                      >
-                        BANK INFORMATION
-                      </button>
-                      <button
-                        className="nav-link"
-                        id="TAX-INFORMATION"
-                        data-bs-toggle="tab"
-                        data-bs-target="#TAXINFORMATION"
-                        type="button"
-                        role="tab"
-                        aria-controls="TAXINFORMATION"
-                        aria-selected="false"
-                      >
-                        TAX INFORMATION
-                      </button>
-                      <button
-                        className="nav-link"
-                        id="SOCIALSECURITYIN-FORMATION"
-                        data-bs-toggle="tab"
-                        data-bs-target="#SOCIALSECURITYINFORMATION"
-                        type="button"
-                        role="tab"
-                        aria-controls="SOCIALSECURITYINFORMATION"
-                        aria-selected="false"
-                      >
-                        SOCIAL SECURITY INFORMATION
-                      </button>
-                      <button
-                        className="nav-link"
-                        id="QUALIFICATIONS-Tab"
-                        data-bs-toggle="tab"
-                        data-bs-target="#QUALIFICATIONS"
-                        type="button"
-                        role="tab"
-                        aria-controls="QUALIFICATIONS"
-                        aria-selected="false"
-                      >
-                        QUALIFICATIONS
-                      </button>
-                    </ul>
-                    <div
-                      className="border border-top-0 clearfix p-3 tab-content "
-                      id="myTabContent"
-                    >
-                      <div
-                        className="tab-pane show active"
-                        id="PERSONALINFORMATION"
-                        role="tabpanel"
-                        aria-labelledby="PERSONALINFORMATION"
-                      >
-                        {SmalsusBtnStatus.personalInfo ? (
-                          <div>
-                            <div className="user-form-4 row">
-                              <div className="col">
-                                <div className="input-group">
-                                  <label className="full-width label-form">
-                                    Adhar Card No.{" "}
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    aria-label="Adhar Card No. "
-                                    placeholder="Adhar Card No. "
-                                  />
+                                    <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
+                                        <button
+                                            className="nav-link active"
+                                            id="PERSONALIN-FORMATION"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#PERSONALINFORMATION"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="PERSONALINFORMATION"
+                                            aria-selected="true">
+                                            PERSONAL INFORMATION
+                                        </button>
+                                        <button
+                                            className="nav-link"
+                                            id="BANK-INFORMATION"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#BANKINFORMATION"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="BANKINFORMATION"
+                                            aria-selected="false">
+                                            BANK INFORMATION
+                                        </button>
+                                        <button
+                                            className="nav-link"
+                                            id="TAX-INFORMATION"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#TAXINFORMATION"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="TAXINFORMATION"
+                                            aria-selected="false">
+                                            TAX INFORMATION
+                                        </button>
+                                        <button
+                                            className="nav-link"
+                                            id="SOCIALSECURITYIN-FORMATION"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#SOCIALSECURITYINFORMATION"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="SOCIALSECURITYINFORMATION"
+                                            aria-selected="false">
+                                            SOCIAL SECURITY INFORMATION
+                                        </button>
+                                        <button
+                                            className="nav-link"
+                                            id="QUALIFICATIONS-Tab"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#QUALIFICATIONS"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="QUALIFICATIONS"
+                                            aria-selected="false">
+                                            QUALIFICATIONS
+                                        </button>
+                                    </ul>
+                                    <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent" >
+                                        <div className="tab-pane show active" id="PERSONALINFORMATION" role="tabpanel" aria-labelledby="PERSONALINFORMATION">
+                                            {SmalsusBtnStatus.personalInfo ? <div>
+                                                <div className='user-form-4 row'>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className='full-width label-form'>Adhar Card No. </label>
+                                                            <input type="text" className="form-control" aria-label="Adhar Card No. " placeholder='Adhar Card No. ' />
+                                                        </div></div>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">PAN Card No.</label>
+                                                            <input type="text" className="form-control" aria-label="PAN Card No." placeholder='PAN Card No.' />
+                                                        </div></div>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Passport No.</label>
+                                                            <input type="text" className="form-control" aria-label="Passport No." placeholder='Passport No.' />
+                                                        </div></div>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Personal Email</label>
+                                                            <input type="text" className="form-control" aria-label="JobTitle" placeholder='Job-Title' />
+                                                        </div></div>
+                                                </div>
+                                                <div className='user-form-4 row'>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Nationality</label>
+                                                            <input type="text" className="form-control" placeholder='Enter Nationality' />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Marital status</label>
+                                                            <select className="form-control">
+                                                                <option selected>Select an Option</option>
+                                                                <option>Single</option>
+                                                                <option>Married</option>
+                                                                <option>Divorced</option>
+                                                                <option>Widowed</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Blood Group</label>
+                                                            <input type='text' className='form-control' placeholder='Enter Your Blood Group' />
+                                                        </div></div>
+                                                    <div className="col">
+                                                        <div className='input-group'>
+                                                            <label className="full-width label-form">Date of Birth</label>
+                                                            <input type="date" className="form-control" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className='card my-2'>
+                                                    <div className='card-header fw-semibold'>
+                                                        Permanent Address
+                                                    </div>
+                                                    <div className='card-body'>
+                                                        <div className='user-form-4 row'>
+                                                            <div className="col">
+                                                                <div className='input-group'>
+                                                                    <label className="full-width label-form">Country</label>
+                                                                    <input type="text" className="form-control" placeholder='Country' />
+                                                                </div></div>
+                                                            <div className="col">
+                                                                <div className='input-group'>
+                                                                    <label className="full-width label-form">State</label>
+                                                                    <input type="text" className="form-control" placeholder='State' />
+                                                                </div></div>
+                                                            <div className="col">
+                                                                <div className='input-group'>
+                                                                    <label className='full-width label-form'>City</label>
+                                                                    <input type="text" className="form-control" placeholder='City' />
+                                                                </div></div>
+                                                            <div className="col">
+                                                                <div className='input-group'>
+                                                                    <label className="full-width label-form">District</label>
+                                                                    <input type="text" className="form-control" placeholder='District' />
+                                                                </div></div>
+                                                        </div>
+                                                        <div className='user-form-4 row'>
+
+                                                            <div className="col">
+                                                                <div className='input-group'>
+                                                                    <label className='full-width label-form'>Street</label>
+                                                                    <input type="text" className="form-control" placeholder='Street' />
+                                                                </div></div>
+                                                            <div className="col">
+                                                                <div className='input-group'>
+                                                                    <label className="full-width label-form">Area</label>
+                                                                    <input type="text" className="form-control" placeholder='Area' />
+                                                                </div></div>
+                                                            <div className="col">
+                                                                <div className='input-group'>
+                                                                    <label className="full-width label-form">Landmark</label>
+                                                                    <input type="text" className="form-control" placeholder='Landmark' />
+                                                                </div></div>
+                                                            <div className="col">
+                                                                <div className='input-group'>
+                                                                    <label className="full-width label-form">Zip Code</label>
+                                                                    <input type="text" className="form-control" placeholder='Zip Code' />
+                                                                </div></div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> : null}</div>
+                                        <div className="tab-pane" id="BANKINFORMATION" role="tabpanel" aria-labelledby="BANKINFORMATION">
+                                            
+                                                <div className="card-body">
+                                                    <div className='user-form-2 row'>
+                                                        <div className="col">
+                                                            <div className='input-group'>
+                                                                <label className='full-width label-form'>Bank Name</label>
+                                                                <input type="text" className="form-control" placeholder='Bank Name' />
+                                                            </div></div>
+                                                        <div className="col">
+                                                            <div className='input-group'>
+                                                                <label className="full-width label-form">Account Number</label>
+                                                                <input type="text" className="form-control" placeholder='Account Number' />
+                                                            </div></div>
+                                                    </div>
+                                                    <div className='user-form-2 row'>
+                                                        <div className="col">
+                                                            <div className='input-group'>
+                                                                <label className="full-width label-form">IFSC</label>
+                                                                <input type="text" className="form-control" placeholder='IFSC' />
+                                                            </div></div>
+                                                        <div className="col">
+                                                            <div className='input-group'>
+                                                                <label className="full-width label-form">Branch Name</label>
+                                                                <input type="number" className="form-control" placeholder='Branch Name' />
+                                                            </div></div>
+                                                    </div>
+                                                </div></div>
+                                        <div className="tab-pane" id="TAXINFORMATION" role="tabpanel" aria-labelledby="TAXINFORMATION">
+                                           
+                                                <div className="card-body">
+                                                    <div className='user-form-3 row'>
+                                                        <div className="col">
+                                                            <div className='input-group'>
+                                                                <label className="full-width label-form">UN Number
+                                                                </label>
+                                                                <input type="text" className="form-control" placeholder='Enter UN Number' />
+                                                            </div></div>
+                                                        <div className="col">
+                                                            <div className='input-group'>
+                                                                <label className="full-width label-form">ITR Number
+                                                                </label>
+                                                                <input type="text" className="form-control" placeholder='Enter ITR Number' />
+                                                            </div></div>
+                                                        <div className="col">
+                                                            <div className='input-group'>
+                                                                <label className="full-width label-form">Income Tax</label>
+                                                                <input type="text" className="form-control" placeholder='Income Tax' />
+                                                            </div></div>
+
+
+                                                    </div>
+                                                    <div className='user-form-2 row'>
+                                                        <div className="col">
+                                                            <div className='input-group'>
+                                                                <label className="full-width label-form">{`(PF) Provident Fund nomination form`}</label>
+                                                                <input type="text" className="form-control" placeholder='Provident Fund nomination form' />
+                                                            </div></div>
+                                                        <div className="col">
+                                                            <div className='input-group'>
+                                                                <label className="full-width label-form">Employee State Insurance (ESI)</label>
+                                                                <input type="text" className="form-control" />
+                                                            </div></div>
+
+                                                    </div>
+                                                </div>
+                                               </div>
+                                        <div className="tab-pane" id="SOCIALSECURITYINFORMATION" role="tabpanel" aria-labelledby="SOCIALSECURITYINFORMATION">
+                                            {SmalsusBtnStatus.socialSecurityInfo ?
+                                                <div className="card-body">
+                                                    <div className='user-form-2 row'>
+                                                        <div className="col">
+                                                            <div className='input-group'>
+                                                                <label className="full-width label-form">Health Insurance Type</label>
+                                                                <select className="form-control" >
+                                                                    <option selected>Select an Option</option>
+                                                                    <option>None</option>
+                                                                    <option >Statutory</option>
+                                                                    <option >Private</option>
+                                                                </select>
+                                                            </div></div>
+                                                        <div className="col">
+                                                            <div className='input-group'>
+                                                                <label className="full-width label-form">Health Insurance Company
+                                                                </label>
+                                                                <input type="text" className="form-control" placeholder='Enter Company Name' />
+                                                            </div></div>
+                                                    </div>
+                                                    <div className='user-form-2 row'>
+                                                        <div className="col">
+                                                            <div className='input-group'>
+                                                                <label className="full-width label-form">Health Insurance Number
+                                                                </label>
+                                                                <input type="text" className="form-control" placeholder='Enter Company Number' />
+                                                            </div></div>
+                                                        <div className="col">
+                                                            <div className='input-group'>
+                                                                <label className="full-width label-form">{`Medical History (Insurance and medical policy)`}
+                                                                </label>
+                                                                <input type="text" className="form-control" placeholder='Enter Medical History (Insurance and medical policy)' />
+                                                            </div></div>
+                                                    </div>
+
+                                                </div> : null}</div>
+                                        <div className="tab-pane" id="QUALIFICATIONS" role="tabpanel" aria-labelledby="QUALIFICATIONS">
+                                           
+                                                <div className='card-body'>
+                                                    <div className='user-form-2 row'>
+                                                        <div className="col">
+                                                            <div className='input-group'>
+                                                                <label className="full-width label-form">Highest school diploma
+                                                                </label>
+                                                                <input type="text" className="form-control" placeholder='Enter Highest school diploma' />
+                                                            </div></div>
+                                                        <div className="col">
+                                                            <div className='input-group'>
+                                                                <label className="full-width label-form">Highest vocational education
+                                                                </label>
+                                                                <input type="text" className="form-control" placeholder='Enter Highest vocational education' />
+                                                            </div></div>
+                                                    </div>
+                                                    <div className='user-form-2 row'>
+                                                        <div className="col">
+                                                            <div className='input-group'>
+                                                                <label className="full-width label-form">Other qualifications
+                                                                </label>
+                                                                <input type="text" className="form-control" placeholder='Enter Other qualifications' />
+                                                            </div></div>
+                                                        <div className="col">
+                                                            <div className='input-group'>
+                                                                <label className="full-width label-form">Languages
+                                                                </label>
+                                                                <input type="text" className="form-control" />
+                                                            </div></div>
+                                                    </div>
+                                                </div> </div>
+
+                                    </div>
                                 </div>
-                              </div>
-                              <div className="col">
-                                <div className="input-group">
-                                  <label className="full-width label-form">
-                                    PAN Card No.
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    aria-label="PAN Card No."
-                                    placeholder="PAN Card No."
-                                  />
-                                </div>
-                              </div>
-                              <div className="col">
-                                <div className="input-group">
-                                  <label className="full-width label-form">
-                                    Passport No.
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    aria-label="Passport No."
-                                    placeholder="Passport No."
-                                  />
-                                </div>
-                              </div>
-                              <div className="col">
-                                <div className="input-group">
-                                  <label className="full-width label-form">
-                                    Personal Email
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    aria-label="JobTitle"
-                                    placeholder="Job-Title"
-                                  />
-                                </div>
-                              </div>
                             </div>
-                            <div className="user-form-4 row">
-                              <div className="col">
-                                <div className="input-group">
-                                  <label className="full-width label-form">
-                                    Nationality
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Enter Nationality"
-                                  />
-                                </div>
-                              </div>
-                              <div className="col">
-                                <div className="input-group">
-                                  <label className="full-width label-form">
-                                    Marital status
-                                  </label>
-                                  <select className="form-control">
-                                    <option selected>Select an Option</option>
-                                    <option>Single</option>
-                                    <option>Married</option>
-                                    <option>Divorced</option>
-                                    <option>Widowed</option>
-                                  </select>
-                                </div>
-                              </div>
-                              <div className="col">
-                                <div className="input-group">
-                                  <label className="full-width label-form">
-                                    Blood Group
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Enter Your Blood Group"
-                                  />
-                                </div>
-                              </div>
-                              <div className="col">
-                                <div className="input-group">
-                                  <label className="full-width label-form">
-                                    Date of Birth
-                                  </label>
-                                  <input type="date" className="form-control" />
-                                </div>
-                              </div>
-                            </div>
-                            <div className="card my-2">
-                              <div className="card-header fw-semibold">
-                                Permanent Address
-                              </div>
-                              <div className="card-body">
-                                <div className="user-form-4 row">
-                                  <div className="col">
-                                    <div className="input-group">
-                                      <label className="full-width label-form">
-                                        Country
-                                      </label>
-                                      <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Country"
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="col">
-                                    <div className="input-group">
-                                      <label className="full-width label-form">
-                                        State
-                                      </label>
-                                      <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="State"
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="col">
-                                    <div className="input-group">
-                                      <label className="full-width label-form">
-                                        City
-                                      </label>
-                                      <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="City"
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="col">
-                                    <div className="input-group">
-                                      <label className="full-width label-form">
-                                        District
-                                      </label>
-                                      <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="District"
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="user-form-4 row">
-                                  <div className="col">
-                                    <div className="input-group">
-                                      <label className="full-width label-form">
-                                        Street
-                                      </label>
-                                      <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Street"
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="col">
-                                    <div className="input-group">
-                                      <label className="full-width label-form">
-                                        Area
-                                      </label>
-                                      <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Area"
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="col">
-                                    <div className="input-group">
-                                      <label className="full-width label-form">
-                                        Landmark
-                                      </label>
-                                      <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Landmark"
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="col">
-                                    <div className="input-group">
-                                      <label className="full-width label-form">
-                                        Zip Code
-                                      </label>
-                                      <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Zip Code"
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ) : null}
-                      </div>
-                      <div
-                        className="tab-pane"
-                        id="BANKINFORMATION"
-                        role="tabpanel"
-                        aria-labelledby="BANKINFORMATION"
-                      >
-                        <div className="card-body">
-                          <div className="user-form-2 row">
-                            <div className="col">
-                              <div className="input-group">
-                                <label className="full-width label-form">
-                                  Bank Name
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Bank Name"
-                                />
-                              </div>
-                            </div>
-                            <div className="col">
-                              <div className="input-group">
-                                <label className="full-width label-form">
-                                  Account Number
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Account Number"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <div className="user-form-2 row">
-                            <div className="col">
-                              <div className="input-group">
-                                <label className="full-width label-form">
-                                  IFSC
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="IFSC"
-                                />
-                              </div>
-                            </div>
-                            <div className="col">
-                              <div className="input-group">
-                                <label className="full-width label-form">
-                                  Branch Name
-                                </label>
-                                <input
-                                  type="number"
-                                  className="form-control"
-                                  placeholder="Branch Name"
-                                />
-                              </div>
-                            </div>
-                          </div>
                         </div>
-                      </div>
-                      <div
-                        className="tab-pane"
-                        id="TAXINFORMATION"
-                        role="tabpanel"
-                        aria-labelledby="TAXINFORMATION"
-                      >
-                        <div className="card-body">
-                          <div className="user-form-3 row">
-                            <div className="col">
-                              <div className="input-group">
-                                <label className="full-width label-form">
-                                  UN Number
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Enter UN Number"
-                                />
-                              </div>
-                            </div>
-                            <div className="col">
-                              <div className="input-group">
-                                <label className="full-width label-form">
-                                  ITR Number
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Enter ITR Number"
-                                />
-                              </div>
-                            </div>
-                            <div className="col">
-                              <div className="input-group">
-                                <label className="full-width label-form">
-                                  Income Tax
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Income Tax"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <div className="user-form-2 row">
-                            <div className="col">
-                              <div className="input-group">
-                                <label className="full-width label-form">{`(PF) Provident Fund nomination form`}</label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Provident Fund nomination form"
-                                />
-                              </div>
-                            </div>
-                            <div className="col">
-                              <div className="input-group">
-                                <label className="full-width label-form">
-                                  Employee State Insurance (ESI)
-                                </label>
-                                <input type="text" className="form-control" />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        className="tab-pane"
-                        id="SOCIALSECURITYINFORMATION"
-                        role="tabpanel"
-                        aria-labelledby="SOCIALSECURITYINFORMATION"
-                      >
-                        {SmalsusBtnStatus.socialSecurityInfo ? (
-                          <div className="card-body">
-                            <div className="user-form-2 row">
-                              <div className="col">
-                                <div className="input-group">
-                                  <label className="full-width label-form">
-                                    Health Insurance Type
-                                  </label>
-                                  <select className="form-control">
-                                    <option selected>Select an Option</option>
-                                    <option>None</option>
-                                    <option>Statutory</option>
-                                    <option>Private</option>
-                                  </select>
-                                </div>
-                              </div>
-                              <div className="col">
-                                <div className="input-group">
-                                  <label className="full-width label-form">
-                                    Health Insurance Company
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Enter Company Name"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                            <div className="user-form-2 row">
-                              <div className="col">
-                                <div className="input-group">
-                                  <label className="full-width label-form">
-                                    Health Insurance Number
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Enter Company Number"
-                                  />
-                                </div>
-                              </div>
-                              <div className="col">
-                                <div className="input-group">
-                                  <label className="full-width label-form">
-                                    {`Medical History (Insurance and medical policy)`}
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Enter Medical History (Insurance and medical policy)"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ) : null}
-                      </div>
-                      <div
-                        className="tab-pane"
-                        id="QUALIFICATIONS"
-                        role="tabpanel"
-                        aria-labelledby="QUALIFICATIONS"
-                      >
-                        <div className="card-body">
-                          <div className="user-form-2 row">
-                            <div className="col">
-                              <div className="input-group">
-                                <label className="full-width label-form">
-                                  Highest school diploma
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Enter Highest school diploma"
-                                />
-                              </div>
-                            </div>
-                            <div className="col">
-                              <div className="input-group">
-                                <label className="full-width label-form">
-                                  Highest vocational education
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Enter Highest vocational education"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <div className="user-form-2 row">
-                            <div className="col">
-                              <div className="input-group">
-                                <label className="full-width label-form">
-                                  Other qualifications
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Enter Other qualifications"
-                                />
-                              </div>
-                            </div>
-                            <div className="col">
-                              <div className="input-group">
-                                <label className="full-width label-form">
-                                  Languages
-                                </label>
-                                <input type="text" className="form-control" />
-                              </div>
-                            </div>
-                          </div>
-                        </div>{" "}
-                      </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {status.orgPopup ? (
-              <OrgContactEditPopup
-                callBack={CloseOrgPopup}
-                updateData={updateData}
-              />
-            ) : null}
-            {status.countryPopup ? (
-              <CountryContactEditPopup
-                popupName="Country"
-                selectedCountry={currentCountry}
-                callBack={CloseCountryPopup}
-                data={countryData}
-                updateData={updateData}
-              />
-            ) : null}
-            {status.statePopup ? (
-              <CountryContactEditPopup
-                popupName="State"
-                selectedState={selectedState}
-                callBack={CloseCountryPopup}
-                data={stateData}
-                updateData={updateData}
-              />
-            ) : null}
-          </div>
-          <footer className="bg-f4 fixed-bottom">
-            <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
-              <div>
-                {console.log("footerdiv")}
-                <div>
-                  <span className="pe-2">Created</span>
-                  <span className="pe-2">
-                    {" "}
-                    {updateData?.Created
-                      ? Moment(updateData?.Created).format("DD/MM/YYYY")
-                      : ""}
-                    &nbsp;By
-                  </span>
-                  <span>
-                    <a>{updateData?.Author ? updateData?.Author?.Title : ""}</a>
-                  </span>
-                </div>
-                <div>
-                  <span className="pe-2">Last modified</span>
-                  <span className="pe-2">
-                    {" "}
-                    {updateData?.Modified
-                      ? Moment(updateData?.Modified).format("DD/MM/YYYY")
-                      : ""}
-                    &nbsp;By
-                  </span>
-                  <span>
-                    <a>{updateData?.Editor ? updateData?.Editor.Title : ""}</a>
-                  </span>
-                </div>
-                {myContextData2.allSite?.MainSite && (
-                  <div className="alignCenter">
-                    <span
-                      onClick={deleteUserDtl}
-                      className="svg__iconbox svg__icon--trash hreflink"
-                    ></span>
-                    Delete this item
-                  </div>
-                )}
-              </div>
+                    {status.orgPopup ? <OrgContactEditPopup callBack={CloseOrgPopup} updateData={updateData} /> : null}
+                    {status.countryPopup ? <CountryContactEditPopup popupName="Country" selectedCountry={currentCountry} callBack={CloseCountryPopup} data={countryData} updateData={updateData} /> : null}
+                    {status.statePopup ? <CountryContactEditPopup popupName="State" selectedState={selectedState} callBack={CloseCountryPopup} data={stateData} updateData={updateData} /> : null}
+                    
+                </div >
+                <footer className='bg-f4 fixed-bottom'>
+                    <div className='align-items-center d-flex justify-content-between me-3 px-4 py-2'>
 
-              <div>
-                {(myContextData2.allSite?.MainSite ||
-                  myContextData2?.allSite?.HrSite) && (
-                  <span>
-                    <a
-                      className="ForAll hreflink"
-                      target="_blank"
-                      data-interception="off"
-                      href={
-                        myContextData2.allSite?.MainSite
-                          ? `${myContextData2?.allListId?.jointSiteUrl}/SitePages/contact-Profile.aspx?contactId=${updateData.Id}`
-                          : `${myContextData2?.allListId?.siteUrl}/SitePages/EmployeeInfo.aspx?employeeId=${updateData.Id}`
-                      }
-                    >
-                      <img
-                        className="mb-3 icon_siz19"
-                        style={{ marginRight: "3px" }}
-                        src="/_layouts/15/images/ichtm.gif?rev=23"
-                        alt="icon"
-                      />
-                      Go to Profile page
-                    </a>
-                  </span>
-                )}
 
-                {(myContextData2.allSite?.MainSite ||
-                  myContextData2?.allSite?.HrSite) && <span>|</span>}
-                {myContextData2.allSite?.MainSite && (
-                  <span>
-                    <a
-                      className="ForAll hreflink"
-                      target="_blank"
-                      data-interception="off"
-                      href={`https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/SmartMetaDataPortfolio.aspx`}
-                    >
-                      Manage Contact-Categories
-                    </a>
-                  </span>
-                )}
-                {myContextData2.allSite?.MainSite && <span>|</span>}
+                        <div>
+                            {console.log("footerdiv")}
+                            <div><span className='pe-2'>Created</span><span className='pe-2'> {updateData?.Created ? Moment(updateData?.Created).format("DD/MM/YYYY") : ''}&nbsp;By</span><span><a>{updateData?.Author ? updateData?.Author?.Title : ''}</a></span></div>
+                            <div><span className='pe-2'>Last modified</span><span className='pe-2'> {updateData?.Modified ? Moment(updateData?.Modified).format("DD/MM/YYYY") : ''}&nbsp;By</span><span><a>{updateData?.Editor ? updateData?.Editor.Title : ''}</a></span></div>
+                            {myContextData2.allSite?.MainSite &&<div className='alignCenter'><span onClick={deleteUserDtl} className="svg__iconbox svg__icon--trash hreflink"></span>Delete this item</div>}
+                        </div>
 
-                <a
-                  href={`${
-                    myContextData2.allSite?.MainSite
-                      ? myContextData2?.allListId?.jointSiteUrl
-                      : myContextData2?.allListId?.siteUrl
-                  }/Lists/Contacts/EditForm.aspx?ID=${updateData?.Id}`}
-                  data-interception="off"
-                  target="_blank"
-                >
-                  Open out-of-the-box form
-                </a>
+                        <div>
 
-                <button
-                  className="btn btn-primary ms-1  mx-2"
-                  onClick={UpdateDetails}
-                >
-                  Save
-                </button>
-                <button className="btn btn-default" onClick={() => callBack()}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </footer>
-          {createContractPopup && (
-            <CreateContract
-              callback={callBackData}
-              AllListId={myContextData2?.allListId}
-              updateData={updateData}
-              pageName={props?.pageName}
-            />
-          )}
-        </Panel>
-      </>
-    );
+                            {(myContextData2.allSite?.MainSite || myContextData2?.allSite?.HrSite)  && <span>
+                                <a className="ForAll hreflink" target="_blank" data-interception="off"                        
+                                 href={myContextData2.allSite?.MainSite?`${myContextData2?.allListId?.jointSiteUrl}/SitePages/contact-Profile.aspx?contactId=${updateData.Id}`:`${myContextData2?.allListId?.siteUrl}/SitePages/EmployeeInfo.aspx?employeeId=${updateData.Id}`}>
+                                    <img className="mb-3 icon_siz19" style={{ marginRight: '3px' }}
+                                        src="/_layouts/15/images/ichtm.gif?rev=23" alt="icon" />Go to Profile page
+                                </a>
+                            </span>}
+
+                            {(myContextData2.allSite?.MainSite || myContextData2?.allSite?.HrSite) && <span>|</span>}
+                            {myContextData2.allSite?.MainSite && <span>
+                                <a className="ForAll hreflink" target="_blank" data-interception="off"
+                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/SmartMetaDataPortfolio.aspx`}>
+                                    Manage Contact-Categories
+                                </a>
+                            </span>}
+                            {myContextData2.allSite?.MainSite && <span>|</span>}
+
+                            <a href={`${myContextData2.allSite?.MainSite ? myContextData2?.allListId?.jointSiteUrl : myContextData2?.allListId?.siteUrl}/Lists/Contacts/EditForm.aspx?ID=${updateData?.Id}`} data-interception="off"
+                                target="_blank">Open out-of-the-box form</a>
+
+                            <button className='btn btn-primary ms-1  mx-2'
+                                onClick={UpdateDetails}
+                            >
+                                Save
+                            </button>
+                            <button className='btn btn-default' onClick={() => callBack()}>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </footer>
+                {createContractPopup && <CreateContract  callback={callBackData} AllListId={myContextData2?.allListId}updateData={updateData} pageName={props?.pageName} />}
+            </Panel>
+        </>
+    )
 }
 export default HHHHEditComponent;

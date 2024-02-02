@@ -39,7 +39,7 @@ const EditDocumentpanel = (props: any) => {
     try {
       await web.lists.getById(props?.AllListId?.DocumentsListID)
         .items.getById(props?.editData?.Id)
-        .select( 'Id','Title','PriorityRank','Year','Body','Item_x0020_Cover','Portfolios/Id','Portfolios/Title','File_x0020_Type','FileLeafRef','FileDirRef','ItemRank','ItemType','Url','Created','Modified','Author/Id','Author/Title','Editor/Id','Editor/Title','EncodedAbsUrl')
+        .select( 'Id','Title','PriorityRank','Name','Year','Body','Item_x0020_Cover','Portfolios/Id','Portfolios/Title','File_x0020_Type','FileLeafRef','FileDirRef','ItemRank','ItemType','Url','Created','Modified','Author/Id','Author/Title','Editor/Id','Editor/Title','EncodedAbsUrl')
         .expand('Author,Editor,Portfolios')
         .get()
         .then((Data) => {
@@ -189,7 +189,7 @@ const EditDocumentpanel = (props: any) => {
     return (
       <>
         <div className='ps-4 siteColor subheading'>
-          {true ? `Edit Document Metadata - ${EditdocumentsData?.Title}` : null}
+          {true ? `Edit Document Metadata - ${EditdocumentsData?.Title!=undefined?EditdocumentsData.Title:EditdocumentsData?.docTitle}` : null}
         </div>
         <Tooltip ComponentId={'942'} />
       </>

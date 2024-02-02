@@ -59,68 +59,87 @@ export default function InfoIconsToolTip(props:any) {
         if (props?.row != undefined && newAction == 'click' || newAction == 'hover') {
 
             try {
-                let addToFeedbackArray = (value: any, heading: any) => {
-                   value=  removeHtmlAndNewline(value)
-                    if (value !== undefined && value != null) {
-                        const obj = {
-                            Title: value,
-                            heading,
-                        };
-                        feedback.push(obj);
-                        hoverTitleShow = obj;
-                        setfeedbackArray(feedback);
-                        if (newAction == "hover" && heading === "Short Description") {
-                            if(hoverTitleShow?.Title==""){
-                                hoverTitleShow.Title="Short Description is not available in this. Please click to see other details" 
-                            }
-                            setshowHoverTitle(hoverTitleShow?.Title)
-                        }
-                    }
-                   
-                }
-                if(props?.row?.Short_x0020_Description_x0020_On==undefined){
-                    let   hovertitle:any;
-                if (newAction == "hover" ) {
-                    if(hoverTitleShow==undefined){
-                       hovertitle="Short Description is not available in this. Please click to see other details" 
-                    }
-                    setshowHoverTitle(hovertitle)
-                }
-            }
-                if(props?.row?.Short_x0020_Description_x0020_On!=undefined){
-                    addToFeedbackArray(props?.row?.Short_x0020_Description_x0020_On, "Short Description");
-                }
-                if(props?.row?.Background!=undefined){
-                    addToFeedbackArray(props?.row?.Background, "Background");
-                } if(props?.row?.Body!=undefined){
-                    addToFeedbackArray(props?.row?.Body, "Description");
-                } if(props?.row?.AdminNotes!=undefined){
-                    addToFeedbackArray(props?.row?.AdminNotes, "AdminNotes");
-                } if(props?.row?.TechnicalExplanations!=undefined){
-                    addToFeedbackArray(props?.row?.TechnicalExplanations, "Technical Explanations");
-                }
-                if(props?.row?.Deliverables!=undefined){
-                    addToFeedbackArray(props?.row?.Deliverables, "Deliverables");
-                }
-                if(props?.row?.Deliverables!=undefined){
-                    addToFeedbackArray(props?.row?.Idea, "Idea");
-                }
-                if(props?.row?.ValueAdded!=undefined){
-                    addToFeedbackArray(props?.row?.ValueAdded, "ValueAdded");
-                }
-               if (props?.row?.FeedBack !== undefined) {
-                    feedback = JSON.parse(props?.row.FeedBack);
-                    hoverTitleShow = feedback[0].FeedBackDescriptions[0];
-                    hoverTitleShow = {
-                        ...hoverTitleShow,
-                        Title: cleanHTML(hoverTitleShow.Title),
-                    }
-                    setfeedbackArray(feedback[0].FeedBackDescriptions);
-                    settaskInfo(true);
-                    if (newAction == "hover") {
-                        setshowHoverTitle(hoverTitleShow?.Title)
+
+                if(props?.SingleColumnData!=undefined){
+                    if(props?.row[props?.SingleColumnData]!=undefined){
+                        let   hovertitle:any;
+                    if (newAction == "hover" ) {
+                        hovertitle= props?.row[props?.SingleColumnData]
+                        // if(hoverTitleShow==undefined){
+                        //    hovertitle="Short Description is not available in this. Please click to see other details" 
+                        // }
+                        setshowHoverTitle(hovertitle)
                     }
                 }
+
+
+                }
+                else{
+                    let addToFeedbackArray = (value: any, heading: any) => {
+                        value=  removeHtmlAndNewline(value)
+                         if (value !== undefined && value != null) {
+                             const obj = {
+                                 Title: value,
+                                 heading,
+                             };
+                             feedback.push(obj);
+                             hoverTitleShow = obj;
+                             setfeedbackArray(feedback);
+                             if (newAction == "hover" && heading === "Short Description") {
+                                 if(hoverTitleShow?.Title==""){
+                                     hoverTitleShow.Title="Short Description is not available in this. Please click to see other details" 
+                                 }
+                                 setshowHoverTitle(hoverTitleShow?.Title)
+                             }
+                         }
+                        
+                     }
+                     if(props?.row?.Short_x0020_Description_x0020_On==undefined){
+                         let   hovertitle:any;
+                     if (newAction == "hover" ) {
+                         if(hoverTitleShow==undefined){
+                            hovertitle="Short Description is not available in this. Please click to see other details" 
+                         }
+                         setshowHoverTitle(hovertitle)
+                     }
+                 }
+                     if(props?.row?.Short_x0020_Description_x0020_On!=undefined){
+                         addToFeedbackArray(props?.row?.Short_x0020_Description_x0020_On, "Short Description");
+                     }
+                     if(props?.row?.Background!=undefined){
+                         addToFeedbackArray(props?.row?.Background, "Background");
+                     } if(props?.row?.Body!=undefined){
+                         addToFeedbackArray(props?.row?.Body, "Description");
+                     } if(props?.row?.AdminNotes!=undefined){
+                         addToFeedbackArray(props?.row?.AdminNotes, "AdminNotes");
+                     } if(props?.row?.TechnicalExplanations!=undefined){
+                         addToFeedbackArray(props?.row?.TechnicalExplanations, "Technical Explanations");
+                     }
+                     if(props?.row?.Deliverables!=undefined){
+                         addToFeedbackArray(props?.row?.Deliverables, "Deliverables");
+                     }
+                     if(props?.row?.Deliverables!=undefined){
+                         addToFeedbackArray(props?.row?.Idea, "Idea");
+                     }
+                     if(props?.row?.ValueAdded!=undefined){
+                         addToFeedbackArray(props?.row?.ValueAdded, "ValueAdded");
+                     }
+                    if (props?.row?.FeedBack !== undefined) {
+                         feedback = JSON.parse(props?.row.FeedBack);
+                         hoverTitleShow = feedback[0].FeedBackDescriptions[0];
+                         hoverTitleShow = {
+                             ...hoverTitleShow,
+                             Title: cleanHTML(hoverTitleShow.Title),
+                         }
+                         setfeedbackArray(feedback[0].FeedBackDescriptions);
+                         settaskInfo(true);
+                         if (newAction == "hover") {
+                             setshowHoverTitle(hoverTitleShow?.Title)
+                         }
+                     }
+                }
+
+               
 
             } catch (error) {
             console.log(error)

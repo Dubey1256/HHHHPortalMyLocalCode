@@ -15,6 +15,7 @@ const EditInstitutionPopup=(props:any)=>{
     const [divisionTitle, setDivisionTitle] = React.useState("");
     
     const [URLs, setURLs] = React.useState([]);
+    let AllCountryData :any= React.useRef()
     const [countryData, setCountryData] = React.useState([]);
     const [status, setStatus] = React.useState({countryPopup: false });
     const [currentCountry, setCurrentCountry] :any= React.useState([])
@@ -22,12 +23,7 @@ const EditInstitutionPopup=(props:any)=>{
     let callBack=props?.callBack;
 React.useEffect(()=>{
     getSmartMetaData();
-    if(myContextData2.allSite?.MainSite){
     
-    jointInstitutionDetails(props.props.Id);
-    }else{
-        HrGmbhInstitutionDeatails(props?.props?.Id)
-    }
 },[])
 
  
@@ -51,6 +47,11 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
                 //    setCurrentInstitute(data?.Institution);
                 // }
                 data.Item_x002d_Image = data?.Item_x0020_Cover;
+                if(data?.SmartCountriesId!=undefined){
+                    let tagCountry = AllCountryData?.current?.filter((country:any)=> country?.Id==data?.SmartCountriesId[0])
+                    data.SmartCountries=tagCountry
+                }
+                
                 if (data?.SmartInstitutionId != undefined) {
                     jointInstitutionDetails(data?.SmartInstitutionId)
                 }
@@ -60,14 +61,9 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
                 if(tagDivision?.length>0){
                     data.Institution=  tagDivision
                 }
-                    setUpdateData(data)
-                
-                  
-                
-                
-            
-                
-            }).catch((error:any)=>{
+                    
+              setUpdateData(data)
+                 }).catch((error:any)=>{
                 console.log(error)
             });
       
@@ -278,7 +274,11 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
            if(myContextData2.allSite?.GMBHSite){
             UpdateGmbhDetails(postData);
            
-           }else{
+           }
+           else if(myContextData2.allSite?.HrSite){
+            updateHrDetails(postData)
+           }
+           else{
             callBack();
            }
           });
@@ -287,17 +287,25 @@ const HrGmbhInstitutionDeatails=async(Id:any)=>{
        } catch (error) {
         console.log("Error:", error.message);
     }
-    if (updateData?.Site?.toString().search("HR") >= 0) {
-        // updateHrDetails();
-        callBack();
-    }
+    // if (updateData?.Site?.toString().search("HR") >= 0) {
+    //     // updateHrDetails();
+    //     callBack();
+    // }
 
    
 
 }
 
 //*****************save function End *************** */
-
+const updateHrDetails = async (postData: any) => {
+    let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/hr');
+        await web.lists.getById(myContextData2?.allListId?.HR_EMPLOYEE_DETAILS_LIST_ID).items.getById(updateData.Id).update(postData).then((e: any) => {
+            console.log("request success", e);
+            callBack();
+        }).catch((error: any) => {
+            console.log(error)
+        })
+    }
 
 
 const UpdateGmbhDetails = async (postData: any) => {
@@ -405,6 +413,7 @@ const CreateDivision= async()=>{
 
 //***********samrt Meta data call function To get The country data ********************* */
 const getSmartMetaData = async () => {
+    let countryData:any=[];
     try {
         let web = new Web(myContextData2?.allListId?.jointSiteUrl);
         let data = await web.lists.getById(myContextData2?.allListId?.MAIN_SMARTMETADATA_LISTID)
@@ -418,7 +427,15 @@ const getSmartMetaData = async () => {
             }
             
         })
+        AllCountryData.current= countryData;
         setCountryData(countryData);
+        if(myContextData2.allSite?.MainSite){
+    
+            jointInstitutionDetails(props.props.Id);
+            }
+            else{
+                HrGmbhInstitutionDeatails(props?.props?.Id)
+            }
         // setStateData(stateData);
     } catch (error) {
         console.log("Error:", error.message);
@@ -557,7 +574,7 @@ return(
                                                            {updateData?.SmartCountries?.length>0?<div className="block wid90 alignCenter">
                                                                 <a className="hreflink" target="_blank">{updateData?.SmartCountries?.[0]?.Title}</a>
                                                                 <span
-                                                                    onClick={() => setUpdateData({...updateData, SmartCountries: undefined})} // change by Anupam
+                                                                //  onClick={() => removeSmartCountry(item.Id)}
                                                                     className="bg-light ml-auto svg__icon--cross svg__iconbox"></span>
                                                             </div>:<input type='text'></input>} 
                                                             

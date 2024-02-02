@@ -1438,12 +1438,6 @@ const ProjectManagementMain = (props: any) => {
               onClick={() => EditPopup(row?.original)}
               className="alignIcon  svg__iconbox svg__icon--edit hreflink"
             ></span>
-            {row?.original?.Item_x0020_Type != "Sprint" ?
-              <span
-                style={{ marginLeft: '4px' }}
-                title='Un-Tag Task From Project'
-                onClick={() => untagTask(row?.original)}
-              ><BsTagFill /></span> : ''}
           </span>
         ),
         id: 'Actions',
