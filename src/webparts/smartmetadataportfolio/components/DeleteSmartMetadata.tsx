@@ -97,6 +97,9 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
                         })
                     } else {
                         if (item.SharewebCategories[0]?.Id === Item.Id) {
+                            item.Created = item.Created !== null ? moment(item?.Created).format("DD/MM/YYYY") : '';
+                            item.DueDate = item.DueDate !== null ? moment(item?.DueDate).format("DD/MM/YYYY") : '';
+                            item.Modified = item.Modified !== null ? moment(item?.Modified).format("DD/MM/YYYY") : '';
                             if (item.ComponentId.length > 0) {
                                 item['Portfoliotype'] = 'Component';
                             } else if (item.ServicesId.length > 0) {
