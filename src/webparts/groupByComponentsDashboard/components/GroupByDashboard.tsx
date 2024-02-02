@@ -49,6 +49,7 @@ const GroupByDashboard = (SelectedProp: any) => {
     copyDtaArray = data;
     const [AllUsers, setTaskUser] = React.useState([]);
     const [AllMetadata, setMetadata] = React.useState([])
+    const [loaded, setLoaded] = React.useState(false);
     const [AllClientCategory, setAllClientCategory] = React.useState([])
     const [IsUpdated, setIsUpdated] = React.useState("");
     const [checkedList, setCheckedList] = React.useState<any>({});
@@ -242,6 +243,7 @@ const GroupByDashboard = (SelectedProp: any) => {
         }
         setAllMasterTasks(componentDetails?.AllData)
         setData(componentDetails?.GroupByData)
+        setLoaded(true);
     };
     React.useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -252,6 +254,7 @@ const GroupByDashboard = (SelectedProp: any) => {
         }
     }, [])
     React.useEffect(() => {
+        setLoaded(false);
         findPortFolioIconsAndPortfolio();
         GetSmartmetadata();
         getTaskUsers();
@@ -919,12 +922,14 @@ const GroupByDashboard = (SelectedProp: any) => {
                                     <div className="col-sm-12 p-0 smart">
                                         <div>
                                             <div>
-                                                <GlobalCommanTable hideAddActivityBtn={true} hideShowingTaskCountToolTip={true} showRestructureButton={true} showCompareButton={true} openCompareTool={openCompareTool} columnSettingIcon={true}
+                                                <GlobalCommanTable hideAddActivityBtn={true} hideShowingTaskCountToolTip={true} showRestructureButton={true} showCompareButton={true} openCompareTool={openCompareTool}
                                                     masterTaskData={allMasterTaskDataFlatLoadeViewBackup} precentComplete={precentComplete} AllMasterTasksData={AllMasterTasksData}
-                                                    ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1}
+                                                    ref={childRef} callChildFunction={callChildFunction} columns={columns} restructureCallBack={callBackData1}
                                                     data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem}
                                                     taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true}
-                                                    showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} />
+                                                    showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal}
+                                                    bulkEditIcon={true} setData={setData} setLoaded={setLoaded} AllListId={ContextValue} columnSettingIcon={true}
+                                                />
                                             </div>
                                         </div>
                                     </div>
@@ -958,6 +963,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 >
                 </EditInstituton>
             )}
+            {!loaded && <PageLoader />}
         </>
     )
 }
