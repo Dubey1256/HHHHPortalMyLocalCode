@@ -110,8 +110,6 @@ function PortfolioTable(SelectedProp: any) {
     const [flatViewDataAll, setFlatViewDataAll] = React.useState([]);
     const [portfolioTypeDataItemBackup, setPortFolioTypeIconBackup] = React.useState([]);
     const [taskTypeDataItemBackup, setTaskTypeDataItemBackup] = React.useState([]);
-    const [priorityRank, setpriorityRank] = React.useState([])
-    const [precentComplete, setPrecentComplete] = React.useState([])
     const globalContextData: any = React.useContext<any>(myContextValue)
   let ComponetsData: any = {};
   let Response: any = [];
@@ -226,8 +224,6 @@ function PortfolioTable(SelectedProp: any) {
 
   const GetSmartmetadata = async () => {
     let siteConfigSites: any = [];
-    let Priority: any = []
-    let PrecentComplete: any = [];
     let web = new Web(ContextValue.siteUrl);
     let smartmetaDetails: any = [];
     smartmetaDetails = await web.lists
@@ -267,24 +263,13 @@ function PortfolioTable(SelectedProp: any) {
       if (newtest?.TaxType == 'timesheetListConfigrations') {
         timeSheetConfig = newtest;
       }
-      if (newtest?.TaxType == 'Priority Rank') {
-        Priority?.push(newtest)
-    }
-    if (newtest?.TaxType === 'Percent Complete' && newtest?.Title != 'In Preparation (0-9)' && newtest?.Title != 'Ongoing (10-89)' && newtest?.Title != 'Completed (90-100)') {
-        PrecentComplete.push(newtest);
-    }
+      
     });
     if (siteConfigSites?.length > 0) {
       setSiteConfig(siteConfigSites);
     }
-    Priority?.sort((a: any, b: any) => {
-      return a.SortOrder - b.SortOrder;
-  });
-  PrecentComplete?.sort((a: any, b: any) => {
-      return a.SortOrder - b.SortOrder;
-  });
-  setpriorityRank(Priority)
-  setPrecentComplete(PrecentComplete)
+    
+ 
     setMetadata(smartmetaDetails);
   };
 
@@ -2106,7 +2091,7 @@ const openCompareTool =()=>{
                   <div className="">
                     <div className="">
                   
-                      <GlobalCommanTable openCompareTool={openCompareTool}  showRestructureButton={true} showCompareButton={true} bulkEditIcon={true} priorityRank={priorityRank} precentComplete={precentComplete}
+                      <GlobalCommanTable openCompareTool={openCompareTool}  showRestructureButton={true} showCompareButton={true} bulkEditIcon={true} 
                       AllSitesTaskData={flatviewTasklist} masterTaskData={flatviewmastertask}
                         smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                         portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData}
