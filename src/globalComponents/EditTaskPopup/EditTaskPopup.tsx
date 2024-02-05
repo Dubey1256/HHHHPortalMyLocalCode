@@ -2781,10 +2781,14 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.DisplayCreateDate =
                                         Items?.Items?.DisplayCreateDate;
                                         dataEditor.data.DisplayDueDate = Moment(EditData?.DueDate).format("DD/MM/YYYY");
-                                    dataEditor.data.PercentComplete = EditData.PercentComplete;
-                                    dataEditor.data.FeedBack = JSON.stringify(
-                                        dataEditor.data.FeedBack
-                                    );
+                                        dataEditor.data.PercentComplete = Number(UpdateTaskInfo.PercentCompleteStatus);
+                                        dataEditor.data.FeedBack = JSON.stringify(
+                                            dataEditor.data.FeedBack
+                                        );
+                                        let portfoliostructureIds = AllProjectBackupArray?.filter((item:any)=> item?.Id === (selectedProject?.length>0?selectedProject[0].Id:""));
+                                        const structureiddata= portfoliostructureIds?.length>0?portfoliostructureIds[0]?.PortfolioStructureID:"";
+                                        
+                                        dataEditor.data.projectStructerId = structureiddata;
                                     Items.Call(dataEditor, "UpdatedData");
                                 } else {
                                     Items.Call(DataJSONUpdate, "UpdatedData");
