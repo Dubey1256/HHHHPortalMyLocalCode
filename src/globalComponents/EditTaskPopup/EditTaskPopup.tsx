@@ -4128,10 +4128,11 @@ const EditTaskPopup = (Items: any) => {
                         newGeneratedId = res.data.Id;
                         await CopyImageData(SelectedSite, res.data);
                         CopydocumentData(SelectedSite, res.data);
+
                         if (FunctionsType == "Copy-Task") {
                             setLoaded(true)
                             if (timesheetData != undefined && timesheetData.length > 0) {
-                                await moveTimeSheet(SelectedSite, res.data);
+                                await moveTimeSheet(SelectedSite, res.data,'copy');
                             }
                             newGeneratedId = res.data.Id;
                             console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
@@ -4140,7 +4141,7 @@ const EditTaskPopup = (Items: any) => {
                         } else {
                             console.log(`Task Moved Successfully on ${SelectedSite} !!!!!`);
                             if (timesheetData != undefined && timesheetData.length > 0) {
-                                await moveTimeSheet(SelectedSite, res.data);
+                                await moveTimeSheet(SelectedSite, res.data,'move');
                             } else {
                                 Items.Items.Action = "Move";
                                 deleteItemFunction(Items.Items.Id, "Move");
@@ -4303,7 +4304,7 @@ const EditTaskPopup = (Items: any) => {
         console.log(Data);
     };
 
-    const moveTimeSheet = async (SelectedSite: any, newItem: any) => {
+    const moveTimeSheet = async (SelectedSite: any, newItem: any,type:any) => {
         newGeneratedId = newItem.Id;
         var TimesheetConfiguration: any = [];
         var folderUri = "";
@@ -4338,7 +4339,7 @@ const EditTaskPopup = (Items: any) => {
                 })
                 .then((res) => {
                     count++;
-                    if (count == timesheetData.length) {
+                    if (count == timesheetData.length && type == 'move') {
                         Items.Items.Action = "Move";
                         setLoaded(true)
                         deleteItemFunction(Items.Items.Id, "Move");
