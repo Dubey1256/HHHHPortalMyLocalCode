@@ -223,6 +223,7 @@ const Permission_management = (props:any) => {
       await web.siteGroups.getById(id).users.add(data);
 
       console.log("User added successfully");
+      setInputValue({...inputValue, Title:""})
     } catch (error) {
       console.error(error);
 
@@ -561,7 +562,7 @@ const changeHeader=(items:any)=>{
             </select>
           </div>
           <div className="Alltable my-3">
-            <GlobalCommanTable showHeader={true} showPagination={true} callBackData={callBackData} columns={columns} data={data} />
+            <GlobalCommanTable showHeader={true} showPagination={true} callBackData={callBackData} columns={columns} data={data} hideOpenNewTableIcon={true} hideTeamIcon={true} />
           </div>
         </div>
         <footer className="text-end">
@@ -574,7 +575,7 @@ const changeHeader=(items:any)=>{
         type={PanelType.medium}
         isOpen={addUser}
         isBlocking={false}
-        onDismiss={() => { setAddUser(false), setSuggestions([]) }}
+        onDismiss={() => { setAddUser(false), setSuggestions([]), setInputValue({...inputValue, Title:""}) }}
       >
         <div className="modal-body">
           <div className="input-group">
@@ -595,7 +596,7 @@ const changeHeader=(items:any)=>{
         </div>
         <footer className="mt-4 text-end">
           <button className="me-2 btn btn-primary" onClick={postUser} >Save</button>
-          <button className="btn btn-default" onClick={() => { setAddUser(false), setSuggestions([]) }} >Cancel</button>
+          <button className="btn btn-default" onClick={() => { setAddUser(false), setSuggestions([]),setInputValue({...inputValue, Title:""}) }} >Cancel</button>
         </footer>
       </Panel>
 
@@ -605,7 +606,7 @@ const changeHeader=(items:any)=>{
         type={PanelType.medium}
         isOpen={checkPermission}
         isBlocking={false}
-        onDismiss={() => { setCheckPermission(false), setSuggestions([]) }}
+        onDismiss={() => { setCheckPermission(false), setSuggestions([]),setPermissionUserGroup([]),setInputValue({...inputValue,Title:''})}}
       >
         <div className="modal-body">
           <div className="row">
@@ -644,7 +645,7 @@ const changeHeader=(items:any)=>{
         </div>
 
         <footer className="mt-4 text-end">
-          <button className="btn btn-primary" onClick={() => { setCheckPermission(false), setSuggestions([]) }} >OK</button>
+          <button className="btn btn-primary" onClick={() => { setCheckPermission(false), setSuggestions([]), setPermissionUserGroup([]),setInputValue({...inputValue,Title:''})}} >OK</button>
         </footer>
       </Panel>
     </>
