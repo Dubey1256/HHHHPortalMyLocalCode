@@ -574,7 +574,7 @@ return(
                                                            {updateData?.SmartCountries?.length>0?<div className="block wid90 alignCenter">
                                                                 <a className="hreflink" target="_blank">{updateData?.SmartCountries?.[0]?.Title}</a>
                                                                 <span
-                                                                //  onClick={() => removeSmartCountry(item.Id)}
+                                                                    onClick={() => setUpdateData({...updateData, SmartCountries: undefined})}
                                                                     className="bg-light ml-auto svg__icon--cross svg__iconbox"></span>
                                                             </div>:<input type='text'></input>} 
                                                             
