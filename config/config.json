@@ -370,6 +370,14 @@
         }
       ]
     },
+    "froala-editor-test-env-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/froalaEditorTestEnv/FroalaEditorTestEnvWebPart.js",
+          "manifest": "./src/webparts/froalaEditorTestEnv/FroalaEditorTestEnvWebPart.manifest.json"
+        }
+      ]
+    },
     "hello-spfx-web-part": {
       "components": [
         {
@@ -439,6 +447,7 @@
     "CategoriesWeeklyMultipleReportWebPartStrings": "lib/webparts/categoriesWeeklyMultipleReport/loc/{locale}.js",
     "CreateTaskWebPartStrings": "lib/webparts/createTask/loc/{locale}.js",
     "PermissionManagementWebPartStrings": "lib/webparts/permissionManagement/loc/{locale}.js",
+    "FroalaEditorTestEnvWebPartStrings": "lib/webparts/froalaEditorTestEnv/loc/{locale}.js",
     "AllTaskUserWebPartStrings": "lib/webparts/allTaskUser/loc/{locale}.js",
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
     "MyPendingTasksWebPartStrings": "lib/webparts/myPendingTasks/loc/{locale}.js",

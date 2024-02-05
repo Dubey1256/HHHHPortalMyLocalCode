@@ -4,7 +4,7 @@ import moment from 'moment';
 import { ColumnDef } from '@tanstack/react-table'
 import React, { useEffect, useRef, useState } from 'react'
 import { Web } from "sp-pnp-js"
-import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable'
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers'
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
@@ -26,7 +26,7 @@ export const Modified = (props: any) => {
   let columns: any = [];
   let portfolioColor: any = '#000066';
   var baseUrl: any = props?.props.context?._pageContext?.web?.absoluteUrl;
-
+  const [gmbhSite,setGmbhSite]=useState(false);
   const [sites, setSites] = useState<any>([])
   const [allSiteData, setallSiteData] = useState<any>([])
   const [allUsers, setAllUsers] = useState<any>([]);
@@ -61,11 +61,14 @@ export const Modified = (props: any) => {
     getPortfolioData()
   }, []);
 
+
   const getAllUsers = async () => {
+      
 
     Users = await globalCommon.loadTaskUsers();
     setAllUsers(Users) 
     if (baseUrl.toLowerCase().includes("gmbh")) {
+      setGmbhSite(true)
       allSite = {
           GMBHSite: true,
           MainSite: false,
@@ -214,7 +217,7 @@ export const Modified = (props: any) => {
       }
       if (allSite.TabName == 'DOCUMENTS' || allSite.TabName == 'FOLDERS' || allSite.TabName == 'COMPONENTS' || allSite.TabName == 'SERVICES'||allSite.TabName=='TEAM-PORTFOLIO'||allSite.TabName=="WEB PAGES") {
         data?.map((item: any) => {
-          item.siteType = allSite?.TabName;
+          item.siteType ="Master Tasks"
           item.listId = allSite.ListId;
           item.siteUrl = baseUrl;
           item.coloumns=allSite.Columns
@@ -950,7 +953,7 @@ else if(type == 'DOCUMENTS' ){
       id: 'Id',
     },
     {
-      accessorKey: "FileLeafRef", placeholder: "Title", header: "",
+      accessorKey: "FileLeafRef", placeholder: "Title", header: "",id:"FileLeafRef",
       cell: ({ row }) =>
         <>
           {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ?<a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</>: undefined}
@@ -975,7 +978,7 @@ else if(type == 'DOCUMENTS' ){
           return false
         }
       },
-      id: 'Modified',
+      id: 'modifiedNew',
       resetColumnFilters: false,
       isColumnDefultSortingDesc: true,
       resetSorting: false,
@@ -1002,7 +1005,7 @@ else if(type == 'DOCUMENTS' ){
           return false
         }
       },
-      id: 'Created',
+      id: 'createdNew',
       resetColumnFilters: false,
       resetSorting: false,
       placeholder: "Created",
@@ -1047,12 +1050,12 @@ else if(type == 'DOCUMENTS' ){
         id: 'Id',
       }, 
       {
-        accessorKey: "ProfileType", placeholder: "Profile Type", header: "",
+        accessorKey: "ProfileType", placeholder: "Profile Type", header: "",id:"ProfileType",
         cell: ({ row }) =>
           <span>{row.original.ProfileType}</span>   
       },
       {
-        accessorKey: "Title", placeholder: "Title", header: "",
+        accessorKey: "Title", placeholder: "Title", header: "",id:"Title",
         cell: ({ row }) =>
           <a  data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
             {row.original.Title}
@@ -1077,7 +1080,7 @@ else if(type == 'DOCUMENTS' ){
             return false
           }
         },
-        id: 'Modified',
+        id: 'modifiedNew',
         resetColumnFilters: false,
         isColumnDefultSortingDesc: true,
         resetSorting: false,
@@ -1105,7 +1108,7 @@ else if(type == 'DOCUMENTS' ){
             return false
           }
         },
-        id: 'Created',
+        id: 'createdNew',
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Created",
@@ -1157,7 +1160,7 @@ else if(type == 'DOCUMENTS' ){
         }, 
         
         {
-          accessorKey: "Title", placeholder: "Title", header: "",
+          accessorKey: "Title", placeholder: "Title", header: "",id:"Title",
           cell: ({ row }) =>
             <span>{row.original.Title}</span>             
         },
@@ -1180,7 +1183,7 @@ else if(type == 'DOCUMENTS' ){
               return false
             }
           },
-          id: 'Modified',
+          id: "modifiedNew",
           resetColumnFilters: false,
           isColumnDefultSortingDesc: true,
           resetSorting: false,
@@ -1208,7 +1211,7 @@ else if(type == 'DOCUMENTS' ){
               return false
             }
           },
-          id: 'Created',
+          id: 'createdNew',
           resetColumnFilters: false,
           resetSorting: false,
           placeholder: "Created",
@@ -1259,21 +1262,21 @@ else if(type == 'DOCUMENTS' ){
         id: 'Id',
       },
       {
-        accessorKey: "FirstName", placeholder: "FirstName", header: "",
+        accessorKey: "FirstName", placeholder: "FirstName", header: "",id:"FirstName",
         cell: ({ row }) =>
           <>
             <span>{row.original.FirstName}</span>
           </>
       },
       {
-        accessorKey: "Title", placeholder: "LastName", header: "",
+        accessorKey: "Title", placeholder: "LastName", header: "",id:"Title",
         cell: ({ row }) =>
           <>
             <span>{row.original.Title}</span>
           </>
       },
       {
-        accessorKey: "FullName", placeholder: "FullName", header: "",
+        accessorKey: "FullName", placeholder: "FullName", header: "",id:"FullName",
         cell: ({ row }) =>
           <>
              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Contact-Profile.aspx?contactId=${row.original.Id}`}>
@@ -1299,7 +1302,7 @@ else if(type == 'DOCUMENTS' ){
             return false
           }
         },
-        id: 'Modified',
+        id: 'modifiedNew',
         resetColumnFilters: false,
         isColumnDefultSortingDesc: true,
         resetSorting: false,
@@ -1326,7 +1329,7 @@ else if(type == 'DOCUMENTS' ){
             return false
           }
         },
-        id: 'Created',
+        id: 'createdNew',
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Created",
@@ -1363,7 +1366,7 @@ else if(type == 'DOCUMENTS' ){
         id: 'Id',
       },
       {
-        accessorKey: "Title", placeholder: "Title", header: "",
+        accessorKey: "Title", placeholder: "Title", header: "",id:"Title",
         cell: ({ row }) =>
           <>
             <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Event-detail.aspx?ItemID=${row.original.Id}&Site=GmbH`}>
@@ -1372,7 +1375,7 @@ else if(type == 'DOCUMENTS' ){
           </>
       },
       {
-        accessorKey: "ItemRank", placeholder: "ItemRank", header: "",
+        accessorKey: "ItemRank", placeholder: "ItemRank", header: "",id:"ItemRank",
         cell: ({ row }) =>
           <>
            <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Event-detail.aspx?ItemID=${row.original.Id}&Site=GmbH`}>
@@ -1381,7 +1384,7 @@ else if(type == 'DOCUMENTS' ){
           </>
       },
       {
-        accessorKey: "eventDate", placeholder: "Event Date", header: "",
+        accessorKey: "eventDate", placeholder: "Event Date", header: "",id:"eventDate",
         cell: ({ row }) =>
           <>
              <a target='_blank' href={`${baseUrl}/SitePages/Contact-Profile.aspx?contactId=${row.original.SmartContactId}`}>
@@ -1407,7 +1410,7 @@ else if(type == 'DOCUMENTS' ){
             return false
           }
         },
-        id: 'Modified',
+        id: 'modifiedNew',
         resetColumnFilters: false,
         isColumnDefultSortingDesc: true,
         resetSorting: false,
@@ -1434,7 +1437,7 @@ else if(type == 'DOCUMENTS' ){
             return false
           }
         },
-        id: 'Created',
+        id: 'createdNew',
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Created",
@@ -1471,7 +1474,7 @@ else if(type == 'DOCUMENTS' ){
         id: 'Id',
       },
       {
-        accessorKey: "Title", placeholder: "Title", header: "",
+        accessorKey: "Title", placeholder: "Title", header: "",id:"Title",
         cell: ({ row }) =>
           <>
             <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Event-detail.aspx?ItemID=${row.original.Id}&Site=GmbH`}>
@@ -1480,7 +1483,7 @@ else if(type == 'DOCUMENTS' ){
           </>
       },
       {
-        accessorKey: "ItemRank", placeholder: "ItemRank", header: "",
+        accessorKey: "ItemRank", placeholder: "ItemRank", header: "",id:"ItemRank",
         cell: ({ row }) =>
           <>
            <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Event-detail.aspx?ItemID=${row.original.Id}&Site=GmbH`}>
@@ -1506,7 +1509,7 @@ else if(type == 'DOCUMENTS' ){
             return false
           }
         },
-        id: 'Modified',
+        id: 'modifiedNew',
         resetColumnFilters: false,
         isColumnDefultSortingDesc: true,
         resetSorting: false,
@@ -1533,7 +1536,7 @@ else if(type == 'DOCUMENTS' ){
             return false
           }
         },
-        id: 'Created',
+        id: 'createdNew',
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Created",
@@ -1570,7 +1573,7 @@ else if(type == 'DOCUMENTS' ){
           size: 5,
           id: 'Id',
         }, {
-          accessorKey: 'PortfolioStructureID', placeholder: 'ID', header: "",
+          accessorKey: 'PortfolioStructureID', placeholder: 'ID', header: "",id:'PortfolioStructureID',
           cell: ({ row }) =>
             <>
               <img className='workmember ms-1' src={`${baseUrl}${row.original.photoComponent}`} alt="" />
@@ -1578,7 +1581,7 @@ else if(type == 'DOCUMENTS' ){
             </>
         },
         {
-          accessorKey: "Title", placeholder: "Component Name", header: "",
+          accessorKey: "Title", placeholder: "Component Name", header: "",id:"Title",
           cell: ({ row }) =>
             <span>  <a data-interception="off" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.Id}`}>
               {row.original.Title}
@@ -1600,7 +1603,7 @@ else if(type == 'DOCUMENTS' ){
               return false
             }
           },
-          id: 'DueDate',
+          id: 'dueDateNew',
           resetColumnFilters: false,
           resetSorting: false,
           placeholder: "DueDate",
@@ -1608,11 +1611,11 @@ else if(type == 'DOCUMENTS' ){
           size: 90,
         },
         {
-          accessorKey: 'PercentCompleteShow', placeholder: '%', header: ''
+          accessorKey: 'PercentCompleteShow', placeholder: '%', header: '',id:'PercentCompleteShow',
 
         },
         {
-          accessorKey: 'PriorityRank', placeholder: 'Priority', header: ''
+          accessorKey: 'PriorityRank', placeholder: 'Priority', header: '',id:'PriorityRank',
         },
         {
           accessorKey: 'Modified'
@@ -1635,7 +1638,7 @@ else if(type == 'DOCUMENTS' ){
               return false
             }
           },
-          id: 'Modified',
+          id: 'modifiedNew',
           resetColumnFilters: false,
           isColumnDefultSortingDesc: true,
           resetSorting: false,
@@ -1665,7 +1668,7 @@ else if(type == 'DOCUMENTS' ){
               return false
             }
           },
-          id: 'Created',
+          id: 'createdNew',
           resetColumnFilters: false,
           resetSorting: false,
           placeholder: "Created",
@@ -1714,14 +1717,17 @@ else if(type == 'DOCUMENTS' ){
           size: 90,
         },
         {
-          accessorKey: "Title", placeholder: "Title", header: "",
-          cell: ({ row }) =>
+          accessorKey: "Title",
+          cell: ({ row }) =>(
             <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
               {row.original.Title}
             </a>
+            ),
+            id:"Title",
+            placeholder: "Title", header: "",
         },
         {
-          accessorKey: 'PortfolioTitle', placeholder: 'Component', header: '',
+          accessorKey: 'PortfolioTitle', placeholder: 'Component', header: '',id:'PortfolioTitle',
           cell: ({ row }) =>
             <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.PortfolioID}`}>
               {row.original.PortfolioTitle}
@@ -1749,14 +1755,14 @@ else if(type == 'DOCUMENTS' ){
           size: 90,
         },
         {
-          accessorKey: 'PercentCompleteShow', placeholder: '%', header: ''
+          accessorKey: 'PercentCompleteShow', placeholder: '%', header: '',id:'PercentCompleteShow'
 
         },
         {
-          accessorKey: 'PriorityRank', placeholder: 'Priority', header: ''
+          accessorKey: 'PriorityRank', placeholder: 'Priority', header: '',id:'PriorityRank'
         },
         {
-          accessorKey: "teamUserName", placeholder: "Team Member", header: "", size: 100,
+          accessorKey: "teamUserName", placeholder: "Team Member", header: "", size: 100,id:"teamUserName",
           cell: ({ row }) =>
             <>
               <ShowTaskTeamMembers props={row.original} TaskUsers={allUsers} />
@@ -1782,7 +1788,7 @@ else if(type == 'DOCUMENTS' ){
               return false
             }
           },
-          id: 'Modified',
+          id: 'modifiedNew',
           resetColumnFilters: false,
           isColumnDefultSortingDesc: true,
           resetSorting: false,
@@ -1810,7 +1816,7 @@ else if(type == 'DOCUMENTS' ){
               return false
             }
           },
-          id: 'Created',
+          id: 'createdNew',
           resetColumnFilters: false,
           resetSorting: false,
           placeholder: "Created",
@@ -1875,8 +1881,6 @@ else if(type == 'DOCUMENTS' ){
             />
             <label>
               SERVICES </label>
-
-
           </div>
         </div>
       </div>
@@ -1905,7 +1909,7 @@ else if(type == 'DOCUMENTS' ){
                 <div className="Alltable mt-2">
                   <div className="col-md-12 p-0 smart">
                     <div className="wrapper">
-                      <GlobalCommanTable columns={columns} ref={childRef} data={allSiteData} showHeader={true} callBackData={callBackData} multiSelect={true} TaskUsers={allUsers} portfolioColor={portfolioColor} AllListId={editLists} />
+                      <GlobalCommanTable columns={columns} ref={childRef} data={allSiteData} showHeader={true} callBackData={callBackData}   multiSelect={true} hideTeamIcon={gmbhSite}  TaskUsers={allUsers} portfolioColor={portfolioColor}  AllListId={editLists} />
                     </div>
                   </div>
                 </div>
