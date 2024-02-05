@@ -17,11 +17,9 @@ import PageLoader from "../../../globalComponents/pageLoader";
 import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
 import TrafficLightComponent from "../../../globalComponents/TrafficLightVerification/TrafficLightComponent";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
-import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
 
 var filt: any = "";
 var ContextValue: any = {};
-let backupAllMaster:any=[];
 let childRefdata: any;
 let copyDtaArray: any = [];
 let portfolioColor: any = '';
@@ -53,7 +51,6 @@ const GroupByDashboard = (SelectedProp: any) => {
     copyDtaArray = data;
     const [AllUsers, setTaskUser] = React.useState([]);
     const [AllMetadata, setMetadata] = React.useState([])
-    const [loaded, setLoaded] = React.useState(false);
     const [AllClientCategory, setAllClientCategory] = React.useState([])
     const [IsUpdated, setIsUpdated] = React.useState("");
     const [checkedList, setCheckedList] = React.useState<any>({});
@@ -246,9 +243,7 @@ const GroupByDashboard = (SelectedProp: any) => {
             console.log("backup Json parse error Page Loade master task Data");
         }
         setAllMasterTasks(componentDetails?.AllData)
-        backupAllMaster = componentDetails?.AllData;
         setData(componentDetails?.GroupByData)
-        setLoaded(true);
     };
     React.useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -259,7 +254,6 @@ const GroupByDashboard = (SelectedProp: any) => {
         }
     }, [])
     React.useEffect(() => {
-        setLoaded(false);
         findPortFolioIconsAndPortfolio();
         GetSmartmetadata();
         getTaskUsers();
@@ -282,28 +276,6 @@ const GroupByDashboard = (SelectedProp: any) => {
         } else { Image = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"; }
         return user ? Image : null;
     };
-    const inlineCallBack = React.useCallback((item: any) => {
-            let ComponentsData :any= [];
-            let AllMasterItem = backupAllMaster;
-            AllMasterItem = AllMasterItem?.map((result: any) => {
-                if (result?.Id == item?.Id) {
-                    return { ...result, ...item };
-                }
-                return result;
-            })
-    
-            AllMasterItem?.map((result: any) => {
-                if (result?.Item_x0020_Type == 'Component') {
-                    const groupedResult = globalCommon?.componentGrouping(result, AllMasterItem)
-                    ComponentsData.push(groupedResult?.comp);
-                }
-            })
-            setAllMasterTasks(AllMasterItem)
-          
-            setData(ComponentsData)
-    
-    
-        }, []);
 
     const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
@@ -348,7 +320,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Type",
                 header: "",
                 resetColumnFilters: false,
-                size: 95,
+                size: 70,
                 isColumnVisible: true
             },
             {
@@ -363,7 +335,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 header: "",
                 resetColumnFilters: false,
                 // isColumnDefultSortingAsc:true,
-                size: 190,
+                size: 95,
                 isColumnVisible: true
             },
             {
@@ -417,7 +389,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Deliverables",
                 header: "",
                 resetColumnFilters: false,
-                size: 50,
+                size: 80,
                 isColumnVisible: true
             },
             {
@@ -432,7 +404,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Help Information",
                 header: "",
                 resetColumnFilters: false,
-                size: 50,
+                size: 80,
                 isColumnVisible: true
             },
             {
@@ -447,7 +419,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Short Description",
                 header: "",
                 resetColumnFilters: false,
-                size: 50,
+                size: 80,
                 isColumnVisible: true
             },
             {
@@ -462,7 +434,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Technical Explanations",
                 header: "",
                 resetColumnFilters: false,
-                size: 50,
+                size: 80,
                 isColumnVisible: true
             },
             {
@@ -477,7 +449,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Body",
                 header: "",
                 resetColumnFilters: false,
-                size: 50,
+                size: 80,
                 isColumnVisible: true
             },
             {
@@ -492,7 +464,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "AdminNotes",
                 header: "",
                 resetColumnFilters: false,
-                size: 50,
+                size: 80,
                 isColumnVisible: true
             },
             {
@@ -507,7 +479,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "ValueAdded",
                 header: "",
                 resetColumnFilters: false,
-                size: 50,
+                size: 80,
                 isColumnVisible: true
             },
             {
@@ -522,7 +494,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Idea",
                 header: "",
                 resetColumnFilters: false,
-                size: 50,
+                size: 80,
                 isColumnVisible: true
             },
             {
@@ -537,7 +509,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Background",
                 header: "",
                 resetColumnFilters: false,
-                size: 50,
+                size: 80,
                 isColumnVisible: true
             },
             {
@@ -551,27 +523,21 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "verified",
                 header: "",
                 resetColumnFilters: false,
-                size: 50,
+                size: 140,
                 isColumnVisible: true
             },
             {
                 accessorFn: (row) => row?.FeatureTypeTitle,
                 cell: ({ row }) => (
                     <>
-                        <InlineEditingcolumns
-                            AllListId={ContextValue}
-                            TaskUsers={AllUsers}
-                            callBack={inlineCallBack}
-                            columnName='FeatureType'
-                            item={row?.original}
-                        />
+                        <span>{row?.original?.FeatureTypeTitle}</span>
                     </>
                 ),
                 id: "FeatureTypeTitle",
                 placeholder: "FeatureTypeTitle",
                 header: "",
                 resetColumnFilters: false,
-                size: 120,
+                size: 50,
                 isColumnVisible: true
             },
             {
@@ -606,7 +572,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                     }
                 },
                 header: "",
-                size: 105
+                size: 125
             },
             {
                 accessorKey: "descriptionsSearch",
@@ -964,14 +930,12 @@ const GroupByDashboard = (SelectedProp: any) => {
                                     <div className="col-sm-12 p-0 smart">
                                         <div>
                                             <div>
-                                                <GlobalCommanTable hideAddActivityBtn={true} hideShowingTaskCountToolTip={true} showRestructureButton={true} showCompareButton={true} openCompareTool={openCompareTool}
+                                                <GlobalCommanTable hideAddActivityBtn={true} hideShowingTaskCountToolTip={true} showRestructureButton={true} showCompareButton={true} openCompareTool={openCompareTool} columnSettingIcon={true}
                                                     masterTaskData={allMasterTaskDataFlatLoadeViewBackup} precentComplete={precentComplete} AllMasterTasksData={AllMasterTasksData}
-                                                    ref={childRef} callChildFunction={callChildFunction} columns={columns} restructureCallBack={callBackData1}
+                                                    ref={childRef} callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1}
                                                     data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem}
                                                     taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true}
-                                                    showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal}
-                                                    bulkEditIcon={true} setData={setData} setLoaded={setLoaded} AllListId={ContextValue} columnSettingIcon={true}
-                                                />
+                                                    showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} />
                                             </div>
                                         </div>
                                     </div>
@@ -1005,7 +969,6 @@ const GroupByDashboard = (SelectedProp: any) => {
                 >
                 </EditInstituton>
             )}
-            {!loaded && <PageLoader />}
         </>
     )
 }
