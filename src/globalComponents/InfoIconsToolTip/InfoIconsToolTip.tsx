@@ -52,7 +52,7 @@ export default function InfoIconsToolTip(props:any) {
         }
     }
     const handlAction = (newAction: any) => {
-        if (action === "click" && newAction === "hover") return;
+        if (action === "click" && newAction === "hover") return setAction("");
         let feedback: any = [];
         var hoverTitleShow: any
         let hoverdata: any
@@ -171,10 +171,13 @@ export default function InfoIconsToolTip(props:any) {
     }, [action]);
     return (
         <>
-             {props?.versionHistory != true ? <span ref={setTriggerRef} onClick={() => handlAction("click")} onMouseEnter={() => handlAction("hover")} onMouseLeave={() => handleMouseLeave()} className=" svg__iconbox svg__icon--info dark"></span>:
+             {props?.versionHistory != true ? <span ref={setTriggerRef} 
+             onClick={() => handlAction("click")}
+              onMouseEnter={() => handlAction("hover")} 
+              onMouseLeave={() => handleMouseLeave()} className=" svg__iconbox svg__icon--info dark"></span>:
             <span className="text-end w-25" ref={setTriggerRef} onClick={() => handlAction("click")} title="Description"><a href="#" className="ps-1">Show More</a></span>}
 
-            {action === "click" && visible && (
+            {action === "click" && visible && props?.SingleColumnData==undefined && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container p-0 m-0" })}>
 
                     <div>
