@@ -139,6 +139,7 @@ const EditDocumentpanel = (props: any) => {
     await web.lists.getById(props?.AllListId?.DocumentsListID)
       .items.getById(EditdocumentsData.Id).update({
         Title: EditdocumentsData?.Title,
+        FileLeafRef:EditdocumentsData?.docTitle,
         ItemRank: EditdocumentsData?.ItemRank == 'Select Item Rank' ? null : EditdocumentsData?.ItemRank,
         Year: EditdocumentsData.Year,
         ItemType: EditdocumentsData.ItemType,
