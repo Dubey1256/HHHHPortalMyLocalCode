@@ -45,7 +45,7 @@ import {
   PeoplePicker,
   PrincipalType
 } from "@pnp/spfx-controls-react/lib/PeoplePicker";
-import { MonthlyLeaveReport } from "./MonthlyLeaveReport";
+import  {MonthlyLeaveReport } from "./MonthlyLeaveReport";
 import { Download } from "react-bootstrap-icons";
 
 interface IPeoplePickerComponentProps {
@@ -180,7 +180,6 @@ const App = (props: any) => {
     React.useState(null);
   const [recurrenceData, setRecurrenceData] = React.useState(null);
   const [selectedKey, setselectedKey] = React.useState('daily');
-
   // People picker function start
   const [selectedUsers, setSelectedUsers] = React.useState([]);
 
@@ -1714,7 +1713,7 @@ const App = (props: any) => {
       // }
     }
     else {
-      setInputValueName('');
+      // setInputValueName('');
       setIsChecked(false);
       allDay = false
       setIsDisableField(false)
@@ -1742,9 +1741,9 @@ const App = (props: any) => {
         </a>
       </div>
       <div className="w-100 text-end">
-      <a className="mailBtn me-4" href="#" onClick={DownloadLeaveReport}>
-           <span>Download Monthly Report Generate</span>
-        </a> 
+      {props.props.context._pageContext._user.email === ('anubhav.shukla@hochhuth-consulting.de'|| "deepak@hochhuth-consulting.de" ||"prashant.kumar@hochhuth-consulting.de"||"prashant@hochhuth-consulting.de") && <a  href="#" onClick={DownloadLeaveReport}>
+           <span>Generate Monthly Report</span>
+        </a> }
         |
         <a
           target="_blank"
@@ -1756,10 +1755,11 @@ const App = (props: any) => {
         </a>
       </div>
       <div style={{ height: "500pt" }}>
-     
+     {props.props.context._pageContext._user.email === ('anubhav.shukla@hochhuth-consulting.de'||"prashant@hochhuth-consulting.de"|| "deepak@hochhuth-consulting.de" ||"prashant.kumar@hochhuth-consulting.de")&&
         <a className="mailBtn me-4" href="#" onClick={emailComp}>
           <FaPaperPlane></FaPaperPlane> <span>Send Leave Summary</span>
         </a>
+        }
         {/* <button type="button" className="mailBtn" >
           Email
         </button> */}
@@ -2142,7 +2142,7 @@ const App = (props: any) => {
 
       </Panel>
 
-      {leaveReport ? <MonthlyLeaveReport props={props.props} Context={props.props.context}/>:""}
+      {leaveReport ? <MonthlyLeaveReport props={props.props} Context={props.props.context} trueval ={ leaveReport} settrue={setleaveReport}/>:""}
     </div>
   );
 };
