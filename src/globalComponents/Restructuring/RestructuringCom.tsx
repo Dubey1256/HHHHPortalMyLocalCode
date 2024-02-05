@@ -5086,19 +5086,20 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
               {OldArrayBackup?.map(function (obj: any) {
                 return (
                   <div className="mainParentSec">
-                    <div className="reStuMainTiles">
+                    {
+                      obj?.Title != "Others" && 
+                      <div className="reStuMainTiles">
+
                       <div className="reStuTile">
                       <div className="alignCenter">
-                      {obj?.Title != "Others" ? (
+                      {
                           obj?.siteIcon?.length === 1 ? (
                             <div className="Dyicons">
                               {obj.siteIcon}
                             </div>
                           ) : 
                            <img className="workmember" src={obj?.siteIcon} />
-                         ) : (
-                          ""
-                        )}
+                       }
                         <span className="mx-2">
                         <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                         </span>
@@ -5134,7 +5135,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                     )}
                         
                       </a></div>
-                    </div></div>
+                     </div>
+
+                    </div>
+                    }
+                   
                    
                     {obj?.newSubChild ? (
                       <>

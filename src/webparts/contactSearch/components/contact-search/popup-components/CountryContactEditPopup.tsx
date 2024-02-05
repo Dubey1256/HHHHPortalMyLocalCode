@@ -74,12 +74,11 @@ const CountryContactEditPopup = (props: any) => {
                                 )
                             })}
                         </div>
-                        {/* changes by anupam */}
                         <div className="list-group mx-2 my-2 d-flex" style={{ width: "18rem" }}>
                             {props?.popupName == 'Country' && updateData?.SmartCountries?.length>0 ?
                                 <li className="list-group-item list-group-item-action d-flex justify-content-between" style={{ background: "#000066", color: "#fff" }} >
                                     <span>{updateData?.SmartCountries?.[0]?.Title}</span>
-                                    <span style={{ cursor: 'pointer' }} onClick={() => setUpdateData({ ...updateData, SmartCountries: [] })}><img src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' /> 
+                                    <span style={{ cursor: 'pointer' }} onClick={() => setUpdateData({ ...updateData, SmartCountries: [] })}><img src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
                                     </span>
                                 </li>
                                 : null}
