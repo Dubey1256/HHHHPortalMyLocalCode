@@ -1075,11 +1075,11 @@ const TimeReport = (props: any) => {
                         <img title={row.original.userName.Title} className='workmember ' src={`${row.original.userName.Item_x0020_Cover != null && row.original.userName.Item_x0020_Cover.Url != null ? row.original.userName.Item_x0020_Cover.Url : 'https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg'}`} />
                     </>
                 ),
-                accessorFn: '',
-                canSort: false,
-                placeholder: '',
+                accessorFn: (row) => row?.userName,
+                placeholder: 'Team Member',
                 header: '',
                 id: 'userName',
+                size: 60,
             },
             // {
             //     // accessorKey: 'userName',

@@ -39,7 +39,7 @@ const EditDocumentpanel = (props: any) => {
     try {
       await web.lists.getById(props?.AllListId?.DocumentsListID)
         .items.getById(props?.editData?.Id)
-        .select( 'Id','Title','PriorityRank','Name','Year','Body','Item_x0020_Cover','Portfolios/Id','Portfolios/Title','File_x0020_Type','FileLeafRef','FileDirRef','ItemRank','ItemType','Url','Created','Modified','Author/Id','Author/Title','Editor/Id','Editor/Title','EncodedAbsUrl')
+        .select( 'Id','Title','PriorityRank','Year','Body','Item_x0020_Cover','Portfolios/Id','Portfolios/Title','File_x0020_Type','FileLeafRef','FileDirRef','ItemRank','ItemType','Url','Created','Modified','Author/Id','Author/Title','Editor/Id','Editor/Title','EncodedAbsUrl')
         .expand('Author,Editor,Portfolios')
         .get()
         .then((Data) => {
@@ -139,6 +139,7 @@ const EditDocumentpanel = (props: any) => {
     await web.lists.getById(props?.AllListId?.DocumentsListID)
       .items.getById(EditdocumentsData.Id).update({
         Title: EditdocumentsData?.Title,
+        FileLeafRef:EditdocumentsData?.docTitle,
         ItemRank: EditdocumentsData?.ItemRank == 'Select Item Rank' ? null : EditdocumentsData?.ItemRank,
         Year: EditdocumentsData.Year,
         ItemType: EditdocumentsData.ItemType,
