@@ -37,10 +37,10 @@ const Permission_management = (props:any) => {
 
 
   const taskUserData = async () => {
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+    let web = new Web(props?.context?.siteUrl);
     let AllTasksMatches: any = [];
     AllTasksMatches = await web.lists
-      .getById("B318BA84-E21D-4876-8851-88B94B9DC300")
+      .getById(props?.context?.TaskUsertListID)
       .items.getAll(4000).then((data: any) => {
         setTaskUser(data);
       }).catch((err: any) => {
@@ -51,7 +51,7 @@ const Permission_management = (props:any) => {
   const getData = async () => {
     await $.ajax({
       method: "GET",
-      url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/sitegroups",
+      url: `${props?.context?.siteUrl}/_api/web/sitegroups`,
       headers: {
         accept: "application/json;odata=verbose",
         "content-Type": "application/json;odata=verbose",
@@ -102,7 +102,7 @@ const Permission_management = (props:any) => {
 
 
     var query = "/_api/web/SiteGroups/GetById(" + id + ")/Users";
-    var SiteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP"
+    var SiteUrl = props?.context?.siteUrl;
     $.ajax({
       url: SiteUrl + query,
       method: "GET",
@@ -126,9 +126,9 @@ const Permission_management = (props:any) => {
 
   // const fetchRequestDigest = async () => {
   //   try {
-  //     const response = await props.context.spHttpClient.post(
-  //       `${props.context.pageContext.web.absoluteUrl}/_api/contextinfo`,
-  //       props.context.spHttpClient.configurations.v1
+  //     const response = await props?.context.context.spHttpClient.post(
+  //       `${props?.context.context.pageContext.web.absoluteUrl}/_api/contextinfo`,
+  //       props?.context.context.spHttpClient.configurations.v1
   //     );
 
   //     if (response.ok) {
@@ -145,9 +145,9 @@ const Permission_management = (props:any) => {
 
   // const postUser = async (data, url) => {
   //   try {
-  //     const response = await props.context.spHttpClient.post(
-  //       `${props.context.pageContext.web.absoluteUrl}/_api/web${url}`,
-  //       props.context.spHttpClient.configurations.v1,
+  //     const response = await props?.context.context.spHttpClient.post(
+  //       `${props?.context.context.pageContext.web.absoluteUrl}/_api/web${url}`,
+  //       props?.context.context.spHttpClient.configurations.v1,
   //       {
   //         headers: {
   //           'Accept': 'application/json;odata=nometadata',
@@ -202,7 +202,7 @@ const Permission_management = (props:any) => {
   // };
 
   const postUser = async () => {
-    const webUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/sp";
+    const webUrl = props?.context?.siteUrl;
     // const id = 1; // Replace with your actual group ID
     // const inputValue = { Email: "user@example.com" }; // Replace with your actual input value
 
@@ -240,7 +240,7 @@ const Permission_management = (props:any) => {
     let newArray: any = [];
     var targetId = inputValue?.AuthorId;
     var query = "/_api/web/GetUserById(" + targetId + ")/Groups";
-    var SiteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
+    var SiteUrl = props?.context?.siteUrl;
 
     await $.ajax({
       url: SiteUrl + query,
@@ -270,7 +270,7 @@ const Permission_management = (props:any) => {
   const deleteRequestWithOutData = (Idd: any) => {
     let confirmation = confirm("Are you sure you want to delete this User ?");
     if (confirmation) {
-      var url = "https://hhhhteams.sharepoint.com/sites/HHHH/sp" + "/_api/web/sitegroups(" + id + ")/users/removebyid(" + Idd + ")";
+      var url = `${props?.context?.siteUrl}/_api/web/sitegroups${id}/users/removebyid${Idd}`;
       $.ajax({
         url: url,
         method: "DELETE",
@@ -417,11 +417,11 @@ const changeHeader=(items:any)=>{
       <div className="alignCenter">
         <div className="alignCenter">
           <h2 className="heading">{headerChange != undefined && headerChange != null && headerChange != '' ? headerChange : 'Permission-Management'} </h2>
-          <EditPage context={props?.context} changeHeader={changeHeader} />
+          <EditPage context={props?.context?.context} changeHeader={changeHeader} />
         </div>
         <div className="ml-auto">
               
-          <a target="_blank" data-interception="off"  className="fw-bold" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Manage-Permission-Tool.aspx">
+          <a target="_blank" data-interception="off"  className="fw-bold" href={`${props?.context?.siteUrl}/SitePages/Manage-Permission-Tool.aspx`}>
             Old Permission-Management
           </a>
         </div>
@@ -483,7 +483,7 @@ const changeHeader=(items:any)=>{
 
       <div className="mb-3 card commentsection">
         <div className="card-header">
-          <div className="align-items-center card-title d-flex h5 justify-content-between my-2">Manage Permissions - Users</div>
+          <div className="align-items-center card-title d-flex h5 justify-content-between my-2">Manage Permissions - Admins</div>
         </div>
         <div className="card-body d-flex justify-content-around  my-3" >
           <div className="card" style={{ width: "14rem" }} onClick={() => { GetUserByGroupId("HHHH Administrator") }}>
@@ -539,7 +539,7 @@ const changeHeader=(items:any)=>{
           </div>
         </div>
       </div>
-      <a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/user.aspx" className="d-flex justify-content-end">
+      <a href={`${props?.context?.siteUrl}/_layouts/15/user.aspx`} className="d-flex justify-content-end">
         OOTB Permissions Management
       </a>
 
@@ -583,6 +583,9 @@ const changeHeader=(items:any)=>{
             <input type="text" className="form-control"
               value={inputValue?.Title}
               onChange={handleInputChange} placeholder="Enter names or email addresses..." />
+             {
+              inputValue?.Title != "" && <span className="svg__icon--cross svg__iconbox dark" onClick={()=>setInputValue({...inputValue,Title:""})}></span>
+             } 
           </div>
           <div className="SmartTableOnTaskPopup w-50">
             <ul className="list-group">
@@ -616,6 +619,9 @@ const changeHeader=(items:any)=>{
                 <input type="text" className="form-control"
                   value={inputValue?.Title}
                   onChange={handleInputChange} placeholder="Enter names or email addresses..." />
+                {
+                  inputValue?.Title != "" && <span className="svg__icon--cross svg__iconbox dark" onClick={()=>setInputValue({...inputValue,Title:""})}></span>
+                }   
               </div>
               <div className="SmartTableOnTaskPopup w-50">
                 <ul className="list-group">
