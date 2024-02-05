@@ -27,7 +27,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
     const [ApprovalPointHistoryStatus, setApprovalPointHistoryStatus] = useState(false);
     const [TaskPopupPanelStatus, UpdateTaskPopupPanelStatus] = useState(false);
     const [currentUserData, setCurrentUserData] = useState<any>([]);
-    const [UpdatedFeedBackParentArray, setUpdatedFeedBackParentArray] = useState([]);
+    let  [UpdatedFeedBackParentArray, setUpdatedFeedBackParentArray] = useState([]);
     let [IndexCount, setIndexCount] = useState(1);
     const [newlyCreatedTask, UpdateNewlyCreatedTask] = useState<any>([]);
 
@@ -38,6 +38,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
         if (TextItems != undefined && TextItems?.length > 0) {
             setState([]);
             let testItems: any = []
+            UpdatedFeedBackParentArray=[]
             TextItems?.map((item: any, index: any) => {
                 if (index > 0) {
                     if(typeof item == "object"){
@@ -117,12 +118,13 @@ export default function FroalaCommnetBoxes(textItems: any) {
             TaskCreatedForThis: false
         };
         State.push(object);
+
         UpdatedFeedBackParentArray.push(object)
         setTexts(!Texts);
         setBtnStatus(true);
     }
     const addMainRowInDiv = () => {
-        let testTaskIndex = UpdatedFeedBackParentArray?.length + 1
+        let testTaskIndex = State?.length + 1
         IndexCount = IndexCount + 1;
         const object = {
             Completed: "",
@@ -132,10 +134,12 @@ export default function FroalaCommnetBoxes(textItems: any) {
             Phone: '',
             LowImportance: '',
             HighImportance: '',
-            isShowLight: ''
+            isShowLight: '',
+            TaskCreatedForThis:false
         };
         State.push(object);
-        UpdatedFeedBackParentArray.push(object)
+        UpdatedFeedBackParentArray= State;
+        // UpdatedFeedBackParentArray.push(object)
         setTexts(!Texts);
         setBtnStatus(true);
     }
@@ -152,12 +156,17 @@ export default function FroalaCommnetBoxes(textItems: any) {
             setBtnStatus(false)
             callBack("delete");
         } else {
+            UpdatedFeedBackParentArray=[]
+            UpdatedFeedBackParentArray.push(tempArray) 
             callBack(tempArray);
         }
+         UpdatedFeedBackParentArray=[]
+            UpdatedFeedBackParentArray.push(tempArray) 
         setState(tempArray);
     }
 
     function handleChange(e: any) {
+        UpdatedFeedBackParentArray=State;
         const id = parseInt(e.currentTarget.dataset.id, 10);
         const { name, type, checked, value } = e.target;
         let updatedValue = type === "checkbox" ? checked : value;
@@ -302,6 +311,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
 
 
     const UpdateFeedbackDetails = async (NewTaskDetails: any, Index: any, OldItemData: any) => {
+        UpdatedFeedBackParentArray= State
         let param: any = Moment(new Date().toLocaleString());
         let baseUrl = window.location.href;
         let TaskURL = baseUrl.replace(TaskDetails.TaskDetails?.Id, NewTaskDetails.Id)
