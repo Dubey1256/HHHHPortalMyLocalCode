@@ -79,6 +79,7 @@ const ProjectManagementMain = (props: any) => {
   const [IsPortfolio, setIsPortfolio] = React.useState(false);
   const [isAddStructureOpen, setIsAddStructureOpen] = React.useState(false);
   const [IsComponent, setIsComponent] = React.useState(false);
+  const [workingTodayFiltered, setWorkingTodayFiltered] = React.useState(false);
   const [pageLoaderActive, setPageLoader] = React.useState(false)
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [AllTasks, setAllTasks] = React.useState([]);
@@ -388,6 +389,7 @@ const ProjectManagementMain = (props: any) => {
           task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime;
         }
       })
+      backupTableData = backupAllTasks;
       setProjectTableData(backupAllTasks);
       setPageLoader(false)
       if (timeEntryIndex) {
@@ -523,13 +525,20 @@ const ProjectManagementMain = (props: any) => {
         return task;
       });
     });
+    backupTableData = ProjectTableData;
   }, []);
 
 
 
   const LoadAllSiteTasks = async function () {
     setPageLoader(true);
-    let taskComponent: any = TaggedPortfoliosToProject;
+    let taskComponent: any = [];
+    try {
+      taskComponent = JSON.parse(JSON.stringify(TaggedPortfoliosToProject));
+    } catch (e) {
+
+    }
+
     taskTaggedComponents = [];
     let localtimeEntryIndex: any;
     try {
@@ -891,6 +900,7 @@ const ProjectManagementMain = (props: any) => {
           return object; // Return the object whether it's modified or not
         });
       });
+      backupTableData = ProjectTableData
     }
     if (propsItems === "Close") {
       setIsComponent(false);
@@ -994,24 +1004,55 @@ const ProjectManagementMain = (props: any) => {
   }, []);
 
 
-  const switchFlatViewData = (data: any) => {
+  const switchFlatViewData = (data?: any | null, workingToday?: boolean | null) => {
     let groupedDataItems = [];
-    try {
-      groupedDataItems = JSON.parse(JSON.stringify(data));
-    } catch (e) {
+    if (workingToday == undefined) {
+   
+      try {
+        groupedDataItems = JSON.parse(JSON.stringify(data));
+      } catch (e) {
 
+      }
+      const flattenedData = flattenData(groupedDataItems);
+      hasCustomExpanded = false
+      hasExpanded = false
+      isHeaderNotAvlable = true
+      isColumnDefultSortingAsc = true
+      setGroupByButtonClickData(data);
+      setclickFlatView(true);
+      setFlatViewDataAll(flattenedData)
+      setProjectTableData(flattenedData);
+
+    } else {
+      if (workingToday) {
+        groupedDataItems = globalCommon.deepCopy(backupTableData);
+        let flattenedData :any = []
+        try{
+          flattenedData = flattenData(groupedDataItems)
+        }catch(e){
+
+        }
+        let filteredTodayTak = flattenedData?.filter((task: any) => {
+          if (task?.IsTodaysTask == true) {
+            return true
+          }
+        })
+        setFlatViewDataAll(filteredTodayTak)
+        setProjectTableData(filteredTodayTak);
+      } else {
+        setFlatViewDataAll(backupTableData)
+        setProjectTableData(backupTableData);
+      }
+      setWorkingTodayFiltered(workingToday)
     }
-    const flattenedData = flattenData(groupedDataItems);
-    hasCustomExpanded = false
-    hasExpanded = false
-    isHeaderNotAvlable = true
-    isColumnDefultSortingAsc = true
-    setGroupByButtonClickData(data);
-    setclickFlatView(true);
-    setFlatViewDataAll(flattenedData)
-    setProjectTableData(flattenedData);
+  
+
     // setProjectTableData(smartAllFilterData);
   }
+
+  const customTableHeaderButtons = (
+    <button type="button" className={`btn btn-${workingTodayFiltered ? 'primary' : 'grey'}`} onClick={() => { switchFlatViewData(ProjectTableData, !workingTodayFiltered) }}> Working-Today </button>
+  )
 
   function flattenData(groupedDataItems: any) {
     const flattenedData: any = [];
@@ -1397,12 +1438,6 @@ const ProjectManagementMain = (props: any) => {
               onClick={() => EditPopup(row?.original)}
               className="alignIcon  svg__iconbox svg__icon--edit hreflink"
             ></span>
-            {row?.original?.Item_x0020_Type != "Sprint" ?
-              <span
-                style={{ marginLeft: '4px' }}
-                title='Un-Tag Task From Project'
-                onClick={() => untagTask(row?.original)}
-              ><BsTagFill /></span> : ''}
           </span>
         ),
         id: 'Actions',
@@ -1432,6 +1467,7 @@ const ProjectManagementMain = (props: any) => {
     setSelectedItem(portfolio)
     setMasterdata(projectData);
     setProjectTableData(displayTasks);
+    backupTableData = displayTasks;
   };
   const AncCallback = (type: any) => {
     switch (type) {
@@ -1802,11 +1838,14 @@ const ProjectManagementMain = (props: any) => {
                                   columns={column2} data={ProjectTableData} callBackData={callBackData}
                                   smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                                   TaskUsers={AllUser} showHeader={true} expendedTrue={false}
-                                  showRestructureButton={true}
                                   showCreationAllButton={true}
                                   flatViewDataAll={flatViewDataAll}
                                   clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
                                   flatView={true}
+                                  customHeaderButtonAvailable={true}
+                                  bulkEditIcon={true} setData={setProjectTableData} setLoaded={setPageLoader} columnSettingIcon={true}
+                                  customTableHeaderButtons={customTableHeaderButtons}
+                                  showRestructureButton={true}
                                   switchGroupbyData={switchGroupbyData}
                                   restructureCallBack={callBackData1}
                                   ref={childRef} callChildFunction={callChildFunction}

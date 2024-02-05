@@ -139,6 +139,7 @@ const EditDocumentpanel = (props: any) => {
     await web.lists.getById(props?.AllListId?.DocumentsListID)
       .items.getById(EditdocumentsData.Id).update({
         Title: EditdocumentsData?.Title,
+        FileLeafRef:EditdocumentsData?.docTitle,
         ItemRank: EditdocumentsData?.ItemRank == 'Select Item Rank' ? null : EditdocumentsData?.ItemRank,
         Year: EditdocumentsData.Year,
         ItemType: EditdocumentsData.ItemType,
@@ -189,7 +190,7 @@ const EditDocumentpanel = (props: any) => {
     return (
       <>
         <div className='ps-4 siteColor subheading'>
-          {true ? `Edit Document Metadata - ${EditdocumentsData?.Title}` : null}
+          {true ? `Edit Document Metadata - ${EditdocumentsData?.Title!=undefined?EditdocumentsData.Title:EditdocumentsData?.docTitle}` : null}
         </div>
         <Tooltip ComponentId={'942'} />
       </>

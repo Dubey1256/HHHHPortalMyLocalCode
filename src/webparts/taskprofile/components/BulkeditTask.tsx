@@ -166,26 +166,22 @@ export default function BulkeditTask(props: any) {
     }
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className='d-flex full-width pb-1'>
+            <>
                 <div className='subheading'>
-                    <span className="siteColor">
                     Bulk Item Update
-                    </span>
                 </div>
                 <Tooltip ComponentId="6797" />
-            </div>
+            </>
         );
     };
     const onRenderCustomHeaderUpdatePopup = () => {
         return (
-            <div className='d-flex full-width pb-1'>
+            <>
                 <div className='subheading'>
-                    <span className="siteColor">
                     Update Task Status
-                    </span>
                 </div>
                 <Tooltip ComponentId="6797" />
-            </div>
+            </>
         );
     };
     const callBackData = useCallback((elem: any, getSelectedRowModel: any) => {
@@ -193,10 +189,10 @@ export default function BulkeditTask(props: any) {
     }, []);
     return (
         <>
-        <div>
+        <div style={{position:'absolute', zIndex:"99", top:"5px", right:"457px"}}>
             <button
-            className="btn btn-primary position-relative"
-            style={{ zIndex: '9999',left: '584px',top: '33px',padding:' 4px 12px !important'}}
+            className="btn btn-primary" 
+            style={{padding:' 4px 12px 3px 12px !important'}}
             onClick={openBulkItemUpdatePopup} disabled={AllSelectedTask.length === 0}> 
             Bulk Item Update</button>
         </div>
