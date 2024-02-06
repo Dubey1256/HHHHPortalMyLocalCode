@@ -629,21 +629,7 @@ const TimeEntryPopup = (item: any)=> {
       }
     });
     TimeSheet.forEach((val: any) => {
-      if (
-        (val.Title == "Design" ||
-          val.Title == "Design" ||
-          val.Title == "Development" ||
-          val.Title == "Investigation" ||
-          val.Title == "QA" ||
-          val.Title == "Support" ||
-          val.Title == "Bug-Fixing" ||
-          val.Title == "Verification" ||
-          val.Title == "Coordination" ||
-          val.Title == "Implementation" ||
-          val.Title == "Conception" ||
-          val.Title == "Preparation") &&
-        val.Parent?.Title == "Components"
-      ) {
+      if (val.Parent?.Title == "Components") {
         newArray.push(val);
       }
 
