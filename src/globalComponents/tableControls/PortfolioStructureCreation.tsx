@@ -18,6 +18,7 @@ export interface IStructureCreationProps {
 
 export interface IStructureCreationState {
     isModalOpen: boolean;
+    deleteShortDescription : boolean;
     AllFilteredAvailableComoponent: any;
     Portfolio_x0020_Type: string;
     textTitle: string;
@@ -51,6 +52,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         this.state = {
             isModalOpen: false,
             disablebutton: false,
+            deleteShortDescription : true,
             ButtonClicked:false,
             AllFilteredAvailableComoponent: [],
             Portfolio_x0020_Type: 'Component',
@@ -85,6 +87,19 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
         this.getPortfolioType();
         this.LoadSPComponents();
+        let targetDiv: any = document?.querySelector(".ms-Panel-main");
+        if ( this.props?.SelectedItem?.PortfolioType?.Color != undefined) { //Changes Made by Robin
+          setTimeout(() => {
+            if (targetDiv) {
+              // Change the --SiteBlue variable for elements under the targetDiv
+              // $('.ms-Panel-main').css('--SiteBlue', props?.selectedItem?.PortfolioType?.Color);
+              $(".ms-Panel-main").css(
+                "--SiteBlue",
+                this.props?.SelectedItem?.PortfolioType?.Color    //Changes Made by Robin
+              );
+            }
+          }, 1000);
+        }
 
     }
 
@@ -694,10 +709,14 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
     handleChildItemSD = (e: any, index: any) => {
         let ChildItemTitle = this.state.ChildItemTitle;
-        ChildItemTitle[index].Child[0].Short_x0020_Description_x0020_On = e.target.value;
+        ChildItemTitle[index].Child[0].Short_x0020_Description_x0020_On = e != null ? e.target.value : e;
         this.setState({ ChildItemTitle });
         console.log(this.state.ChildItemTitle);
-
+     if(e == null){
+         this.setState({
+            deleteShortDescription : false,
+         })
+     }
     }
 
     RemoveFeedbackColumn = (index: any, type: any) => {
@@ -877,27 +896,29 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                                         placeholder="Enter Child Item Title" ng-required="true" />
                                                                 </div>
                                                             </div>
-                                                            <div className="row mt-3">
+                                                            {
+                                                                this.state.deleteShortDescription &&
+                                                                <div className="row mb-2">
                                                                 {item.Child.length > 0 &&
                                                                     <div ng-repeat="items in item.Child">
-                                                                        <label className="fw-semibold  titleclrgreen ">Short
-                                                                            Description </label>
+                                                                        <label className="fw-semibold  titleclrgreen ">Short Description 
+                                                                            <span className='svg__icon--cross svg__iconbox dark pull-right' onClick={()=>this.handleChildItemSD(null, index)}></span></label>
                                                                         <div className="col">
                                                                             <textarea className='full-width' rows={4}
                                                                                 value={this.state.ChildItemTitle[index].Child[0].Short_x0020_Description_x0020_On} onChange={(e) => this.handleChildItemSD(e, index)}></textarea>
                                                                         </div>
                                                                     </div>
                                                                 }
-
-
-                                                            </div>
+                                                                 </div>
+                                                            }
+                                                            
                                                         </div>
                                                     </div>
                                                     {index == 0 &&
                                                         <div className="col-sm-12  ">
-                                                            {/* <TeamConfigurationCard ItemInfo={this.state.SelectedItem} Sitel={this.state.PropValue} parentCallback={this.DDComponentCallBack}  />
+                                                            <TeamConfigurationCard ItemInfo={this.state.SelectedItem} AllListId={this.state.PropValue} parentCallback={this.DDComponentCallBack}  />
                                                             <div className="clearfix">
-                                                            </div> */}
+                                                            </div>
                                                         </div>
                                                     }
                                                 </div>

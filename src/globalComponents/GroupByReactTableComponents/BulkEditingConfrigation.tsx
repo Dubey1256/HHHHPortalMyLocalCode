@@ -3,7 +3,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
 const BulkEditingConfrigation = (item: any) => {
-    const [checkboxValues, setCheckboxValues] = React.useState({ priority: false, status: false, dueDate: false, itemRank: false, categories: false, clientCategories: false, Project: false });
+    const [checkboxValues, setCheckboxValues] = React.useState({ priority: false, status: false, dueDate: false, itemRank: false, categories: false, clientCategories: false, Project: false, FeatureType: false });
 
     const handleCheckboxChange = (checkboxName: any) => {
         setCheckboxValues((prevValues: any) => ({
@@ -61,6 +61,11 @@ const BulkEditingConfrigation = (item: any) => {
                                 <label>
                                     <input type="checkbox" className="cursor-pointer form-check-input rounded-0 me-1" checked={checkboxValues.categories} onChange={() => handleCheckboxChange('categories')} />
                                     Categories
+                                </label>
+                                <br />
+                                <label>
+                                    <input type="checkbox" className="cursor-pointer form-check-input rounded-0 me-1" checked={checkboxValues.FeatureType} onChange={() => handleCheckboxChange('FeatureType')} />
+                                    Feature Type
                                 </label>
                                 {/* <label>
                                     <input type="checkbox" className="cursor-pointer form-check-input rounded-0" checked={checkboxValues.itemRank} onChange={() => handleCheckboxChange('itemRank')} />

@@ -356,7 +356,7 @@ let ID: any;
     };
 
     const GetSmartHelpDetails = async () => {
-        let smartHelpDetails = await web.lists.getById(RequireData.SmartHelptListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title").expand("Components").getAll();
+        let smartHelpDetails = await web.lists.getById(RequireData.SmartHelpListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title, Created, Modified, Author/Id, Author/Title, Editor/Id, Editor/Title").expand("Components, Author, Editor").getAll();
         setSmartHelpDetails(smartHelpDetails)
     }
 
@@ -892,32 +892,32 @@ let ID: any;
     const onRenderCustomHeaderQuestion = () => {
         return (
             <>
-                <div className="subheading siteColor">Add Question</div>
-                <Tooltip ComponentId="1626" />
+                <div className="subheading">Add Question</div>
+                <Tooltip ComponentId="1000" />
             </>
         );
     };
     const onRenderCustomHeaderHelp = () => {
         return (
             <>
-                <div className="subheading siteColor">Add Help</div>
-                <Tooltip ComponentId="1626" />
+                <div className="subheading">Add Help</div>
+                <Tooltip ComponentId="1000" />
             </>
         );
     };
     const onRenderHeaderQuestionEdit = () => {
         return (
             <>
-                <div className="subheading siteColor">Edit Question</div>
-                <Tooltip ComponentId="1626" />
+                <div className="subheading">Edit Question</div>
+                <Tooltip ComponentId="1000" />
             </>
         );
     };
     const onRenderHeaderHelpEdit = () => {
         return (
             <>
-                <div className="subheading siteColor">Edit Help</div>
-                <Tooltip ComponentId="1626" />
+                <div className="subheading">Edit Help</div>
+                <Tooltip ComponentId="1000" />
             </>
         );
     };
@@ -1601,20 +1601,21 @@ let ID: any;
     const AddQuestionFunc = async () => {
         try {
             let componentId = CompoenetItem[0].Id;
+            const questionDescription = PostQuestionDescription?.replace(/<[^>]+>|&nbsp;|\n/g, "");
             const newItem = {
                 ItemType: "Question",
                 // Title: `${CompoenetItem[0].Title} - ${question}`,
                 Title: question,
                 ComponentsId: { "results": [componentId] },
                 Permission: choice,
-                Body: PostQuestionDescription || (EditData?.PostQuestionDescription || ""),
+                Body: questionDescription || (EditData?.PostQuestionDescription || ""),
             };
-            await web.lists.getById(RequireData.SmartHelptListID).items.add(newItem);
+            await web.lists.getById(RequireData.SmartHelpListID).items.add(newItem);
 
             // Update the state with the newly added item
             setSmartHelpDetails([...SmartHelpDetails, newItem]);
             setIsOpenPopup(false);
-            let smartHelpDetails = await web.lists.getById(RequireData.SmartHelptListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title").expand("Components").getAll();
+            let smartHelpDetails = await web.lists.getById(RequireData.SmartHelpListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title, Created, Modified, Author/Id, Author/Title, Editor/Id, Editor/Title").expand("Components, Author, Editor").getAll();
             setSmartHelpDetails(smartHelpDetails)
             setQuestion("")
             setChoice("");
@@ -1628,20 +1629,21 @@ let ID: any;
     const AddHelpFunc = async () => {
         try {
             let componentId = CompoenetItem[0].Id;
+            const questionDescription = PostQuestionDescription?.replace(/<[^>]+>|&nbsp;|\n/g, "");
             const newItem = {
                 ItemType: "Help",
                 // Title: `${CompoenetItem[0].Title} - ${help}`,
                 Title: help,
                 ComponentsId: { "results": [componentId] },
-                Permission: choice,
-                Body: PostQuestionDescription || (EditData?.PostQuestionDescription || ""),
+                Permission: choice, 
+                Body: questionDescription || (EditData?.PostQuestionDescription || ""),
             };
-            await web.lists.getById(RequireData.SmartHelptListID).items.add(newItem);
+            await web.lists.getById(RequireData.SmartHelpListID).items.add(newItem);
 
             // Update the state with the newly added item
             setSmartHelpDetails([...SmartHelpDetails, newItem]);
             setOpenPopup(false);
-            let smartHelpDetails = await web.lists.getById(RequireData.SmartHelptListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title").expand("Components").getAll();
+            let smartHelpDetails = await web.lists.getById(RequireData.SmartHelpListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title, Created, Modified, Author/Id, Author/Title, Editor/Id, Editor/Title").expand("Components, Author, Editor").getAll();
             setSmartHelpDetails(smartHelpDetails)
             setHelp("")
             setChoice("");
@@ -2593,16 +2595,17 @@ let ID: any;
     }
 
     const updateDetails = async () => {
+        const questionDescription = PostQuestionDescription?.replace(/<[^>]+>|&nbsp;|\n/g, "");
         try {
-            await web.lists.getById(RequireData.SmartHelptListID).items.getById(ID).update({
+            await web.lists.getById(RequireData.SmartHelpListID).items.getById(ID).update({
                 Title: question ? question : dataUpdate?.Title,
                 Permission: choice ? choice : dataUpdate?.choice,
-                Body: PostQuestionDescription ? PostQuestionDescription || (EditData?.PostQuestionDescription || "") : dataUpdate?.Body,
+                Body: questionDescription ? questionDescription || (EditData?.PostQuestionDescription || "") : dataUpdate?.Body,
             }).then(async (i: any) => {
                 console.log(i);
 
                 // Fetch the updated data and set it to SmartHelpDetails
-                const updatedSmartHelpDetails = await web.lists.getById(RequireData.SmartHelptListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title").expand("Components").getAll();
+                const updatedSmartHelpDetails = await web.lists.getById(RequireData.SmartHelpListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title, Created, Modified, Author/Id, Author/Title, Editor/Id, Editor/Title").expand("Components, Author, Editor").getAll();
                 setSmartHelpDetails(updatedSmartHelpDetails);
                 setQuestion("");
                 setChoice("");
@@ -2616,16 +2619,17 @@ let ID: any;
 
 
     const updateHelpDetails = async () => {
+        const questionDescription = PostQuestionDescription?.replace(/<[^>]+>|&nbsp;|\n/g, "");
         try {
-            await web.lists.getById(RequireData.SmartHelptListID).items.getById(ID).update({
+            await web.lists.getById(RequireData.SmartHelpListID).items.getById(ID).update({
                 Title: help ? help : helpDataUpdate?.Title,
                 Permission: choice ? choice : helpDataUpdate?.choice,
-                Body: PostQuestionDescription ? PostQuestionDescription || (EditData?.PostQuestionDescription || "") : helpDataUpdate?.Body,
+                Body: questionDescription ? questionDescription || (EditData?.PostQuestionDescription || "") : helpDataUpdate?.Body,
             }).then(async (i: any) => {
                 console.log(i);
 
                 // Fetch the updated data and set it to SmartHelpDetails
-                const updatedSmartHelpDetails = await web.lists.getById(RequireData.SmartHelptListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title").expand("Components").getAll();
+                const updatedSmartHelpDetails = await web.lists.getById(RequireData.SmartHelpListID).items.select("Title, Id, Body, Permission, ItemType, Components/Id, Components/Title, Created, Modified, Author/Id, Author/Title, Editor/Id, Editor/Title").expand("Components, Author, Editor").getAll();
                 setSmartHelpDetails(updatedSmartHelpDetails);
                 setHelp("");
                 setChoice("");
@@ -2640,7 +2644,7 @@ let ID: any;
 
     // Function to delete Question and Help from Help tab section
     const deleteHandler = async (item_Id: any) => {
-        await web.lists.getById(RequireData.SmartHelptListID).items.getById(item_Id).delete()
+        await web.lists.getById(RequireData.SmartHelpListID).items.getById(item_Id).delete()
             .then((i: any) => {
                 console.log(i);
                 SmartHelpDetails.map((catId: any, index: any) => {
@@ -4482,54 +4486,10 @@ let ID: any;
                         </div>
                     </div>
                 </div>
-                <footer className="footer-right">
-                    <div className="align-items-center d-flex justify-content-between">
-                        <div className="">
-                            <div className="text-left">
-                                Created{" "}
-                                <span ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
-                                    {" "}
-                                    {EditData.Created ? moment(EditData.Created).format("DD/MM/YYYY") : ""}
-                                </span>{" "}
-                                by
-                                <span className="panel-title ps-1 hreflink">
-                                    {EditData?.Author?.Title != undefined
-                                        ? EditData?.Author?.Title
-                                        : ""}
-                                </span>
-                            </div>
-                            <div className="text-left">
-                                Last modified{" "}
-                                <span>
-                                    {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
-                                </span>{" "}
-                                by{" "}
-                                <span className="panel-title hreflink">
-                                    {EditData?.Editor?.Title != undefined
-                                        ? EditData?.Editor?.Title
-                                        : ""}
-                                </span>
-                            </div>
-                            <div className="text-left">
-                                <span className="hreflink">
-                                    {" "}
-                                    {EditData?.ID ? (
-                                        <VersionHistoryPopup
-                                            taskId={EditData?.ID}
-                                            listId={RequireData.MasterTaskListID}
-                                            siteUrls={RequireData?.siteUrl}
-                                        />
-                                    ) : (
-                                        ""
-                                    )}
-                                </span>
-                            </div>
-                        </div>
-                        <div className="">
-                            <button className='btn btn-primary' onClick={() => AddQuestionFunc()}>Save</button>
-                            <button className='btn btn-default ms-1' onClick={() => setIsOpenPopup(false)}>Cancel</button>
-                        </div>
-                    </div>
+                <footer className="modal-footer">
+                    <button className='btn btn-primary' onClick={() => AddQuestionFunc()}>Save</button>
+                    <button className='btn btn-default ms-1' onClick={() => setIsOpenPopup(false)}>Cancel</button>
+                        
                 </footer>
             </Panel>
 
@@ -4572,7 +4532,7 @@ let ID: any;
                             <input type="radio" id="admin" className="radio" value="Admin" checked={choice === 'Admin'} onChange={choiceHandler} /> Admin</label>
                     </div> */}
                     <div className="mb-2">
-                        <label className="form-label full-width">Description{`(${EditData?.QuestionDescription?.length})`}</label>
+                        <label className="form-label full-width">Description</label>
                         <div>
                             <HtmlEditorCard editorValue={
                                 EditData.QuestionDescription != undefined
@@ -4591,36 +4551,36 @@ let ID: any;
                         <div>
                             <div className="text-left">
                                 Created{" "}
-                                <span ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
+                                <span ng-bind="dataUpdate?.Created | date:'MM-DD-YYYY'">
                                     {" "}
-                                    {EditData.Created ? moment(EditData.Created).format("DD/MM/YYYY") : ""}
+                                    {dataUpdate?.Created ? moment(dataUpdate?.Created).format("DD/MM/YYYY") : ""}
                                 </span>{" "}
                                 by
                                 <span className="panel-title ps-1 hreflink">
-                                    {EditData?.Author?.Title != undefined
-                                        ? EditData?.Author?.Title
+                                    {dataUpdate?.Author?.Title != undefined
+                                        ? dataUpdate?.Author?.Title
                                         : ""}
                                 </span>
                             </div>
                             <div className="text-left">
                                 Last modified{" "}
                                 <span>
-                                    {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                                    {dataUpdate?.Modified ? moment(dataUpdate?.Modified).format("DD/MM/YYYY") : ''}
                                 </span>{" "}
                                 by{" "}
                                 <span className="panel-title hreflink">
-                                    {EditData?.Editor?.Title != undefined
-                                        ? EditData?.Editor?.Title
+                                    {dataUpdate?.Editor?.Title != undefined
+                                        ? dataUpdate?.Editor?.Title
                                         : ""}
                                 </span>
                             </div>
                             <div className="text-left">
                                 <span className="hreflink">
                                     {" "}
-                                    {EditData?.ID ? (
+                                    {dataUpdate?.ID ? (
                                         <VersionHistoryPopup
-                                            taskId={EditData?.ID}
-                                            listId={RequireData.MasterTaskListID}
+                                            taskId={dataUpdate?.ID}
+                                            listId={RequireData?.SmartHelpListID}
                                             siteUrls={RequireData?.siteUrl}
                                         />
                                     ) : (
@@ -4666,54 +4626,11 @@ let ID: any;
                         </div>
                     </div>
                 </div>
-                <footer className="footer-right">
-                    <div className="align-items-center d-flex justify-content-between">
-                        <div>
-                            <div className="text-left">
-                                Created{" "}
-                                <span ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
-                                    {" "}
-                                    {EditData.Created ? moment(EditData.Created).format("DD/MM/YYYY") : ""}
-                                </span>{" "}
-                                by
-                                <span className="panel-title ps-1 hreflink">
-                                    {EditData?.Author?.Title != undefined
-                                        ? EditData?.Author?.Title
-                                        : ""}
-                                </span>
-                            </div>
-                            <div className="text-left">
-                                Last modified{" "}
-                                <span>
-                                    {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
-                                </span>{" "}
-                                by{" "}
-                                <span className="panel-title hreflink">
-                                    {EditData?.Editor?.Title != undefined
-                                        ? EditData?.Editor?.Title
-                                        : ""}
-                                </span>
-                            </div>
-                            <div className="text-left">
-                                <span className="hreflink">
-                                    {" "}
-                                    {EditData?.ID ? (
-                                        <VersionHistoryPopup
-                                            taskId={EditData?.ID}
-                                            listId={RequireData.MasterTaskListID}
-                                            siteUrls={RequireData?.siteUrl}
-                                        />
-                                    ) : (
-                                        ""
-                                    )}
-                                </span>
-                            </div>
-                        </div>
-                        <div className="">
+                <footer className="modal-footer">
+                    
                             <button className="me-1 btn btn-primary" onClick={() => AddHelpFunc()}>Save</button>
                             <button className="btn btn-default" onClick={() => setOpenPopup(false)}>Cancel</button>
-                        </div>
-                    </div>
+                      
                 </footer>
             </Panel>
             <Panel
@@ -4749,36 +4666,36 @@ let ID: any;
                         <div>
                             <div className="text-left">
                                 Created{" "}
-                                <span ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
+                                <span ng-bind="helpDataUpdate?.Created | date:'MM-DD-YYYY'">
                                     {" "}
-                                    {EditData.Created ? moment(EditData.Created).format("DD/MM/YYYY") : ""}
+                                    {helpDataUpdate?.Created ? moment(helpDataUpdate?.Created).format("DD/MM/YYYY") : ""}
                                 </span>{" "}
                                 by
                                 <span className="panel-title ps-1 hreflink">
-                                    {EditData?.Author?.Title != undefined
-                                        ? EditData?.Author?.Title
+                                    {helpDataUpdate?.Author?.Title != undefined
+                                        ? helpDataUpdate?.Author?.Title
                                         : ""}
                                 </span>
                             </div>
                             <div className="text-left">
                                 Last modified{" "}
                                 <span>
-                                    {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                                    {helpDataUpdate?.Modified ? moment(helpDataUpdate?.Modified).format("DD/MM/YYYY") : ''}
                                 </span>{" "}
                                 by{" "}
                                 <span className="panel-title hreflink">
-                                    {EditData?.Editor?.Title != undefined
-                                        ? EditData?.Editor?.Title
+                                    {helpDataUpdate?.Editor?.Title != undefined
+                                        ? helpDataUpdate?.Editor?.Title
                                         : ""}
                                 </span>
                             </div>
                             <div className="text-left">
                                 <span className="hreflink">
                                     {" "}
-                                    {EditData?.ID ? (
+                                    {helpDataUpdate?.ID ? (
                                         <VersionHistoryPopup
-                                            taskId={EditData?.ID}
-                                            listId={RequireData.MasterTaskListID}
+                                            taskId={helpDataUpdate?.ID}
+                                            listId={RequireData?.SmartHelpListID}
                                             siteUrls={RequireData?.siteUrl}
                                         />
                                     ) : (
@@ -4828,7 +4745,7 @@ let ID: any;
                                 Created{" "}
                                 <span className="hreflink" ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
                                     {" "}
-                                    {EditData.Created ? moment(EditData.Created).format("DD/MM/YYYY") : ""}
+                                    {EditData?.Created ? moment(EditData?.Created).format("DD/MM/YYYY") : ""}
                                 </span>{" "}
                                 by
                                 <span className="panel-title ps-1 hreflink">
@@ -4840,7 +4757,7 @@ let ID: any;
                             <div className="text-left">
                                 Last modified{" "}
                                 <span>
-                                    {EditData.Modified ? moment(EditData.Modified).format("DD/MM/YYYY") : ''}
+                                    {EditData?.Modified ? moment(EditData?.Modified).format("DD/MM/YYYY") : ''}
                                 </span>{" "}
                                 by{" "}
                                 <span className="panel-title hreflink">

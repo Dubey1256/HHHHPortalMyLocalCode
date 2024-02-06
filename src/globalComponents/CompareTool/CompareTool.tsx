@@ -14,25 +14,33 @@ import Picker from "../EditTaskPopup/SmartMetaDataPicker";
 import { FaLeftLong, FaRightLong } from "react-icons/fa6";
 import PageLoader from "../pageLoader";
 import DatePicker from "react-datepicker";
+import ClientCategoryPupup from "../ClientCategoryPopup";
 import ServiceComponentPortfolioPopup from "../EditTaskPopup/ServiceComponentPortfolioPopup";
 import { TbRuler2Off } from "react-icons/tb";
-
-
+import { ColumnDef } from "@tanstack/react-table";
+import GlobalCommanTable from "../GroupByReactTableComponents/GlobalCommanTable";
+import EditTaskPopup from "../EditTaskPopup/EditTaskPopup";
+import Smartmetadatapickerin from "../../globalComponents/Smartmetadatapickerindependent/SmartmetadatapickerSingleORMulti";
+import { Item } from "@pnp/sp/items";
 
 let renderData: any = [];
 let AutoCompleteItemsArray: any = [];
 let catItem: any = {};
 let color: any = false;
 let PutComment: any = "";
+
+let TempTimeSheetCategoryArray: any = [];
 const CompareTool = (props: any) => {
     const refreshData = () => setData(() => renderData);
     const [data, setData]: any = useState([]);
     const [TaskUser, setTaskUser]: any = useState([]);
     const [history, setHistory] = useState([]);
     const [verionhistory, setVersionHistory] = useState([]);
-    const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState([]);
+    const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>({});
     const [comments, setcomments] = React.useState<any>('');
     const [categories, setCategories] = useState<any>({});
+    const [TaskItem, setTaskItem] = useState<any>("");
+    const [IsClientPopup, setIsClientPopup] = useState<any>(false);
     const [isPicker, setisPicker] = useState<any>({ PortfolioTitle: '', condition: false });
     const [openComment, setOpenComment] = useState({ data: [], condition: false, fieldName: '', ItemIndex: 0 });
     const [htmlEditor, setHtmlEditor] = useState<any>({ data: '', condition: false, fieldName: '', ItemIndex: 0 });
@@ -40,11 +48,12 @@ const CompareTool = (props: any) => {
     const [autoSearch, setautoSearch] = useState<any>('');
     const [taggedItems, setTaggedItems] = useState<any>({});
     const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
-    const [categorySearchKey, setCategorySearchKey] = React.useState<any>('');
+    const [categorySearchKey, setCategorySearchKey] = React.useState<any>({});
     const [AllMasterTasksItems, setAllMasterTasksItems] = React.useState<any>({});
     const [selectedData, setSelectedData] = React.useState([]);
-    const [AllCommentModal, setAllCommentModal] = React.useState<any>(false) 
+    const [AllCommentModal, setAllCommentModal] = React.useState<any>(false)
     const [showLoader, setshowLoader] = React.useState<any>(false)
+    const [Smartdatapopup, setSmartdatapopup] = React.useState(false);
     const rerender = React.useReducer(() => ({}), {})[1]
     const [ItemRankArray, setItemRankArray]: any = useState([
         { rankTitle: 'Select Item Rank', rank: null },
@@ -57,47 +66,72 @@ const CompareTool = (props: any) => {
         { rankTitle: '(1) Archive', rank: 1 },
         { rankTitle: '(0) No Show', rank: 0 }
     ])
+    const getchildstasks = async (Items: any, props: any) => {
+        Items?.map(async (items: any) => {
+            items.subRows = [];
+            if (items?.TaskType?.Id != undefined) {
+                let filter = `(ParentTask/Id eq ${items?.Id})`
+                const Itesm: any = await globalCommon.loadAllSiteTasks(props?.contextValue, filter);
+                items.subRows = Itesm;
+            }
+        })
+    };
     const gettaggedItems = async (Items: any, props: any) => {
-
         let count = 0;
         Items?.map(async (items: any) => {
             items.subRows = [];
-            let filter = `((Portfolio/Id eq ${items?.Id}))`
-            const Itesm: any = await globalCommon.loadAllSiteTasks(props?.contextValue, filter);
-            items.taggedTasks = [];
-            if (Itesm?.length > 0) {
-                Itesm.forEach((obj: any) => {
-                    obj.property = 'taggedTasks';
-                })
-                items.taggedTasks = Itesm;
-            }
+            // get tagged tasks of selected Component
             if (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature" || items?.Item_x0020_Type === "Project" || items?.Item_x0020_Type === "Sprint") {
-                const select =
-                    "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo, TechnicalExplanations, SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,Priority_x0020_Rank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title, Portfolios/Id,Portfolios/ItemType, ClientTime,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Parent,Portfolios,TaskCategories,ClientCategory,Author,Editor,SharewebCategories"
-                await globalCommon.getData(
-                    props?.contextValue?.siteUrl,
-                    props?.contextValue?.MasterTaskListID,
-
-                    select + "&$filter=" + `((Parent/Id eq ${items?.Id}))`
-                ).then(async (datas: any) => {
-                    count++;
-                    datas.forEach((obj: any) => {
-                        obj.property = 'subRows';
-                        obj.siteUrl = props?.contextValue?.siteUrl,
-                            obj.listId = props?.contextValue?.MasterTaskListID,
-                            obj.IconTitle = obj.Item_x0020_Type.charAt(0);
+                let filter = `((Portfolio/Id eq ${items?.Id}))`
+                const Itesm: any = await globalCommon.loadAllSiteTasks(props?.contextValue, filter);
+                items.taggedTasks = [];
+                if (Itesm?.length > 0) {
+                    Itesm.forEach((obj: any) => {
+                        obj.property = 'taggedTasks';
                     })
-                    items.subRows = datas;
-                    if (Items?.length === count) {
-                        setData(Items);
-                        setVersionHistory(Items);
-                        setshowLoader(false);
-                    }
-                }).catch((err: any) => {
-                    console.error(err);
-                })
+                    items.taggedTasks = Itesm;
+                }
+            }
+            let select: any = '';
+            // get tagged tasks of selected tasks
+            if (items?.TaskType?.Id != undefined) {
+                let filter = `(ParentTask/Id eq ${items?.Id})`
+                const Itesm: any = await globalCommon.loadAllSiteTasks(props?.contextValue, filter);
+                items.subRows = Itesm;
+                if(items?.subRows?.length>0)
+                getchildstasks(items.subRows,props);
+                count++;
+                if (Items?.length === count) {
+                   
+                    setData(Items);
+                    setVersionHistory(Items);
+                    setshowLoader(false);
+                }
 
             }
+            // get tagged component of selected Component
+            else {
+                select = "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo, TechnicalExplanations, SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,Priority_x0020_Rank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title, Portfolios/Id,Portfolios/ItemType, ClientTime,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Parent,Portfolios,TaskCategories,ClientCategory,Author,Editor,SharewebCategories"
+                await globalCommon.getData(props?.contextValue?.siteUrl, items?.listId === undefined ? props?.contextValue?.MasterTaskListID : items?.listId, select + "&$filter=" + `(Parent/Id eq ${items?.Id})`)
+                    .then(async (datas: any) => {
+                        count++;
+                        datas.forEach((obj: any) => {
+                            obj.property = 'subRows';
+                            obj.siteUrl = props?.contextValue?.siteUrl,
+                                obj.listId = props?.contextValue?.MasterTaskListID,
+                                obj.IconTitle = obj.Item_x0020_Type.charAt(0);
+                        })
+                        items.subRows = datas;
+                        if (Items?.length === count) {
+                            setData(Items);
+                            setVersionHistory(Items);
+                            setshowLoader(false);
+                        }
+                    }).catch((err: any) => {
+                        console.error(err);
+                    })
+            }
+
         })
         // if(a.length >0)
         // setData(a);
@@ -112,86 +146,495 @@ const CompareTool = (props: any) => {
 
         // setData(a);
     };
+    // get the time
+    const getDateForTimeEntry = function (newDate: any, items: any) {
+        var LatestDate = [];
+        var getMonth = '';
+        var combinedDate = '';
+        LatestDate = newDate.split('/');
+        switch (LatestDate[1]) {
+            case "01":
+                getMonth = 'January ';
+                break;
+            case "02":
+                getMonth = 'Febuary ';
+                break;
+            case "03":
+                getMonth = 'March ';
+                break;
+            case "04":
+                getMonth = 'April ';
+                break;
+            case "05":
+                getMonth = 'May ';
+                break;
+            case "06":
+                getMonth = 'June ';
+                break;
+            case "07":
+                getMonth = 'July ';
+                break;
+            case "08":
+                getMonth = 'August ';
+                break;
+            case "09":
+                getMonth = 'September'
+                break;
+            case "10":
+                getMonth = 'October ';
+                break;
+            case "11":
+                getMonth = 'November ';
+                break;
+            case "12":
+                getMonth = 'December ';
+                break;
+        }
+        combinedDate = LatestDate[0] + ' ' + getMonth + ' ' + LatestDate[2];
+        var dateE = new Date(combinedDate);
+        items.NewestCreated = dateE.setDate(dateE.getDate());
+    }
+    const checkCategory = function (item: any, category: any, Item: any) {
+        Item?.TaskTimeSheetCategoriesGrouping?.forEach((categoryTitle: any) => {
+            if (categoryTitle?.Id == category)
+                categoryTitle.subRows.push(item);
+        })
+    }
+    const getStructureData = function (Item: any) {
+        Item?.AllTimeSpentDetails.map((item: any) => {
+            if (item.TimesheetTitle == undefined || item.TimesheetTitle.Id == undefined) {
+                item.Expanded = true;
+                Item?.AllTimeSpentDetails.map((val: any) => {
+                    if (val.TimesheetTitle != undefined && val.TimesheetTitle.Id != undefined && val.TimesheetTitle.Id == item.Id) {
+                        val.isShifted = true;
+                        val?.AdditionalTime.forEach((value: any) => {
+                            value.ParentID = val.Id;
+                            value.MainParentId = item.Id;
+                            item.AdditionalTime.push(value);
+                        })
+                    }
+                })
+            }
+        })
+        Item.AllTimeSpentDetails = Item.AllTimeSpentDetails.filter((type: { isShifted: boolean; }) => type.isShifted == false)
+        Item?.AllTimeSpentDetails.map((item: any) => {
+            if (item.AdditionalTime.length > 0) {
+                item?.AdditionalTime.map((val: any) => {
+                    var NewDate = val.TaskDate;
+                    try {
+                        getDateForTimeEntry(NewDate, val);
+                    } catch (e) { }
+                })
+            }
+        })
+        Item?.AllTimeSpentDetails?.map((item: any) => {
+            if (item.Category.Title == undefined)
+                checkCategory(item, 319, Item);
+            else
+                checkCategory(item, item?.Category?.Id, Item);
+        })
+        Item.IsTimeSheetAvailable = false;
+        Item?.TaskTimeSheetCategoriesGrouping?.forEach((item: any) => {
+            if (item.subRows.length > 0)
+                Item.IsTimeSheetAvailable = true;
+        })
+        let finalData: any = [];
+        Item?.TaskTimeSheetCategoriesGrouping?.forEach((items: any) => {
+            if (items.subRows != undefined && items.subRows.length > 0) {
+                items?.subRows?.forEach((child: any) => {
+                    child.CategoryTitleShow = true;
+                    if (child.AdditionalTime != undefined && child?.AdditionalTime?.length > 0 && (child.subRows == undefined || child.subRows.length == 0)) {
+                        child.subRows = child.AdditionalTime;
+                        child.TaskDate = undefined;
+                    }
+                    finalData.push(child);
+
+                });
+            }
+        });
+        Item.finalData = finalData;
+    }
+    const GetTaskTime = async (Item: any) => {
+        Item.AllTimeSpentDetails = [];
+        Item.CopyAllTimeSpentDetails = [];
+        var site = Item.siteType.replace(' ', '');
+        if (site != undefined && site.toLowerCase() == 'shareweb')
+            site = site.toLowerCase().replace(/\b[a-z]/g, function (letter: string) { return letter.toUpperCase(); });
+        if (site != undefined && site.toLowerCase() == 'sharewebqa')
+            site = 'OffshoreTasks';
+        var filteres = "Task" + site + "/Id eq " + Item.Id;
+        var select = "Id,Title,TaskDate,TaskTime,Description,AdditionalTimeEntry,AuthorId,Author/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Author,Category,TimesheetTitle&$filter=" + filteres + "";
+        var listID = "464FB776-E4B3-404C-8261-7D3C50FF343F";
+        if (site != undefined && site == 'Migration' || site == 'ALAKDigital')
+            listID = "9ed5c649-3b4e-42db-a186-778ba43c5c93";
+        const web = new Web(props?.contextValue?.siteUrl);
+        await web.lists.getById(listID).items.select(select)
+            .getAll().then((data: any) => {
+                data?.d?.results.map((time: any) => {
+                    time.IsItemUpdated = false;
+                    time.select = false;
+                })
+                Item.AllTimeSpentDetails = [...data];
+                Item.CopyAllTimeSpentDetails = [...Item.AllTimeSpentDetails];
+                var totletimeparentcount = 0;
+                Item.AllAvailableTitle = [];
+                Item?.AllTimeSpentDetails.map((item: any) => {
+                    if (item.TimesheetTitle != undefined && item.TimesheetTitle.Id != undefined) {
+                        if (item.AdditionalTimeEntry != undefined && item.AdditionalTimeEntry != '') {
+                            try {
+                                item.AdditionalTime = JSON.parse(item.AdditionalTimeEntry);
+                                if (item.AdditionalTime.length > 0) {
+                                    item?.AdditionalTime.map((additionalTime: any) => {
+                                        var time = parseFloat(additionalTime.TaskTime)
+                                        if (!isNaN(time))
+                                            totletimeparentcount += time;
+                                    });
+                                }
+                            } catch (e) { console.log(e) }
+                        }
+                        TaskUser?.map((taskUser: any) => {
+                            if (taskUser.AssingedToUserId == item.AuthorId) {
+                                item.AuthorName = taskUser.Title;
+                                item.AuthorImage = taskUser.Item_x0020_Cover.Url != undefined ? taskUser.Item_x0020_Cover.Url : taskUser.Item_x0020_Cover.Url;
+                            }
+                        });
+                        if (item.TaskTime != undefined) {
+                            var TimeInHours = item.TaskTime / 60;
+                            item.TaskTime = TimeInHours.toFixed(2);
+                        }
+                    } else {
+                        Item.AllAvailableTitle.push(item);
+                    }
+                    if (item.AdditionalTime == undefined) {
+                        item.AdditionalTime = [];
+                    }
+                    item.TaskDate = globalCommon.ConvertLocalTOServerDate(item.TaskDate, 'DD/MM/YYYY');
+                    item.isShifted = false;
+                })
+                getStructureData(Item);
+                Item.AllSiteData = [...Item.copyAllSites]
+                Item?.AllSiteData.map((site: any) => {
+                    if (site.ClienTimeDescription != undefined && site.ClienTimeDescription != '')
+                        if (Item.siteType != undefined && site.Title != undefined && Item.siteType == site.Title && site.ClienTimeParcent == undefined && site.flag == true) {
+                            site.ClienTimeParcent = parseFloat(((totletimeparentcount * parseFloat((site.ClienTimeDescription).toFixed(2))) / 100).toFixed(2));
+                            site.newClienTimeParcent = parseFloat(((totletimeparentcount * parseFloat((site.ClienTimeDescription).toFixed(2))) / 100).toFixed(3));
+                        } else if (site.ClienTimeParcent == undefined && site.flag == true) {
+                            site.ClienTimeParcent = parseFloat(((totletimeparentcount * parseFloat((site.ClienTimeDescription).toFixed(2))) / 100).toFixed(2));
+                            site.newClienTimeParcent = parseFloat(((totletimeparentcount * parseFloat((site.ClienTimeDescription).toFixed(2))) / 100).toFixed(3));
+                        }
+                })
+            },
+                function (error: any) {
+                    alert(JSON.stringify(error));
+
+                });
+    }
+    const TimeEntryColumnsFirst = React.useMemo<ColumnDef<any, unknown>[]>(
+        () => [
+            {
+                accessorKey: "",
+                placeholder: "",
+                hasCheckbox: true,
+                hasCustomExpanded: true,
+                hasExpanded: true,
+                isHeaderNotAvlable: true,
+                size: 22,
+                id: 'Id',
+
+            },
+            {
+                id: "AuthorName",
+                placeholder: "",
+                canSort: false,
+                header: "",
+                size: 90,
+                cell: ({ row }) => (
+                    <>
+                        <span>
+                            <div className="d-flex">
+                                <>
+                                    {row?.original?.CategoryTitleShow != true ? (
+                                        <span>
+                                            {row?.original?.AuthorImage != "" &&
+                                                row?.original.AuthorImage != null ? (
+                                                <img
+                                                    className="AssignUserPhoto1 bdrbox m-0 wid29"
+                                                    title={row?.original.AuthorName}
+                                                    data-toggle="popover"
+                                                    data-trigger="hover"
+                                                    src={row?.original.AuthorImage}
+                                                ></img>
+                                            ) : (
+                                                <>
+                                                    {" "}
+                                                    <img
+                                                        className="AssignUserPhoto1 bdrbox m-0 wid29"
+                                                        title={row?.original.AuthorName}
+                                                        data-toggle="popover"
+                                                        data-trigger="hover"
+                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+                                                    ></img>
+                                                </>
+                                            )}
+                                            <span className="mx-1">{row?.original?.AuthorName}</span>
+                                        </span>
+                                    ) : (
+                                        <>
+                                            <span className="mx-1">
+                                                {row?.original?.Category?.Title} -{" "}
+                                                {row?.original?.Title}
+                                            </span>
+                                        </>
+                                    )}
+                                </>
+                            </div>
+                        </span>
+                    </>
+                )
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        <span>{row?.original?.TaskDate}</span>
+                    </>
+                ),
+                id: "TaskDate",
+                size: 95,
+                placeholder: "",
+                canSort: false,
+                header: "",
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        <span>{row?.original?.TaskTime}</span>
+                    </>
+                ),
+                id: "TaskTime",
+                size: 95,
+                placeholder: "",
+                canSort: false,
+                header: "",
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        <span>{row?.original?.Description}</span>
+                    </>
+                ),
+                id: "Description",
+                size: 300,
+                placeholder: "",
+                canSort: false,
+                header: "",
+            },
+        ],
+        [data[0]?.finalData]
+    );
+    const callBackDataFirst = React.useCallback((elem: any, ShowingData: any) => { },
+        []);
+    const TimeEntryColumnsSecond = React.useMemo<ColumnDef<any, unknown>[]>(
+        () => [
+            {
+                accessorKey: "",
+                placeholder: "",
+                hasCheckbox: true,
+                hasCustomExpanded: true,
+                hasExpanded: true,
+                isHeaderNotAvlable: true,
+                size: 22,
+                id: 'Id',
+
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        <span>
+                            <div className="d-flex">
+                                <>
+                                    {row?.original?.CategoryTitleShow != true ? (
+                                        <span>
+                                            {row?.original?.AuthorImage != "" &&
+                                                row?.original.AuthorImage != null ? (
+                                                <img
+                                                    className="AssignUserPhoto1 bdrbox m-0 wid29"
+                                                    title={row?.original.AuthorName}
+                                                    data-toggle="popover"
+                                                    data-trigger="hover"
+                                                    src={row?.original.AuthorImage}
+                                                ></img>
+                                            ) : (
+                                                <>
+                                                    {" "}
+                                                    <img
+                                                        className="AssignUserPhoto1 bdrbox m-0 wid29"
+                                                        title={row?.original.AuthorName}
+                                                        data-toggle="popover"
+                                                        data-trigger="hover"
+                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+                                                    ></img>
+                                                </>
+                                            )}
+                                            <span className="mx-1">{row?.original?.AuthorName}</span>
+                                        </span>
+                                    ) : (
+                                        <>
+                                            <span className="mx-1">
+                                                {row?.original?.Category?.Title} -{" "}
+                                                {row?.original?.Title}
+                                            </span>
+                                        </>
+                                    )}
+                                </>
+                            </div>
+                        </span>
+                    </>
+                ),
+                id: "AuthorName",
+                placeholder: "",
+                canSort: false,
+                header: "",
+                size: 90,
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        <span>{row?.original?.TaskDate}</span>
+                    </>
+                ),
+                id: "TaskDate",
+                size: 95,
+                placeholder: "",
+                canSort: false,
+                header: "",
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        <span>{row?.original?.TaskTime}</span>
+                    </>
+                ),
+                id: "TaskTime",
+                size: 95,
+                placeholder: "",
+                canSort: false,
+                header: "",
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        <span>{row?.original?.Description}</span>
+                    </>
+                ),
+                id: "Description",
+                size: 300,
+                placeholder: "",
+                canSort: false,
+                header: "",
+            },
+        ],
+        [data[1]?.finalData]
+    );
+    const callBackDataSecond = React.useCallback((elem: any, ShowingData: any) => { },
+        []);
+
+
+
+
     const getDataWithFilter = async () => {
         let a: any = [];
+        let select: any = '';
         selectedData?.map(async (items: any) => {
             if (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature" || items?.Item_x0020_Type === "Project" || items?.Item_x0020_Type === "Sprint") {
-                const select =
-                    "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,Synonyms,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo,TechnicalExplanations,SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,Priority_x0020_Rank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title,Portfolios/Id,ClientTime,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title,AssignedTo/Title,AssignedTo/Id,TeamMembers/Title,TeamMembers/Id,ResponsibleTeam/Title,ResponsibleTeam/Id&$expand=Parent,Portfolios,TaskCategories,AssignedTo,ClientCategory,TeamMembers,ResponsibleTeam,ClientCategory,Author,Editor"
+                select = "ID,Id,Title,Mileage,PortfolioLevel,Synonyms,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo,TechnicalExplanations,SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,Priority_x0020_Rank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title,Portfolios/Id,ClientTime,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title,FeatureType/Id,FeatureType/Title,AssignedTo/Title,AssignedTo/Id,TeamMembers/Title,TeamMembers/Id,ResponsibleTeam/Title,ResponsibleTeam/Id&$expand=Parent,Portfolios,TaskCategories,AssignedTo,ClientCategory,TeamMembers,ResponsibleTeam,FeatureType,Author,Editor"
+            } else
+                select = "ID,Id,ParentTask/Title,ParentTask/Id,ItemRank,TaskLevel,OffshoreComments,TeamMembers/Id,ClientCategory/Id,ClientCategory/Title,TaskID,ResponsibleTeam/Id,ResponsibleTeam/Title,ParentTask/TaskID,TaskType/Level,PriorityRank,TeamMembers/Title,FeedBack,Title,Id,ID,DueDate,Comments,Categories,Status,Body,PercentComplete,ClientCategory,Priority,TaskType/Id,TaskType/Title,Portfolio/Id,Portfolio/ItemType,Portfolio/PortfolioStructureID,Portfolio/Title,TaskCategories/Id,TaskCategories/Title,TeamMembers/Name,Project/Id,Project/PortfolioStructureID,Project/Title,Project/PriorityRank,AssignedTo/Id,AssignedTo/Title,AssignedToId,Author/Id,Author/Title,Editor/Id,Editor/Title,Created,Modified,IsTodaysTask,workingThisWeek&$expand=ParentTask, Portfolio,TaskType,ClientCategory,TeamMembers,ResponsibleTeam,AssignedTo,Editor,Author,TaskCategories,Project";
 
-                await globalCommon.getData(
-                    props?.contextValue?.siteUrl,
-                    props?.contextValue?.MasterTaskListID,
+            await globalCommon.getData(
+                props?.contextValue?.siteUrl,
+                items?.listId === undefined ? props?.contextValue?.MasterTaskListID : items?.listId,
 
-                    select + "&$filter=" + `((Id eq ${items?.Id}))`
-                ).then(async (datas: any) => {
-                    if (datas?.length > 0) {
-                        datas[0].Comments = globalCommon.parseJSON(datas[0]?.Comments);
-                        datas[0].Comments = datas[0].Comments == undefined ? [] : datas[0].Comments;
-                        datas[0].SiteComposition = globalCommon.parseJSON(datas[0]?.Sitestagging);
-                        datas[0].SiteComposition = datas[0].SiteComposition == undefined ? [] : datas[0].SiteComposition;
-                        datas[0].Synonyms = globalCommon.parseJSON(datas[0]?.Synonyms);
-                        datas[0].AssignToUsers = [];
-                        datas[0].TeamMembersUsers = [];
-                        datas[0].TaskCategories = datas[0]?.TaskCategories === undefined ? [] : datas[0]?.TaskCategories;
-                        datas[0].PortfolioItem = [];
-                        datas[0].ProjectItem = [];
-                        datas[0]?.Portfolios?.forEach((obj: any) => {
-                            let dataitem: any = AllMasterTasksItems?.AllData?.filter((master: any) => master.Id === obj.Id);
-                            if(dataitem?.length ===0)
-                             dataitem = AllMasterTasksItems?.ProjectData?.filter((master: any) => master.Id === obj.Id)
-                            if (dataitem[0]?.Item_x0020_Type != undefined && dataitem[0]?.Item_x0020_Type === 'Project')
-                                datas[0].ProjectItem.push(obj)
-                            else if (dataitem[0]?.Item_x0020_Type != undefined && dataitem[0]?.Item_x0020_Type != 'Project') datas[0].PortfolioItem.push(obj);
-                        })
-                        // datas[0].PortfolioItem = datas[0]?.Portfolios === undefined ? [] : datas[0]?.Portfolios;
-                        // datas[0].ProjectItem = datas[0]?.Portfolios === undefined ? [] : datas[0]?.Portfolios;
-                        datas[0].ResponsibileUsers = [];
-                        if (datas[0]?.CompletedDate != undefined && datas[0]?.CompletedDate != null)
-                            datas[0].CompletedDate = new Date(datas[0]?.CompletedDate);
-                        if (datas[0]?.StartDate != undefined && datas[0]?.StartDate != null)
-                            datas[0].StartDate = new Date(datas[0]?.StartDate);
-                        if (datas[0]?.DueDate != undefined && datas[0]?.DueDate != null)
-                            datas[0].DueDate = new Date(datas[0]?.DueDate);
-                        TaskUser?.forEach((element: any) => {
-                            if (datas[0]?.AssignedTo?.length > 0)
-                                datas[0].AssignToUsers = datas[0].AssignToUsers.concat(datas[0]?.AssignedTo?.filter((obj: any) => {
-                                    if (obj.Id === element?.AssingedToUser?.Id) {
-                                        obj["userImage"] = element?.Item_x0020_Cover?.Url
-                                        return obj;
-                                    }
-                                }));
-                            if (datas[0]?.TeamMembers?.length > 0)
-                                datas[0].TeamMembersUsers = datas[0].TeamMembersUsers.concat(datas[0]?.TeamMembers?.filter((obj: any) => {
-                                    if (obj.Id === element?.AssingedToUser?.Id) {
-                                        obj["userImage"] = element?.Item_x0020_Cover?.Url
-                                        return obj;
-                                    }
-                                }));
-                            if (datas[0]?.ResponsibleTeam?.length > 0)
-                                datas[0].ResponsibileUsers = datas[0].ResponsibileUsers.concat(datas[0]?.ResponsibleTeam?.filter((obj: any) => {
-                                    if (obj.Id === element?.AssingedToUser?.Id) {
-                                        obj["userImage"] = element?.Item_x0020_Cover?.Url
-                                        return obj;
-                                    }
-                                }));
-                        });
+                select + "&$filter=" + `((Id eq ${items?.Id}))`
+            ).then(async (datas: any) => {
+                if (datas?.length > 0) {
+                    datas[0].Comments = globalCommon.parseJSON(datas[0]?.Comments);
+                    datas[0].Comments = datas[0].Comments == undefined ? [] : datas[0].Comments;
+                    datas[0].SiteComposition = globalCommon.parseJSON(datas[0]?.Sitestagging);
+                    datas[0].SiteComposition = datas[0].SiteComposition == undefined ? [] : datas[0].SiteComposition;
+                    datas[0].Synonyms = globalCommon.parseJSON(datas[0]?.Synonyms);
+                    datas[0].AssignToUsers = [];
+                    datas[0].TeamMembersUsers = [];
+                    datas[0]["SiteIcon"] = SmartMetaDataAllItems?.Sites.map((site: any) => {
+                        if (site.Title === items.siteType) {
+                            return site.Item_x005F_x0020_Cover?.Url;
+                        }
+                        return null; // Or any other default value if the condition is not met
+                    }).filter((url: any) => url !== null)[0];
+                    SmartMetaDataAllItems?.Sites.map((site: any) => { return site?.Item_x005F_x0020_Cover?.Url; site.Title === items.siteType })
+                    //datas[0]["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
+                    datas[0].TaskTimeSheetCategoriesGrouping = JSON.parse(JSON.stringify(SmartMetaDataAllItems?.TimeSheetCategory));
+                    datas[0].TaskCategories = datas[0]?.TaskCategories === undefined ? [] : datas[0]?.TaskCategories;
+                    datas[0].ClientCategory = datas[0]?.ClientCategory === undefined ? [] : datas[0]?.ClientCategory;
+                    datas[0].PortfolioItem = [];
+                    datas[0].ProjectItem = [];
+                    datas[0]?.Portfolios?.forEach((obj: any) => {
+                        let dataitem: any = AllMasterTasksItems?.AllData?.filter((master: any) => master.Id === obj.Id);
+                        if (dataitem?.length === 0)
+                            dataitem = AllMasterTasksItems?.ProjectData?.filter((master: any) => master.Id === obj.Id)
+                        if (dataitem[0]?.Item_x0020_Type != undefined && dataitem[0]?.Item_x0020_Type === 'Project')
+                            datas[0].ProjectItem.push(obj)
+                        else if (dataitem[0]?.Item_x0020_Type != undefined && dataitem[0]?.Item_x0020_Type != 'Project') datas[0].PortfolioItem.push(obj);
+                    })
+                    datas[0].FeatureType = datas[0]?.FeatureType === undefined ? [] : [{ Id: datas[0]?.FeatureType?.Id, Title: datas[0]?.FeatureType?.Title }];
+                    // datas[0].ProjectItem = datas[0]?.Portfolios === undefined ? [] : datas[0]?.Portfolios;
+                    datas[0].ResponsibileUsers = [];
+                    if (datas[0]?.CompletedDate != undefined && datas[0]?.CompletedDate != null)
+                        datas[0].CompletedDate = new Date(datas[0]?.CompletedDate);
+                    if (datas[0]?.StartDate != undefined && datas[0]?.StartDate != null)
+                        datas[0].StartDate = new Date(datas[0]?.StartDate);
+                    if (datas[0]?.DueDate != undefined && datas[0]?.DueDate != null)
+                        datas[0].DueDate = new Date(datas[0]?.DueDate);
+                    TaskUser?.forEach((element: any) => {
+                        if (datas[0]?.AssignedTo?.length > 0)
+                            datas[0].AssignToUsers = datas[0].AssignToUsers.concat(datas[0]?.AssignedTo?.filter((obj: any) => {
+                                if (obj.Id === element?.AssingedToUser?.Id) {
+                                    obj["userImage"] = element?.Item_x0020_Cover?.Url
+                                    return obj;
+                                }
+                            }));
+                        if (datas[0]?.TeamMembers?.length > 0)
+                            datas[0].TeamMembersUsers = datas[0].TeamMembersUsers.concat(datas[0]?.TeamMembers?.filter((obj: any) => {
+                                if (obj.Id === element?.AssingedToUser?.Id) {
+                                    obj["userImage"] = element?.Item_x0020_Cover?.Url
+                                    return obj;
+                                }
+                            }));
+                        if (datas[0]?.ResponsibleTeam?.length > 0)
+                            datas[0].ResponsibileUsers = datas[0].ResponsibileUsers.concat(datas[0]?.ResponsibleTeam?.filter((obj: any) => {
+                                if (obj.Id === element?.AssingedToUser?.Id) {
+                                    obj["userImage"] = element?.Item_x0020_Cover?.Url
+                                    return obj;
+                                }
+                            }));
+                    });
+
+                    datas[0].TaskID = globalCommon.GetTaskId(datas[0]);
+                    datas[0].siteUrl = props?.contextValue?.siteUrl,
+                        datas[0].listId = items?.listId === undefined ? props?.contextValue?.MasterTaskListID : items?.listId,
+                        datas[0].siteType = items.siteType === undefined ? "Master Tasks" : items.siteType,
+                        getDocuments(datas)
+                    if (datas[0]?.TaskType?.Id != undefined)
+                        GetTaskTime(datas[0]);
+                    a.push(...datas);
+                    if (selectedData?.length === a?.length)
+                        gettaggedItems(a, props);
+                }
+
+            }).catch((err: any) => {
+                console.error(err);
+            })
 
 
-                        datas[0].siteUrl = props?.contextValue?.siteUrl,
-                            datas[0].listId = props?.contextValue?.MasterTaskListID,
-                            datas[0].siteType = "Master Tasks",
-                            getDocuments(datas)
-                        a.push(...datas);
-                        if (selectedData?.length === a?.length)
-                            gettaggedItems(a, props);
-                    }
-
-                }).catch((err: any) => {
-                    console.error(err);
-                })
-
-            }
 
         })
         // if(a.length >0)
@@ -335,7 +778,7 @@ const CompareTool = (props: any) => {
         setHistory((prevHistory) => [...prevHistory, _.cloneDeep(data)]);
         const updatedItems = _.cloneDeep(data);
         const indexValue = index == 1 ? 0 : 1
-        if (taggedItems != undefined && taggedItems?.property === property && (property === 'tagDoc' || property === 'taggedTasks' || property === 'subRows')) {
+        if (taggedItems != undefined && (property === 'tagDoc' || property === 'subRows')) {
             const findUnSelected = updatedItems[indexValue][property].filter((obj: any) => taggedItems?.Id != obj.Id);
 
             updatedItems[indexValue][property] = findUnSelected
@@ -345,7 +788,7 @@ const CompareTool = (props: any) => {
                 elem.checked = false
             })
         }
-        else if (taggedItems != undefined && (property === "AssignToUsers" || property === "TeamMembersUsers" || property === "ResponsibileUsers")) {
+        else if ((property === "AssignToUsers" || property === "TeamMembersUsers" || property === "ResponsibileUsers")) {
             const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
 
             if (updatedItems[index][property]?.length > 0 && selectedItems?.length > 0) {
@@ -361,8 +804,28 @@ const CompareTool = (props: any) => {
                     elem.checked = false
                 })
             }
+        }
+
+        else if (property === 'taggedTasks') {
+            const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
+            const UnselectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked != true);
+            updatedItems[indexValue][property] = UnselectedItems;
+            if (updatedItems[index][property]?.length > 0 && selectedItems?.length > 0) {
+                if (!IsExistsData(updatedItems[index][property], selectedItems[0])) {
+                    updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
+                    updatedItems[index][property].map((elem: any) => {
+                        elem.checked = false
+                    })
+                }
+            } else if (selectedItems?.length > 0) {
+                updatedItems[index][property] = selectedItems;
+                updatedItems[index][property]?.map((elem: any) => {
+                    elem.checked = false
+                })
+            }
 
         }
+
         else {
             const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
             if (selectedItems?.length === 0)
@@ -445,7 +908,7 @@ const CompareTool = (props: any) => {
     };
     const handleCheckboxChange = (index: any, item: any, property: any) => {
         item.checked = !item.checked;
-        // setTaggedItems(item);
+        rerender();
     };
     const closeHtmlEditor = () => {
         setHtmlEditor({ ...htmlEditor, condition: false, })
@@ -474,9 +937,9 @@ const CompareTool = (props: any) => {
         setHistory((prevHistory) => [...prevHistory, _.cloneDeep(data)]);
         const updatedItems = _.cloneDeep(data);
         if (updatedItems[autoSearch?.itemIndex][autoSearch?.property] != undefined) {
-            if (!IsExistsData(updatedItems[autoSearch?.itemIndex][autoSearch?.property],selectCategoryData) && autoSearch?.property === "PortfolioItem")
+            if (!IsExistsData(updatedItems[autoSearch?.itemIndex][autoSearch?.property], selectCategoryData) && autoSearch?.property === "PortfolioItem")
                 updatedItems[autoSearch?.itemIndex][autoSearch?.property] = selectCategoryData;
-            else if(!IsExistsData(updatedItems[autoSearch?.itemIndex][autoSearch?.property],selectCategoryData[0]))
+            else if (!IsExistsData(updatedItems[autoSearch?.itemIndex][autoSearch?.property], selectCategoryData[0]))
                 updatedItems[autoSearch?.itemIndex][autoSearch?.property].push(selectCategoryData[0]);
         }
         setData(updatedItems);
@@ -484,6 +947,7 @@ const CompareTool = (props: any) => {
     }
     const autoSuggestionsForCategory = (e: any, property: any, itemIndex: any, AutoCompleteItemsArray: any) => {
         let searchedKey: any = e.target.value;
+        setCategorySearchKey(searchedKey);
         let tempArray: any = [];
         if (searchedKey?.length > 0) {
             AutoCompleteItemsArray?.map((itemData: any) => {
@@ -545,13 +1009,14 @@ const CompareTool = (props: any) => {
 
         let AllClientCategoryData: any = [];
         let AllCategoriesData: any = [];
-        let AllTimesheetCategoriesData: any = [];
+
         let AllStatusData: any = [];
         let AllPriorityData: any = [];
         let AllPriorityRankData: any = [];
         let CategoriesGroupByData: any = [];
-        let tempArray: any = [];
-        let TempTimeSheetCategoryArray: any = [];
+        let AllFeatureTypeData: any = [];
+        let AllSitesData: any = [];
+        let AllTimesheetCategoriesData: any = [];
         try {
             let web = new Web(props?.contextValue?.siteUrl);
             AllSmartDataListData = await web.lists
@@ -588,8 +1053,8 @@ const CompareTool = (props: any) => {
                     }
                 });
             }
-            // AllSitesData = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Sites");
-
+            AllSitesData = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Sites");
+            AllFeatureTypeData = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Feature Type");
             AllClientCategoryData = getSmartMetadataItemsByTaxType(
                 AllSmartDataListData,
                 "Client Category"
@@ -598,10 +1063,13 @@ const CompareTool = (props: any) => {
                 AllSmartDataListData,
                 "Categories"
             );
+
+
             AllTimesheetCategoriesData = getSmartMetadataItemsByTaxType(
                 AllSmartDataListData,
                 "TimesheetCategories"
             );
+            AllTimesheetCategoriesData.push({ "__metadata": { "id": "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(319)", "uri": "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(319)", "etag": "\"1\"", "type": "SP.Data.SmartMetadataListItem" }, "Id": 319, "Title": "Others", "siteName": null, "siteUrl": null, "listId": null, "Description1": null, "IsVisible": true, "Item_x005F_x0020_Cover": null, "SmartFilters": null, "SortOrder": null, "TaxType": "TimesheetCategories", "Selectable": true, "ParentID": "ParentID", "SmartSuggestions": false, "ID": 319 });
             AllStatusData = getSmartMetadataItemsByTaxType(
                 AllSmartDataListData,
                 "Status"
@@ -666,12 +1134,13 @@ const CompareTool = (props: any) => {
 
                 // ############## this is used for filttering time sheet category data from smart medatadata list ##########
                 if (AllTimesheetCategoriesData?.length > 0) {
-                    AllTimesheetCategoriesData = AllTimesheetCategoriesData.map(
-                        (TimeSheetCategory: any) => {
-                            if (TimeSheetCategory.ParentId == 303) {
-                                TempTimeSheetCategoryArray.push(TimeSheetCategory);
-                            }
+                    AllTimesheetCategoriesData = AllTimesheetCategoriesData.map((TimeSheetCategory: any) => {
+                        TimeSheetCategory.subRows = [];
+                        TimeSheetCategory.IsSelectTimeEntry = false;
+                        if (TimeSheetCategory.ParentId == 303) {
+                            TempTimeSheetCategoryArray.push(TimeSheetCategory);
                         }
+                    }
                     );
                 }
                 console.log("Timesheet Category Data ====", TempTimeSheetCategoryArray);
@@ -679,12 +1148,13 @@ const CompareTool = (props: any) => {
                 let AllSmartMetaDataGroupBy: any = {
                     TimeSheetCategory: TempTimeSheetCategoryArray,
                     Categories: AutoCompleteItemsArray,
-                    Sites: tempArray,
+                    Sites: AllSitesData,
                     Status: AllStatusData,
                     Priority: AllPriorityData,
                     PriorityRank: AllPriorityRankData,
                     ClientCategory: AllClientCategoryData,
                     AllSmartDataListData: AllSmartDataListData,
+                    AllFeatureTypeData: AllFeatureTypeData,
                 };
                 // setsmartMetadataItems(AllSmartDataListData);
                 setSmartMetaDataAllItems(AllSmartMetaDataGroupBy);
@@ -736,7 +1206,7 @@ const CompareTool = (props: any) => {
     ));
     const removeItem = (item: any, index: any, property: any) => {
         const updatedItems = _.cloneDeep(data);
-        let items = updatedItems[index][property]?.filter((obj: any) => { item?.Id != obj?.Id });
+        let items = updatedItems[index][property]?.filter((obj: any) => item?.Id != obj?.Id);
         updatedItems[index][property] = items?.length > 0 ? items : [];
         setData(updatedItems);
     }
@@ -749,6 +1219,16 @@ const CompareTool = (props: any) => {
         catItem = item;
         setisPicker({ PortfolioTitle: PortfolioTitle, condition: condition });
     };
+    // const EditClientCategory = (item: any, Type: any) => {
+    //     ItemType = Type;
+    //     setIsClientPopup(true);
+    //     setEditData(item);
+    // };
+    const EditClientCategory = (item: any, condition: any, PortfolioTitle: any) => {
+        catItem = item;
+        setIsClientPopup(true);
+    };
+
     const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any, WhichItem: any) => {
         if (functionType == "Close") {
             setisPicker({ PortfolioTitle: '', condition: false });
@@ -759,6 +1239,14 @@ const CompareTool = (props: any) => {
                 catItem.PortfolioItem = DataItem;
 
             setisPicker({ PortfolioTitle: '', condition: false });
+        }
+    }, []);
+    const ClientCategoryCallBack = React.useCallback((DataItem: any, Type: any, functionType: any, WhichItem: any) => {
+        if (functionType == "Close") {
+            setisPicker({ PortfolioTitle: '', condition: false });
+        } else {
+            catItem.ClientCategory = DataItem;
+            setIsClientPopup(false);
         }
     }, []);
     const SelectCategoryCallBack = React.useCallback((selectCategoryDataCallBack: any) => {
@@ -867,31 +1355,31 @@ const CompareTool = (props: any) => {
         Firstitem?.tagDoc?.forEach((element: any) => {
             let temp1 = element?.Portfolios?.filter((obj: any) => obj.Id == secondItem.Id)
             try {
-            if (temp1?.length > 0) {
-                let PortfolioIds: any = [];
-                element?.Portfolios.forEach((elo: any) => {
-                    if (elo?.Id != secondItem.Id)
-                        PortfolioIds.push(elo.Id);
-                })
-                PortfolioIds.push(Firstitem.Id)
-                let postData = {
-                    PortfoliosId: { "results": PortfolioIds },
-                }
-                globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.DocumentListID === undefined ? 'D0F88B8F-D96D-4E12-B612-2706BA40FB08' : props?.contextValue?.DocumentListID, postData, element.Id)
-                    .then((returnresult) => {
-                        console.log(returnresult);
-                        // result.smartTime = String(returnresult)
-                        // console.log("Final Total Time:", returnresult);
+                if (temp1?.length > 0) {
+                    let PortfolioIds: any = [];
+                    element?.Portfolios.forEach((elo: any) => {
+                        if (elo?.Id != secondItem.Id)
+                            PortfolioIds.push(elo.Id);
                     })
-                    .catch((error) => {
-                        console.error("Error:", error);
-                    });
+                    PortfolioIds.push(Firstitem.Id)
+                    let postData = {
+                        PortfoliosId: { "results": PortfolioIds },
+                    }
+                    globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.DocumentListID === undefined ? 'D0F88B8F-D96D-4E12-B612-2706BA40FB08' : props?.contextValue?.DocumentListID, postData, element.Id)
+                        .then((returnresult) => {
+                            console.log(returnresult);
+                            // result.smartTime = String(returnresult)
+                            // console.log("Final Total Time:", returnresult);
+                        })
+                        .catch((error) => {
+                            console.error("Error:", error);
+                        });
 
+                }
+            } catch (error) {
+                // Handle the error, you can log it or perform any other actions
+                console.error('Error in the first block:', error);
             }
-        } catch (error) {
-            // Handle the error, you can log it or perform any other actions
-            console.error('Error in the first block:', error);
-        }
         });
     }
     const TaggedTaskSavingConfiguration = (Firstitem: any, secondItem: any) => {
@@ -921,7 +1409,7 @@ const CompareTool = (props: any) => {
             console.error('Error in the first block:', error);
         }
     }
-    const SaveComponentsItems = async (FirstItem: any, SecondItem:any) => {
+    const SaveComponentsItems = async (FirstItem: any, SecondItem: any) => {
         if (FirstItem?.subRows?.length > 0) {
             let allCompo = FirstItem?.subRows?.filter((obj: any) => obj?.Parent?.Id === SecondItem.Id)
             try {
@@ -963,152 +1451,152 @@ const CompareTool = (props: any) => {
     }
     const SaveComponent = async (Item: any, type: any) => {
         try {
-        var AssignedToIds: any = [];
-        var TeamMembersIds: any = [];
-        let ResponsibleTeamIds: any = [];
-        if (Item.AssignToUsers != undefined && Item.AssignToUsers.length > 0) {
-            Item.AssignToUsers.forEach((user: any) => {
-                if (user?.Id != undefined)
-                    AssignedToIds.push(user.Id);
-            });
-        }
-        if (Item.TeamMembersUsers != undefined && Item.TeamMembersUsers.length > 0) {
-            Item.TeamMembersUsers.forEach((user: any) => {
-                if (user?.Id != undefined)
-                    TeamMembersIds.push(user?.Id);
-            });
-        }
-        if (Item.ResponsibleTeam != undefined && Item.ResponsibleTeam.length > 0) {
-            Item.ResponsibleTeam.forEach((user: any) => {
-                if (user?.Id != undefined)
-                    ResponsibleTeamIds.push(user.Id);
-            });
-        }
+            var AssignedToIds: any = [];
+            var TeamMembersIds: any = [];
+            let ResponsibleTeamIds: any = [];
+            if (Item.AssignToUsers != undefined && Item.AssignToUsers.length > 0) {
+                Item.AssignToUsers.forEach((user: any) => {
+                    if (user?.Id != undefined)
+                        AssignedToIds.push(user.Id);
+                });
+            }
+            if (Item.TeamMembersUsers != undefined && Item.TeamMembersUsers.length > 0) {
+                Item.TeamMembersUsers.forEach((user: any) => {
+                    if (user?.Id != undefined)
+                        TeamMembersIds.push(user?.Id);
+                });
+            }
+            if (Item.ResponsibleTeam != undefined && Item.ResponsibleTeam.length > 0) {
+                Item.ResponsibleTeam.forEach((user: any) => {
+                    if (user?.Id != undefined)
+                        ResponsibleTeamIds.push(user.Id);
+                });
+            }
 
 
-        if (Item.QuestionDescription != undefined && Item.QuestionDescription.length > 0) {
-            Item.QuestionDescription.forEach((obj: any) => {
-                if (obj.IsUpdated != undefined && obj.IsUpdated)
-                    saveSmartHelp(obj, Item);
-            })
+            if (Item.QuestionDescription != undefined && Item.QuestionDescription.length > 0) {
+                Item.QuestionDescription.forEach((obj: any) => {
+                    if (obj.IsUpdated != undefined && obj.IsUpdated)
+                        saveSmartHelp(obj, Item);
+                })
 
-        }
-        if (Item.HelpDescription != undefined && Item.HelpDescription.length > 0) {
-            Item.HelpDescription.forEach((obj: any) => {
-                if (obj.IsUpdated != undefined && obj.IsUpdated)
-                    saveSmartHelp(obj, Item);
-            })
+            }
+            if (Item.HelpDescription != undefined && Item.HelpDescription.length > 0) {
+                Item.HelpDescription.forEach((obj: any) => {
+                    if (obj.IsUpdated != undefined && obj.IsUpdated)
+                        saveSmartHelp(obj, Item);
+                })
 
-        }
-
-
-        // if (Item.attachments.length > 0) {
-        //     angular.forEach(Item.attachments, function (attach) {
-        //         if (attach.IsSelected == true && attach.OldId != Item.Id) {
-        //             $scope.getContactAttachments(attach.OldId, Item.Id, attach.FileName);
-        //         }
-
-        //     })
-        // }
+            }
 
 
+            // if (Item.attachments.length > 0) {
+            //     angular.forEach(Item.attachments, function (attach) {
+            //         if (attach.IsSelected == true && attach.OldId != Item.Id) {
+            //             $scope.getContactAttachments(attach.OldId, Item.Id, attach.FileName);
+            //         }
 
-        // if (Item.childs != undefined && Item.childs.length > 0) {
-        //     angular.forEach(Item.childs, function (val) {
-        //         if (val.Parent.Id != Item.Id)
-        //             $scope.ChangeParentId(val, Item);
-        //         if (val.childs != undefined && val.childs.length > 0) {
-        //             angular.forEach(val.childs, function (item) {
-        //                 if (item.Parent.Id != val.Id)
-        //                     $scope.ChangeParentId(item, val);
-        //             })
-        //         }
-        //     })
-        // }
-        var PercentComplete = Item.PercentComplete > 1 ? Item.PercentComplete / 100 : Item.PercentComplete;
-        let taskCategoryIds: any = [];
-        if (Item.TaskCategories.length > 0) {
-            Item.TaskCategories.forEach((categories: any) => {
-                taskCategoryIds.push(categories.Id);
-            })
-        }
-
-        let portfolioIds: any = [];
-        if (Item.PortfolioItem.length > 0) {
-            Item.PortfolioItem.forEach((portfolio: any) => {
-                portfolioIds.push(portfolio.Id);
-            })
-        }
-        if (Item.ProjectItem.length > 0) {
-            Item.ProjectItem.forEach((project: any) => {
-                portfolioIds.push(project.Id);
-            })
-        }
+            //     })
+            // }
 
 
-        let postData: any = {
-            'Title': Item.Title,
-            'Help_x0020_Information': Item.Help_x0020_Information,
-            'TechnicalExplanations': Item.TechnicalExplanations,
-            'Short_x0020_Description_x0020_On': Item.Short_x0020_Description_x0020_On,
-            'Admin_x0020_Notes': Item.Admin_x0020_Notes,
-            'Background': Item.Background,
-            'Body': Item.Body,
-            'Idea': Item.Idea,
-            'ValueAdded': Item.ValueAdded,
-            'PercentComplete': Item.PercentComplete,
-            'Priority': Item.Priority,
-            'Deliverable_x002d_Synonyms': Item.Deliverable_x002d_Synonyms,
-            // 'Synonyms': Item.Synonyms,
-            'StartDate': Item.StartDate ? moment(Item.StartDate).format("MM-DD-YYYY") : null,
-            'DueDate': Item.DueDate ? moment(Item.DueDate).format("MM-DD-YYYY") : null,
-            'CompletedDate': Item.CompletedDate ? moment(Item.CompletedDate).format("MM-DD-YYYY") : null,
-            'ItemRank': Item.ItemRank,
-            'Mileage': Item.Mileage,
-            'Priority_x0020_Rank': Item.PriorityRank,
-            // 'ComponentId': { "results": $scope.smartComponentsIds },
-            'PortfoliosId': { "results": portfolioIds },
-            'TaskCategoriesId': { "results": taskCategoryIds },
-            'Package': Item.Package,
-            // 'SiteCompositionSettings': angular.toJson(Item.SiteCompositionSettingsValue),
-            'Sitestagging': JSON.stringify(Item.SiteCompositionSettingsValue),
-            'Deliverables': Item.Deliverables,
-            'ClientActivity': Item.ClientActivity,
-            Comments: JSON.stringify(Item.Comments),
-            'Item_x002d_Image': {
-                '__metadata': { 'type': 'SP.FieldUrlValue' },
-                'Description': Item.Item_x002d_Image != undefined ? Item.Item_x002d_Image.Url : null,
-                'Url': Item.Item_x002d_Image != undefined ? Item.Item_x002d_Image.Url : null,
-            },
-            'component_x0020_link': {
-                '__metadata': { 'type': 'SP.FieldUrlValue' },
-                'Description': Item.component_x0020_link != undefined ? Item.component_x0020_link.Url : null,
-                'Url': Item.component_x0020_link != undefined ? Item.component_x0020_link.Url : null,
-            },
-            AssignedToId: { "results": AssignedToIds },
-            TeamMembersId: { "results": TeamMembersIds },
-        }
-        if (Item?.Synonyms?.length > 0) {
-            postData.Synonyms = JSON.stringify(Item.Synonyms);
-        }
-        else {
-            postData.Synonyms = null;
-        }
-        globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.MasterTaskListID, postData, Item.Id)
-            .then((returnresult) => {
-                console.log(returnresult);
-                if (type === 'Keep1')
-                    props.compareToolCallBack(data[0])
-                if (type === 'Keep2')
-                    props.compareToolCallBack(data[1])
-                if (type === 'KeepBoth')
-                    props.compareToolCallBack(data)
-                // result.smartTime = String(returnresult)
-                // console.log("Final Total Time:", returnresult);
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-            });
+
+            // if (Item.childs != undefined && Item.childs.length > 0) {
+            //     angular.forEach(Item.childs, function (val) {
+            //         if (val.Parent.Id != Item.Id)
+            //             $scope.ChangeParentId(val, Item);
+            //         if (val.childs != undefined && val.childs.length > 0) {
+            //             angular.forEach(val.childs, function (item) {
+            //                 if (item.Parent.Id != val.Id)
+            //                     $scope.ChangeParentId(item, val);
+            //             })
+            //         }
+            //     })
+            // }
+            var PercentComplete = Item.PercentComplete > 1 ? Item.PercentComplete / 100 : Item.PercentComplete;
+            let taskCategoryIds: any = [];
+            if (Item.TaskCategories.length > 0) {
+                Item.TaskCategories.forEach((categories: any) => {
+                    taskCategoryIds.push(categories.Id);
+                })
+            }
+
+            let portfolioIds: any = [];
+            if (Item.PortfolioItem.length > 0) {
+                Item.PortfolioItem.forEach((portfolio: any) => {
+                    portfolioIds.push(portfolio.Id);
+                })
+            }
+            if (Item.ProjectItem.length > 0) {
+                Item.ProjectItem.forEach((project: any) => {
+                    portfolioIds.push(project.Id);
+                })
+            }
+
+
+            let postData: any = {
+                'Title': Item.Title,
+                'Help_x0020_Information': Item.Help_x0020_Information,
+                'TechnicalExplanations': Item.TechnicalExplanations,
+                'Short_x0020_Description_x0020_On': Item.Short_x0020_Description_x0020_On,
+                'Admin_x0020_Notes': Item.Admin_x0020_Notes,
+                'Background': Item.Background,
+                'Body': Item.Body,
+                'Idea': Item.Idea,
+                'ValueAdded': Item.ValueAdded,
+                'PercentComplete': Item.PercentComplete,
+                'Priority': Item.Priority,
+                'Deliverable_x002d_Synonyms': Item.Deliverable_x002d_Synonyms,
+                // 'Synonyms': Item.Synonyms,
+                'StartDate': Item.StartDate ? moment(Item.StartDate).format("MM-DD-YYYY") : null,
+                'DueDate': Item.DueDate ? moment(Item.DueDate).format("MM-DD-YYYY") : null,
+                'CompletedDate': Item.CompletedDate ? moment(Item.CompletedDate).format("MM-DD-YYYY") : null,
+                'ItemRank': Item.ItemRank,
+                'Mileage': Item.Mileage,
+                'Priority_x0020_Rank': Item.PriorityRank,
+                // 'ComponentId': { "results": $scope.smartComponentsIds },
+                'PortfoliosId': { "results": portfolioIds },
+                'TaskCategoriesId': { "results": taskCategoryIds },
+                'Package': Item.Package,
+                // 'SiteCompositionSettings': angular.toJson(Item.SiteCompositionSettingsValue),
+                'Sitestagging': JSON.stringify(Item.SiteCompositionSettingsValue),
+                'Deliverables': Item.Deliverables,
+                'ClientActivity': Item.ClientActivity,
+                Comments: JSON.stringify(Item.Comments),
+                'Item_x002d_Image': {
+                    '__metadata': { 'type': 'SP.FieldUrlValue' },
+                    'Description': Item.Item_x002d_Image != undefined ? Item.Item_x002d_Image.Url : null,
+                    'Url': Item.Item_x002d_Image != undefined ? Item.Item_x002d_Image.Url : null,
+                },
+                'component_x0020_link': {
+                    '__metadata': { 'type': 'SP.FieldUrlValue' },
+                    'Description': Item.component_x0020_link != undefined ? Item.component_x0020_link.Url : null,
+                    'Url': Item.component_x0020_link != undefined ? Item.component_x0020_link.Url : null,
+                },
+                AssignedToId: { "results": AssignedToIds },
+                TeamMembersId: { "results": TeamMembersIds },
+            }
+            if (Item?.Synonyms?.length > 0) {
+                postData.Synonyms = JSON.stringify(Item.Synonyms);
+            }
+            else {
+                postData.Synonyms = null;
+            }
+            globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.MasterTaskListID, postData, Item.Id)
+                .then((returnresult) => {
+                    console.log(returnresult);
+                    if (type === 'Keep1')
+                        props.compareToolCallBack(data[0])
+                    if (type === 'Keep2')
+                        props.compareToolCallBack(data[1])
+                    if (type === 'KeepBoth')
+                        props.compareToolCallBack(data)
+                    // result.smartTime = String(returnresult)
+                    // console.log("Final Total Time:", returnresult);
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
         } catch (error) {
             // Handle the error, you can log it or perform any other actions
             console.error('Error in the first block:', error);
@@ -1130,22 +1618,22 @@ const CompareTool = (props: any) => {
                 SaveComponent(data[0], type);
                 TaggedTaskSavingConfiguration(data[0], data[1]);
                 TaggeddocumentConfiguration(data[0], data[1]);
-                SaveComponentsItems(data[0],data[1]);
+                SaveComponentsItems(data[0], data[1]);
                 deleteComponent(data[1]);
             } else if (type == 'Keep2') {
                 SaveComponent(data[1], type);
                 TaggedTaskSavingConfiguration(data[1], data[0]);
                 TaggeddocumentConfiguration(data[1], data[0]);
-                SaveComponentsItems(data[1],data[0]);
+                SaveComponentsItems(data[1], data[0]);
                 deleteComponent(data[0]);
             } else if (type == 'KeepBoth') {
                 SaveComponent(data[0], '');
                 TaggedTaskSavingConfiguration(data[0], data[1]);
                 TaggeddocumentConfiguration(data[0], data[1]);
-                SaveComponentsItems(data[0],data[1]);
+                SaveComponentsItems(data[0], data[1]);
                 TaggedTaskSavingConfiguration(data[1], data[0]);
                 TaggeddocumentConfiguration(data[1], data[0]);
-                SaveComponentsItems(data[1],data[0]);
+                SaveComponentsItems(data[1], data[0]);
                 SaveComponent(data[1], type);
             }
         }
@@ -1156,12 +1644,90 @@ const CompareTool = (props: any) => {
         updatedItems[index][property] = v;
         setData(updatedItems);
     }
+    const EditItemTaskPopup = (item: any) => {
+        setTaskItem(item);
+    };
+    const Call = (res: any, UpdatedData: any) => {
+        setTaskItem(undefined);
+    }
+    const checkboxValueHandler = (id: any, Items: any) => {
+        Items.map((checkbox: any) =>
+            checkbox.id === id ? { ...checkbox, checked: !checkbox.checked } : checkbox
+        )
+
+    };
+    const Smartmetadatafeature = React.useCallback((data: any) => {
+        if (data === "Close") {
+            setSmartdatapopup(false)
+        } else {
+            setSmartdatapopup(false)
+            catItem["FeatureType"] = data;
+            rerender()
+        }
+    }, [])
+
     return (
         <>
             <Panel onRenderHeader={onRenderCustomHeaderMain} type={PanelType.large} isOpen={props?.isOpen} isBlocking={false} onDismiss={() => props?.compareToolCallBack("close")}>
                 <Modal.Body className="mb-5">
                     <Container fluid className="CompareSmartpopup">
-                        <Row className="Metadatapannel ">
+                        {data[0]?.Item_x0020_Type === "Component" || data[0]?.Item_x0020_Type === "SubComponent" || data[0]?.Item_x0020_Type === "Feature" || data[0]?.Item_x0020_Type === "Project" || data[0]?.Item_x0020_Type === "Sprint" ?
+                            (<Row className="Metadatapannel ">
+                                <Col sm="5" md="5" lg="5" className="alignCenter siteColor">
+                                    <span className="Dyicons me-1">{data[0]?.Item_x0020_Type.charAt(0)}</span> <Label><a target="_blank" data-interception="off"
+                                        href={`${data[0]?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${data[0]?.Id}`}>
+                                        {data[0]?.Title}
+                                    </a></Label>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="text-center">
+                                    <span><img className="imgWid29" src={`${props?.contextValue?.siteUrl}/SiteCollectionImages/ICONS/Shareweb/SwitchItem_icon.png`} title="Switch Items" onClick={() => switchItems()} /></span>
+                                </Col>
+                                <Col sm="5" md="5" lg="5" className="alignCenter siteColor">
+                                    <span className="Dyicons me-1">{data[1]?.Item_x0020_Type.charAt(0)}</span> <Label>
+                                        <a target="_blank" data-interception="off"
+                                            href={`${data[1]?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${data[1]?.Id}`}>
+                                            {data[1]?.Title}
+                                        </a>
+                                    </Label>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <LuUndo2 size="25" />
+                                </Col>
+                            </Row>) : <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5" className="alignCenter siteColor">
+                                    <span>
+                                        <img className="imgWid29 pe-1" src={data[0]?.SiteIcon} />
+                                    </span>
+                                    <span>{data[0]?.TaskID}</span>
+                                    <a target="_blank" className="mx-2" data-interception="off"
+                                        href={`${data[0]?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${data[0]?.Id}&Site=${data[0]?.siteType}`}>
+                                        {data[0]?.Title}
+                                    </a>
+                                    <span className="svg__iconbox svg__icon--edit"
+                                        onClick={(e) => EditItemTaskPopup(data[0])}
+                                    ></span>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="text-center">
+                                    <span><img className="imgWid29" src={`${props?.contextValue?.siteUrl}/SiteCollectionImages/ICONS/Shareweb/SwitchItem_icon.png`} title="Switch Items" onClick={() => switchItems()} /></span>
+                                </Col>
+                                <Col sm="5" md="5" lg="5" className="alignCenter siteColor">
+                                    <span>
+                                        <img className="imgWid29 pe-1" src={data[1]?.SiteIcon} />
+                                    </span>
+                                    <span>{data[1]?.TaskID}</span>
+                                    <a target="_blank" className="mx-2" data-interception="off"
+                                        href={`${data[1]?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${data[1]?.Id}&Site=${data[1]?.siteType}`}>
+                                        {data[1]?.Title}
+                                    </a>
+                                    <span className="svg__iconbox svg__icon--edit"
+                                        onClick={() => EditItemTaskPopup(data[1])}
+                                    ></span>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns(undefined)} />
+                                </Col>
+                            </Row>}
+                        {/* <Row className="Metadatapannel ">
                             <Col sm="5" md="5" lg="5" className="alignCenter siteColor">
                                 <span className="Dyicons me-1">{data[0]?.Item_x0020_Type.charAt(0)}</span> <Label><a target="_blank" data-interception="off"
                                     href={`${data[0]?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${data[0]?.Id}`}>
@@ -1182,7 +1748,7 @@ const CompareTool = (props: any) => {
                             <Col sm="1" md="1" lg="1">
                                 <LuUndo2 size="25" />
                             </Col>
-                        </Row>
+                        </Row> */}
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5">
                                 <div className="input-group">
@@ -1287,13 +1853,15 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('tagDoc')} />
                             </Col>
                         </Row>
+                        {data[0]?.TaskType===undefined && 
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5">
                                 <label className="fw-semibold form-label">Tagged Tasks</label>
                                 <span className="ms-3"> {
                                     data[0]?.taggedTasks?.length > 0 && data[0]?.taggedTasks?.map((items: any) => {
-                                        return <div className="SpfxCheckRadio">
-                                            <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span>   <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radiotask" onClick={() => handleRadioChange(items, 'taggedTask')} className="radio" />
+                                        return <div className="SpfxCheckRadio" key={items.Id}>
+                                            <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span> <span>{items.TaskID}</span>
+                                            <input type="checkbox" checked={items.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />
                                             <span> <a target="_blank" className="mx-2" data-interception="off"
                                                 href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
                                                 {items?.Title}
@@ -1312,8 +1880,9 @@ const CompareTool = (props: any) => {
                                 <label className="fw-semibold form-label">Tagged Tasks</label>
                                 <span className="ms-3"> {
                                     data[1]?.taggedTasks?.length > 0 && data[1]?.taggedTasks?.map((items: any) => {
-                                        return <div className="SpfxCheckRadio">
-                                            <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span>   <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radiotask" onClick={() => handleRadioChange(items, 'taggedTask')} className="radio" />
+                                        return <div className="SpfxCheckRadio" key={items.Id}>
+                                            <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span> <span>{items.TaskID}</span>
+                                            <input type="checkbox" checked={items.checked} className="form-check-input me-1 mt-0" name="radiotask" onClick={() => handleCheckboxChange(1, items, 'taggedTask')} />
                                             <span> <a target="_blank" className="mx-2" data-interception="off"
                                                 href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
                                                 {items?.Title}
@@ -1326,9 +1895,10 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('taggedTasks')} />
                             </Col>
                         </Row>
+                        }
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5">
-                                <label className="fw-semibold form-label">Team Members</label>
+                                <label className="fw-semibold form-label">Team Leaders</label>
                                 {
                                     data[0]?.AssignToUsers?.length > 0 && data[0]?.AssignToUsers?.map((items: any) =>
                                         <span className="SpfxCheckRadio alignCenter">
@@ -1345,7 +1915,7 @@ const CompareTool = (props: any) => {
                                 </div>
                             </Col>
                             <Col sm="5" md="5" lg="5">
-                                <label className="fw-semibold form-label">Team Members</label>
+                                <label className="fw-semibold form-label">Team Leaders</label>
                                 {
                                     data[1]?.AssignToUsers?.length > 0 && data[1]?.AssignToUsers?.map((items: any) =>
                                         <span className="SpfxCheckRadio alignCenter">
@@ -1430,6 +2000,50 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('ResponsibileUsers')} />
                             </Col>
                         </Row>}
+                        {data[0]?.TaskType?.Id !=undefined ?
+                        <Row className="Metadatapannel">
+                            <Col sm="5" md="5" lg="5">
+                                <label className="fw-semibold form-label">Child Items</label>
+                                
+                                 <span className="ms-3"> {
+                                    data[0]?.subRows?.length > 0 && data[0]?.subRows?.map((items: any) => {
+                                        return <div className="SpfxCheckRadio" key={items.Id}>
+                                            <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span> <span>{items.TaskID}</span>
+                                            <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
+                                            <span> <a target="_blank" className="mx-2" data-interception="off"
+                                                href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
+                                                {items?.Title}
+                                            </a></span>
+                                        </div>
+                                    })
+                                }</span>
+                            </Col>
+                            <Col sm="1" md="1" lg="1">
+                                <div className="text-center">
+                                    <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'subRows', data[1]?.subRows)} /></div>
+                                    <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'subRows', data[0]?.subRows)} /></div>
+                                </div>
+                            </Col>
+                            <Col sm="5" md="5" lg="5">
+                                <label className="fw-semibold form-label">Child Items</label>
+                                <span className="ms-3">{
+                                    data[1]?.subRows?.length > 0 && data[1]?.subRows?.map((items: any) => {
+                                        return <div className="SpfxCheckRadio alignCenter">
+                                            <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span> <span>{items.TaskID}</span>
+                                            <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
+                                            <span> <a target="_blank" className="mx-2" data-interception="off"
+                                                href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
+                                                {items?.Title}
+                                            </a></span>
+                                        </div>
+                                    })
+                                }</span>
+                                
+                            </Col>
+                            <Col sm="1" md="1" lg="1">
+                                <LuUndo2 size="25" onClick={() => undoChangescolumns('subRows')} />
+                            </Col>
+                        </Row> :  
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5">
                                 <label className="fw-semibold form-label">Child Items</label>
@@ -1470,7 +2084,7 @@ const CompareTool = (props: any) => {
                             <Col sm="1" md="1" lg="1">
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('subRows')} />
                             </Col>
-                        </Row>
+                        </Row>}
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="sit-preview">
                                 <label className="fw-semibold form-label">Image</label>
@@ -1494,7 +2108,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Categories</label>
-                                    <input type="text" className="form-control" placeholder="Search Category Here" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e, 'TaskCategories', 0, AutoCompleteItemsArray)} />
+                                    <input type="text" className="form-control" placeholder="Search Category Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'TaskCategories0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'TaskCategories', 0, AutoCompleteItemsArray)} />
 
                                     {data[0]?.TaskCategories != undefined && data[0]?.TaskCategories.map((type: any, index: number) => {
                                         return (
@@ -1511,7 +2125,7 @@ const CompareTool = (props: any) => {
                                     </span>
                                 </div>
                                 {autoSearch?.itemIndex === 0 && autoSearch?.property === 'TaskCategories' && SearchedCategoryData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
+                                    <div className="SmartTableOnTaskPopup w-100">
                                         <ul className="list-group">
                                             {SearchedCategoryData.map((item: any) => {
                                                 return (
@@ -1533,7 +2147,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Categories</label>
-                                    <input type="text" defaultValue={data[1]?.TaskCategories} className="form-control" placeholder="Search Category Here" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e, 'TaskCategories', 1, AutoCompleteItemsArray)} />
+                                    <input type="text" defaultValue={data[1]?.TaskCategories} className="form-control" placeholder="Search Category Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'TaskCategories1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'TaskCategories', 1, AutoCompleteItemsArray)} />
 
                                     {data[1]?.TaskCategories != undefined && data[1]?.TaskCategories.map((type: any, index: number) => {
                                         return (
@@ -1550,7 +2164,7 @@ const CompareTool = (props: any) => {
                                     </span>
                                 </div>
                                 {autoSearch?.itemIndex === 1 && autoSearch?.property === 'TaskCategories' && SearchedCategoryData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
+                                    <div className="SmartTableOnTaskPopup w-100">
                                         <ul className="list-group">
                                             {SearchedCategoryData.map((item: any) => {
                                                 return (
@@ -1570,8 +2184,84 @@ const CompareTool = (props: any) => {
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5">
                                 <div className="input-group">
+                                    <label className="fw-semibold full-width form-label">Client Categories</label>
+                                    <input type="text" className="form-control" placeholder="Search Category Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ClientCategory0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ClientCategory', 0, AllMasterTasksItems?.AllData)} />
+                                    {data[0]?.ClientCategory != undefined && data[0]?.ClientCategory.map((type: any, index: number) => {
+                                        return (
+                                            <div className="block w-100">
+                                                <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
+                                                <span onClick={() => removeItem(type, 0, 'ClientCategory')} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox" >
+                                                </span>
+                                            </div>
+                                        );
+                                    }
+                                    )}
+                                    <span className="input-group-text">
+                                        <span title="Edit Categories" onClick={() => EditClientCategory(data[0], true, 'ClientCategory')} className="svg__iconbox svg__icon--editBox"></span>
+                                    </span>
+                                </div>
+                                {autoSearch?.itemIndex === 0 && autoSearch?.property === 'ClientCategory' && SmartMetaDataAllItems?.ClientCategory?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup w-100">
+                                        <ul className="list-group">
+                                            {SmartMetaDataAllItems?.ClientCategory.map((item: any) => {
+                                                return (
+                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                        <a>{item.Newlabel || item.Path}</a>
+                                                    </li>
+                                                )
+                                            }
+                                            )}
+                                        </ul>
+                                    </div>) : null}
+                            </Col>
+                            <Col sm="1" md="1" lg="1">
+                                <div className="text-center">
+                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'ClientCategory', data[1]?.ClientCategory)} /></div>
+                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'ClientCategory', data[0]?.ClientCategory)} /></div>
+                                </div>
+                            </Col>
+                            <Col sm="5" md="5" lg="5">
+                                <div className="input-group">
+                                    <label className="fw-semibold full-width form-label">Client Categories</label>
+                                    <input type="text" className="form-control" placeholder="Search Category Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ClientCategory1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ClientCategory', 1, AllMasterTasksItems?.AllData)} />
+
+                                    {data[1]?.ClientCategory != undefined && data[1]?.ClientCategory.map((type: any, index: number) => {
+                                        return (
+                                            <div className="block w-100">
+                                                <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
+                                                <span onClick={() => removeItem(type, 1, 'ClientCategory')} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox" >
+                                                </span>
+                                            </div>
+                                        );
+                                    }
+                                    )}
+                                    <span className="input-group-text">
+                                        <span title="Edit Categories" onClick={() => EditClientCategory(data[1], true, 'ClientCategory')} className="svg__iconbox svg__icon--editBox"></span>
+                                    </span>
+                                </div>
+                                {autoSearch?.itemIndex === 1 && autoSearch?.property === 'ClientCategory' && SmartMetaDataAllItems?.ClientCategory?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup w-100">
+                                        <ul className="list-group">
+                                            {SmartMetaDataAllItems?.ClientCategory?.map((item: any) => {
+                                                return (
+                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                        <a>{item.Newlabel || item.Path}</a>
+                                                    </li>
+                                                )
+                                            }
+                                            )}
+                                        </ul>
+                                    </div>) : null}
+                            </Col>
+                            <Col sm="1" md="1" lg="1">
+                                <LuUndo2 size="25" onClick={() => undoChangescolumns('PortfolioItem')} />
+                            </Col>
+                        </Row>
+                        <Row className="Metadatapannel">
+                            <Col sm="5" md="5" lg="5">
+                                <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Portfolio Item</label>
-                                    <input type="text" defaultValue={data[1]?.TaskCategories} className="form-control" placeholder="Search Category Here" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e, 'PortfolioItem', 0, AllMasterTasksItems?.AllData)} />
+                                    <input type="text" defaultValue={data[1]?.TaskCategories} className="form-control" placeholder="Search Portfolio Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'PortfolioItem0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'PortfolioItem', 0, AllMasterTasksItems?.AllData)} />
                                     {data[0]?.PortfolioItem != undefined && data[0]?.PortfolioItem.map((type: any, index: number) => {
                                         return (
                                             <div className="block w-100">
@@ -1587,7 +2277,7 @@ const CompareTool = (props: any) => {
                                     </span>
                                 </div>
                                 {autoSearch?.itemIndex === 0 && autoSearch?.property === 'PortfolioItem' && AllMasterTasksItems?.ProjectData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
+                                    <div className="SmartTableOnTaskPopup w-100">
                                         <ul className="list-group">
                                             {AllMasterTasksItems?.ProjectData.map((item: any) => {
                                                 return (
@@ -1609,7 +2299,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Portfolio Item</label>
-                                    <input type="text" className="form-control" placeholder="Search Category Here" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e, 'PortfolioItem', 1, AllMasterTasksItems?.AllData)} />
+                                    <input type="text" className="form-control" placeholder="Search Portfolio Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'PortfolioItem1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'PortfolioItem', 1, AllMasterTasksItems?.AllData)} />
 
                                     {data[1]?.PortfolioItem != undefined && data[1]?.PortfolioItem.map((type: any, index: number) => {
                                         return (
@@ -1626,7 +2316,7 @@ const CompareTool = (props: any) => {
                                     </span>
                                 </div>
                                 {autoSearch?.itemIndex === 1 && autoSearch?.property === 'PortfolioItem' && AllMasterTasksItems?.AllData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
+                                    <div className="SmartTableOnTaskPopup w-100">
                                         <ul className="list-group">
                                             {AllMasterTasksItems?.AllData.map((item: any) => {
                                                 return (
@@ -1646,8 +2336,84 @@ const CompareTool = (props: any) => {
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5">
                                 <div className="input-group">
+                                    <label className="fw-semibold full-width form-label">Feature Type</label>
+                                    <input type="text" defaultValue={data[1]?.TaskCategories} className="form-control" placeholder="Search Feature Type Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'FeatureType0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'FeatureType', 0, AllMasterTasksItems?.AllData)} />
+                                    {data[0]?.FeatureType != undefined && data[0]?.FeatureType?.map((type: any, index: number) => {
+                                        return (
+                                            <div className="block w-100">
+                                                <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
+                                                <span onClick={() => removeItem(type, 0, 'FeatureType')} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox" >
+                                                </span>
+                                            </div>
+                                        );
+                                    }
+                                    )}
+                                    <span className="input-group-text">
+                                        <span title="Edit Categories" onClick={() => OpenComponentPicker(data[0], true, 'FeatureType')} className="svg__iconbox svg__icon--editBox"></span>
+                                    </span>
+                                </div>
+                                {autoSearch?.itemIndex === 0 && autoSearch?.property === 'FeatureType' && SmartMetaDataAllItems?.AllFeatureTypeData?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup w-100">
+                                        <ul className="list-group">
+                                            {SmartMetaDataAllItems?.AllFeatureTypeData?.map((item: any) => {
+                                                return (
+                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                        <a>{item.Title}</a>
+                                                    </li>
+                                                )
+                                            }
+                                            )}
+                                        </ul>
+                                    </div>) : null}
+                            </Col>
+                            <Col sm="1" md="1" lg="1">
+                                <div className="text-center">
+                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'FeatureType', data[1]?.FeatureType)} /></div>
+                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'FeatureType', data[0]?.FeatureType)} /></div>
+                                </div>
+                            </Col>
+                            <Col sm="5" md="5" lg="5">
+                                <div className="input-group">
+                                    <label className="fw-semibold full-width form-label">Feature Type</label>
+                                    <input type="text" className="form-control" placeholder="Search Feature Type Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'FeatureType1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'FeatureType', 1, AllMasterTasksItems?.AllData)} />
+
+                                    {data[1]?.FeatureType != undefined && data[1]?.FeatureType?.map((type: any, index: number) => {
+                                        return (
+                                            <div className="block w-100">
+                                                <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
+                                                <span onClick={() => removeItem(type, 1, 'FeatureType')} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox" >
+                                                </span>
+                                            </div>
+                                        );
+                                    }
+                                    )}
+                                    <span className="input-group-text">
+                                        <span title="Edit Categories" onClick={() => OpenComponentPicker(data[1], true, 'FeatureType')} className="svg__iconbox svg__icon--editBox"></span>
+                                    </span>
+                                </div>
+                                {autoSearch?.itemIndex === 1 && autoSearch?.property === 'FeatureType' && SmartMetaDataAllItems?.AllFeatureTypeData?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup w-100">
+                                        <ul className="list-group">
+                                            {SmartMetaDataAllItems?.AllFeatureTypeData?.map((item: any) => {
+                                                return (
+                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                        <a>{item.Title}</a>
+                                                    </li>
+                                                )
+                                            }
+                                            )}
+                                        </ul>
+                                    </div>) : null}
+                            </Col>
+                            <Col sm="1" md="1" lg="1">
+                                <LuUndo2 size="25" onClick={() => undoChangescolumns('FeatureType')} />
+                            </Col>
+                        </Row>
+                        <Row className="Metadatapannel">
+                            <Col sm="5" md="5" lg="5">
+                                <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Project</label>
-                                    <input type="text" className="form-control" placeholder="Search Category Here" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 0, AllMasterTasksItems?.ProjectData)} />
+                                    <input type="text" className="form-control" placeholder="Search Project Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ProjectItem0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 0, AllMasterTasksItems?.ProjectData)} />
                                     {data[0]?.ProjectItem != undefined && data[0]?.ProjectItem.map((type: any, index: number) => {
                                         return (
                                             <div className="block w-100">
@@ -1663,7 +2429,7 @@ const CompareTool = (props: any) => {
                                     </span>
                                 </div>
                                 {autoSearch?.itemIndex === 0 && autoSearch?.property === 'ProjectItem' && AllMasterTasksItems?.ProjectData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
+                                    <div className="SmartTableOnTaskPopup w-100">
                                         <ul className="list-group">
                                             {AllMasterTasksItems?.ProjectData.map((item: any) => {
                                                 return (
@@ -1685,7 +2451,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Project</label>
-                                    <input type="text" className="form-control" placeholder="Search Category Here" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 1, AllMasterTasksItems?.ProjectData)} />
+                                    <input type="text" className="form-control" placeholder="Search Project Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ProjectItem1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 1, AllMasterTasksItems?.ProjectData)} />
                                     {data[1]?.ProjectItem != undefined && data[1]?.ProjectItem.map((type: any, index: number) => {
                                         return (
                                             <div className="block w-100">
@@ -1701,7 +2467,7 @@ const CompareTool = (props: any) => {
                                     </span>
                                 </div>
                                 {autoSearch?.itemIndex === 1 && autoSearch?.property === 'ProjectItem' && AllMasterTasksItems?.ProjectData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
+                                    <div className="SmartTableOnTaskPopup w-100">
                                         <ul className="list-group">
                                             {AllMasterTasksItems?.ProjectData.map((item: any) => {
                                                 return (
@@ -2129,238 +2895,242 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('Comments')} />
                             </Col>
                         </Row>
-                        {/* <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Description
-                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Body", true) }}></span>
-                                    </label>
-                                    <textarea rows={3} className="form-control" value={data[0]?.Body != undefined && data[0]?.Body != null ? data[0]?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}>
+                        {data[0]?.TaskType?.Title != undefined &&
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Description
+                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Body", true) }}></span>
+                                        </label>
+                                        <textarea rows={3} className="form-control" value={data[0]?.Body != undefined && data[0]?.Body != null ? data[0]?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}>
 
-                                    </textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'Body', data[1]?.Body)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'Body', data[0]?.Body)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Description
-                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Body", true) }}></span>
-                                    </label>
-                                    <textarea className="form-control" rows={3} value={data[1]?.Body != undefined && data[1]?.Body != null ? data[1]?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('Body')} />
-                            </Col>
-                        </Row> */}
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Help Information
-                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Help_x0020_Information", true) }}></span>
-                                    </label>
-                                    <textarea className="form-control" rows={3} value={data[0]?.Help_x0020_Information != undefined && data[0]?.Help_x0020_Information != null ? data[0]?.Help_x0020_Information.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'Help_x0020_Information', data[1]?.Help_x0020_Information)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'Help_x0020_Information', data[0]?.Help_x0020_Information)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Help Information
-                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Help_x0020_Information", true) }}></span>
-                                    </label>
-                                    <textarea className="form-control" rows={3} value={data[1]?.Help_x0020_Information != undefined && data[1]?.Help_x0020_Information != null ? data[1]?.Help_x0020_Information.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                        </textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'Body', data[1]?.Body)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'Body', data[0]?.Body)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Description
+                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Body", true) }}></span>
+                                        </label>
+                                        <textarea className="form-control" rows={3} value={data[1]?.Body != undefined && data[1]?.Body != null ? data[1]?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('Body')} />
+                                </Col>
+                            </Row>
+                        }
+                        {data[0]?.TaskType === undefined && <span>
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Help Information
+                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Help_x0020_Information", true) }}></span>
+                                        </label>
+                                        <textarea className="form-control" rows={3} value={data[0]?.Help_x0020_Information != undefined && data[0]?.Help_x0020_Information != null ? data[0]?.Help_x0020_Information.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'Help_x0020_Information', data[1]?.Help_x0020_Information)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'Help_x0020_Information', data[0]?.Help_x0020_Information)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Help Information
+                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Help_x0020_Information", true) }}></span>
+                                        </label>
+                                        <textarea className="form-control" rows={3} value={data[1]?.Help_x0020_Information != undefined && data[1]?.Help_x0020_Information != null ? data[1]?.Help_x0020_Information.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
 
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('Help_x0020_Information')} />
-                            </Col>
-                        </Row>
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Technical Explanations
-                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "TechnicalExplanations", true) }}></span>
-                                    </label>
-                                    <textarea className="form-control" rows={3} value={data[0]?.TechnicalExplanations != null && data[0]?.TechnicalExplanations != undefined ? data[0]?.TechnicalExplanations.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'TechnicalExplanations', data[1]?.TechnicalExplanations)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'TechnicalExplanations', data[0]?.TechnicalExplanations)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Technical Explanations
-                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "TechnicalExplanations", true) }}></span>
-                                    </label>
-                                    <textarea className="form-control" rows={3} value={data[1]?.TechnicalExplanations != null && data[1]?.TechnicalExplanations != undefined ? data[1]?.TechnicalExplanations.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('TechnicalExplanations')} />
-                            </Col>
-                        </Row>
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Deliverables
-                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Deliverables", true) }}></span>
-                                    </label>
-                                    <textarea className="form-control" rows={3} value={data[0]?.Deliverables != null && data[0]?.Deliverables != undefined ? data[0]?.Deliverables.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'Deliverables', data[1]?.Deliverables)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'Deliverables', data[0]?.Deliverables)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Deliverables
-                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Deliverables", true) }}></span>
-                                    </label>
-                                    <textarea className="form-control" rows={3} value={data[1]?.Deliverables != undefined && data[1]?.Deliverables != null ? data[1]?.Deliverables.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('Deliverables')} />
-                            </Col>
-                        </Row>
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Short Description
-                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Short_x0020_Description_x0020_On", true) }}></span>
-                                    </label>
-                                    <textarea className="form-control" rows={3} value={data[0]?.Short_x0020_Description_x0020_On != null && data[0]?.Short_x0020_Description_x0020_On != undefined ? data[0]?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'Short_x0020_Description_x0020_On', data[1]?.Short_x0020_Description_x0020_On)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'Short_x0020_Description_x0020_On', data[0]?.Short_x0020_Description_x0020_On)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Short Description
-                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Short_x0020_Description_x0020_On", true) }}></span>
-                                    </label>
-                                    <textarea className="form-control" rows={3} value={data[1]?.Short_x0020_Description_x0020_On != undefined && data[1]?.Short_x0020_Description_x0020_On != null ? data[1]?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('Short_x0020_Description_x0020_On')} />
-                            </Col>
-                        </Row>
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Admin Notes</label>
-                                    <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 0, 'AdminNotes')} rows={3} value={(data[0]?.AdminNotes == null || data[0]?.AdminNotes === "") ? "" : data[0]?.AdminNotes} ></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'AdminNotes', data[1]?.AdminNotes)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'AdminNotes', data[0]?.AdminNotes)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Admin Notes</label>
-                                    <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 1, 'AdminNotes')} rows={3} value={(data[1]?.AdminNotes == null || data[1]?.AdminNotes === "") ? "" : data[1]?.AdminNotes} ></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('AdminNotes')} />
-                            </Col>
-                        </Row>
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Background</label>
-                                    <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 0, 'Background')} rows={3} value={(data[0]?.Background == null || data[0]?.Background === "") ? "" : data[0]?.Background} ></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'Background', data[1]?.Background)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'Background', data[0]?.Background)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Background</label>
-                                    <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 1, 'Background')} rows={3} value={(data[1]?.Background == null || data[1]?.Background === "") ? "" : data[1]?.Background} ></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('Background')} />
-                            </Col>
-                        </Row>
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5">
-                                {/* <TextField label="Idea" value={data[0]?.Idea} /> */}
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Idea</label>
-                                    <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 0, 'Idea')} rows={3} value={(data[0]?.Idea == null || data[0]?.Idea === "") ? "" : data[0]?.Idea}></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'Idea', data[1]?.Idea)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(0, 'Idea', data[1]?.Idea)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5">
-                                {/* <TextField label="Idea" value={data[1]?.Idea} /> */}
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Idea</label>
-                                    <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 1, 'Idea')} rows={3} value={(data[1]?.Idea == null || data[1]?.Idea === "") ? "" : data[1]?.Idea}></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('Idea')} />
-                            </Col>
-                        </Row>
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5">
-                                <div className="input-group" key={data[0]}>
-                                    <label className="fw-semibold full-width form-label">Value Added</label>
-                                    <textarea className="full-width" rows={3} onChange={(e) => bindMultilineValue(e, 0, 'ValueAdded')} value={(data[0]?.ValueAdded == null || data[0]?.ValueAdded === "") ? "" : data[0]?.ValueAdded}></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'ValueAdded', data[1]?.ValueAdded)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'ValueAdded', data[0]?.ValueAdded)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5">
-                                <div className="input-group" key={data[1]}>
-                                    <label className="fw-semibold full-width form-label">Value Added</label>
-                                    <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 1, 'ValueAdded')} rows={3} value={(data[1]?.ValueAdded == null || data[1]?.ValueAdded === "") ? "" : data[1]?.ValueAdded}></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('ValueAdded')} />
-                            </Col>
-                        </Row>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('Help_x0020_Information')} />
+                                </Col>
+                            </Row>
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Technical Explanations
+                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "TechnicalExplanations", true) }}></span>
+                                        </label>
+                                        <textarea className="form-control" rows={3} value={data[0]?.TechnicalExplanations != null && data[0]?.TechnicalExplanations != undefined ? data[0]?.TechnicalExplanations.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'TechnicalExplanations', data[1]?.TechnicalExplanations)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'TechnicalExplanations', data[0]?.TechnicalExplanations)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Technical Explanations
+                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "TechnicalExplanations", true) }}></span>
+                                        </label>
+                                        <textarea className="form-control" rows={3} value={data[1]?.TechnicalExplanations != null && data[1]?.TechnicalExplanations != undefined ? data[1]?.TechnicalExplanations.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('TechnicalExplanations')} />
+                                </Col>
+                            </Row>
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Deliverables
+                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Deliverables", true) }}></span>
+                                        </label>
+                                        <textarea className="form-control" rows={3} value={data[0]?.Deliverables != null && data[0]?.Deliverables != undefined ? data[0]?.Deliverables.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'Deliverables', data[1]?.Deliverables)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'Deliverables', data[0]?.Deliverables)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Deliverables
+                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Deliverables", true) }}></span>
+                                        </label>
+                                        <textarea className="form-control" rows={3} value={data[1]?.Deliverables != undefined && data[1]?.Deliverables != null ? data[1]?.Deliverables.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('Deliverables')} />
+                                </Col>
+                            </Row>
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Short Description
+                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Short_x0020_Description_x0020_On", true) }}></span>
+                                        </label>
+                                        <textarea className="form-control" rows={3} value={data[0]?.Short_x0020_Description_x0020_On != null && data[0]?.Short_x0020_Description_x0020_On != undefined ? data[0]?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'Short_x0020_Description_x0020_On', data[1]?.Short_x0020_Description_x0020_On)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'Short_x0020_Description_x0020_On', data[0]?.Short_x0020_Description_x0020_On)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Short Description
+                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Short_x0020_Description_x0020_On", true) }}></span>
+                                        </label>
+                                        <textarea className="form-control" rows={3} value={data[1]?.Short_x0020_Description_x0020_On != undefined && data[1]?.Short_x0020_Description_x0020_On != null ? data[1]?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('Short_x0020_Description_x0020_On')} />
+                                </Col>
+                            </Row>
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Admin Notes</label>
+                                        <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 0, 'AdminNotes')} rows={3} value={(data[0]?.AdminNotes == null || data[0]?.AdminNotes === "") ? "" : data[0]?.AdminNotes} ></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'AdminNotes', data[1]?.AdminNotes)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'AdminNotes', data[0]?.AdminNotes)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Admin Notes</label>
+                                        <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 1, 'AdminNotes')} rows={3} value={(data[1]?.AdminNotes == null || data[1]?.AdminNotes === "") ? "" : data[1]?.AdminNotes} ></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('AdminNotes')} />
+                                </Col>
+                            </Row>
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Background</label>
+                                        <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 0, 'Background')} rows={3} value={(data[0]?.Background == null || data[0]?.Background === "") ? "" : data[0]?.Background} ></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'Background', data[1]?.Background)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'Background', data[0]?.Background)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Background</label>
+                                        <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 1, 'Background')} rows={3} value={(data[1]?.Background == null || data[1]?.Background === "") ? "" : data[1]?.Background} ></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('Background')} />
+                                </Col>
+                            </Row>
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5">
+                                    {/* <TextField label="Idea" value={data[0]?.Idea} /> */}
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Idea</label>
+                                        <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 0, 'Idea')} rows={3} value={(data[0]?.Idea == null || data[0]?.Idea === "") ? "" : data[0]?.Idea}></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'Idea', data[1]?.Idea)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(0, 'Idea', data[1]?.Idea)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5">
+                                    {/* <TextField label="Idea" value={data[1]?.Idea} /> */}
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Idea</label>
+                                        <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 1, 'Idea')} rows={3} value={(data[1]?.Idea == null || data[1]?.Idea === "") ? "" : data[1]?.Idea}></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('Idea')} />
+                                </Col>
+                            </Row>
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group" key={data[0]}>
+                                        <label className="fw-semibold full-width form-label">Value Added</label>
+                                        <textarea className="full-width" rows={3} onChange={(e) => bindMultilineValue(e, 0, 'ValueAdded')} value={(data[0]?.ValueAdded == null || data[0]?.ValueAdded === "") ? "" : data[0]?.ValueAdded}></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'ValueAdded', data[1]?.ValueAdded)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'ValueAdded', data[0]?.ValueAdded)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group" key={data[1]}>
+                                        <label className="fw-semibold full-width form-label">Value Added</label>
+                                        <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 1, 'ValueAdded')} rows={3} value={(data[1]?.ValueAdded == null || data[1]?.ValueAdded === "") ? "" : data[1]?.ValueAdded}></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('ValueAdded')} />
+                                </Col>
+                            </Row>
+                        </span>}
                         {/* <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5">
                                 <div className="input-group">
@@ -2382,33 +3152,72 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={undoChanges} />
                             </Col>
                         </Row> */}
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5">
-                                {/* <Text>Help Descriptions</Text>
-                                <Text>{data[0]?.HelpDescription}</Text> */}
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Help Descriptions</label>
-                                    <textarea className="full-width" rows={3}>{data[0]?.HelpDescription}</textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'HelpDescription', data[1]?.HelpDescription)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'HelpDescription', data[0]?.HelpDescription)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5">
-                                {/* <Text>Help Descriptions</Text>
-                                <Text>{data[0]?.HelpDescription}</Text> */}
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Help Descriptions</label>
-                                    <textarea className="full-width" rows={3}>{data[0]?.HelpDescription}</textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('HelpDescription')} />
-                            </Col>
-                        </Row>
+                        {data[0]?.TaskType === undefined &&
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Help Descriptions</label>
+                                        <textarea className="full-width" rows={3}>{data[0]?.HelpDescription}</textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'HelpDescription', data[1]?.HelpDescription)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'HelpDescription', data[0]?.HelpDescription)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Help Descriptions</label>
+                                        <textarea className="full-width" rows={3}>{data[0]?.HelpDescription}</textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('HelpDescription')} />
+                                </Col>
+                            </Row>
+                        }
+                        {data[0]?.TaskType?.Title != undefined &&
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5">
+
+                                    <div className="input-group" >
+                                        <label className="fw-semibold full-width form-label">Time Entries</label>
+                                        {data[0]?.finalData?.length > 0 ? (
+                                            <GlobalCommanTable
+                                                columns={TimeEntryColumnsFirst}
+                                                data={data[0]?.finalData}
+                                                callBackData={callBackDataFirst}
+                                                expendedTrue={true}
+                                            />
+                                        ) : <div className="d-flex justify-content-center">No Timesheet Available</div>}
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'HelpDescription', data[1]?.HelpDescription)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'HelpDescription', data[0]?.HelpDescription)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5">
+
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Time Entries</label>
+                                        {data[1]?.finalData?.length > 0 ? (
+                                            <GlobalCommanTable
+                                                columns={TimeEntryColumnsSecond}
+                                                data={data[1]?.finalData}
+                                                callBackData={callBackDataSecond}
+                                                expendedTrue={true}
+                                            />
+                                        ) : <div className="d-flex justify-content-center">No Timesheet Available</div>}
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1">
+                                    <LuUndo2 size="25" />
+                                </Col>
+                            </Row>
+                        }
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5">
                                 <label className="fw-semibold form-label">Site Composition</label>
@@ -2480,7 +3289,7 @@ const CompareTool = (props: any) => {
                         </div>
                     </div>
                 </footer>
-                {showLoader ? <PageLoader/>:''}
+                {showLoader ? <PageLoader /> : ''}
             </Panel>
             {
                 categories?.condition && <Picker
@@ -2493,7 +3302,7 @@ const CompareTool = (props: any) => {
                 ></Picker>
             }
             {
-                isPicker?.condition && <ServiceComponentPortfolioPopup
+                isPicker?.condition && isPicker?.PortfolioTitle != 'FeatureType' && <ServiceComponentPortfolioPopup
                     props={catItem}
                     Dynamic={props?.contextValue}
                     ComponentType={catItem.Item_x0020_Type}
@@ -2502,8 +3311,10 @@ const CompareTool = (props: any) => {
                     showProject={isPicker?.PortfolioTitle === 'ProjectItem' ? true : false}
                 />
             }
+            {isPicker?.condition && isPicker?.PortfolioTitle === 'FeatureType' && (<Smartmetadatapickerin props={catItem} Call={Smartmetadatafeature} selectedFeaturedata={catItem?.FeatureType != undefined ? catItem?.FeatureType[0] : catItem?.FeatureType} AllListId={props.contextValue} TaxType='Feature Type' usedFor="Single" ></Smartmetadatapickerin>)}
+
             <Panel onRenderHeader={onRenderCustomHeaderMain2} type={PanelType.medium} isOpen={htmlEditor?.condition} isBlocking={false} onDismiss={closeHtmlEditor}>
-                
+
                 <div className="modal-body"><HtmlEditorCard
                     editorValue={
                         htmlEditor?.data != undefined
@@ -2514,12 +3325,12 @@ const CompareTool = (props: any) => {
                 ></HtmlEditorCard>
                 </div>
                 <footer className="modal-footer mt-2">
-                <button className="btn btn-primary" type="button" onClick={() => { saveEditorData() }}>Save</button>
-                <button className="btn btn-default" type="button" onClick={closeHtmlEditor}>Cancel</button>
+                    <button className="btn btn-primary" type="button" onClick={() => { saveEditorData() }}>Save</button>
+                    <button className="btn btn-default" type="button" onClick={closeHtmlEditor}>Cancel</button>
                 </footer>
             </Panel>
-
-
+            {IsClientPopup && <ClientCategoryPupup props={catItem} selectedClientCategoryData={catItem?.ClientCategory} Call={ClientCategoryCallBack} ></ClientCategoryPupup>}
+            {TaskItem && <EditTaskPopup Items={TaskItem} Call={Call} AllListId={props?.contextValue} context={props?.contextValue} pageName={"TaskFooterTable"} ></EditTaskPopup>}
 
             <Panel
 
@@ -2588,7 +3399,7 @@ const CompareTool = (props: any) => {
                     </footer>
 
                 </div>
-                            
+
             </Panel>
         </>
     );

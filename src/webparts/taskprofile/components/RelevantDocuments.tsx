@@ -144,19 +144,19 @@ const RelevantDocuments = (props: any, ref: any) => {
           {documentData?.map((item: any, index: any) => {
             return (
               <div className='card-body p-1'>
-                <ul className='alignCenter list-none'>
+                <ul className='alignCenter list-none text-break'>
                   {/* <li>
                                    <a  href={item?.FileDirRef} target="_blank" data-interception="off" > <span className='svg__iconbox svg__icon--folder'></span></a>
                                 </li> */}
-                  <li className="text-break">
+                  <li className='pe-1'>
                     <a href={item.EncodedAbsUrl}>
-                      <span className={`alignIcon  svg__iconbox svg__icon--${item?.docType}`} title={item?.File_x0020_Type}></span>
+                      <span className={`alignIcon svg__iconbox svg__icon--${item?.docType}`} title={item?.File_x0020_Type}></span>
                     </a>
                   </li>
                   <li>
-                    <a className='px-2' href={item?.File_x0020_Type == "aspx" ? `${item?.Url?.Url}` : `${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{item?.Title}.{item?.docType}</span></a>
+                    <a href={item?.File_x0020_Type == "aspx" ? `${item?.Url?.Url}` : `${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off">{item?.Title}.{item?.docType}</a>
                   </li>
-                  <li className='ml-auto '>
+                  <li className='ml-auto ps-1'>
                     <span title="Edit" className="svg__iconbox svg__icon--edit hreflink alignIcon" onClick={() => editDocumentsLink(item)}></span>
 
                   </li>
@@ -176,7 +176,7 @@ const RelevantDocuments = (props: any, ref: any) => {
         <div className='card-body p-1'>
           <ul className='list-none'>
             <li>
-              <a href={Fileurl} target="_blank" data-interception="off" className='d-flex'> <span className='svg__iconbox svg__icon--folder '></span> <span className='ms-3'>{props?.folderName}</span></a>
+              <a href={Fileurl} target="_blank" data-interception="off" className='d-flex'> <span className='svg__iconbox svg__icon--folder wid30 me-2'></span> <span>{props?.folderName}</span></a>
             </li>
           </ul>
         </div>

@@ -732,7 +732,7 @@ export const loadTaskUsers = async () => {
         taskUser = await web.lists
             .getById('b318ba84-e21d-4876-8851-88b94b9dc300')
             .items
-            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name,UserGroup/Id,UserGroup/Title&$expand=AssingedToUser,Approver,UserGroup")
             .get();
     }
     catch (error) {
@@ -1806,7 +1806,7 @@ export const getPortfolio = async (type: any) => {
 
 
 // ********************* This is for the Getting All Component And Service Portfolio Data ********************
-export const GetServiceAndComponentAllData = async (Props: any) => {
+export const GetServiceAndComponentAllData = async (Props?: any | null, filter?: any | null) => {
     var ComponentsData: any = [];
     var AllPathGeneratedData: any = [];
     let AllPathGeneratedProjectdata: any = [];
@@ -1818,8 +1818,12 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
         AllMasterTaskData = await web.lists
             .getById(Props.MasterTaskListID)
             .items
-            .select("ID", "Id", "Title", "PortfolioLevel", "FeatureType/Title", "FeatureType/Id", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate", "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id", "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id")
-            .expand("Parent", "PortfolioType", "FeatureType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "ResponsibleTeam")
+            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID","HelpInformationVerifiedJson","HelpInformationVerified", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate",
+                "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "Help_x0020_Information", "PriorityRank",
+                "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id",
+                "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "Deliverables",
+                "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "FeatureType/Title", "FeatureType/Id")
+            .expand("Parent", "PortfolioType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "FeatureType", "ResponsibleTeam").filter(filter != null ? filter : '')
             .getAll();
 
         // console.log("all Service and Coponent data form global Call=======", AllMasterTaskData);
@@ -1889,8 +1893,45 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
 
 
             result.descriptionsSearch = '';
+            result.commentsSearch = "";
+            result.descriptionsDeliverablesSearch = '';
+            result.descriptionsHelpInformationSarch = '';
+            result.descriptionsShortDescriptionSearch = '';
+            result.descriptionsTechnicalExplanationsSearch = '';
+            result.descriptionsBodySearch = '';
+            result.descriptionsAdminNotesSearch = '';
+            result.descriptionsValueAddedSearch = '';
+            result.descriptionsIdeaSearch = '';
+            result.descriptionsBackgroundSearch = '';
             try {
                 result.descriptionsSearch = portfolioSearchData(result)
+                if (result?.Deliverables != undefined) {
+                    result.descriptionsDeliverablesSearch = `${removeHtmlAndNewline(result.Deliverables)}`;
+                }
+                if (result.Help_x0020_Information != undefined) {
+                    result.descriptionsHelpInformationSarch = `${removeHtmlAndNewline(result?.Help_x0020_Information)}`;
+                }
+                if (result.Short_x0020_Description_x0020_On != undefined) {
+                    result.descriptionsShortDescriptionSearch = ` ${removeHtmlAndNewline(result.Short_x0020_Description_x0020_On)} `;
+                }
+                if (result.TechnicalExplanations != undefined) {
+                    result.descriptionsTechnicalExplanationsSearch = `${removeHtmlAndNewline(result.TechnicalExplanations)}`;
+                }
+                if (result.Body != undefined) {
+                    result.descriptionsBodySearch = `${removeHtmlAndNewline(result.Body)}`;
+                }
+                if (result.AdminNotes != undefined) {
+                    result.descriptionsAdminNotesSearch = `${removeHtmlAndNewline(result.AdminNotes)}`;
+                }
+                if (result.ValueAdded != undefined) {
+                    result.descriptionsValueAddedSearch = `${removeHtmlAndNewline(result.ValueAdded)}`;
+                }
+                if (result.Idea != undefined) {
+                    result.descriptionsIdeaSearch = `${removeHtmlAndNewline(result.Idea)}`;
+                }
+                if (result.Background != undefined) {
+                    result.descriptionsBackgroundSearch = `${removeHtmlAndNewline(result.Background)}`;
+                }
                 result.commentsSearch = result?.Comments != null && result?.Comments != undefined ? result.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
             } catch (error) {
 
@@ -1956,11 +1997,9 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             //         result.ClientCategory.push(categoryData);
             //     })
             // }
-
             if (result?.Item_x0020_Type != undefined) {
                 result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
             }
-
             if (result.Item_x0020_Type == 'Component' && Props?.projectSelection != true) {
                 const groupedResult = componentGrouping(result, AllMasterTaskData)
                 AllPathGeneratedData = [...AllPathGeneratedData, ...groupedResult?.PathArray];
@@ -2014,7 +2053,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
 }
 
 
-const componentGrouping = (Portfolio: any, AllProtFolioData: any, path: string = "") => {
+export const componentGrouping = (Portfolio: any, AllProtFolioData: any, path: string = "") => {
     let pathArray: any = [];
     Portfolio.subRows = [];
     let subComFeat = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === Portfolio?.Id);

@@ -811,7 +811,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         }
     };
     React.useImperativeHandle(ref, () => ({
-        callChildFunction, trueTopIcon, setRowSelection, globalFilter,projectTopIcon, setColumnFilters, setGlobalFilter, coustomFilterColumns, table
+        callChildFunction, trueTopIcon, setRowSelection, globalFilter, projectTopIcon, setColumnFilters, setGlobalFilter, coustomFilterColumns, table
     }));
 
     const restructureFunct = (items: any) => {
@@ -915,8 +915,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
     /**************************************** Drag And Drop Functionality End ***************************************/
     return (
         <>
-            {items?.bulkEditIcon === true && (bulkEditingCongration?.priority === true || bulkEditingCongration?.dueDate === true || bulkEditingCongration?.status === true || bulkEditingCongration?.Project === true || bulkEditingCongration?.categories === true) && <span className="toolbox">
-                <BulkEditingFeature categoriesTiles={categoriesTiles} masterTaskData={items?.masterTaskData} data={data} columns={items?.columns} setData={items?.setData} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView} ContextValue={items?.AllListId} priorityRank={items?.priorityRank} dragedTask={dragedTask} precentComplete={items?.precentComplete} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} projectTiles={projectTiles} AllTaskUser={items.TaskUsers} />
+            {items?.bulkEditIcon === true && (bulkEditingCongration?.priority === true || bulkEditingCongration?.dueDate === true || bulkEditingCongration?.status === true || bulkEditingCongration?.Project === true || bulkEditingCongration?.categories === true || bulkEditingCongration?.FeatureType === true) && <span className="toolbox">
+                <BulkEditingFeature categoriesTiles={categoriesTiles} masterTaskData={items?.masterTaskData} data={data} columns={items?.columns} setData={items?.setData} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView} ContextValue={items?.AllListId}
+                    dragedTask={dragedTask} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} projectTiles={projectTiles} AllTaskUser={items.TaskUsers} />
             </span>}
             {showHeader === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
@@ -934,42 +935,44 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                 )
                             })}
                         </label>
-                        {!items?.pageName ? <span className="popover__wrapper ms-1 mt--5" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
-                            <span className='svg__iconbox svg__icon--info alignIcon dark mt--2'></span>
-                            <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
-                                <label style={{ color: "#333333" }}>
-                                    Showing
-                                </label>
-                                {portfolioTypeData?.map((type: any, index: any) => {
-                                    return (
-                                        <>
-                                            {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: "#333333" }} className="ms-1"> | </label></> :
-                                                <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: "#333333" }} className="ms-1"> | </label></>}
-                                        </>
-                                    )
-                                })}
-                                {items?.taskTypeDataItem?.map((type: any, index: any) => {
-                                    return (
-                                        <>
-                                            {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
-                                                <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
-                                        </>
-                                    )
-                                })}
-                            </span>
-                        </span> :
-                            <>
-                                <div className='alignCenter mt--2'>
-                                    {items?.taskTypeDataItem?.map((type: any, index: any) => {
+                        {items?.hideShowingTaskCountToolTip != true ? <>
+                            {!items?.pageName ? <span className="popover__wrapper ms-1 mt--5" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
+                                <span className='svg__iconbox svg__icon--info alignIcon dark mt--2'></span>
+                                <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
+                                    <label style={{ color: "#333333" }}>
+                                        Showing
+                                    </label>
+                                    {portfolioTypeData?.map((type: any, index: any) => {
                                         return (
                                             <>
-                                                {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
-                                                    <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
+                                                {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: "#333333" }} className="ms-1"> | </label></> :
+                                                    <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: "#333333" }} className="ms-1"> | </label></>}
                                             </>
                                         )
                                     })}
-                                </div>
-                            </>}
+                                    {items?.taskTypeDataItem?.map((type: any, index: any) => {
+                                        return (
+                                            <>
+                                                {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
+                                                    <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
+                                            </>
+                                        )
+                                    })}
+                                </span>
+                            </span> :
+                                <>
+                                    <div className='alignCenter mt--2'>
+                                        {items?.taskTypeDataItem?.map((type: any, index: any) => {
+                                            return (
+                                                <>
+                                                    {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
+                                                        <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
+                                                </>
+                                            )
+                                        })}
+                                    </div>
+                                </>}
+                        </> : ''}
 
                     </div> :
                         <span style={{ color: "#333333", flex: "none" }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>}
@@ -1049,6 +1052,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                 >Restructure</button>
                         }
                     </>
+                    }
+                    {
+                        items?.customHeaderButtonAvailable === true && items?.customTableHeaderButtons
                     }
                     {
                         items?.siteStructureCreation === true &&

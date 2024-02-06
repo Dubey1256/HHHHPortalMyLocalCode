@@ -93,10 +93,10 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     
 
     const getTooltiphierarchyAllData =async (item: any):Promise<any>=> {
-        let web = new Web(AllListId?.siteUrl);
+        let web = new Web(item?.siteUrl || AllListId?.siteUrl);
         let Object: any;
         item.isExpanded=true;
-        item.siteUrl=AllListId?.siteUrl
+        item.siteUrl = item?.siteUrl || AllListId?.siteUrl;
          if(item?.ParentTask!=undefined || item?.ParentTask!=null){
             try{
             Object = await web.lists.getById(item?.listId)
@@ -123,22 +123,21 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
         }
         
         if(Object!=undefined){
-        if (
-            Object?.Id === item?.ParentTask?.Id
-        ) {
+        if (Object?.Id === item?.ParentTask?.Id) {
             Object.subRows = [item];
             Object.listId=item?.listId;
             Object.SiteIcon=item?.SiteIcon;
-            Object.siteType=item?.siteType; 
+            Object.siteType= item?.siteType; 
+            Object.siteUrl = item?.siteUrl;
             return getTooltiphierarchyAllData(Object);
         } else if (Object?.Id === item?.Parent?.Id) {
+            Object.listId=item?.listId; 
+            Object.siteUrl = item?.siteUrl;           
             Object.subRows = [item];
             return getTooltiphierarchyAllData(Object);
-        } else if (
-            item?.Portfolio != undefined &&
-            Object?.Id === item?.Portfolio?.Id &&
-            (item?.ParentTask?.TaskID == null || item?.ParentTask?.TaskID == undefined)
-        ) {
+        } else if (item?.Portfolio != undefined &&Object?.Id === item?.Portfolio?.Id &&(item?.ParentTask?.TaskID == null || item?.ParentTask?.TaskID == undefined)) {  
+            Object.listId=item?.listId;  
+            Object.siteUrl = item?.siteUrl;       
             Object.subRows = [item];
             return getTooltiphierarchyAllData(Object);
         }
@@ -182,7 +181,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     };
 
     const openActivityPopup = (row: any) => {
-        if (row.TaskType == undefined) {
+        if (row?.TaskType?.Title == undefined) {
             setOpenActivity(true)
             row['NoteCall'] = 'Task'
             row['PageType'] = 'ProjectManagement'

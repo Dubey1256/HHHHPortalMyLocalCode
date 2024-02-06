@@ -78,7 +78,7 @@ const CountryContactEditPopup = (props: any) => {
                             {props?.popupName == 'Country' && updateData?.SmartCountries?.length>0 ?
                                 <li className="list-group-item list-group-item-action d-flex justify-content-between" style={{ background: "#000066", color: "#fff" }} >
                                     <span>{updateData?.SmartCountries?.[0]?.Title}</span>
-                                    <span style={{ cursor: 'pointer' }} onClick={() => updateData({ ...updateData, SmartCountries: [] })}><img src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
+                                    <span style={{ cursor: 'pointer' }} onClick={() => setUpdateData({ ...updateData, SmartCountries: [] })}><img src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
                                     </span>
                                 </li>
                                 : null}
@@ -86,7 +86,7 @@ const CountryContactEditPopup = (props: any) => {
                             {props?.popupName == 'State' && selectedStateData!= undefined ?
                                 <li className="list-group-item list-group-item-action d-flex justify-content-between" style={{ background: "#000066", color: "#fff" }} >
                                     <span>{selectedStateData.Title}</span>
-                                    <span style={{ cursor: 'pointer' }} onClick={() => updateData({ ...updateData,Fedral_State : '' })}><img src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
+                                    <span style={{ cursor: 'pointer' }} onClick={() => setUpdateData({ ...updateData,Fedral_State : '' })}><img src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />
                                     </span>
                                 </li>
                                 : null}
