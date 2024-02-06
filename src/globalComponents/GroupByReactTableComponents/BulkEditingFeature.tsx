@@ -4,7 +4,7 @@ import pnp, { sp, Web } from "sp-pnp-js";
 import ServiceComponentPortfolioPopup from "../EditTaskPopup/ServiceComponentPortfolioPopup";
 import SelectedTaskUpdateOnPopup from "./selectedTaskUpdateOnPopup";
 import Picker from "../EditTaskPopup/SmartMetaDataPicker";
-import * as GlobalFunctionForUpdateItem from '../GlobalFunctionForUpdateItems';
+import * as GlobalFunctionForUpdateItem from '../GlobalFunctionForUpdateItems'; 
 
 
 export const addedCreatedDataFromAWT = (itemData: any, dataToPush: any) => {
