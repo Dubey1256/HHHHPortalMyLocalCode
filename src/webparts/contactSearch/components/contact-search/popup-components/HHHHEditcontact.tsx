@@ -328,7 +328,7 @@ const HHHHEditComponent = (props: any) => {
                 Item_x0020_Cover: {
                     "__metadata": { type: "SP.FieldUrlValue" },
                     Description: "Description",
-                    Url: updateData?.Item_x002d_Image != undefined ? updateData?.Item_x002d_Image?.Url : (updateData?.Item_x0020_Cover != undefined ? updateData?.Item_x0020_Cover?.Url : null)
+                    Url: updateData?.Item_x002d_Image != undefined ? updateData?.Item_x002d_Image?.Url : null
                 },
                 WorkZip: (updateData?.WorkZip),
                 IM: (updateData?.IM),
