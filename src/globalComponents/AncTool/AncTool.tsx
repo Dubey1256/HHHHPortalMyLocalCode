@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import DefaultFolderContent from './DefaultFolderContent'
 import axios from 'axios';
 import { usePopperTooltip } from "react-popper-tooltip";
@@ -47,6 +47,7 @@ const itemRanks: any[] = [
 ]
 const AncTool = (props: any) => {
     let siteUrl = '';
+    const fileInputRef = useRef(null);
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [choosePathPopup, setChoosePathPopup] = React.useState(false);
     const [FileNamePopup, setFileNamePopup] = React.useState(false);
@@ -453,7 +454,9 @@ const AncTool = (props: any) => {
             return fileName
         }
     }
-
+    const resetForm = () => {
+        fileInputRef.current.form.reset();
+    };
     const handleUpload = async (uploadselectedFile: any) => {
         let emailDoc: any = [];
         let attachmentFile = false;
@@ -611,9 +614,21 @@ const AncTool = (props: any) => {
                                                             setPageLoader(false)
                                                             setUploadedDocDetails(taggedDocument);
                                                             setRenamedFileName('')
+                                                            setSelectedFile(null);
+                                                            try {
+                                                                resetForm()
+                                                            } catch (e) {
+                                                                console.log(e)
+                                                            }
                                                             return file;
                                                         }).catch((e) => {
                                                             setPageLoader(false)
+                                                            setSelectedFile(null);
+                                                            try {
+                                                                resetForm()
+                                                            } catch (e) {
+                                                                console.log(e)
+                                                            }
                                                         })
 
                                                     console.log("File uploaded successfully.", file);
@@ -662,9 +677,21 @@ const AncTool = (props: any) => {
                                                                 setPageLoader(false)
                                                                 setUploadedDocDetails(taggedDocument);
                                                                 setRenamedFileName('')
+                                                                setSelectedFile(null);
+                                                                try {
+                                                                    resetForm()
+                                                                } catch (e) {
+                                                                    console.log(e)
+                                                                }
                                                                 return file;
                                                             }).catch((e) => {
                                                                 setPageLoader(false)
+                                                                setSelectedFile(null);
+                                                                try {
+                                                                    resetForm()
+                                                                } catch (e) {
+                                                                    console.log(e)
+                                                                }
                                                             })
 
                                                         console.log("File uploaded successfully.", file);
@@ -679,7 +706,7 @@ const AncTool = (props: any) => {
                             setUploadedDocDetails(taggedDocument);
                             setShowConfirmation(true)
                             setUploadEmailModal(false)
-                            setModalIsOpenToFalse()
+                            // setModalIsOpenToFalse()
                         })
                     }
 
@@ -871,7 +898,14 @@ const AncTool = (props: any) => {
                                             setPageLoader(false)
                                             pathGenerator()
                                             cancelNewCreateFile()
+                                            setSelectedFile(null);
+                                            try {
+                                                resetForm()
+                                            } catch (e) {
+                                                console.log(e)
+                                            }
                                             props?.callBack();
+
                                             return file;
                                         }).catch((e) => {
                                             setPageLoader(false)
@@ -885,7 +919,7 @@ const AncTool = (props: any) => {
                 setUploadedDocDetails(taggedDocument);
                 setShowConfirmation(true)
                 setUploadEmailModal(false)
-                setModalIsOpenToFalse()
+                //setModalIsOpenToFalse()
             } catch (error) {
                 console.log("File upload failed:", error);
             }
@@ -1273,7 +1307,10 @@ const AncTool = (props: any) => {
                                     let resultArray: any = [];
                                     resultArray.push(props?.item?.Id);
                                     let siteColName = `${siteName}Id`;
-                                    taggedDocument.link = file.EncodedAbsUrl;
+                                    if (file != undefined && file.EncodedAbsUrl != undefined && file.EncodedAbsUrl != '')
+                                        taggedDocument.link = file.EncodedAbsUrl;
+                                    else
+                                        taggedDocument.link = LinkToDocUrl;
                                     // Update the document file here
                                     let postData = {
                                         [siteColName]: { "results": resultArray },
@@ -1309,7 +1346,7 @@ const AncTool = (props: any) => {
                 setUploadedDocDetails(taggedDocument);
                 setShowConfirmation(true)
                 setUploadEmailModal(false)
-                setModalIsOpenToFalse()
+                // setModalIsOpenToFalse()
             } catch (error) {
                 console.log("File upload failed:", error);
             }
@@ -1526,7 +1563,8 @@ const AncTool = (props: any) => {
                                                             styles={{ dropdown: { width: '100%' } }}
                                                         />
                                                         <div className='my-2 input-group'>
-                                                            <input type="file" onChange={handleFileInputChange} className='form-control' />
+                                                            <form>
+                                                                <input type="file" onChange={handleFileInputChange} className='form-control' ref={fileInputRef} /></form>
                                                         </div>
                                                         <div className='mb-2 input-group'>
                                                             <label className='form-label full-width fw-semibold'>Rename The Document</label>
@@ -1693,10 +1731,11 @@ const AncTool = (props: any) => {
 
                             <div className='text-center pb-2'>OR</div>
                             <div className='mb-2'>
-                                <input type="file" onChange={handleFileInputChange} className='full-width' />
+                                <input type="file" onChange={handleFileInputChange} className='full-width' ref={fileInputRef} />
                             </div>
                             <div className='mb-2'>
-                                <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Rename your document' className='full-width' />
+                                <form>
+                                    <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Rename your document' className='full-width' /> </form>
                             </div>
                             <div className='text-end'>
                                 <button onClick={handleUpload} disabled={selectedFile?.name?.length > 0 ? false : true} className="btnCol btn btn-primary">Upload</button>
@@ -1901,7 +1940,7 @@ const AncTool = (props: any) => {
                     }
                 </div>
             </Panel>
-
+            <div className='clearfix'></div>
         </>
     )
 }

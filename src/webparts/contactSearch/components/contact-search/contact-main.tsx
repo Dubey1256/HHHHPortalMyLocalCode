@@ -34,7 +34,7 @@ const ContactMainPage = (props: any) => {
     const [isDisabled, setIsDisabled] = useState(true);
     const [btnVisibility, setBtnVisibility] = useState(true);
     const [divisionData, setDivisionData] = useState([]);
-
+   let countryData:any= React.useRef();
     useEffect(() => {
         if (props?.props.Context.pageContext.web.absoluteUrl.toLowerCase().includes("hr")) {
             allSite = {
@@ -68,11 +68,31 @@ const ContactMainPage = (props: any) => {
             InstitutionDetails();
         }
         if (allSite?.GMBHSite || allSite?.HrSite) {
+            getSmartMetaData()
             oldTaskLink=`${allListId?.siteUrl}/SitePages/Contacts-Search-Old.aspx`
-            HrGmbhEmployeDeatails();
+           
         }
 
     }, [])
+    const getSmartMetaData = async () => {
+        
+        try {
+            let web = new Web(allListId?.jointSiteUrl);
+            await web.lists.getById(allListId?.MAIN_SMARTMETADATA_LISTID)
+                .items.getAll().then((smartmetadata:any)=>{
+                    countryData.current=smartmetadata
+                    HrGmbhEmployeDeatails();
+                }).catch((error:any)=>{
+                    console.error(error)
+                })
+          
+           
+        } catch (error) {
+            console.log("Error:", error.message);
+        }
+    
+    }
+    //************samrt Meta  End function ************* */
     const EmployeeDetails = async () => {
         try {
             let web = new Web(allListId?.siteUrl);
@@ -107,7 +127,7 @@ const ContactMainPage = (props: any) => {
             let web = new Web(allListId?.siteUrl);
             await web.lists.getById(props?.props?.HHHHInstitutionListId)
                 .items
-               . select("Id","Title","FirstName","Description","Parent/Id","FullName","Company","JobTitle","About","InstitutionType","SocialMediaUrls","ItemType","WorkCity","ItemImage","WorkCountry","WorkAddress","WebPage","CellPhone","HomePhone","Email","SharewebSites","SmartCountries/Id","SmartCountries/Title","Created","Author/Id","Author/Title","Modified","Editor/Id","Editor/Title")
+               . select("Id","Title","SmartCountries/Id","SmartCountries/Title","FirstName","Description","Parent/Id","FullName","Company","JobTitle","About","InstitutionType","SocialMediaUrls","ItemType","WorkCity","ItemImage","WorkCountry","WorkAddress","WebPage","CellPhone","HomePhone","Email","SharewebSites","Created","Author/Id","Author/Title","Modified","Editor/Id","Editor/Title")
                 .expand("Author", "Editor","Parent","SmartCountries")
                 .orderBy("Created", true)
                 .getAll().then((data: any) => {
@@ -128,6 +148,7 @@ const ContactMainPage = (props: any) => {
                                     })
                                 }
                             }
+                            Item.SmartCountriesTitle=Item?.SmartCountries?.length>0?Item?.SmartCountries[0]?.Title:""
                         })
                         setInstitutionsData(instData);
                         setSearchedInstituteData(instData);
@@ -154,7 +175,7 @@ const ContactMainPage = (props: any) => {
             let web = new Web(allListId?.siteUrl);
             await web.lists.getById(allSite?.GMBHSite ? props?.props?.GMBH_CONTACT_SEARCH_LISTID : props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID)
                 .items
-                .select("Id", "Title", "FirstName","FullName","DOJ","DOE", "Company", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
+                .select("Id", "Title", "FirstName","FullName","SmartCountriesId","DOJ","DOE", "Company", "WorkCity", "Suffix", "WorkPhone", "HomePhone", "Comments", "WorkAddress", "WorkFax", "WorkZip", "ItemType", "JobTitle", "Item_x0020_Cover", "WebPage", "CellPhone", "Email", "LinkedIn", "Created", "SocialMediaUrls", "Author/Title", "Modified", "Editor/Title", "Division/Title", "Division/Id", "EmployeeID/Title", "StaffID", "EmployeeID/Id", "Institution/Id", "Institution/FullName", "IM")
                 .expand("EmployeeID", "Division", "Author", "Editor", "Institution")
                 .orderBy("Created", true)
                 .getAll().then((data: any) => {
@@ -171,7 +192,12 @@ const ContactMainPage = (props: any) => {
                                 })
                             }
                         }
-                        if (Item?.ItemType == "Division") {
+                        Item.SmartCountriesTitle=""
+                        if(Item?.SmartCountriesId!=undefined){
+                            let tagCountry =countryData?.current?.find((data:any)=> data?.Id==Item?.SmartCountriesId)
+                            Item.SmartCountriesTitle=tagCountry?.Title
+                        }
+                         if (Item?.ItemType == "Division") {
                             Division.push(Item)
 
                         }
@@ -463,7 +489,7 @@ const ContactMainPage = (props: any) => {
             // }
         ],
         [searchedData]);
-    const Inscolumns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
+    const Inscolumns = React.useMemo<ColumnDef<unknown, unknown>[]>(() =>
         [{
             accessorKey: "",
             placeholder: "",
@@ -502,20 +528,8 @@ const ContactMainPage = (props: any) => {
             id: 'Title',
             size: 150,
         },
-
-        //changes in smart country column by Anupam
         { accessorKey: "WorkCity", placeholder: "City", header: "", size: 80, id:"WorkCity"},
-        { 
-            accessorFn: (row: any) => row?.SmartCountries[0]?.Title, 
-            cell: ({ row }: any) => (
-            <span>{row?.original?.SmartCountries[0]?.Title}</span>
-            ),
-
-            placeholder: "Country", 
-            header: "", 
-            size: 80,
-            id:"SmartCountries",
-        },
+        { accessorKey: "SmartCountriesTitle", placeholder: "Country", header: "", size: 80,id:"SmartCountriesTitle" },
         { accessorKey: "SitesTagged", placeholder: "Site", header: "", size: 80,id:"SitesTagged" },
        
         {

@@ -244,7 +244,7 @@ let allTaskUsers:any;
             {smartTimeTotal.toFixed(1)}
             <span className='openhoverpopup hoverimg'>
             <span className="svg__iconbox svg__icon--clock dark" onClick={OpenTimeEntry}></span>
-               <div className='hoverpopup overlay'>
+               <div className={additionalTime?.length > 0 ? "hoverpopup overlay" :'hoverpopup overlay blankTooltip'}>
                     <div className='hoverpopuptitle'>{item.props.Title}</div>
                     <div className='hoverpopupbody'>
                         <table className='table mb-0'>
@@ -255,13 +255,13 @@ let allTaskUsers:any;
                                             <tr className='for-c0l'>
                                                 <td style={{ width: "170px" }} colSpan={2}>
                                                     <div className='alignCenter'>
-                                                        <img className='workmember me-2'  src={items?.AuthorImage != undefined && items?.AuthorImage !="" ? items?.AuthorImage:"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}></img>
+                                                        <img className='workmember'src={items?.AuthorImage != undefined && items?.AuthorImage !="" ? items?.AuthorImage:"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}></img>
                                                         <span className="ms-8">
                                                             <SmartTooltipComponent items={items}allTaskUsers={allTaskUsers}siteUrl={item?.AllListId?.siteUrl}/>
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td>Total Time{items.hoverTime.toFixed(2)}<span className='mx-1'>{items.hoverTime>1?'hours':'hour'}</span></td>
+                                                <td>Total Time {items.hoverTime.toFixed(2)}<span className='mx-1'>{items.hoverTime>1?'hours':'hour'}</span></td>
                                             </tr>
 
                                             {items?.additionaltime2?.length > 0 && items?.additionaltime2?.map((details: any) => {

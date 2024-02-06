@@ -10,18 +10,15 @@ import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
-import {
-  ColumnDef,
-} from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { SlArrowRight, SlArrowDown } from "react-icons/sl";
 import { Col, Row } from 'react-bootstrap';
-import Loader from "react-loader";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import PreSetDatePikerPannel from "../../../globalComponents/SmartFilterGolobalBomponents/PreSetDatePiker"
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
-// import CentralizedSiteComposition from '../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition';
+import PageLoader from '../../../globalComponents/pageLoader';
 import FileSaver from 'file-saver';
 import * as XLSX from "xlsx";
 import CentralizedSiteComposition from '../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition';
@@ -32,44 +29,11 @@ var AllSitesAllTasks: any[] = [];
 var AllTimeSheetResult: any[] = [];
 var AllTaskUser: any[] = []
 export interface IUserTimeEntryState {
-  Result: any;
-  taskUsers: any;
-  checked: any;
-  expanded: any;
-  checkedSites: any;
-  expandedSites: any;
-  filterItems: any;
-  filterSites: any;
-  ImageSelectedUsers: any;
-  startdate: Date;
-  enddate: Date;
-  SitesConfig: any;
-  AllTimeEntry: any;
-  SelectGroupName: string;
-  checkedAll: boolean;
-  checkedAllSites: boolean;
-  checkedParentNode: any;
-  resultSummary: any;
-  ShowingAllData: any;
-  loaded: any;
-  expandIcons: boolean;
-  columns: ColumnDef<any, unknown>[];
-  IsMasterTask: any;
-  IsTask: any;
-  IsPresetPopup: any;
-  PresetEndDate: any,
-  PresetStartDate: any,
-  PreSetItem: any,
-  isStartDatePickerOne: boolean;
-  isEndDatePickerOne: boolean;
-  IsCheckedComponent: boolean;
-  IsCheckedService: boolean;
-  selectedRadio: any,
-  IsTimeEntry: boolean,
-  SharewebTimeComponent: any,
-  AllMetadata: any,
-  isDirectPopup: boolean,
-  TimeSheetLists: any
+  Result: any; taskUsers: any; checked: any; expanded: any; checkedSites: any; expandedSites: any; filterItems: any; filterSites: any; ImageSelectedUsers: any; startdate: Date;
+  enddate: Date; SitesConfig: any; AllTimeEntry: any; SelectGroupName: string; checkedAll: boolean; checkedAllSites: boolean; checkedParentNode: any; resultSummary: any;
+  ShowingAllData: any; loaded: any; expandIcons: boolean; columns: ColumnDef<any, unknown>[]; IsMasterTask: any; IsTask: any; IsPresetPopup: any; PresetEndDate: any;
+  PresetStartDate: any; PreSetItem: any; isStartDatePickerOne: boolean; isEndDatePickerOne: boolean; IsCheckedComponent: boolean; IsCheckedService: boolean; selectedRadio: any;
+  IsTimeEntry: boolean; SharewebTimeComponent: any; AllMetadata: any; isDirectPopup: boolean; TimeSheetLists: any
 }
 var user: any = ''
 var userIdByQuery: any = ''
@@ -81,44 +45,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
   public constructor(props: IUserTimeEntryProps, state: IUserTimeEntryState) {
     super(props);
     this.state = {
-      Result: {},
-      taskUsers: [],
-      checked: [],
-      expanded: [],
-      checkedSites: [],
-      expandedSites: [],
-      filterItems: [],
-      filterSites: [],
-      ImageSelectedUsers: [],
-      startdate: new Date(),
-      enddate: new Date(),
-      SitesConfig: [],
-      AllTimeEntry: [],
-      SelectGroupName: '',
-      checkedAll: false,
-      expandIcons: false,
-      checkedAllSites: false,
-      checkedParentNode: [],
-      resultSummary: { totalTime: 0, totalDays: 0 },
-      ShowingAllData: [],
-      loaded: false,
-      columns: [],
-      IsTask: '',
-      IsMasterTask: '',
-      IsPresetPopup: false,
-      PresetEndDate: new Date(),
-      PresetStartDate: new Date(),
-      PreSetItem: {},
-      isStartDatePickerOne: true,
-      isEndDatePickerOne: false,
-      IsCheckedComponent: true,
-      IsCheckedService: true,
-      selectedRadio: 'ThisWeek',
-      IsTimeEntry: false,
-      SharewebTimeComponent: {},
-      AllMetadata: [],
-      isDirectPopup: false,
-      TimeSheetLists: []
+      Result: {}, taskUsers: [], checked: [], expanded: [], checkedSites: [], expandedSites: [], filterItems: [], filterSites: [], ImageSelectedUsers: [], startdate: new Date(),
+      enddate: new Date(), SitesConfig: [], AllTimeEntry: [], SelectGroupName: '', checkedAll: false, expandIcons: false, checkedAllSites: false, checkedParentNode: [],
+      resultSummary: { totalTime: 0, totalDays: 0 }, ShowingAllData: [], loaded: true, columns: [], IsTask: '', IsMasterTask: '', IsPresetPopup: false, PresetEndDate: new Date(),
+      PresetStartDate: new Date(), PreSetItem: {}, isStartDatePickerOne: true, isEndDatePickerOne: false, IsCheckedComponent: true, IsCheckedService: true, selectedRadio: 'ThisWeek',
+      IsTimeEntry: false, SharewebTimeComponent: {}, AllMetadata: [], isDirectPopup: false, TimeSheetLists: []
     }
     this.OpenPresetDatePopup = this.OpenPresetDatePopup.bind(this);
     this.SelectedPortfolioItem = this.SelectedPortfolioItem.bind(this);
@@ -130,7 +61,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown);
   }
-
   componentWillUnmount() {
     window.removeEventListener('keydown', this.handleKeyDown);
   }
@@ -199,23 +129,18 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         enddate: newDate
       });
     }
-
   }
-
   private BackupAllTimeEntry: any = [];
   private AllTimeEntry: any = [];
   private TotalTimeEntry: any;
   private TotalDays: any;
-  private AllYearMonth: any = [];
-  private CategoryItemsArray: any = [];
   private StartWeekday: any;
   private endweekday: any;
   private async GetResult() {
-    var queryString = window.location.search;
-    // Create a URLSearchParams object to parse the query string
-    var params = new URLSearchParams(queryString);
-    // Get the value of the 'userId' parameter from the query string
+    var params = new URLSearchParams(window.location.search);
     userIdByQuery = params.get('userId');
+    if (userIdByQuery == undefined || userIdByQuery == '')
+      userIdByQuery = params.get('UserId');
     await this.LoadPortfolio()
     await this.GetTaskUsers();
     await this.LoadAllMetaDataFilter();
@@ -247,15 +172,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   task.listId = config.listId;
                   task.siteUrl = config.siteUrl.Url;
                   task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
-                  task.DisplayDueDate =
-                    task.DueDate != null
-                      ? Moment(task.DueDate).format("DD/MM/YYYY")
-                      : "";
+                  task.DisplayDueDate = task.DueDate != null ? Moment(task.DueDate).format("DD/MM/YYYY") : "";
                   task.portfolio = {};
                   if (task?.Portfolio?.Id != undefined) {
                     task.portfolio = task?.Portfolio;
                     task.PortfolioTitle = task?.Portfolio?.Title;
-                    // task["Portfoliotype"] = "Component";
                   }
                   task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                   task.TeamMembersSearch = "";
@@ -267,9 +188,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             let currentCount = siteConfig?.length;
             if (arraycount === currentCount) {
               AllSitesAllTasks = AllSiteTasks;
-              // this.setState({
-              //   loaded: true,
-              // })
             }
           } else {
             arraycount++;
@@ -389,20 +307,26 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         }
       }
     }
-    document.getElementById('rdThisWeek').click();
-    this.setState({ ImageSelectedUsers }, () => {
-      this.updatefilter(true);
-    });
+    // document.getElementById('rdThisWeek').click();
+    // this.setState({ ImageSelectedUsers }, () => {
+    //   this.updatefilter(true);
+    // });
   }
   private async LoadPortfolio() {
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
     AllPortfolios = await web.lists.getById(this.props?.MasterTaskListID).items.select("ID", "Title", "DueDate", "Status", "Sitestagging",
       "ItemRank", "Item_x0020_Type", 'PortfolioStructureID', 'ClientTime', 'SiteCompositionSettings', "PortfolioType/Title", "PortfolioType/Id", "PortfolioType/Color", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "TaskCategories/Id", "TaskCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title")
       .expand("TeamMembers", "Author", "ClientCategory", "Parent", "TaskCategories", "AssignedTo", "ClientCategory", "PortfolioType").top(4999).filter("(Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature')").get();
+    if (AllPortfolios != undefined && AllPortfolios?.length > 0) {
+      AllPortfolios?.map((item: any) => {
+        item.listId = this.props?.MasterTaskListID
+      })
+    }
+
   }
   private async GetTaskUsers() {
     this.setState({
-      loaded: false,
+      loaded: true,
     })
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
     let taskUsers = [];
@@ -428,6 +352,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     this.setState({
       taskUsers: taskUsers
     })
+    if (userIdByQuery != undefined && userIdByQuery != '') {
+      await this.DefaultValues();
+    }
   }
   private GetTimeEntry() {
     this.StartWeekday = (new Date().getFullYear()).toString() + '/01/01';
@@ -498,8 +425,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       SitesConfig: sitesResult,
       AllMetadata: results,
       TimeSheetLists: TimeSheetResult,
-      loaded: true,
+      loaded: false,
     }, () => this.loadSmartFilters(ccResults, sitesResult))
+    // if (userIdByQuery != undefined && userIdByQuery != '') {
+    //   await this.LoadAllTimeSheetaData();
+    // }
   }
   private loadSmartFilters(items: any, siteItems: any) {
     let filterGroups = [];
@@ -842,13 +772,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     if (this.state.startdate.getTime() == startdt.getTime() && this.state.enddate.getTime() == enddt.getTime()) {
       RadioType = 'today';
     }
-
     startdt.setDate(startdt.getDate() - 1);
     enddt.setDate(enddt.getDate() - 1);
     if (this.state.startdate.getTime() == startdt.getTime() && this.state.enddate.getTime() == enddt.getTime()) {
       RadioType = 'yesterday';
     }
-
     diff = startdt.getDate() - startdt.getDay() + (startdt.getDay() === 0 ? -6 : 1);
     startdt = new Date(startdt.setDate(diff));
     lastday = enddt.getDate() - (enddt.getDay() - 1) + 6;
@@ -856,7 +784,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     if (this.state.startdate.getTime() == startdt.getTime() && this.state.enddate.getTime() == enddt.getTime()) {
       RadioType = 'ThisWeek';
     }
-
     tempdt = new Date();
     tempdt = new Date(tempdt.getFullYear(), tempdt.getMonth(), tempdt.getDate() - 7);
     diff = tempdt.getDate() - tempdt.getDay() + (tempdt.getDay() === 0 ? -6 : 1);
@@ -866,49 +793,41 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     if (this.state.startdate.getTime() == startdt.getTime() && this.state.enddate.getTime() == enddt.getTime()) {
       RadioType = 'LastWeek';
     }
-
     startdt = new Date(startdt.getFullYear(), startdt.getMonth(), 1);
     enddt = new Date(enddt.getFullYear(), enddt.getMonth() + 1, 0);
     if (this.state.startdate.getTime() == startdt.getTime() && this.state.enddate.getTime() == enddt.getTime()) {
       RadioType = 'EntrieMonth';
     }
-
     startdt = new Date(startdt.getFullYear(), startdt.getMonth() - 1);
     enddt = new Date(enddt.getFullYear(), enddt.getMonth(), 0);
     if (this.state.startdate.getTime() == startdt.getTime() && this.state.enddate.getTime() == enddt.getTime()) {
       RadioType = 'LastMonth';
     }
-
     startdt = new Date(startdt.getFullYear(), startdt.getMonth() - 3);
     enddt = new Date(enddt.getFullYear(), enddt.getMonth(), 0);
     if (this.state.startdate.getTime() == startdt.getTime() && this.state.enddate.getTime() == enddt.getTime()) {
       RadioType = 'Last3Month';
     }
-
     startdt = new Date(new Date().getFullYear(), 0, 1);
     enddt = new Date(new Date().getFullYear(), 11, 31);
     if (this.state.startdate.getTime() == startdt.getTime() && this.state.enddate.getTime() == enddt.getTime()) {
       RadioType = 'EntrieYear';
     }
-
     startdt = new Date(new Date().getFullYear() - 1, 0, 1);
     enddt = new Date(new Date().getFullYear() - 1, 11, 31);
     if (this.state.startdate.getTime() == startdt.getTime() && this.state.enddate.getTime() == enddt.getTime()) {
       RadioType = 'LastYear';
     }
-
     startdt = new Date('2017/01/01');
     enddt = new Date();
     if (this.state.startdate.getTime() == startdt.getTime() && this.state.enddate.getTime() == enddt.getTime()) {
       RadioType = 'AllTime';
     }
-
     startdt = new Date(this.state?.PresetStartDate);
     enddt = new Date(this.state?.PresetEndDate);
     if (this.state.startdate.getTime() == startdt.getTime() && this.state.enddate.getTime() == enddt.getTime()) {
       RadioType = 'Presettime';
     }
-
     this.setState({
       selectedRadio: RadioType,
     })
@@ -944,15 +863,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     switch (type) {
       case 'Custom':
         break;
-
       case 'today':
         break;
-
       case 'yesterday':
         startdt.setDate(startdt.getDate() - 1);
         enddt.setDate(enddt.getDate() - 1);
         break;
-
       case 'ThisWeek':
         diff = startdt.getDate() - startdt.getDay() + (startdt.getDay() === 0 ? -6 : 1);
         startdt = new Date(startdt.setDate(diff));
@@ -960,7 +876,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         lastday = enddt.getDate() - (enddt.getDay() - 1) + 6;
         enddt = new Date(enddt.setDate(lastday));;
         break;
-
       case 'LastWeek':
         tempdt = new Date();
         tempdt = new Date(tempdt.getFullYear(), tempdt.getMonth(), tempdt.getDate() - 7);
@@ -971,37 +886,30 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         lastday = tempdt.getDate() - (tempdt.getDay() - 1) + 6;
         enddt = new Date(tempdt.setDate(lastday));
         break;
-
       case 'EntrieMonth':
         startdt = new Date(startdt.getFullYear(), startdt.getMonth(), 1);
         enddt = new Date(enddt.getFullYear(), enddt.getMonth() + 1, 0);
         break;
-
       case 'LastMonth':
         startdt = new Date(startdt.getFullYear(), startdt.getMonth() - 1);
         enddt = new Date(enddt.getFullYear(), enddt.getMonth(), 0);
         break;
-
       case 'Last3Month':
         startdt = new Date(startdt.getFullYear(), startdt.getMonth() - 3);
         enddt = new Date(enddt.getFullYear(), enddt.getMonth(), 0);
         break;
-
       case 'EntrieYear':
         startdt = new Date(new Date().getFullYear(), 0, 1);
         enddt = new Date(new Date().getFullYear(), 11, 31);
         break;
-
       case 'LastYear':
         startdt = new Date(new Date().getFullYear() - 1, 0, 1);
         enddt = new Date(new Date().getFullYear() - 1, 11, 31);
         break;
-
       case 'AllTime':
         startdt = new Date('2017/01/01');
         enddt = new Date();
         break;
-
       case 'Presettime':
         startdt = new Date(this.state?.PresetStartDate);
         enddt = new Date(this.state?.PresetEndDate);
@@ -1027,7 +935,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     else {
       if (IsLoader == true) {
         this.setState({
-          loaded: false,
+          loaded: true,
         })
       }
       this.generateTimeEntry();
@@ -1037,7 +945,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let AllTimeEntry: any = [];
     let arraycount = 0;
     this.setState({
-      loaded: false,
+      loaded: true,
     })
     if (AllTimeSheetResult == undefined || AllTimeSheetResult?.length == 0) {
 
@@ -1070,13 +978,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     else {
       this.updatefilter(true);
     }
-
   }
   private async generateTimeEntry() {
     let FilterTimeEntry: any[] = []
     let filters = '('; //use when without date filter
     let ImageSelectedUsers = this.state.ImageSelectedUsers;
-
     // if (ImageSelectedUsers != undefined && ImageSelectedUsers.length > 0) {
     //   ImageSelectedUsers.forEach(function (obj: any, index: any) {
     //     if (obj != undefined && obj.AssingedToUserId != undefined) {
@@ -1271,7 +1177,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         confi.Title = confi.Title.replace(" ", "");
       confi['Sitee' + confi.Title] = 'filter=';
     })
-
     copysitesConfi.forEach(function (confi: any) {
       getAllTimeEntry.forEach(function (tab: any) {
         if (tab.siteType == confi.Title)
@@ -1279,7 +1184,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             confi['Sitee' + confi.Title] += '(Id eq ' + tab.TaskItemID + ') or';
       })
     })
-
     for (let index = 0; index < copysitesConfi.length; index++) {
       let confi = copysitesConfi[index];
       if (confi['Sitee' + confi.Title].length > 7) {
@@ -1313,7 +1217,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     if (queryfrist.length > 7 && countIn > 0)
       querystringSplit1.push(queryfrist.slice(0, queryfrist.length - 2));
     return querystringSplit1;
-
   }
   private ConvertLocalTOServerDate(LocalDateTime: any, dtformat: any) {
     if (dtformat == undefined || dtformat == '')
@@ -1396,7 +1299,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         filterItem.ClientCategorySearch = ''
         filterItem.clientCategory = '';
         filterItem.clientCategoryIds = '';
-
         AllSharewebSiteTasks.forEach(function (copygetval: any) {
           var getItem: any = JSON.stringify(copygetval)
           getItem = globalCommon.parseJSON(getItem);
@@ -1493,7 +1395,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     else {
       this.setState({
-        loaded: true,
+        loaded: false,
       })
     }
   }
@@ -1714,7 +1616,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       for (let index = 0; index < this.AllTimeEntry.length; index++) {
         let timeitem = this.AllTimeEntry[index];
         this.TotalTimeEntry += timeitem.Effort;
-
       }
       this.TotalTimeEntry = (this.TotalTimeEntry).toFixed(2);
       this.TotalDays = this.TotalTimeEntry / 8;
@@ -1741,7 +1642,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       }, () => this.createTableColumns())
     }
     this.setState({
-      loaded: true,
+      loaded: false,
     }, () => this.createTableColumns())
   }
   private issmartExistsIds(array: any[], Ids: { TaskItemID: any; ID: any; TimeEntryId: any; }) {
@@ -1774,7 +1675,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     });
     return commonItems;
   }
-
   private DynamicSortitems(items: any, column: any, type: any, order: any) {
     if (order == 'Ascending') {
       if (type == 'DateTime') {
@@ -1815,121 +1715,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         });
     }
   }
-  private childarray(arrays: any, StartDate: any, EndDate: any) {
-    let Item: any = {};
-    let DateItem: any = [];
-    //let selectedMembers = arrays.filter(m => new Date(m.TimeEntrykDateNew) >= new Date(StartDate) && new Date(m.TimeEntrykDateNew) <= new Date(EndDate));
-    let selectedMembers = arrays.filter(function (m: any, i: any) {
-      return new Date(m.TimeEntrykDateNew) >= new Date(StartDate) && new Date(m.TimeEntrykDateNew) <= new Date(EndDate)
-    });
-    Item["childs"] = [];
-    let arrayItem = [];
-    if (selectedMembers != undefined && selectedMembers.length > 0) {
-      for (let index = 0; index < selectedMembers.length; index++) {
-        let client = selectedMembers[index];
-        if (client.Secondlevel != undefined && client.Secondlevel != "") {
-          if (!this.isItemExistsItems(arrayItem, client.Secondlevel, 'Secondlevel'))
-            arrayItem.push(client);
-        }
-      }
-    }
-    let ImageSelectedUsers = this.state.ImageSelectedUsers;
-    if (arrayItem != undefined && arrayItem.length > 0) {
-      arrayItem.forEach(function (obj) {
-        if (obj != undefined && obj != "") {
-          let result = selectedMembers.filter((type: any) => type.Secondlevel != '' && obj.Secondlevel != undefined && type.Secondlevel == obj.Secondlevel);
-          if (result != undefined && result.length > 0) {
-            let cate = '';
-            let totalValue = 0;
-            let First = ''; let Secondlevel = ''; let Thirdlevel = '';
-            let ChildItem: any = {};
-            result.forEach(function (obj: any) {
-              if (obj.clientCategory != undefined) {
-                let Category = obj.clientCategory.split(';');
-                Category.forEach(function (type: any) {
-                  if (type != undefined && cate.indexOf(type) == -1)
-                    cate += type + '; ';
-                })
-              }
-              totalValue += obj.Effort
-              First = obj.First;
-              Secondlevel = obj.Secondlevel;
-              Thirdlevel = obj.Thirdlevel
-              ChildItem['SiteUrl'] = obj.SiteUrl;
-              Item['SiteUrl'] = obj.SiteUrl;
-            })
-            let smarttotalvalue = 0;
-            let smarttotalvalueNew = 0;
-            if (ImageSelectedUsers != undefined && ImageSelectedUsers.length > 0) {
-              ImageSelectedUsers.forEach(function (item: any) {
-                if (item.AssingedToUserId == user?.Id) {
-                  item.isActiveUser = true;
-                }
-                let results = selectedMembers.filter((itemnew: any) => itemnew.Secondlevel != '' && obj.Secondlevel != undefined && itemnew.Secondlevel == obj.Secondlevel && itemnew.AuthorId == item.AssingedToUserId);
-                if (results != undefined && results.length > 0) {
-                  let smarttotalvalue = 0;
-                  let smarttotalvalueNew = 0;
-                  results.forEach(function (resu: any) {
-                    if (resu.Effort != undefined && resu.Effort && item.SmartTime != undefined)
-                      smarttotalvalue += resu.Effort;
-                    else if (item.SmartTime == undefined)
-                      smarttotalvalueNew += resu.Effort;
-                  })
-                  if (item.SmartTime != undefined) {
-                    if (ChildItem['TotalSmartTime'] == undefined || ChildItem['TotalSmartTime'] == '')
-                      ChildItem['TotalSmartTime'] = 0;
-                    ChildItem['TotalSmartTime'] += ((smarttotalvalue * item.SmartTime) / 100);
-                  }
-                  else if (item['SmartTime'] == undefined) {
-                    if (ChildItem['TotalSmartTime'] == undefined || ChildItem['TotalSmartTime'] == '')
-                      ChildItem['TotalSmartTime'] = 0;
-                    ChildItem['TotalSmartTime'] += smarttotalvalueNew
-                  }
-                  ChildItem['getUserName'] = item.Title;
-                }
-              })
-            }
-            ChildItem['Firstlevel'] = First;
-            ChildItem['Thirdlevel'] = Thirdlevel;
-            ChildItem['Secondlevel'] = Secondlevel;
-            ChildItem['TotalValue'] = totalValue;
-            ChildItem['AdjustedTime'] = ChildItem['TotalValue'];
-            ChildItem['AllTask'] = result;
-            //$scope.TotalTimeEntry += totalValue; - will check later
-            ChildItem['expanded'] = true;
-            ChildItem['flag'] = true;
-            ChildItem['childs'] = [];
-            ChildItem['clientCategory'] = cate;
-            ChildItem['getUserName'] = '';//$scope.getUserName; - will check later
-            if (ChildItem['TotalSmartTime'] != undefined) {
-              ChildItem['TotalSmartTime'] = ChildItem['TotalSmartTime'].toFixed(2);
-              ChildItem['TotalSmartTime'] = parseFloat(ChildItem['TotalSmartTime'])
-            }
-            Item['childs'].push(ChildItem);
-          }
-        }
-      })
-    }
-    let st = StartDate.split('/');
-    Item['getUserName'] = 'Week ' + Moment(new Date(StartDate)).format('YYYY-MM-DD');
-    Item['getMonthYearDate'] = new Date(StartDate).toLocaleDateString('en-us', { year: "numeric", month: "short" });
-    if (this.AllYearMonth.length == 0) {
-      let YearCollection: any = {};
-      YearCollection['getMonthYearDate'] = Item['getMonthYearDate'];
-      this.AllYearMonth.push(YearCollection);
-    }
-    if (!this.isItemExistsItems(this.AllYearMonth, Item['getMonthYearDate'], 'getMonthYearDate')) {
-      let YearCollection: any = {};
-      YearCollection['getMonthYearDate'] = Item['getMonthYearDate'];
-      this.AllYearMonth.push(YearCollection);
-    }
-    Item['flag'] = true;
-    Item['expanded'] = true;
-    if (Item['childs'] != undefined && Item['childs'].length > 0) {
-      this.sortitems(Item['childs'], 'Secondlevel', 'Descending');
-      this.CategoryItemsArray.push(Item);
-    }
-  }
   private isItemExistsItems(arr: any, title: any, titname: any) {
     let isExists = false;
     arr.forEach(function (item: any) {
@@ -1954,7 +1739,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         return (aID == bID) ? 0 : (aID > bID) ? 1 : -1;
       });
   }
-
   private ClearFilters() {
     this.AllTimeEntry = this.BackupAllTimeEntry;
     this.TotalTimeEntry = 0;
@@ -1962,7 +1746,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       let timeitem = this.AllTimeEntry[index];
       timeitem.Effort = parseFloat(timeitem.TaskTime)
       this.TotalTimeEntry += timeitem.Effort;
-
     }
     this.TotalTimeEntry = (this.TotalTimeEntry).toFixed(2);
     this.TotalDays = this.TotalTimeEntry / 8;
@@ -2036,20 +1819,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       })
     });
   }
-  private sortBy(propertyName: any, order: any) {
-    let AllTimeEntry = this.state.AllTimeEntry;
-    AllTimeEntry.sort(function (a: any, b: any) {
-      let aID = a[propertyName];
-      let bID = b[propertyName];
-      if (order)
-        return (aID == bID) ? 0 : (aID > bID) ? 1 : -1;
-      else
-        return (aID == bID) ? 0 : (aID < bID) ? 1 : -1;
-    });
-    this.setState({
-      AllTimeEntry
-    })
-  }
   private EditDataTimeEntryData = (e: any, item: any) => {
     item.Id = item?.TaskItemID;
     item.ID = item?.TaskItemID
@@ -2082,22 +1851,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       IsTask: item
     });
   };
-  private sortByChild(propertyName: any, order: any) {
-    let AllTimeEntry = this.state.AllTimeEntry;
-    AllTimeEntry.forEach(function (entry: any) {
-      entry.childs.sort(function (a: any, b: any) {
-        let aID = a[propertyName];
-        let bID = b[propertyName];
-        if (order)
-          return (aID == bID) ? 0 : (aID > bID) ? 1 : -1;
-        else
-          return (aID == bID) ? 0 : (aID < bID) ? 1 : -1;
-      });
-    });
-    this.setState({
-      AllTimeEntry
-    })
-  }
   private createTableColumns() {
     let dt = [
       {
@@ -2109,8 +1862,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         isHeaderNotAvlable: true,
         size: 25,
         id: 'Id',
-      },
-      {
+      }, {
         accessorFn: (info: any) => info?.Site,
         cell: (info: any) => <span>
           <img className='circularImage rounded-circle' src={info?.row?.original?.SiteIcon} />
@@ -2121,8 +1873,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         resetSorting: false,
         resetColumnFilters: false,
         size: 30
-      },
-      {
+      }, {
         accessorKey: "DisplayTaskId",
         placeholder: "Task",
         id: "DisplayTaskId",
@@ -2133,8 +1884,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             <ReactPopperTooltipSingleLevel AllListId={AllListId} ShareWebId={info?.row?.original?.DisplayTaskId} row={info?.row?.original} singleLevel={true} masterTaskData={AllPortfolios} AllSitesTaskData={AllSitesAllTasks} />
           </span>
         </>
-      },
-      {
+      }, {
         accessorKey: 'TaskTitle',
         id: "TaskTitle",
         header: "",
@@ -2150,8 +1900,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               </span>) : ("")}
           </span>,
         size: 275,
-      },
-      {
+      }, {
         accessorFn: (info: any) => info?.ClientCategorySearch,
         cell: (info: any) => (
           <>
@@ -2163,15 +1912,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         header: "",
         resetColumnFilters: false,
         size: 90,
-      },
-      {
+      }, {
         accessorKey: "PercentComplete",
         id: "PercentComplete",
         placeholder: "%",
         header: "",
         size: 35,
-      },
-      {
+      }, {
         accessorKey: 'ComponentName',
         id: "ComponentName",
         header: "",
@@ -2184,9 +1931,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           onClick={(e) => this.EditComponentPopup(info.row?.original?.PortfolioItem)}>
           </span></>,
         size: 275,
-      },
-
-      {
+      }, {
         accessorKey: "Description",
         cell: (info: any) => <><span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
           <span>{info?.row?.original.truncatedTitle?.length > 0 ? info?.row?.original?.truncatedTitle : info?.row?.original?.Description}</span>
@@ -2240,15 +1985,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         isColumnDefultSortingDesc: true,
         header: "",
         size: 91
-      },
-      {
+      }, {
         accessorKey: "DispEffort",
         id: "DispEffort",
         placeholder: "Time",
         header: "",
         size: 45,
-      },
-      {
+      }, {
         cell: (info: any) => (
           <>
             <a className="alignCenter" onClick={(e) => this.EditDataTimeEntryData(e, info?.row?.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
@@ -2262,8 +2005,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         resetColumnFilters: false,
         placeholder: "",
         size: 25
-      },
-      {
+      }, {
         cell: (info: any) => (
           <span
             title="Edit Task"
@@ -2338,7 +2080,6 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       for (let index = 0; index < this.AllTimeEntry.length; index++) {
         let timeitem = this.AllTimeEntry[index];
         this.TotalTimeEntry += timeitem.Effort;
-
       }
       this.TotalTimeEntry = (this.TotalTimeEntry).toFixed(2);
       this.TotalDays = this.TotalTimeEntry / 8;
@@ -2476,290 +2217,264 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     } = this.props;
     return (
       <div id="TimeSheet-Section" >
-        <div className="p-0" style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>All Timesheets</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
-        <Col className='smartFilter bg-light border mb-3 '>
-          <details className='p-0 m-0 allfilter' open>
-            <summary className='hyperlink'><a className="fw-semibold hreflink mr-5 pe-2 pull-left ">All Filters - <span className='me-1 fw-normal'>Task User :</span> </a>
-              {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
-                return user?.Item_x0020_Cover != undefined && user.Item_x0020_Cover?.Url != undefined ?
-                  <span>
-                    <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
-                  </span> :
-                  <span className="suffix_Usericon showSuffixIcon m-1" title={user?.Title} >{user?.Suffix}</span>
-              })
-              }
-            </summary>
-            <Col className='allfilter'>
-              <Col className='subfilters'>
-                <details open className='p-0 m-0'>
-                  <span className="pull-right" style={{ display: 'none' }}>
-                    <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
-                    <label>Select All </label>
-                  </span>
-                  <summary><span className='fw-semibold f-15 fw-semibold'>Team members</span></summary>
-                  <hr style={{ width: "98%", marginLeft: "30px" }}></hr>
-                  <div style={{ display: "block" }}>
-                    <div className="taskTeamBox ps-30 my-2">
-                      {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
-                        return users?.childs?.length > 0 && <div className="top-assign">
-                          <div className="team ">
-                            <label className="BdrBtm">
-                              <input style={{ display: 'none' }} className="" type="checkbox" onClick={(e) => this.SelectedGroup(e, users)} />
-                              {users.childs.length > 0 &&
-                                <>
-                                  {users.Title}
-                                </>
-                              }
-                            </label>
-                            <div className='d-flex'>
-                              {users.childs.length > 0 && users.childs.map((item: any, i: number) => {
-                                return item.AssingedToUser != undefined && <div className="alignCenter">
-                                  {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
-                                    <span>
-                                      <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
-                                        title={item.AssingedToUser.Title}
-                                        src={item.Item_x0020_Cover.Url} />
-                                    </span> :
-                                    <span id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg newDynamicUserIcon' : 'newDynamicUserIcon'} title={item.Title} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
-                                    >{item?.Suffix}</span>
-                                  }
-                                </div>
-                              })}
+        {this.state.loaded && <PageLoader />}
+        <div>
+          <div className="p-0" style={{ verticalAlign: "top" }}><h2 className="heading d-flex justify-content-between align-items-center"><span> <a>All Timesheets</a> </span><span className="text-end fs-6"><a target="_blank" data-interception="off" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}>Old UserTimeEntry</a></span></h2></div>
+          <Col className='smartFilter bg-light border mb-3 '>
+            <details className='p-0 m-0 allfilter' open>
+              <summary className='hyperlink'><a className="fw-semibold hreflink mr-5 pe-2 pull-left ">All Filters - <span className='me-1 fw-normal'>Task User :</span> </a>
+                {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
+                  return user?.Item_x0020_Cover != undefined && user.Item_x0020_Cover?.Url != undefined ?
+                    <span>
+                      <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} />
+                    </span> :
+                    <span className="suffix_Usericon showSuffixIcon m-1" title={user?.Title} >{user?.Suffix}</span>
+                })
+                }
+              </summary>
+              <Col className='allfilter'>
+                <Col className='subfilters'>
+                  <details open className='p-0 m-0'>
+                    <span className="pull-right" style={{ display: 'none' }}>
+                      <input type="checkbox" className="" onClick={(e) => this.SelectAllGroupMember(e)} />
+                      <label>Select All </label>
+                    </span>
+                    <summary><span className='fw-semibold f-15 fw-semibold'>Team members</span></summary>
+                    <hr style={{ width: "98%", marginLeft: "30px" }}></hr>
+                    <div style={{ display: "block" }}>
+                      <div className="taskTeamBox ps-30 my-2">
+                        {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((users: any, i: number) => {
+                          return users?.childs?.length > 0 && <div className="top-assign">
+                            <div className="team ">
+                              <label className="BdrBtm">
+                                <input style={{ display: 'none' }} className="" type="checkbox" onClick={(e) => this.SelectedGroup(e, users)} />
+                                {users.childs.length > 0 &&
+                                  <>
+                                    {users.Title}
+                                  </>
+                                }
+                              </label>
+                              <div className='d-flex'>
+                                {users.childs.length > 0 && users.childs.map((item: any, i: number) => {
+                                  return item.AssingedToUser != undefined && <div className="alignCenter">
+                                    {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
+                                      <span>
+                                        <img id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg seclected-Image ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                          title={item.AssingedToUser.Title}
+                                          src={item.Item_x0020_Cover.Url} />
+                                      </span> :
+                                      <span id={"UserImg" + item.Id} className={item?.AssingedToUserId == user?.Id ? 'activeimg newDynamicUserIcon' : 'newDynamicUserIcon'} title={item.Title} onClick={(e) => this.SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                      >{item?.Suffix}</span>
+                                    }
+                                  </div>
+                                })}
+                              </div>
                             </div>
                           </div>
+                        })
+                        }
+                      </div>
+                    </div>
+                  </details>
+                  <details className='m-0' open>
+                    <summary><span className='fw-semibold f-15 fw-semibold'> Date</span> </summary>
+                    <hr style={{ width: "98%", marginLeft: "30px" }}></hr>
+                    <Row className="ps-30 my-2">
+                      <div>
+                        <div className="col TimeReportDays">
+                          <span className='SpfxCheckRadio'>
+                            <input type="radio" className="radio" name="dateSelection" id="rdCustom" value="Custom" checked={this.state.selectedRadio === "Custom" || (this.state.startdate !== null && this.state.enddate !== null && !this.state.selectedRadio)} onClick={() => this.selectDate('Custom')} />
+                            <label>Custom</label>
+                          </span>
+                          <span className='SpfxCheckRadio'>
+                            <input type="radio" name="dateSelection" value="today" id="rdToday" checked={this.state.selectedRadio === "today"} onClick={() => this.selectDate('today')} className="radio" />
+                            <label>Today</label>
+                          </span>
+                          <span className='SpfxCheckRadio'>
+                            <input type="radio" name="dateSelection" value="yesterday" id="rdYesterday" checked={this.state.selectedRadio === "yesterday"} onClick={() => this.selectDate('yesterday')} className="radio" />
+                            <label> Yesterday </label>
+                          </span>
+                          <span className='SpfxCheckRadio'>
+                            <input type="radio" name="dateSelection" defaultChecked={true} id="rdThisWeek" value="ThisWeek" checked={this.state.selectedRadio === "ThisWeek"} onClick={() => this.selectDate('ThisWeek')} className="radio" />
+                            <label> This Week</label>
+                          </span>
+                          <span className='SpfxCheckRadio'>
+                            <input type="radio" name="dateSelection" value="LastWeek" id="rdLastWeek" checked={this.state.selectedRadio === "LastWeek"} onClick={() => this.selectDate('LastWeek')} className="radio" />
+                            <label> Last Week</label>
+                          </span>
+                          <span className='SpfxCheckRadio'>
+                            <input type="radio" name="dateSelection" id="rdThisMonth" value="EntrieMonth" checked={this.state.selectedRadio === "EntrieMonth"} onClick={() => this.selectDate('EntrieMonth')} className="radio" />
+                            <label>This Month</label>
+                          </span>
+                          <span className='SpfxCheckRadio'>
+                            <input type="radio" name="dateSelection" id="rdLastMonth" value="LastMonth" checked={this.state.selectedRadio === "LastMonth"} onClick={() => this.selectDate('LastMonth')} className="radio" />
+                            <label>Last Month</label>
+                          </span>
+                          <span className='SpfxCheckRadio'>
+                            <input type="radio" name="dateSelection" value="Last3Month" checked={this.state.selectedRadio === "Last3Month"} onClick={() => this.selectDate('Last3Month')} className="radio" />
+                            <label>Last 3 Months</label>
+                          </span>
+                          <span className='SpfxCheckRadio'>
+                            <input type="radio" name="dateSelection" value="EntrieYear" checked={this.state.selectedRadio === "EntrieYear"} onClick={() => this.selectDate('EntrieYear')} className="radio" />
+                            <label>This Year</label>
+                          </span>
+                          <span className='SpfxCheckRadio'>
+                            <input type="radio" name="dateSelection" value="LastYear" checked={this.state.selectedRadio === "LastYear"} onClick={() => this.selectDate('LastYear')} className="radio" />
+                            <label>Last Year</label>
+                          </span>
+                          <span className='SpfxCheckRadio'>
+                            <input type="radio" name="dateSelection" value="AllTime" checked={this.state.selectedRadio === "AllTime"} onClick={() => this.selectDate('AllTime')} className="radio" />
+                            <label>All Time</label>
+                          </span>
+                          <span className='SpfxCheckRadio'>
+                            <input type="radio" name="dateSelection" value="Presettime" checked={this.state.selectedRadio === "Presettime"} onClick={() => this.selectDate('Presettime')} className="radio" />
+                            <label>Pre-set</label>
+                            <span className="svg__iconbox svg__icon--editBox alignIcon hreflink" onClick={() => this.OpenPresetDatePopup()}></span>
+                          </span>
                         </div>
-                      })
-                      }
-                    </div>
-                  </div>
-                </details>
-                <details className='m-0' open>
-                  <summary><span className='fw-semibold f-15 fw-semibold'> Date</span> </summary>
-                  <hr style={{ width: "98%", marginLeft: "30px" }}></hr>
-                  <Row className="ps-30 my-2">
-                    <div>
-                      <div className="col TimeReportDays">
-                        <span className='SpfxCheckRadio'>
-                          <input type="radio" className="radio" name="dateSelection" id="rdCustom" value="Custom" checked={this.state.selectedRadio === "Custom" || (this.state.startdate !== null && this.state.enddate !== null && !this.state.selectedRadio)} onClick={() => this.selectDate('Custom')} />
-                          <label>Custom</label>
-                        </span>
-                        <span className='SpfxCheckRadio'>
-                          <input type="radio" name="dateSelection" value="today" id="rdToday" checked={this.state.selectedRadio === "today"} onClick={() => this.selectDate('today')} className="radio" />
-                          <label>Today</label>
-                        </span>
-                        <span className='SpfxCheckRadio'>
-                          <input type="radio" name="dateSelection" value="yesterday" id="rdYesterday" checked={this.state.selectedRadio === "yesterday"} onClick={() => this.selectDate('yesterday')} className="radio" />
-                          <label> Yesterday </label>
-                        </span>
-                        <span className='SpfxCheckRadio'>
-                          <input type="radio" name="dateSelection" defaultChecked={true} id="rdThisWeek" value="ThisWeek" checked={this.state.selectedRadio === "ThisWeek"} onClick={() => this.selectDate('ThisWeek')} className="radio" />
-                          <label> This Week</label>
-                        </span>
-                        <span className='SpfxCheckRadio'>
-                          <input type="radio" name="dateSelection" value="LastWeek" id="rdLastWeek" checked={this.state.selectedRadio === "LastWeek"} onClick={() => this.selectDate('LastWeek')} className="radio" />
-                          <label> Last Week</label>
-                        </span>
-                        <span className='SpfxCheckRadio'>
-                          <input type="radio" name="dateSelection" id="rdThisMonth" value="EntrieMonth" checked={this.state.selectedRadio === "EntrieMonth"} onClick={() => this.selectDate('EntrieMonth')} className="radio" />
-                          <label>This Month</label>
-                        </span>
-                        <span className='SpfxCheckRadio'>
-                          <input type="radio" name="dateSelection" id="rdLastMonth" value="LastMonth" checked={this.state.selectedRadio === "LastMonth"} onClick={() => this.selectDate('LastMonth')} className="radio" />
-                          <label>Last Month</label>
-                        </span>
-                        <span className='SpfxCheckRadio'>
-                          <input type="radio" name="dateSelection" value="Last3Month" checked={this.state.selectedRadio === "Last3Month"} onClick={() => this.selectDate('Last3Month')} className="radio" />
-                          <label>Last 3 Months</label>
-                        </span>
-                        <span className='SpfxCheckRadio'>
-                          <input type="radio" name="dateSelection" value="EntrieYear" checked={this.state.selectedRadio === "EntrieYear"} onClick={() => this.selectDate('EntrieYear')} className="radio" />
-                          <label>This Year</label>
-                        </span>
-                        <span className='SpfxCheckRadio'>
-                          <input type="radio" name="dateSelection" value="LastYear" checked={this.state.selectedRadio === "LastYear"} onClick={() => this.selectDate('LastYear')} className="radio" />
-                          <label>Last Year</label>
-                        </span>
-                        <span className='SpfxCheckRadio'>
-                          <input type="radio" name="dateSelection" value="AllTime" checked={this.state.selectedRadio === "AllTime"} onClick={() => this.selectDate('AllTime')} className="radio" />
-                          <label>All Time</label>
-                        </span>
-                        <span className='SpfxCheckRadio'>
-                          <input type="radio" name="dateSelection" value="Presettime" checked={this.state.selectedRadio === "Presettime"} onClick={() => this.selectDate('Presettime')} className="radio" />
-                          <label>Pre-set</label>
-                          <span className="svg__iconbox svg__icon--editBox alignIcon hreflink" onClick={() => this.OpenPresetDatePopup()}></span>
-                        </span>
                       </div>
-                    </div>
-                  </Row>
-                  <Row className='ps-30 mb-2'>
-                    <div className="col-2">
-                      <div className='input-group'>
-                        <label className='full-width'>Start Date</label>
-                        <span>
-                          <DatePicker selected={this.state.startdate} data-input-type="First" onChange={(date: any) => this.setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
-                            className="form-control date-picker p-1" popperPlacement="bottom-start" customInput={<this.ExampleCustomInputStrat />}
-                          />
-                        </span>
+                    </Row>
+                    <Row className='ps-30 mb-2'>
+                      <div className="col-2">
+                        <div className='input-group'>
+                          <label className='full-width'>Start Date</label>
+                          <span>
+                            <DatePicker selected={this.state.startdate} data-input-type="First" onChange={(date: any) => this.setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
+                              className="form-control date-picker p-1" popperPlacement="bottom-start" customInput={<this.ExampleCustomInputStrat />}
+                            />
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="col-2">
-                      <div className='input-group'>
-                        <label className='full-width'>End Date</label>
-                        <span>
-                          <DatePicker selected={this.state.enddate} onChange={(date: any) => this.setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
-                            className="form-control date-picker p-1" popperPlacement="bottom-start" customInput={<this.ExampleCustomInputEnd />}
-                          />
-                        </span>
+                      <div className="col-2">
+                        <div className='input-group'>
+                          <label className='full-width'>End Date</label>
+                          <span>
+                            <DatePicker selected={this.state.enddate} onChange={(date: any) => this.setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
+                              className="form-control date-picker p-1" popperPlacement="bottom-start" customInput={<this.ExampleCustomInputEnd />}
+                            />
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <div className='col'>
-                      <div className='mt-1'>
-                        <label className='full_width'>Portfolio Item</label>
-                        <label> <input type="checkbox" checked={this.state?.IsCheckedComponent} className="form-check-input" onClick={(e) => this.SelectedPortfolioItem(e, 'Component')} /> Component</label>
-                        <label><input type="checkbox" checked={this.state?.IsCheckedService} className="form-check-input ml-12" onClick={(e) => this.SelectedPortfolioItem(e, 'Service')} /> Service</label>
+                      <div className='col'>
+                        <div className='mt-1'>
+                          <label className='full_width'>Portfolio Item</label>
+                          <label> <input type="checkbox" checked={this.state?.IsCheckedComponent} className="form-check-input" onClick={(e) => this.SelectedPortfolioItem(e, 'Component')} /> Component</label>
+                          <label><input type="checkbox" checked={this.state?.IsCheckedService} className="form-check-input ml-12" onClick={(e) => this.SelectedPortfolioItem(e, 'Service')} /> Service</label>
+                        </div>
                       </div>
-                    </div>
-                  </Row>
-                </details>
-                <div id="showFilterBox" className="col m-0 p-0 ">
-                  <div className="togglebox">
-                    <details open>
-                      <summary>
-                        <span className='fw-semibold f-15 fw-semibold'> SmartSearch – Filters</span>
-                        <span className='f-14 ps-2'>
-                          {this.state.checkedAll && this.state.filterItems != null && this.state.filterItems.length > 0 &&
-                            this.state.filterItems.map((obj: any) => {
-                              return <span> {obj.Title}
-                                <span>
-                                  : ({this.getAllSubChildenCount(obj)})
+                    </Row>
+                  </details>
+                  <div id="showFilterBox" className="col m-0 p-0 ">
+                    <div className="togglebox">
+                      <details open>
+                        <summary>
+                          <span className='fw-semibold f-15 fw-semibold'> SmartSearch – Filters</span>
+                          <span className='f-14 ps-2'>
+                            {this.state.checkedAll && this.state.filterItems != null && this.state.filterItems.length > 0 &&
+                              this.state.filterItems.map((obj: any) => {
+                                return <span> {obj.Title}
+                                  <span>
+                                    : ({this.getAllSubChildenCount(obj)})
+                                  </span>
                                 </span>
-                              </span>
-                            })
-                          }
-                          {this.state.checkedAllSites && this.state.filterSites != null && this.state.filterSites.length > 0 &&
-                            this.state.filterSites.map((obj: any) => {
-                              return <span> {obj.Title}
-                                <span>
-                                  : ({this.getAllSubChildenCount(obj)})
+                              })
+                            }
+                            {this.state.checkedAllSites && this.state.filterSites != null && this.state.filterSites.length > 0 &&
+                              this.state.filterSites.map((obj: any) => {
+                                return <span> {obj.Title}
+                                  <span>
+                                    : ({this.getAllSubChildenCount(obj)})
+                                  </span>
                                 </span>
-                              </span>
-                            })
-                          }
-                          {this.state.checkedParentNode != null && !this.state.checkedAll && this.state.checkedParentNode.length > 0 &&
-                            this.state.checkedParentNode.map((obj: any) => {
-                              return <span> {obj.Title}
-                                <span>
-                                  : ({this.getAllSubChildenCount(obj)})
+                              })
+                            }
+                            {this.state.checkedParentNode != null && !this.state.checkedAll && this.state.checkedParentNode.length > 0 &&
+                              this.state.checkedParentNode.map((obj: any) => {
+                                return <span> {obj.Title}
+                                  <span>
+                                    : ({this.getAllSubChildenCount(obj)})
+                                  </span>
                                 </span>
-                              </span>
-                            })
-                          }
-                        </span>
-                      </summary>
-                      <hr style={{ width: "98%", marginLeft: "30px" }}></hr>
-                      <div className="togglecontent my-2" style={{ display: "block", paddingLeft: "24px" }}>
-                        <div className="smartSearch-Filter-Section">
-                          <table width="100%" className="indicator_search">
-                            <Loader loaded={this.state.loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={portfolioColor ? portfolioColor : "#000066"}
-                              speed={2} trail={60} shadow={false} hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
-                            <tbody>
-                              <tr>
-                                <td valign="top">
-                                  <div className='row'>
-                                    <div className='col-md-4'>
-                                      <div className='col-md-10'>
-                                        <label className='border-bottom full-width pb-1'>
-                                          <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" className="form-check-input me-1" />
-                                          Client Category
-                                        </label>
-                                        <div className="custom-checkbox-tree">
-                                          <CheckboxTree
-                                            nodes={this.state.filterItems}
-                                            checked={this.state.checked}
-                                            expanded={this.state.expanded}
-                                            onCheck={checked => this.setState({ checked })}
-                                            onExpand={expanded => this.ExpandClientCategory(expanded)}
-                                            nativeCheckboxes={true}
-                                            showNodeIcon={false}
-                                            checkModel={'all'}
-                                            icons={{ expandOpen: <SlArrowDown />, expandClose: <SlArrowRight />, parentClose: null, parentOpen: null, leaf: null, }}
-                                          />
-                                        </div></div>
-                                    </div>
-                                    <div className='col-md-4'>
-                                      <div className='col-md-10'>
-                                        <label className='border-bottom full-width pb-1'>
-                                          <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} className="form-check-input me-1" />
-                                          Sites
-                                        </label>
-                                        <div className="custom-checkbox-tree">
-                                          <CheckboxTree
-                                            nodes={this.state.filterSites}
-                                            checked={this.state.checkedSites}
-                                            expanded={this.state.expandedSites}
-                                            onCheck={checkedSites => this.setState({ checkedSites })}
-                                            onExpand={expandedSites => this.ExpandSite(expandedSites)}
-                                            nativeCheckboxes={true}
-                                            showNodeIcon={false}
-                                            checkModel={'all'}
-                                            icons={{
-                                              expandOpen: <SlArrowDown />,
-                                              expandClose: <SlArrowRight />,
-                                              parentClose: null,
-                                              parentOpen: null,
-                                              leaf: null,
-                                            }}
-                                          />
+                              })
+                            }
+                          </span>
+                        </summary>
+                        <hr style={{ width: "98%", marginLeft: "30px" }}></hr>
+                        <div className="togglecontent my-2" style={{ display: "block", paddingLeft: "24px" }}>
+                          <div className="smartSearch-Filter-Section">
+                            <table width="100%" className="indicator_search">
+                              <tbody>
+                                <tr>
+                                  <td valign="top">
+                                    <div className='row'>
+                                      <div className='col-md-4'>
+                                        <div className='col-md-10'>
+                                          <label className='border-bottom full-width pb-1'>
+                                            <input id='chkAllCategory' defaultChecked={this.state.checkedAll} onClick={(e) => this.SelectAllCategories(e)} type="checkbox" className="form-check-input me-1" />
+                                            Client Category
+                                          </label>
+                                          <div className="custom-checkbox-tree">
+                                            <CheckboxTree nodes={this.state.filterItems} checked={this.state.checked} expanded={this.state.expanded} onCheck={checked => this.setState({ checked })}
+                                              onExpand={expanded => this.ExpandClientCategory(expanded)} nativeCheckboxes={true} showNodeIcon={false} checkModel={'all'}
+                                              icons={{ expandOpen: <SlArrowDown />, expandClose: <SlArrowRight />, parentClose: null, parentOpen: null, leaf: null, }}
+                                            />
+                                          </div></div>
+                                      </div>
+                                      <div className='col-md-4'>
+                                        <div className='col-md-10'>
+                                          <label className='border-bottom full-width pb-1'>
+                                            <input type="checkbox" id='chkAllSites' defaultChecked={this.state.checkedAllSites} onClick={(e) => this.SelectAllSits(e)} className="form-check-input me-1" />
+                                            Sites
+                                          </label>
+                                          <div className="custom-checkbox-tree">
+                                            <CheckboxTree nodes={this.state.filterSites} checked={this.state.checkedSites} expanded={this.state.expandedSites}
+                                              onCheck={checkedSites => this.setState({ checkedSites })} onExpand={expandedSites => this.ExpandSite(expandedSites)} nativeCheckboxes={true} showNodeIcon={false}
+                                              checkModel={'all'} icons={{ expandOpen: <SlArrowDown />, expandClose: <SlArrowRight />, parentClose: null, parentOpen: null, leaf: null, }}
+                                            />
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
-
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
-
-                      </div>
-                    </details>
+                      </details>
+                    </div>
                   </div>
-                </div>
-                <div className="col text-end mb-2">
-                  <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.LoadAllTimeSheetaData()}>
-                    Update Filters
-                  </button>
-                  <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
-                    Clear Filters
-                  </button>
-                </div>
+                  <div className="col text-end mb-2">
+                    <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.LoadAllTimeSheetaData()}>
+                      Update Filters
+                    </button>
+                    <button type="button" className="btn btn-default me-1" onClick={() => this.ClearFilters()}>
+                      Clear Filters
+                    </button>
+                  </div>
+                </Col>
               </Col>
-            </Col>
-          </details>
-        </Col>
-        {
-          // this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
+            </details>
+          </Col>
           <div className='col'>
             <section className='TableContentSection'>
               <div className="Alltable p-0">
                 <div className="wrapper">
                   <GlobalCommanTable expandIcon={true} showCatIcon={true} exportToExcelCategoryReport={this.exportToExcel} showHeader={true} showDateTime={' | Time: ' + this.state.resultSummary.totalTime + ' | Days: (' + this.state.resultSummary.totalDays + ')'} columns={this.state.columns} data={this.state.AllTimeEntry} callBackData={this.callBackData} TaskUsers={AllTaskUser} AllListId={this?.props} portfolioColor={portfolioColor} />
+
                 </div>
               </div>
             </section>
           </div>
-        }
+
+        </div>
         {
           this.state.IsTask &&
           (<EditTaskPopup Items={this.state.IsTask} Call={() => { this.Call(undefined) }} AllListId={AllListId} context={this?.props?.Context} ></EditTaskPopup>)
         }
         {
           this.state?.IsMasterTask &&
-          (<CentralizedSiteComposition
-            ItemDetails={this.state?.IsMasterTask}
-            RequiredListIds={AllListId}
-            closePopupCallBack={() => { this.Call('Master Task') }}
-            usedFor={"CSF"}
+          (<CentralizedSiteComposition ItemDetails={this.state?.IsMasterTask} RequiredListIds={AllListId} closePopupCallBack={() => { this.Call('Master Task') }} usedFor={"CSF"}
           />
           )
         }
@@ -2773,7 +2488,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           this.state.IsTimeEntry &&
           (<TimeEntryPopup props={this.state.SharewebTimeComponent} CallBackTimeEntry={this.TimeEntryCallBack} Context={this?.props?.Context}></TimeEntryPopup>)
         }
-      </div>
+        <div className='clearfix'></div>
+      </div >
     );
   }
 }

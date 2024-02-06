@@ -2244,7 +2244,7 @@ function TeamPortlioTable(SelectedProp: any) {
         childRef?.current?.setRowSelection({});
     }
     const addActivity = (type: any) => {
-        if (checkedList?.TaskType?.Id == undefined || checkedList?.TaskTypeId == undefined) {
+        if (checkedList?.TaskType?.Id == undefined) {
             checkedList.NoteCall = type
             setActivityPopup(true);
         }
