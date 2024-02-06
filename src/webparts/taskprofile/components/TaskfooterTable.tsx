@@ -889,13 +889,14 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
           <>
-            {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+          <span className='columnFixedTitle'>
+            {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink text-content serviceColor_Active"
               href={props?.AllListId?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID}
             >
               <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
             </a>}
             {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== 'Others' &&
-              <a className="hreflink serviceColor_Active" target="_blank" data-interception="off"
+              <a className="hreflink text-content serviceColor_Active" target="_blank" data-interception="off"
                 href={props?.AllListId?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType}
               >
                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
@@ -905,6 +906,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
             ) : (
               ""
             )}
+            </span>
             {row?.original?.Categories == 'Draft' ?
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?

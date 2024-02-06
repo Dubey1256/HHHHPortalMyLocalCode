@@ -45,6 +45,8 @@ import {
   PeoplePicker,
   PrincipalType
 } from "@pnp/spfx-controls-react/lib/PeoplePicker";
+import { MonthlyLeaveReport } from "./MonthlyLeaveReport";
+import { Download } from "react-bootstrap-icons";
 
 interface IPeoplePickerComponentProps {
   context: any; // Your SPFx context
@@ -136,6 +138,8 @@ const App = (props: any) => {
   let compareData: any = [];
   // const [isOpsetIsOpen]:any = React.useState(false);
   // const [name, setName]:any = React.useState('');
+  
+  const [leaveReport, setleaveReport] = React.useState(false);
   const [startDate, setStartDate]: any = React.useState(null);
   const [endDate, setEndDate]: any = React.useState(null);
   const [chkName, setChkName]: any = React.useState("");
@@ -1667,6 +1671,9 @@ const App = (props: any) => {
     setTodayEvent(currentDayEvents);
     setEmail(true);
   };
+ const DownloadLeaveReport = () =>{
+    setleaveReport(true);
+ }
 
   // var a:any=false
   // if(a==true){
@@ -1735,6 +1742,10 @@ const App = (props: any) => {
         </a>
       </div>
       <div className="w-100 text-end">
+      <a className="mailBtn me-4" href="#" onClick={DownloadLeaveReport}>
+           <span>Download Monthly Report Generate</span>
+        </a> 
+        |
         <a
           target="_blank"
           data-interception="off"
@@ -1745,6 +1756,7 @@ const App = (props: any) => {
         </a>
       </div>
       <div style={{ height: "500pt" }}>
+     
         <a className="mailBtn me-4" href="#" onClick={emailComp}>
           <FaPaperPlane></FaPaperPlane> <span>Send Leave Summary</span>
         </a>
@@ -2129,6 +2141,8 @@ const App = (props: any) => {
         )}
 
       </Panel>
+
+      {leaveReport ? <MonthlyLeaveReport props={props.props} Context={props.props.context}/>:""}
     </div>
   );
 };
