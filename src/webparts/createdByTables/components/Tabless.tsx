@@ -350,7 +350,6 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
            allData.push({
             ...dataItem,
             idType: dataItem.idType,
-            Title: dataItem.Title,
             Categories: dataItem.Categories,
             percentage: dataItem.percentage,
             newDueDate: dataItem.newDueDate,
@@ -360,17 +359,13 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
             EditorSuffix:dataItem.EditorSuffix,
             AuthorSuffix:dataItem.AuthorSuffix,
             authorImg: dataItem.AuthorImg,
-            siteIcon: items.Title == "Migration" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png" : items.ImageUrl,
+            SiteIcon: items.Title == "Migration" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png" : items.ImageUrl,
             siteUrl: items.siteUrl,
-            Id: dataItem.Id,
-            ID: dataItem.Id,
             EstimatedTime:(jsonObject != null && jsonObject !=undefined && jsonObject[0]?.EstimatedTime != undefined && jsonObject[0]?.EstimatedTime != null ? jsonObject[0]?.EstimatedTime : ''),
             priority: dataItem.Priority_x0020_Rank ,
             Author: dataItem.Author,
             Editor: dataItem.Editor,
             Editorss: dataItem.Editor.Title,
-            ParentTask: dataItem.ParentTask,
-            TaskType:dataItem.TaskType,
             Team_x0020_Members: dataItem.Team_x0020_Members,
             Responsible_x0020_Team: dataItem.Responsible_x0020_Team,
             AllTeamName : cleanedString,
@@ -458,8 +453,8 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
   const columns = React.useMemo(
     () => [
       {
-        accessorFn: (row: any) => <img className="workmember" src={row?.siteIcon}></img>,
-        id: "siteIcon",
+        accessorFn: (row: any) => <img className="workmember" src={row?.SiteIcon}></img>,
+        id: "SiteIcon",
         placeholder: "",
         header: "",
         resetColumnFilters: false,

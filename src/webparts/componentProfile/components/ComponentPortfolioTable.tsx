@@ -1544,6 +1544,7 @@ const switchGroupbyData = () => {
 
   const callBackData1 = React.useCallback((getData: any, topCompoIcon: any) => {
     setData((getData) => [...getData]);
+    childRef?.current?.setRowSelection({});
     setTopCompoIcon(topCompoIcon);
     renderData = [];
     renderData = renderData.concat(getData);
