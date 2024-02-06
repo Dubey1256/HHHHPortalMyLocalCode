@@ -2443,3 +2443,63 @@ export const openUsersDashboard = (siteUrl?: any | undefined, AssignedUserId?: a
 
 // if don't have the AssignedUserId
 // 1. openUsersDashboard(siteUrl:"Https....................", AssignedUserId:Undefined,  AssignedUserTitle:"UserName", AllTaskUsers=[alltaskuserData])
+export const getBreadCrumbHierarchyAllData = async (item: any, AllListId: any, AllItems?: any | []): Promise<any> => {
+    let web = new Web(AllListId?.siteUrl);
+    let Object: any;
+
+    item.isExpanded = true;
+    item.siteUrl = AllListId?.siteUrl
+    if (item?.ParentTask != undefined || item?.ParentTask != null) {
+        try {
+            Object = await web.lists.getById(item?.listId)
+                .items.getById(item?.ParentTask.Id).select(
+                    "Id, TaskID, TaskId, Title, ParentTask/Id, ParentTask/Title, Portfolio/Id, Portfolio/Title, Portfolio/PortfolioStructureID"
+                )
+                .expand("ParentTask, Portfolio")
+                .get();
+        } catch (error) {
+            console.error(error)
+        }
+    }
+    else if (item.Parent != undefined || item?.Portfolio != undefined) {
+        let useId = item.Portfolio != undefined ? item?.Portfolio?.Id : item?.Parent?.Id;
+        try {
+            Object = await web.lists.getById(AllListId?.MasterTaskListID)
+                .items.getById(useId).select("Id, Title, Parent/Id, Parent/Title, PortfolioStructureID, Item_x0020_Type")
+                .expand("Parent")
+                .get()
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+
+    if (Object != undefined) {
+        if (
+            Object?.Id === item?.ParentTask?.Id
+        ) {
+            Object.subRows = [item]; AllItems?.push(item)
+            Object.listId = item?.listId;
+            Object.SiteIcon = item?.SiteIcon;
+            Object.siteType = item?.siteType;
+            return getBreadCrumbHierarchyAllData(Object, AllListId, AllItems);
+        } else if (Object?.Id === item?.Parent?.Id) {
+            Object.subRows = [item]; AllItems?.push(item)
+            if(Object?.Parent==undefined){
+                Object.subRows = [item]; AllItems?.push(item)  
+            }else{
+                return getBreadCrumbHierarchyAllData(Object, AllListId, AllItems);
+            }
+           
+        } else if (
+            item?.Portfolio != undefined &&
+            Object?.Id === item?.Portfolio?.Id &&
+            (item?.ParentTask?.TaskID == null || item?.ParentTask?.TaskID == undefined)
+        ) {
+            Object.subRows = [item]; AllItems?.push(item)
+            return getBreadCrumbHierarchyAllData(Object, AllListId, AllItems);
+        }
+
+    }
+    return { withGrouping: item, flatdata: AllItems };
+}
