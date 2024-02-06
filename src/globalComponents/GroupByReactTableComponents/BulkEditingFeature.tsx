@@ -158,6 +158,7 @@ export function BulkUpdateFeatureType(taskValue: any) {
         </>
     )
 }
+////CategoriesUpdate //////
 export function CategoriesUpdate(taskValue: any) {
     const [categoriesPopup, setCategoriesPopup] = React.useState(false);
     const [selectedCategoryData, setSelectedCategoryData] = React.useState([]);
