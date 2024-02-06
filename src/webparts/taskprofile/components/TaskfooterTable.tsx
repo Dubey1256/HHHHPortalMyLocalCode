@@ -888,7 +888,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
       {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
-          <>
+          <div className='alignCenter'>
           <span className='columnFixedTitle'>
             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink text-content serviceColor_Active"
               href={props?.AllListId?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID}
@@ -915,7 +915,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
               Discription={row?.original?.descriptionsSearch}
               row={row?.original}
             />}
-          </>
+          </div>
         ),
         id: "Title",
         placeholder: "Title",
