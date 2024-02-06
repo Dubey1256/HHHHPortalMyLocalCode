@@ -5,7 +5,20 @@ import { myContextValue } from '../globalCommon'
 import Tooltip from "../Tooltip";
 const EditTrafficLightComment = (props: any) => {
     const myContextValue2: any = React.useContext(myContextValue)
+    const [copyTrafficlight, setCopyTrafficlight] = useState("");
+    const [copycolumnVerificationStatus, SetCopycolumnVerificationStatus]: any = useState()
+    const [copyCommentData, setCopyCommentData] = useState("")
+    React.useEffect(() => {
+        if (myContextValue2?.columnVerificationStatus == "true" || myContextValue2?.columnVerificationStatus == "Yes") {
+            SetCopycolumnVerificationStatus("true")
+        }
+        if (myContextValue2?.columnVerificationStatus == "false" || myContextValue2?.columnVerificationStatus == "No") {
+            SetCopycolumnVerificationStatus("false")
+        }
+        setCopyTrafficlight(myContextValue2?.trafficValue)
+        setCopyCommentData(myContextValue2?.CommentData)
 
+    }, [])
     const onRenderCustomHeadercomment = () => {
         return (
             <>
@@ -19,11 +32,22 @@ const EditTrafficLightComment = (props: any) => {
         );
     }
     const handleUpdateComment = (commentData: any) => {
-        myContextValue2.SetCommentData(commentData)
+        setCopyCommentData(commentData)
+        // myContextValue2.SetCommentData(commentData)
     }
     const changeTrafficLight = (trafficValue: any) => {
         console.log(trafficValue)
-        myContextValue2.setTrafficValue(trafficValue)
+        setCopyTrafficlight(trafficValue)
+        // myContextValue2.setTrafficValue(trafficValue)
+    }
+    const cancelPopup = () => {
+        props?.setOpenCommentpopup(false)
+    }
+    const updateData = () => {
+        myContextValue2.setTrafficValue(copyTrafficlight);
+        myContextValue2.SetCommentData(copyCommentData)
+        myContextValue2?.setcolumnVerificationStatus(copycolumnVerificationStatus)
+        myContextValue2?.updateJson()
     }
     return (
         <>
@@ -41,7 +65,7 @@ const EditTrafficLightComment = (props: any) => {
                             <div className="editcolumn">
 
 
-                                <select className="w-100" value={myContextValue2?.columnVerificationStatus} onChange={(e) => myContextValue2?.setcolumnVerificationStatus(e?.target?.value)}>
+                                <select className="w-100" value={copycolumnVerificationStatus} onChange={(e) => SetCopycolumnVerificationStatus(e?.target?.value)}>
                                     <option value="false">NO</option>
                                     <option value="true"> Yes </option>
 
@@ -61,19 +85,19 @@ const EditTrafficLightComment = (props: any) => {
                             <div>
                                 <ul className="list-none">
                                     <li className="alignCenter my-1" onClick={() => changeTrafficLight("Incorrect")}>
-                                        <span title="Incorrect" className={myContextValue2?.trafficValue == "Incorrect" ? "circlelight br_red red" : "circlelight br_red"}>
+                                        <span title="Incorrect" className={copyTrafficlight == "Incorrect" ? "circlelight br_red red" : "circlelight br_red"}>
                                         </span> <span className="ms-1">Incorrect</span>
                                     </li>
                                     <li className="alignCenter my-1" onClick={() => changeTrafficLight("Maybe")} >
-                                        <span title="Maybe" className={myContextValue2?.trafficValue == "Maybe" ? "circlelight br_yellow yellow" : "circlelight br_yellow"} >
+                                        <span title="Maybe" className={copyTrafficlight == "Maybe" ? "circlelight br_yellow yellow" : "circlelight br_yellow"} >
                                         </span>  <span className="ms-1">Maybe</span>
                                     </li>
                                     <li className="alignCenter my-1" onClick={() => changeTrafficLight("Correct")}>
-                                        <span title="Correct" className={myContextValue2?.trafficValue == "Correct" ? "circlelight br_green green" : "circlelight br_green"} >
+                                        <span title="Correct" className={copyTrafficlight == "Correct" ? "circlelight br_green green" : "circlelight br_green"} >
                                         </span>   <span className="ms-1">Correct</span>
                                     </li>
                                     <li className="alignCenter my-1" onClick={() => changeTrafficLight("NA")}>
-                                        <span title="NA" className={myContextValue2?.trafficValue == "NA" ? "circlelight notable" : "circlelight br_black"} >
+                                        <span title="NA" className={copyTrafficlight == "NA" ? "circlelight notable" : "circlelight br_black"} >
                                         </span>   <span className="ms-1">Not Available</span>
                                     </li>
                                 </ul>
@@ -91,14 +115,14 @@ const EditTrafficLightComment = (props: any) => {
                             </div>
                         </div>
 
-                        <textarea id="txtUpdateComment" rows={6} className="full-width" value={myContextValue2?.CommentData} onChange={(e) => handleUpdateComment(e.target.value)}  ></textarea>
+                        <textarea id="txtUpdateComment" rows={6} className="full-width" value={copyCommentData} onChange={(e) => handleUpdateComment(e.target.value)}  ></textarea>
                     </div>
                 </div>
                 <footer className='modal-footer mt-2'>
                     <button className="btn btn-primary ms-1"
-                     onClick={(e) => myContextValue2?.updateJson()}
+                        onClick={(e) => updateData()}
                     >Save</button>
-                    <button className='btn btn-default ms-1' onClick={() => props?.setOpenCommentpopup(false)}>Cancel</button>
+                    <button className='btn btn-default ms-1' onClick={() => cancelPopup()}>Cancel</button>
                 </footer>
             </Panel>
         </>

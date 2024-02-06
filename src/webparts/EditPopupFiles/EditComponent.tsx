@@ -892,7 +892,7 @@ let ID: any;
     const onRenderCustomHeaderQuestion = () => {
         return (
             <>
-                <div className="subheading siteColor">Add Question</div>
+                <div className="subheading">Add Question</div>
                 <Tooltip ComponentId="1000" />
             </>
         );
@@ -900,7 +900,7 @@ let ID: any;
     const onRenderCustomHeaderHelp = () => {
         return (
             <>
-                <div className="subheading siteColor">Add Help</div>
+                <div className="subheading">Add Help</div>
                 <Tooltip ComponentId="1000" />
             </>
         );
@@ -908,7 +908,7 @@ let ID: any;
     const onRenderHeaderQuestionEdit = () => {
         return (
             <>
-                <div className="subheading siteColor">Edit Question</div>
+                <div className="subheading">Edit Question</div>
                 <Tooltip ComponentId="1000" />
             </>
         );
@@ -916,7 +916,7 @@ let ID: any;
     const onRenderHeaderHelpEdit = () => {
         return (
             <>
-                <div className="subheading siteColor">Edit Help</div>
+                <div className="subheading">Edit Help</div>
                 <Tooltip ComponentId="1000" />
             </>
         );
@@ -1601,13 +1601,14 @@ let ID: any;
     const AddQuestionFunc = async () => {
         try {
             let componentId = CompoenetItem[0].Id;
+            const questionDescription = PostQuestionDescription?.replace(/<[^>]+>|&nbsp;|\n/g, "");
             const newItem = {
                 ItemType: "Question",
                 // Title: `${CompoenetItem[0].Title} - ${question}`,
                 Title: question,
                 ComponentsId: { "results": [componentId] },
                 Permission: choice,
-                Body: PostQuestionDescription || (EditData?.PostQuestionDescription || ""),
+                Body: questionDescription || (EditData?.PostQuestionDescription || ""),
             };
             await web.lists.getById(RequireData.SmartHelpListID).items.add(newItem);
 
@@ -1628,13 +1629,14 @@ let ID: any;
     const AddHelpFunc = async () => {
         try {
             let componentId = CompoenetItem[0].Id;
+            const questionDescription = PostQuestionDescription?.replace(/<[^>]+>|&nbsp;|\n/g, "");
             const newItem = {
                 ItemType: "Help",
                 // Title: `${CompoenetItem[0].Title} - ${help}`,
                 Title: help,
                 ComponentsId: { "results": [componentId] },
                 Permission: choice, 
-                Body: PostQuestionDescription || (EditData?.PostQuestionDescription || ""),
+                Body: questionDescription || (EditData?.PostQuestionDescription || ""),
             };
             await web.lists.getById(RequireData.SmartHelpListID).items.add(newItem);
 
@@ -2593,11 +2595,12 @@ let ID: any;
     }
 
     const updateDetails = async () => {
+        const questionDescription = PostQuestionDescription?.replace(/<[^>]+>|&nbsp;|\n/g, "");
         try {
             await web.lists.getById(RequireData.SmartHelpListID).items.getById(ID).update({
                 Title: question ? question : dataUpdate?.Title,
                 Permission: choice ? choice : dataUpdate?.choice,
-                Body: PostQuestionDescription ? PostQuestionDescription || (EditData?.PostQuestionDescription || "") : dataUpdate?.Body,
+                Body: questionDescription ? questionDescription || (EditData?.PostQuestionDescription || "") : dataUpdate?.Body,
             }).then(async (i: any) => {
                 console.log(i);
 
@@ -2616,11 +2619,12 @@ let ID: any;
 
 
     const updateHelpDetails = async () => {
+        const questionDescription = PostQuestionDescription?.replace(/<[^>]+>|&nbsp;|\n/g, "");
         try {
             await web.lists.getById(RequireData.SmartHelpListID).items.getById(ID).update({
                 Title: help ? help : helpDataUpdate?.Title,
                 Permission: choice ? choice : helpDataUpdate?.choice,
-                Body: PostQuestionDescription ? PostQuestionDescription || (EditData?.PostQuestionDescription || "") : helpDataUpdate?.Body,
+                Body: questionDescription ? questionDescription || (EditData?.PostQuestionDescription || "") : helpDataUpdate?.Body,
             }).then(async (i: any) => {
                 console.log(i);
 
@@ -3620,36 +3624,6 @@ let ID: any;
                             <span className="input-group-text" placeholder="Project">
                               <span title="Project" onClick={(e) => openPortfolioPopup("Project")} className="svg__iconbox svg__icon--editBox"></span>
                             </span>
-                            <div className="col-sm-12  inner-tabb">
-                            {filterdata && filterdata.length > 0 ? 
-                            (
-                              <div >
-                                {filterdata?.map((items:any, Index: any)=>
-                                 <div className="block d-flex justify-content-between mb-1" key={Index}>
-                              
-                                  <a
-                                    href={`${SelectD.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${items.Id}`}
-                                    className="wid-90 light"
-                                    data-interception="off"
-                                    target="_blank"
-                                  >
-                                    {items?.Title}
-                                  </a>
-                                  <a className="text-end">
-                                            {" "}
-                                            <span
-                                              className="bg-light svg__icon--cross svg__iconbox"
-                                              onClick={() =>
-                                                DeleteCrossIconData([items?.Id])
-                                              }
-                                            ></span>
-                                          </a>
-                                </div>)}
-                                </div>) : ""
-                  
-                            }
-                          
-                          </div>        
                         </div>
                         <div className="col-sm-12 padding-0 input-group">
                             <label className="full_width">Feature Type </label>
@@ -3671,7 +3645,36 @@ let ID: any;
                               </>)
                             })}
                         </div>
-                                                    
+                            <div className="col-sm-12  inner-tabb">
+                            {filterdata && filterdata.length > 0 ? 
+                            (
+                              <div >
+                                {filterdata?.map((items:any, Index: any)=>
+                                 <div className="block d-flex justify-content-between mb-1" key={Index}>
+                              
+                                  <a
+                                    href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?=${items.Id}`}
+                                    className="wid-90 light"
+                                    data-interception="off"
+                                    target="_blank"
+                                  >
+                                    {items?.Title}
+                                  </a>
+                                  <a className="text-end">
+                                            {" "}
+                                            <span
+                                              className="bg-light svg__icon--cross svg__iconbox"
+                                              onClick={() =>
+                                                DeleteCrossIconData([items?.Id])
+                                              }
+                                            ></span>
+                                          </a>
+                                </div>)}
+                                </div>) : ""
+                  
+                            }
+                          
+                          </div>                                  
                         </div>
 
                        </div>
@@ -4483,13 +4486,10 @@ let ID: any;
                         </div>
                     </div>
                 </div>
-                <footer className="footer-right">
-                    <div className="align-items-center d-flex justify-content-between">
-                        <div className="">
-                            <button className='btn btn-primary' onClick={() => AddQuestionFunc()}>Save</button>
-                            <button className='btn btn-default ms-1' onClick={() => setIsOpenPopup(false)}>Cancel</button>
-                        </div>
-                    </div>
+                <footer className="modal-footer">
+                    <button className='btn btn-primary' onClick={() => AddQuestionFunc()}>Save</button>
+                    <button className='btn btn-default ms-1' onClick={() => setIsOpenPopup(false)}>Cancel</button>
+                        
                 </footer>
             </Panel>
 
@@ -4626,13 +4626,11 @@ let ID: any;
                         </div>
                     </div>
                 </div>
-                <footer className="footer-right">
-                    <div className="align-items-center d-flex justify-content-between">
-                        <div className="">
+                <footer className="modal-footer">
+                    
                             <button className="me-1 btn btn-primary" onClick={() => AddHelpFunc()}>Save</button>
                             <button className="btn btn-default" onClick={() => setOpenPopup(false)}>Cancel</button>
-                        </div>
-                    </div>
+                      
                 </footer>
             </Panel>
             <Panel

@@ -616,7 +616,7 @@ function PortfolioTable(SelectedProp: any) {
   }, []);
 
   React.useEffect(() => {
-    portfolioColor = SelectedProp?.props?.PortfolioType?.Color;
+    portfolioColor = SelectedProp?.props?.PortfolioType?.Color; //  Changes made by Robin
   }, [AllSiteTasksData]);
 
 // Flatview 
