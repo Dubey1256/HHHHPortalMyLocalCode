@@ -1193,7 +1193,7 @@ const switchGroupbyData = () => {
         placeholder: "Feature Type",
         header: "",
         resetColumnFilters: false,
-        size: 90,
+        size: 110,
         id: "FeatureTypeTitle",
     },
       {
@@ -1242,7 +1242,7 @@ const switchGroupbyData = () => {
         placeholder: "Task Type",
         header: "",
         resetColumnFilters: false,
-        size: 90,
+        size: 110,
         id: "TaskTypeValue",
     },
       {
