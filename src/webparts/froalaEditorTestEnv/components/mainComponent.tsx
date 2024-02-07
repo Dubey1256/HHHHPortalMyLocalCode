@@ -53,7 +53,7 @@ export default function MainComponent() {
     }
     return (
         <div>
-            <div className="col froala-comment-box" id="uploadCommentFroalaEditor">
+            <div className="col froala-comment-box">
                 <FroalaEditor
                     config={configuration}
                     onModelChange={handleModelChange}
