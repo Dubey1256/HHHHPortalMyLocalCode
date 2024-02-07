@@ -4,6 +4,7 @@ import pnp, { sp, Web } from "sp-pnp-js";
 import ServiceComponentPortfolioPopup from "../EditTaskPopup/ServiceComponentPortfolioPopup";
 import SelectedTaskUpdateOnPopup from "./selectedTaskUpdateOnPopup";
 import Picker from "../EditTaskPopup/SmartMetaDataPicker";
+import * as GlobalFunctionForUpdateItem from '../GlobalFunctionForUpdateItems';
 
 
 export const addedCreatedDataFromAWT = (itemData: any, dataToPush: any) => {
@@ -166,29 +167,47 @@ export function CategoriesUpdate(taskValue: any) {
             taskValue?.activeCategory.map((elem: any) => {
                 postCatItem.push(elem.Id);
             })
-            UpdateBulkTaskUpdate(taskValue, postCatItem, '');
+            UpdateBulkTaskUpdate(taskValue, taskValue?.activeCategory, '');
         } else if (item && event === 'categories') {
             let postCatItem: any = []
-            postCatItem.push(item.Id);
+            postCatItem.push(item);
             UpdateBulkTaskUpdate(taskValue, postCatItem, item);
         }
     }
     const UpdateBulkTaskUpdate = async (task: any, postCatItem: any, item: any) => {
         const updatePromises: Promise<any>[] = [];
         if (taskValue?.selectedData?.length > 0) {
-            taskValue?.selectedData?.forEach((elem: any) => {
-                const web = new Web(elem?.original?.siteUrl);
-                const updatePromise = web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update({
-                    TaskCategoriesId: { results: postCatItem }
+            for (const elem of taskValue?.selectedData || []) {
+                let RequiredData: any = {
+                    ItemDetails: elem?.original,
+                    RequiredListIds: taskValue?.ContextValue,
+                    UpdatedData: { TaskCategories: postCatItem },
+                    Context: taskValue?.ContextValue?.Context,
+                }
+                let UpdatedDataItem: any;
+                let updatePromise: any = await GlobalFunctionForUpdateItem.BulkUpdateTaskInfo(RequiredData).then((resolve: any) => {
+                    UpdatedDataItem = resolve;
+                    console.log("Res my data", resolve);
+                    updatePromises.push(updatePromise);
+                }).catch((error: any) => {
+                    console.error("Error in BulkUpdateTaskInfo:", error);
                 });
-                updatePromises.push(updatePromise);
-            });
+            };
         } else {
-            const web = new Web(task?.taskValue?.siteUrl);
-            const updatePromise = web.lists.getById(task?.taskValue?.listId).items.getById(task?.taskValue?.Id).update({
-                TaskCategoriesId: { results: postCatItem }
+            let RequiredData: any = {
+                ItemDetails: task?.taskValue,
+                RequiredListIds: taskValue?.ContextValue,
+                UpdatedData: { TaskCategories: postCatItem },
+                Context: taskValue?.ContextValue?.Context,
+            }
+            let UpdatedDataItem: any;
+            const updatePromise: any = await GlobalFunctionForUpdateItem.BulkUpdateTaskInfo(RequiredData).then((resolve: any) => {
+                UpdatedDataItem = resolve;
+                console.log("Res my data", resolve);
+                updatePromises.push(updatePromise);
+            }).catch((error: any) => {
+                console.error("Error in BulkUpdateTaskInfo:", error);
             });
-            updatePromises.push(updatePromise);
         }
         try {
             const results = await Promise.all(updatePromises);
@@ -198,27 +217,27 @@ export function CategoriesUpdate(taskValue: any) {
             if (taskValue?.updatedSmartFilterFlatView != true && taskValue?.clickFlatView != true) {
                 if (taskValue?.selectedData?.length > 0) {
                     taskValue?.selectedData?.forEach((value: any) => {
-                        if (taskValue?.activeCategory?.length > 0) {
-                            value.original.TaskCategories = taskValue?.activeCategory;
-                        } else {
-                            value.original.TaskCategories = [];
-                            value.original.TaskCategories.push({ Id: item.Id, Title: item.Title });
-                        }
-                        if (value?.original?.TaskCategories?.length > 0) {
-                            value.original.TaskTypeValue = value?.original?.TaskCategories?.map((val: any) => val.Title).join(",")
-                        }
+                        // if (taskValue?.activeCategory?.length > 0) {
+                        //     value.original.TaskCategories = taskValue?.activeCategory;
+                        // } else {
+                        //     value.original.TaskCategories = [];
+                        //     value.original.TaskCategories.push({ Id: item.Id, Title: item.Title });
+                        // }
+                        // if (value?.original?.TaskCategories?.length > 0) {
+                        //     value.original.TaskTypeValue = value?.original?.TaskCategories?.map((val: any) => val.Title).join(",")
+                        // }
                         checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
                     });
                 } else {
-                    if (taskValue?.activeCategory?.length > 0) {
-                        task.taskValue.TaskCategories = taskValue?.activeCategory;
-                    } else {
-                        task.taskValue.TaskCategories = [];
-                        task.taskValue.TaskCategories.push({ Id: item.Id, Title: item.Title });
-                    }
-                    if (task?.taskValue?.TaskCategories?.length > 0) {
-                        task.taskValue.TaskTypeValue = task?.taskValue?.TaskCategories?.map((val: any) => val.Title).join(",")
-                    }
+                    // if (taskValue?.activeCategory?.length > 0) {
+                    //     task.taskValue.TaskCategories = taskValue?.activeCategory;
+                    // } else {
+                    //     task.taskValue.TaskCategories = [];
+                    //     task.taskValue.TaskCategories.push({ Id: item.Id, Title: item.Title });
+                    // }
+                    // if (task?.taskValue?.TaskCategories?.length > 0) {
+                    //     task.taskValue.TaskTypeValue = task?.taskValue?.TaskCategories?.map((val: any) => val.Title).join(",")
+                    // }
                     checkBoolian = addedCreatedDataFromAWT(allData, task?.taskValue);
                 }
                 if (checkBoolian) {
@@ -230,30 +249,30 @@ export function CategoriesUpdate(taskValue: any) {
                     updatedAllData = taskValue?.data?.map((elem: any) => {
                         const match = taskValue?.selectedData?.find((match: any) => match?.original?.Id === elem?.Id && match?.original?.siteType === elem?.siteType);
                         if (match) {
-                            if (taskValue?.activeCategory?.length > 0) {
-                                match.original.TaskCategories = taskValue?.activeCategory;
-                            } else {
-                                match.original.TaskCategories = [];
-                                match.original.TaskCategories.push({ Id: item.Id, Title: item.Title });
-                            }
-                            if (match?.original?.TaskCategories?.length > 0) {
-                                match.original.TaskTypeValue = match?.original?.TaskCategories?.map((val: any) => val.Title).join(",")
-                            }
+                            // if (taskValue?.activeCategory?.length > 0) {
+                            //     match.original.TaskCategories = taskValue?.activeCategory;
+                            // } else {
+                            //     match.original.TaskCategories = [];
+                            //     match.original.TaskCategories.push({ Id: item.Id, Title: item.Title });
+                            // }
+                            // if (match?.original?.TaskCategories?.length > 0) {
+                            //     match.original.TaskTypeValue = match?.original?.TaskCategories?.map((val: any) => val.Title).join(",")
+                            // }
                             return match?.original;
                         } return elem;
                     });
                 } else {
                     updatedAllData = taskValue.data.map((elem: any) => {
                         if (task?.taskValue?.Id === elem?.Id && task?.taskValue?.siteType === elem?.siteType) {
-                            if (taskValue?.activeCategory?.length > 0) {
-                                task.taskValue.TaskCategories = taskValue?.activeCategory;
-                            } else {
-                                task.taskValue.TaskCategories = [];
-                                task.taskValue.TaskCategories.push({ Id: item.Id, Title: item.Title })
-                            }
-                            if (task?.taskValue?.TaskCategories?.length > 0) {
-                                task.taskValue.TaskTypeValue = task?.taskValue?.TaskCategories?.map((val: any) => val.Title).join(",")
-                            }
+                            // if (taskValue?.activeCategory?.length > 0) {
+                            //     task.taskValue.TaskCategories = taskValue?.activeCategory;
+                            // } else {
+                            //     task.taskValue.TaskCategories = [];
+                            //     task.taskValue.TaskCategories.push({ Id: item.Id, Title: item.Title })
+                            // }
+                            // if (task?.taskValue?.TaskCategories?.length > 0) {
+                            //     task.taskValue.TaskTypeValue = task?.taskValue?.TaskCategories?.map((val: any) => val.Title).join(",")
+                            // }
                             return task?.taskValue;
                         } return elem;
                     });
@@ -467,19 +486,38 @@ export function PrecentCompleteUpdate(taskValue: any) {
     const UpdateBulkTaskUpdate = async (task: any, TaskStatus: any, TaskApproval: any) => {
         const updatePromises: Promise<any>[] = [];
         if (taskValue?.selectedData?.length > 0) {
-            taskValue?.selectedData?.forEach((elem: any) => {
-                const web = new Web(elem?.original?.siteUrl);
-                const updatePromise = web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update({
-                    PercentComplete: TaskStatus,
+            for (const elem of taskValue?.selectedData || []) {
+                // taskValue?.selectedData?.forEach(async (elem: any) => {
+                let RequiredData: any = {
+                    ItemDetails: elem?.original,
+                    RequiredListIds: taskValue?.ContextValue,
+                    UpdatedData: { PercentComplete: TaskStatus * 100 },
+                    Context: taskValue?.ContextValue?.Context,
+                }
+                let UpdatedDataItem: any;
+                let updatePromise: any = await GlobalFunctionForUpdateItem.BulkUpdateTaskInfo(RequiredData).then((resolve: any) => {
+                    UpdatedDataItem = resolve;
+                    console.log("Res my data", resolve);
+                    updatePromises.push(updatePromise);
+                }).catch((error: any) => {
+                    console.error("Error in BulkUpdateTaskInfo:", error);
                 });
-                updatePromises.push(updatePromise);
-            });
+            };
         } else {
-            const web = new Web(task?.taskValue?.siteUrl);
-            const updatePromise = web.lists.getById(task?.taskValue?.listId).items.getById(task?.taskValue?.Id).update({
-                PercentComplete: TaskStatus,
+            let RequiredData: any = {
+                ItemDetails: task?.taskValue,
+                RequiredListIds: taskValue?.ContextValue,
+                UpdatedData: { PercentComplete: TaskStatus * 100 },
+                Context: taskValue?.ContextValue?.Context,
+            }
+            let UpdatedDataItem: any;
+            const updatePromise: any = await GlobalFunctionForUpdateItem.BulkUpdateTaskInfo(RequiredData).then((resolve: any) => {
+                UpdatedDataItem = resolve;
+                console.log("Res my data", resolve);
+                updatePromises.push(updatePromise);
+            }).catch((error: any) => {
+                console.error("Error in BulkUpdateTaskInfo:", error);
             });
-            updatePromises.push(updatePromise);
         }
         try {
             const results = await Promise.all(updatePromises);
@@ -489,11 +527,11 @@ export function PrecentCompleteUpdate(taskValue: any) {
             if (taskValue?.updatedSmartFilterFlatView != true && taskValue?.clickFlatView != true) {
                 if (taskValue?.selectedData?.length > 0) {
                     taskValue?.selectedData?.forEach((value: any) => {
-                        value.original.PercentComplete = TaskStatus;
+                        // value.original.PercentComplete = TaskStatus;
                         checkBoolian = addedCreatedDataFromAWT(allData, value?.original);
                     });
                 } else {
-                    task.taskValue.PercentComplete = TaskStatus;
+                    // task.taskValue.PercentComplete = TaskStatus;
                     checkBoolian = addedCreatedDataFromAWT(allData, task?.taskValue);
                 }
                 if (checkBoolian) {
@@ -505,14 +543,14 @@ export function PrecentCompleteUpdate(taskValue: any) {
                     updatedAllData = taskValue?.data?.map((elem: any) => {
                         const match = taskValue?.selectedData?.find((match: any) => match?.original?.Id === elem?.Id && match?.original?.siteType === elem?.siteType);
                         if (match) {
-                            match.original.PercentComplete = TaskStatus;
+                            // match.original.PercentComplete = TaskStatus;
                             return match?.original;
                         } return elem;
                     });
                 } else {
                     updatedAllData = taskValue.data.map((elem: any) => {
                         if (task?.taskValue?.Id === elem?.Id && task?.taskValue?.siteType === elem?.siteType) {
-                            task.taskValue.PercentComplete = TaskStatus;
+                            // task.taskValue.PercentComplete = TaskStatus;
                             return task?.taskValue;
                         } return elem;
                     });

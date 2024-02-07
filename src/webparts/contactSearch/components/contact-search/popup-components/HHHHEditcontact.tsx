@@ -99,7 +99,7 @@ const HHHHEditComponent = (props: any) => {
                         tagDivision=   myContextData2?.divisionData?.filter((divData:any)=>divData?.Parent?.Id==data?.Institution?.Id)
                        }
                        if(tagDivision?.length>0){
-                           data.Division=  tagDivision
+                           data.TaggedDivision=  tagDivision
                        }
                     setUpdateData(data);
                   
@@ -311,6 +311,7 @@ const HHHHEditComponent = (props: any) => {
                 JobTitle: (updateData?.JobTitle),
                 FullName: (updateData?.FirstName) + " " + (updateData?.Title!=null?updateData?.Title:""),
                 InstitutionId: (updateData?.Institution != undefined ? updateData?.Institution?.Id : null),
+                DivisionId: (updateData?.Division != undefined ? updateData?.Division?.Id : null),
                 Email: (updateData?.Email),
                 Department: (updateData?.Department),
                 WorkPhone: (updateData?.WorkPhone),
@@ -793,7 +794,7 @@ const HHHHEditComponent = (props: any) => {
                                                         {updateData?.Institution?.FullName ?
                                                             <div className="block wid90 alignCenter">
                                                                 <a className="hreflink" target="_blank"> {updateData?.Institution?.FullName}</a>
-                                                                <span className="bg-light svg__icon--cross svg__iconbox hreflink ml-auto" onClick={() => setUpdateData({ ...updateData, Institution: undefined })}></span>
+                                                                <span className="bg-light svg__icon--cross svg__iconbox hreflink ml-auto" onClick={() => setUpdateData({ ...updateData, Institution: undefined, Division: undefined })}></span>
                                                             </div> : <input type='text' />
 
                                                         }
@@ -806,14 +807,21 @@ const HHHHEditComponent = (props: any) => {
                                                 <div className="col">
                                                     <div className='input-group'>
                                                         <label className="full-width label-form">Division</label>
-                                                        <select className="form-control"value={updateData?.Department}onChange={(e)=>setUpdateData({ ...updateData,Department:e.target.value})}>
-                                                            <option selected>Select Division</option>
-                                                           {updateData?.Division?.length>0&& updateData?.Division?.map((division:any)=>{
-                                                            return(
-                                                           <option>{division?.Title}</option>
-                                                            )
-                                                           })} 
-                                                            
+                                                        <select
+                                                            className="form-control"
+                                                            value={updateData?.Institution != undefined ? updateData?.Division?.Title : ''}
+                                                            onChange={(e) => {
+                                                            const selectedDivision = updateData?.TaggedDivision?.find((division: any) => division?.Title === e.target.value);
+                                                            setUpdateData({ ...updateData, Division: selectedDivision });
+                                                            }}
+                                                        >
+                                                        <option>Select Division</option>
+                                                            {updateData?.TaggedDivision?.length > 0 &&
+                                                            updateData?.TaggedDivision?.map((division: any, index: number) => {
+                                                                return (
+                                                                <option key={index} value={division?.Title}>{division?.Title}</option>
+                                                                );
+                                                            })}
                                                         </select>
                                                     </div>
                                                 </div>
