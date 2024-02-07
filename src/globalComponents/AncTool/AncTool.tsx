@@ -384,15 +384,13 @@ const AncTool = (props: any) => {
     };
     const ChoosePathCustomHeader = () => {
         return (
-            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
+            <>
                 <div className='subheading'>
                     {/* <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} /> */}
-                    <span className="siteColor">
                         Select Upload Folder
-                    </span>
                 </div>
                 <Tooltip ComponentId="7643" />
-            </div>
+            </>
         );
     };
     //End//
@@ -1410,7 +1408,7 @@ const AncTool = (props: any) => {
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M10.0391 41V23.5V6H19.4757H28.9121L33.5299 10.6849L38.1476 15.3699V28.1849V30H35.9414V27.8957V17.0308L31.6544 16.9865L27.3672 16.9424L27.3237 12.5908L27.2801 8.23934L19.7218 8.19621L12.1635 8.15308V23.4995V38.8458L24.0525 38.8033L27.1016 38.7924V39V41H24.0933H10.0391ZM31.8559 14.7915C33.1591 14.7915 34.2255 14.7346 34.2255 14.6649C34.2255 14.5952 33.1591 13.458 31.8559 12.1374L29.4862 9.73654V12.264V14.7915H31.8559ZM16.5759 23.4171V22.3389V21.2607H24.0933H31.6107V22.3389V23.4171H24.0933H16.5759ZM16.5759 27.8957V26.8175V25.7393H24.0933H31.6107V26.8175V27.8957H24.0933H16.5759ZM16.5759 32.2085V31.1303V30.0521H24.0933H31.6107V31.1303V32.2085H24.0933H16.5759Z" />
                                     <path d="M35.4 32H33.6V35.6H30V37.4H33.6V41H35.4V37.4H39V35.6H35.4V32Z" />
                                 </svg>
-                                <a className='d-block hreflink f-11 mt-1'>Upload Documents</a>
+                                <a className='d-block hreflink siteColor f-11 mt-1'>Upload Documents</a>
                             </div>
                             <div className='text-center w-25 px-2' onClick={() => { setUploadEmailModal(true) }}>
                                 <svg className="hreflink" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48"  >
@@ -1418,7 +1416,7 @@ const AncTool = (props: any) => {
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M3.73609 11.5681C3.68578 11.7002 3.66678 17.3809 3.69423 24.1921L3.74396 36.5761L24.048 36.6251L44.352 36.6739V24.0011V11.3281H24.09C8.05724 11.3281 3.80886 11.3782 3.73609 11.5681ZM41.28 13.9197C41.28 13.9723 37.3923 15.9595 32.6407 18.3357L24.0013 22.6563L15.4567 18.3853C10.7571 16.0362 6.91196 14.049 6.91196 13.9691C6.91196 13.8894 14.6448 13.8241 24.096 13.8241C33.5472 13.8241 41.28 13.8671 41.28 13.9197ZM15.2634 21.0712L24 25.4382L32.7365 21.0712C37.5415 18.6692 41.5591 16.7041 41.6645 16.7041C41.7889 16.7041 41.856 19.7613 41.856 25.4411V34.178L24.048 34.1291L6.23996 34.0801L6.18985 25.6321C6.14281 17.7048 6.1693 16.7041 6.42543 16.7041C6.48111 16.7041 10.4584 18.6692 15.2634 21.0712Z" />
                                     <rect width="13" height="13" transform="translate(34 26)" fill="white" />
                                     <path d="M41.4 28H39.6V31.6H36V33.4H39.6V37H41.4V33.4H45V31.6H41.4V28Z" />
-                                </svg><a className='d-block hreflink f-11 mt-1'>Upload Email</a></div>
+                                </svg><a className='d-block siteColor hreflink f-11 mt-1'>Upload Email</a></div>
                             {/* {/ <a className='siteColor' onClick={() => { setUploadEmailModal(true) }}> Upload Email</a> /} */}
                             <div className='text-center w-25' onClick={() => { setFileNamePopup(true) }}>
                                 <svg className="hreflink" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48"  >
@@ -1427,14 +1425,14 @@ const AncTool = (props: any) => {
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M8.58157 11.104C7.83652 11.3416 7.46851 11.6111 7.21812 12.1035C7.00209 12.528 6.9766 14.0418 7.01468 24.2181L7.05823 35.8478L7.4519 36.2736C7.66841 36.5077 8.10402 36.7756 8.41991 36.8687C8.8026 36.9817 14.108 37.0217 24.3212 36.9889C40.8615 36.9358 39.9299 36.9888 40.6161 36.0632C40.9286 35.6419 40.9403 35.3369 40.983 26.4099C41.0319 16.2148 41.0437 16.3455 40.0207 15.7118C39.5089 15.3945 39.2214 15.3808 33.0792 15.3803C25.7954 15.3794 25.9103 15.3979 25.1066 14.0959C24.2515 12.7107 23.4347 11.7798 22.7462 11.406C22.0712 11.0396 21.9788 11.0345 15.5284 11.0037C11.9346 10.9864 8.80857 11.0317 8.58157 11.104ZM21.8043 13.3465C22.1875 13.5766 23.7565 15.6701 23.7565 15.9513C23.7565 16.1085 22.8223 16.8969 22.2481 17.2241C21.7926 17.4838 21.1438 17.511 15.41 17.511H9.07494V15.2977V13.0843H15.2212C20.5659 13.0843 21.4244 13.1185 21.8043 13.3465ZM38.8832 26.1597L38.8414 34.8083L23.9582 34.8501L9.07494 34.892V27.2672V19.6424L15.488 19.6414C19.3843 19.6409 22.1356 19.5744 22.4986 19.472C22.8272 19.3793 23.4672 19.0051 23.9209 18.6408C25.3137 17.5221 25.2118 17.5355 32.4298 17.5225L38.925 17.511L38.8832 26.1597Z" />
                                     <rect width="13" height="13" transform="translate(33 28)" fill="white" />
                                     <path d="M40.3999 30H38.6V33.6H35V35.3999H38.6V39H40.3999V35.3999H44V33.6H40.3999V30Z" stroke-width="0.2" />
-                                </svg><a className='d-block hreflink f-11  mt-1'>Create New Online File</a></div>
+                                </svg><a className='d-block siteColor hreflink f-11  mt-1'>Create New Online File</a></div>
                             {/* {/ <a className='siteColor' onClick={() => { setFileNamePopup(true) }}> Create New Online File</a> /} */}
                             <div className='text-center w-25' onClick={() => { setRemark(true) }}>
                                 <svg className="hreflink" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48"  >
                                     <title>Add SmartNotes</title>
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M9 23.5V40H19.9177H28.7609V37.9373H19.9189H11.0769V23.5V9.06249H18.3462H25.6154V13.1875V17.3125H29.7692H33.9231V21.4237V29.3325H36V21.7232V15.8513L31.5432 11.4256L27.0863 7H18.0432H9V23.5ZM30.0866 12.901L32.4515 15.25H30.0719H27.6923V12.901C27.6923 11.6091 27.699 10.5521 27.707 10.5521C27.7152 10.5521 28.7859 11.6091 30.0866 12.901Z" stroke-width="0.2" />
                                     <path d="M36.3999 32H34.6V35.6H31V37.3999H34.6V41H36.3999V37.3999H40V35.6H36.3999V32Z" stroke-width="0.2" />
-                                </svg><a className='d-block hreflink f-11 mt-1'>Add SmartNotes</a></div>
+                                </svg><a className='d-block siteColor hreflink f-11 mt-1'>Add SmartNotes</a></div>
                             {/* {/ <a className='siteColor' onClick={() => { setRemark(true) }}> Add SmartNote</a> /} */}
                         </div>
                     </Row>
@@ -1482,9 +1480,9 @@ const AncTool = (props: any) => {
                                                     <span>{selectedPath?.displayPath?.split(siteName)}<span className=''>{siteName}
 
                                                     </span></span>}</>}</span>
-                                                <span><a title="Click for Associated Folder" className='hreflink ms-2' onClick={() => setChoosePathPopup(true)} > Change Path </a></span>
+                                                <span><a title="Click for Associated Folder" className='hreflink ms-2 siteColor' onClick={() => setChoosePathPopup(true)} > Change Path </a></span>
                                             </div>
-                                            <div className='my-2'><label className='form-label fw-semibold'>All files in default folder:</label><span><a title="Default Folder Content" className='hreflink ms-2' onClick={() => OpenDefaultContentFolder()} > View </a></span></div>
+                                            <div className='my-2'><label className='form-label fw-semibold'>All files in default folder:</label><span><a title="Default Folder Content" className='hreflink ms-2 siteColor' onClick={() => OpenDefaultContentFolder()} > View </a></span></div>
 
                                             <div>
                                                 <div className='input-group'>
@@ -1498,10 +1496,10 @@ const AncTool = (props: any) => {
                                                             <Table hover responsive className='mb-0'>
                                                                 <thead className='fixed-Header top-0'>
                                                                     <tr>
-                                                                        <th></th>
-                                                                        <th className='p-1'>Type</th>
-                                                                        <th className='p-1' style={{ width: "300px" }}>Title</th>
-                                                                        <th style={{ width: '100px' }} className='p-1'>Rank</th>
+                                                                        <th style={{width:"20px"}}></th>
+                                                                        <th style={{width:"50px"}} className='p-1'>Type</th>
+                                                                        <th className='p-1'>Title</th>
+                                                                        <th style={{ width: '60px' }} className='p-1'>Rank</th>
 
                                                                     </tr>
 
@@ -1512,7 +1510,7 @@ const AncTool = (props: any) => {
                                                                             return (
                                                                                 <tr>
                                                                                     <td><input type="checkbox" className='form-check-input hreflink' checked={AllReadytagged?.some((doc: any) => file.Id == doc.Id)} onClick={() => { tagSelectedDoc(file) }} /></td>
-                                                                                    <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.File_x0020_Type}></span></td>
+                                                                                    <td><span className={`mt-1 svg__iconbox svg__icon--${file?.docType}`} title={file?.File_x0020_Type}></span></td>
                                                                                     <td><a style={{ wordBreak: "break-all" }} href={`${file?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
                                                                                     <td>{file?.ItemRank}</td>
                                                                                 </tr>
@@ -1652,10 +1650,10 @@ const AncTool = (props: any) => {
                                                             <thead className='fixed-Header top-0'>
                                                                 <tr>
 
-                                                                    <th className='p-1'>Type</th>
+                                                                    <th style={{ width: "50px" }} className='p-1'>Type</th>
                                                                     <th className='p-1'>Title</th>
-                                                                    <th style={{ width: "150px" }}>Item Rank</th>
-                                                                    <th style={{ width: "15x" }}>&nbsp;</th>
+                                                                    <th style={{ width: "100px" }}>Item Rank</th>
+                                                                    <th style={{ width: "20px" }}>&nbsp;</th>
 
                                                                 </tr>
 
@@ -1664,14 +1662,14 @@ const AncTool = (props: any) => {
                                                                 {AllReadytagged?.map((file: any) => {
                                                                     return (
                                                                         <tr>
-                                                                            <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
+                                                                            <td><span className={`mt-1 svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
                                                                             <td><a href={`${file?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off" className='hreflink'>{file?.Title}</a></td>
                                                                             <td>{file?.ItemRank}</td>
                                                                             <td> <span
                                                                                 style={{ marginLeft: '6px' }}
                                                                                 title='Untag Document'
                                                                                 onClick={() => { tagSelectedDoc(file) }}
-                                                                                className='alignIcon  svg__iconbox svg__icon--cross dark hreflink'
+                                                                                className='mt-1 svg__iconbox svg__icon--cross dark hreflink'
                                                                             ></span></td>
                                                                         </tr>
                                                                     )
