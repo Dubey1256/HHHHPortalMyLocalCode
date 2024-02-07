@@ -406,9 +406,10 @@ const HalfClientCategory = (props: any) => {
                                     items.Sitestagging = JSON.parse(items?.Sitestagging);
                                     items.siteCompositionSearch = result?.result;
                                     items.siteCompositionTotal = result?.total;
+                                    items.siteCompositionTotal = items?.siteCompositionTotal.toString();
                                 } else {
                                     items.siteCompositionSearch = ' ';
-                                    items.siteCompositionTotal = ' ';
+                                    items.siteCompositionTotal = null;
                                 }
                                 taskTypeCount?.map((type: any) => {
                                     if (items?.TaskType?.Title === type?.Title) {
@@ -561,9 +562,10 @@ const HalfClientCategory = (props: any) => {
                             items.Sitestagging = JSON.parse(items?.Sitestagging)
                             items.siteCompositionSearch = result?.result;
                             items.siteCompositionTotal = result?.total;
+                            items.siteCompositionTotal = items?.siteCompositionTotal.toString();
                         } else {
                             items.siteCompositionSearch = ' ';
-                            items.siteCompositionTotal = ' ';
+                            items.siteCompositionTotal = null;
                         }
                         if (items?.PortfolioType?.Id != undefined && items?.TaskType === undefined) {
                             portFoliotypeCount?.map((type: any) => {
@@ -865,7 +867,11 @@ const HalfClientCategory = (props: any) => {
                 header: "",
                 resetColumnFilters: false,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.siteCompositionTotal == filterValue
+                    if (row?.original?.siteCompositionTotal?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
                 },
                 resetSorting: false,
                 size: 60,
@@ -1046,7 +1052,11 @@ const HalfClientCategory = (props: any) => {
                 placeholder: "Composition Total",
                 header: "",
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.siteCompositionTotal == filterValue
+                    if (row?.original?.siteCompositionTotal?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
                 },
                 resetColumnFilters: false,
                 resetSorting: false,

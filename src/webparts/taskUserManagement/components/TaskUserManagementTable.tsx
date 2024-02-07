@@ -858,13 +858,15 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         <label className='form-label full-width fw-semibold'>Team: </label>
                                         <select className='full-width' id="sites" defaultValue={memberToUpdate?.Team} onChange={(e: any) => setUserTeam(e.target.value)}
                                         >
+
                                             <option>Select</option>
-                                            <option value="SPFx">SPFx</option>
-                                            <option value="Project">Project</option>
-                                            <option value="AnC">AnC</option>
-                                            <option value="Contact">Contact</option>
+                                            <option value="SPFx">Management</option>
+                                            <option value="Project">SPFX</option>
+                                            <option value="AnC">Shareweb</option>
+                                            <option value="Contact">Mobile</option>
                                             <option value="QA">QA</option>
                                             <option value="Design">Design</option>
+                                            <option value="Design">HR</option>
                                         </select>
                                     </div>
                                 </Col>
