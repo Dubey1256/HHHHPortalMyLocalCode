@@ -7,6 +7,7 @@ import TaskStatusTbl from './TaskStausTable';
 import * as Moment from "moment";
 import PageLoader from '../../../globalComponents/pageLoader';
 var taskUsers: any;
+let GroupByUsers: any = [];
 let AllMasterTasks: any[] = [];
 var currentUserData: any;
 let DashboardConfig: any = [];
@@ -90,11 +91,11 @@ const EmployeProfile = (props: any) => {
               console.log(error);
             }
           }
-          if (IsLoadTask != false) {
-            setprogressBar(true);
-            getAllData(false)
-          }
         })
+        if (IsLoadTask != false) {
+          setprogressBar(true);
+          getAllData(IsLoadTask)
+        }
       }
     }).catch((err: any) => {
       console.log(err);
@@ -123,13 +124,27 @@ const EmployeProfile = (props: any) => {
     AllsiteData = AllsiteData?.filter((item: any) => item.Title != "" && item.Title != "Master Tasks" && item.Title != "SDC Sites" && item.Title != "Offshore Tasks" && item.Configurations != null)
     setAllSite(AllsiteData)
   };
+  const getChilds = (item: any, items: any) => {
+    item.childs = [];
+    for (let index = 0; index < items.length; index++) {
+      let childItem = items[index];
+      if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID) {
+        item.childs.push(childItem);
+        getChilds(childItem, items);
+      }
+    }
+  }
   const loadTaskUsers = async () => {
     let taskUser;
     try {
       taskUsers = await globalCommon.loadAllTaskUsers(props?.props);
       let mailApprover: any;
+      let currentUserId: any = props?.props?.Context?.pageContext?.legacyPageContext?.userId
       taskUsers?.map((item: any) => {
-        let currentUserId: any = props?.props?.Context?.pageContext?.legacyPageContext?.userId
+        if (item.UserGroupId == undefined) {
+          getChilds(item, taskUsers);
+          GroupByUsers.push(item);
+        }
         if (currentUserId == item?.AssingedToUser?.Id && currentUserId != undefined) {
           currentUserData = item;
           if (item?.Approver?.length > 0 && item?.Approver?.length != undefined && item?.Approver?.length != null)
@@ -149,8 +164,22 @@ const EmployeProfile = (props: any) => {
         }
         item.expanded = false;
       })
+      if (GroupByUsers != undefined && GroupByUsers.length > 0) {
+        GroupByUsers?.map((User: any) => {
+          if (User.childs != undefined && User.childs.length > 0) {
+            User.childs.map((ChildUser: any) => {
+              if (ChildUser.Item_x0020_Cover == null || ChildUser.Item_x0020_Cover == undefined) {
+                let tempObject: any = {
+                  Description: '/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg',
+                  Url: '/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'
+                }
+                ChildUser.Item_x0020_Cover = tempObject;
+              }
+            })
+          }
+        })
+      }
       setData({ AllTaskUser: taskUsers });
-
     }
     catch (error) {
       return Promise.reject(error);
@@ -194,14 +223,21 @@ const EmployeProfile = (props: any) => {
     const array: any = allData
     DashboardConfig?.forEach((config: any) => {
       if (config?.Tasks == undefined)
-        config.Tasks = []
-      if (config?.smartFevId != undefined && config?.smartFevId != '' && config?.isShowEveryone === false && currentUserData.AssingedToUser.Id == config?.CurrentUserID) {
-        config.LoadDefaultFilter = false;
-        FilterDataOnCheck(config);
+        config.Tasks = [];
+      if (config?.DataSource == 'Tasks') {
+        if (config?.smartFevId != undefined && config?.smartFevId != '' && config?.isShowEveryone === false && currentUserData.AssingedToUser.Id == config?.CurrentUserID) {
+          config.LoadDefaultFilter = false;
+          FilterDataOnCheck(config);
+        }
+        else if (config?.smartFevId != undefined && config?.smartFevId != '' && config?.isShowEveryone === true) {
+          config.LoadDefaultFilter = false;
+          FilterDataOnCheck(config);
+        }
       }
-      else if (config?.smartFevId != undefined && config?.smartFevId != '' && config?.isShowEveryone === true) {
+      else if (config?.DataSource == 'TaskUsers') {
         config.LoadDefaultFilter = false;
-        FilterDataOnCheck(config);
+        config.Tasks = GroupByUsers.filter((User: any) => User?.Id == config?.smartFevId);
+
       }
     })
     array?.forEach((items: any) => {
@@ -304,6 +340,7 @@ const EmployeProfile = (props: any) => {
 
   };
   const callbackFunction = () => {
+    // getAllData(true)
     LoadAdminConfiguration(true)
   }
   /*smartFavId filter functionaloity*/
@@ -601,7 +638,7 @@ const EmployeProfile = (props: any) => {
   return (
     <>
       {progressBar && <PageLoader />}
-      <myContextValue.Provider value={{ ...myContextValue, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
+      <myContextValue.Provider value={{ ...myContextValue, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
         <div> <Header /></div>
         <TaskStatusTbl />
       </myContextValue.Provider>
