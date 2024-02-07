@@ -3,11 +3,14 @@ import { Web } from 'sp-pnp-js';
 // @ts-ignore
 import * as html2pdf from 'html2pdf.js';
 import * as XLSX from 'xlsx';
+import { Modal, Button, Form } from 'react-bootstrap';
 
+let allReportData:any = [];
 export const MonthlyLeaveReport = (props: any) => {
+  const [selectedDate, setSelectedDate] = useState('');
   const [AllTaskuser, setAllTaskuser] = useState([]);
   const [leaveData, setLeaveData] = useState([]);
-
+  const [opendate, setopendate] = useState(true);
   const getTaskUser = async () => {
     let web = new Web(props.props.siteUrl);
     try {
@@ -41,10 +44,16 @@ export const MonthlyLeaveReport = (props: any) => {
     loadleave();
   }, []);
   const downloadExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(AllTaskuser);
+    const worksheet = XLSX.utils.json_to_sheet(allReportData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-    XLSX.writeFile(workbook, 'yourData.xlsx');
+    XLSX.writeFile(workbook, 'SmalsusMonthlyLeaveReport.xlsx');
+  };
+  const downloadExcelCompleteMonth = () => {
+    const worksheet = XLSX.utils.json_to_sheet(CurrentMonthData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    XLSX.writeFile(workbook, 'SmalsusMonthlyLeaveReportofMonth.xlsx');
   };
   const downloadPDF = () => {
     const element = document.getElementById('contentToConvert');
@@ -146,26 +155,79 @@ export const MonthlyLeaveReport = (props: any) => {
   };
 
   let year = new Date().getFullYear();
-  let Currentyeardata = leaveData.filter((item: any) => item?.EventDate?.substring(0, 4) === `${year}`);
-  AllTaskuser.forEach((user: any) => {
-    const matchedData: any = Currentyeardata.filter((member) => member.Employee?.Id === user.AssingedToUserId);
+let month = new Date(selectedDate).getMonth() + 1; // Month is zero-based, so adding 1 to get the actual month
+let formattedMonth = month < 10 ? `0${month}` : `${month}`;
 
-    // Variables to store leave durations
-    let halfDayDuration = 0;
+let CurrentMonthData = leaveData.filter((item: any) => {
+  let itemYear = item?.EventDate?.substring(0, 4);
+  let itemMonth = item?.EventDate?.substring(5, 7);
 
-  
-    user.Plannedleave = calculatePlannedLeave(matchedData,"Planned Leave");
-    user.unplannedleave = calculatePlannedLeave(matchedData,"Un-Planned");
-    user.Halfday = halfDayDuration;
-    user.TotalLeave = calculateTotalWorkingDays(matchedData);
+  return itemYear === `${year}` && itemMonth === formattedMonth;
 });
 
+  AllTaskuser.forEach((users: any,Index:any) => {
+    let user:any={};
+    const matchedData: any = CurrentMonthData.filter((member) => member.Employee?.Id === users.AssingedToUserId);
+    user.Number = Index+1;
+    user.Title = users.Title;
+    user.Plannedleave = calculatePlannedLeave(matchedData,"Planned Leave");
+    user.unplannedleave = calculatePlannedLeave(matchedData,"Un-Planned");
+    user.TotalLeave = calculateTotalWorkingDays(matchedData);
+    
+    allReportData.push(user)
+});
 
+  const handleDateChange = (event:any) => {
+    setSelectedDate(event.target.value);
+  };
+
+  const handleSubmit = (event:any) => {
+    event.preventDefault();
+    // Handle the date submission or any other logic here
+    console.log('Selected Date:', selectedDate);
+    // Close the modal
+    allReportData= []
+    setopendate(false);
+  };
+  const handleclose =()=>{
+    setopendate(false)
+    allReportData= []
+    
+    props.settrue(false)
+  }
+  useEffect(()=>{
+    if(props.trueval){
+        setopendate(true)
+      }
+  },[])
+  
   return (
     
     <div>
-        {AllTaskuser?.length>0 && 
+ <Modal show={opendate} onHide={()=>handleclose()}>
+      <Modal.Header closeButton>
+        <Modal.Title>Select a Date</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group controlId="formDate">
+            <Form.Label>Date:</Form.Label>
+            <Form.Control
+              type="date"
+              placeholder="Select a date"
+              value={selectedDate}
+              onChange={handleDateChange}
+            />
+          </Form.Group>
+          <Button variant="primary" type="submit">
+            Submit
+          </Button>
+        </Form>
+      </Modal.Body>
+    </Modal>
+        {allReportData?.length>0 && 
       <div id="contentToConvert">
+        <h1>Monthly Report of Leave</h1>
         <table>
           <thead>
             <tr>
@@ -173,18 +235,16 @@ export const MonthlyLeaveReport = (props: any) => {
               <th>Name</th>
               <th>Planned</th>
               <th>Unplanned</th>
-              <th>Halfday</th>
               <th>TotalLeave</th>
             </tr>
           </thead>
           <tbody>
-            {AllTaskuser.map((entry, index) => (
+            {allReportData.map((entry:any, index:any) => (
               <tr key={index}>
                 <td>{index + 1}</td>
                 <td>{entry.Title}</td>
                 <td>{entry.Plannedleave}</td>
                 <td>{entry.unplannedleave}</td>
-                <td>{entry.Halfday}</td>
                 <td>{entry.TotalLeave}</td>
               </tr>
             ))}
@@ -193,7 +253,13 @@ export const MonthlyLeaveReport = (props: any) => {
       </div>
       }
       <button onClick={downloadExcel}>Download Excel</button>
+      <button onClick={downloadExcelCompleteMonth}>Download Month Excel</button>
+      
     </div>
    
   );
 };
+
+
+
+

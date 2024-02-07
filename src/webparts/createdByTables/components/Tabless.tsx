@@ -30,11 +30,11 @@ import PageLoad from '../../../globalComponents/pageLoader';
 import "bootstrap/dist/js/bootstrap.min.js";
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import HighlightableCell from '../../../globalComponents/GroupByReactTableComponents/highlight';
+import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 
 
 let TaskUserBackup:any=[]
-const Tabless = (props: any) => {
-  let UserId:any = ''
+const Tabless = (props: any) => { let UserId:any = ''
   let count: any = 0;
   let AllListId: any = {
     MasterTaskListID: props?.Items?.MasterTaskListID,
@@ -80,6 +80,7 @@ const Tabless = (props: any) => {
   const [checkTeamMembers, setCheckTeamMembers]: any = React.useState([]);
   const [checkPrioritys, setCheckPriority]: any = React.useState([]);
   const [checkedValues, setCheckedValues]: any = React.useState([]);
+  const [masterTaskData, setmasterTaskData] = React.useState([]);
   const [copyData, setCopyData]: any = React.useState([]);
   const [date, setDate]: any = React.useState({ due: null, modify: null, created: null });
   const [loading,setloading] = React.useState(false);
@@ -200,6 +201,12 @@ const Tabless = (props: any) => {
   const getQueryVariable = () => {
     const params = new URLSearchParams(window.location.search);
     let CreatedBy = params.get("CreatedBy");
+    if(CreatedBy == null){
+      params.set('CreatedBy', props?.Items?.userDisplayName.split(" ")[0]);
+      const newUrl = `${window.location.pathname}?${params.toString()}`;
+      window.history.pushState({}, '', newUrl);
+      CreatedBy = params.get("CreatedBy");
+    }
     CreatedByQueryId = CreatedBy;
     let AssignedTo = params.get("AssignedTo");
     AssignedToQueryId = AssignedTo;
@@ -243,6 +250,7 @@ const Tabless = (props: any) => {
       .top(4999)
       .get().then((data: any) => {
         masterTasks = data;
+        setmasterTaskData(data);
         setloading(true);
         getTaskUserData();
       }).catch((err: any) => {
@@ -267,8 +275,8 @@ const Tabless = (props: any) => {
     const web = new Web(items.siteUrl);
     await web.lists
       .getById(items.listId)
-      .items.select("Title", "PercentComplete","TeamMembers/Id","TeamMembers/Title","ResponsibleTeam/Id","ResponsibleTeam/Title",'EstimatedTimeDescription',"EstimatedTime" ,"SharewebTaskType/Title", "TaskType/Id", "TaskType/Title", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "Categories", "Priority_x0020_Rank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
-      .expand("Team_x0020_Members", "ResponsibleTeam" , "TeamMembers" , "Author", "PortfolioType", "Portfolio", "TaskType", "SharewebTaskType", "Editor", "Responsible_x0020_Team", "AssignedTo")
+      .items.select("Title", "PercentComplete","TaskLevel","TeamMembers/Id","TaskID","ParentTask/Title","ParentTask/Id","TeamMembers/Title","ResponsibleTeam/Id","ResponsibleTeam/Title",'EstimatedTimeDescription',"EstimatedTime" ,"SharewebTaskType/Title", "TaskType/Id", "TaskType/Title","TaskType/Level", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "Categories", "Priority_x0020_Rank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
+      .expand("Team_x0020_Members", "ResponsibleTeam" , "TeamMembers","ParentTask" , "Author", "PortfolioType", "Portfolio", "TaskType", "SharewebTaskType", "Editor", "Responsible_x0020_Team", "AssignedTo")
       .filter(`${filter}`).top(5000)
       .getAll()
       .then((data: any) => {
@@ -340,8 +348,8 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
 
 
            allData.push({
+            ...dataItem,
             idType: dataItem.idType,
-            Title: dataItem.Title,
             Categories: dataItem.Categories,
             percentage: dataItem.percentage,
             newDueDate: dataItem.newDueDate,
@@ -351,10 +359,8 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
             EditorSuffix:dataItem.EditorSuffix,
             AuthorSuffix:dataItem.AuthorSuffix,
             authorImg: dataItem.AuthorImg,
-            siteIcon: items.Title == "Migration" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png" : items.ImageUrl,
+            SiteIcon: items.Title == "Migration" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png" : items.ImageUrl,
             siteUrl: items.siteUrl,
-            Id: dataItem.Id,
-            ID: dataItem.Id,
             EstimatedTime:(jsonObject != null && jsonObject !=undefined && jsonObject[0]?.EstimatedTime != undefined && jsonObject[0]?.EstimatedTime != null ? jsonObject[0]?.EstimatedTime : ''),
             priority: dataItem.Priority_x0020_Rank ,
             Author: dataItem.Author,
@@ -447,8 +453,8 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
   const columns = React.useMemo(
     () => [
       {
-        accessorFn: (row: any) => <img className="workmember" src={row?.siteIcon}></img>,
-        id: "siteIcon",
+        accessorFn: (row: any) => <img className="workmember" src={row?.SiteIcon}></img>,
+        id: "SiteIcon",
         placeholder: "",
         header: "",
         resetColumnFilters: false,
@@ -458,7 +464,7 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
         accessorFn: (row: any) => row?.idType,
         cell: ({ row, getValue }: any) => (
 
-          <>{row?.original?.idType}</>
+          <>   <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.idType} row={row?.original} AllListId={AllListId} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={data} /></>
 
         ),
         id: "idType",
@@ -473,7 +479,7 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
         cell: ({ row, getValue }: any) => (
           <div>
             <a
-            target='_blank'
+              target='_blank'
               style={{ textDecoration: 'none', cursor: 'pointer', color: `${row?.original?.PortfolioType?.Color}` }}
               href={`${props.Items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
               rel='noopener noreferrer'
@@ -661,13 +667,13 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
         <div className='Alltable'>
           <GlobalCommanTable expandIcon={true} showHeader={true} showPagination={true} columns={columns} data={data} callBackData={callBackData} />
         </div>
-        {loading && <PageLoad />} 
+       
       </section>
       <span>
         {editPopup && <EditTaskPopup Items={result} context={props.Items.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
 
       </span>
-     
+      {loading && <PageLoad />} 
     </div>
   )
 }

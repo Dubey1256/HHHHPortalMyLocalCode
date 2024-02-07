@@ -370,6 +370,15 @@
         }
       ]
     },
+    "froala-editor-test-env-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/froalaEditorTestEnv/FroalaEditorTestEnvWebPart.js",
+          "manifest": "./src/webparts/froalaEditorTestEnv/FroalaEditorTestEnvWebPart.manifest.json"
+        }
+      ]
+    },
+    
     "hello-spfx-web-part": {
       "components": [
         {
@@ -391,6 +400,14 @@
         {
           "entrypoint": "./lib/webparts/groupByComponentsDashboard/GroupByComponentsDashboardWebPart.js",
           "manifest": "./src/webparts/groupByComponentsDashboard/GroupByComponentsDashboardWebPart.manifest.json"
+        }
+      ]
+    },
+    "datacleanuptool-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/datacleanuptool/DatacleanuptoolWebPart.js",
+          "manifest": "./src/webparts/datacleanuptool/DatacleanuptoolWebPart.manifest.json"
         }
       ]
     }
@@ -424,6 +441,7 @@
     "RecruitmentLandingPageWebPartStrings": "lib/webparts/recruitmentLandingPage/loc/{locale}.js",
     "TaskprofileWebPartStrings": "lib/webparts/taskprofile/loc/{locale}.js",
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
+    "DatacleanuptoolWebPartStrings": "lib/webparts/datacleanuptool/loc/{locale}.js",
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
     "TaskUserManagementWebPartStrings": "lib/webparts/taskUserManagement/loc/{locale}.js",
@@ -439,6 +457,7 @@
     "CategoriesWeeklyMultipleReportWebPartStrings": "lib/webparts/categoriesWeeklyMultipleReport/loc/{locale}.js",
     "CreateTaskWebPartStrings": "lib/webparts/createTask/loc/{locale}.js",
     "PermissionManagementWebPartStrings": "lib/webparts/permissionManagement/loc/{locale}.js",
+    "FroalaEditorTestEnvWebPartStrings": "lib/webparts/froalaEditorTestEnv/loc/{locale}.js",
     "AllTaskUserWebPartStrings": "lib/webparts/allTaskUser/loc/{locale}.js",
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
     "MyPendingTasksWebPartStrings": "lib/webparts/myPendingTasks/loc/{locale}.js",
