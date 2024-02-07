@@ -907,7 +907,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
               ""
             )}
             </span>
-            {row?.original?.Categories == 'Draft' ?
+            {row?.original?.TaskCategories == 'Draft' ?
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
               <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
