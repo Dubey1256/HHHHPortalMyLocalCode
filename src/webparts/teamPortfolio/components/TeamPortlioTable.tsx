@@ -10,7 +10,7 @@ import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryCompone
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
-//import { PortfolioStructureCreationCard } from "../../../globalComponents/tableControls/PortfolioStructureCreation";
+import { PortfolioStructureCreationCard } from "../../../globalComponents/tableControls/PortfolioStructureCreation";
 import CreateActivity from "../../../globalComponents/CreateActivity";
 import CreateWS from "../../../globalComponents/CreateWS";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -2377,7 +2377,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 </div>
             </section>
             <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={AddStructureCallBackCall} >
-                {/* <PortfolioStructureCreationCard
+                <PortfolioStructureCreationCard
                     CreatOpen={CreateOpenCall}
                     Close={AddStructureCallBackCall}
                     PortfolioType={IsUpdated}
@@ -2387,13 +2387,13 @@ function TeamPortlioTable(SelectedProp: any) {
                             ? checkedList
                             : props
                     }
-                /> */}
-                <CreateAllStructureComponent 
+                />
+                {/* <CreateAllStructureComponent 
                  Close={callbackdataAllStructure}
                  taskUser={AllUsers}
                  portfolioTypeData={portfolioTypeData}
                  PropsValue={ContextValue}
-                 />
+                 /> */}
 
             </Panel>
 
