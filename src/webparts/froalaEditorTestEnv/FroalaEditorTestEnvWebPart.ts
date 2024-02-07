@@ -8,34 +8,28 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'PermissionManagementWebPartStrings';
-import PermissionManagement from './components/PermissionManagement';
-import { IPermissionManagementProps } from './components/IPermissionManagementProps';
+import * as strings from 'FroalaEditorTestEnvWebPartStrings';
+import FroalaEditorTestEnv from './components/FroalaEditorTestEnv';
+import { IFroalaEditorTestEnvProps } from './components/IFroalaEditorTestEnvProps';
 
-export interface IPermissionManagementWebPartProps {
+export interface IFroalaEditorTestEnvWebPartProps {
   description: string;
-  SitePagesList:"16839758-4688-49D5-A45F-CFCED9F80BA6",
-  TaskUsertListID:string
 }
 
-export default class PermissionManagementWebPart extends BaseClientSideWebPart<IPermissionManagementWebPartProps> {
+export default class FroalaEditorTestEnvWebPart extends BaseClientSideWebPart<IFroalaEditorTestEnvWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IPermissionManagementProps> = React.createElement(
-      PermissionManagement,
+    const element: React.ReactElement<IFroalaEditorTestEnvProps> = React.createElement(
+      FroalaEditorTestEnv,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName,
-        siteUrl: this.context.pageContext.web.absoluteUrl,
-        SitePagesList: this.properties.SitePagesList,
-        TaskUsertListID:this.properties.TaskUsertListID,
-        context:this.context.pageContext
+        userDisplayName: this.context.pageContext.user.displayName
       }
     );
 
@@ -53,7 +47,7 @@ export default class PermissionManagementWebPart extends BaseClientSideWebPart<I
   private _getEnvironmentMessage(): Promise<string> {
     if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
       return this.context.sdks.microsoftTeams.teamsJs.app.getContext()
-        .then((context:any) => {
+        .then(context => {
           let environmentMessage: string = '';
           switch (context.app.host.name) {
             case 'Office': // running in Office
@@ -115,13 +109,7 @@ export default class PermissionManagementWebPart extends BaseClientSideWebPart<I
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
-                }),
-                 PropertyPaneTextField('SitePagesList', {
-                  label: 'Site Pages'
-                }),
-                PropertyPaneTextField('TaskUsertListID', {
-                  label: 'Task User List'
-                }),
+                })
               ]
             }
           ]

@@ -558,7 +558,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       AllClientCategories = smartMetaData;
     }
 
-    if (ClientCategory.length > 0) {
+    if (ClientCategory?.length > 0) {
       ClientCategory?.map((item: any, index: any) => {
         smartMetaData?.map((items: any, index: any) => {
           if (item?.Id == items?.Id) {
@@ -2176,7 +2176,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                           <div className='alignCenter'>
                                             <span className='me-2'>{EstimatedTimeData?.Team != undefined ? EstimatedTimeData?.Team : EstimatedTimeData?.Category != undefined ? EstimatedTimeData?.Category : null}</span> |
                                             <span className='mx-2'>{EstimatedTimeData?.EstimatedTime ? (EstimatedTimeData?.EstimatedTime > 1 ? EstimatedTimeData?.EstimatedTime + " hours" : EstimatedTimeData?.EstimatedTime + " hour") : "0 hour"}</span>
-                                            <img className="ProirityAssignedUserPhoto m-0 mx-2" title={EstimatedTimeData?.UserName} src={EstimatedTimeData?.UserImage != undefined && EstimatedTimeData?.UserImage?.length > 0 ? EstimatedTimeData?.UserImage : ''} />
+                                            <img className="ProirityAssignedUserPhoto m-0 mx-2" onClick={()=>globalCommon?.openUsersDashboard(AllListId?.siteUrl,undefined,EstimatedTimeData?.UserName,this?.taskUsers)} title={EstimatedTimeData?.UserName} src={EstimatedTimeData?.UserImage != undefined && EstimatedTimeData?.UserImage?.length > 0 ? EstimatedTimeData?.UserImage : ''} />
                                           </div>
                                           {EstimatedTimeData?.EstimatedTimeDescription?.length > 0 && <div className='alignCenter hover-text'>
                                             <span className="svg__iconbox svg__icon--info"></span>
@@ -2399,7 +2399,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                               <div className="d-flex border ms-3 p-2  mb-1">
                                                                 <div className="col-1 p-0 wid30">
                                                                   <img className="workmember"onClick={()=>globalCommon?.openUsersDashboard(AllListId?.siteUrl,undefined,replymessage?.AuthorName,this?.taskUsers)} src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
-                                                                    replymessage.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                                                    replymessage?.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                                                                 </div>
                                                                 <div className="col-11 pe-0" >
                                                                   <div className='d-flex justify-content-between align-items-center'>
@@ -2657,7 +2657,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                     <span >{imgData?.UploadeDate}</span>
                                     <span className='round px-1'>
                                       {imgData?.UserImage !== null &&
-                                        <img className='align-self-start' title={imgData?.UserName} src={imgData?.UserImage} />
+                                        <img className='align-self-start' title={imgData?.UserName} onClick={()=>globalCommon?.openUsersDashboard(AllListId?.siteUrl,undefined,imgData?.UserName,this?.taskUsers)} src={imgData?.UserImage} />
                                       }
                                     </span>
                                   </div>
@@ -2676,7 +2676,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
                                 <span className='round px-1'>
                                   {item.AuthorImage != null &&
-                                    <img className='align-self-start' title={item?.AuthorName} src={item?.AuthorImage} />
+                                    <img className='align-self-start' title={item?.AuthorName} onClick={()=>globalCommon?.openUsersDashboard(AllListId?.siteUrl,undefined,item?.AuthorName,this?.taskUsers)} src={item?.AuthorImage} />
                                   }
                                 </span>
 
