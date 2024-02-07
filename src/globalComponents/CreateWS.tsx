@@ -150,42 +150,19 @@ const CreateWS = (props: any) => {
 
 
     //************ breadcrum start */
+
     const GetParentHierarchy = async (Item: any) => {
-        const parentdata: any = []
-        // parentdata.push()
-        // return new Promise((resolve, reject) => {
-        if (Item.Parent != null || Item?.Portfolio != undefined) {
-
-            var filt: any = "Id eq " + (Item.Parent != null || undefined ? Item?.Parent?.Id : Item?.Portfolio?.Id) + "";
-
-        }
-        let web = new Web(AllListId?.siteUrl);
-        let compo = [];
-        web.lists
-            .getById(AllListId?.MasterTaskListID)
-            .items
-            .select("ID", "Id", "Title", "Mileage", "ItemType", "Parent/Id", "Parent/Title"
-            ).expand("Parent")
-
-            .top(4999)
-            .filter(filt)
-            .get().then((comp: any) => {
-
-                console.log(comp)
-                parentdata.push(comp[0])
-                parentdata.push(Item)
-                //  if(comp[0].Parent!=undefined){
-                // GetParentHierarchy(comp[0])
-                //  }else{
-                setParentArray(parentdata)
-                // resolve(parentdata)
-                //  }
-
-            }).catch((error: any) => {
-                console.log(error)
-                // reject(error)
-            });
-        // })
+        const flateData: any = []
+      
+     globalCommon?.getBreadCrumbHierarchyAllData(Item,AllListId,flateData).then((resolve:any)=>{
+        console.log(resolve)
+        // resolve?.flatdata.push(Item)
+        setParentArray(resolve?.flatdata.reverse())
+      }).catch((error:any)=>{
+        console.log(error)
+      });
+    
+    
 
     }
     // ***** bread crum end ***********
@@ -611,10 +588,11 @@ const CreateWS = (props: any) => {
                                     ParentArray?.map((childsitem: any, index: any) => {
                                         return (
                                             <>
-                                                <li><a href='#'>{ParentArray.length - 1 == index ? `${childsitem?.Title}` : `${childsitem?.Title}`} </a> </li>
+                                                <li><a  target="_blank" data-interception="off"  href={'ParentTask'in childsitem?`${AllListId?.siteUrl}/SP/SitePages/Task-Profile.aspx?taskId=${childsitem?.Id}&Site=${childsitem?.siteType}` : `${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${childsitem?.Id}`}>{ParentArray?.length - 1 == index ? `${childsitem?.Title}` : `${childsitem?.Title}`} </a> </li>
                                             </>
                                         )
                                     })
+                                    
                                 }
                             </ul>
 

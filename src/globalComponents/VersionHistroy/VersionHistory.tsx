@@ -19,6 +19,7 @@ export default function VersionHistory(props: any) {
     const siteTypeUrl = props.siteUrls;
     const listId = props?.listId
     const ItemId = props?.taskId;
+    let sitetype = window?.location?.search?.split("&Site=")[1];
     const RequiredListIds: any = props?.RequiredListIds;
     let tempEstimatedArrayData: any;
     const [show, setShow] = React.useState(false);
@@ -570,7 +571,7 @@ export default function VersionHistory(props: any) {
                                                 {itm?.No}
                                             </td>
                                             <td>
-                                                <span className="siteColor"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/HHHH/DispForm.aspx?ID=${itm.ID}&VersionNo=${itm.version}`}>{itm?.ModifiedDate}</a></span>
+                                                <span className="siteColor"><a href={`${siteTypeUrl}/Lists/${sitetype}/DispForm.aspx?ID=${itm.ID}&VersionNo=${itm.version}`} target='_blank' data-interception="off">{itm?.ModifiedDate}</a></span>
                                             </td>
                                             <td>
                                                 <div className='Info-VH-Col'>

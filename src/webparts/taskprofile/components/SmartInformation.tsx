@@ -10,14 +10,13 @@ import * as moment from "moment-timezone";
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { DragDropFiles } from "@pnp/spfx-controls-react/lib/DragDropFiles";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-
+import * as globalCommon from '../../../globalComponents/globalCommon';
 import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup"
 import { myContextValue } from "../../../globalComponents/globalCommon";
 let AllTasktagsmartinfo: any = [];
 let hhhsmartinfoId: any = [];
 let taskUser: any = [];
 let mastertaskdetails: any = [];
-let MovefolderItemUrl2 = "";
 let addSmartInfoPopupAddlinkDoc2 = false;
 const SmartInformation = (props: any, ref: any) => {
   const myContextData2: any = React.useContext<any>(myContextValue)
@@ -28,8 +27,7 @@ const SmartInformation = (props: any, ref: any) => {
     Title: "", URL: "", Acronym: "", Description: "", InfoType: "Information Note", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [],
   })
  
-
-  const [filterSmartinfo, setFiltersmartinfo] = useState([]);
+ const [filterSmartinfo, setFiltersmartinfo] = useState([]);
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
   const [uplodDoc, setUploaddoc] = useState(null);
   const [EditTaskdata, setEditTaskdata] = useState();
@@ -463,7 +461,6 @@ const SmartInformation = (props: any, ref: any) => {
       //=============edit the data  save function   ===============
 
       if (popupEdit) {
-        // await web.lists.getByTitle("SmartInformation")
         await web.lists.getById(props?.AllListId?.SmartInformationListID)
           .items.getById(editvalue?.Id).update(postdata)
           .then(async (editData: any) => {
@@ -475,7 +472,6 @@ const SmartInformation = (props: any, ref: any) => {
                 Url: postdata?.URL?.Url,
                 Description: postdata?.URL?.Description
               }
-              // urlcallback.
               let backupremarkdata = props.RemarkData
               restdata.Created = postdata.Created;
               restdata.Description = postdata.Description;
@@ -486,7 +482,6 @@ const SmartInformation = (props: any, ref: any) => {
               restdata.SelectedFolder = postdata.SelectedFolder;
               restdata.Title = postdata.Title;
               restdata.Acronym = postdata.Acronym;
-              // backupremarkdata?.SmartInformation[0]?.push(res?.data)
               backupremarkdata?.SmartInformation.splice(0, 1, restdata);
               if (props?.setRemark != undefined) {
                 props.setRemark(false)
@@ -564,18 +559,12 @@ const SmartInformation = (props: any, ref: any) => {
       }
     }
     else {
-    
-      alert("Please fill the Title")
+    alert("Please fill the Title")
       reject("Please fill the Title")
-    
-   
-      addSmartInfoPopupAddlinkDoc2 = false;
+     addSmartInfoPopupAddlinkDoc2 = false;
     }
      })
-    
-
-
-  }
+     }
 
   //===========show hide smartInformation===========
 
@@ -1028,8 +1017,8 @@ const SmartInformation = (props: any, ref: any) => {
                       )
                     })}
                   </div>
-                  <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Created By</span><span className='pe-2'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Author?.AuthorImage != undefined ? <img className='align-self-start' title={SmartInformation?.Author?.Title} src={SmartInformation?.Author?.AuthorImage?.Url} /> : ""}</span></div>
-                  <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified By</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : ""}</span></div>
+                  <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Created By</span><span className='pe-2'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Author?.AuthorImage != undefined ? <img className='align-self-start' onClick={()=>globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl,SmartInformation?.Author?.Id)} title={SmartInformation?.Author?.Title} src={SmartInformation?.Author?.AuthorImage?.Url} /> : ""}</span></div>
+                  <div className="p-1 px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified By</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' onClick={()=>globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl,SmartInformation?.Editor?.Id)} title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : ""}</span></div>
                 </div>
                 <div></div>
               </>)
