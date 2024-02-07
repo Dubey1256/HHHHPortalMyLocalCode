@@ -67,27 +67,26 @@ const EmailComponenet = (props: any) => {
       if (items?.eventType == 'Work From Home') {
         membersWorkfromHome.push(items)
       }
-    })    
-let SendEmailMessage =
-    sp.utility
-      .sendEmail({
-        Body: BindHtmlBody(),
-         Subject: "HHHH - Team Attendance " + formattedDate + " " + Allteamoforganization + " available - " + (Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length) + " on leave",
-        To: ["deepak@hochhuth-consulting.de","stefan.hochhuth@hochhuth-consulting.de","robert.ungethuem@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de"],
-        // ,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"
-       
-        AdditionalHeaders: {
-          "content-type": "text/html",
-        },
-      })
-      .then(() => {
-        console.log("Email Sent!");
-        alert("Email Sent!");
-        props.call();
-      })
-      .catch((error) => {
-        alert("error");
-      });
+    })
+    let SendEmailMessage =
+      sp.utility
+        .sendEmail({
+          Body: BindHtmlBody(),
+          Subject: "HHHH - Team Attendance " + formattedDate + " " + Allteamoforganization + " available - " + (Object?.keys(nameidTotals)?.length - membersWorkfromHome?.length) + " on leave",
+          To: ["deepak@hochhuth-consulting.de","stefan.hochhuth@hochhuth-consulting.de","robert.ungethuem@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de"],
+          // ,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"
+          AdditionalHeaders: {
+            "content-type": "text/html",
+          },
+        })
+        .then(() => {
+          console.log("Email Sent!");
+          alert("Email Sent!");
+          props.call();
+        })
+        .catch((error) => {
+          alert("error");
+        });
   };
 
   // ,"juli.kumari@hochhuth-consulting.de","juli.kumari@smalsus.com","anubhav@smalsus.com","ranu.trivedi@hochhuth-consulting.de"
@@ -117,32 +116,32 @@ let SendEmailMessage =
   let arr: any = [];
   // Count all the leave of the user
   let year = new Date().getFullYear();
-  let yeardata = leaveData.filter((item:any) => item?.EventDate?.substring(0, 4) === `${year}`)
+  let yeardata = leaveData.filter((item: any) => item?.EventDate?.substring(0, 4) === `${year}`)
 
   const calculateTotalWorkingDays = (matchedData: any) => {
     const today = new Date();
-  
+
     return matchedData.reduce((total: any, item: any) => {
       const endDate = new Date(item.EndDate);
       const eventDate = new Date(item.EventDate);
       const timezoneOffset = endDate.getTimezoneOffset();
       const timezoneOffsetInHours = timezoneOffset / 60;
       const adjustedEndDate = new Date(endDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
-      const adjustedEventDate:any = new Date(eventDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
-  
+      const adjustedEventDate: any = new Date(eventDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
+
       // Filter data based on the event date being in the current year
       if (adjustedEventDate.getFullYear() === today.getFullYear()) {
         const adjustedEndDateToToday = today < adjustedEndDate ? today : adjustedEndDate;
-  
+
         // Set hours to 0 for accurate date comparisons
         adjustedEndDateToToday.setHours(0);
         let workingDays = 0;
         let currentDate = new Date(adjustedEventDate);
         currentDate.setHours(0);
-  
+
         while (currentDate <= adjustedEndDateToToday) {
           const dayOfWeek = currentDate.getDay();
-  
+
           if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(currentDate, adjustedEndDateToToday)) {
             // Exclude Sunday (0) and Saturday (6), and the event date and end date if they're both on a weekend
             if (item?.Event_x002d_Type !== "Work From Home") {
@@ -156,21 +155,21 @@ let SendEmailMessage =
               }
             }
           }
-  
+
           currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
         }
-  
+
         return total + workingDays;
       }
-  
+
       return total;
     }, 0);
   };
-  
-  
-  
-  
- 
+
+
+
+
+
 
   // Function to check if a date falls on a weekend
   const isWeekend = (startDate: any, endDate: any) => {
@@ -275,12 +274,12 @@ let SendEmailMessage =
   qateamavailabel = qaleavetotal.length - qateamleave.length;
   const designteamleave = data.filter((item: any) => item.designteam.length != 0 && item.eventType != 'Work From Home');
   designteamavailabel = designttotal.length - designteamleave.length;
-// // <div style="margin-bottom: 40px;font-size: 32px;font-weight: 600;line-height: 40px;color: #2F5596;font-family: Segoe UI;">
+  // // <div style="margin-bottom: 40px;font-size: 32px;font-weight: 600;line-height: 40px;color: #2F5596;font-family: Segoe UI;">
 
-            //     ${Object?.keys(nameidTotals)?.length === 0 ? `The ${formattedDate} is a great Day! All ${Allteamoforganization} are in Office today!` : `${formattedDate}: ${(Object?.keys(nameidTotals)?.length - WorkfromHomeEmp?.length)} are on leave, ${Allteamoforganization - (Object?.keys(nameidTotals)?.length - WorkfromHomeEmp?.length)} are working`}
-            // </div>
+  //     ${Object?.keys(nameidTotals)?.length === 0 ? `The ${formattedDate} is a great Day! All ${Allteamoforganization} are in Office today!` : `${formattedDate}: ${(Object?.keys(nameidTotals)?.length - WorkfromHomeEmp?.length)} are on leave, ${Allteamoforganization - (Object?.keys(nameidTotals)?.length - WorkfromHomeEmp?.length)} are working`}
+  // </div>
   const returnEmailHtml = (): any => {
-     let WorkfromHomeEmp: any = []
+    let WorkfromHomeEmp: any = []
     props?.data.filter((items: any) => {
       if (items?.eventType == 'Work From Home') {
         WorkfromHomeEmp.push(items)
@@ -288,17 +287,31 @@ let SendEmailMessage =
     })
     let structure = `    
     <div id="htmlMailBodyemail" style=" display:none;">
-    <div style="background-color:#FAFAFA;margin:-18px -10px;">
-        <div width="900px" style="width:900px;margin:0 auto; padding:0px 32px;background-color:#ffff;">
-            <div style="display: flex;align-items: center;padding: 56px 0px;">
-                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png" width="48px" height="48px" style="width: 48px;height: 48px;border-radius: 50%;" alt="Site Icon">
-                <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Attendance Report</div>
+    <table width="100%" bgcolor="#FAFAFA" style="background-color:#FAFAFA;margin:-18px -10px;" align="center">
+    <tr>
+    <td width="100%">
+        <table width="900px" align="center" bgcolor="#fff" style="width:900px;padding:0px 32px;background-color:#fff;">
+        <tr><td width="100%">
+            <div style="padding-top: 56px;" width="100%">
+              <table style="height: 50px;border-collapse: collapse;" border="0" align="left">
+                <tr>
+                  <td width="48px" height="48px"><img width="100%" height="100%" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png" style="width: 48px;height: 48px;border-radius: 50%;" alt="Site Icon"></td>
+                  <td style="margin-left:4px;"><div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;">Attendance Report</div></td>
+                </tr>
+              </table>
+            </div>
+            <div width="100%">
+              <table style="height: 56px;border-collapse: collapse;" border="0" width="100%" height="56px">
+                <tr>
+                  <td width="100%" height="56px">&nbsp;</td>
+                </tr>
+              </table>
             </div>
             
         `;
 
     let tableBody = `
-        <div style="margin-bottom: 32px;">
+        <div>
         <table style="height: 88px;border-collapse: collapse;">
             <tr>
                 <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;text-align: center;">Smalsus Lead Team</td>
@@ -318,7 +331,14 @@ let SendEmailMessage =
             </tr>
         </table>
     </div>
-    <div style="margin-bottom: 48px;">
+    <div width="100%">
+              <table style="height: 32px;border-collapse: collapse;" border="0" width="100%" height="32px">
+                <tr>
+                  <td width="100%" height="32px">&nbsp;</td>
+                </tr>
+              </table>
+            </div>
+    <div>
     <table style="border-collapse: collapse;">
         <tr>
             <td width="40px" height="48px" style="color: #333;height:48px;width:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">No.</td>
@@ -326,8 +346,8 @@ let SendEmailMessage =
             <td width="112px" height="48px" style="color: #333;height:48px;width:112px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Attendance</td>
             <td width="104px" height="48px" style="color: #333;height:48px;width:104px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Reason</td>
             <td width="144px" height="48px" style="color: #333;height:48px;width:144px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Expected leave end</td>
-            <td width="156px" height="48px" style="color: #333;height:48px;width:156px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Team</td>
-            <td width="144px" height="48px" style="color: #333;height:48px;width:144px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Total leave this year</td>
+            <td width="140px" height="48px" style="color: #333;height:48px;width:140px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Team</td>
+            <td width="160px" height="48px" style="color: #333;height:48px;width:160px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Total leave this year</td>
         </tr>
        `
     let innerTableRow: any = '';
@@ -340,15 +360,23 @@ let SendEmailMessage =
              <td width="104px" height="40px" style="color: #333;height:40px;width:104px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;">${item?.reason}</td>
              <td width="144px" height="40px" style="color: #333;height:40px;width:144px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;text-decoration-line: underline;color: #2F5596;"><a style="color: #2F5596;" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">
                  <span style="color: #2F5596;">${item?.enddate}</span></td>
-             <td width="156px" height="40px" style="color: #333;height:40px;width:156px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;" >${item.Designation}</td>
-             <td width="144px" height="40px" style="color: #333;height:40px;width:144px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;">${item?.TotalLeave}</td>
+             <td width="140px" height="40px" style="color: #333;height:40px;width:140px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;" >${item.Designation}</td>
+             <td width="160px" height="40px" style="color: #333;height:40px;width:160px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;">${item?.TotalLeave}</td>
          </tr>`
 
     })
 
     tableBody += innerTableRow + ` </table></div>`
 
-    let CompleteEmployeeBody = ` <div width="264" height="264px" style="width: 264px;height: 264px;flex-shrink: 0;border-radius: 264px;background: #EEF4FF;margin-bottom: 40px;padding: 20px;display: flex; align-items: center;justify-content: space-around; margin: 0 auto;">
+    let CompleteEmployeeBody = ` 
+    <div width="100%">
+              <table style="height: 48px;border-collapse: collapse;" border="0" width="100%" height="48px">
+                <tr>
+                  <td width="100%" height="48px">&nbsp;</td>
+                </tr>
+              </table>
+            </div>
+    <div width="264" height="264px" style="width: 264px;height: 264px;flex-shrink: 0;border-radius: 264px;background: #EEF4FF;margin-bottom: 40px;padding: 20px;display: flex; align-items: center;justify-content: space-around; margin: 0 auto;">
     <div width="200px" height="200px" style="width: 200px;height: 200px;flex-shrink: 0;">
     <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/CalendarImages/image%2048.png">
     </div>
@@ -356,30 +384,62 @@ let SendEmailMessage =
 <div style="margin-bottom: 88px;">
     <div width="260px" height="40px" style="display: flex;justify-content: center;align-items: center;gap: 8px;flex-shrink: 0;color: #FFF;border-radius: 4px;
     background: #2F5596;width: 260px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;">See Full Leave Report Online</div>
-</div>
+     
+    </div>
 <div style="display: flex;align-items: center;padding-bottom: 56px;">
     <img width="48px" height="48px" src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 48px;" alt="Site Icon">
-    <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div>
+    <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;">Hochhuth Consulting GmbH</div>
 </div>`
 
     let allEmpPresent = false;
-     Object?.keys(nameidTotals)?.length != 0 ? (allEmpPresent = false) : (allEmpPresent = true);
+    Object?.keys(nameidTotals)?.length != 0 ? (allEmpPresent = false) : (allEmpPresent = true);
 
     if (allEmpPresent) {
       structure += CompleteEmployeeBody + `</div></div></div></div></div>`;
     } else {
       structure += tableBody + `
-            <div style="margin-bottom: 88px;">
-                <div style="display: flex;justify-content: center;align-items: center;flex-shrink: 0;color: #FFF;border-radius: 4px;
-                background: #2F5596;width: 260px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;">
-                    <a style="text-decoration: none;color: white;" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">See Full Leave Report Online</a>
-                </div>
+            <div width="100%">
+              <table style="height: 48px;border-collapse: collapse;" border="0" width="100%" height="48px">
+                <tr>
+                  <td width="100%" height="48px">&nbsp;</td>
+                </tr>
+              </table>
             </div>
-            <div style="display: flex;align-items: center;padding-bottom: 56px;">
-                <img src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 48px;" alt="Site Icon">
-                <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div>
+            <div width="100%">
+              <table align="left">
+                <tr>
+                  <td width="260px" height="40px" align="center" style="background: #2F5596;display: flex;justify-content: center;align-items: center;gap: 8px;flex-shrink: 0;border-radius: 4px;
+                    font-family: Segoe UI;width:260px;height:40px;font-size: 14px;font-style: normal;font-weight: 600;line-height: normal;">
+                    <a width="260px" height="40px" style="color:#fff;text-decoration: none;" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">
+                         See Full Leave Report Online
+                    </a>
+                  </td>
+                </tr>
+              </table>
             </div>
-        </div></div></div></div></div></div>`;
+            <div width="100%">
+              <table style="height: 88px;border-collapse: collapse;" border="0" width="100%" height="88px">
+                <tr>
+                  <td width="100%" height="88px">&nbsp;</td>
+                </tr>
+              </table>
+            </div>
+            <div width="100%">
+                <table style="height: 50px;border-collapse: collapse;" border="0" align="left">
+                  <tr>
+                    <td width="48px" height="48px"><img src="https://www.hochhuth-consulting.de/images/logo.png" width="100%" height="100%" style="width: 48px;height: 48px;" alt="Site Icon"></td>
+                    <td style="margin-left:4px;"><div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div></td>
+                  </tr>
+                </table>
+            </div>
+            <div width="100%">
+              <table style="height: 56px;border-collapse: collapse;" border="0" width="100%" height="88px">
+                <tr>
+                  <td width="100%" height="56px">&nbsp;</td>
+                </tr>
+              </table>
+            </div>
+        </div></div></div></td></tr></table></td></tr></table></div>`;
     }
 
     return structure;
