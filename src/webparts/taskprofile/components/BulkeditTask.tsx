@@ -189,7 +189,7 @@ export default function BulkeditTask(props: any) {
     }, []);
     return (
         <>
-        <div style={{position:'absolute', zIndex:"99", top:"5px", right:"457px"}}>
+        <div style={{position:'absolute', zIndex:"99", top:"5px", right:"485px"}}>
             <button
             className="btn btn-primary" 
             style={{padding:' 4px 12px 3px 12px !important'}}
