@@ -2,40 +2,41 @@ import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
-  IPropertyPaneConfiguration,
+  type IPropertyPaneConfiguration,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'PermissionManagementWebPartStrings';
-import PermissionManagement from './components/PermissionManagement';
-import { IPermissionManagementProps } from './components/IPermissionManagementProps';
+import * as strings from 'DatacleanuptoolWebPartStrings';
+import Datacleanuptool from './components/Datacleanuptool';
+import { IDatacleanuptoolProps } from './components/IDatacleanuptoolProps';
 
-export interface IPermissionManagementWebPartProps {
+export interface IDatacleanuptoolWebPartProps {
   description: string;
-  SitePagesList:"16839758-4688-49D5-A45F-CFCED9F80BA6",
-  TaskUsertListID:string
+  siteUrl: string;
+  BackupConfigurationsListID:"ce1d02af-03ec-473c-ad58-a52a2b97bb8d";
+  TaskUserListID:"b318ba84-e21d-4876-8851-88b94b9dc300";
 }
 
-export default class PermissionManagementWebPart extends BaseClientSideWebPart<IPermissionManagementWebPartProps> {
+export default class DatacleanuptoolWebPart extends BaseClientSideWebPart<IDatacleanuptoolWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IPermissionManagementProps> = React.createElement(
-      PermissionManagement,
+    const element: React.ReactElement<IDatacleanuptoolProps> = React.createElement(
+      Datacleanuptool,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        siteUrl: this.context.pageContext.web.absoluteUrl,
-        SitePagesList: this.properties.SitePagesList,
-        TaskUsertListID:this.properties.TaskUsertListID,
-        context:this.context.pageContext
+        BackupConfigurationsListID: this.properties.BackupConfigurationsListID,
+        TaskUserListID: this.properties.TaskUserListID,
+        Context: this.context,
+        siteUrl:this.context.pageContext.web.absoluteUrl,
       }
     );
 
@@ -53,7 +54,7 @@ export default class PermissionManagementWebPart extends BaseClientSideWebPart<I
   private _getEnvironmentMessage(): Promise<string> {
     if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
       return this.context.sdks.microsoftTeams.teamsJs.app.getContext()
-        .then((context:any) => {
+        .then(context => {
           let environmentMessage: string = '';
           switch (context.app.host.name) {
             case 'Office': // running in Office
@@ -63,10 +64,11 @@ export default class PermissionManagementWebPart extends BaseClientSideWebPart<I
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
+              // case 'TeamsModern':
+              //   environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
               break;
             default:
-              throw new Error('Unknown host');
+              environmentMessage = strings.UnknownEnvironment;
           }
 
           return environmentMessage;
@@ -107,7 +109,8 @@ export default class PermissionManagementWebPart extends BaseClientSideWebPart<I
       pages: [
         {
           header: {
-            description: strings.PropertyPaneDescription
+            description: strings.PropertyPaneDescription,
+           
           },
           groups: [
             {
@@ -116,11 +119,11 @@ export default class PermissionManagementWebPart extends BaseClientSideWebPart<I
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
                 }),
-                 PropertyPaneTextField('SitePagesList', {
-                  label: 'Site Pages'
+                PropertyPaneTextField("BackupConfigurationsListID", {
+                  label: "Backup Configurations List",
                 }),
-                PropertyPaneTextField('TaskUsertListID', {
-                  label: 'Task User List'
+                PropertyPaneTextField("TaskUserListID", {
+                  label: "Task User List",
                 }),
               ]
             }

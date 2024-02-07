@@ -1,66 +1,57 @@
 import * as React from "react";
-import {
-  FaAngleDown,
-  FaAngleUp,
-  FaChevronDown,
-  FaChevronRight
-} from "react-icons/fa";
 import { sp, Web } from "sp-pnp-js";
 import * as $ from "jquery";
-import { arraysEqual, Modal, Panel, PanelType } from "office-ui-fabric-react";
+import { Modal, Panel, PanelType } from "office-ui-fabric-react";
 import * as Moment from "moment";
-import { IFolderAddResult } from "@pnp/sp/folders";
 import { spfi } from "@pnp/sp";
 import "@pnp/sp/webs";
 import "@pnp/sp/folders";
-import pnp, { PermissionKind } from "sp-pnp-js";
 import { ColumnDef } from "@tanstack/react-table";
-import { parseISO, format } from "date-fns";
 import "@pnp/sp/lists";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import GlobalCommanTable from "../GroupByReactTableComponents/GlobalCommanTable";
-import * as moment from "moment-timezone";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Tooltip from "../Tooltip";
 import * as globalCommon from "../globalCommon";
-import { truncate } from "@microsoft/sp-lodash-subset";
 import HighlightableCell from "../highlight";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight, MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight } from "react-icons/Md";
-var AllTimeSpentDetails: any = [];
-var CurntUserId = "";
-var changeTime: any = 0;
-var ParentId: any = "";
-var Category: any = "";
-var NewCategoryId: any = "";
-var Eyd = "";
-var changeEdited = "";
-var CurrentUserTitle = "";
-var CategoriesIdd = "";
-var Categoryy = "";
-var CategoryyID: any = "";
-var timesheetMoveData: any = [];
-var TaskCate: any = [];
-var TimeSheetlistId = "";
-var CategryTitle = "";
-var siteUrl = "";
-let Flatview: any = false;
-var PortfolioType = "";
-var listName = "";
-var RelativeUrl: any = "";
-var CurrentSiteUrl: any = "";
-var AllTimeEntry: any = [];
-var UserName: any = "";
-var backupEdit: any = [];
-var AllUsers: any = [];
-var TimesheetConfiguration: any = [];
-var isShowCate: any = "";
+
+let AllTimeSpentDetails: any = [];
+let CurntUserId = "";
+let changeTime: any = 0;
+let ParentId: any = "";
+let Category: any = "";
+let NewCategoryId: any = "";
+let Eyd = "";
+let changeEdited = "";
+let CurrentUserTitle = "";
+let CategoriesIdd = "";
+let Categoryy = "";
+let  timesheetMoveData: any = [];
+let  TaskCate: any = [];
+let  TimeSheetlistId = "";
+let CategryTitle = "";
+let  CategoryyID: any = "";
+let  siteUrl = "";
+let  Flatview: any = false;
+let  PortfolioType = "";
+let  listName = "";
+let  RelativeUrl: any = "";
+let  CurrentSiteUrl: any = "";
+let  AllTimeEntry: any = [];
+let  UserName: any = "";
+let  backupEdit: any = [];
+let  AllUsers: any = [];
+let  TimesheetConfiguration: any = [];
+let  isShowCate: any = "";
 let expendedTrue: any = true;
 var change: any = new Date();
 var PopupType: any = ''
 var PopupTypeCat: any = false;
 const SP = spfi();
-var AllMetadata: [] = [];
+let AllMetadata: [] = [];
+
 const TimeEntryPopup = (item: any)=> {
   if (item?.props?.siteUrl != undefined) {
     var Url = item?.props?.siteUrl.split("https://hhhhteams.sharepoint.com");
@@ -88,7 +79,6 @@ const TimeEntryPopup = (item: any)=> {
   const [EditTaskItemitle, setEditItem] = React.useState("");
   const [flatview, setFlatview] = React.useState<any>("");
   const [collapseItem, setcollapseItem] = React.useState(true);
-  const [open, setOpen] = React.useState(false);
   const [search, setSearch]: [string, (search: string) => void] =
     React.useState("");
   const [TaskStatuspopup, setTaskStatuspopup] = React.useState(false);
@@ -105,7 +95,6 @@ const TimeEntryPopup = (item: any)=> {
   const [data, setData] = React.useState([]);
   const [counts, setCounts] = React.useState(1);
   const [months, setMonths] = React.useState(1);
-  const [saveEditTaskTime, setsaveEditTaskTime] = React.useState([]);
   const [demoState, setDemoState] = React.useState();
   const [postData, setPostData] = React.useState({
     Title: "",
@@ -121,12 +110,6 @@ const TimeEntryPopup = (item: any)=> {
     TimeSpentInHours: "",
     TaskTime: ""
   });
-  const [add, setAdd] = React.useState({
-    Title: "",
-    TaskDate: "",
-    Description: "",
-    TaskTime: ""
-  });
   const [saveEditTaskTimeChild, setsaveEditTaskTimeChild] = React.useState<any>({});
   const [AllUser, setAllUser] = React.useState([]);
   const [checkCategories, setcheckCategories] = React.useState();
@@ -139,7 +122,10 @@ const TimeEntryPopup = (item: any)=> {
   const [TimeInHours, setTimeInHours] = React.useState(0);
   const [TimeInMinutes, setTimeInMinutes] = React.useState<any>(0);
   const [categoryData, setCategoryData] = React.useState([]);
-  var smartTermName = "Task" + item.props.siteType;
+
+  let smartTermName = "Task" + item.props.siteType;
+
+// -------------------Load TaskUse------------------------------------------------------------------------------------------
 
   const GetTaskUsers = async () => {
     let web = new Web(`${CurrentSiteUrl}`);
@@ -147,8 +133,11 @@ const TimeEntryPopup = (item: any)=> {
     taskUsers = await web.lists.getByTitle("Task Users").items.top(4999).get();
     AllUsers = taskUsers;
     EditData(item.props);
-    //console.log(this.taskUsers);
+
   };
+
+  //-------------------------check folder of user----------------------------------------------------------------------------------------------
+
   const getAllTime = async () => {
     $.each(AllUsers, async function (index: any, taskUser: any) {
       if (taskUser.AssingedToUserId == CurntUserId) {
@@ -165,6 +154,8 @@ const TimeEntryPopup = (item: any)=> {
     AllTimeEntry = taskUsers;
   };
 
+
+  //---------------------------------------Change Date function--------------------------------------------------------------------------------
   const changeDate = (val: any, Type: any) => {
     if (val === "Date") {
       setCount(count + 1);
@@ -237,6 +228,9 @@ const TimeEntryPopup = (item: any)=> {
   var showProgressHide = () => {
     $(" #SpfxProgressbar").hide();
   };
+
+ // -----------------------------------------Decrease Date function-----------------------------------------------------------------------------
+
   const changeDateDec = (val: any, Type: any) => {
     if (val === "Date") {
       // setCount(count - 1)
@@ -395,7 +389,7 @@ const TimeEntryPopup = (item: any)=> {
 
 
   };
-
+//-----------------------Edit Category function-----------------------------------------------------------------------------------------------
   const Editcategorypopup = (child: any) => {
     var array: any = [];
     Categoryy = child.Category.Title;
@@ -413,6 +407,7 @@ const TimeEntryPopup = (item: any)=> {
   };
 
 
+//----------------------------------Open Main Centralize popup------------------------=====------------------------------------------------------------------
 
   const openAddTasktimepopup = async (childitem: any, Type: any) => {
     setbuttonDisable(false)
@@ -611,6 +606,8 @@ const TimeEntryPopup = (item: any)=> {
     }
   };
 
+  //----------------------------------Show All Category function---------------------------------------------------------------------------------------
+
   const GetTimeSheet = async () => {
     var TimeSheet: any = [];
     var newArray: any = [];
@@ -650,6 +647,7 @@ const TimeEntryPopup = (item: any)=> {
 
 
 
+//----------------------------------------Load Dynamic Lists----------------------------------------------------------------------------------------
 
   const GetSmartMetadata = async () => {
     let web = new Web(`${CurrentSiteUrl}`);
@@ -707,6 +705,8 @@ const TimeEntryPopup = (item: any)=> {
       }
     );
   };
+
+//------------------------------------*** Bind data function ***--------------------------------------------------------------------------------------------------
 
   const getStructureData = function () {
     TaskCate = AllTimeSpentDetails;
@@ -934,6 +934,8 @@ const TimeEntryPopup = (item: any)=> {
     return Items;
   };
 
+
+  //------------------------------------------------------Load Timesheet Data-----------------------------------------------------------------------------
   const EditData = async (items: any) => {
     AllTimeSpentDetails = [];
 
@@ -1196,13 +1198,7 @@ const TimeEntryPopup = (item: any)=> {
       var Title = titleName;
     }
   };
-  const handleTimeOpen = (item: any) => {
-    item.show = item.show = item.show === true ? false : true;
-    setTimeSheet((TaskTimeSheetCategoriesGrouping) => [
-      ...TaskTimeSheetCategoriesGrouping
-    ]);
-    // setData(data => ([...data]));
-  };
+  
   const sortBy = (Type: any) => {
     var copy: any = [];
     AllTimeSpentDetails?.forEach((val: any) => {
@@ -1225,6 +1221,7 @@ const TimeEntryPopup = (item: any)=> {
   };
 
 
+//-----------------------------------------Delete Timesheet function----------------------------------------------------------------------------------
 
   const deleteTaskTime = async (childinew: any) => {
     var UpdatedData: any = [];
@@ -1286,6 +1283,8 @@ const TimeEntryPopup = (item: any)=> {
       "ListItem"
     );
   }
+
+ // ------------------------------------Create Folder of user-----------------------------------------------------------------------------
   const GetOrCreateFolder = async (
     folderName: any,
     UpdatedData: any,
@@ -1366,6 +1365,9 @@ const TimeEntryPopup = (item: any)=> {
     mainParentTitle = newdata.data.Title;
     createItemforNewUser(LetestFolderID);
   };
+
+  // ----------------------------------------------------------Save Timesheet for old user----------------------------------------------------------------------
+
   const saveOldUserTask = async (UpdatedData: any) => {
     var Available = false;
     var TimeInHours: any = changeTime / 60;
@@ -1439,7 +1441,7 @@ const TimeEntryPopup = (item: any)=> {
   };
 
 
-
+//---------------------------------------------------------------Save Timesheet Main function----------------------------------------------------------------------
   const saveTimeSpent = async () => {
     var UpdatedData: any = {};
     if (item.props.siteType == "Offshore Tasks") {
@@ -1485,6 +1487,8 @@ const TimeEntryPopup = (item: any)=> {
 
     //--------------------------------End Post----------------------------------------------------------------
   };
+
+//-------------------------------------------------Create Timesheet in folder----------------------------------------------------------------------------------
   const createItemMainList = async () => {
     var UpdatedData: any = {};
     $.each(AllUsers, function (index: any, taskUser: any) {
@@ -1540,6 +1544,8 @@ const TimeEntryPopup = (item: any)=> {
     }
 
   };
+
+
   const createItemforNewUser = async (LetestFolderID: any) => {
     let web = new Web(`${CurrentSiteUrl}`);
     let taskUsers = [];
@@ -1594,6 +1600,8 @@ const TimeEntryPopup = (item: any)=> {
     EditData(item.props);
   };
 
+
+  //-----------------------------------------------Create Add Timesheet--------------------------------------------------------------------------------------
   const AddTaskTime = async (child: any, Type: any) => {
     setbuttonDisable(true)
 
@@ -1911,6 +1919,8 @@ const TimeEntryPopup = (item: any)=> {
 
    
   };
+
+//-------------------------------------------------Add JSON Data in Another category--------------------------------------------------------------------------
   const saveJsonDataAnotherCat = async (CurrentUser: any, items: any) => {
     var update: any = {};
     var UpdatedData: any = [];
@@ -1993,6 +2003,9 @@ const TimeEntryPopup = (item: any)=> {
         //setAdditionalTime({ ...AdditionalTime })
       });
   };
+
+
+//-----------------------------------------------Copy Data function-------------------------------------------------------------------------------------------
   const saveJsonDataAnotherCopy = async (
     CurrentUser: any,
     items: any,
@@ -2104,6 +2117,8 @@ const TimeEntryPopup = (item: any)=> {
       });
   };
 
+
+//---------------------------------------------------Delete category------------------------------------------------------------------------------------------
   const deleteCategory = async (val: any) => {
     var deleteConfirmation = confirm("Are you sure, you want to delete this?");
     var ListId = TimeSheetlistId;
@@ -2118,6 +2133,7 @@ const TimeEntryPopup = (item: any)=> {
       });
     }
   };
+
 
   var isTrue = false;
 
@@ -2153,6 +2169,8 @@ const TimeEntryPopup = (item: any)=> {
         setupdateData(updateData + 1);
       });
   };
+
+  //-----------------------------header of Main popup-----------------------------------------------------------------------------------------------------
   const onRenderCustomHeaderAddTaskTime = () => {
     return (
       <>
@@ -2165,6 +2183,7 @@ const TimeEntryPopup = (item: any)=> {
     );
   };
 
+  //----------------------------------------------Header of Edit category popup------------------------------------------------------------------------------
   const onRenderCustomHeaderEditCategory = () => {
     return (
       <>
@@ -2177,6 +2196,7 @@ const TimeEntryPopup = (item: any)=> {
     );
   };
 
+  //--------------------------------------Change time by custom button-----------------------------------------------------------------------------
   const changeTimeFunction = (e: any, type: any) => {
     if (type == "Add") {
       changeTime = e.target.value;
@@ -2205,6 +2225,8 @@ const TimeEntryPopup = (item: any)=> {
     }
   };
 
+
+  //--------------------------------------------Change Date by custom button--------------------------------------------------------------------------------
   const changeDatetodayQuickly = (date: any, type: any, Popup: any) => {
     if (Popup == "EditTime" || Popup == "CopyTime") {
       var newDate:any = Moment(date).format("DD/MM/YYYY");
@@ -2321,12 +2343,8 @@ const TimeEntryPopup = (item: any)=> {
       }
     }
   };
-  function convert(str: any) {
-    var date = new Date(str),
-      mnth = ("0" + (date.getMonth() + 1)).slice(-2),
-      day = ("0" + date.getDate()).slice(-2);
-    return [date.getFullYear(), mnth, day].join("-");
-  }
+ 
+
   const handleDatedue = (date: any) => {
     change = new window.Date(date);
     var NewDate: any = new window.Date(date);
@@ -2335,9 +2353,7 @@ const TimeEntryPopup = (item: any)=> {
     //setMyDatee(NewDate)
     setediteddata(NewDate);
   };
-  const handleOnBlur = (event: any) => {
-    setNewData({ ...newData, TaskDate: event.target.value });
-  };
+  
 
   const flatviewOpen = (e: any) => {
     var newArray: any = [];
@@ -2358,6 +2374,7 @@ const TimeEntryPopup = (item: any)=> {
     // setFlatview((flatview: any) => ([...flatview]))
   };
 
+  //------------------------------------------------------------Define columns-----------------------------------------------------------------------------
   const column = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
       {
@@ -2532,6 +2549,8 @@ const TimeEntryPopup = (item: any)=> {
     ],
     [data]
   );
+
+
   return (
     <div className={PortfolioType == "Service" ? "serviepannelgreena" : ""}>
       <div>
@@ -2561,6 +2580,7 @@ const TimeEntryPopup = (item: any)=> {
         </div>
       </div>
 
+{/* -----------------------------------------Show Table of Timesheet------------------------------------------------------------------------------- */}
       {collapseItem && (
         <div className="togglecontent clearfix mb-2">
           <div id="forShowTask" className="pt-0">

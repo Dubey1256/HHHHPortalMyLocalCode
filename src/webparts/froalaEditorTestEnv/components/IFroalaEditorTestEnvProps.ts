@@ -1,10 +1,7 @@
-export interface IManagedashboardconfigProps {
+export interface IFroalaEditorTestEnvProps {
   description: string;
   isDarkTheme: boolean;
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
-  Context: any;
-  AdminConfigurationListId: string;
-  TaskUserListId:any;
 }

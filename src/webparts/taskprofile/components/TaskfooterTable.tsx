@@ -888,7 +888,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
       {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
-          <div className='alignCenter'>
+          <>
           <span className='columnFixedTitle'>
             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink text-content serviceColor_Active"
               href={props?.AllListId?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID}
@@ -907,7 +907,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
               ""
             )}
             </span>
-            {row?.original?.Categories == 'Draft' ?
+            {row?.original?.TaskCategories == 'Draft' ?
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
               <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
@@ -915,7 +915,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
               Discription={row?.original?.descriptionsSearch}
               row={row?.original}
             />}
-          </div>
+          </>
         ),
         id: "Title",
         placeholder: "Title",
@@ -1329,7 +1329,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
     // className={IsUpdated === 'Events' ? 'app component eventpannelorange' : (IsUpdated == 'Service' ? 'app component serviepannelgreena' : 'app component')}
     >
       <div className="Alltable mt-10">
-        <div className="col-sm-12 pad0 smart tableheight" style={{height:"350px"}}>
+        <div className="col-sm-12 pad0 smart tableheight" >
             <div className={`${data?.length > 10 ? "wrapper" : "MinHeight tableheight"}`}>
               <div> <BulkeditTask SelectedTask={BulkTaskUpdate} Call={Call}></BulkeditTask></div>
 

@@ -5,6 +5,7 @@ export interface IPermissionManagementProps {
   hasTeamsContext: any;
   userDisplayName: string;
   siteUrl: any,
+  TaskUsertListID:any,
   SitePagesList:"16839758-4688-49D5-A45F-CFCED9F80BA6";
   context:any;
 }
