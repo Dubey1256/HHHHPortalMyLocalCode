@@ -1329,7 +1329,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
     // className={IsUpdated === 'Events' ? 'app component eventpannelorange' : (IsUpdated == 'Service' ? 'app component serviepannelgreena' : 'app component')}
     >
       <div className="Alltable mt-10">
-        <div className="col-sm-12 pad0 smart tableheight" >
+        <div className="col-sm-12 pad0 smart tableheight" style={{height:"350px"}}>
             <div className={`${data?.length > 10 ? "wrapper" : "MinHeight tableheight"}`}>
               <div> <BulkeditTask SelectedTask={BulkTaskUpdate} Call={Call}></BulkeditTask></div>
 
