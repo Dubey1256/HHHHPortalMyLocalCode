@@ -3538,6 +3538,9 @@ const EditTaskPopup = (Items: any) => {
             onUploadImageFunction(TaskImages, [arrayIndex]);
         }
     };
+
+    // this is used for hadneling the upload and replace image functions 
+
     const onUploadImageFunction = async (
         imageList: ImageListType,
         addUpdateIndex: number[] | undefined
@@ -3622,196 +3625,233 @@ const EditTaskPopup = (Items: any) => {
             }
         }
     };
-    const UploadImageFunction = (Data: any, imageName: any, DataJson: any) => {
-        let listId = Items.Items.listId;
-        let listName = Items.Items.listName;
-        let Id = Items.Items.Id;
-        var src = Data.data_url?.split(",")[1];
-        var byteArray = new Uint8Array(
-            atob(src)
-                ?.split("")
-                ?.map(function (c) {
-                    return c.charCodeAt(0);
-                })
-        );
-        const data: any = byteArray;
-        var fileData = "";
-        for (var i = 0; i < byteArray.byteLength; i++) {
-            fileData += String.fromCharCode(byteArray[i]);
-        }
-        setTimeout(() => {
+
+    // this is used for upload image on backend side 
+
+    const UploadImageFunction = (Data: any, imageName: any, DataJson: any): Promise<any> => {
+        return new Promise<void>(async (resolve, reject) => {
+            let listId = Items.Items.listId;
+            let listName = Items.Items.listName;
+            let Id = Items.Items.Id;
+            var src = Data.data_url?.split(",")[1];
+            var byteArray = new Uint8Array(
+                atob(src)
+                    ?.split("")
+                    ?.map(function (c) {
+                        return c.charCodeAt(0);
+                    })
+            );
+            const data = byteArray;
+            var fileData = "";
+            for (var i = 0; i < byteArray.byteLength; i++) {
+                fileData += String.fromCharCode(byteArray[i]);
+            }
+            setTimeout(() => {
+                if (Items.Items.listId != undefined) {
+                    (async () => {
+                        try {
+                            let web = new Web(siteUrls);
+                            let item = web.lists.getById(listId).items.getById(Id);
+                            await item.attachmentFiles.add(imageName, data);
+                            console.log("Attachment added");
+                            UpdateBasicImageInfoJSON(DataJson, "Upload", 0);
+                            EditData.UploadedImage = DataJson;
+                            setUploadBtnStatus(false);
+                            resolve();
+                        } catch (error) {
+                            reject(error);
+                        }
+                    })();
+                } else {
+                    (async () => {
+                        try {
+                            let web = new Web(siteUrls);
+                            let item = web.lists.getByTitle(listName).items.getById(Id);
+                            await item.attachmentFiles.add(imageName, data);
+                            console.log("Attachment added");
+                            UpdateBasicImageInfoJSON(DataJson, "Upload", 0);
+                            EditData.UploadedImage = DataJson;
+                            setUploadBtnStatus(false);
+                            resolve();
+                        } catch (error) {
+                            reject(error);
+                        }
+                    })();
+                }
+            }, 2500);
+        });
+    };
+
+
+    // this is a common function for updating the basic inmage info on Backend side when we upload image, replace image, and remove image
+
+    const UpdateBasicImageInfoJSON = (JsonData: any, usedFor: string, ImageIndex: any) => {
+        return new Promise<void>(async (resolve, reject) => {
+            var UploadImageArray: any = [];
+            if (JsonData != undefined && JsonData.length > 0) {
+                JsonData?.map((imgItem: any, Index: any) => {
+                    if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
+                        if (
+                            imgItem.imageDataUrl != undefined &&
+                            imgItem.imageDataUrl != null
+                        ) {
+                            let TimeStamp = Moment(new Date().toLocaleString());
+                            let ImageUpdatedURL;
+                            if (usedFor == "Update" && Index == ImageIndex) {
+                                ImageUpdatedURL = imgItem.imageDataUrl + "?Updated=" + TimeStamp;
+                            } else {
+                                ImageUpdatedURL = imgItem.imageDataUrl;
+                            }
+                            let tempObject = {
+                                ImageName: imgItem.ImageName,
+                                ImageUrl: ImageUpdatedURL,
+                                UploadeDate: imgItem.UploadeDate,
+                                UserName: imgItem.UserName,
+                                UserImage: imgItem.UserImage,
+                                Description: imgItem.Description != undefined ? imgItem.Description : "",
+                            };
+                            UploadImageArray.push(tempObject);
+                        } else {
+                            let TimeStamp = Moment(new Date().toLocaleString());
+                            let ImageUpdatedURL;
+                            if (usedFor == "Update" && Index == ImageIndex) {
+                                ImageUpdatedURL = imgItem.ImageUrl + "?Updated=" + TimeStamp;
+                            } else {
+                                ImageUpdatedURL = imgItem.ImageUrl;
+                            }
+                            imgItem.Description = imgItem.Description != undefined ? imgItem.Description : "";
+                            imgItem.ImageUrl = ImageUpdatedURL;
+                            UploadImageArray.push(imgItem);
+                        }
+                    }
+                });
+            }
+
+            try {
+                let web = new Web(siteUrls);
+                await web.lists
+                    .getById(Items.Items.listId)
+                    .items.getById(Items.Items.Id)
+                    .update({ BasicImageInfo: UploadImageArray?.length > 0 ? JSON.stringify(UploadImageArray) : null });
+                console.log("Image JSON Updated !!");
+                AddImageDescriptionsIndex = undefined;
+                resolve();
+            } catch (error) {
+                console.log("Error Message :", error);
+                reject(error);
+            }
+        });
+    };
+
+
+    // this is used for deleteing a image and update data on backend side
+
+    const RemoveImageFunction = (imageIndex: any, imageName: any, FunctionType: any) => {
+        return new Promise<void>(async (resolve, reject) => {
+            let tempArray: any = [];
+            if (FunctionType == "Remove") {
+                TaskImages?.map((imageData, index) => {
+                    if (index != imageIndex) {
+                        tempArray.push(imageData);
+                    }
+                });
+                setTaskImages(tempArray);
+            }
             if (Items.Items.listId != undefined) {
                 (async () => {
-                    let web = new Web(siteUrls);
-                    let item = web.lists.getById(listId).items.getById(Id);
-                    item.attachmentFiles.add(imageName, data).then(() => {
-                        console.log("Attachment added");
-                        UpdateBasicImageInfoJSON(DataJson, "Upload", 0);
-                        EditData.UploadedImage = DataJson;
-                    });
-                    setUploadBtnStatus(false);
-                })().catch(console.log);
+                    try {
+                        let web = new Web(siteUrls);
+                        let item = web.lists
+                            .getById(Items.Items.listId)
+                            .items.getById(Items.Items.Id);
+                        await item.attachmentFiles.getByName(imageName).recycle();
+                        await UpdateBasicImageInfoJSON(tempArray, "Upload", 0);
+                        EditData.UploadedImage = tempArray;
+                        console.log("Attachment deleted");
+                        resolve();
+                    } catch (error) {
+                        console.log("Error deleting attachment:", error);
+                        reject(error);
+                    }
+                })();
             } else {
                 (async () => {
-                    let web = new Web(siteUrls);
-                    let item = web.lists.getByTitle(listName).items.getById(Id);
-                    item.attachmentFiles.add(imageName, data).then(() => {
-                        console.log("Attachment added");
-                        UpdateBasicImageInfoJSON(DataJson, "Upload", 0);
-                        EditData.UploadedImage = DataJson;
-                    });
-                    setUploadBtnStatus(false);
-                })().catch(console.log);
-            }
-        }, 2500);
-    };
-
-    const UpdateBasicImageInfoJSON = async (
-        JsonData: any,
-        usedFor: any,
-        ImageIndex: any
-    ) => {
-        var UploadImageArray: any = [];
-        if (JsonData != undefined && JsonData.length > 0) {
-            JsonData?.map((imgItem: any, Index: any) => {
-                if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
-                    if (
-                        imgItem.imageDataUrl != undefined &&
-                        imgItem.imageDataUrl != null
-                    ) {
-                        let TimeStamp: any = Moment(new Date().toLocaleString());
-                        let ImageUpdatedURL: any;
-                        if (usedFor == "Update" && Index == ImageIndex) {
-                            ImageUpdatedURL = imgItem.imageDataUrl + "?Updated=" + TimeStamp;
-                        } else {
-                            ImageUpdatedURL = imgItem.imageDataUrl;
-                        }
-                        let tempObject: any = {
-                            ImageName: imgItem.ImageName,
-                            ImageUrl: ImageUpdatedURL,
-                            UploadeDate: imgItem.UploadeDate,
-                            UserName: imgItem.UserName,
-                            UserImage: imgItem.UserImage,
-                            Description:
-                                imgItem.Description != undefined ? imgItem.Description : "",
-                        };
-                        UploadImageArray.push(tempObject);
-                    } else {
-                        let TimeStamp: any = Moment(new Date().toLocaleString());
-                        let ImageUpdatedURL: any;
-                        if (usedFor == "Update" && Index == ImageIndex) {
-                            ImageUpdatedURL = imgItem.ImageUrl + "?Updated=" + TimeStamp;
-                        } else {
-                            ImageUpdatedURL = imgItem.ImageUrl;
-                        }
-                        imgItem.Description =
-                            imgItem.Description != undefined ? imgItem.Description : "";
-                        imgItem.ImageUrl = ImageUpdatedURL;
-                        UploadImageArray.push(imgItem);
+                    try {
+                        let web = new Web(siteUrls);
+                        let item = web.lists
+                            .getByTitle(Items.Items.listName)
+                            .items.getById(Items.Items.Id);
+                        await item.attachmentFiles.getByName(imageName).recycle();
+                        await UpdateBasicImageInfoJSON(tempArray, "Upload", 0);
+                        EditData.UploadedImage = tempArray;
+                        console.log("Attachment deleted");
+                        resolve();
+                    } catch (error) {
+                        console.log("Error deleting attachment:", error);
+                        reject(error);
                     }
-                }
-            });
-        }
-
-        try {
-            let web = new Web(siteUrls);
-            await web.lists
-                .getById(Items.Items.listId)
-                .items.getById(Items.Items.Id)
-                .update({ BasicImageInfo: UploadImageArray?.length > 0 ? JSON.stringify(UploadImageArray) : null })
-                .then((res: any) => {
-                    console.log("Image JSON Updated !!");
-                    AddImageDescriptionsIndex = undefined;
-                });
-        } catch (error) {
-            console.log("Error Message :", error);
-        }
-
+                })();
+            }
+        });
     };
-    const RemoveImageFunction = (
-        imageIndex: number,
-        imageName: any,
-        FunctionType: any
-    ) => {
-        let tempArray: any = [];
-        if (FunctionType == "Remove") {
-            TaskImages?.map((imageData: any, index: number) => {
-                if (index != imageIndex) {
-                    tempArray.push(imageData);
-                }
-            });
-            setTaskImages(tempArray);
-        }
-        if (Items.Items.listId != undefined) {
-            (async () => {
-                let web = new Web(siteUrls);
-                let item = web.lists
-                    .getById(Items.Items.listId)
-                    .items.getById(Items.Items.Id);
-                item.attachmentFiles
-                    .getByName(imageName)
-                    .recycle()
-                    .then(() => {
-                        UpdateBasicImageInfoJSON(tempArray, "Upload", 0);
-                        EditData.UploadedImage = tempArray;
-                        console.log("Attachment deleted");
-                    });
-            })().catch(console.log);
-        } else {
-            (async () => {
-                let web = new Web(siteUrls);
-                let item = web.lists
-                    .getByTitle(Items.Items.listName)
-                    .items.getById(Items.Items.Id);
-                item.attachmentFiles
-                    .getByName(imageName)
-                    .recycle()
-                    .then(() => {
-                        UpdateBasicImageInfoJSON(tempArray, "Upload", 0);
-                        EditData.UploadedImage = tempArray;
-                        console.log("Attachment deleted");
-                    });
-            })().catch(console.log);
-        }
-    };
+
+    // this is used for replace a image and update data on backend side
+
     const ReplaceImageFunction = (Data: any, ImageIndex: any) => {
-        let ImageName = EditData?.UploadedImage[ImageIndex]?.ImageName;
-        var src = Data?.data_url?.split(",")[1];
-        var byteArray = new Uint8Array(
-            atob(src)
-                ?.split("")
-                ?.map(function (c) {
-                    return c.charCodeAt(0);
-                })
-        );
-        const data: any = byteArray;
-        var fileData = "";
-        for (var i = 0; i < byteArray.byteLength; i++) {
-            fileData += String.fromCharCode(byteArray[i]);
-        }
-        if (siteUrls != undefined) {
-            (async () => {
-                let web = new Web(siteUrls);
-                let item = web.lists
-                    .getById(Items.Items.listId)
-                    .items.getById(Items.Items.Id);
-                item.attachmentFiles.getByName(ImageName).setContent(data);
-                console.log("Attachment Updated");
-                UpdateBasicImageInfoJSON(EditData.UploadedImage, "Update", ImageIndex);
-            })().catch(console.log);
-        } else {
-            (async () => {
-                let web = new Web(siteUrls);
-                let item = web.lists
-                    .getById(Items.Items.listName)
-                    .items.getById(Items.Items.Id);
-                item.attachmentFiles.getByName(ImageName).setContent(data);
-                console.log("Attachment Updated");
-                UpdateBasicImageInfoJSON(EditData.UploadedImage, "Update", ImageIndex);
-            })().catch(console.log);
-        }
-        setTaskImages(EditData.UploadedImage);
+        return new Promise<void>(async (resolve, reject) => {
+            let ImageName = EditData?.UploadedImage[ImageIndex]?.ImageName;
+            var src = Data?.data_url?.split(",")[1];
+            var byteArray = new Uint8Array(
+                atob(src)
+                    ?.split("")
+                    ?.map(function (c) {
+                        return c.charCodeAt(0);
+                    })
+            );
+            const data = byteArray;
+            var fileData = "";
+            for (var i = 0; i < byteArray.byteLength; i++) {
+                fileData += String.fromCharCode(byteArray[i]);
+            }
+            if (siteUrls != undefined) {
+                (async () => {
+                    try {
+                        let web = new Web(siteUrls);
+                        let item = web.lists
+                            .getById(Items.Items.listId)
+                            .items.getById(Items.Items.Id);
+                        await item.attachmentFiles.getByName(ImageName).setContent(data);
+                        console.log("Attachment Updated");
+                        await UpdateBasicImageInfoJSON(EditData.UploadedImage, "Update", ImageIndex);
+                        setTaskImages(EditData.UploadedImage);
+                        resolve();
+                    } catch (error) {
+                        console.log("Error updating attachment:", error);
+                        reject(error);
+                    }
+                })();
+            } else {
+                (async () => {
+                    try {
+                        let web = new Web(siteUrls);
+                        let item = web.lists
+                            .getById(Items.Items.listName)
+                            .items.getById(Items.Items.Id);
+                        await item.attachmentFiles.getByName(ImageName).setContent(data);
+                        console.log("Attachment Updated");
+                        await UpdateBasicImageInfoJSON(EditData.UploadedImage, "Update", ImageIndex);
+                        setTaskImages(EditData.UploadedImage);
+                        resolve();
+                    } catch (error) {
+                        console.log("Error updating attachment:", error);
+                        reject(error);
+                    }
+                })();
+            }
+        });
     };
+
+    //  This is used for opening the Image Hover Model 
 
     const MouseHoverImageFunction = (e: any, HoverImageData: any) => {
         e.preventDefault();
@@ -3820,6 +3860,9 @@ const EditTaskPopup = (Items: any) => {
         // tempArray.push(HoverImageData)
         setHoverImageData([HoverImageData]);
     };
+
+    //  This is used for closing the Image Hover Model 
+
     const MouseOutImageFunction = (e: any) => {
         e.preventDefault();
         setHoverImageModal("None");
@@ -4136,7 +4179,7 @@ const EditTaskPopup = (Items: any) => {
                         if (FunctionsType == "Copy-Task") {
                             setLoaded(true)
                             if (timesheetData != undefined && timesheetData.length > 0) {
-                                await moveTimeSheet(SelectedSite, res.data,'copy');
+                                await moveTimeSheet(SelectedSite, res.data, 'copy');
                             }
                             newGeneratedId = res.data.Id;
                             console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
@@ -4145,7 +4188,7 @@ const EditTaskPopup = (Items: any) => {
                         } else {
                             console.log(`Task Moved Successfully on ${SelectedSite} !!!!!`);
                             if (timesheetData != undefined && timesheetData.length > 0) {
-                                await moveTimeSheet(SelectedSite, res.data,'move');
+                                await moveTimeSheet(SelectedSite, res.data, 'move');
                             } else {
                                 Items.Items.Action = "Move";
                                 deleteItemFunction(Items.Items.Id, "Move");
@@ -4308,7 +4351,7 @@ const EditTaskPopup = (Items: any) => {
         console.log(Data);
     };
 
-    const moveTimeSheet = async (SelectedSite: any, newItem: any,type:any) => {
+    const moveTimeSheet = async (SelectedSite: any, newItem: any, type: any) => {
         newGeneratedId = newItem.Id;
         var TimesheetConfiguration: any = [];
         var folderUri = "";
