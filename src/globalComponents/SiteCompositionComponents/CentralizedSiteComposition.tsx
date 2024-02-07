@@ -222,7 +222,11 @@ const CentralizedSiteComposition = (Props: any) => {
                     if (ItemDetails?.SiteIcon == undefined || ItemDetails?.SiteIcon == null) {
                         TempAllSiteData?.map((AllSiteData: any) => {
                             if (AllSiteData.Title == ItemDetails.SiteType) {
-                                ItemDetails.SiteIcon = AllSiteData?.Item_x005F_x0020_Cover?.Url;
+                                if (AllSiteData?.Item_x005F_x0020_Cover?.Url?.length > 0) {
+                                    ItemDetails.SiteIcon = AllSiteData?.Item_x005F_x0020_Cover?.Url;
+                                } else {
+                                    ItemDetails.SiteIcon = "https://hhhhteams.sharepoint.com/_layouts/15/images/ittask.png?rev=47";
+                                }
                             }
                         })
                     }
@@ -1292,10 +1296,10 @@ const CentralizedSiteComposition = (Props: any) => {
         const searchedInputKey: string = Event.target.value;
         const tempArray: any = [];
         let CCDataForAutoSuggestions: any[] = await buildClientCategoryAllDataArray(AllClientCategoryDataBackup);
-        
+
         if (searchedInputKey?.length > 0) {
             setSearchedKey(searchedInputKey);
-            if(searchedInputKey?.length > 1){
+            if (searchedInputKey?.length > 1) {
                 if (CCDataForAutoSuggestions?.length > 0) {
                     CCDataForAutoSuggestions?.map((CCItem: any) => {
                         if (CCItem.newLabel?.toLowerCase().includes(searchedInputKey.toLowerCase())) {
@@ -1305,7 +1309,7 @@ const CentralizedSiteComposition = (Props: any) => {
                     setSearchedClientCategoryData(tempArray);
                 }
             }
-           
+
         } else {
             setSearchedClientCategoryData(tempArray);
             setSearchedKey('')
