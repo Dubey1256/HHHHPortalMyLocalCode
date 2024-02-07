@@ -3,11 +3,13 @@ import { Dropdown, Panel, PanelType } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
 import { Col, Row } from "react-bootstrap";
 import Tooltip from "./Tooltip";
-let portfolioColor: any = '#000066';
+let portfolioColor: any = '#057BD0';
 const AddConfiguration = (props: any) => {
-    let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": '', "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '' }
+    let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": '', "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks" }
     const [NewItem, setNewItem]: any = React.useState<any>([defaultConfig]);
     const [SmartFav, setSmartFav] = React.useState<any>([]);
+    const [AllTaskUsers, setAllTaskUsers] = React.useState<any>([]);
+    const [DataSource, setDataSource] = React.useState<any>([{ "key": "Tasks", "text": "Tasks" }, { "key": "TaskUsers", "text": "TaskUsers" }]);
     const [DashboardTitle, setDashboardTitle] = React.useState<any>('');
     const [IsCheck, setIsCheck] = React.useState<any>(false);
     const LoadSmartFav = async () => {
@@ -49,6 +51,46 @@ const AddConfiguration = (props: any) => {
         }).catch((err: any) => {
             console.log(err);
         })
+    }
+    const getChilds = (item: any, items: any) => {
+        item.childs = [];
+        for (let index = 0; index < items.length; index++) {
+            let childItem = items[index];
+            if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID) {
+                item.childs.push(childItem);
+                getChilds(childItem, items);
+            }
+        }
+    }
+    const loadTaskUsers = async () => {
+        const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
+        let taskUsers: any = [];
+        let results = await web.lists
+            .getById(props?.props?.TaskUserListId).items.select('Id', 'IsActive', 'UserGroupId', 'Suffix', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
+            .filter('IsActive eq 1').expand('AssingedToUser').orderBy('SortOrder', true).orderBy("Title", true).get();
+        results.forEach(function (item: any) {
+            if (item.UserGroupId == undefined) {
+                getChilds(item, results);
+                taskUsers.push(item);
+            }
+        });
+        if (taskUsers != undefined && taskUsers.length > 0) {
+            taskUsers?.map((User: any) => {
+                if (User.childs != undefined && User.childs.length > 0) {
+                    User.childs.map((ChildUser: any) => {
+                        if (ChildUser.Item_x0020_Cover == null || ChildUser.Item_x0020_Cover == undefined) {
+                            let tempObject: any = {
+                                Description: '/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg',
+                                Url: '/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'
+                            }
+                            ChildUser.Item_x0020_Cover = tempObject;
+                        }
+                    })
+                }
+            })
+        }
+        console.log(taskUsers);
+        setAllTaskUsers(taskUsers)
     }
     const CloseConfiguationPopup = () => {
         setNewItem([]);
@@ -108,7 +150,12 @@ const AddConfiguration = (props: any) => {
         );
     };
     const handleSelectFilterChange = (event: any, index: any, items: any) => {
-        const updatedItems = [...NewItem]; updatedItems[index] = { ...items, smartFevId: event, };
+        const updatedItems = [...NewItem];
+        updatedItems[index] = { ...items, smartFevId: event, };
+        setNewItem(updatedItems);
+    };
+    const handleDataSourceChange = (event: any, index: any, items: any) => {
+        const updatedItems = [...NewItem]; updatedItems[index] = { ...items, DataSource: event, };
         setNewItem(updatedItems);
     };
     const AddMorewebpart = () => {
@@ -143,6 +190,7 @@ const AddConfiguration = (props: any) => {
     }
     useEffect(() => {
         LoadSmartFav()
+        loadTaskUsers()
     }, []);
     return (
         <>
@@ -152,8 +200,8 @@ const AddConfiguration = (props: any) => {
                 isBlocking={false}
                 type={PanelType.medium}>
                 <div className='border container modal-body p-1 mb-1'>
-                    <Row className="Metadatapannel p-2">
-                        <Col sm="12" md="12" lg="12">
+                    <Row className="Metadatapannel p-2 mb-2">
+                        <Col sm="6" md="6" lg="6">
                             <label className='form-label full-width'>Dashboard Title</label>
                             <input className='form-control' type='text' placeholder="Dashboard Title" value={DashboardTitle} onChange={(e) => setDashboardTitle(e.target.value)} />
                         </Col>
@@ -166,7 +214,7 @@ const AddConfiguration = (props: any) => {
                                     <>
                                         <div key={index} className='border p-2 mb-2'>
                                             <Row className="Metadatapannel mb-2">
-                                                <Col sm="6" md="6" lg="6">
+                                                <Col sm="4" md="4" lg="4">
                                                     <label className='form-label full-width'>WebPart Title</label>
                                                     <input className='form-control' type='text' placeholder="Name"
                                                         value={items?.WebpartTitle} onChange={(e) => {
@@ -174,9 +222,7 @@ const AddConfiguration = (props: any) => {
                                                             setNewItem(updatedItems);
                                                         }} />
                                                 </Col>
-                                                <Col md="6"> 
-                                                <Row>
-                                                  <Col sm="5" md="5" lg="5">
+                                                <Col sm="3" md="3" lg="3">
                                                     <div> Show WebPart</div>
 
                                                     <label className="switch me-2" htmlFor={`ShowWebpartCheckbox${index}`}>
@@ -188,8 +234,8 @@ const AddConfiguration = (props: any) => {
                                                         }} type="checkbox" id={`ShowWebpartCheckbox${index}`} />
                                                         {items?.ShowWebpart === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
                                                     </label>
-                                                  </Col>
-                                                  <Col sm="5" md="5" lg="5" className="p-0">
+                                                </Col>
+                                                <Col sm="3" md="3" lg="3">
                                                     <div> Group By View</div>
                                                     <label className="switch me-2" htmlFor={`GroupByViewCheckbox${index}`}>
                                                         <input checked={items?.GroupByView} onChange={(e: any) => {
@@ -200,11 +246,9 @@ const AddConfiguration = (props: any) => {
                                                             type="checkbox" id={`GroupByViewCheckbox${index}`} />
                                                         {items?.GroupByView === true ? <div className="slider round" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}` }}></div> : <div className="slider round"></div>}
                                                     </label>
-                                                  </Col>
-                                                  <Col sm="2" md="2" lg="2" className="text-end">
+                                                </Col>
+                                                <Col sm="2" md="2" lg="2">
                                                     {index != 0 && <a className="pull-right hreflink" title="Remove webpart" onClick={(e) => RemoveWebpart(items, index)}><span className="svg__iconbox svg__icon--cross "></span></a>}
-                                                  </Col>
-                                                  </Row>
                                                 </Col>
                                             </Row>
                                             <Row className="Metadatapannel mb-2">
@@ -229,23 +273,26 @@ const AddConfiguration = (props: any) => {
                                                 </Col>
                                             </Row>
                                             <Row className="Metadatapannel">
-                                                <Col sm="6" md="6" lg="6">
+                                                <Col sm="4" md="4" lg="4">
                                                     <label className='form-label full-width'>Select Filter</label>
-                                                    <Dropdown id="Filtes" options={[{ key: '', text: '' }, ...(SmartFav?.map((item: any) => ({ key: item?.UpdatedId, text: item?.Title })) || [])]} selectedKey={items?.smartFevId}
+                                                    {items.DataSource == "Tasks" && <Dropdown id="FiltesSmartFav" options={[{ key: '', text: '' }, ...(SmartFav?.map((item: any) => ({ key: item?.UpdatedId, text: item?.Title })) || [])]} selectedKey={items?.smartFevId}
                                                         onChange={(e, option) => handleSelectFilterChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }}
                                                     />
+                                                    }
+                                                    {items.DataSource == "TaskUsers" && <Dropdown id="FiltesTaskUser" options={[{ key: '', text: '' }, ...(AllTaskUsers?.map((item: any) => ({ key: item?.Id, text: item?.Title })) || [])]} selectedKey={items?.smartFevId}
+                                                        onChange={(e, option) => handleSelectFilterChange(option?.key, index, items)}
+                                                        styles={{ dropdown: { width: '100%' } }}
+                                                    />
+                                                    }
                                                 </Col>
-                                                
-                                                    <Col md="6"  className="p-0">
-                                                        <Row>
-                                                    <Col sm="6" md="6" lg="6" className="p-0">
+                                                <Col sm="4" md="4" lg="4">
                                                     <div className="form-check form-check-inline m-4">
                                                         <input type="checkbox" checked={items?.IsDefaultTile} className="form-check-input me-1" onClick={(e: any) => SelectedTile(e.target.checked, items, index)} />
                                                         <label className="form-check-label">Default Tile</label>
                                                     </div>
                                                 </Col>
-                                                <Col sm="6" md="6" lg="6" className="p-0">
+                                                <Col sm="4" md="4" lg="4">
                                                     <div className="form-check form-check-inline m-4">
                                                         <input type="checkbox" checked={items?.IsShowTile} className="form-check-input me-1" onChange={(e: any) => {
                                                             const updatedItems = [...NewItem]; updatedItems[index] = { ...items, IsShowTile: e.target.checked, };
@@ -254,11 +301,21 @@ const AddConfiguration = (props: any) => {
                                                         <label className="form-check-label">Show Tile</label>
                                                     </div>
                                                 </Col>
-                                                </Row>
-                                                    </Col>
-                                                
-                                           
+                                            </Row>
+                                            <Row className="Metadatapannel">
+                                                <Col sm="4" md="4" lg="4">
+                                                    <label className='form-label full-width'>Data Source</label>
+                                                    <Dropdown id="DataSource" options={[{ key: '', text: '' }, ...(DataSource?.map((item: any) => ({ key: item?.key, text: item?.text })) || [])]} selectedKey={items?.DataSource}
+                                                        onChange={(e, option) => handleDataSourceChange(option?.key, index, items)}
+                                                        styles={{ dropdown: { width: '100%' } }}
+                                                    />
+                                                </Col>
+                                                <Col sm="4" md="4" lg="4">
 
+                                                </Col>
+                                                <Col sm="4" md="4" lg="4">
+
+                                                </Col>
                                             </Row>
                                         </div>
                                     </>
@@ -267,7 +324,7 @@ const AddConfiguration = (props: any) => {
                         </Col>
                     </Row>
                 </div>
-                <div className='mb-5'><a className="pull-right  hreflink" onClick={(e) => AddMorewebpart()}> +Add More </a></div>
+                <div className='mb-5'><a className="pull-right empCol hreflink" onClick={(e) => AddMorewebpart()}> +Add More </a></div>
                 <div className='modal-footer mt-2'>
                     <button className="btn btn-primary ms-1" onClick={SaveConfigPopup} disabled={DashboardTitle == '' || IsCheck == false}>Save</button>
                     <button className='btn btn-default ms-1' onClick={CloseConfiguationPopup}>Cancel</button>
