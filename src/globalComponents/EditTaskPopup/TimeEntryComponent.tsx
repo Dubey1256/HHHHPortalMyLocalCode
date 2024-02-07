@@ -581,7 +581,7 @@ const TimeEntryPopup = (item: any)=> {
 
         if (changeTime != undefined) {
           if (changeTime < 0) {
-            alert('The value you entered is negative, and negative entries are not allowed')
+            alert('The value you entered is negative so the filled time will be set to default beforehand')
             changeTime = 0;
           }
           var TimeInHour: any = changeTime / 60;
@@ -592,7 +592,7 @@ const TimeEntryPopup = (item: any)=> {
       if (type === "EditTime" && items === "60") {
         changeTime = Number(changeTime);
         if (changeTime == 0) {
-          alert('The value you entered is negative, and negative entries are not allowed')
+          alert('The value you entered is negative so the filled time will be set to default beforehand')
           changeTime = time.TaskTimeInMin - 60;
         } else {
           changeTime = changeTime - 60;
@@ -600,7 +600,7 @@ const TimeEntryPopup = (item: any)=> {
 
         if (changeTime != undefined) {
           if (changeTime < 0) {
-            alert('The value you entered is negative, and negative entries are not allowed')
+            alert('The value you entered is negative so the filled time will be set to default beforehand')
             changeTime = 0;
           }
           var TimeInHour: any = changeTime / 60;

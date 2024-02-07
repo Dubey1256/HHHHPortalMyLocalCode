@@ -10,7 +10,7 @@ import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryCompone
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
-import { PortfolioStructureCreationCard } from "../../../globalComponents/tableControls/PortfolioStructureCreation";
+//import { PortfolioStructureCreationCard } from "../../../globalComponents/tableControls/PortfolioStructureCreation";
 import CreateActivity from "../../../globalComponents/CreateActivity";
 import CreateWS from "../../../globalComponents/CreateWS";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -29,6 +29,7 @@ import TeamSmartFilter from "../../../globalComponents/SmartFilterGolobalBompone
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import PageLoader from "../../../globalComponents/pageLoader";
 import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
+import CreateAllStructureComponent from "../../../globalComponents/CreateAllStructure";
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -1994,6 +1995,21 @@ function TeamPortlioTable(SelectedProp: any) {
     };
 
     let isOpenPopup = false;
+
+    const callbackdataAllStructure = React.useCallback((item)=>{
+        if(item != undefined && item.length>0){
+            item.forEach((value:any)=>{
+                copyDtaArray.unshift(value)
+            })
+        }
+        setOpenAddStructurePopup(false);
+        console.log(item)
+        renderData = [];
+        renderData = renderData.concat(copyDtaArray)
+        refreshData();
+       
+    },[])
+
     const AddStructureCallBackCall = React.useCallback((item) => {
         childRef?.current?.setRowSelection({});
         if (!isOpenPopup && item.CreatedItem != undefined) {
@@ -2361,7 +2377,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 </div>
             </section>
             <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={AddStructureCallBackCall} >
-                <PortfolioStructureCreationCard
+                {/* <PortfolioStructureCreationCard
                     CreatOpen={CreateOpenCall}
                     Close={AddStructureCallBackCall}
                     PortfolioType={IsUpdated}
@@ -2371,7 +2387,14 @@ function TeamPortlioTable(SelectedProp: any) {
                             ? checkedList
                             : props
                     }
-                />
+                /> */}
+                <CreateAllStructureComponent 
+                 Close={callbackdataAllStructure}
+                 taskUser={AllUsers}
+                 portfolioTypeData={portfolioTypeData}
+                 PropsValue={ContextValue}
+                 />
+
             </Panel>
 
             {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.SelectedProp} />}
