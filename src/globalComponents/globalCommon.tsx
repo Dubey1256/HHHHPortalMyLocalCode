@@ -2486,7 +2486,7 @@ export const getBreadCrumbHierarchyAllData = async (item: any, AllListId: any, A
         } else if (Object?.Id === item?.Parent?.Id) {
             Object.subRows = [item]; AllItems?.push(item)
             if(Object?.Parent==undefined){
-                Object.subRows = [item]; AllItems?.push(item)  
+                Object.subRows = [item]; AllItems?.push(Object)  
             }else{
                 return getBreadCrumbHierarchyAllData(Object, AllListId, AllItems);
             }
