@@ -1148,7 +1148,7 @@ const switchGroupbyData = () => {
                 ""
               )}
             </span>
-            {row?.original?.Categories == "Draft" ? (
+            {row?.original?.TaskCategories == "Draft" ? (
               <FaCompressArrowsAlt
                 style={{
                   height: "11px",
