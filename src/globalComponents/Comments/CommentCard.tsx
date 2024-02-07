@@ -879,7 +879,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                           <div className="d-flex justify-content-between align-items-center">
                             <span className="comment-date ng-binding">
                               <span className="round  pe-1">
-                                <img className="align-self-start " title={cmtData?.AuthorName}
+                                <img className="align-self-start " title={cmtData?.AuthorName} onClick={()=>globalCommon?.openUsersDashboard(this.props?.AllListId?.siteUrl,undefined,cmtData?.AuthorName,this?.taskUsers)}
                                   src={cmtData?.AuthorImage != undefined && cmtData?.AuthorImage != '' ?
                                     cmtData?.AuthorImage :
                                     "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
@@ -912,7 +912,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                             <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}>
 
                             </span></p> */}
-    <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}></span>
+                       <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}></span>
                             {/* {this.detectAndRenderLinks(cmtData?.Description)} */}
                           </div>
 
@@ -965,7 +965,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                       <div className="d-flex justify-content-between align-items-center">
                                         <span className="comment-date ng-binding">
                                           <span className="round  pe-1">
-                                            <img className="align-self-start " title={ReplyMsg?.AuthorName}
+                                            <img className="align-self-start " title={ReplyMsg?.AuthorName}onClick={()=>globalCommon?.openUsersDashboard(this.props?.AllListId?.siteUrl,undefined,ReplyMsg?.AuthorName,this?.taskUsers)}
                                               src={ReplyMsg?.AuthorImage != undefined && ReplyMsg?.AuthorImage != '' ?
                                                 ReplyMsg?.AuthorImage :
                                                 "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
