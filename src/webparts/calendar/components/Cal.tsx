@@ -1741,7 +1741,7 @@ const App = (props: any) => {
         </a>
       </div>
       <div className="w-100 text-end">
-      {props.props.context._pageContext._user.email === ('anubhav.shukla@hochhuth-consulting.de'|| "deepak@hochhuth-consulting.de" ||"prashant.kumar@hochhuth-consulting.de"||"prashant@hochhuth-consulting.de") && <a  href="#" onClick={DownloadLeaveReport}>
+      {props.props.context._pageContext._user.email === ('anubhav.shukla@hochhuth-consulting.de'|| "deepak@hochhuth-consulting.de" ||"prashant.kumar@hochhuth-consulting.de" || "prashant@hochhuth-consulting.de") && <a  href="#" onClick={DownloadLeaveReport}>
            <span>Generate Monthly Report</span>
         </a> }
         |
