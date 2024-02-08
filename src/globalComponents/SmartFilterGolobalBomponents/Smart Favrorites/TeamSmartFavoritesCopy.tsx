@@ -15,6 +15,7 @@ import GlobalCommanTable from '../../GroupByReactTableComponents/GlobalCommanTab
 import PreSetDatePikerPannel from '../PreSetDatePiker';
 import { GlobalConstants } from '../../LocalCommon';
 import { Web } from 'sp-pnp-js';
+import Tooltip from '../../Tooltip';
 const TeamSmartFavoritesCopy = (item: any) => {
     let ContextValue = item?.ContextValue;
     let portfolioColor: any = item?.portfolioColor

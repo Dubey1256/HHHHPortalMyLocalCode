@@ -1,8 +1,10 @@
 import * as React from "react";
 import pnp, { Web } from "sp-pnp-js";
 import * as GlobalCommon from './globalCommon';
+import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 // import EmailNotificationMail from "./EditTaskPopup/EmailNotificationMail";
 import * as Moment from "moment";
+import ReactDOM from "react-dom";
 // import EmailComponent from "./EmailComponents";
 
 // import ReactDOMServer, { renderToStaticMarkup } from 'react-dom/server';
@@ -230,12 +232,14 @@ export const UpdateTaskStatusFunction = async (RequiredData: any): Promise<any> 
             const GetTaskUsersData: any = await GetCurrentUserData({ ListId: RequiredListIds?.TaskUsertListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context })
             const AllTaskUsersData = GetTaskUsersData?.AllUsersData;
             const CurrentUserData = GetTaskUsersData?.CurrentUser;
+            const ApproversData = GetTaskUsersData?.ApproversData;
             let UpdateDataJSON: any = { PercentComplete: Number(Status) / 100 };
             let TaskCategories: string = ItemDetails?.TaskCategories?.map((item: any) => item.Title).join(', ');
             let TaskCategoriesIds: any = ItemDetails?.TaskCategories?.map((Item: any) => Item.Id);
             let ApproverIds: any = GetTaskUsersData?.ApproversData?.map((Item: any) => Item.Id);
             let UniqueIds = TaskCategoriesIds.filter((number: any, index: any, array: any) => array.indexOf(number) === index);
             let ReceiveRejectedTaskUserId: any = [];
+            let ReceiverEmail: any = [];
 
             if (ItemDetails?.Approvee?.length > 0) {
                 ReceiveRejectedTaskUserId = ItemDetails?.Approvee?.Id;
@@ -251,6 +255,7 @@ export const UpdateTaskStatusFunction = async (RequiredData: any): Promise<any> 
                 } else {
                     UniqueIds = [227]
                 }
+
                 UpdateDataJSON.ApproveeId = GetTaskUsersData?.CurrentUserId;
                 UpdateDataJSON.Status = "For Approval";
                 UpdateDataJSON.TaskCategoriesId = {
@@ -265,51 +270,41 @@ export const UpdateTaskStatusFunction = async (RequiredData: any): Promise<any> 
                     results:
                         ApproverIds?.length > 0 ? ApproverIds : []
                 };
-                // const sendEmailNotification = async () => {
-                //     return new Promise(async (resolve, reject) => {
-                //         try {
-                //             const emailComponent = <EmailComponent
-                //                 AllTaskUser={AllTaskUsersData}
-                //                 CurrentUser={CurrentUserData}
-                //                 CreatedApprovalTask={true}
-                //                 items={ItemDetails}
-                //                 Context={Context}
-                //                 callBack={() => console.log("Dummy FUnction")}
-                //                 statusUpdateMailSendStatus={false}
-                //                 IsEmailCategoryTask={true}
-                //             />;
-                //             const emailHTML = renderToStaticMarkup(emailComponent);
-                //             resolve(emailHTML);
-                //         } catch (error) {
-                //             console.log("Send Email Notification", error.message);
-                //             reject(error);
-                //         }
-                //     });
-                // };
+                let TempEmailArray: any = [];
+                if (ApproversData?.length > 0) {
+                    AllTaskUsersData?.map((AllUserData: any) => {
+                        ApproversData?.map((ApproverItem: any) => {
+                            if (AllUserData.AssingedToUserId === ApproverItem.Id) {
+                                TempEmailArray.push(AllUserData.Email);
+                                if (AllUserData?.Approver?.length > 0) {
+                                    AllUserData?.Approver?.map((AAItem: any) => {
+                                        TempEmailArray.push(AAItem.Email);
+                                    })
+                                }
+                            }
+                        })
+                    })
+                }
+                ReceiverEmail = TempEmailArray;
+                let EmailRequiredData: any = {
+                    ItemDetails: ItemDetails,
+                    AskForApproval: true,
+                    TaskIsApproved: undefined,
+                    CurrentUser: [CurrentUserData],
+                    Context: Context,
+                    ReceiverEmail: ReceiverEmail,
+                    usedFor: "Approval"
+                }
+                SendApprovalEmailNotificationComponent(EmailRequiredData)
+                    .then((data) => {
+                        // Handle success
+                        console.log("Email sent successfully!", data);
+                    })
+                    .catch((error) => {
+                        // Handle error
+                        console.error("Error sending email:", error);
+                    });
 
-                // sendEmailNotification()
-                //     .then((emailHTML) => {
-                //         console.log("Email HTML:", emailHTML);
-                //     })
-                //     .catch((error) => {
-                //         console.error("Error sending email notification:", error);
-                //     });
-                // try {
-                //     const emailComponent = <EmailComponent
-                //         AllTaskUser={AllTaskUsersData}
-                //         CurrentUser={CurrentUserData}
-                //         CreatedApprovalTask={true}
-                //         items={ItemDetails}
-                //         Context={Context}
-                //         callBack={() => console.log("Dummy FUnction")}
-                //         statusUpdateMailSendStatus={false}
-                //         IsEmailCategoryTask={true}
-                //     />;
-                //     const emailHTML = renderToStaticMarkup(emailComponent);
-                //     return emailHTML;
-                // } catch (error) {
-                //     console.log("Send Email Notification", error.message);
-                // }
             }
             if (Status == 2) {
                 let FeedBackData: any = await UpdateFeedbackJSON({ ItemDetails: ItemDetails, SmartLightStatus: "Reject" });
@@ -323,43 +318,83 @@ export const UpdateTaskStatusFunction = async (RequiredData: any): Promise<any> 
                         ReceiveRejectedTaskUserId?.length > 0 ? ReceiveRejectedTaskUserId : []
                 };
                 UpdateDataJSON.FeedBack = FeedBackData?.length > 0 ? JSON.stringify(FeedBackData) : [];
+                if (ApproversData?.length > 0) {
+                    AllTaskUsersData?.map((AllUserData: any) => {
+                        if (ItemDetails?.Approvee?.AssingedToUserId !== undefined) {
+                            if (AllUserData.AssingedToUserId === ItemDetails?.Approvee?.AssingedToUserId) {
+                                ReceiverEmail = [AllUserData.Email];
+                            }
+                        } else {
+                            if (AllUserData.AssingedToUserId === ItemDetails?.Author?.Id) {
+                                ReceiverEmail = [AllUserData.Email];
+                            }
+                        }
 
+                    })
+                }
                 try {
-                    // const emailComponent = <EmailComponent
-                    //     AllTaskUser={AllTaskUsersData}
-                    //     CurrentUser={CurrentUserData}
-                    //     CreatedApprovalTask={false}
-                    //     items={ItemDetails}
-                    //     Context={Context}
-                    //     ApprovalTaskStatus={true}
-                    //     callBack={() => console.log("Dummy FUnction")}
-                    // />;
-                    // const emailHTML = renderToStaticMarkup(emailComponent);
-                    // return emailHTML;
+                    let EmailRequiredData: any = {
+                        ItemDetails: ItemDetails,
+                        AskForApproval: undefined,
+                        TaskIsApproved: false,
+                        CurrentUser: [CurrentUserData],
+                        Context: Context,
+                        ReceiverEmail: ReceiverEmail,
+                        usedFor: "Approval"
+                    }
+                    SendApprovalEmailNotificationComponent(EmailRequiredData)
+                        .then((data) => {
+                            console.log("Email sent successfully!", data);
+                        })
+                        .catch((error) => {
+                            console.error("Error sending email:", error);
+                        });
                 } catch (error) {
                     console.log("Send Email Notification", error.message);
                 }
 
             }
             if (Status == 3) {
+                if (ApproversData?.length > 0) {
+                    AllTaskUsersData?.map((AllUserData: any) => {
+                        if (ItemDetails?.Approvee?.AssingedToUserId !== undefined) {
+                            if (AllUserData.AssingedToUserId === ItemDetails?.Approvee?.AssingedToUserId) {
+                                ReceiverEmail = [AllUserData.Email];
+                            }
+                        } else {
+                            if (AllUserData.AssingedToUserId === ItemDetails?.Author?.Id) {
+                                ReceiverEmail = [AllUserData.Email];
+                            }
+                        }
+
+                    })
+                }
                 let FeedBackData: any = UpdateFeedbackJSON({ ItemDetails: ItemDetails, SmartLightStatus: "Approved" });
                 UpdateDataJSON.Status = "Approved";
                 UpdateDataJSON.AssignedToId = {
                     results: []
                 };
-                UpdateDataJSON.FeedBack = FeedBackData?.length > 0 ? JSON.stringify(FeedBackData) : []
-
-                // const emailComponent = <EmailComponent
-                //     AllTaskUser={AllTaskUsersData}
-                //     CurrentUser={CurrentUserData}
-                //     CreatedApprovalTask={false}
-                //     items={ItemDetails}
-                //     Context={Context}
-                //     ApprovalTaskStatus={true}
-                //     callBack={() => console.log("Dummy FUnction")}
-                // />;
-                // const emailHTML = renderToStaticMarkup(emailComponent);
-                // return emailHTML;
+                UpdateDataJSON.FeedBack = FeedBackData?.length > 0 ? JSON.stringify(FeedBackData) : [];
+                try {
+                    let EmailRequiredData: any = {
+                        ItemDetails: ItemDetails,
+                        AskForApproval: undefined,
+                        TaskIsApproved: true,
+                        CurrentUser: [CurrentUserData],
+                        Context: Context,
+                        ReceiverEmail: ReceiverEmail,
+                        usedFor: "Approval"
+                    }
+                    SendApprovalEmailNotificationComponent(EmailRequiredData)
+                        .then((data) => {
+                            console.log("Email sent successfully!", data);
+                        })
+                        .catch((error) => {
+                            console.error("Error sending email:", error);
+                        });
+                } catch (error) {
+                    console.log("Send Email Notification", error.message);
+                }
             }
 
             if (Status == 5) {
@@ -370,10 +405,34 @@ export const UpdateTaskStatusFunction = async (RequiredData: any): Promise<any> 
             if (Status >= 5 && Status <= 90) {
                 if (CheckImmediateCategoryTask || CheckEmailCategoryTask) {
                     try {
-                        // const reactComponent = <EmailNotificationMail emailStatus={true} items={ItemDetails} statusValue={Status} Context={Context} />;
-                        // const htmlString = ReactDOMServer.renderToString(reactComponent);
-                        // console.log(htmlString);
-                        // <EmailNotificationMail emailStatus={true} items={ItemDetails} statusValue={Status} Context={Context} />
+                        if (ApproversData?.length > 0) {
+                            AllTaskUsersData?.map((AllUserData: any) => {
+                                if (AllUserData.AssingedToUserId === ItemDetails?.Author?.Id) {
+                                    ReceiverEmail = [AllUserData.Email];
+                                }
+                            })
+                        }
+                        try {
+                            let EmailRequiredData: any = {
+                                ItemDetails: ItemDetails,
+                                AskForApproval: undefined,
+                                TaskIsApproved: false,
+                                CurrentUser: [CurrentUserData],
+                                Context: Context,
+                                ReceiverEmail: ReceiverEmail,
+                                usedFor: "Immediate"
+                            }
+                            SendApprovalEmailNotificationComponent(EmailRequiredData)
+                                .then((data) => {
+                                    console.log("Email sent successfully!", data);
+                                })
+                                .catch((error) => {
+                                    console.error("Error sending email:", error);
+                                });
+                        } catch (error) {
+                            console.log("Send Email Notification", error.message);
+                        }
+
                     } catch (error) {
                         console.log("Send Email Notification", error.message)
                     }
@@ -493,6 +552,7 @@ export const UpdateTaskCategoryFunction = async (RequiredData: any): Promise<any
             let CheckAttentionCategoryTask = TaskCategories?.some((category: any) => category?.IsSendAttentionEmail?.Id !== undefined);
             const GetTaskUsersData: any = await GetCurrentUserData({ ListId: RequiredListIds?.TaskUsertListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context })
             const AllTaskUsersData = GetTaskUsersData?.AllUsersData;
+            let ReceiverEmail: any = [];
             if (ItemDetails.TaskCategories?.length > 0) {
                 let TaggedData: any = ItemDetails.TaskCategories;
                 FinalTaskCategory = TaggedData.concat(TaskCategories);
@@ -513,11 +573,24 @@ export const UpdateTaskCategoryFunction = async (RequiredData: any): Promise<any
             let TaskStatusValue: any = ItemDetails?.PercentComplete !== undefined && ItemDetails?.PercentComplete !== null ? Number(ItemDetails?.PercentComplete) * 100 : 0;
 
             if ((CheckImmediateCategoryTask || CheckEmailCategoryTask) && (TaskStatusValue <= 5 && TaskStatusValue >= 90)) {
-                try {
-                    // <EmailNotificationMail emailStatus={true} items={ItemDetails} statusValue={TaskStatusValue} Context={Context} />
-                } catch (error) {
-                    console.log("Send Email Notification", error.message);
+                AllTaskUsersData?.map((AllUserData: any) => {
+                    if (AllUserData.AssingedToUserId === ItemDetails?.Author?.Id) {
+                        ReceiverEmail = [AllUserData.Email];
+                    }
+                })
+                let EmailRequiredData: any = {
+                    ItemDetails: ItemDetails,
+                    Context: Context,
+                    ReceiverEmail: ReceiverEmail,
+                    usedFor: "Immediate"
                 }
+                SendApprovalEmailNotificationComponent(EmailRequiredData)
+                    .then((data) => {
+                        console.log("Email sent successfully!", data);
+                    })
+                    .catch((error) => {
+                        console.error("Error sending email:", error);
+                    });
             }
 
             if (CheckBugCategoryTask || CheckEmailCategoryTask || CheckImmediateCategoryTask) {
@@ -793,6 +866,418 @@ export const UpdateItemDetails = (RequiredData: any): Promise<any> => {
         }
     });
 };
+
+
+// this is used for sending Email Notification for Approval Category Task on the basis of Status change 
+
+export const SendApprovalEmailNotificationComponent = (props: any) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let TaskStatus = '';
+            const { ItemDetails, AskForApproval, TaskIsApproved, CurrentUser, Context, ReceiverEmail, usedFor } = props || {};
+            if (usedFor == "Approval") {
+                if (props?.AskForApproval === true) {
+                    TaskStatus = "Approval"
+                } else if (props?.TaskIsApproved === true) {
+                    TaskStatus = "Approved"
+                } else if (props?.AskForApproval === false) {
+                    TaskStatus = "Rejected"
+                }
+            } else {
+                TaskStatus = `Task Status Is Updated ${ItemDetails.PercentComplete} for `
+            }
+            if (ItemDetails?.FeedBack?.length > 0) {
+                let FeedItemData: any = JSON.parse(ItemDetails?.FeedBack);
+                ItemDetails.FeedBackJSON = FeedItemData;
+            }
+            let EmailMessage: any = '';
+            if (usedFor == "Approval") {
+                EmailMessage = SendApprovalEmailNotificationBodyContent({ items: ItemDetails, AskForApproval, TaskIsApproved, CurrentUser });
+            } else {
+                EmailMessage = SendEmailAndImmediateTaskNotificationBodyContent(ItemDetails);
+            }
+            const containerDiv = document.createElement('div');
+            const reactElement = React.createElement(EmailMessage?.type, EmailMessage?.props);
+            ReactDOM.render(reactElement, containerDiv);
+            const FinalMSG = "<style>p>br {display: none;}</style>" + containerDiv.innerHTML;
+            const EmailProps = {
+                To: ReceiverEmail,
+                Subject: "[ " + ItemDetails?.siteType + " - " + TaskStatus + " ]" + ItemDetails?.Title,
+                Body: ItemDetails?.Title
+            };
+            if (ReceiverEmail?.length > 0) {
+                const sp = spfi().using(spSPFx(Context));
+                const data = sp.utility.sendEmail({
+                    Body: FinalMSG,
+                    Subject: EmailProps.Subject,
+                    To: EmailProps.To,
+                    AdditionalHeaders: {
+                        "content-type": "text/html"
+                    },
+                }).then((res: any) => {
+                    console.log("Email Sent!");
+                    console.log(data);
+                }).catch((error: any) => {
+                    console.log("Error", error.message)
+                })
+                resolve(data);
+            } else {
+                reject("Receiver email not provided");
+            }
+        } catch (error) {
+            reject(error); // Reject the promise if any error occurs
+        }
+    });
+};
+
+const joinObjectValues = (arr: any) => {
+    let val = '';
+    arr.forEach((element: any) => {
+        val += element.Title + ';'
+    });
+    return val;
+}
+
+// This function is used for generating the required HTML structure to handle different scenarios, such as sending email notifications for tasks that are created, approved, or rejected
+
+export const SendApprovalEmailNotificationBodyContent = (props: any) => {
+
+    return (
+        <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
+            <div style={{ marginTop: "2pt" }}>
+                {props.AskForApproval != undefined && props.AskForApproval === true ?
+                    <div>
+                        {props?.items?.Approvee != undefined && props?.items?.Approvee?.Title != props?.items?.Author?.Title ?
+                            <>
+                                {props?.items?.Author?.Title} has created a Task but {props?.CurrentUser[0]?.Title}  has sent you for approval. Please take your time and review:
+                                Please note that you still have 1 tasks left to approve.<br /> You can find all pending approval tasks on your task dashboard or the approval page.
+                            </> : <>{props?.items?.Author?.Title} has created a Task which requires your Approval. Please take your time and review:
+                                Please note that you still have 1 tasks left to approve.<br /> You can find all pending approval tasks on your task dashboard or the approval page.
+                            </>}
+                        <p>
+                            <div style={{ marginTop: "5pt" }}>Have a nice day, Thank You!</div>
+                            <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props.items["Title"]}</a>&nbsp;&nbsp;
+                            <a href={`${props.items["siteUrl"]}/SitePages/TaskDashboard.aspx`} target="_blank" data-interception="off">Your Task Dashboard</a>
+                            <a style={{ marginLeft: "20px" }} href={`${props.items["siteUrl"]}/SitePages/TaskManagement.aspx?SmartfavoriteId=101&smartfavorite=All%20Approval%20Tasks`} target="_blank" data-interception="off">Your Approval Page</a>
+                        </p>
+                    </div>
+                    :
+                    null
+                }
+                {props.TaskIsApproved != undefined && (props.TaskIsApproved == true || props.TaskIsApproved == false) ?
+                    <div style={{ marginTop: "11.25pt" }}>
+                        <div style={{ marginTop: "2pt" }}>Hi,</div>
+                        <div style={{ marginTop: "5pt" }}>your task has been {props?.TaskIsApproved == true ? "approved" : "rejected"} by {props.CurrentUser[0]?.Title}, Please follow the below task link to have look..</div>
+                        <div style={{ marginTop: "5pt" }}>Have a nice day, Thank You!.</div>
+                        <div style={{ marginTop: "10pt" }}>
+                            <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props.items["Title"]}</a><u></u><u></u>
+                        </div>
+                    </div>
+                    : null
+                }
+            </div>
+            <table cellPadding="0" width="100%" style={{ width: "100.0%" }}>
+                <tbody>
+                    <tr>
+                        <td width="70%" valign="top" style={{ width: '70.0%', padding: '.75pt .75pt .75pt .75pt' }}>
+                            <table cellPadding="0" width="99%" style={{ width: "99.0%" }}>
+                                <tbody>
+                                    <tr>
+                                        <td style={{ padding: ".75pt .75pt .75pt .75pt" }}></td>
+                                    </tr>
+                                    <tr>
+                                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Task Id:</span></b><u></u><u></u></p>
+                                        </td>
+                                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items?.TaskId}</span><u></u><u></u></p>
+                                        </td>
+                                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Component:</span></b><u></u><u></u></p>
+                                        </td>
+                                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p>{props.items["Component"] != null &&
+                                                props.items["Component"].length > 0 &&
+                                                <span style={{ fontSize: '10.0pt', color: 'black' }}>
+                                                    {joinObjectValues(props.items["Component"])}
+                                                </span>
+                                            }
+                                                <span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                        </td>
+                                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Priority:</span></b><u></u><u></u></p>
+                                        </td>
+                                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Priority"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Start Date:</span></b><u></u><u></u></p>
+                                        </td>
+                                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["StartDate"] != null && props.items["StartDate"] != undefined ? Moment(props.items["StartDate"]).format("DD-MMMM-YYYY") : ""}</span><u></u><u></u></p>
+                                        </td>
+                                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Completion Date:</span></b><u></u><u></u></p>
+                                        </td>
+                                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["CompletedDate"] != null && props.items["CompletedDate"] != undefined ? Moment(props.items["CompletedDate"]).format("DD-MMMM-YYYY") : ""}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                        </td>
+                                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Due Date:</span></b><u></u><u></u></p>
+                                        </td>
+                                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["DueDate"] != null && props.items["DueDate"] != undefined ? Moment(props.items["DueDate"]).format("DD-MMMM-YYYY") : ''}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Team Members:</span></b><u></u><u></u></p>
+                                        </td>
+                                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p>{props.items["TeamMembers"] != null &&
+                                                props.items["TeamMembers"].length > 0 &&
+                                                <span style={{ fontSize: '10.0pt', color: 'black' }}>
+                                                    {joinObjectValues(props.items["TeamMembers"])}
+                                                </span>
+                                            }
+                                                <span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                        </td>
+                                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created:</span></b><u></u><u></u></p>
+                                        </td>
+                                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{Moment(props.items["Created"]).format("DD-MMMM-YYYY")}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                        </td>
+                                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created By:</span></b><u></u><u></u></p>
+                                        </td>
+                                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Author"] != null && props.items["Author"] != undefined && props.items["Author"].Title}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Categories:</span></b><u></u><u></u></p>
+                                        </td>
+                                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Categories"]}</span><u></u><u></u></p>
+                                        </td>
+                                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Status:</span></b><u></u><u></u></p>
+                                        </td>
+                                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            {props.statusUpdateMailSendStatus != undefined && props.statusUpdateMailSendStatus == false ?
+                                                <>
+                                                    {props.CreatedApprovalTask ?
+                                                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>For Approval</span><span style={{ color: "black" }}> </span><u></u><u></u></p> :
+                                                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.ApprovalTaskStatus ? "Approved" : "Follow up"}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                                    }
+                                                </> : <p><span style={{ fontSize: '10.0pt', color: 'black' }}>Acknowledged</span><span style={{ color: "black" }}> </span><u></u><u></u></p>}
+
+                                        </td>
+                                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>% Complete:</span></b><u></u><u></u></p>
+                                        </td>
+                                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            {props.statusUpdateMailSendStatus != undefined && props.statusUpdateMailSendStatus == false ?
+                                                <>
+                                                    {props.CreatedApprovalTask ?
+                                                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>1%</span><span style={{ color: "black" }}> </span><u></u><u></u></p> :
+                                                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.ApprovalTaskStatus ? 3 : 2}%</span><span style={{ color: "black" }}> </span><u></u><u></u></p>}
+                                                </> : <p><span style={{ fontSize: '10.0pt', color: 'black' }}>5%</span><span style={{ color: "black" }}> </span><u></u><u></u></p>}
+
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>URL:</span></b><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                        </td>
+                                        <td colSpan={7} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>
+                                                {props.items["ComponentLink"] != null &&
+                                                    <a href={props.items["ComponentLink"].Url} target="_blank">{props.items["ComponentLink"].Url}</a>
+                                                }</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                        </td>
+                                        <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
+                                    </tr>
+                                    <tr>
+                                        <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
+                                        <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
+                                        <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
+                                        <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
+                                        <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
+                                        <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
+                                        <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
+                                        <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
+                                        <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="91" style={{ border: "none" }}></td>
+                                        <td width="46" style={{ border: "none" }}></td>
+                                        <td width="46" style={{ border: "none" }}></td>
+                                        <td width="100" style={{ border: "none" }}></td>
+                                        <td width="53" style={{ border: "none" }}></td>
+                                        <td width="51" style={{ border: "none" }}></td>
+                                        <td width="74" style={{ border: "none" }}></td>
+                                        <td width="32" style={{ border: "none" }}></td>
+                                        <td width="33" style={{ border: "none" }}></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table cellPadding="0" width="100%" style={{ width: "100.0%" }}>
+                                <tbody>
+                                    <tr>
+                                        <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
+                                    </tr>
+                                    {props.items["FeedBackJSON"] != null &&
+                                        props.items["FeedBackJSON"][0]?.FeedBackDescriptions?.length > 0 &&
+                                        props.items["FeedBackJSON"][0]?.FeedBackDescriptions[0].Title != '' &&
+                                        props.items["FeedBackJSON"][0]?.FeedBackDescriptions.map((fbData: any, i: any) => {
+                                            return <>
+                                                <tr>
+                                                    <td width="30px" align="center" style={{ border: "1px solid rgb(204, 204, 204)" }}>
+                                                        <span style={{ fontSize: "10pt", color: "rgb(111, 111, 111)" }}>
+                                                            <span>{i + 1}</span> <br />
+                                                            <span>
+                                                                {fbData?.isShowLight === "Maybe" || fbData?.isShowLight === "Reject" ? <svg style={{ margin: "3px" }} xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 32 32" fill="none">
+                                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M23.2312 6.9798C19.3953 10.8187 16.1662 13.9596 16.0553 13.9596C15.9445 13.9596 12.7598 10.8632 8.9783 7.0787C5.1967 3.2942 1.96283 0.19785 1.79199 0.19785C1.40405 0.19785 0.20673 1.41088 0.20673 1.80398C0.20673 1.96394 3.3017 5.1902 7.0844 8.9734C10.8672 12.7567 13.9621 15.9419 13.9621 16.0516C13.9621 16.1612 10.8207 19.3951 6.9812 23.2374L0 30.2237L0.90447 31.1119L1.80893 32L8.8822 24.9255L15.9556 17.851L22.9838 24.8802C26.8495 28.7464 30.1055 31.9096 30.2198 31.9096C30.4742 31.9096 31.9039 30.4689 31.9039 30.2126C31.9039 30.1111 28.7428 26.8607 24.8791 22.9897L17.8543 15.9512L24.9271 8.8731L32 1.79501L31.1029 0.8975L30.2056 0L23.2312 6.9798Z" fill="#DC0018" />
+                                                                </svg> : null
+                                                                }
+                                                                {fbData?.isShowLight === "Approve" ? <svg style={{ margin: "3px" }} xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 34 24" fill="none">
+                                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M21.8306 10.1337L11.6035 20.2676L6.7671 15.4784C4.1069 12.8444 1.83537 10.6893 1.71894 10.6893C1.45515 10.6893 0 12.1487 0 12.4136C0 12.5205 2.58808 15.1712 5.7512 18.304L11.5023 24L22.7511 12.8526L34 1.7051L33.1233 0.8525C32.6411 0.3836 32.2041 0 32.1522 0C32.1003 0 27.4556 4.5601 21.8306 10.1337Z" fill="#3BAD06" />
+                                                                </svg> : null
+                                                                }
+                                                            </span>
+                                                        </span>
+                                                    </td>
+                                                    <td style={{ padding: "0px 2px 0px 10px", border: "1px solid #ccc" }}><span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span>
+                                                        {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
+                                                            return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                                                                <div style={{ marginBottom: '3.75pt' }}>
+                                                                    <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span>{fbComment.AuthorName} - {fbComment.Created}<u></u><u></u></span></p>
+                                                                </div>
+                                                                <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span><u></u><u></u></span></p>
+                                                            </div>
+                                                        })}
+                                                    </td>
+                                                </tr>
+                                                {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map((fbSubData: any, j: any) => {
+                                                    return <>
+                                                        <tr>
+                                                            <td width="30px" align="center" style={{ border: "1px solid rgb(204, 204, 204)" }}>
+                                                                <span style={{ fontSize: "10pt", color: "rgb(111, 111, 111)" }}>
+                                                                    <span>{i + 1}.{j + 1}</span> <br />
+                                                                    <span>
+                                                                        {fbSubData?.isShowLight === "Maybe" || fbSubData?.isShowLight === "Reject" ? <svg style={{ margin: "3px" }} xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 32 32" fill="none">
+                                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M23.2312 6.9798C19.3953 10.8187 16.1662 13.9596 16.0553 13.9596C15.9445 13.9596 12.7598 10.8632 8.9783 7.0787C5.1967 3.2942 1.96283 0.19785 1.79199 0.19785C1.40405 0.19785 0.20673 1.41088 0.20673 1.80398C0.20673 1.96394 3.3017 5.1902 7.0844 8.9734C10.8672 12.7567 13.9621 15.9419 13.9621 16.0516C13.9621 16.1612 10.8207 19.3951 6.9812 23.2374L0 30.2237L0.90447 31.1119L1.80893 32L8.8822 24.9255L15.9556 17.851L22.9838 24.8802C26.8495 28.7464 30.1055 31.9096 30.2198 31.9096C30.4742 31.9096 31.9039 30.4689 31.9039 30.2126C31.9039 30.1111 28.7428 26.8607 24.8791 22.9897L17.8543 15.9512L24.9271 8.8731L32 1.79501L31.1029 0.8975L30.2056 0L23.2312 6.9798Z" fill="#DC0018" />
+                                                                        </svg> : null
+                                                                        }
+                                                                        {fbSubData?.isShowLight === "Approve" ? <svg style={{ margin: "3px" }} xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 34 24" fill="none">
+                                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M21.8306 10.1337L11.6035 20.2676L6.7671 15.4784C4.1069 12.8444 1.83537 10.6893 1.71894 10.6893C1.45515 10.6893 0 12.1487 0 12.4136C0 12.5205 2.58808 15.1712 5.7512 18.304L11.5023 24L22.7511 12.8526L34 1.7051L33.1233 0.8525C32.6411 0.3836 32.2041 0 32.1522 0C32.1003 0 27.4556 4.5601 21.8306 10.1337Z" fill="#3BAD06" />
+                                                                        </svg> : null
+                                                                        }
+                                                                    </span>
+                                                                </span>
+                                                            </td>
+                                                            <td style={{ padding: "0px 2px 0px 10px", border: "1px solid #ccc" }}
+                                                            ><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
+                                                                {fbSubData['Comments'] != null && fbSubData['Comments']?.length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
+                                                                    return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                                                                        <div style={{ marginBottom: '3.75pt' }}>
+                                                                            <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}<u></u><u></u></span></p>
+                                                                        </div>
+                                                                        <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span><u></u><u></u></span></p>
+                                                                    </div>
+                                                                })}
+                                                            </td>
+                                                        </tr>
+                                                    </>
+                                                })}
+                                            </>
+                                        })}
+                                </tbody>
+                            </table>
+                        </td>
+                        <td width="22%" style={{ width: '22.0%', padding: '.75pt .75pt .75pt .75pt' }}>
+                            <table className='table table-striped ' cellPadding={0} width="100%" style={{ width: '100.0%', border: 'solid #dddddd 1.0pt', borderRadius: '4px' }}>
+                                <tbody>
+                                    <tr>
+                                        <td style={{ border: 'none', borderBottom: 'solid #dddddd 1.0pt', background: 'whitesmoke', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            <p style={{ marginBottom: '1.25pt' }}><span>Comments:<u></u><u></u></span></p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style={{ border: 'none', padding: '.75pt .75pt .75pt .75pt' }}>
+                                            {props?.items["Comments"] != undefined && props?.items["Comments"]?.length > 0 && props.items["Comments"]?.map((cmtData: any, i: any) => {
+                                                return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                                                    <div style={{ marginBottom: "3.75pt" }}>
+                                                        <p style={{ marginBottom: '1.25pt' }}>
+                                                            <span style={{ color: 'black', background: '#fbfbfb' }}>{cmtData.AuthorName} - {cmtData.Created}</span></p>
+                                                    </div>
+                                                    <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
+                                                        <span style={{ color: 'black' }}>{cmtData.Description}</span></p>
+                                                </div>
+                                            })}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    )
+}
+
+// This function is used for generating the required HTML structure to handle different scenarios, such as sending email notifications for Email Notification and Immediate Task Category
+
+export const SendEmailAndImmediateTaskNotificationBodyContent = (props: any) => {
+    return (
+        <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
+            <div style={{ backgroundColor: "#FAFAFA" }}>
+                <div style={{ width: "900px", backgroundColor: "#fff", padding: "0px 32px", margin: "0 auto" }}>
+                    <div style={{ display: "flex", alignItems: "center", padding: "56px 0px" }}>
+                        <img src={props?.siteIcon} style={{ width: "48px", height: "48px", borderRadius: "50%" }}></img>
+                        <div style={{ color: "var(--black, #333)", textAlign: "center", fontFamily: "Segoe UI", fontSize: "14px", fontStyle: "normal", fontWeight: "600", marginLeft: "4px" }}></div>
+                    </div>
+                    <div style={{ marginBottom: "12px", fontSize: "16px", fontWeight: "400", fontFamily: "Segoe UI" }}>
+                        Hi {props?.Author?.Title},
+                    </div>
+                    <div style={{ marginBottom: "12px", fontSize: "16px", fontWeight: "400", fontFamily: "Segoe UI" }}>
+                        Task created from your end has been marked to {props?.PercentComplete}%. Please follow the below link to review it.
+                    </div>
+                    <div style={{ marginBottom: "32px", fontSize: "16px", fontWeight: "400", fontFamily: "Segoe UI" }}>
+                        You can track your Task Status here:
+                    </div>
+                    <div style={{ marginBottom: "40px" }}>
+                        <div style={{
+                            display: "flex", padding: "8px", justifyContent: "center", alignItems: 'center', gap: "8px", flexShrink: "0", color: "#FFF", borderRadius: "4px",
+                            background: " #2F5596", width: "260px", height: "40px", fontFamily: "Segoe UI", fontSize: "14px", fontStyle: "normal", fontWeight: "600", lineHeight: "normal"
+                        }}> <a style={{ color: "#fff", textDecorationLine: "underline" }} data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                            href={`${props.siteUrl}/SitePages/Task-Profile.aspx?taskId=` + props?.items?.Id + '&Site=' + props?.items?.siteType}
+                        >Track the Task Status</a>
+                        </div>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: "56px" }}>
+                        <div style={{ color: "var(--black, #333)", textAlign: "center", fontFamily: "Segoe UI", fontSize: "14px", fontStyle: "normal", fontWeight: "600", marginLeft: "4px" }}>Thanks</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+
+
+
+
+
+
+
 
 
 // Instructions for Using this Global Common Functions 

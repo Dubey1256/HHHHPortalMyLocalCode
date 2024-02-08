@@ -1741,9 +1741,9 @@ const App = (props: any) => {
         </a>
       </div>
       <div className="w-100 text-end">
-      {props.props.context._pageContext._user.email === ('anubhav.shukla@hochhuth-consulting.de'|| "deepak@hochhuth-consulting.de" ||"prashant.kumar@hochhuth-consulting.de" || "prashant@hochhuth-consulting.de") && <a  href="#" onClick={DownloadLeaveReport}>
-           <span>Generate Monthly Report</span>
-        </a> }
+       <a  href="#" onClick={DownloadLeaveReport}>
+           <span>Generate Monthly Report |</span>
+        </a> 
         |
         <a
           target="_blank"
@@ -1755,11 +1755,10 @@ const App = (props: any) => {
         </a>
       </div>
       <div style={{ height: "500pt" }}>
-     {props.props.context._pageContext._user.email === ('anubhav.shukla@hochhuth-consulting.de'||"prashant@hochhuth-consulting.de"|| "deepak@hochhuth-consulting.de" ||"prashant.kumar@hochhuth-consulting.de")&&
-        <a className="mailBtn me-4" href="#" onClick={emailComp}>
+     <a className="mailBtn me-4" href="#" onClick={emailComp}>
           <FaPaperPlane></FaPaperPlane> <span>Send Leave Summary</span>
         </a>
-        }
+        
         {/* <button type="button" className="mailBtn" >
           Email
         </button> */}
