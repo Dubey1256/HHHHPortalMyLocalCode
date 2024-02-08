@@ -1454,9 +1454,11 @@ function CreateTaskComponent(props: any) {
                                 >
                                     {row?.original?.Title}
                                 </a>
-                                {row?.original?.descriptionsSearch !== null && row?.original?.descriptionsSearch != '' && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
-                                }
+                               
                             </span>
+                            <span className='mt--3'>
+                            {row?.original?.descriptionsSearch !== null && row?.original?.descriptionsSearch != '' && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
+                                }</span>
                         </div>
                     </>
                 ),

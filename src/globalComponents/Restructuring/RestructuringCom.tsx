@@ -5062,9 +5062,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
           <div>
             <div className="my-1">
               Selected Item will restructure into the
-              {RestructureChecked[0]?.Item_x0020_Type != "Task" ? (newItemBackUp?.Item_x0020_Type == "Component" && RestructureChecked[0]?.Item_x0020_Type == "Component" ? " SubComponent " : (newItemBackUp?.Item_x0020_Type == "SubComponent" && (RestructureChecked[0]?.Item_x0020_Type == "SubComponent" || RestructureChecked[0]?.Item_x0020_Type == "Component") ? " Feature " : RestructureChecked[0]?.Item_x0020_Type ))
+              {RestructureChecked[0]?.Item_x0020_Type != "Task" ? (newItemBackUp?.Item_x0020_Type == "Component" && RestructureChecked[0]?.Item_x0020_Type == "Component" ? " SubComponent " : (newItemBackUp?.Item_x0020_Type == "SubComponent" && (RestructureChecked[0]?.Item_x0020_Type == "SubComponent" || RestructureChecked[0]?.Item_x0020_Type == "Component") ? " Feature " : ` ${RestructureChecked[0]?.Item_x0020_Type} ` ))
               : (newItemBackUp?.Item_x0020_Type != "Task" && RestructureChecked[0]?.TaskType?.Id == 3 ? ' Activity '  : (newItemBackUp?.TaskType?.Id == 1 && RestructureChecked[0]?.TaskType?.Id == 1 ? ' Workstream ' : (newItemBackUp?.TaskType?.Id == 1 && newItemBackUp?.subRows?.some((item: any) => item?.Id === RestructureChecked[0]?.Id && item?.Title === RestructureChecked[0]?.Title) && RestructureChecked[0]?.TaskType?.Id == 3 ?
-              ' Task ' : (newItemBackUp?.TaskType?.Id == 1 && newItemBackUp?.subRows?.some((item: any) => item?.Id === RestructureChecked[0]?.Id && item?.Title === RestructureChecked[0]?.Title) && RestructureChecked[0]?.TaskType?.Id == 2 ? ' Workstream ' : RestructureChecked[0]?.TaskType?.Id == 2 ? ' Task ' : (RestructureChecked[0]?.TaskType?.Id == 3 ? ' Workstream ' : ''))))      
+              ' Task ' : (newItemBackUp?.TaskType?.Id == 1 && newItemBackUp?.subRows?.some((item: any) => item?.Id === RestructureChecked[0]?.Id && item?.Title === RestructureChecked[0]?.Title) && RestructureChecked[0]?.TaskType?.Id == 2 ? ' Workstream ' : RestructureChecked[0]?.TaskType?.Id == 2 ? ' Task ' : (RestructureChecked[0]?.TaskType?.Id == 3 ? ' Workstream ' : (RestructureChecked[0]?.TaskType?.Id == 1 ? " Activity " : '')))))      
                 // RestructureChecked[0]?.TaskType?.Id == 2 || RestructureChecked[0]?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ? " Task " : (RestructureChecked[0]?.TaskType?.Id == 1 ? " Activity " : (newItemBackUp?.Item_x0020_Type != "Task" ? " Activity " : " Workstream "))
               )}
               inside
@@ -5745,12 +5745,21 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           }
                         >
                         
-                          {newItemBackUp?.Item_x0020_Type === "Component" && (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature") ?  <span className="Dyicons"> S </span> : 
+                        {
+                          newItemBackUp?.Item_x0020_Type === "Component" && items?.Item_x0020_Type === "Component" ? <span className="Dyicons"> S </span> : (
+                            newItemBackUp?.Item_x0020_Type == "SubComponent" && (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent") ? 
+                            <span className="Dyicons">F</span> : (
+                              items?.Item_x0020_Type === "Task" ? <img className="workmember" src={items?.siteIcon} />  : <span className="Dyicons">{items?.siteIcon}</span>
+                            )
+
+                          )
+                        }
+                          {/* {newItemBackUp?.Item_x0020_Type === "Component" && (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature") ?  <span className="Dyicons"> S </span> : 
                           (newItemBackUp?.Item_x0020_Type == "SubComponent" && (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature") ? <span className="Dyicons">F</span> : 
                           items?.Item_x0020_Type === "Task" ? <img className="workmember" src={items?.siteIcon} /> 
                            : 
                             "")
-                          }
+                          } */}
                           <span className="mx-2">
                             {
                             newItemBackUp?.Item_x0020_Type != "Task" ?
