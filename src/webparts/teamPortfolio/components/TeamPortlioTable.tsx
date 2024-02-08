@@ -1625,7 +1625,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                 ""
                             )}
                         </span>
-                        {row?.original?.TaskCategories == 'Draft' ?
+                        {row?.original?.Categories?.includes("Draft") ?
                             <FaCompressArrowsAlt style={{ height: '11px', width: '20px', color: `${row?.original?.PortfolioType?.Color}` }} /> : ''}
                         {row?.original?.subRows?.length > 0 ?
                             <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
