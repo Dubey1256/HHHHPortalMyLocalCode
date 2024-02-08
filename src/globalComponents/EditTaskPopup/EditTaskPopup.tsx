@@ -2948,12 +2948,17 @@ const EditTaskPopup = (Items: any) => {
             updateFeedbackArray = JSON.parse(EditData?.FeedBack);
         }
         // FeedBackBackupArray = [];
+        let CategoriesTitle: any = "";
         if (tempShareWebTypeData != undefined && tempShareWebTypeData?.length > 0) {
             tempShareWebTypeData.map((typeData: any) => {
                 CategoryTypeID.push(typeData.Id);
+                if (CategoriesTitle?.length) {
+                    CategoriesTitle = CategoriesTitle + ";" + typeData.Title;
+                } else {
+                    CategoriesTitle = typeData.Title;
+                }
             });
-        }
-
+        } 
         if (TaggedPortfolioData != undefined && TaggedPortfolioData?.length > 0) {
             TaggedPortfolioData?.map((com: any) => {
                 smartComponentsIds = com.Id;
@@ -3045,7 +3050,7 @@ const EditTaskPopup = (Items: any) => {
                     : EditData.PercentComplete
                         ? EditData.PercentComplete / 100
                         : 0,
-            Categories: CategoriesData ? CategoriesData : null,
+            Categories: CategoriesTitle ? CategoriesTitle : null,
             PortfolioId: smartComponentsIds === "" ? null : smartComponentsIds,
             RelevantPortfolioId: {
                 results:
@@ -3059,6 +3064,7 @@ const EditTaskPopup = (Items: any) => {
                         ? CategoryTypeID
                         : [],
             },
+
             DueDate: EditData.DueDate
                 ? Moment(EditData.DueDate).format("MM-DD-YYYY")
                 : null,

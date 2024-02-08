@@ -835,6 +835,7 @@ const GroupByDashboard = (SelectedProp: any) => {
     let isOpenPopup = false;
     const AddStructureCallBackCall = React.useCallback((item) => {
         childRef?.current?.setRowSelection({});
+      
         if (!isOpenPopup && item.CreatedItem != undefined) {
             item.CreatedItem.forEach((obj: any) => {
                 obj.data.childs = [];
@@ -844,6 +845,8 @@ const GroupByDashboard = (SelectedProp: any) => {
                 obj.data.siteType = "Master Tasks";
                 obj.data.SiteIconTitle = obj?.data?.Item_x0020_Type?.charAt(0);
                 obj.data["TaskID"] = obj.data.PortfolioStructureID;
+                obj.data.Author = { Id: obj.data.AuthorId }
+                obj.data.Parent={Id:obj?.data?.ParentId} 
                 if (
                     item.props != undefined &&
                     item.props.SelectedItem != undefined &&
@@ -911,6 +914,7 @@ const GroupByDashboard = (SelectedProp: any) => {
             item.data.subRows = [];
             item.data.flag = true;
             item.data.TitleNew = item.data.Title;
+            item.data.Author = { Id: item.data.AuthorId }
             item.data.siteType = "Master Tasks";
             if (portfolioTypeData != undefined && portfolioTypeData.length > 0) {
                 portfolioTypeData.forEach((obj: any) => {
@@ -920,6 +924,7 @@ const GroupByDashboard = (SelectedProp: any) => {
             }
             item.data.SiteIconTitle = item?.data?.Item_x0020_Type?.charAt(0);
             item.data["TaskID"] = item.data.PortfolioStructureID;
+            
             copyDtaArray.unshift(item.data);
             renderData = [];
             renderData = renderData.concat(copyDtaArray)
@@ -930,6 +935,7 @@ const GroupByDashboard = (SelectedProp: any) => {
             }
             refreshData();
         }
+       
         setOpenAddStructurePopup(false);
     }, []);
     const onRenderCustomHeaderMain1 = () => {

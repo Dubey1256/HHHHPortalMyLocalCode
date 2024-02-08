@@ -742,6 +742,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
           if (elem?.Id === childelem?.Id || elem.ID === childelem?.Id) {
             if (childelem?.NewDueDate != '') {
               elem.DueDate = childelem?.NewDueDate
+        
             }
             if (childelem?.NewStatus != '') {
               elem.PercentComplete = childelem?.NewStatus
@@ -907,7 +908,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
               ""
             )}
             </span>
-            {row?.original?.TaskCategories == 'Draft' ?
+            {row?.original?.Categories?.includes("Draft")?
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
               <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
