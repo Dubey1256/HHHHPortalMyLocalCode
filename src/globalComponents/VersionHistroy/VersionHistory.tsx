@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Web } from "sp-pnp-js";
 import Tooltip from '../Tooltip';
 import * as moment from 'moment';
+import { isEmpty } from 'lodash';
 import InfoIconsToolTip from '../InfoIconsToolTip/InfoIconsToolTip';
 import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import * as globalCommon from "../globalCommon";
@@ -64,7 +65,7 @@ export default function VersionHistory(props: any) {
 
                 const employeesWithoutLastName = result.map(employee => {
                     employee.childs = []
-                    const { VersionId, IsCurrentVersion, ClientTime, PreviouslyAssignedTo, Portfolio_x005f_x0020_x005f_Type, Project_x005f_x003a_x005f_ID, VersionLabel, UniqueId, ParentUniqueId, ScopeId, SMLastModifiedDate, GUID, FileRef, FileDirRef, OData__x005f_Moderation, WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, ...rest } = employee;
+                    const { VersionId, IsCurrentVersion, ClientTime, PreviouslyAssignedTo, Portfolio_x005f_x0020_x005f_Type,Portfolio_x005f_x003a_x005f_ID, Project_x005f_x003a_x005f_ID, VersionLabel, UniqueId, ParentUniqueId, ScopeId, SMLastModifiedDate, GUID, FileRef, FileDirRef, OData__x005f_Moderation, WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, ...rest } = employee;
                     return rest;
                 });
                 console.log(employeesWithoutLastName)
@@ -116,8 +117,7 @@ export default function VersionHistory(props: any) {
                     }
                     if (val.Comments !== undefined && val.Comments !== null && val.Comments !== '[]') {
                         val.CommentsDescription = JSON.parse(val?.Comments)
-                    }
-
+                    }                                        
                     val.No = val.owshiddenversion;
                     val.ModifiedDate = moment(val?.Modified).format("DD/MM/YYYY h:mmA");
                     val.ModifiedBy = val?.Editor?.LookupValue;
@@ -126,7 +126,7 @@ export default function VersionHistory(props: any) {
 
                 employeesWithoutLastName?.forEach((val: any) => {
                     val.childs?.forEach((ele: any) => {
-                        const { VersionId, IsCurrentVersion, ClientTime, PreviouslyAssignedTo, Portfolio_x005f_x0020_x005f_Type, VersionLabel, Project_x005f_x003a_x005f_ID, UniqueId, ParentUniqueId, ScopeId, SMLastModifiedDate, GUID, FileRef, FileDirRef, OData__x005f_Moderation, WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, Editor, ...rest } = ele;
+                        const { VersionId, IsCurrentVersion, ClientTime, PreviouslyAssignedTo, Portfolio_x005f_x0020_x005f_Type, Portfolio_x005f_x003a_x005f_ID, VersionLabel, Project_x005f_x003a_x005f_ID, UniqueId, ParentUniqueId, ScopeId, SMLastModifiedDate, GUID, FileRef, FileDirRef, OData__x005f_Moderation, WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, Editor, ...rest } = ele;
                         return rest;
                     })
                 })
@@ -235,12 +235,15 @@ export default function VersionHistory(props: any) {
                 const differingPairs: any = {};
                 differingPairs['TaskID'] = currentObj.ID;
                 differingPairs['TaskTitle'] = currentObj.Title;
-                for (const key in currentObj) {
+                
+                for (let key in currentObj) {
                     differingPairs['version'] = currentObj.VersionId;
                     differingPairs['ID'] = currentObj.ID;
+                    if(key === 'PercentComplete')
+                     key = '%Complete';
                     if (currentObj.hasOwnProperty(key) && (!nextObj.hasOwnProperty(key) || !isEqual(currentObj[key], nextObj[key]))) {
                         differingPairs[key] = currentObj[key];
-                        differingPairs['Editor'] = currentObj.Editor;
+                        differingPairs['Editor'] = currentObj.Editor;                                              
                     }
                 }
 
@@ -252,7 +255,7 @@ export default function VersionHistory(props: any) {
                     }
                 }
 
-                if (Object.keys(differingPairs).length > 0) {
+                if (Object.keys(differingPairs).length > 0) {                                        
                     differingValues.push(differingPairs);
                 }
             }
@@ -262,17 +265,18 @@ export default function VersionHistory(props: any) {
                 const differingPairs: any = {};
                 differingPairs['TaskID'] = currentObj.ID;
                 differingPairs['TaskTitle'] = currentObj.Title;
+                
                 for (const key in currentObj) {
                     differingPairs['version'] = currentObj.VersionId;
                     differingPairs['ID'] = currentObj.ID;
                     differingPairs['owshiddenversion'] = currentObj.owshiddenversion;
                     if (currentObj.PercentComplete != undefined && currentObj.PercentComplete != null && currentObj.PercentComplete !== 'NaN')
-                        differingPairs['PercentComplete'] = currentObj.PercentComplete;
+                        differingPairs['% Complete'] = currentObj.PercentComplete;
                     if ((currentObj[key] !== undefined && currentObj[key] !== null && currentObj[key] !== '' && currentObj.hasOwnProperty(key)) && (key !== 'Checkmark' && key !== 'odata.type' && key !== 'ItemChildCount' && key !== 'SMTotalFileStreamSize' && key !== 'ContentVersion' && key !== 'FolderChildCount' && key !== 'NoExecute' && key !== 'FSObjType' && key !== 'FileLeafRef' && key !== 'Order' && key !== 'Created_x005f_x0020_x005f_Date' && key !== 'Last_x005f_x0020_x005f_Modified')) {
-                        if (currentObj[key]?.length > 0 && key != 'Project_x005f_x003a_x005f_ID') {
+                        if (!isEmpty(currentObj[key]) && key != 'Project_x005f_x003a_x005f_ID' && key != 'SyncClientId' && key != 'SMTotalSize' && key != 'SMTotalFileCount') {
                             differingPairs[key] = currentObj[key];
                             differingPairs['Editor'] = currentObj.Editor;
-                        }
+                        }                        
                     }
                 }
                 if (Object.keys(differingPairs).length > 0) {
@@ -326,8 +330,8 @@ export default function VersionHistory(props: any) {
             <>
                 <div className='subheading mb-0'>
                     Version History
-                </div>
-                <Tooltip />
+                </div>  
+                <Tooltip ComponentId='8796' />
             </>
         );
     };
@@ -336,14 +340,13 @@ export default function VersionHistory(props: any) {
             <>
                 <div className='subheading mb-0'>
                     All Comments
-                </div>
-                <Tooltip />
+                </div>               
             </>
         );
     };
-    const renderArray = (arr: any[]) => {
+    const renderArray = (arr: any[],key:any) => {
         return arr.map((item, index) => (
-            <div key={index}>{typeof item === 'object' ? item?.LookupValue : item}</div>
+            <div key={index}>{typeof item === 'object' ? item.LookupValue : item} </div>
         ));
     };
     const renderSiteComposition = (itm: any) => {
@@ -505,12 +508,17 @@ export default function VersionHistory(props: any) {
         )
     }
 
-    const renderObject = (obj: any, visited: Set<object> = new Set()) => {
+    const renderObject = (obj: any,key:any) => {
         if (obj != null && obj != undefined) {
             if (obj?.Url != undefined && obj?.Url != null) {
                 return <a href={obj?.Url} target='_blank' data-interception="off"> {obj?.Url} </a>
             }
-            return <div>{obj?.LookupValue}</div>
+            return (
+            <div>
+                {key === 'Project' ? <a href={`${siteTypeUrl}/SitePages/Project-Management.aspx?ProjectId=${obj.LookupId}`} target='_blank' data-interception="off">{obj.LookupValue}</a>:
+                key === 'Portfolio' ? <a href={`${siteTypeUrl}/SitePages/Portfolio-Profile.aspx?taskId=${obj.LookupId}`} target='_blank' data-interception="off">{obj.LookupValue}</a> :
+                obj?.LookupValue}
+            </div>)
         }
 
 
@@ -588,13 +596,13 @@ export default function VersionHistory(props: any) {
                                                                                 <li key={index}>
                                                                                     <span className='vh-textLabel'>{key}</span>
                                                                                     <span className='vh-textData'>{Array.isArray(item[key])
-                                                                                        ? renderArray(item[key])
+                                                                                        ? renderArray(item[key],key)
                                                                                         : typeof item[key] === 'object'
-                                                                                            ? renderObject(item[key])
+                                                                                            ? renderObject(item[key],key)
                                                                                             : key === 'FeedBack'
                                                                                                 ? <div className='feedbackItm-text'>
                                                                                                     {(item?.FeedBackDescription != undefined && item?.FeedBackDescription != '' && item?.FeedBackDescription?.length > 0) ? <span className='d-flex'><p className='text-ellips mb-0'>{`${item?.FeedBackDescription[0]?.Title}`}</p> <InfoIconsToolTip Discription='' row={item} versionHistory={true} /></span> : ''}
-                                                                                                </div> : key === 'PercentComplete' ? (item?.PercentComplete) * 100 : key === 'BasicImageInfo'
+                                                                                                </div> : key === '%Complete' ? (item['% Complete']) * 100 : key === 'BasicImageInfo'
                                                                                                     ? <div className='BasicimagesInfo_groupImages'>
                                                                                                         {item?.BasicImageInfoArray != undefined && item?.BasicImageInfoArray.map((image: any, indx: any) => {
                                                                                                             return (

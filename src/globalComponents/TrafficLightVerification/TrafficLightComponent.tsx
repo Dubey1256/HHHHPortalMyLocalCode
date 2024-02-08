@@ -14,22 +14,22 @@ const TrafficLightComponent = (props: any) => {
     const [columnVerificationStatus, setcolumnVerificationStatus]: any = useState()
     const [trafficValue, setTrafficValue] = useState("")
     const [CommentData, SetCommentData] = useState("")
-    let JsonColumnCopy=React.useRef("")
+    let JsonColumnCopy = React.useRef("")
     const [columnLevelVerificationJson, setColumnLevelVerificationJson]: any = useState()
     useEffect(() => {
         if (props?.columnName != undefined) {
-            let copycolumnVerificationStatus=props?.columnData[props?.columnName]
-            let typeofcopycolumnVerificationStatus=typeof copycolumnVerificationStatus
-            if(typeofcopycolumnVerificationStatus){
-                copycolumnVerificationStatus=copycolumnVerificationStatus==false?"No":"Yes" 
+            let copycolumnVerificationStatus = props?.columnData[props?.columnName]
+            let typeofcopycolumnVerificationStatus = typeof copycolumnVerificationStatus
+            if (typeofcopycolumnVerificationStatus) {
+                copycolumnVerificationStatus = copycolumnVerificationStatus == false ? "No" : "Yes"
             }
-         setcolumnVerificationStatus(copycolumnVerificationStatus)
+            setcolumnVerificationStatus(copycolumnVerificationStatus)
             ListId = props?.columnData?.listId;
             siteUrl = props?.columnData?.siteUrl;
         }
         if (props?.usedFor == "GroupByComponents") {
             JsonColumn = "HelpInformationVerifiedJson"
-            JsonColumnCopy.current=JsonColumn
+            JsonColumnCopy.current = JsonColumn
             let columnLevelJson = JSON.parse(props?.columnData[JsonColumn])
             if (columnLevelJson?.length > 0) {
                 setColumnLevelVerificationJson(columnLevelJson)
@@ -73,13 +73,13 @@ const TrafficLightComponent = (props: any) => {
             })
 
 
-            UpdateJsonColumn=columnLevelVerificationJson
+            UpdateJsonColumn = columnLevelVerificationJson
         }
-     console.log(JsonColumnCopy.current)
+        console.log(JsonColumnCopy.current)
         let postData: any = {
-         [JsonColumnCopy.current]: JSON.stringify(UpdateJsonColumn)
+            [JsonColumnCopy.current]: JSON.stringify(UpdateJsonColumn)
         };
-        
+
         if (props?.columnName !== undefined) {
             postData[props.columnName] = columnVerificationStatus;
         }
@@ -94,37 +94,20 @@ const TrafficLightComponent = (props: any) => {
     }
 
     return (
-        <> {props?.columnData != undefined &&
-            <myContextValue.Provider value={{ ...myContextValue.default,updateJson, trafficValue: trafficValue, CommentData: CommentData, SetCommentData, setTrafficValue, columnVerificationStatus: columnVerificationStatus, setcolumnVerificationStatus }}>
-                <div className="mt-2">
-                    <div className="alignCenter m-0">
-
-                        <span className="alignCenter">
-                            <span title="Incorrect" className={trafficValue == "Incorrect" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"} onClick={() => changeTrafficLight("Incorrect")}>
-                            </span>
-                            <span title="Maybe" className={trafficValue == "Maybe" ? "circlelight br_yellow pull-left yellow mx-1" : "circlelight br_yellow pull-left mx-1"} onClick={() => changeTrafficLight("Maybe")}>
-                            </span>
-                            <span title="Correct" className={trafficValue == "Correct" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"} onClick={() => changeTrafficLight("Correct")} >
-
-                            </span>
-                            <span title="NA" className={trafficValue == "NA" ? "circlelight br_green pull-left notable mx-1" : "circlelight br_black pull-left mx-1"} onClick={() => changeTrafficLight("NA")}>
-                            </span>
-
-                        </span>
+        <>  {props?.columnData != undefined &&
+            <myContextValue.Provider value={{ ...myContextValue.default, updateJson, trafficValue: trafficValue, CommentData: CommentData, SetCommentData, setTrafficValue, columnVerificationStatus: columnVerificationStatus, setcolumnVerificationStatus }}>
+                <div className="alignCenter">
+                    <span title="Incorrect" className={trafficValue == "Incorrect" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"} onClick={() => changeTrafficLight("Incorrect")}></span>
+                    <span title="Maybe" className={trafficValue == "Maybe" ? "circlelight br_yellow pull-left yellow mx-1" : "circlelight br_yellow pull-left mx-1"} onClick={() => changeTrafficLight("Maybe")}></span>
+                    <span title="Correct" className={trafficValue == "Correct" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"} onClick={() => changeTrafficLight("Correct")} > </span>
+                    <span title="NA" className={trafficValue == "NA" ? "circlelight br_green pull-left notable mx-1" : "circlelight br_black pull-left mx-1"} onClick={() => changeTrafficLight("NA")}></span>
+                    <div className="alignCenter">
+                        <span className="">{columnVerificationStatus != undefined && columnVerificationStatus}</span>
+                        <FaCommentDots className="ms-1" title={CommentData} />
+                        <span className="svg__iconbox svg__icon--editBox alignIcon" onClick={() => setOpenCommentpopup(true)}></span>
                     </div>
-
-                    <span className="me-2">{columnVerificationStatus!=undefined&&columnVerificationStatus}</span>
-                 
-
-                    <FaCommentDots className="me-2" title={CommentData} />
-                    <span className="svg__iconbox svg__icon--editBox alignIcon ms-1"
-                        //  onClick={() => setOpenColumnLevelVerification(true)}
-                        onClick={() => setOpenCommentpopup(true)}
-                    ></span>
-
-                    {openCommentpopup && <EditTrafficLightComment setOpenCommentpopup={setOpenCommentpopup} columnData={props?.columnData} />}
                 </div>
-
+                {openCommentpopup && <EditTrafficLightComment setOpenCommentpopup={setOpenCommentpopup} columnData={props?.columnData} />}
             </myContextValue.Provider >}
         </>
     )
