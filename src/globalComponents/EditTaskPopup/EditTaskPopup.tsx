@@ -2477,87 +2477,7 @@ const EditTaskPopup = (Items: any) => {
             }
         }
 
-
-        // When task assigned to user, send a notification on MS Teams 
-
-        if (!IsUserFromHHHHTeam) {
-            try {
-                let sendUserEmails: any = [];
-                let AssignedUserName: string = '';
-                TaskAssignedTo?.map((userDtl: any) => {
-                    taskUsers?.map((allUserItem: any) => {
-                        if (userDtl.Id == allUserItem.AssingedToUserId) {
-                            sendUserEmails.push(allUserItem.Email);
-                            if (AssignedUserName?.length > 0) {
-                                AssignedUserName = "Team";
-                            } else {
-                                AssignedUserName = allUserItem.Title;
-                            }
-                        }
-                    });
-                });
-                let uniqueIds: any = {};
-                const result: any = tempShareWebTypeData.filter((item: any) => {
-                    if (!uniqueIds[item.Id]) {
-                        uniqueIds[item.Id] = true;
-                        return true;
-                    }
-                    return false;
-                });
-                let TaskCategories = result?.map((item: any) => item.Title).join(', ');
-                let SendMessage: string = '';
-                let CommonMsg: string = '';
-                if (TeamMemberChanged) {
-                    CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`
-                }
-                if (IsTaskStatusUpdated) {
-                    if ((Number(taskPercentageValue) * 100) == 80) {
-                        CommonMsg = `Below task has been set to 80%, please review it.`
-                    }
-                    if ((Number(taskPercentageValue) * 100) == 70) {
-                        CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`
-                    }
-                }
-
-                SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> </br> 
-                <p>
-                Task Link:  <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + EditData.siteType}>
-                 ${EditData.TaskId}-${EditData.Title}
-                </a>
-                </br>
-                Task Category: ${TaskCategories}</br>
-                Smartpriority: <b>${EditData?.SmartPriority}</b></br>
-                </p>
-                <p></p>
-                <b>
-                Thanks, </br>
-                Task Management Team
-                </b>
-                `
-                try {
-                    if ((IsTaskStatusUpdated || TeamMemberChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85)) {
-                        if (sendUserEmails?.length > 0) {
-                            await globalCommon.SendTeamMessage(
-                                sendUserEmails,
-                                SendMessage,
-                                Items.context
-                            );
-                        }
-                    }
-
-                } catch (error) {
-                    console.log("Error", error.message);
-                }
-            } catch (error) {
-                console.log("Error", error.message)
-            }
-
-        }
-
-
-
         if (TaskShuoldBeUpdate) {
-
             try {
                 let web = new Web(siteUrls);
                 await web.lists
@@ -2621,24 +2541,24 @@ const EditTaskPopup = (Items: any) => {
                             TaskDetailsFromCall = await web.lists
                                 .getById(Items.Items.listId)
                                 .items.select(
-                                    "Id,Title,PriorityRank,workingThisWeek,waitForResponse,Approvee/Id,Approvee/Title,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
+                                    "Id,Title,PriorityRank,workingThisWeek,Approvee/Id,Approvee/Title,waitForResponse,Project/Id, Project/Title,Project/PriorityRank,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
                                 )
                                 .top(5000)
                                 .filter(`Id eq ${Items.Items.Id}`)
                                 .expand(
-                                    "AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee"
+                                    "AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee,Project"
                                 )
                                 .get();
                         } else {
                             TaskDetailsFromCall = await web.lists
                                 .getById(Items.Items.listName)
                                 .items.select(
-                                    "Id,Title,PriorityRank,workingThisWeek,Approvee/Id,Approvee/Title,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
+                                    "Id,Title,PriorityRank,workingThisWeek,Approvee/Id,Approvee/Title,waitForResponse,Project/Id, Project/Title,Project/PriorityRank,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
                                 )
                                 .top(5000)
                                 .filter(`Id eq ${Items.Items.Id}`)
                                 .expand(
-                                    "AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee"
+                                    "AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee,Project"
                                 )
                                 .get();
                         }
@@ -2646,6 +2566,86 @@ const EditTaskPopup = (Items: any) => {
                         TaskDetailsFromCall[0].TaskId = globalCommon.GetTaskId(
                             TaskDetailsFromCall[0]
                         );
+                        let UpdatedDataObject: any = TaskDetailsFromCall[0]
+                        let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
+                        UpdatedDataObject.SmartPriority = NewSmartPriority;
+
+                        // When task assigned to user, send a notification on MS Teams 
+
+                        if (!IsUserFromHHHHTeam && SendCategoryName !== "Bottleneck") {
+                            try {
+                                let sendUserEmails: any = [];
+                                let AssignedUserName: string = '';
+                                TaskAssignedTo?.map((userDtl: any) => {
+                                    taskUsers?.map((allUserItem: any) => {
+                                        if (userDtl.Id == allUserItem.AssingedToUserId) {
+                                            sendUserEmails.push(allUserItem.Email);
+                                            if (AssignedUserName?.length > 0) {
+                                                AssignedUserName = "Team";
+                                            } else {
+                                                AssignedUserName = allUserItem.Title;
+                                            }
+                                        }
+                                    });
+                                });
+                                let uniqueIds: any = {};
+                                const result: any = tempShareWebTypeData.filter((item: any) => {
+                                    if (!uniqueIds[item.Id]) {
+                                        uniqueIds[item.Id] = true;
+                                        return true;
+                                    }
+                                    return false;
+                                });
+                                let TaskCategories = result?.map((item: any) => item.Title).join(', ');
+                                let SendMessage: string = '';
+                                let CommonMsg: string = '';
+                                if (TeamMemberChanged) {
+                                    CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`
+                                }
+                                if (IsTaskStatusUpdated) {
+                                    if ((Number(taskPercentageValue) * 100) == 80) {
+                                        CommonMsg = `Below task has been set to 80%, please review it.`
+                                    }
+                                    if ((Number(taskPercentageValue) * 100) == 70) {
+                                        CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`
+                                    }
+                                }
+
+                                SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> </br> 
+                                <p>
+                                Task Link:  <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
+                                 ${UpdatedDataObject.TaskId}-${UpdatedDataObject.Title}
+                                </a>
+                                </br>
+                                Task Category: ${TaskCategories}</br>
+                                Smartpriority: <b>${UpdatedDataObject?.SmartPriority}</b></br>
+                                </p>
+                                <p></p>
+                                <b>
+                                Thanks, </br>
+                                Task Management Team
+                                </b>
+                                `
+                                try {
+                                    if ((IsTaskStatusUpdated || TeamMemberChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85)) {
+                                        if (sendUserEmails?.length > 0) {
+                                            await globalCommon.SendTeamMessage(
+                                                sendUserEmails,
+                                                SendMessage,
+                                                Items.context
+                                            );
+                                        }
+                                    }
+
+                                } catch (error) {
+                                    console.log("Error", error.message);
+                                }
+                            } catch (error) {
+                                console.log("Error", error.message)
+                            }
+
+                        }
+
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             taskUsers.forEach((val: any) => {
                                 if (
@@ -2780,15 +2780,15 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.SiteIcon = Items?.Items?.SiteIcon;
                                     dataEditor.data.DisplayCreateDate =
                                         Items?.Items?.DisplayCreateDate;
-                                        dataEditor.data.DisplayDueDate = Moment(EditData?.DueDate).format("DD/MM/YYYY");
-                                        dataEditor.data.PercentComplete = Number(UpdateTaskInfo.PercentCompleteStatus);
-                                        dataEditor.data.FeedBack = JSON.stringify(
-                                            dataEditor.data.FeedBack
-                                        );
-                                        let portfoliostructureIds = AllProjectBackupArray?.filter((item:any)=> item?.Id === (selectedProject?.length>0?selectedProject[0].Id:""));
-                                        const structureiddata= portfoliostructureIds?.length>0?portfoliostructureIds[0]?.PortfolioStructureID:"";
-                                        
-                                        dataEditor.data.projectStructerId = structureiddata;
+                                    dataEditor.data.DisplayDueDate = Moment(EditData?.DueDate).format("DD/MM/YYYY");
+                                    dataEditor.data.PercentComplete = Number(UpdateTaskInfo.PercentCompleteStatus);
+                                    dataEditor.data.FeedBack = JSON.stringify(
+                                        dataEditor.data.FeedBack
+                                    );
+                                    let portfoliostructureIds = AllProjectBackupArray?.filter((item: any) => item?.Id === (selectedProject?.length > 0 ? selectedProject[0].Id : ""));
+                                    const structureiddata = portfoliostructureIds?.length > 0 ? portfoliostructureIds[0]?.PortfolioStructureID : "";
+
+                                    dataEditor.data.projectStructerId = structureiddata;
                                     Items.Call(dataEditor, "UpdatedData");
                                 } else {
                                     Items.Call(DataJSONUpdate, "UpdatedData");
