@@ -339,6 +339,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
 
   // console.log(FinalTotalTime);
   return FinalTotalTime;
+  refreshData();
 };
 
 // Loadsmarttimeend
