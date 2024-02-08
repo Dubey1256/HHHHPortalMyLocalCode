@@ -2659,6 +2659,13 @@ function TeamPortlioTable(SelectedProp: any) {
                             : props
                     }
                 />
+                {/* <CreateAllStructureComponent 
+                 Close={callbackdataAllStructure}
+                 taskUser={AllUsers}
+                 portfolioTypeData={portfolioTypeData}
+                 PropsValue={ContextValue}
+                 /> */}
+
             </Panel>
 
             {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.SelectedProp} />}

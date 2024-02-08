@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { myContextValue } from "../../../globalComponents/globalCommon";
+import * as globalCommon from '../../../globalComponents/globalCommon';
 import ComingBirthday from "./comingBirthday";
 import MyNotes from "./MyNotes";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
@@ -10,6 +11,7 @@ import GlobalCommanTable from "../../../globalComponents/GroupByReactTableCompon
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import EmailComponenet from "../../taskprofile/components/emailComponent";
 import ManageConfigPopup from "../../../globalComponents/ManageConfigPopup";
+import { Web } from "sp-pnp-js";
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -18,12 +20,14 @@ let flagApproval: boolean = false;
 let approveItem: any;
 let emailStatus: any = "";
 let IsShowConfigBtn = false;
+let dragItem: any;
 const TaskStatusTbl = (Tile: any) => {
   const ContextData: any = React.useContext(myContextValue);
   const AllTaskUser: any = ContextData?.AlltaskData?.AllTaskUser;
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
   const [editPopup, setEditPopup]: any = React.useState(false);
   const [result, setResult]: any = React.useState(false);
+  const [ActiveTile, setActiveTile] = React.useState(Tile?.activeTile);
   if (ContextData != undefined && ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
     AllapprovalTask = ContextData.DashboardConfig.filter((item: any) => item.Id == 6)[0];
     if (AllapprovalTask != undefined && AllapprovalTask.length > 0)
@@ -31,7 +35,6 @@ const TaskStatusTbl = (Tile: any) => {
     else
       AllapprovalTask = []
   }
-
   let [approvalTask, setapprovalTask]: any = React.useState([]);
   const [sendMail, setsendMail]: any = React.useState(false);
   const [IsManageConfigPopup, setIsManageConfigPopup] = React.useState(false);
@@ -54,7 +57,6 @@ const TaskStatusTbl = (Tile: any) => {
     flagApproval = true
     setapprovalTask(AllapprovalTask)
   }
-
   useEffect(() => {
     Count += 1
     if (ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
@@ -62,6 +64,53 @@ const TaskStatusTbl = (Tile: any) => {
       DashboardConfigCopy = [...DashboardConfig]
     }
   }, []);
+  const startDrag = (e: any, Item: any, ItemId: any, draggedItem: any) => {
+    dragItem = draggedItem;
+    e.dataTransfer.setData("DataId", JSON.stringify(Item))
+    console.log('Drag successfuly');
+  }
+  const onDropUser = (e: any, User: any) => {
+    let TeamMemberIds = [];
+    let AssignedToIds = [];
+    let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
+    if (Item?.TeamMembers != undefined && Item?.TeamMembers?.length > 0) {
+      Item?.TeamMembers?.map((teamMember: any) => {
+        TeamMemberIds.push(teamMember.Id);
+      });
+    }
+    TeamMemberIds.push(User?.AssingedToUserId);
+    Item?.TeamMembers.push({ "Id": User?.AssingedToUserId, "Title": User?.Title })
+    if (Item?.AssignedTo != undefined && Item?.AssignedTo?.length > 0) {
+      Item?.AssignedTo?.map((assignMember: any) => {
+        AssignedToIds.push(assignMember.Id);
+      });
+    }
+    AssignedToIds.push(User?.AssingedToUserId);
+    Item?.AssignedTo.push({ "Id": User?.AssingedToUserId, "Title": User?.Title })
+    if (Item != undefined && Item != '') {
+      let web = new Web(ContextData?.propsValue?.siteUrl);
+      web.lists.getById(Item.listId).items.getById(Item?.Id).update({
+        AssignedToId: { results: AssignedToIds != undefined && AssignedToIds.length > 0 ? AssignedToIds : [], },
+        TeamMembersId: { results: TeamMemberIds != undefined && TeamMemberIds.length > 0 ? TeamMemberIds : [], },
+      }).then((res: any) => {
+        console.log('Drop successfuly');
+        DashboardConfig?.map((item: any) => {
+          if (item?.WebpartTitle != undefined && dragItem?.WebpartTitle != undefined && item?.WebpartTitle == dragItem?.WebpartTitle) {
+            item?.Tasks.map((task: any) => {
+              if (task?.Id == Item.Id) {
+                task.AssignedTo = Item?.AssignedTo;
+                task.TeamMembers = Item?.TeamMembers;
+              }
+            });
+          }
+        });
+        setActiveTile(Tile?.activeTile)
+      }).catch((err: any) => {
+        console.log(err);
+      })
+    }
+
+  }
   const generateDynamicColumns = (item: any) => {
     return [{
       accessorKey: "",
@@ -99,7 +148,7 @@ const TaskStatusTbl = (Tile: any) => {
       accessorFn: (row: any) => row?.Title,
       cell: ({ row, getValue }: any) => (
         <div>
-          <a className="hreflink" target='_blank' style={{ textDecoration: 'none', cursor: 'pointer' }} href={`${ContextData.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
+          <a className="hreflink" draggable onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.TaskID, item)} target='_blank' style={{ textDecoration: 'none', cursor: 'pointer' }} href={`${ContextData.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
             rel='noopener noreferrer' data-interception="off" > {row?.original?.Title}
           </a>
           {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != "" && (
@@ -312,7 +361,7 @@ const TaskStatusTbl = (Tile: any) => {
         const box = (
           <div className={`col-${12 / config.highestColumn} px-1 mb-2 `} key={index}>
             {config?.ShowWebpart == true && config?.GroupByView != undefined && <section>
-              <div className="workingSec empAllSec clearfix">
+              {config?.DataSource == 'Tasks' && <div className="workingSec empAllSec clearfix">
                 <div className="alignCenter mb-2 justify-content-between">
                   <span className="fw-bold">
                     {`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}
@@ -340,7 +389,41 @@ const TaskStatusTbl = (Tile: any) => {
                     {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={ContextData.Context} emailStatus={"Approved"} items={approveItem} />}
                   </span>}
                 </div>
-              </div>
+              </div>}
+              {config?.DataSource == 'TaskUsers' &&
+                <>
+                  <div className="alignCenter mb-2 justify-content-between">
+                    <span className="fw-bold">
+                      {`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}
+                    </span>
+                  </div>
+                  <div className="dashbord-teamBox">
+                    {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => {
+                      return <div ui-on-drop="onDropRemoveTeam($event,$data,taskUsers)" className="top-assign ng-scope">
+                        {user.childs.length > 0 &&
+                          <div className="team ng-scope">
+                            <label className="BdrBtm">
+                              {user.Title}
+                            </label>
+                            <div className='d-flex'>
+                              {user.childs.map((item: any, i: number) => {
+                                return <div className="marginR41 ng-scope">
+                                  {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined &&
+                                    <span>
+                                      <img draggable onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, item)} className="large_teamsimg" src={item.Item_x0020_Cover.Url} title={item.AssingedToUser.Title} />
+                                    </span>
+                                  }
+                                </div>
+                              })}
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    })
+                    }
+                  </div>
+                </>
+              }
             </section>}
             {config.IsMyNotes == true && config?.ShowWebpart == true && config?.GroupByView == undefined &&
               <div className="empAllSec notesSec shadow-sm clearfix">
@@ -370,7 +453,7 @@ const TaskStatusTbl = (Tile: any) => {
   };
   return (
     <div>
-      {Tile.activeTile != undefined && generateDashboard()}     
+      {ActiveTile != undefined && generateDashboard()}
       <span>
         {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
       </span>

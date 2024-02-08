@@ -32,10 +32,12 @@ let QueryPortfolioId: any = null;
 let loggedInUser: any;
 let oldTaskIrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx";
 let groupedComponentData: any = [];
+let groupedProjectData: any = [];
 var ContextValue: any = {};
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 var AllListId: any = {}
+let AllProjects: any = [];
 let DirectTask = false;
 function CreateTaskComponent(props: any) {
     let base_Url = props?.pageContext?._web?.absoluteUrl;
@@ -45,16 +47,21 @@ function CreateTaskComponent(props: any) {
     })
     const [siteType, setSiteType] = React.useState([])
     const [sendApproverMail, setSendApproverMail] = React.useState(false)
+    const [ProjectManagementPopup, setProjectManagementPopup] = React.useState(false)
     const [TaskTypes, setTaskTypes] = React.useState([])
     const [subCategory, setsubCategory] = React.useState([])
+    const [SuggestedProjectsOfporfolio, setSuggestedProjectsOfporfolio] = React.useState([])
     const [SearchedServiceCompnentData, setSearchedServiceCompnentData] = React.useState<any>([]);
     const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = React.useState<any>('');
+    const [SearchedProjectItems, setSearchedProjectItems] = React.useState<any>([]);
+    const [SearchedProjectKey, setSearchedProjectKey] = React.useState<any>('');
     const [priorityRank, setpriorityRank] = React.useState([])
     const [openPortfolioType, setOpenPortfolioType] = React.useState("");
     const [taskCat, setTaskCat] = React.useState([]);
     const [UserEmailNotify, setUserEmailNotify] = React.useState(false);
     const [IsOpenPortfolio, setIsOpenPortfolio] = React.useState(false);
     const [smartComponentData, setSmartComponentData] = React.useState([]);
+    const [relevantProjects, setRelevantProjects] = React.useState([]);
     const [Timing, setTiming] = React.useState([])
     const [isActive, setIsActive] = React.useState({
         siteType: false,
@@ -68,7 +75,7 @@ function CreateTaskComponent(props: any) {
     const [ComponentRelevantTask, setComponentRelevantTask]: any = React.useState([])
 
     const [isActiveCategory, setIsActiveCategory] = React.useState(false);
-    // const [isActiveCategory, setIsActiveCategory] = React.useState({});
+    const [selectedProjectData, setSelectedProjectData]: any = React.useState({});
     const [activeCategory, setActiveCategory] = React.useState([]);
     const [ShareWebComponent, setShareWebComponent] = React.useState('');
     const [refreshPage, setRefreshPage] = React.useState(false);
@@ -123,36 +130,61 @@ function CreateTaskComponent(props: any) {
         if (results?.AllData?.length > 0) {
             componentDetails = results?.AllData;
             groupedComponentData = results?.GroupByData;
+            groupedProjectData = results?.ProjectData;
+            AllProjects = results?.FlatProjectData
         }
         return componentDetails
     }
 
     const EditPortfolio = (item: any, Type: any) => {
-        setIsOpenPortfolio(true);
-        setOpenPortfolioType(Type)
-        setShareWebComponent(item);
+        if (Type == 'Component') {
+            setIsOpenPortfolio(true);
+            setOpenPortfolioType(Type)
+            setShareWebComponent(item);
+        }
+        if (Type == 'Project') {
+            setProjectManagementPopup(true)
+            setOpenPortfolioType(Type)
+            setShareWebComponent(item);
+        }
     }
 
     const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
         // let saveItem = save;
         if (functionType == "Close") {
-            setIsOpenPortfolio(false)
+            setProjectManagementPopup(false);
+            setIsOpenPortfolio(false);
         } else {
             if (DataItem != undefined && DataItem.length > 0) {
-                setSave(prevSave => ({
-                    ...prevSave,
-                    Component: DataItem,
-                    portfolioType: "Component"
-                }));
-                // setSave({ ...save, Component: DataItem });
-                setSmartComponentData(DataItem);
-                selectedPortfolio = DataItem;
-                setSearchedServiceCompnentData([]);
-                setSearchedServiceCompnentKey('');
-                // selectPortfolioType('Component');
-                console.log("Popup component component ", DataItem)
+                if (DataItem[0]?.Item_x0020_Type == "Project" || DataItem[0]?.Item_x0020_Type == "Sprint") {
+                    setSave(prevSave => ({
+                        ...prevSave,
+                        Project: DataItem[0],
+                    }));
+                    setSelectedProjectData(DataItem[0]);
+                    setProjectManagementPopup(false);
+                    setSearchedProjectItems([]);
+                    setSearchedProjectKey("");
+                } else {
+                    setSave(prevSave => ({
+                        ...prevSave,
+                        Component: DataItem,
+                        portfolioType: "Component"
+                    }));
+                    let suggestedProjects = AllProjects?.filter((Projects: any) => Projects?.Portfolios?.some((port: any) => port?.Id == DataItem[0]?.Id));
+                    setSuggestedProjectsOfporfolio(suggestedProjects);
+                    // setSave({ ...save, Component: DataItem });
+                    setSmartComponentData(DataItem);
+                    selectedPortfolio = DataItem;
+                    setSearchedServiceCompnentData([]);
+                    setSearchedServiceCompnentKey('');
+                    // selectPortfolioType('Component');
+                    console.log("Popup component component ", DataItem)
+                    setIsOpenPortfolio(false)
+                }
+
             }
-            setIsOpenPortfolio(false)
+
         }
         // setSave(saveItem);
     }, [])
@@ -174,6 +206,26 @@ function CreateTaskComponent(props: any) {
         } else {
             setSearchedServiceCompnentData([]);
             setSearchedServiceCompnentKey("");
+        }
+    }
+    const autoSuggestionsForProject = (e: any) => {
+        let SearchedKeyWord: any = e.target.value;
+        let TempArray: any = [];
+        if (SearchedKeyWord.length > 0) {
+            if (AllProjects != undefined && AllProjects?.length > 0) {
+                AllProjects?.map((AllDataItem: any) => {
+                    if ((AllDataItem.Path?.toLowerCase())?.includes(SearchedKeyWord.toLowerCase())) {
+                        TempArray.push(AllDataItem);
+                    }
+                })
+            }
+            if (TempArray != undefined && TempArray.length > 0) {
+                setSearchedProjectItems(TempArray);
+                setSearchedProjectKey(SearchedKeyWord);
+            }
+        } else {
+            setSearchedProjectItems([]);
+            setSearchedProjectKey("");
         }
     }
 
@@ -305,6 +357,8 @@ function CreateTaskComponent(props: any) {
                         setComponent.push(item)
                         setSave((prev: any) => ({ ...prev, Component: setComponent }));
                         setSmartComponentData(setComponent);
+                        let suggestedProjects = AllProjects?.filter((Projects: any) => Projects?.Portfolios?.some((port: any) => port?.Id == paramComponentId));
+                        setSuggestedProjectsOfporfolio(suggestedProjects);
                         selectedPortfolio = setComponent
                     }
                 })
@@ -455,8 +509,9 @@ function CreateTaskComponent(props: any) {
 
     const loadRelevantTask = async (PortfolioId: any, UrlTask: any, PageTask: any) => {
         let allData: any = [];
+        let URLRelatedProjects: any = [];
         let query = '';
-        query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskID,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,FeedBack,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/TaskID,ParentTask/Title,ParentTask/Id&$expand=AssignedTo,ParentTask,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc"
+        query = "Categories,AssignedTo/Title,AssignedTo/Name,PriorityRank,TaskType/Id,TaskType/Title,AssignedTo/Id,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,AttachmentFiles/FileName,ComponentLink/Url,FileLeafRef,TaskLevel,TaskID,TaskLevel,Title,Id,PriorityRank,PercentComplete,Company,WebpartId,StartDate,DueDate,Status,Body,FeedBack,WebpartId,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/TaskID,ParentTask/Title,ParentTask/Id,Project/Id,Project/Title&$expand=AssignedTo,Project,ParentTask,AttachmentFiles,TaskType,Portfolio,Author,Editor&$orderby=Modified desc"
         let PageRelevant = PageRelevantTask;
         let TaskUrlRelevant = TaskUrlRelevantTask;
         let ComponentRelevant = ComponentRelevantTask;
@@ -524,9 +579,23 @@ function CreateTaskComponent(props: any) {
                                 if (item.siteType != 'Offshore Tasks') {
                                     try {
                                         if (item?.ComponentLink?.Url.indexOf(UrlTask) > -1) {
+
                                             TaskUrlRelevant.push(item);
                                         }
                                         if (item?.ComponentLink?.Url.indexOf(PageTask) > -1) {
+                                            if (!URLRelatedProjects?.some((Project: any) => Project?.Id == item?.Project?.Id) && item?.Project?.Id != undefined) {
+                                                let foundProject = AllProjects?.find((Proj: any) => Proj.Id == item?.Project?.Id)
+                                                foundProject.Count = 1;
+                                                URLRelatedProjects.push(foundProject)
+                                            } else {
+                                                URLRelatedProjects = URLRelatedProjects?.map((project: any) => {
+                                                    if (project.Id == item?.Project?.Id) {
+                                                        project.Count += 1
+                                                        return project
+                                                    }
+                                                    return project
+                                                })
+                                            }
                                             PageRelevant.push(item);
                                         }
 
@@ -537,6 +606,8 @@ function CreateTaskComponent(props: any) {
                             })
                             count++;
                             if (count == SitesTypes.length) {
+                                URLRelatedProjects = URLRelatedProjects.sort((a: any, b: any) => { return b.Count - a.Count })
+                                setRelevantProjects(URLRelatedProjects)
                                 console.log("inside Set Task")
                                 setPageRelevantTask(PageRelevant)
                                 setTaskUrlRelevantTask(TaskUrlRelevant)
@@ -884,7 +955,13 @@ function CreateTaskComponent(props: any) {
 
                     var newCopyUrl = CopyUrl != undefined ? CopyUrl : '';
 
-
+                    let ProjectId = null;
+                    if (props?.projectId != undefined) {
+                        ProjectId = props?.projectId
+                    }
+                    if ('Id' in selectedProjectData) {
+                        ProjectId = selectedProjectData?.Id
+                    }
                     var item = {
                         "Title": save.taskName,
                         "Priority": priority,
@@ -895,6 +972,7 @@ function CreateTaskComponent(props: any) {
                         ResponsibleTeamId: { "results": ResponsibleIds },
                         PortfolioId: portfolioId,
                         TeamMembersId: { "results": TeamMembersIds },
+                        ProjectId: ProjectId,
                         // SharewebComponentId: { "results": $scope.SharewebComponent },
                         TaskCategoriesId: { "results": taskCat },
                         ClientCategoryId: { "results": selectedCC },
@@ -911,7 +989,6 @@ function CreateTaskComponent(props: any) {
                             Description: save.taskUrl?.length > 0 ? save.taskUrl : null,
                             Url: save.taskUrl?.length > 0 ? save.taskUrl : null,
                         },
-                        ProjectId: props?.projectId != undefined ? props?.projectId : null
                     };
                     if (CategoryTitle?.toLowerCase().indexOf('approval') > -1)
                         item.PercentComplete = 0;
@@ -1220,15 +1297,6 @@ function CreateTaskComponent(props: any) {
         setSave({ ...save, recentClick: isActiveItem })
     };
 
-    const selectPortfolioType = (item: any) => {
-        if (item === 'Component') {
-            setSave({ ...save, portfolioType: 'Component' })
-            // setSmartComponentData([])
-        }
-        if (item === 'Service') {
-            setSave({ ...save, portfolioType: 'Service' })
-        }
-    }
 
     const selectSubTaskCategory = (title: any, Id: any, item: any) => {
         if (item?.Parent?.Title == "Attention") {
@@ -1328,16 +1396,6 @@ function CreateTaskComponent(props: any) {
         setTaskCat(TaskCategories)
 
     }
-    const EmailNotificationOnTeams = async (sitename: any, taskId: any, TaskTitle: any, CreateSite: any) => {
-        let TaskUrl: any = `${base_Url}/SitePages/Task-Profile.aspx?taskId=${taskId}&Site=${CreateSite}`
-        let txtComment = `You have been tagged as Attention in the below task by ${props.SelectedProp.pageContext._user.displayName}`;
-        let TeamMsg = txtComment + `</br> <a href=${TaskUrl}>${taskId}-${TaskTitle}</a>`
-        TeamMessagearray.map((mail: any) => {
-            if (mail?.EMail?.length > 0) {
-                globalCommon.SendTeamMessage([mail.EMail], TeamMsg, props.SelectedProp.Context);
-            }
-        })
-    }
 
     const inlineCallBack = React.useCallback((item: any) => {
 
@@ -1396,9 +1454,11 @@ function CreateTaskComponent(props: any) {
                                 >
                                     {row?.original?.Title}
                                 </a>
-                                {row?.original?.descriptionsSearch !== null && row?.original?.descriptionsSearch != '' && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
-                                }
+                               
                             </span>
+                            <span className='mt--3'>
+                            {row?.original?.descriptionsSearch !== null && row?.original?.descriptionsSearch != '' && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
+                                }</span>
                         </div>
                     </>
                 ),
@@ -1636,64 +1696,107 @@ function CreateTaskComponent(props: any) {
         console.log();
     }
     return (
-        <>  <div className={save.portfolioType == "Service" ? "serviepannelgreena" : ''}>
-            <div className='creatTaskPage'>
+        <>  <div className={save.portfolioType == "Service" ? "justify-content-center align-items-start d-flex" : 'justify-content-center align-items-start d-flex'}>
+            <div className='creatTaskPage' >
                 <div className='generalInfo'>
                     <div>
                         {props?.projectId == undefined ?
                             <h4 className="titleBorder">General Information</h4> : ''}
                         <div className='row p-0'>
-                            <div className='col-sm-6'>
+                            <div className='col-sm-6 '>
                                 <div className='input-group'>
                                     <label className='full-width'>Task Name</label>
                                     <input type="text" placeholder='Enter task Name' className='form-control' value={save.taskName} onChange={(e) => { changeTitle(e) }}></input>
                                 </div>
                             </div>
-                            <div className='col-sm-6'>{
-                                save.portfolioType === 'Component' ?
-                                    <div className="input-group autosuggest-container">
-                                        <label className="full-width">Portfolio Item</label>
-                                        {smartComponentData?.length > 0 ? null :
-                                            <><div className='input-group'>
-                                                <input type="text" onChange={(e) => autoSuggestionsForServiceAndComponent(e)}
-                                                    className="form-control"
-                                                    id="{{PortfoliosID}}" autoComplete="off"
-                                                /></div>
-                                            </>
-                                        }{SearchedServiceCompnentData?.length > 0 ? (
+                            <div className='col-sm-3'>
+                                <div className="input-group mb-2">
+                                    <label className="form-label full-width">
+                                        Portfolio Item
+                                    </label>
+                                    {smartComponentData?.length > 0 ? (
+                                        <div className="full-width">
+                                            {smartComponentData?.map((com: any) => {
+                                                return (
+                                                    <>
+                                                        <div className="full-width replaceInput pe-0 alignCenter" style={{ width: '90%' }}>
+                                                            <a title={com?.Title} target="_blank" data-interception="off" className="textDotted"
+                                                                href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com?.Id}`} >
+                                                                {com?.Title}
+                                                            </a>
+                                                            <span title="Remove Component" onClick={() => { setSmartComponentData([]), selectedPortfolio = [], setSuggestedProjectsOfporfolio([]) }}
+                                                                style={{ backgroundColor: 'black' }} className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
+                                                        </div>
 
-                                            <ul className="autosuggest-list maXh-200 scrollbar">
-                                                {SearchedServiceCompnentData.map((Item: any) => {
-                                                    return (
-                                                        <li key={Item.id} onClick={() => ComponentServicePopupCallBack([Item], undefined, undefined)} >
-                                                            <a>{Item.Path}</a>
-                                                        </li>
-                                                    )
-                                                }
-                                                )}
-                                            </ul>) : null}
-                                        {smartComponentData?.length > 0 ? smartComponentData?.map((com: any) => {
-                                            return (
-                                                <>
-                                                    <div className="block d-flex justify-content-between pt-1 px-2" style={{ width: "95%" }}>
-                                                        <a style={{ color: "#fff !important" }} data-interception="off" target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
-                                                        <a>
-                                                            <span title="Remove Component" onClick={() => { setSmartComponentData([]), selectedPortfolio = [] }}
-                                                                style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
-                                                        </a>
-                                                    </div>
-                                                </>
-                                            )
-                                        }) : null}
-                                        <span className="input-group-text">
-                                            <span onClick={(e) => EditPortfolio(save, 'Component')} style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--editBox dark"></span>
-                                            {/* <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
-                                            onClick={(e) => EditComponent(save, 'Component')} /> */}
-                                        </span>
-                                    </div> : ''
-                            }
+                                                    </>
+                                                );
+                                            })}
+                                        </div>
+                                    ) : (<input type="text" className="form-control" value={SearchedServiceCompnentKey}
+                                        onChange={(e) => autoSuggestionsForServiceAndComponent(e)} placeholder="Search Portfolio Item" />)}
+                                    <span className="input-group-text">
+                                        <span title="Component Popup" onClick={(e) => EditPortfolio(save, 'Component')}
+                                            className="svg__iconbox svg__icon--editBox"></span>
+                                    </span>
+                                </div>
+                                {SearchedServiceCompnentData?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup">
+                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                            {SearchedServiceCompnentData.map((Item: any) => {
+                                                return (
+                                                    <li className='hreflink list-group-item rounded-0 list-group-item-action' key={Item.id} onClick={() => ComponentServicePopupCallBack([Item], undefined, undefined)} >
+                                                        <a>{Item.Path}</a>
+                                                    </li>
+                                                )
+                                            }
+                                            )}
+                                        </ul>
+                                    </div>) : null}
+
+
                             </div>
-                            <div className='col mt-2'>
+                            <div className='col-sm-3'>
+                                <div className="input-group mb-2">
+                                    <label className="form-label full-width">
+                                        Project
+                                    </label>
+                                    {selectedProjectData?.Id != undefined ? (
+                                        <div className="full-width">
+                                            <div className="full-width replaceInput pe-0 alignCenter" style={{ width: '90%' }}>
+                                                <a title={selectedProjectData?.Title} target="_blank" data-interception="off" className="textDotted"
+                                                    href={`${base_Url}/SitePages/Project-Management.aspx?ProjectId=${selectedProjectData?.ID}`} >
+                                                    {selectedProjectData?.Title}
+                                                </a>
+                                                <span title="Remove Project" onClick={() => { setSelectedProjectData({}) }}
+                                                    style={{ backgroundColor: 'black' }} className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
+                                            </div>
+
+                                        </div>
+                                    ) : (<input type="text" className="form-control" value={SearchedProjectKey}
+                                        onChange={(e) => autoSuggestionsForProject(e)} placeholder="Search Project/Sprints" />)}
+                                    <span className="input-group-text">
+                                        <span title="Component Popup" onClick={(e) => EditPortfolio(save, 'Component')}
+                                            className="svg__iconbox svg__icon--editBox"></span>
+                                    </span>
+                                </div>
+                                {SearchedProjectItems?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup">
+                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                            {SearchedProjectItems.map((Item: any) => {
+                                                return (
+                                                    <li className='hreflink list-group-item rounded-0 list-group-item-action' key={Item.id} onClick={() => ComponentServicePopupCallBack([Item], undefined, undefined)} >
+                                                        <a>{Item.Path}</a>
+                                                    </li>
+                                                )
+                                            }
+                                            )}
+                                        </ul>
+                                    </div>) : null}
+
+
+                            </div>
+
+                            <div className='col  mt-2'>
                                 <div className='input-group'>
                                     <label className='full-width'>Task URL</label>
                                     <input type="text" className='form-control' placeholder='Enter task Url' value={save.taskUrl} onChange={(e) => UrlPasteTitle(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>
@@ -1887,19 +1990,63 @@ function CreateTaskComponent(props: any) {
                     <button type="button" className='btn btn-primary bg-siteColor ' onClick={() => createTask()}>Submit</button>
                 </footer>
 
-                {IsOpenPortfolio &&
+
+                {(IsOpenPortfolio || ProjectManagementPopup) && (
                     <ServiceComponentPortfolioPopup
                         props={ShareWebComponent}
                         Dynamic={AllListId}
                         Call={ComponentServicePopupCallBack}
-                        ComponentType={openPortfolioType}
-                        groupedData={groupedComponentData}
+                        selectionType={"Single"}
+                        groupedData={IsOpenPortfolio == true ? groupedComponentData : groupedProjectData}
+                        showProject={ProjectManagementPopup}
                     />
-                }
+                )}
                 {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup context={props?.SelectedProp.Context} SDCTaskDetails={burgerMenuTaskDetails}
                     sendApproverMail={sendApproverMail} AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
-            </div>
-        </div>
+            </div >
+            {(SuggestedProjectsOfporfolio?.length > 0 || relevantProjects?.length > 0) ?
+                <span className="ms-4">
+                    {SuggestedProjectsOfporfolio?.length > 0 ?
+                        <div className="card mb-3">
+                            <div className="card-body">
+                                <h6 className="f-15 title titleBorder">Suggested Projects</h6>
+                                <ul className="SpfxCheckRadio list-group list-group-flush">
+                                    {SuggestedProjectsOfporfolio?.map((project: any) => {
+                                        return (
+                                            <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action' >
+                                                <input type="radio" className="radio" onClick={() => ComponentServicePopupCallBack([project], undefined, undefined)} checked={selectedProjectData?.Title == project?.Title} />
+                                                <a className="hreflink" title={`${project?.PortfolioStructureID} - ${project?.Title}`} href={`${base_Url}/SitePages/Project-Management.aspx?ProjectId=${project?.Id}`}
+                                                    data-interception="off" target="_blank">{`${project?.PortfolioStructureID} - ${project?.Title}`}</a>
+                                            </li>
+                                        )
+                                    })}
+                                </ul>
+                            </div>
+                        </div>
+                        : ''}
+                    {relevantProjects?.length > 0 ?
+                        <div className="card mb-3">
+                            <div className="card-body">
+                                <h6 className="f-15 title titleBorder">Relevant Projects</h6>
+                                <ul className="SpfxCheckRadio  list-group list-group-flush">
+                                    {relevantProjects?.map((project: any) => {
+                                        return (
+                                            <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action'>
+                                                <input type="radio" className="radio" onClick={() => ComponentServicePopupCallBack([project], undefined, undefined)} checked={selectedProjectData?.Title == project?.Title} />
+                                                <a className="hreflink" title={`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`} href={`${base_Url}/SitePages/Project-Management.aspx?ProjectId=${project?.Id}`}
+                                                    data-interception="off" target="_blank">{`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`}</a>
+                                            </li>
+                                        )
+                                    })}
+                                </ul>
+                            </div>
+                        </div>
+                        : ''}
+
+
+                </span> : ''
+            }
+        </div >
         </>
     )
 }

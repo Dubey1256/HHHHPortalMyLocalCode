@@ -892,7 +892,7 @@ let ID: any;
     const onRenderCustomHeaderQuestion = () => {
         return (
             <>
-                <div className="subheading siteColor">Add Question</div>
+                <div className="subheading">Add Question</div>
                 <Tooltip ComponentId="1000" />
             </>
         );
@@ -900,7 +900,7 @@ let ID: any;
     const onRenderCustomHeaderHelp = () => {
         return (
             <>
-                <div className="subheading siteColor">Add Help</div>
+                <div className="subheading">Add Help</div>
                 <Tooltip ComponentId="1000" />
             </>
         );
@@ -908,7 +908,7 @@ let ID: any;
     const onRenderHeaderQuestionEdit = () => {
         return (
             <>
-                <div className="subheading siteColor">Edit Question</div>
+                <div className="subheading">Edit Question</div>
                 <Tooltip ComponentId="1000" />
             </>
         );
@@ -916,7 +916,7 @@ let ID: any;
     const onRenderHeaderHelpEdit = () => {
         return (
             <>
-                <div className="subheading siteColor">Edit Help</div>
+                <div className="subheading">Edit Help</div>
                 <Tooltip ComponentId="1000" />
             </>
         );
@@ -4486,13 +4486,10 @@ let ID: any;
                         </div>
                     </div>
                 </div>
-                <footer className="footer-right">
-                    <div className="align-items-center d-flex justify-content-between">
-                        <div className="">
-                            <button className='btn btn-primary' onClick={() => AddQuestionFunc()}>Save</button>
-                            <button className='btn btn-default ms-1' onClick={() => setIsOpenPopup(false)}>Cancel</button>
-                        </div>
-                    </div>
+                <footer className="modal-footer">
+                    <button className='btn btn-primary' onClick={() => AddQuestionFunc()}>Save</button>
+                    <button className='btn btn-default ms-1' onClick={() => setIsOpenPopup(false)}>Cancel</button>
+                        
                 </footer>
             </Panel>
 
@@ -4629,13 +4626,11 @@ let ID: any;
                         </div>
                     </div>
                 </div>
-                <footer className="footer-right">
-                    <div className="align-items-center d-flex justify-content-between">
-                        <div className="">
+                <footer className="modal-footer">
+                    
                             <button className="me-1 btn btn-primary" onClick={() => AddHelpFunc()}>Save</button>
                             <button className="btn btn-default" onClick={() => setOpenPopup(false)}>Cancel</button>
-                        </div>
-                    </div>
+                      
                 </footer>
             </Panel>
             <Panel
