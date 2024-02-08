@@ -4,7 +4,7 @@ import pnp, { sp, Web } from "sp-pnp-js";
 import ServiceComponentPortfolioPopup from "../EditTaskPopup/ServiceComponentPortfolioPopup";
 import SelectedTaskUpdateOnPopup from "./selectedTaskUpdateOnPopup";
 import Picker from "../EditTaskPopup/SmartMetaDataPicker";
-import * as GlobalFunctionForUpdateItem from '../GlobalFunctionForUpdateItems';
+import * as GlobalFunctionForUpdateItem from '../GlobalFunctionForUpdateItems'; 
 
 
 export const addedCreatedDataFromAWT = (itemData: any, dataToPush: any) => {
@@ -158,6 +158,7 @@ export function BulkUpdateFeatureType(taskValue: any) {
         </>
     )
 }
+////CategoriesUpdate //////
 export function CategoriesUpdate(taskValue: any) {
     const [categoriesPopup, setCategoriesPopup] = React.useState(false);
     const [selectedCategoryData, setSelectedCategoryData] = React.useState([]);

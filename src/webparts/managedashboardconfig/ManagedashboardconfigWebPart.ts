@@ -15,6 +15,7 @@ import { IManagedashboardconfigProps } from './components/IManagedashboardconfig
 export interface IManagedashboardconfigWebPartProps {
   description: string;
   AdminConfigurationListId: string;
+  TaskUserListId: string;
   Context: string;
 }
 
@@ -34,6 +35,7 @@ export default class ManagedashboardconfigWebPart extends BaseClientSideWebPart<
         userDisplayName: this.context.pageContext.user.displayName,
         Context: this.context,
         AdminConfigurationListId: this.properties.AdminConfigurationListId,
+        TaskUserListId: this.properties.TaskUserListId,
       }
     );
 
@@ -115,6 +117,10 @@ export default class ManagedashboardconfigWebPart extends BaseClientSideWebPart<
                 PropertyPaneTextField("AdminConfigurationListId", {
                   label: "AdminConfigurationListId"
                 }),
+                PropertyPaneTextField("TaskUserListId", {
+                  label: "TaskUserListId"
+                }),
+
               ]
             }
           ]
