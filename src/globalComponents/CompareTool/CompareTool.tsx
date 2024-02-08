@@ -22,7 +22,7 @@ import GlobalCommanTable from "../GroupByReactTableComponents/GlobalCommanTable"
 import EditTaskPopup from "../EditTaskPopup/EditTaskPopup";
 import Smartmetadatapickerin from "../../globalComponents/Smartmetadatapickerindependent/SmartmetadatapickerSingleORMulti";
 import { Item } from "@pnp/sp/items";
-
+import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 let renderData: any = [];
 let AutoCompleteItemsArray: any = [];
 let catItem: any = {};
@@ -55,6 +55,9 @@ const CompareTool = (props: any) => {
     const [showLoader, setshowLoader] = React.useState<any>(false)
     const [Smartdatapopup, setSmartdatapopup] = React.useState(false);
     const rerender = React.useReducer(() => ({}), {})[1]
+    const [isExpanded, setIsExpanded] = useState(false);
+
+
     const [ItemRankArray, setItemRankArray]: any = useState([
         { rankTitle: 'Select Item Rank', rank: null },
         { rankTitle: '(8) Top Highlights', rank: 8 },
@@ -66,43 +69,66 @@ const CompareTool = (props: any) => {
         { rankTitle: '(1) Archive', rank: 1 },
         { rankTitle: '(0) No Show', rank: 0 }
     ])
-    const getchildstasks = async (Items: any, props: any) => {
-        Items?.map(async (items: any) => {
-            items.subRows = [];
-            if (items?.TaskType?.Id != undefined) {
-                let filter = `(ParentTask/Id eq ${items?.Id})`
-                const Itesm: any = await globalCommon.loadAllSiteTasks(props?.contextValue, filter);
-                items.subRows = Itesm;
+    // const getchildstasks = async (Items: any, props: any) => {
+    //     Items?.map(async (items: any) => {
+    //         items.subRows = [];
+    //         if (items?.TaskType?.Id != undefined) {
+    //             let filter = `(ParentTask/Id eq ${items?.Id})`
+    //             const Itesm: any = await globalCommon.loadAllSiteTasks(props?.contextValue, filter);
+    //             items.subRows = Itesm;
+    //         }
+    //     })
+    // };
+    const getTaskChilds = (item: any, items: any, property: any) => {
+        item[property] = [];
+        items?.forEach((childItem: any) => {
+            if (childItem.ParentTask?.Id != undefined && parseInt(childItem?.ParentTask?.Id) == item.ID) {
+                childItem.isExpanded = false;
+                childItem.property = property;
+                item[property].push(childItem);
+                getChilds(childItem, items);
             }
-        })
+        });
     };
     const gettaggedItems = async (Items: any, props: any) => {
         let count = 0;
         Items?.map(async (items: any) => {
             items.subRows = [];
-            // get tagged tasks of selected Component
+            items.isExpanded = false;
             if (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature" || items?.Item_x0020_Type === "Project" || items?.Item_x0020_Type === "Sprint") {
                 let filter = `((Portfolio/Id eq ${items?.Id}))`
-                const Itesm: any = await globalCommon.loadAllSiteTasks(props?.contextValue, filter);
+                const Itesm: any = await globalCommon.loadAllSiteTasks(props?.contextValue, undefined);
                 items.taggedTasks = [];
                 if (Itesm?.length > 0) {
                     Itesm.forEach((obj: any) => {
-                        obj.property = 'taggedTasks';
+                        if (obj?.Portfolio?.Id === items?.Id) {
+                            obj.property = 'taggedTasks';
+                            obj.isExpanded = false;
+                            items.taggedTasks.push(obj);
+                            getTaskChilds(obj, Itesm, 'taggedTasks');
+                        }
                     })
-                    items.taggedTasks = Itesm;
                 }
             }
             let select: any = '';
             // get tagged tasks of selected tasks
             if (items?.TaskType?.Id != undefined) {
-                let filter = `(ParentTask/Id eq ${items?.Id})`
-                const Itesm: any = await globalCommon.loadAllSiteTasks(props?.contextValue, filter);
-                items.subRows = Itesm;
-                if(items?.subRows?.length>0)
-                getchildstasks(items.subRows,props);
+                //  let filter = `(ParentTask/Id eq ${items?.Id})`
+                const Itesm: any = await globalCommon.loadAllSiteTasks(props?.contextValue, undefined);
+                if (Itesm != undefined && Itesm.length > 0) {
+                    Itesm?.forEach((task: any) => {
+                        if (task?.ParentTask?.Id === items?.Id) {
+                            task.isExpanded = false;
+                            items.subRows.push(task);
+                            getTaskChilds(task, Itesm, 'subRows');
+                        }
+
+                    })
+
+                }
                 count++;
                 if (Items?.length === count) {
-                   
+
                     setData(Items);
                     setVersionHistory(Items);
                     setshowLoader(false);
@@ -200,6 +226,7 @@ const CompareTool = (props: any) => {
                 categoryTitle.subRows.push(item);
         })
     }
+
     const getStructureData = function (Item: any) {
         Item?.AllTimeSpentDetails.map((item: any) => {
             if (item.TimesheetTitle == undefined || item.TimesheetTitle.Id == undefined) {
@@ -247,7 +274,8 @@ const CompareTool = (props: any) => {
                         child.subRows = child.AdditionalTime;
                         child.TaskDate = undefined;
                     }
-                    finalData.push(child);
+                    if (!IsExistsData(finalData, child))
+                        finalData.push(child);
 
                 });
             }
@@ -1243,9 +1271,9 @@ const CompareTool = (props: any) => {
     }, []);
     const ClientCategoryCallBack = React.useCallback((DataItem: any, Type: any, functionType: any, WhichItem: any) => {
         if (functionType == "Close") {
-            setisPicker({ PortfolioTitle: '', condition: false });
+            setisPicker({ PortfolioTitle: '', condition: false });setIsClientPopup(false);
         } else {
-            catItem.ClientCategory = DataItem;
+            catItem.ClientCategory = catItem.Clientcategories ===undefined ? [] :catItem.Clientcategories;
             setIsClientPopup(false);
         }
     }, []);
@@ -1449,7 +1477,143 @@ const CompareTool = (props: any) => {
 
         //  return SharewebListService.UpdateListItemByListId(GlobalConstants.ADMIN_SITE_URL, GlobalConstants.QUESTIONHELPDESCRIPTION_LISTID, postData, obj.Id);
     }
-    const SaveComponent = async (Item: any, type: any) => {
+    const componentPost = (Item: any, type: any) => {
+        try {
+            var AssignedToIds: any = [];
+            var TeamMembersIds: any = [];
+            if (Item.AssignToUsers != undefined && Item.AssignToUsers.length > 0) {
+                Item.AssignToUsers.forEach((user: any) => {
+                    if (user?.Id != undefined)
+                        AssignedToIds.push(user.Id);
+                });
+            }
+            if (Item.TeamMembersUsers != undefined && Item.TeamMembersUsers.length > 0) {
+                Item.TeamMembersUsers.forEach((user: any) => {
+                    if (user?.Id != undefined)
+                        TeamMembersIds.push(user?.Id);
+                });
+            }
+
+
+            if (Item.QuestionDescription != undefined && Item.QuestionDescription.length > 0) {
+                Item.QuestionDescription.forEach((obj: any) => {
+                    if (obj.IsUpdated != undefined && obj.IsUpdated)
+                        saveSmartHelp(obj, Item);
+                })
+
+            }
+            if (Item.HelpDescription != undefined && Item.HelpDescription.length > 0) {
+                Item.HelpDescription.forEach((obj: any) => {
+                    if (obj.IsUpdated != undefined && obj.IsUpdated)
+                        saveSmartHelp(obj, Item);
+                })
+
+            }
+            var PercentComplete = Item.PercentComplete > 1 ? Item.PercentComplete / 100 : Item.PercentComplete;
+            let taskCategoryIds: any = [];
+            if (Item.TaskCategories.length > 0) {
+                Item.TaskCategories.forEach((categories: any) => {
+                    taskCategoryIds.push(categories.Id);
+                })
+            }
+
+            let portfolioIds: any = [];
+            if (Item.PortfolioItem.length > 0) {
+                Item.PortfolioItem.forEach((portfolio: any) => {
+                    portfolioIds.push(portfolio.Id);
+                })
+            }
+            if (Item.ProjectItem.length > 0) {
+                Item.ProjectItem.forEach((project: any) => {
+                    portfolioIds.push(project.Id);
+                })
+            }
+            if (Item.ProjectItem.length > 0) {
+                Item.ProjectItem.forEach((project: any) => {
+                    portfolioIds.push(project.Id);
+                })
+            }
+            let ClientCategoryIds: any = [];
+            if (Item.ClientCategory.length > 0) {
+                Item.ClientCategory.forEach((cate: any) => {
+                    portfolioIds.push(cate.Id);
+                })
+            }
+
+            let postData: any = {
+                'Title': Item.Title,
+                'Help_x0020_Information': Item.Help_x0020_Information,
+                'TechnicalExplanations': Item.TechnicalExplanations,
+                'Short_x0020_Description_x0020_On': Item.Short_x0020_Description_x0020_On,
+                'Admin_x0020_Notes': Item.Admin_x0020_Notes,
+                'Background': Item.Background,
+                'Body': Item.Body,
+                'Idea': Item.Idea,
+                'ValueAdded': Item.ValueAdded,
+                'PercentComplete': PercentComplete,
+                'Priority': Item.Priority,
+                'Deliverable_x002d_Synonyms': Item.Deliverable_x002d_Synonyms,
+                // 'Synonyms': Item.Synonyms,
+                'StartDate': Item.StartDate ? moment(Item.StartDate).format("MM-DD-YYYY") : null,
+                'DueDate': Item.DueDate ? moment(Item.DueDate).format("MM-DD-YYYY") : null,
+                'CompletedDate': Item.CompletedDate ? moment(Item.CompletedDate).format("MM-DD-YYYY") : null,
+                'ItemRank': Item.ItemRank,
+                'Mileage': Item.Mileage,
+                'Priority_x0020_Rank': Item.PriorityRank,
+                // 'ComponentId': { "results": $scope.smartComponentsIds },
+                'PortfoliosId': { "results": portfolioIds },
+                'TaskCategoriesId': { "results": taskCategoryIds },
+                'Package': Item.Package,
+                // 'SiteCompositionSettings': angular.toJson(Item.SiteCompositionSettingsValue),
+                'Sitestagging': JSON.stringify(Item.SiteCompositionSettingsValue),
+                'Deliverables': Item.Deliverables,
+                'ClientActivity': Item.ClientActivity,
+                Comments: JSON.stringify(Item.Comments),
+                'Item_x002d_Image': {
+                    '__metadata': { 'type': 'SP.FieldUrlValue' },
+                    'Description': Item.Item_x002d_Image != undefined ? Item.Item_x002d_Image.Url : null,
+                    'Url': Item.Item_x002d_Image != undefined ? Item.Item_x002d_Image.Url : null,
+                },
+                'component_x0020_link': {
+                    '__metadata': { 'type': 'SP.FieldUrlValue' },
+                    'Description': Item.component_x0020_link != undefined ? Item.component_x0020_link.Url : null,
+                    'Url': Item.component_x0020_link != undefined ? Item.component_x0020_link.Url : null,
+                },
+                AssignedToId: { "results": AssignedToIds },
+                TeamMembersId: { "results": TeamMembersIds },
+                ClientCategoryId: { "results": ClientCategoryIds },
+            }
+            if (Item?.Synonyms?.length > 0) {
+                postData.Synonyms = JSON.stringify(Item.Synonyms);
+            }
+            else {
+                postData.Synonyms = null;
+            }
+            if (Item?.FeatureType?.length > 0) {
+                postData.FeatureTypeId = Item.FeatureType[0].Id;
+            }
+            globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.MasterTaskListID, postData, Item.Id)
+                .then((returnresult) => {
+                    console.log(returnresult);
+                    if (type === 'Keep1')
+                        props.compareToolCallBack(data[0])
+                    if (type === 'Keep2')
+                        props.compareToolCallBack(data[1])
+                    if (type === 'KeepBoth')
+                        props.compareToolCallBack(data)
+                    // result.smartTime = String(returnresult)
+                    // console.log("Final Total Time:", returnresult);
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+
+        } catch (error) {
+            // Handle the error, you can log it or perform any other actions
+            console.error('Error in the first block:', error);
+        }
+    }
+    const TaskPost = (Item: any, type: any) => {
         try {
             var AssignedToIds: any = [];
             var TeamMembersIds: any = [];
@@ -1488,31 +1652,6 @@ const CompareTool = (props: any) => {
                 })
 
             }
-
-
-            // if (Item.attachments.length > 0) {
-            //     angular.forEach(Item.attachments, function (attach) {
-            //         if (attach.IsSelected == true && attach.OldId != Item.Id) {
-            //             $scope.getContactAttachments(attach.OldId, Item.Id, attach.FileName);
-            //         }
-
-            //     })
-            // }
-
-
-
-            // if (Item.childs != undefined && Item.childs.length > 0) {
-            //     angular.forEach(Item.childs, function (val) {
-            //         if (val.Parent.Id != Item.Id)
-            //             $scope.ChangeParentId(val, Item);
-            //         if (val.childs != undefined && val.childs.length > 0) {
-            //             angular.forEach(val.childs, function (item) {
-            //                 if (item.Parent.Id != val.Id)
-            //                     $scope.ChangeParentId(item, val);
-            //             })
-            //         }
-            //     })
-            // }
             var PercentComplete = Item.PercentComplete > 1 ? Item.PercentComplete / 100 : Item.PercentComplete;
             let taskCategoryIds: any = [];
             if (Item.TaskCategories.length > 0) {
@@ -1536,15 +1675,9 @@ const CompareTool = (props: any) => {
 
             let postData: any = {
                 'Title': Item.Title,
-                'Help_x0020_Information': Item.Help_x0020_Information,
-                'TechnicalExplanations': Item.TechnicalExplanations,
-                'Short_x0020_Description_x0020_On': Item.Short_x0020_Description_x0020_On,
-                'Admin_x0020_Notes': Item.Admin_x0020_Notes,
                 'Background': Item.Background,
                 'Body': Item.Body,
-                'Idea': Item.Idea,
-                'ValueAdded': Item.ValueAdded,
-                'PercentComplete': Item.PercentComplete,
+                'PercentComplete': PercentComplete,
                 'Priority': Item.Priority,
                 'Deliverable_x002d_Synonyms': Item.Deliverable_x002d_Synonyms,
                 // 'Synonyms': Item.Synonyms,
@@ -1554,11 +1687,9 @@ const CompareTool = (props: any) => {
                 'ItemRank': Item.ItemRank,
                 'Mileage': Item.Mileage,
                 'Priority_x0020_Rank': Item.PriorityRank,
-                // 'ComponentId': { "results": $scope.smartComponentsIds },
                 'PortfoliosId': { "results": portfolioIds },
                 'TaskCategoriesId': { "results": taskCategoryIds },
                 'Package': Item.Package,
-                // 'SiteCompositionSettings': angular.toJson(Item.SiteCompositionSettingsValue),
                 'Sitestagging': JSON.stringify(Item.SiteCompositionSettingsValue),
                 'Deliverables': Item.Deliverables,
                 'ClientActivity': Item.ClientActivity,
@@ -1582,6 +1713,9 @@ const CompareTool = (props: any) => {
             else {
                 postData.Synonyms = null;
             }
+            if (Item?.FeatureType?.length > 0) {
+                postData.FeatureTypeId = Item.FeatureType[0].Id;
+            }
             globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.MasterTaskListID, postData, Item.Id)
                 .then((returnresult) => {
                     console.log(returnresult);
@@ -1597,6 +1731,20 @@ const CompareTool = (props: any) => {
                 .catch((error) => {
                     console.error("Error:", error);
                 });
+
+        } catch (error) {
+            // Handle the error, you can log it or perform any other actions
+            console.error('Error in the first block:', error);
+        }
+    }
+
+    const SaveComponent = async (Item: any, type: any) => {
+        try {
+            if (Item?.ItemType?.Id != undefined)
+                componentPost(Item, type);
+            else
+                TaskPost(Item, type);
+
         } catch (error) {
             // Handle the error, you can log it or perform any other actions
             console.error('Error in the first block:', error);
@@ -1665,6 +1813,99 @@ const CompareTool = (props: any) => {
             rerender()
         }
     }, [])
+    const toggleExpand = (item: any, ParentItem: any, property: any) => {
+        item.isExpanded = !item.isExpanded;
+        setHistory((prevHistory) => [...prevHistory, _.cloneDeep(data)]);
+        const updatedItems = _.cloneDeep(data);
+        updatedItems?.forEach((ite: any) => {
+            if (ite?.Id === ParentItem?.Id) {
+                ite[property]?.forEach((task: any) => {
+                    if (task?.Id === item?.Id)
+                        task.isExpanded = item.isExpanded;
+                })
+            }
+        })
+
+        setData(updatedItems);
+    };
+    const TreeNode: React.FC<any> = ({ items, taggedItems, handleRadioChange }) => (
+        <>
+            {items?.subRows?.length > 0 &&
+
+                items?.subRows?.map((child: any) => (
+                    <div className="SpfxCheckRadio" key={child.Id}>
+                        {child?.subRows && child?.subRows?.length > 0 ? (
+                            <span>
+                                <span onClick={() => toggleExpand(items, data[0], 'taggedTasks')}>  {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
+                                <div className="SpfxCheckRadio" key={child.Id}>
+                                    <span className="me-1">
+                                        <img className="workmember" src={child.SiteIcon} alt="Site Icon" />
+                                    </span>
+                                    <span>{child.TaskID}</span>
+                                    <input type="radio" checked={taggedItems?.Id === child?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(child, 'taggedComponents')} className="radio" />
+                                    <span>
+                                        <a target="_blank" className="mx-2" data-interception="off" href={`${child.siteUrl}/SitePages/Task-Profile.aspx?taskId=${child?.Id}&Site=${child?.siteType}`} >
+                                            {child?.Title}
+                                        </a>
+                                    </span>
+                                    {child.isExpanded &&
+                                        <TreeNode items={child} taggedItems={taggedItems} handleRadioChange={handleRadioChange} />
+                                    }
+                                </div>
+                            </span>) :
+                            <div className="SpfxCheckRadio" key={child.Id}>
+                                <span className="me-1">
+                                    <img className="workmember" src={child.SiteIcon} alt="Site Icon" />
+                                </span>
+                                <span>{child.TaskID}</span>
+                                <input type="radio" checked={taggedItems?.Id === child?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(child, 'taggedComponents')} className="radio" />
+                                <span>
+                                    <a target="_blank" className="mx-2" data-interception="off" href={`${child.siteUrl}/SitePages/Task-Profile.aspx?taskId=${child?.Id}&Site=${child?.siteType}`} >
+                                        {child?.Title}
+                                    </a>
+                                </span>
+
+                            </div>}
+                    </div>))}
+        </>
+    );
+    const TreeNodeTasks: React.FC<any> = ({ items, taggedItems, handleRadioChange }) => (
+        <>
+            {items?.taggedTasks?.length > 0 &&
+                items?.taggedTasks?.map((child: any) => (
+
+                    <div className="SpfxCheckRadio" key={child.Id}>
+                        {child?.subRows && child?.subRows?.length > 0 ? (
+                            <span>
+                                <span onClick={() => toggleExpand(items, data[0], 'taggedTasks')}>  {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
+                                <span className="me-1">
+                                    <img className="workmember" src={child.SiteIcon} alt="Site Icon" />
+                                </span>
+                                <span>{child.TaskID}</span>
+                                <input type="checkbox" checked={items.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, child, undefined)} />
+                                <span>
+                                    <a target="_blank" className="mx-2" data-interception="off" href={`${child.siteUrl}/SitePages/Task-Profile.aspx?taskId=${child?.Id}&Site=${child?.siteType}`} >
+                                        {child?.Title}
+                                    </a>
+                                </span>
+                                {child.isExpanded &&
+                                    <TreeNode items={child} taggedItems={taggedItems} handleRadioChange={handleRadioChange} />}
+                            </span>) : (<span> <span className="me-1">
+                                <img className="workmember" src={child.SiteIcon} alt="Site Icon" />
+                            </span>
+                                <span>{child.TaskID}</span>
+                                <input type="checkbox" checked={items.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, child, undefined)} />
+                                <span>
+                                    <a target="_blank" className="mx-2" data-interception="off" href={`${child.siteUrl}/SitePages/Task-Profile.aspx?taskId=${child?.Id}&Site=${child?.siteType}`} >
+                                        {child?.Title}
+                                    </a>
+                                </span></span>)}
+                    </div>
+                ))}
+        </>
+    );
+
+    // export default TreeNode;
 
     return (
         <>
@@ -1691,11 +1932,12 @@ const CompareTool = (props: any) => {
                                     </Label>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="iconSec">
-                                <div className="text-center">
-                                    <LuUndo2 size="25" />
+                                    <div className="text-center">
+                                        <LuUndo2 size="25" />
                                     </div>
                                 </Col>
-                            </Row>) : <Row className="Metadatapannel">
+                            </Row>) :
+                            <Row className="Metadatapannel">
                                 <Col sm="5" md="5" lg="5" className="alignCenter siteColor contentSec">
                                     <span>
                                         <img className="imgWid29 pe-1" src={data[0]?.SiteIcon} />
@@ -1726,8 +1968,8 @@ const CompareTool = (props: any) => {
                                     ></span>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="iconSec">
-                                <div className="text-center">
-                                    <LuUndo2 size="25" onClick={() => undoChangescolumns(undefined)} />
+                                    <div className="text-center">
+                                        <LuUndo2 size="25" onClick={() => undoChangescolumns(undefined)} />
                                     </div>
                                 </Col>
                             </Row>}
@@ -1799,42 +2041,9 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <label className="fw-semibold form-label me-2">Tagged Documents</label>
                                 <div className="my-1 SearchTableCategoryComponent">
-                                <div className="SpfxCheckRadio">
-                                    {data[0]?.tagDoc?.length > 0 && data[0]?.tagDoc?.map((items: any) => {
-                                        return (<div className="alignCenter">
-                                            <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radiodoc" onClick={() => handleRadioChange(items, 'tagDoc')} className="radio" />
-                                            <a className="alignCenter" href={items?.EncodedAbsUrl}>
-                                                {items?.File_x0020_Type == "pdf" && <span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
-                                                {items?.File_x0020_Type == "docx" && <span className='svg__iconbox svg__icon--docx' title="docx"></span>}
-                                                {items?.File_x0020_Type == "csv" && <span className='svg__iconbox svg__icon--csv' title="csv"></span>}
-                                                {items?.File_x0020_Type == "xlsx" && <span className='svg__iconbox svg__icon--xlsx' title="xlsx"></span>}
-                                                {items?.File_x0020_Type == "jpeg" || items?.File_x0020_Type == "jpg " && <span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span>}
-                                                {items?.File_x0020_Type == "ppt" || items?.File_x0020_Type == "pptx" && <span className='svg__iconbox svg__icon--ppt' title="ppt"></span>}
-                                                {items?.File_x0020_Type == "svg" && <span className='svg__iconbox svg__icon--svg' title="svg"></span>}
-                                                {items?.File_x0020_Type == "zip" && <span className='svg__iconbox svg__icon--zip' title="zip"></span>}
-                                                {items?.File_x0020_Type == "png" && <span className='svg__iconbox svg__icon--png' title="png"></span>}
-                                                {items?.File_x0020_Type == "txt" && <span style={{ width: "20px", height: "20px" }} className='svg__iconbox svg__icon--txt' title="txt"></span>}
-                                                {items?.File_x0020_Type == "smg" && <span className='svg__iconbox svg__icon--smg' title="smg"></span>}
-
-                                            </a><a href={`${items?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{items?.Title}</span></a>
-                                        </div>
-                                        )
-                                    })}
-                                </div></div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="iconSec">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'tagDoc', data[1]?.tagDoc)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'tagDoc', data[0]?.tagDoc)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <label className="fw-semibold form-label me-2">Tagged Documents</label>
-                                <div className="my-1 SearchTableCategoryComponent">
-                                <div className="SpfxCheckRadio">
-                                    {data[1]?.tagDoc?.length > 0 && data[1]?.tagDoc?.map((items: any) => {
-                                        return (
-                                            <div className="alignCenter">
+                                    <div className="SpfxCheckRadio">
+                                        {data[0]?.tagDoc?.length > 0 && data[0]?.tagDoc?.map((items: any) => {
+                                            return (<div className="alignCenter">
                                                 <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radiodoc" onClick={() => handleRadioChange(items, 'tagDoc')} className="radio" />
                                                 <a className="alignCenter" href={items?.EncodedAbsUrl}>
                                                     {items?.File_x0020_Type == "pdf" && <span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
@@ -1846,78 +2055,140 @@ const CompareTool = (props: any) => {
                                                     {items?.File_x0020_Type == "svg" && <span className='svg__iconbox svg__icon--svg' title="svg"></span>}
                                                     {items?.File_x0020_Type == "zip" && <span className='svg__iconbox svg__icon--zip' title="zip"></span>}
                                                     {items?.File_x0020_Type == "png" && <span className='svg__iconbox svg__icon--png' title="png"></span>}
-                                                    {items?.File_x0020_Type == "txt" && <span className='svg__iconbox svg__icon--txt' title="txt"></span>}
+                                                    {items?.File_x0020_Type == "txt" && <span style={{ width: "20px", height: "20px" }} className='svg__iconbox svg__icon--txt' title="txt"></span>}
                                                     {items?.File_x0020_Type == "smg" && <span className='svg__iconbox svg__icon--smg' title="smg"></span>}
 
                                                 </a><a href={`${items?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{items?.Title}</span></a>
                                             </div>
-                                        )
-                                    })}
-                                </div></div>
+                                            )
+                                        })}
+                                    </div></div>
+                            </Col>
+                            <Col sm="1" md="1" lg="1" className="iconSec">
+                                <div className="text-center">
+                                    <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'tagDoc', data[1]?.tagDoc)} /></div>
+                                    <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'tagDoc', data[0]?.tagDoc)} /></div>
+                                </div>
+                            </Col>
+                            <Col sm="5" md="5" lg="5" className="contentSec">
+                                <label className="fw-semibold form-label me-2">Tagged Documents</label>
+                                <div className="my-1 SearchTableCategoryComponent">
+                                    <div className="SpfxCheckRadio">
+                                        {data[1]?.tagDoc?.length > 0 && data[1]?.tagDoc?.map((items: any) => {
+                                            return (
+                                                <div className="alignCenter">
+                                                    <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radiodoc" onClick={() => handleRadioChange(items, 'tagDoc')} className="radio" />
+                                                    <a className="alignCenter" href={items?.EncodedAbsUrl}>
+                                                        {items?.File_x0020_Type == "pdf" && <span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
+                                                        {items?.File_x0020_Type == "docx" && <span className='svg__iconbox svg__icon--docx' title="docx"></span>}
+                                                        {items?.File_x0020_Type == "csv" && <span className='svg__iconbox svg__icon--csv' title="csv"></span>}
+                                                        {items?.File_x0020_Type == "xlsx" && <span className='svg__iconbox svg__icon--xlsx' title="xlsx"></span>}
+                                                        {items?.File_x0020_Type == "jpeg" || items?.File_x0020_Type == "jpg " && <span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span>}
+                                                        {items?.File_x0020_Type == "ppt" || items?.File_x0020_Type == "pptx" && <span className='svg__iconbox svg__icon--ppt' title="ppt"></span>}
+                                                        {items?.File_x0020_Type == "svg" && <span className='svg__iconbox svg__icon--svg' title="svg"></span>}
+                                                        {items?.File_x0020_Type == "zip" && <span className='svg__iconbox svg__icon--zip' title="zip"></span>}
+                                                        {items?.File_x0020_Type == "png" && <span className='svg__iconbox svg__icon--png' title="png"></span>}
+                                                        {items?.File_x0020_Type == "txt" && <span className='svg__iconbox svg__icon--txt' title="txt"></span>}
+                                                        {items?.File_x0020_Type == "smg" && <span className='svg__iconbox svg__icon--smg' title="smg"></span>}
+
+                                                    </a><a href={`${items?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{items?.Title}</span></a>
+                                                </div>
+                                            )
+                                        })}
+                                    </div></div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('tagDoc')} />
                             </Col>
                         </Row>
-                        {data[0]?.TaskType===undefined && 
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <label className="fw-semibold form-label">Tagged Tasks</label>
-                                <div className="my-1 SearchTableCategoryComponent"> {
-                                    data[0]?.taggedTasks?.length > 0 && data[0]?.taggedTasks?.map((items: any) => {
-                                        return <div className="SpfxCheckRadio alignCenter" key={items.Id}>
-                                            <img className="workmember me-1" src={items.SiteIcon}></img> 
-                                            <div style={{flex: "0 0 60px"}}>{items.TaskID}</div>
-                                            
-                                            <input type="checkbox" checked={items.checked} className="form-check-input mx-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />
-                                            
-                                            <a target="_blank" data-interception="off"
-                                                href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
-                                                {items?.Title}
-                                            </a>
-                                        </div>
-                                    })
-                                }</div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="iconSec">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'taggedTasks', data[1]?.taggedTasks)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'taggedTasks', data[0]?.taggedTasks)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <label className="fw-semibold form-label">Tagged Tasks</label>
-                                <div className="my-1 SearchTableCategoryComponent"> {
-                                    data[1]?.taggedTasks?.length > 0 && data[1]?.taggedTasks?.map((items: any) => {
-                                        return <div className="SpfxCheckRadio alignCenter" key={items.Id}>
-                                            <img className="workmember me-1" src={items.SiteIcon}></img>
-                                            <div style={{flex: "0 0 60px"}}>{items.TaskID}</div>
-                                            <input type="checkbox" checked={items.checked} className="form-check-input mx-1 mt-0" name="radiotask" onClick={() => handleCheckboxChange(1, items, 'taggedTask')} />
-                                            <a target="_blank" data-interception="off"
-                                                href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
-                                                {items?.Title}
-                                            </a>
-                                        </div>
-                                    })
-                                }</div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('taggedTasks')} />
-                            </Col>
-                        </Row>
+                        {data[0]?.TaskType === undefined &&
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <label className="fw-semibold form-label">Tagged Tasks</label>
+                                    <div className="my-1 SearchTableCategoryComponent">
+                                        <span className="ms-3"> {
+                                            data[0]?.taggedTasks?.length > 0 && data[0]?.taggedTasks?.map((items: any) => {
+                                                return <div className="SpfxCheckRadio" key={items.Id}>
+                                                    {items?.subRows && items?.subRows?.length > 0 ? (
+                                                        <span>
+                                                            <span onClick={() => toggleExpand(items, data[0], 'taggedTasks')}>  {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
+                                                            <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span> <span>{items.TaskID}</span>
+                                                            <input type="checkbox" checked={items.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />
+                                                            <span> <a target="_blank" className="mx-2" data-interception="off"
+                                                                href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
+                                                                {items?.Title}
+                                                            </a></span>
+                                                            {items.isExpanded &&
+                                                                <TreeNodeTasks items={items} taggedItems={data[0]} handleRadioChange={'taggedTasks'} />}
+                                                        </span>) : <span>
+
+                                                        <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span> <span>{items.TaskID}</span>
+                                                        <input type="checkbox" checked={items.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />
+                                                        <span> <a target="_blank" className="mx-2" data-interception="off"
+                                                            href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
+                                                            {items?.Title}
+                                                        </a></span>
+
+                                                    </span>}
+                                                </div>
+                                            })
+                                        }</span>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="iconSec">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'taggedTasks', data[1]?.taggedTasks)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'taggedTasks', data[0]?.taggedTasks)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <label className="fw-semibold form-label">Tagged Tasks</label>
+                                    <div className="my-1 SearchTableCategoryComponent"> {
+                                        <span className="ms-3"> {
+                                            data[1]?.taggedTasks?.length > 0 && data[1]?.taggedTasks?.map((items: any) => {
+                                                return <div className="SpfxCheckRadio" key={items.Id}>
+                                                    {items?.subRows && items?.subRows?.length > 0 ? (
+                                                        <span>
+                                                            <span onClick={() => toggleExpand(items, data[1], 'taggedTasks')}>   {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
+                                                            <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span> <span>{items.TaskID}</span>
+                                                            <input type="checkbox" checked={items.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />
+                                                            <span> <a target="_blank" className="mx-2" data-interception="off"
+                                                                href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
+                                                                {items?.Title}
+                                                            </a></span>
+                                                            {items.isExpanded &&
+                                                                <TreeNodeTasks items={items} taggedItems={data[0]} handleRadioChange={'taggedTasks'} />}
+                                                        </span>) : <span>
+
+                                                        <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span> <span>{items.TaskID}</span>
+                                                        <input type="checkbox" checked={items.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />
+                                                        <span> <a target="_blank" className="mx-2" data-interception="off"
+                                                            href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
+                                                            {items?.Title}
+                                                        </a></span>
+
+                                                    </span>}
+                                                </div>
+                                            })
+                                        }</span>}</div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('taggedTasks')} />
+                                </Col>
+                            </Row>
                         }
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <label className="fw-semibold form-label">Team Leaders</label>
                                 <div className="my-1 SearchTableCategoryComponent">
-                                {
-                                    data[0]?.AssignToUsers?.length > 0 && data[0]?.AssignToUsers?.map((items: any) =>
-                                        <span className="SpfxCheckRadio alignCenter">
-                                            <input type="checkbox" className="form-check-input me-1 mt-0" onChange={() => handleCheckboxChange(0, items, 'AssignToUsers')} />
-                                            <img className="workmember" src={items?.userImage} />
-                                            <span className="ms-1">{items?.Title}</span>
-                                        </span>)
-                                }</div>
+                                    {
+                                        data[0]?.AssignToUsers?.length > 0 && data[0]?.AssignToUsers?.map((items: any) =>
+                                            <span className="SpfxCheckRadio alignCenter">
+                                                <input type="checkbox" className="form-check-input me-1 mt-0" onChange={() => handleCheckboxChange(0, items, 'AssignToUsers')} />
+                                                <img className="workmember" src={items?.userImage} />
+                                                <span className="ms-1">{items?.Title}</span>
+                                            </span>)
+                                    }</div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
                                 <div className="text-center">
@@ -1928,14 +2199,14 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <label className="fw-semibold form-label">Team Leaders</label>
                                 <div className="my-1 SearchTableCategoryComponent">
-                                {
-                                    data[1]?.AssignToUsers?.length > 0 && data[1]?.AssignToUsers?.map((items: any) =>
-                                        <span className="SpfxCheckRadio alignCenter">
-                                            <input type="checkbox" className="form-check-input me-1 mt-0" onChange={() => handleCheckboxChange(1, items, 'AssignToUsers')} />
-                                            <img className="workmember" src={items?.userImage} />
-                                            <span className="ms-1">{items?.Title}</span>
-                                        </span>)
-                                }</div>
+                                    {
+                                        data[1]?.AssignToUsers?.length > 0 && data[1]?.AssignToUsers?.map((items: any) =>
+                                            <span className="SpfxCheckRadio alignCenter">
+                                                <input type="checkbox" className="form-check-input me-1 mt-0" onChange={() => handleCheckboxChange(1, items, 'AssignToUsers')} />
+                                                <img className="workmember" src={items?.userImage} />
+                                                <span className="ms-1">{items?.Title}</span>
+                                            </span>)
+                                    }</div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('AssignToUsers')} />
@@ -2012,94 +2283,141 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('ResponsibileUsers')} />
                             </Col>
                         </Row>}
-                        {data[0]?.TaskType?.Id !=undefined ?
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <label className="fw-semibold form-label">Child Items</label>
-                                
-                                 <div className="ms-3 SearchTableCategoryComponent my-1"> {
-                                    data[0]?.subRows?.length > 0 && data[0]?.subRows?.map((items: any) => {
-                                        return <div className="SpfxCheckRadio alignCenter mb-1" key={items.Id}>
-                                            <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span> <span>{items.TaskID}</span>
-                                            <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
-                                            <span> <a target="_blank" className="mx-2" data-interception="off"
-                                                href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
-                                                {items?.Title}
-                                            </a></span>
-                                        </div>
-                                    })
-                                }</div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="iconSec">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'subRows', data[1]?.subRows)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'subRows', data[0]?.subRows)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <label className="fw-semibold form-label">Child Items</label>
-                                <div className="ms-3 my-1 SearchTableCategoryComponent">
-                                    {
-                                    data[1]?.subRows?.length > 0 && data[1]?.subRows?.map((items: any) => {
-                                        <>
-                                        return <div className="SpfxCheckRadio alignCenter mb-1">
-                                            <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span> <span>{items.TaskID}</span>
-                                            <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
-                                            <span> <a target="_blank" className="mx-2" data-interception="off"
-                                                href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
-                                                {items?.Title}
-                                            </a></span>
-                                        </div></>
-                                    })
-                                }
-                                </div>
-                                
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('subRows')} />
-                            </Col>
-                        </Row> :  
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <label className="fw-semibold form-label">Child Items</label>
-                                <div className="ms-3 SearchTableCategoryComponent my-1"> {
-                                    data[0]?.subRows?.length > 0 && data[0]?.subRows?.map((items: any) => {
-                                        return <div className="SpfxCheckRadio alignCenter">
-                                            <span className="Dyicons me-1">{items.IconTitle}</span>
-                                            <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
-                                            <span> <a target="_blank" className="ms-2" data-interception="off"
-                                                href={`${items.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items?.Id}&Site=${items?.Id}`}>
-                                                {items?.Title}
-                                            </a></span>
-                                        </div>
-                                    })
-                                }</div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="iconSec">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'subRows', data[1]?.subRows)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'subRows', data[0]?.subRows)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <label className="fw-semibold form-label">Child Items</label>
-                                <div className="ms-3 SearchTableCategoryComponent my-1">{
-                                    data[1]?.subRows?.length > 0 && data[1]?.subRows?.map((items: any) => {
-                                        return <div className="SpfxCheckRadio alignCenter">
-                                            <span className="Dyicons me-1">{items.IconTitle}</span>
-                                            <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
-                                            <span> <a target="_blank" className="mx-2" data-interception="off"
-                                                href={`${items.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items?.Id}`}>
-                                                {items?.Title}
-                                            </a></span>
-                                        </div>
-                                    })
-                                }</div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('subRows')} />
-                            </Col>
-                        </Row>}
+                        {data[0]?.TaskType?.Id != undefined ?
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <label className="fw-semibold form-label">Child Items</label>
+
+                                    <div className="ms-3 SearchTableCategoryComponent my-1">
+                                        <span className="ms-3">
+                                            {data[0]?.subRows?.length > 0 &&
+                                                data[0]?.subRows?.map((items: any) => (
+                                                    <div className="SpfxCheckRadio" key={items.Id}>
+                                                        {items?.subRows && items?.subRows?.length > 0 ? (
+                                                            <span>
+                                                                <span onClick={() => toggleExpand(items, data[0], 'subRows')}>    {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
+
+                                                                <span className="me-1">
+                                                                    <img className="workmember" src={items.SiteIcon} alt="Site Icon" />
+                                                                </span>
+                                                                <span>{items.TaskID}</span>
+                                                                <input type="radio" checked={taggedItems?.Id === items?.Id} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
+                                                                <span>
+                                                                    <a target="_blank" className="mx-2" data-interception="off" href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}  >
+                                                                        {items?.Title}
+                                                                    </a>
+                                                                </span>
+                                                                {items.isExpanded &&
+                                                                    <TreeNode items={items} taggedItems={data[0]} handleRadioChange={'subRows'} />}
+                                                            </span>) :
+                                                            <span> <span className="me-1">
+                                                                <img className="workmember" src={items.SiteIcon} alt="Site Icon" />
+                                                            </span>
+                                                                <span>{items.TaskID}</span>
+                                                                <input type="radio" checked={taggedItems?.Id === items?.Id} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
+                                                                <span>
+                                                                    <a target="_blank" className="mx-2" data-interception="off" href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}  >
+                                                                        {items?.Title}
+                                                                    </a>
+                                                                </span></span>}
+                                                    </div>
+                                                ))}
+                                        </span>
+
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="iconSec">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'subRows', data[1]?.subRows)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'subRows', data[0]?.subRows)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <label className="fw-semibold form-label">Child Items</label>
+                                    <div className="ms-3 my-1 SearchTableCategoryComponent">
+                                        <span className="ms-3">
+                                            {data[1]?.subRows?.length > 0 &&
+                                                data[1]?.subRows?.map((items: any) => (
+                                                    <div className="SpfxCheckRadio" key={items.Id}>
+                                                        {items?.subRows && items?.subRows?.length > 0 ? (
+                                                            <span>
+                                                                <span onClick={() => toggleExpand(items, data[1], 'subRows')}>    {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
+
+
+                                                                <span className="me-1">
+                                                                    <img className="workmember" src={items.SiteIcon} alt="Site Icon" />
+                                                                </span>
+                                                                <span>{items.TaskID}</span>
+                                                                <input type="radio" checked={taggedItems?.Id === items?.Id} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
+                                                                <span>
+                                                                    <a target="_blank" className="mx-2" data-interception="off" href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}  >
+                                                                        {items?.Title}
+                                                                    </a>
+                                                                </span>
+                                                                {items.isExpanded &&
+                                                                    <TreeNode items={items} taggedItems={data[0]} handleRadioChange={'subRows'} />}
+                                                            </span>) :
+                                                            <span> <span className="me-1">
+                                                                <img className="workmember" src={items.SiteIcon} alt="Site Icon" />
+                                                            </span>
+                                                                <span>{items.TaskID}</span>
+                                                                <input type="radio" checked={taggedItems?.Id === items?.Id} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
+                                                                <span>
+                                                                    <a target="_blank" className="mx-2" data-interception="off" href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}  >
+                                                                        {items?.Title}
+                                                                    </a>
+                                                                </span></span>}
+                                                    </div>
+                                                ))}
+                                        </span>
+                                    </div>
+
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('subRows')} />
+                                </Col>
+                            </Row> :
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <label className="fw-semibold form-label">Child Items</label>
+                                    <div className="ms-3 SearchTableCategoryComponent my-1"> {
+                                        data[0]?.subRows?.length > 0 && data[0]?.subRows?.map((items: any) => {
+                                            return <div className="SpfxCheckRadio alignCenter">
+                                                <span className="Dyicons me-1">{items.IconTitle}</span>
+                                                <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
+                                                <span> <a target="_blank" className="ms-2" data-interception="off"
+                                                    href={`${items.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items?.Id}&Site=${items?.Id}`}>
+                                                    {items?.Title}
+                                                </a></span>
+                                            </div>
+                                        })
+                                    }</div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="iconSec">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'subRows', data[1]?.subRows)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'subRows', data[0]?.subRows)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <label className="fw-semibold form-label">Child Items</label>
+                                    <div className="ms-3 SearchTableCategoryComponent my-1">{
+                                        data[1]?.subRows?.length > 0 && data[1]?.subRows?.map((items: any) => {
+                                            return <div className="SpfxCheckRadio alignCenter">
+                                                <span className="Dyicons me-1">{items.IconTitle}</span>
+                                                <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
+                                                <span> <a target="_blank" className="mx-2" data-interception="off"
+                                                    href={`${items.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items?.Id}`}>
+                                                    {items?.Title}
+                                                </a></span>
+                                            </div>
+                                        })
+                                    }</div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('subRows')} />
+                                </Col>
+                            </Row>}
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="sit-preview contentSec">
                                 <label className="fw-semibold form-label">Image</label>
