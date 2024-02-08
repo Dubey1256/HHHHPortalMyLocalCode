@@ -164,7 +164,9 @@ function TasksTable(props: any) {
     smartmetaDetails.forEach((newtest: any) => {
       newtest.Id = newtest.ID;
       if (newtest.TaxType == 'Sites' && newtest.Title != 'Master Tasks' && newtest.Title != 'SDC Sites') {
-        siteConfig.push(newtest)
+        if(newtest?.Title==props?.props?.siteType){
+          siteConfig.push(newtest)
+        }
       }
       if (newtest.TaxType == 'Sites' && newtest.Item_x005F_x0020_Cover != undefined) {
         siteIconAllTask.push(newtest)
@@ -236,8 +238,8 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
 
   // Get the list Name
   let TimesheetConfiguration: any[] = [];
-  if (smartmetaDetailsall.length > 0) {
-    smartmetaDetailsall.forEach((itemss: any) => {
+  if (siteConfig?.length > 0) {
+    siteConfig?.forEach((itemss: any) => {
       if (itemss.Title == items.siteType && itemss.TaxType == 'Sites') {
         TimesheetConfiguration = JSON.parse(itemss.Configurations);
       }
@@ -546,18 +548,19 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
                     });
                     if (obj.Id != undefined) {
                       AllTasks.forEach((task: any) => {
-                        if (task?.ParentTask != undefined && obj?.Id === task?.ParentTask?.Id && task?.siteType == props?.props?.siteType) {
-                          obj.subRows = obj?.subRows != undefined ? obj?.subRows : []
-                          SmartTimeData(task)
-                          .then((returnresult) => {
-                            task.smartTime = String(returnresult)
-                            // console.log("Final Total Time:", returnresult);
-                          })
-                          .catch((error) => {
-                            console.error("Error:", error);
-                          });
-                          obj.subRows.push(task)
-                        }
+                        SmartTimeData(task)
+                        .then((returnresult) => {
+                          task.smartTime = String(returnresult)
+                          if (task?.ParentTask != undefined && obj?.Id === task?.ParentTask?.Id && task?.siteType == props?.props?.siteType) {
+                            obj.subRows = obj?.subRows != undefined ? obj?.subRows : []
+                           
+                            obj.subRows.push(task)
+                          }
+                        })
+                        .catch((error) => {
+                          console.error("Error:", error);
+                        });
+                       
 
                       })
                     }
@@ -892,7 +895,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
       {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
-          <>
+          <div className='alignCenter'>
           <span className='columnFixedTitle'>
             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink text-content serviceColor_Active"
               href={props?.AllListId?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID}
@@ -919,7 +922,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
               Discription={row?.original?.descriptionsSearch}
               row={row?.original}
             />}
-          </>
+          </div>
         ),
         id: "Title",
         placeholder: "Title",
@@ -1333,7 +1336,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
     // className={IsUpdated === 'Events' ? 'app component eventpannelorange' : (IsUpdated == 'Service' ? 'app component serviepannelgreena' : 'app component')}
     >
       <div className="Alltable mt-10">
-        <div className="col-sm-12 pad0 smart tableheight" >
+        <div className="col-sm-12 pad0 smart tableheight" style={{height:"350px"}}>
             <div className={`${data?.length > 10 ? "wrapper" : "MinHeight tableheight"}`}>
               <div> <BulkeditTask SelectedTask={BulkTaskUpdate} Call={Call}></BulkeditTask></div>
 
@@ -1341,6 +1344,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
               AllSitesTaskData={props?.AllSiteTasks} masterTaskData={props?.AllMasterTasks}
                 queryItems={props?.props}
                 SmartTimeIconShow={true}
+                smartTimeTotalFunction={SmartTimeData} 
                 ref={childRef}
                 callChildFunction={callChildFunction}
                 AllListId={props?.AllListId}
