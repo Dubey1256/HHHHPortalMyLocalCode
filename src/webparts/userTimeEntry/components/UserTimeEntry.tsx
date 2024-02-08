@@ -27,7 +27,8 @@ var siteConfig: any[] = []
 var AllPortfolios: any[] = [];
 var AllSitesAllTasks: any[] = [];
 var AllTimeSheetResult: any[] = [];
-var AllTaskUser: any[] = []
+var AllTaskUser: any[] = [];
+let QueryStringId: any = '';
 export interface IUserTimeEntryState {
   Result: any; taskUsers: any; checked: any; expanded: any; checkedSites: any; expandedSites: any; filterItems: any; filterSites: any; ImageSelectedUsers: any; startdate: Date;
   enddate: Date; SitesConfig: any; AllTimeEntry: any; SelectGroupName: string; checkedAll: boolean; checkedAllSites: boolean; checkedParentNode: any; resultSummary: any;
@@ -138,8 +139,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
   private async GetResult() {
     var params = new URLSearchParams(window.location.search);
     user = { "Id": params.get('userId') }
+    QueryStringId = params.get('userId');
     if (user == undefined || user?.Id == undefined || user?.Id == '') {
       user = { "Id": params.get('UserId') }
+      QueryStringId = params.get('UserId');
     }
     if (user == undefined || user?.Id == undefined || user?.Id == '') {
       let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
@@ -387,7 +390,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     this.setState({
       startdate: startdt, enddate: enddt, SitesConfig: sitesResult, AllMetadata: results, TimeSheetLists: TimeSheetResult, loaded: false,
     }, () => this.loadSmartFilters(ccResults, sitesResult))
-    if (user != undefined && user?.Id != undefined && user?.Id != '') {
+    if (QueryStringId != undefined && QueryStringId != '') {
       await this.LoadAllTimeSheetaData();
     }
   }
