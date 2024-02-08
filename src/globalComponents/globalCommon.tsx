@@ -1818,7 +1818,7 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
         AllMasterTaskData = await web.lists
             .getById(Props.MasterTaskListID)
             .items
-            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID","HelpInformationVerifiedJson","HelpInformationVerified", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate",
+            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "HelpInformationVerifiedJson", "HelpInformationVerified", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate",
                 "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "Help_x0020_Information", "PriorityRank",
                 "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id",
                 "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "Deliverables",
@@ -2208,13 +2208,19 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
 
     }
 }
-export const loadAllSiteTasks = async (allListId?: any|null, filter?: any|null) => {
+export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | null, pertiCularSites?: any | null) => {
     let query = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,EstimatedTimeDescription,ClientActivityJson,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
     if (filter != undefined) {
         query += `&$filter=${filter}`
     }
     let siteConfig: any = await loadSmartMetadata(allListId, "Sites")
-    let filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.Title != "Offshore Tasks")
+    let filteredSiteConfig = [];
+    if (pertiCularSites != null) {
+        filteredSiteConfig = siteConfig.filter((site: any) => pertiCularSites?.find((item: any) => site?.Title?.toLowerCase() == item?.toLowerCase()))
+    } else {
+        filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.Title != "Offshore Tasks")
+    }
+
     let AllSiteTasks: any = []
     if (filteredSiteConfig?.length > 0) {
         const fetchPromises = filteredSiteConfig.map(async (site: any) => {
