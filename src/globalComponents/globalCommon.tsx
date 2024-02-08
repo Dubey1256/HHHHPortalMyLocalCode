@@ -2340,7 +2340,8 @@ export const portfolioSearchData = (items: any) => {
 }
 function removeHtmlAndNewline(text: any) {
     if (text) {
-        return text.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+        let testValue = text.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '');
+        return testValue?.trim()
     } else {
         return ''; // or any other default value you prefer
     }
