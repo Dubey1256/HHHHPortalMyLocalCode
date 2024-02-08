@@ -300,6 +300,7 @@ export default function VersionHistory(props: any) {
                         } 
                         else if(key === 'TaskID'){
                             newKey = 'TaskID';
+                            differingPairs[newKey] = currentObj.TaskID;
                         }
                         else {
                             differingPairs[newKey] = currentObj[key];
@@ -371,6 +372,10 @@ export default function VersionHistory(props: any) {
                                 newKey = 'Body';
                                 const Bodyvalue = currentObj.Body.replace(/<[^>]*>/g, '');
                                 differingPairs[newKey] = Bodyvalue;
+                            }
+                            else if(key === 'TaskID'){
+                                newKey = 'TaskID';
+                                differingPairs[newKey] = currentObj.TaskID;
                             }
                              else {
                                 differingPairs[newKey] = currentObj[key];
