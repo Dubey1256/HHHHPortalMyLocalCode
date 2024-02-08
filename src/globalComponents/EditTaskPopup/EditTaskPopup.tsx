@@ -31,18 +31,6 @@ import Tooltip from "../Tooltip";
 import FlorarImageUploadComponent from "../FlorarComponents/FlorarImageUploadComponent";
 import "bootstrap/dist/css/bootstrap.min.css";
 import PageLoader from "../pageLoader";
-import { Table } from "reactstrap";
-import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
-import {
-    useTable,
-    useSortBy,
-    useFilters,
-    useExpanded,
-    usePagination,
-    HeaderGroup,
-} from "react-table";
-import { Filter, DefaultColumnFilter } from "../ReactTableComponents/filters";
-import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 import EmailComponent from "../EmailComponents";
 import SmartTotalTime from "./SmartTimeTotal";
 import "react-datepicker/dist/react-datepicker.css";
@@ -225,21 +213,11 @@ const EditTaskPopup = (Items: any) => {
         { value: 2, status: "2% Follow Up", taskStatusComment: "Follow Up" },
         { value: 3, status: "3% Approved", taskStatusComment: "Approved" },
         { value: 5, status: "5% Acknowledged", taskStatusComment: "Acknowledged" },
-        {
-            value: 10,
-            status: "10% working on it",
-            taskStatusComment: "working on it",
-        },
-        {
-            value: 80,
-            status: "80% In QA Review",
-            taskStatusComment: "In QA Review",
-        },
-        {
-            value: 90,
-            status: "90% Task completed",
-            taskStatusComment: "Task completed",
-        },
+        { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
+        { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
+        { value: 75, status: "70% Deployment Pending", taskStatusComment: "Deployment Pending" },
+        { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
+        { value: 90, status: "90% Task completed", taskStatusComment: "Task completed" },
         { value: 100, status: "100% Closed", taskStatusComment: "Closed" },
     ]);
 
