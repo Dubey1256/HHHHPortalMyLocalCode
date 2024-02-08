@@ -2471,8 +2471,8 @@ export const getBreadCrumbHierarchyAllData = async (item: any, AllListId: any, A
         let useId = item.Portfolio != undefined ? item?.Portfolio?.Id : item?.Parent?.Id;
         try {
             Object = await web.lists.getById(AllListId?.MasterTaskListID)
-                .items.getById(useId).select("Id, Title, Parent/Id, Parent/Title, PortfolioStructureID, Item_x0020_Type")
-                .expand("Parent")
+                .items.getById(useId).select("Id, Title, Parent/Id, Parent/Title, PortfolioStructureID, PortfolioType/Id,PortfolioType/Title")
+                .expand("Parent","PortfolioType")
                 .get()
         }
         catch (error) {
@@ -2502,8 +2502,13 @@ export const getBreadCrumbHierarchyAllData = async (item: any, AllListId: any, A
             Object?.Id === item?.Portfolio?.Id &&
             (item?.ParentTask?.TaskID == null || item?.ParentTask?.TaskID == undefined)
         ) {
-            Object.subRows = [item]; AllItems?.push(item)
-            return getBreadCrumbHierarchyAllData(Object, AllListId, AllItems);
+            Object.subRows = [item];
+             AllItems?.push(item)
+            if(Object?.Parent==undefined){
+                Object.subRows = [Object];
+                AllItems?.push(Object)
+            }
+          return getBreadCrumbHierarchyAllData(Object, AllListId, AllItems);
         }
 
     }
