@@ -404,6 +404,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     React.useEffect(() => {
         if (columns?.length > 0 && columns != undefined) {
             let sortingDescData: any = [];
+            let columnVisibilityResult: any = {}
             columns.map((sortDec: any) => {
                 if (sortDec.isColumnDefultSortingDesc === true) {
                     let obj = { 'id': sortDec.id, desc: true }
@@ -412,7 +413,14 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     let obj = { 'id': sortDec.id, desc: false }
                     sortingDescData.push(obj)
                 }
+                if (sortDec?.isColumnVisible === false) {
+                    columnVisibilityResult[sortDec.id] = sortDec.isColumnVisible;
+                }
             })
+            if (columnVisibilityResult) {
+                setColumnVisibility((prevCheckboxes: any) => ({ ...prevCheckboxes, ...columnVisibilityResult }));
+                // setColumnVisibility(columnVisibilityResult)
+            }
             if (sortingDescData.length > 0) {
                 setSorting(sortingDescData);
             } else {
