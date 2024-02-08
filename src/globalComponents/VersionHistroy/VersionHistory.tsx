@@ -233,7 +233,7 @@ export default function VersionHistory(props: any) {
                 const currentObj = data[i];
                 const nextObj = data[i + 1];
                 const differingPairs: any = {};
-                differingPairs['TaskID'] = currentObj.ID;
+                //differingPairs['TaskID'] = currentObj.ID;
                 differingPairs['TaskTitle'] = currentObj.Title;
                 differingPairs['version'] = currentObj.VersionId;
                 differingPairs['ID'] = currentObj.ID;
@@ -298,6 +298,9 @@ export default function VersionHistory(props: any) {
                             const Bodyvalue = currentObj.Body.replace(/<[^>]*>/g, '');
                             differingPairs[newKey] = Bodyvalue;
                         } 
+                        else if(key === 'TaskID'){
+                            newKey = 'TaskID';
+                        }
                         else {
                             differingPairs[newKey] = currentObj[key];
                         }
@@ -320,7 +323,7 @@ export default function VersionHistory(props: any) {
                 const currentObj = data[i];
                 const prevObj = data[i - 1];
                 const differingPairs: any = {};
-                differingPairs['TaskID'] = currentObj.ID;
+                //differingPairs['TaskID'] = currentObj.ID;
                 differingPairs['TaskTitle'] = currentObj.Title;
                 differingPairs['version'] = currentObj.VersionId;
                 differingPairs['ID'] = currentObj.ID;
