@@ -2781,6 +2781,12 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.DisplayCreateDate =
                                         Items?.Items?.DisplayCreateDate;
                                     dataEditor.data.DisplayDueDate = Moment(EditData?.DueDate).format("DD/MM/YYYY");
+                                    if (dataEditor.data.DisplayDueDate == "Invalid date" || "") {
+                                        dataEditor.data.DisplayDueDate = dataEditor.data.DisplayDueDate.replaceAll(
+                                          "Invalid date",
+                                          ""
+                                        );
+                                      }
                                     dataEditor.data.PercentComplete = Number(UpdateTaskInfo.PercentCompleteStatus);
                                     dataEditor.data.FeedBack = JSON.stringify(
                                         dataEditor.data.FeedBack

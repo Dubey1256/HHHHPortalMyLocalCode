@@ -520,7 +520,9 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
                     result.projectStructerId =
                       result?.Project?.PortfolioStructureID;
                     const title = result?.Project?.Title || "";
-                    const dueDate = result?.DueDate;
+                    const dueDate = moment(new Date(result?.DueDate)).format(
+                      "DD/MM/YYYY"
+                  );
                     result.joinedData = [];
                     if (title) result.joinedData.push(`Title: ${title}`);
                     if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
@@ -1337,6 +1339,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
               <GlobalCommanTable
               AllSitesTaskData={props?.AllSiteTasks} masterTaskData={props?.AllMasterTasks}
                 queryItems={props?.props}
+                SmartTimeIconShow={true}
                 ref={childRef}
                 callChildFunction={callChildFunction}
                 AllListId={props?.AllListId}
