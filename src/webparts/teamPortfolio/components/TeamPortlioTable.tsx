@@ -29,7 +29,7 @@ import TeamSmartFilter from "../../../globalComponents/SmartFilterGolobalBompone
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import PageLoader from "../../../globalComponents/pageLoader";
 import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
-import CreateAllStructureComponent from "../../../globalComponents/CreateAllStructure";
+import TrafficLightComponent from "../../../globalComponents/TrafficLightVerification/TrafficLightComponent";
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -338,8 +338,6 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.TeamLeaderUser = [];
                             result.AllTeamName = result.AllTeamName === undefined ? "" : result.AllTeamName;
                             result.chekbox = false;
-                            result.descriptionsSearch = '';
-                            result.commentsSearch = '';
                             result.timeSheetsDescriptionSearch = '';
                             result.SmartPriority = 0;
                             result.TaskTypeValue = '';
@@ -347,6 +345,18 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.taskPriorityOnHover = result?.PriorityRank;
                             result.showFormulaOnHover;
                             result.portfolioItemsSearch = '';
+                            result.commentsSearch = '';
+                            result.descriptionsSearch = '';
+                            result.descriptionsDeliverablesSearch = '';
+                            result.descriptionsHelpInformationSarch = '';
+                            result.descriptionsShortDescriptionSearch = '';
+                            result.descriptionsTechnicalExplanationsSearch = '';
+                            result.descriptionsBodySearch = '';
+                            result.descriptionsAdminNotesSearch = '';
+                            result.descriptionsValueAddedSearch = '';
+                            result.descriptionsIdeaSearch = '';
+                            result.descriptionsBackgroundSearch = '';
+                            result.FeatureTypeTitle = ''
                             if (result?.DueDate != null && result?.DueDate != undefined) {
                                 result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
                             }
@@ -359,6 +369,10 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
                             if (result.DisplayCreateDate == "Invalid date" || "") {
                                 result.DisplayCreateDate = result.DisplayCreateDate.replaceAll("Invalid date", "");
+                            }
+                            result.DisplayModifiedDate = Moment(result.Modified).format("DD/MM/YYYY");
+                            if (result.Editor) {
+                                result.Editor.autherImage = findUserByName(result.Editor?.Id)
                             }
                             if (result.Author) {
                                 result.Author.autherImage = findUserByName(result.Author?.Id)
@@ -591,8 +605,6 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.TeamLeaderUser = [];
                             result.AllTeamName = result.AllTeamName === undefined ? "" : result.AllTeamName;
                             result.chekbox = false;
-                            result.descriptionsSearch = '';
-                            result.commentsSearch = '';
                             result.timeSheetsDescriptionSearch = '';
                             result.SmartPriority = 0;
                             result.TaskTypeValue = '';
@@ -600,6 +612,18 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.taskPriorityOnHover = result?.PriorityRank;
                             result.showFormulaOnHover;
                             result.portfolioItemsSearch = '';
+                            result.descriptionsSearch = '';
+                            result.commentsSearch = '';
+                            result.descriptionsDeliverablesSearch = '';
+                            result.descriptionsHelpInformationSarch = '';
+                            result.descriptionsShortDescriptionSearch = '';
+                            result.descriptionsTechnicalExplanationsSearch = '';
+                            result.descriptionsBodySearch = '';
+                            result.descriptionsAdminNotesSearch = '';
+                            result.descriptionsValueAddedSearch = '';
+                            result.descriptionsIdeaSearch = '';
+                            result.descriptionsBackgroundSearch = '';
+                            result.FeatureTypeTitle = ''
                             if (result?.DueDate != null && result?.DueDate != undefined) {
                                 result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
                             }
@@ -619,6 +643,10 @@ function TeamPortlioTable(SelectedProp: any) {
                             result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
                             if (result.DisplayDueDate == "Invalid date" || "") {
                                 result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
+                            }
+                            result.DisplayModifiedDate = Moment(result.Modified).format("DD/MM/YYYY");
+                            if (result.Editor) {
+                                result.Editor.autherImage = findUserByName(result.Editor?.Id)
                             }
                             if (result?.TaskType) {
                                 result.portfolioItemsSearch = result?.TaskType?.Title;
@@ -784,7 +812,7 @@ function TeamPortlioTable(SelectedProp: any) {
         componentDetails = await web.lists
             .getById(ContextValue.MasterTaskListID)
             .items
-            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
+            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "HelpInformationVerifiedJson", "HelpInformationVerified",
                 "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
                 "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
                 "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
@@ -804,11 +832,20 @@ function TeamPortlioTable(SelectedProp: any) {
             result["siteType"] = "Master Tasks";
             result.listId = ContextValue?.MasterTaskListID;
             result.AllTeamName = "";
-            result.descriptionsSearch = '';
             result.SmartPriority = 0;
-            result.commentsSearch = '';
             result.TaskTypeValue = '';
             result.timeSheetsDescriptionSearch = '';
+            result.commentsSearch = '';
+            result.descriptionsSearch = '';
+            result.descriptionsDeliverablesSearch = '';
+            result.descriptionsHelpInformationSarch = '';
+            result.descriptionsShortDescriptionSearch = '';
+            result.descriptionsTechnicalExplanationsSearch = '';
+            result.descriptionsBodySearch = '';
+            result.descriptionsAdminNotesSearch = '';
+            result.descriptionsValueAddedSearch = '';
+            result.descriptionsIdeaSearch = '';
+            result.descriptionsBackgroundSearch = '';
             result.portfolioItemsSearch = result.Item_x0020_Type;
             result.TeamLeaderUser = [];
             if (result.Item_x0020_Type === 'Component') {
@@ -849,6 +886,10 @@ function TeamPortlioTable(SelectedProp: any) {
             if (result.Author) {
                 result.Author.autherImage = findUserByName(result.Author?.Id)
             }
+            result.DisplayModifiedDate = Moment(result.Modified).format("DD/MM/YYYY");
+            if (result?.Editor) {
+                result.Editor.autherImage = findUserByName(result?.Editor?.Id)
+            }
             result.PercentComplete = (result?.PercentComplete * 100).toFixed(0) === "0" ? "" : (result?.PercentComplete * 100).toFixed(0);
             if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
                 result.percentCompleteValue = parseInt(result?.PercentComplete);
@@ -856,6 +897,33 @@ function TeamPortlioTable(SelectedProp: any) {
             if (result?.Deliverables != undefined || result.Short_x0020_Description_x0020_On != undefined || result.TechnicalExplanations != undefined || result.Body != undefined || result.AdminNotes != undefined || result.ValueAdded != undefined
                 || result.Idea != undefined || result.Background != undefined) {
                 result.descriptionsSearch = `${removeHtmlAndNewline(result.Deliverables)} ${removeHtmlAndNewline(result.Short_x0020_Description_x0020_On)} ${removeHtmlAndNewline(result.TechnicalExplanations)} ${removeHtmlAndNewline(result.Body)} ${removeHtmlAndNewline(result.AdminNotes)} ${removeHtmlAndNewline(result.ValueAdded)} ${removeHtmlAndNewline(result.Idea)} ${removeHtmlAndNewline(result.Background)}`;
+            }
+            if (result?.Deliverables != undefined) {
+                result.descriptionsDeliverablesSearch = `${removeHtmlAndNewline(result.Deliverables)}`;
+            }
+            if (result.Help_x0020_Information != undefined) {
+                result.descriptionsHelpInformationSarch = `${removeHtmlAndNewline(result?.Help_x0020_Information)}`;
+            }
+            if (result.Short_x0020_Description_x0020_On != undefined) {
+                result.descriptionsShortDescriptionSearch = ` ${removeHtmlAndNewline(result.Short_x0020_Description_x0020_On)} `;
+            }
+            if (result.TechnicalExplanations != undefined) {
+                result.descriptionsTechnicalExplanationsSearch = `${removeHtmlAndNewline(result.TechnicalExplanations)}`;
+            }
+            if (result.Body != undefined) {
+                result.descriptionsBodySearch = `${removeHtmlAndNewline(result.Body)}`;
+            }
+            if (result.AdminNotes != undefined) {
+                result.descriptionsAdminNotesSearch = `${removeHtmlAndNewline(result.AdminNotes)}`;
+            }
+            if (result.ValueAdded != undefined) {
+                result.descriptionsValueAddedSearch = `${removeHtmlAndNewline(result.ValueAdded)}`;
+            }
+            if (result.Idea != undefined) {
+                result.descriptionsIdeaSearch = `${removeHtmlAndNewline(result.Idea)}`;
+            }
+            if (result.Background != undefined) {
+                result.descriptionsBackgroundSearch = `${removeHtmlAndNewline(result.Background)}`;
             }
             try {
                 if (result?.Comments != null && result?.Comments != undefined) {
@@ -1093,6 +1161,7 @@ function TeamPortlioTable(SelectedProp: any) {
             temp.Project = "";
             temp.DisplayCreateDate = null;
             temp.DisplayDueDate = null;
+            temp.DisplayModifiedDate = null;
             temp.TaskTypeValue = "";
             temp.AllTeamName = '';
             temp.ClientCategorySearch = '';
@@ -1286,6 +1355,7 @@ function TeamPortlioTable(SelectedProp: any) {
             temp.Project = "";
             temp.DisplayCreateDate = null;
             temp.DisplayDueDate = null;
+            temp.DisplayModifiedDate = null;
             temp.TaskTypeValue = "";
             temp.AllTeamName = '';
             temp.ClientCategorySearch = '';
@@ -1359,8 +1429,6 @@ function TeamPortlioTable(SelectedProp: any) {
             setTaskTypeDataItemBackup(taskLabelCountBackup)
         }
     };
-
-
     const countComponentLevel = (countTaskAWTLevel: any, afterFilter: any) => {
         if (countTaskAWTLevel?.length > 0 && afterFilter === true) {
             countTaskAWTLevel?.map((result: any) => {
@@ -1744,6 +1812,190 @@ function TeamPortlioTable(SelectedProp: any) {
                 isColumnVisible: true
             },
             {
+                accessorFn: (row) => row?.PriorityRank,
+                cell: ({ row }) => (
+                    <div className="text-center">{row?.original?.PriorityRank}</div>
+                ),
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.PriorityRank == filterValue) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                id: "PriorityRank",
+                placeholder: "Priority Rank",
+                resetColumnFilters: false,
+                header: "",
+                size: 42,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsDeliverablesSearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsDeliverablesSearch ? row?.original?.descriptionsDeliverablesSearch?.length : ""}</span>
+                        {row?.original?.descriptionsDeliverablesSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"descriptionsDeliverablesSearch"} />}
+                    </div>
+                ),
+                id: "descriptionsDeliverablesSearch",
+                placeholder: "Deliverables",
+                header: "",
+                resetColumnFilters: false,
+                size: 56,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsHelpInformationSarch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsHelpInformationSarch ? row?.original?.descriptionsHelpInformationSarch?.length : ""}</span>
+                        {row?.original?.descriptionsHelpInformationSarch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Help_x0020_Information"} />}
+                    </div>
+                ),
+                id: "descriptionsHelpInformationSarch",
+                placeholder: "Help Information",
+                header: "",
+                resetColumnFilters: false,
+                size: 56,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsShortDescriptionSearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsShortDescriptionSearch ? row?.original?.descriptionsShortDescriptionSearch?.length : ""}</span>
+                        {row?.original?.descriptionsShortDescriptionSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Short_x0020_Description_x0020_On"} />}
+                    </div>
+                ),
+                id: "descriptionsShortDescriptionSearch",
+                placeholder: "Short Description",
+                header: "",
+                resetColumnFilters: false,
+                size: 56,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsTechnicalExplanationsSearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsTechnicalExplanationsSearch ? row?.original?.descriptionsTechnicalExplanationsSearch?.length : ""}</span>
+                        {row?.original?.descriptionsTechnicalExplanationsSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"TechnicalExplanations"} />}
+                    </div>
+                ),
+                id: "descriptionsTechnicalExplanationsSearch",
+                placeholder: "Technical Explanations",
+                header: "",
+                resetColumnFilters: false,
+                size: 56,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsBodySearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsBodySearch ? row?.original?.descriptionsBodySearch?.length : ""}</span>
+                        {row?.original?.descriptionsBodySearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Body"} />}
+                    </div>
+                ),
+                id: "descriptionsBodySearch",
+                placeholder: "Body",
+                header: "",
+                resetColumnFilters: false,
+                size: 56,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsAdminNotesSearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsAdminNotesSearch ? row?.original?.descriptionsAdminNotesSearch?.length : ""}</span>
+                        {row?.original?.descriptionsAdminNotesSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"AdminNotes"} />}
+                    </div>
+                ),
+                id: "descriptionsAdminNotesSearch",
+                placeholder: "AdminNotes",
+                header: "",
+                resetColumnFilters: false,
+                size: 56,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsValueAddedSearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsValueAddedSearch ? row?.original?.descriptionsValueAddedSearch?.length : ""}</span>
+                        {row?.original?.descriptionsValueAddedSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"ValueAdded"} />}
+                    </div>
+                ),
+                id: "descriptionsValueAddedSearch",
+                placeholder: "ValueAdded",
+                header: "",
+                resetColumnFilters: false,
+                size: 56,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsIdeaSearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsIdeaSearch ? row?.original?.descriptionsIdeaSearch?.length : ""}</span>
+                        {row?.original?.descriptionsIdeaSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Idea"} />}
+                    </div>
+                ),
+                id: "descriptionsIdeaSearch",
+                placeholder: "Idea",
+                header: "",
+                resetColumnFilters: false,
+                size: 56,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsBackgroundSearch,
+                cell: ({ row }) => (
+                    <>
+                        <span>{row?.original?.descriptionsBackgroundSearch ? row?.original?.descriptionsBackgroundSearch?.length : ""}</span>
+                        {row?.original?.descriptionsBackgroundSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Background"} />}
+                    </>
+                ),
+                id: "descriptionsBackgroundSearch",
+                placeholder: "Background",
+                header: "",
+                resetColumnFilters: false,
+                size: 80,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.HelpInformationVerified,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        {row?.original?.HelpInformationVerified && <span> <TrafficLightComponent columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>}
+                    </div>
+                ),
+                id: "HelpInformationVerified",
+                placeholder: "verified",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.FeatureTypeTitle,
+                cell: ({ row }) => (
+                    <>
+                        <span style={{ display: "flex", maxWidth: '60px' }}>
+                            <span style={{ flexGrow: 1, overflow: 'hidden', textOverflow: "ellipsis", whiteSpace: 'nowrap' }} title={row?.original?.FeatureTypeTitle} >{row?.original?.FeatureTypeTitle}</span>
+                        </span>
+                    </>
+                ),
+                id: "FeatureTypeTitle",
+                placeholder: "Feature Type",
+                header: "",
+                resetColumnFilters: false,
+                size: 70,
+                isColumnVisible: false
+            },
+            {
                 accessorFn: (row) => row?.DueDate,
                 cell: ({ row, column, getValue }) => (
                     <HighlightableCell value={row?.original?.DisplayDueDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
@@ -1796,6 +2048,40 @@ function TeamPortlioTable(SelectedProp: any) {
                 },
                 header: "",
                 size: 125
+            },
+            {
+                accessorFn: (row) => row?.Modified,
+                cell: ({ row, column }) => (
+                    <div className="alignCenter">
+                        {row?.original?.Modified == null ? ("") : (
+                            <>
+                                <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.DisplayModifiedDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
+                                {row?.original?.Editor != undefined &&
+                                    <>
+                                        <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
+                                            target="_blank" data-interception="off">
+                                            <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={row?.original?.Editor?.autherImage} />
+                                        </a>
+                                    </>
+                                }
+                            </>
+                        )}
+                    </div>
+                ),
+                id: 'Modified',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Modified",
+                isColumnVisible: false,
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                header: "",
+                size: 115
             },
             {
                 accessorKey: "descriptionsSearch",
@@ -1995,21 +2281,6 @@ function TeamPortlioTable(SelectedProp: any) {
     };
 
     let isOpenPopup = false;
-
-    const callbackdataAllStructure = React.useCallback((item)=>{
-        if(item != undefined && item.length>0){
-            item.forEach((value:any)=>{
-                copyDtaArray.unshift(value)
-            })
-        }
-        setOpenAddStructurePopup(false);
-        console.log(item)
-        renderData = [];
-        renderData = renderData.concat(copyDtaArray)
-        refreshData();
-       
-    },[])
-
     const AddStructureCallBackCall = React.useCallback((item) => {
         childRef?.current?.setRowSelection({});
         if (!isOpenPopup && item.CreatedItem != undefined) {
@@ -2362,12 +2633,12 @@ function TeamPortlioTable(SelectedProp: any) {
                                     <div>
                                         <div>
                                             <GlobalCommanTable showRestructureButton={true} showCompareButton={true} openCompareTool={openCompareTool} columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup}
-                                             masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup}
-                                              flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
-                                               flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef}
+                                                masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup}
+                                                flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
+                                                flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef}
                                                 callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers}
-                                                 showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration}
-                                                  showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
+                                                showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration}
+                                                showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
                                         </div>
                                     </div>
                                 </div>

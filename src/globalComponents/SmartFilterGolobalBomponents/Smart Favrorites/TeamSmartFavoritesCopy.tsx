@@ -1355,12 +1355,22 @@ const TeamSmartFavoritesCopy = (item: any) => {
                     <div className='align-items-center d-flex justify-content-between px-4 py-2'>
                         <div></div>
                         <div className='footer-right'>
-                            <button type="button" className="btn btn-default pull-right" onClick={() =>setModalIsOpenToFalse("", "")}>
+                            <button type="button" className="btn btn-default pull-right" onClick={() => setModalIsOpenToFalse("", "")}>
                                 Cancel
                             </button>
-                            <button type="button" className="btn btn-primary mx-1 pull-right" onClick={AddSmartfaviratesfilter}>
-                                Add SmartFavorite
-                            </button>
+                            <>
+                                {(item?.updatedSmartFilter !== true && !item?.updatedEditData) ? (
+                                    <>
+                                        {smartTitle !== "" ? (
+                                            <button type="button" className="btn btn-primary mx-1 pull-right" onClick={AddSmartfaviratesfilter}>Add SmartFavorite</button>
+                                        ) : (
+                                            <button type="button" disabled={true} className="btn btn-primary mx-1 pull-right" onClick={AddSmartfaviratesfilter}>Add SmartFavorite</button>
+                                        )}
+                                    </>
+                                ) : (
+                                    <button type="button" className="btn btn-primary mx-1 pull-right" onClick={AddSmartfaviratesfilter}>Update Smart Favorite</button>
+                                )}
+                            </>
                         </div>
                     </div>
                 </footer>
