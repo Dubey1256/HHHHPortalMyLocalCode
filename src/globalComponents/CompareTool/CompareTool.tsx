@@ -1690,8 +1690,8 @@ const CompareTool = (props: any) => {
                                         </a>
                                     </Label>
                                 </Col>
-                                <Col sm="1" md="1" lg="1">
-                                <div className="text-center iconSec">
+                                <Col sm="1" md="1" lg="1" className="iconSec">
+                                <div className="text-center">
                                     <LuUndo2 size="25" />
                                     </div>
                                 </Col>

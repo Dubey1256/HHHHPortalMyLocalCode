@@ -120,7 +120,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                 cell: ({ row }) => (
                     <div className='alignCenter columnFixedTitle p-0'>
                         <><a href={`${row?.original?.EncodedAbsUrl}?web=1`}>
-                            <span className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`} title={row?.original?.File_x0020_Type}></span></a>
+                            <span className={`alignIcon svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`} title={row?.original?.File_x0020_Type}></span></a>
                             <a className='ms-1 wid90' target="_blank" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.Title} </a>
                         </>
                     </div>
@@ -177,7 +177,7 @@ const RelevantDocuments = (props: any, ref: any) => {
             {
                 accessorFn: "",
                 cell: ({ row }: any) => (
-                    <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(row?.original)}></span>
+                    <span title="Edit" className="alignIcon  svg__iconbox svg__icon--edit hreflink" onClick={() => editDocumentsLink(row?.original)}></span>
 
                 ),
                 id: 'CreatedDate',

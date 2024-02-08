@@ -860,13 +860,15 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         >
 
                                             <option>Select</option>
-                                            <option value="SPFx">Management</option>
-                                            <option value="Project">SPFX</option>
-                                            <option value="AnC">Shareweb</option>
-                                            <option value="Contact">Mobile</option>
+                                            <option value="Management">Management</option>
+                                            <option value="SPFX">SPFX</option>
+                                            <option value="Shareweb">Shareweb</option>
+                                            <option value="Mobile">Mobile</option>
                                             <option value="QA">QA</option>
                                             <option value="Design">Design</option>
-                                            <option value="Design">HR</option>
+                                            <option value="HR">HR</option>
+                                            <option value="Junior Task Management">Junior Task Management</option>
+                                            
                                         </select>
                                     </div>
                                 </Col>
