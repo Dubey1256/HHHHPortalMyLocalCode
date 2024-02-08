@@ -71,9 +71,7 @@ export default function InfoIconsToolTip(props:any) {
                         setshowHoverTitle(hovertitle)
                     }
                 }
-
-
-                }
+            }
                 else{
                     let addToFeedbackArray = (value: any, heading: any) => {
                         value=  removeHtmlAndNewline(value)
@@ -118,7 +116,7 @@ export default function InfoIconsToolTip(props:any) {
                      if(props?.row?.Deliverables!=undefined){
                          addToFeedbackArray(props?.row?.Deliverables, "Deliverables");
                      }
-                     if(props?.row?.Deliverables!=undefined){
+                     if(props?.row?.Idea!=undefined){
                          addToFeedbackArray(props?.row?.Idea, "Idea");
                      }
                      if(props?.row?.ValueAdded!=undefined){

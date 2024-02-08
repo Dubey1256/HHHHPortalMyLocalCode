@@ -5,7 +5,31 @@ import TaskStatusTbl from './TaskStausTable';
 import EmployeePieChart from './EmployeePieChart';
 import { Web } from 'sp-pnp-js';
 import { Panel, PanelType } from 'office-ui-fabric-react';
+import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
+import Slider from "react-slick";
+////import "slick-carousel/slick/slick.css";
+///import "slick-carousel/slick/slick-theme.css";
+import { Col, Container, Row } from "react-bootstrap";
 let DashboardConfig: any = [];
+function SamplePrevArrow(props:any) {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={className}
+      style={{ ...style, display: "block"}}
+      onClick={onClick}>
+   <HiArrowCircleRight></HiArrowCircleRight>
+   </div>
+  );
+}
+function SamplnextvArrow(props:any) {
+  const { className, style, onClick } = props;
+  return (
+    <div className={className}  style={{ ...style, display: "block"}}onClick={onClick}>
+    <HiArrowCircleLeft></HiArrowCircleLeft></div>
+  );
+}
+
 const Header = () => {
   const params = new URLSearchParams(window.location.search);
   let DashboardId: any = params.get('DashBoardId');
@@ -92,8 +116,24 @@ const Header = () => {
   }
   useEffect(() => {
     handleTileClick(ContextData?.ActiveTile)
+    if(DashboardId!=undefined&& DashboardId!=""){
+      
+    }
   }, [ContextData?.ActiveTile]);
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 1000,
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    //autoplay: true, // Enable autoplay
+  // autoplaySpeed: 500
+  nextArrow: <SamplePrevArrow />,
+  prevArrow: <SamplnextvArrow />
 
+  };
+
+  
   return (
     <div>
       <section className="NameTopSec">
@@ -152,7 +192,117 @@ const Header = () => {
 
       <section className="tabSec">
         <div className="d-flex justify-content-center">
-          {DashboardConfig.map((items: any, index: any) => (
+        <div className='container-fluid p-0'>
+        <div className="carouselSlider">
+          <Row>
+          {DashboardId != undefined && DashboardId != ''&&  <Col className='pe-0 hhhbox'>
+            {DashboardConfig?.map((items:any,index:any)=>{
+                 if(items?.TileName && index==0 )
+              {
+            return (
+              <>
+      <div className={`${activeTile === items?.TileName ? 'col alignCenter  mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white mb-3 hreflink shadow-sm'}`}
+        onClick={() => handleTileClick(items?.TileName)}>
+        <span className="iconSec" title={items?.TileName}>
+          {items?.AdditonalHeader == true ? <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
+            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
+            <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
+          </svg> : <span title={items?.TileName} className="svg__iconbox svg__icon--calendar"></span>}
+        </span>
+        {items?.AdditonalHeader && <span className="ms-2 tabText">
+          <div>{items?.WebpartTitle}</div>
+          <div className="align-items-center d-flex f-18 justify-content-between tabResultText workToday">
+            <div className='alignCenter'>
+              <span title='Todays Task'>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#057BD0" className="bi bi-check2-circle" viewBox="0 0 16 16">
+                  <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z" />
+                  <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z" />
+                </svg>
+              </span>
+              <span className='fw-semibold ms-1'>{items?.Tasks?.length}</span>
+            </div>
+            <div className="mx-2">|</div>
+            <div className='alignCenter'>
+              <span title='Todays Time'>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#057BD0" className="bi bi-clock" viewBox="0 0 16 16">
+                  <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
+                  <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z" />
+                </svg></span>
+              <span className='fw-semibold ms-1'>{currentTime}</span></div>
+          </div>
+          {items?.AdditonalHeader != true && <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>}
+        </span>}
+        {items?.AdditonalHeader != true && <span className='ms-2'>
+          <div>{items?.WebpartTitle}</div>
+          <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>
+        </span>}
+      </div>
+    </>
+  )
+}   
+           
+
+            })}
+            
+            </Col>}
+            
+            {DashboardId != undefined && DashboardId != '' ?<Col md={8} className='px-2'>  
+    <Slider className='DashBoardslider' {...settings}>
+        {DashboardConfig?.map((items:any, index :any) => (
+            items?.TileName && index!=0 &&(
+            <>
+          {/* <div
+            className="slide-item" 
+            key={index}
+           
+          > */}
+          
+              <div className={`${activeTile === items?.TileName ? 'col alignCenter  mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white mb-3 hreflink shadow-sm'}`}
+                  onClick={() => handleTileClick(items?.TileName)}>
+                  <span className="iconSec" title={items?.TileName}>
+                    {items?.AdditonalHeader == true ? <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
+                      <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
+                      <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
+                    </svg> : <span title={items?.TileName} className="svg__iconbox svg__icon--calendar"></span>}
+                  </span>
+                  {items?.AdditonalHeader && <span className="ms-2 tabText">
+                    <div>{items?.WebpartTitle}</div>
+                    <div className="align-items-center d-flex f-18 justify-content-between tabResultText workToday">
+                      <div className='alignCenter'>
+                        <span title='Todays Task'>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#057BD0" className="bi bi-check2-circle" viewBox="0 0 16 16">
+                            <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z" />
+                            <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z" />
+                          </svg>
+                        </span>
+                        <span className='fw-semibold ms-1'>{items?.Tasks?.length}</span>
+                      </div>
+                      <div className="mx-2">|</div>
+                      <div className='alignCenter'>
+                        <span title='Todays Time'>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#057BD0" className="bi bi-clock" viewBox="0 0 16 16">
+                            <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
+                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z" />
+                          </svg></span>
+                        <span className='fw-semibold ms-1'>{currentTime}</span></div>
+                    </div>
+                    {items?.AdditonalHeader != true && <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>}
+                  </span>}
+                  {items?.AdditonalHeader != true && <span className='ms-2'>
+                    <div>{items?.WebpartTitle}</div>
+                    <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>
+                  </span>}
+                </div>
+             {/* </div> */}
+      
+          </>
+        )))}
+      </Slider></Col>
+    
+      : 
+      <Col md={10} className='px-2'>
+        <Row  className='deffrenttiles'>
+      {DashboardConfig?.map((items: any, index: any) => (
             items?.TileName && (
               <>
                 <div className={`${activeTile === items?.TileName ? 'col alignCenter me-3 mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white mb-3 hreflink shadow-sm'}`}
@@ -194,7 +344,12 @@ const Header = () => {
               </>
             )
           ))}
-          <div className={`${activeTile === 'TimeSheet' ? 'col alignCenter hreflink  mb-3 p-3 empBg shadow-sm active empBg' : 'col alignCenter p-3 hreflink  bg-white mb-3 shadow-sm'}`}
+          </Row>
+          </Col>
+      }
+            
+            <Col  className='ps-0 timesheet'>
+            <div className={`${activeTile === 'TimeSheet' ? 'col alignCenter hreflink  mb-3 p-3 empBg shadow-sm active empBg' : 'col alignCenter p-3 hreflink  bg-white mb-3 shadow-sm'}`}
             onClick={() => handleTileClick('TimeSheet')}>
             <span className="iconSec">
               <span title='TimeSheet' style={{ width: '24px', height: '24px' }} className=" svg__iconbox svg__icon--draftOther"></span>
@@ -202,6 +357,13 @@ const Header = () => {
             <span className='ms-2'>
               <div>TimeSheet</div>
             </span>
+          </div>
+            </Col>
+          </Row>
+
+  
+    </div>
+      
           </div>
         </div>
         {
@@ -211,6 +373,8 @@ const Header = () => {
           activeTile === items?.TileName && <div><TaskStatusTbl activeTile={activeTile} /></div>
         ))} */}
       </section>
+
+
       <span>
         {IsOpenTimeSheetPopup == true && <EmployeePieChart IsOpenTimeSheetPopup={IsOpenTimeSheetPopup} Call={() => { CallBack() }} />}
       </span>
