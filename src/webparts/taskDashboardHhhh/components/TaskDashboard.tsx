@@ -333,7 +333,7 @@ const TaskDashboard = (props: any) => {
         setPageLoader(false)
     };
     const currentUserTimeEntryCalculation = () => {
-        const timesheetDistribution = ['Today', 'This Week', 'This Month'];
+        const timesheetDistribution = ['Today','Yesterday','This Week', 'This Month'];
 
         const allTimeCategoryTime = timesheetDistribution.reduce((totals, start) => {
             const startDate = getStartingDate(start);
@@ -370,6 +370,7 @@ const TaskDashboard = (props: any) => {
             return { ...totals, [start.toLowerCase()]: total };
         }, {
             today: 0,
+            yesterday:0,
             thisWeek: 0,
             thisMonth: 0,
         });
