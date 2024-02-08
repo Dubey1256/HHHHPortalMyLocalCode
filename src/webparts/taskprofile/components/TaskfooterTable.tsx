@@ -1339,6 +1339,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
               <GlobalCommanTable
               AllSitesTaskData={props?.AllSiteTasks} masterTaskData={props?.AllMasterTasks}
                 queryItems={props?.props}
+                SmartTimeIconShow={true}
                 ref={childRef}
                 callChildFunction={callChildFunction}
                 AllListId={props?.AllListId}
