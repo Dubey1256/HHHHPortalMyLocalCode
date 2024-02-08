@@ -314,14 +314,18 @@ const TeamSmartFilter = (item: any) => {
                     item?.setLoaded(false);
                     fetchAllDataAboveNinty();
                 } else {
-                    allTastsData = [];
-                    allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
+                    if (AllSiteTasksDataLoadAll?.length > 0) {
+                        allTastsData = [];
+                        allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
+                    }
                     FilterDataOnCheck();
                     headerCountData();
                 }
             } else {
-                allTastsData = [];
-                allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
+                if (AllSiteTasksDataLoadAll?.length > 0) {
+                    allTastsData = [];
+                    allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
+                }
                 FilterDataOnCheck();
                 headerCountData();
             }
@@ -331,8 +335,10 @@ const TeamSmartFilter = (item: any) => {
         const fetchAllData = await item?.LoadAllSiteTasksAllData();
         if (fetchAllData != undefined) {
             setLoadeAllData(true);
-            allTastsData = [];
-            allTastsData = allTastsData.concat(fetchAllData);
+            if (fetchAllData?.length > 0) {
+                allTastsData = [];
+                allTastsData = allTastsData.concat(fetchAllData);
+            }
             FilterDataOnCheck();
             headerCountData();
         }
@@ -2075,8 +2081,10 @@ const TeamSmartFilter = (item: any) => {
         //     loadAdminConfigurationsId(items?.Id);
         // }
         if (items.Id && filterSmaePage) {
-            allTastsData = [];
-            allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
+            if (AllSiteTasksDataLoadAll?.length > 0) {
+                allTastsData = [];
+                allTastsData = allTastsData.concat(AllSiteTasksDataLoadAll);
+            }
             item?.setLoaded(false);
             setFlatView(true);
             setUpdatedSmartFilter(true);
@@ -2795,7 +2803,8 @@ const TeamSmartFilter = (item: any) => {
                                         <div className='alignCenter'>
                                             {isEveryOneShow === true ?
                                                 <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
-                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>EveryOne</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{dateCountInfo ? '- ' + dateCountInfo : ''}</div>
+                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>EveryOne</span>
+                                            {/* <div className="ms-2 f-14" style={{ color: "#333333" }}>{dateCountInfo ? '- ' + dateCountInfo : ''}</div> */}
                                         </div>
                                     </span>
                                 </label>
@@ -2830,7 +2839,8 @@ const TeamSmartFilter = (item: any) => {
                                         <div className='alignCenter'>
                                             {isOnlyMeShow === true ?
                                                 <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
-                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>Only Me</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{dateCountInfo ? '- ' + dateCountInfo : ''}</div>
+                                            <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>Only Me</span>
+                                            {/* <div className="ms-2 f-14" style={{ color: "#333333" }}>{dateCountInfo ? '- ' + dateCountInfo : ''}</div> */}
                                         </div>
                                     </span>
                                 </label>

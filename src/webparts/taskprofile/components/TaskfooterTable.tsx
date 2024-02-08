@@ -520,7 +520,9 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
                     result.projectStructerId =
                       result?.Project?.PortfolioStructureID;
                     const title = result?.Project?.Title || "";
-                    const dueDate = result?.DueDate;
+                    const dueDate = moment(new Date(result?.DueDate)).format(
+                      "DD/MM/YYYY"
+                  );
                     result.joinedData = [];
                     if (title) result.joinedData.push(`Title: ${title}`);
                     if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
@@ -742,6 +744,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
           if (elem?.Id === childelem?.Id || elem.ID === childelem?.Id) {
             if (childelem?.NewDueDate != '') {
               elem.DueDate = childelem?.NewDueDate
+        
             }
             if (childelem?.NewStatus != '') {
               elem.PercentComplete = childelem?.NewStatus
@@ -907,7 +910,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
               ""
             )}
             </span>
-            {row?.original?.TaskCategories == 'Draft' ?
+            {row?.original?.Categories?.includes("Draft")?
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
               <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
@@ -1336,6 +1339,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
               <GlobalCommanTable
               AllSitesTaskData={props?.AllSiteTasks} masterTaskData={props?.AllMasterTasks}
                 queryItems={props?.props}
+                SmartTimeIconShow={true}
                 ref={childRef}
                 callChildFunction={callChildFunction}
                 AllListId={props?.AllListId}
