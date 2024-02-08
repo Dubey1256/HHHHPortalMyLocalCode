@@ -26,7 +26,7 @@ import GlobalCommanTable, {
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import PageLoader from "../../../globalComponents/pageLoader";
 import CreateActivity from "../../../globalComponents/CreateActivity";
-import CreateWS from '../../../globalComponents/CreateWS';
+import CreateWS from "../../../globalComponents/CreateWS";
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
@@ -1193,7 +1193,7 @@ const switchGroupbyData = () => {
         placeholder: "Feature Type",
         header: "",
         resetColumnFilters: false,
-        size: 90,
+        size: 110,
         id: "FeatureTypeTitle",
     },
       {
@@ -1242,7 +1242,7 @@ const switchGroupbyData = () => {
         placeholder: "Task Type",
         header: "",
         resetColumnFilters: false,
-        size: 90,
+        size: 110,
         id: "TaskTypeValue",
     },
       {
@@ -1380,7 +1380,7 @@ const switchGroupbyData = () => {
           }
         },
         header: "",
-        size: 125
+        size: 105
       },
       {
         accessorKey: "descriptionsSearch",
