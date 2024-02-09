@@ -9,7 +9,7 @@ import { Web } from "sp-pnp-js";
 import * as moment from 'moment';
 import * as globalCommon from "../../../globalComponents/globalCommon"
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
-import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
+import InlineEditingcolumns from '../../../globalComponents/inlineEditingcolumns';
 import { ColumnDef } from '@tanstack/react-table';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';

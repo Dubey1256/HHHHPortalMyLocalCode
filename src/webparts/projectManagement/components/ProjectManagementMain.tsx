@@ -1,10 +1,10 @@
 import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
+import InlineEditingcolumns from "../../../globalComponents/inlineEditingcolumns";
 import { FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import { Web } from "sp-pnp-js";
-import EditProjectPopup from "../../projectmanagementOverviewTool/components/EditProjectPopup";
+import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
 import * as Moment from "moment";
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import {
@@ -913,8 +913,8 @@ const ProjectManagementMain = (props: any) => {
       } else {
         propsItems.DisplayCreateDate = '';
       }
-      if (propsItems?.taggedPortfolios != undefined) {
-        let filteredSmartPortfolios = propsItems?.taggedPortfolios.filter((tagPort: any) => tagPort?.Id !== undefined).map((tagPort: any) => smartPortfoliosData.find((port: any) => port?.Id === tagPort?.Id));
+      if (propsItems?.Portfolios != undefined) {
+        let filteredSmartPortfolios = propsItems?.Portfolios.filter((tagPort: any) => tagPort?.Id !== undefined).map((tagPort: any) => smartPortfoliosData.find((port: any) => port?.Id === tagPort?.Id));
         smartPortfoliosData = filteredSmartPortfolios
       }
       }
@@ -1827,7 +1827,7 @@ const ProjectManagementMain = (props: any) => {
                                     {/* <div className="col-md-12 url"><div className="d-flex p-0"><div className="bg-fxdark p-2"><label>Url</label></div><div className="bg-light p-2 text-break full-width"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></div></div></div> */}
                                     <div className="col-md-12 pe-0"><dl><dt className="bg-fxdark UrlLabel">Url</dt><dd className="bg-light UrlField"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></dd></dl></div>
                                     {
-                                      Masterdata?.Body != undefined ? <div className="mt-2 row pe-0 detailsbox">
+                                      Masterdata?.Body != undefined ? <div className="mt-2 col-md-12  detailsbox">
                                         <details className="pe-0" open>
                                           <summary>Description</summary>
                                           <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Body }}></div>
@@ -1837,7 +1837,7 @@ const ProjectManagementMain = (props: any) => {
                                     }
 
                                     {
-                                      Masterdata?.Background != undefined ? <div className="mt-2 row pe-0 detailsbox">
+                                      Masterdata?.Background != undefined ? <div className="mt-2 col-md-12  detailsbox">
                                         <details className="pe-0">
                                           <summary>Background</summary>
                                           <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Background }}></div>
@@ -1847,7 +1847,7 @@ const ProjectManagementMain = (props: any) => {
                                     }
 
                                     {
-                                      Masterdata?.Idea != undefined ? <div className="mt-2 row pe-0 detailsbox">
+                                      Masterdata?.Idea != undefined ? <div className="mt-2 col-md-12  detailsbox">
                                         <details className="pe-0">
                                           <summary>Idea</summary>
                                           <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Idea }}></div>
@@ -1857,7 +1857,7 @@ const ProjectManagementMain = (props: any) => {
                                     }
 
                                     {
-                                      Masterdata?.Deliverables != undefined ? <div className="mt-2 row pe-0 detailsboxp 41_
+                                      Masterdata?.Deliverables != undefined ? <div className="mt-2 col-md-12  detailsbox 41_
                                 0=][9\
                                 -p/\otyty5/">
                                         <details className="pe-0">
@@ -1869,7 +1869,7 @@ const ProjectManagementMain = (props: any) => {
 
                                   </div>
                                 </div>
-                                <div className='p-0'> {Masterdata?.Id != undefined && <KeyDocuments ref={relevantDocRef} AllListId={AllListId} Context={props?.Context} siteUrl={AllListId?.siteUrl} DocumentsListID={AllListId.DocumentsListID} siteName={"Master Tasks"} folderName={Masterdata?.Title} keyDoc={true}></KeyDocuments>}</div>
+                                <div className='col-md-12 bg-white'> {Masterdata?.Id != undefined && <KeyDocuments ref={relevantDocRef} AllListId={AllListId} Context={props?.Context} siteUrl={AllListId?.siteUrl} DocumentsListID={AllListId.DocumentsListID} siteName={"Master Tasks"} folderName={Masterdata?.Title} keyDoc={true}></KeyDocuments>}</div>
                               </div>
                             </div>
                           </section>

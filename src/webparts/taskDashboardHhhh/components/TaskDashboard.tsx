@@ -12,7 +12,7 @@ import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup
 import * as Moment from "moment";
 import { Web } from "sp-pnp-js";
 import * as globalCommon from "../../../globalComponents/globalCommon";
-import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
+import InlineEditingcolumns from '../../../globalComponents/inlineEditingcolumns';
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import PageLoader from '../../../globalComponents/pageLoader';
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
