@@ -104,7 +104,7 @@ const TrafficLightComponent = (props: any) => {
                     <span title="NA" className={trafficValue == "NA" ? "circlelight br_green pull-left notable mx-1" : "circlelight br_black pull-left mx-1"} onClick={() => changeTrafficLight("NA")}></span>
                     <div className="alignCenter">
                         <span className="">{columnVerificationStatus != undefined && columnVerificationStatus}</span>
-                        <FaCommentDots className="ms-1" title={CommentData} />
+                        <FaCommentDots className="ms-1"style={CommentData==""&&{color: "floralwhite"}} title={CommentData} />
                         <span className="svg__iconbox svg__icon--editBox alignIcon" onClick={() => setOpenCommentpopup(true)}></span>
                     </div>
                 </div>
