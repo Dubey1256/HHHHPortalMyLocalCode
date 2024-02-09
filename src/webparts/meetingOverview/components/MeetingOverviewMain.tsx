@@ -9,7 +9,7 @@ import * as globalCommon from "../../../globalComponents/globalCommon";
 import AddMeeting from './AddMeeting';
 import MeetingPopupComponent from '../../../globalComponents/MeetingPopup/MeetingPopup';
 import { mycontextValue } from '../../meetingOverViewPage/components/MeetingProfile';
-import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
+import InlineEditingcolumns from '../../../globalComponents/inlineEditingcolumns';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 // import TagTaskToProjectPopup from '../../projectManagement/components/TagTaskToProjectPopup';
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";

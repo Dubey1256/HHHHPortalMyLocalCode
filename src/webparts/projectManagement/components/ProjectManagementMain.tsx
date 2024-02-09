@@ -1,10 +1,10 @@
 import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
+import InlineEditingcolumns from "../../../globalComponents/inlineEditingcolumns";
 import { FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import { Web } from "sp-pnp-js";
-import EditProjectPopup from "../../projectmanagementOverviewTool/components/EditProjectPopup";
+import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
 import * as Moment from "moment";
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import {
