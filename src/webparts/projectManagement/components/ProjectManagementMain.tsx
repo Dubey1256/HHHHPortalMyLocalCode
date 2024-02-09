@@ -913,8 +913,10 @@ const ProjectManagementMain = (props: any) => {
       } else {
         propsItems.DisplayCreateDate = '';
       }
-      let filteredSmartPortfolios = propsItems?.taggedPortfolios.filter((tagPort: any) => tagPort?.Id !== undefined).map((tagPort: any) => smartPortfoliosData.find((port: any) => port?.Id === tagPort?.Id));
-      smartPortfoliosData = filteredSmartPortfolios
+      if (propsItems?.taggedPortfolios != undefined) {
+        let filteredSmartPortfolios = propsItems?.taggedPortfolios.filter((tagPort: any) => tagPort?.Id !== undefined).map((tagPort: any) => smartPortfoliosData.find((port: any) => port?.Id === tagPort?.Id));
+        smartPortfoliosData = filteredSmartPortfolios
+      }
       }
     if (propsItems?.Item_x0020_Type == "Project") {
       setMasterdata(propsItems)

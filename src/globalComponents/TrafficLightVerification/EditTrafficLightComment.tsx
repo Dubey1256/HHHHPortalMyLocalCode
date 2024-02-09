@@ -27,7 +27,7 @@ const EditTrafficLightComment = (props: any) => {
                     Comment -{props?.columnData?.Title}
 
                 </div>
-                <Tooltip ComponentId='' />
+                <Tooltip ComponentId='484' />
             </>
         );
     }
@@ -44,8 +44,10 @@ const EditTrafficLightComment = (props: any) => {
         props?.setOpenCommentpopup(false)
     }
     const updateData = () => {
-        myContextValue2.setTrafficValue(copyTrafficlight);
-        myContextValue2.SetCommentData(copyCommentData)
+       myContextValue2.trafficValue=copyTrafficlight;
+        myContextValue2.CommentData=copyCommentData;
+        myContextValue2?.setTrafficValue(copyTrafficlight);
+        myContextValue2?.SetCommentData(copyCommentData)
         myContextValue2?.setcolumnVerificationStatus(copycolumnVerificationStatus)
         myContextValue2?.updateJson()
     }
