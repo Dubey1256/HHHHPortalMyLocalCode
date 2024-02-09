@@ -8,6 +8,7 @@ const RestructuringCom = (props: any, ref: any) => {
   let restructureCallBack = props?.restructureCallBack;
 
   const [OldArrayBackup, setOldArrayBackup]: any = React.useState([]);
+  const [selectedItems, setSelectedItems]:any = React.useState([]);
   const [allData, setAllData]: any = React.useState([]);
   const [restructureItem, setRestructureItem]: any = React.useState([]);
   const [NewArrayBackup, setNewArrayBackup]: any = React.useState([]);
@@ -47,6 +48,7 @@ const RestructuringCom = (props: any, ref: any) => {
         array?.push(obj.original);
       });
       setRestructureItem(array);
+      setSelectedItems(array);
 
       const setPortfolioTypeCheck = (arr: any, portfolioTypeCheck: any) => {
         arr?.forEach((obj: any) => {
@@ -1568,6 +1570,26 @@ const RestructuringCom = (props: any, ref: any) => {
       restructureCallBack(array, topCompo);
   }
 
+  const handleCheckboxChange = (itemId:any) => {
+    if (restructureItem.includes(itemId)) {
+      setRestructureItem(restructureItem.filter((Id:any) => Id !== itemId));
+    } else {
+      setRestructureItem([...restructureItem, itemId]);
+    }
+  };
+
+  // const handleCheckboxChange = (itemId) => {
+  //   const updatedSelectedItems = restructureItem.includes(itemId)
+  //     ? restructureItem.filter((id) => id !== itemId)
+  //     : [...restructureItem, itemId];
+
+  //   // Update internal state
+  //   setInternalSelectedItems(updatedSelectedItems);
+
+  //   // Pass the updated selected items to the parent component
+  //   onCheckboxChange(updatedSelectedItems);
+  // };
+
   const buttonRestructuring = () => {
     let topCompo: any = false;
     let array = allData;
@@ -1797,8 +1819,12 @@ const RestructuringCom = (props: any, ref: any) => {
                           setCheckSubChilds(sub);
                           newChildarray?.push(newObj.newSubChild);
                           setRestructureChecked(newChildarray);
-                          ArrayTest?.push(newObj);
                           obj.isRestructureActive = false;
+                          ArrayTest?.push(newObj);
+                          if(obj?.Item_x0020_Type == 'Component' && items?.subRows?.length == 0){
+                            obj.isRestructureActive = true;
+                          }
+                          
                         }
                         if (sub.Title == "Others") {
                           sub.isRestructureActive = false;
@@ -2041,7 +2067,9 @@ const RestructuringCom = (props: any, ref: any) => {
                     newChildarray?.push(newObj.newSubChild);
                     setRestructureChecked(newChildarray);
                     ArrayTest?.push(newObj);
-                    obj.isRestructureActive = false;
+                    if(obj?.Item_x0020_Type !== 'Component'){
+                     obj.isRestructureActive = false;
+                    }
                     sub.isRestructureActive = false;
                   }
                   if (sub.Title == "Others") {
@@ -5978,6 +6006,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
           isOpen={ResturuningOpen}
           onRenderHeader={onRenderCustomCalculateSC}
           isBlocking={false}
+          type={PanelType.medium}
           onDismiss={closePanel}
         >
           <div className="mt-2">
@@ -5989,7 +6018,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                 </span>
               ) : (
                   <img
-                    className="workmember"
+                    className="workmember mx-1"
                     src={newItemBackUp?.SiteIcon}
                   />
               )}
@@ -6024,6 +6053,32 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                 </a>
               )}
             </span>
+            <div>
+            <table className="my-2" style={{width:"100%"}}>
+                <tr className="bg-ee border">
+                  <th className="py-1" style={{width:"25px"}}></th>
+                  <th className="py-1" style={{width:"40px"}}>Icon</th>
+                  <th className="py-1" style={{width:"120px"}}>Id</th>
+                  <th className="py-1">Title</th>  
+                </tr>
+                {selectedItems.map((val:any) => {
+                    return (
+                        <tr className="border-bottom" key={val.Id}>
+                          <td className="py-1"> 
+                            <input type="checkbox" className="form-check-input rounded-0"
+                              checked={restructureItem.includes(val.Id)} onChange={() => handleCheckboxChange(val.Id)}
+                              /></td>
+                            <td className="py-1"><img className="workmember" src={val.SiteIcon}/></td>
+                            <td  className="py-1">
+                            <ReactPopperTooltipSingleLevel ShareWebId={val?.TaskID} row={val} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                         
+                              </td>
+                            <td className="py-1">{val.Title}</td>
+                        </tr>
+                    )
+                })}
+            </table>
+            </div>
           </div>
           {restructureItem != undefined &&
           restructureItem?.length > 1 &&
@@ -6422,7 +6477,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                 <span className="Dyicons me-1 ms-1">
                   X
                 </span> : (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ?  <img
-                            className="workmember"
+                            className="workmember "
                               src={newItemBackUp?.SiteIcon}
                             /> : <span className="Dyicons me-1 ms-1">
                             P
