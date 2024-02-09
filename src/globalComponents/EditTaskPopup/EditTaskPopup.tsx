@@ -2725,16 +2725,13 @@ const EditTaskPopup = (Items: any) => {
                                 }
                             }
                             if (
-                                (CalculateStatusPercentage == 5 ||
-                                    CalculateStatusPercentage == 10 ||
-                                    CalculateStatusPercentage == 80 ||
-                                    CalculateStatusPercentage == 90) &&
-                                ImmediateStatus
-                            ) {
+                                (CalculateStatusPercentage == 5 || CalculateStatusPercentage == 10 || CalculateStatusPercentage == 80 ||
+                                CalculateStatusPercentage == 90) && ImmediateStatus && EditData.PercentComplete != CalculateStatusPercentage) {
                                 ValueStatus = CalculateStatusPercentage;
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
-                            } else {
+                            } 
+                            else {
                                 setSendEmailComponentStatus(false);
                                 Items.StatusUpdateMail = false;
                             }
