@@ -387,7 +387,7 @@ const AncTool = (props: any) => {
             <>
                 <div className='subheading'>
                     {/* <img className="imgWid29 pe-1 mb-1 " src={Item?.SiteIcon} /> */}
-                        Select Upload Folder
+                    Select Upload Folder
                 </div>
                 <Tooltip ComponentId="7643" />
             </>
@@ -1496,8 +1496,8 @@ const AncTool = (props: any) => {
                                                             <Table hover responsive className='mb-0'>
                                                                 <thead className='fixed-Header top-0'>
                                                                     <tr>
-                                                                        <th style={{width:"20px"}}></th>
-                                                                        <th style={{width:"50px"}} className='p-1'>Type</th>
+                                                                        <th style={{ width: "20px" }}></th>
+                                                                        <th style={{ width: "50px" }} className='p-1'>Type</th>
                                                                         <th className='p-1'>Title</th>
                                                                         <th style={{ width: '60px' }} className='p-1'>Rank</th>
 
@@ -1801,9 +1801,11 @@ const AncTool = (props: any) => {
             }
             {
                 ShowConfirmation ?
-                    <>    {pageLoaderActive ? <PageLoader /> : ''}
+                    <>
+
                         <div className="modal Anc-Confirmation-modal" >
                             <div className="modal-dialog modal-mg rounded-0 " style={{ maxWidth: "700px" }}>
+                                {pageLoaderActive ? <PageLoader /> : ''}
                                 <div className="modal-content rounded-0">
                                     <div className="modal-header">
                                         <h5 className="modal-title">Upload Documents - Confirmation</h5>
