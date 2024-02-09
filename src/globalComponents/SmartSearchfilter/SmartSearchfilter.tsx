@@ -20,6 +20,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import ReactPopperTooltipSingleLevel from '../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import HighlightableCell from '../GroupByReactTableComponents/highlight';
 import EditTaskPopup from '../EditTaskPopup/EditTaskPopup';
+import InfoIconsToolTip from '../InfoIconsToolTip/InfoIconsToolTip';
 
 
 let selectedfilter: any = [];
@@ -351,6 +352,10 @@ const TaskMangementTable = (props: any) => {
                             if (result.DisplayDueDate == "Invalid date" || "") {
                                 result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
                             }
+                            result.Modified = Moment(result?.Modified).format("DD/MM/YYYY");
+                            if (result.Modified == "Invalid date" || "") {
+                                result.Modified = result?.Modified.replaceAll("Invalid date", "");
+                            }
                             if (result?.TaskType) {
                                 result.portfolioItemsSearch = result?.TaskType?.Title;
                             }
@@ -460,7 +465,7 @@ const TaskMangementTable = (props: any) => {
                             } else {
                                 result.ClientCategorySearch = ''
                             }
-                            if(result?.Portfolio != undefined){
+                            if (result?.Portfolio != undefined) {
                                 result.tagComponentTitle = result?.Portfolio?.Title;
                                 result.tagComponentId = result?.Portfolio.Id
                             }
@@ -541,7 +546,7 @@ const TaskMangementTable = (props: any) => {
             .getById(item?.MasterTaskListID)
             .items
             .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
-                "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
+                "DueDate", "Body", "FeedBack", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
                 "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
                 "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "AssignedTo/Title", "AssignedToId", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title",
                 "Created", "Modified", "Deliverables", "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "Sitestagging"
@@ -566,7 +571,7 @@ const TaskMangementTable = (props: any) => {
             result.timeSheetsDescriptionSearch = '';
             result.portfolioItemsSearch = result.Item_x0020_Type;
             result.TeamLeaderUser = [];
-            if(result?.Portfolio != undefined){
+            if (result?.Portfolio != undefined) {
                 result.tagComponentTitle = result?.Portfolio?.Title;
                 result.tagComponentId = result?.Portfolio.Id
             }
@@ -601,6 +606,10 @@ const TaskMangementTable = (props: any) => {
             result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
             if (result.DisplayDueDate == "Invalid date" || "") {
                 result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
+            }
+            result.Modified = Moment(result?.Modified).format("DD/MM/YYYY");
+            if (result.Modified == "Invalid date" || "") {
+                result.Modified = result?.Modified.replaceAll("Invalid date", "");
             }
             if (result.Author) {
                 result.Author.autherImage = findUserByName(result.Author?.Id)
@@ -888,7 +897,9 @@ const TaskMangementTable = (props: any) => {
                     <>
                         {row.original.siteName === 'Master Tasks' && <a target='_blank' href={`${item?.siteurl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}`}>{row.original.Title}</a>}
                         {row.original.siteName !== 'Master Tasks' && <a target='_blank' href={`${item?.siteurl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteName}`}>{row.original.Title}</a>}
+                        {row?.original?.Body?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /></span>}
                     </>
+
                 ),
                 id: "Title",
                 placeholder: "Title",
@@ -988,7 +999,7 @@ const TaskMangementTable = (props: any) => {
             }
         ], [data]
     );
-    const CallBack = (type:any) =>{
+    const CallBack = (type: any) => {
         setiseditOpen(false);
     }
 
@@ -1021,7 +1032,7 @@ const TaskMangementTable = (props: any) => {
                 </div >
             </section >
             {loading && <PageLoad />}
-            {iseditOpen && <EditTaskPopup Items={Updateditem} AllListId={item} context={item?.ContextValue} Call={(Type: any) => { CallBack(Type) }}/>} 
+            {iseditOpen && <EditTaskPopup Items={Updateditem} AllListId={item} context={item?.ContextValue} Call={(Type: any) => { CallBack(Type) }} />}
         </>
 
     );
