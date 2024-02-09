@@ -211,7 +211,8 @@ const Header = () => {
         </span>
         {items?.AdditonalHeader && <span className="ms-2 tabText">
           <div>{items?.WebpartTitle}</div>
-          <div className="align-items-center d-flex f-18 justify-content-between tabResultText workToday">
+          <span className='fw-semibold ms-1'>{items?.Tasks?.length}</span>
+          {/* <div className="align-items-center d-flex f-18 justify-content-between tabResultText workToday">
             <div className='alignCenter'>
               <span title='Todays Task'>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#057BD0" className="bi bi-check2-circle" viewBox="0 0 16 16">
@@ -229,7 +230,7 @@ const Header = () => {
                   <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z" />
                 </svg></span>
               <span className='fw-semibold ms-1'>{currentTime}</span></div>
-          </div>
+          </div> */}
           {items?.AdditonalHeader != true && <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>}
         </span>}
         {items?.AdditonalHeader != true && <span className='ms-2'>
