@@ -60,9 +60,9 @@ export default function MainComponent() {
                     onModelChange={handleModelChange}
                 />
             </div>
-            <button onClick={() => setShowOutPut(!ShowOutPut)}>Show Output</button>
+            <button className="btn btn-primary my-2" onClick={() => setShowOutPut(!ShowOutPut)}>Show Output</button>
             {ShowOutPut ?
-                <div className="border p-1 my-5">
+                <div className="border p-2 my-3">
                     <FroalaEditorView
                         model={model}
                     />
