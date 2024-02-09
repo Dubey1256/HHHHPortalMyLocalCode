@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import InlineEditingcolumns from '../../webparts/projectmanagementOverviewTool/components/inlineEditingcolumns';
+import InlineEditingcolumns from '../inlineEditingcolumns';
 import ReactPopperTooltipSingleLevel from '../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import GlobalCommanTable, { IndeterminateCheckbox } from '../GroupByReactTableComponents/GlobalCommanTable';
 import InfoIconsToolTip from '../InfoIconsToolTip/InfoIconsToolTip';

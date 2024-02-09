@@ -10,7 +10,7 @@ import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
 import EditComponentProtfolio from '../../EditPopupFiles/EditComponent';
 import EditInstituton from "../../EditPopupFiles/EditComponent";
-import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
+import InlineEditingcolumns from '../../../globalComponents/inlineEditingcolumns';
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";

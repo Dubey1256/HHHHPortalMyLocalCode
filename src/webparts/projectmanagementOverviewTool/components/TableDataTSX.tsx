@@ -15,7 +15,7 @@ import {
 import { Filter, DefaultColumnFilter, SelectColumnFilter } from './filters';
 import { values } from 'office-ui-fabric-react';
 import ProjectOverview from './ProjectOverView';
-import EditProjectPopup from './EditProjectPopup';
+import EditProjectPopup from '../../../globalComponents/EditProjectPopup';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 var AllTaskUsers: any = []
 const TableDataTSX = (props: any) => {
