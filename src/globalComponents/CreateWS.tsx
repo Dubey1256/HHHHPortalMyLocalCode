@@ -157,7 +157,8 @@ const CreateWS = (props: any) => {
      globalCommon?.getBreadCrumbHierarchyAllData(Item,AllListId,flateData).then((resolve:any)=>{
         console.log(resolve)
         // resolve?.flatdata.push(Item)
-        setParentArray(resolve?.flatdata.reverse())
+        let data=resolve?.flatdata.reverse().pop()
+        setParentArray(resolve?.flatdata)
       }).catch((error:any)=>{
         console.log(error)
       });
@@ -345,6 +346,12 @@ const CreateWS = (props: any) => {
                 ProjectId = globalContextData?.ProjectLandingPageDetails?.Id != undefined ? globalContextData?.ProjectLandingPageDetails?.Id : null;
               }
 
+           
+        }
+        else{
+            if(selectedItem?.Project?.Id!=undefined){
+                ProjectId= selectedItem?.Project?.Id
+            }
            
         }
         let web = new Web(AllListId?.siteUrl);
@@ -588,7 +595,7 @@ const CreateWS = (props: any) => {
                                     ParentArray?.map((childsitem: any, index: any) => {
                                         return (
                                             <>
-                                                <li><a  target="_blank" data-interception="off"  href={'ParentTask'in childsitem?`${AllListId?.siteUrl}/SP/SitePages/Task-Profile.aspx?taskId=${childsitem?.Id}&Site=${childsitem?.siteType}` : `${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${childsitem?.Id}`}>{ParentArray?.length - 1 == index ? `${childsitem?.Title}` : `${childsitem?.Title}`} </a> </li>
+                                                <li><a  target="_blank" data-interception="off"  href={'PortfolioType'in childsitem? `${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${childsitem?.Id}`:`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${childsitem?.Id}&Site=${childsitem?.siteType}`}>{ParentArray?.length - 1 == index ? `${childsitem?.Title}` : `${childsitem?.Title}`} </a> </li>
                                             </>
                                         )
                                     })

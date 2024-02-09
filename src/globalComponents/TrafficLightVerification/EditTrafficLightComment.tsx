@@ -6,14 +6,14 @@ import Tooltip from "../Tooltip";
 const EditTrafficLightComment = (props: any) => {
     const myContextValue2: any = React.useContext(myContextValue)
     const [copyTrafficlight, setCopyTrafficlight] = useState("");
-    const [copycolumnVerificationStatus, SetCopycolumnVerificationStatus]: any = useState()
+    const [copycolumnVerificationStatus, SetCopycolumnVerificationStatus]: any = useState("No")
     const [copyCommentData, setCopyCommentData] = useState("")
     React.useEffect(() => {
         if (myContextValue2?.columnVerificationStatus == "true" || myContextValue2?.columnVerificationStatus == "Yes") {
-            SetCopycolumnVerificationStatus("true")
+            SetCopycolumnVerificationStatus("Yes")
         }
         if (myContextValue2?.columnVerificationStatus == "false" || myContextValue2?.columnVerificationStatus == "No") {
-            SetCopycolumnVerificationStatus("false")
+            SetCopycolumnVerificationStatus("No")
         }
         setCopyTrafficlight(myContextValue2?.trafficValue)
         setCopyCommentData(myContextValue2?.CommentData)
@@ -27,7 +27,7 @@ const EditTrafficLightComment = (props: any) => {
                     Comment -{props?.columnData?.Title}
 
                 </div>
-                <Tooltip ComponentId='' />
+                <Tooltip ComponentId='484' />
             </>
         );
     }
@@ -44,8 +44,10 @@ const EditTrafficLightComment = (props: any) => {
         props?.setOpenCommentpopup(false)
     }
     const updateData = () => {
-        myContextValue2.setTrafficValue(copyTrafficlight);
-        myContextValue2.SetCommentData(copyCommentData)
+       myContextValue2.trafficValue=copyTrafficlight;
+        myContextValue2.CommentData=copyCommentData;
+        myContextValue2?.setTrafficValue(copyTrafficlight);
+        myContextValue2?.SetCommentData(copyCommentData)
         myContextValue2?.setcolumnVerificationStatus(copycolumnVerificationStatus)
         myContextValue2?.updateJson()
     }
@@ -65,9 +67,9 @@ const EditTrafficLightComment = (props: any) => {
                             <div className="editcolumn">
 
 
-                                <select className="w-100" value={copycolumnVerificationStatus} onChange={(e) => SetCopycolumnVerificationStatus(e?.target?.value)}>
-                                    <option value="false">NO</option>
-                                    <option value="true"> Yes </option>
+                                <select className="w-100" value={copycolumnVerificationStatus} onChange={(e) => SetCopycolumnVerificationStatus(e?.target?.value === "Yes" ? "Yes" : "No")}>
+                                    <option value="No">NO</option>
+                                    <option value="Yes"> Yes </option>
 
                                 </select>
 
@@ -79,7 +81,7 @@ const EditTrafficLightComment = (props: any) => {
                                     <span className="fw-semilold">Select Traffic Lights</span>
                                 </div>
                                 <div className="ml-auto">
-                                    <a className="href"><span >Clear</span></a>
+                                    <a className="href"><span  onClick={()=>setCopyTrafficlight("")}>Clear</span></a>
                                 </div>
                             </div>
                             <div>
@@ -111,7 +113,7 @@ const EditTrafficLightComment = (props: any) => {
                         <div className="alignCenter">
                             <div className="fw-semilold">Add Comment</div>
                             <div className="ml-auto">
-                                <a className="href"><span >Clear</span></a>
+                                <a className="href"><span onClick={()=>setCopyCommentData("")} >Clear</span></a>
                             </div>
                         </div>
 

@@ -91,7 +91,12 @@ function CreateTaskComponent(props: any) {
         LoadTaskUsers();
     }, [])
     React.useEffect(() => {
-
+        try {
+            $("#spPageCanvasContent").removeClass();
+            $("#spPageCanvasContent").addClass("hundred");
+          } catch (e) {
+            console.log(e);
+          }
         AllListId = {
             MasterTaskListID: props?.SelectedProp?.MasterTaskListID,
             TaskUsertListID: props?.SelectedProp?.TaskUsertListID,
@@ -1456,9 +1461,8 @@ function CreateTaskComponent(props: any) {
                                 </a>
                                
                             </span>
-                            <span className='mt--3'>
-                            {row?.original?.descriptionsSearch !== null && row?.original?.descriptionsSearch != '' && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
-                                }</span>
+                            <span className='mt-1'>
+                            {row?.original?.descriptionsSearch !== null && row?.original?.descriptionsSearch != '' && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />}</span>
                         </div>
                     </>
                 ),
@@ -1703,7 +1707,7 @@ function CreateTaskComponent(props: any) {
                         {props?.projectId == undefined ?
                             <h4 className="titleBorder">General Information</h4> : ''}
                         <div className='row p-0'>
-                            <div className='col-sm-6 '>
+                            <div className='col-sm-6 ps-0 '>
                                 <div className='input-group'>
                                     <label className='full-width'>Task Name</label>
                                     <input type="text" placeholder='Enter task Name' className='form-control' value={save.taskName} onChange={(e) => { changeTitle(e) }}></input>
@@ -1715,7 +1719,7 @@ function CreateTaskComponent(props: any) {
                                         Portfolio Item
                                     </label>
                                     {smartComponentData?.length > 0 ? (
-                                        <div className="full-width">
+                                        <span className="full-width">
                                             {smartComponentData?.map((com: any) => {
                                                 return (
                                                     <>
@@ -1731,7 +1735,7 @@ function CreateTaskComponent(props: any) {
                                                     </>
                                                 );
                                             })}
-                                        </div>
+                                        </span>
                                     ) : (<input type="text" className="form-control" value={SearchedServiceCompnentKey}
                                         onChange={(e) => autoSuggestionsForServiceAndComponent(e)} placeholder="Search Portfolio Item" />)}
                                     <span className="input-group-text">
@@ -1755,13 +1759,13 @@ function CreateTaskComponent(props: any) {
 
 
                             </div>
-                            <div className='col-sm-3'>
+                            <div className='col-sm-3 pe-0 '>
                                 <div className="input-group mb-2">
                                     <label className="form-label full-width">
                                         Project
                                     </label>
                                     {selectedProjectData?.Id != undefined ? (
-                                        <div className="full-width">
+                                        <span className="full-width">
                                             <div className="full-width replaceInput pe-0 alignCenter" style={{ width: '90%' }}>
                                                 <a title={selectedProjectData?.Title} target="_blank" data-interception="off" className="textDotted"
                                                     href={`${base_Url}/SitePages/Project-Management.aspx?ProjectId=${selectedProjectData?.ID}`} >
@@ -1771,7 +1775,7 @@ function CreateTaskComponent(props: any) {
                                                     style={{ backgroundColor: 'black' }} className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
                                             </div>
 
-                                        </div>
+                                        </span>
                                     ) : (<input type="text" className="form-control" value={SearchedProjectKey}
                                         onChange={(e) => autoSuggestionsForProject(e)} placeholder="Search Project/Sprints" />)}
                                     <span className="input-group-text">
@@ -1796,7 +1800,7 @@ function CreateTaskComponent(props: any) {
 
                             </div>
 
-                            <div className='col  mt-2'>
+                            <div className='col pe-0 ps-0 mt-2'>
                                 <div className='input-group'>
                                     <label className='full-width'>Task URL</label>
                                     <input type="text" className='form-control' placeholder='Enter task Url' value={save.taskUrl} onChange={(e) => UrlPasteTitle(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>

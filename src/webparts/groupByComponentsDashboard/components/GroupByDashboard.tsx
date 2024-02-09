@@ -407,10 +407,10 @@ const GroupByDashboard = (SelectedProp: any) => {
             {
                 accessorFn: (row) => row?.descriptionsDeliverablesSearch,
                 cell: ({ row }) => (
-                    <>
+                    <div className="alignCenter">
                         <span>{row?.original?.descriptionsDeliverablesSearch ? row?.original?.descriptionsDeliverablesSearch?.length : ""}</span>
                         {row?.original?.descriptionsDeliverablesSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"descriptionsDeliverablesSearch"} />}
-                    </>
+                    </div>
                 ),
                 id: "descriptionsDeliverablesSearch",
                 placeholder: "Deliverables",
@@ -422,10 +422,10 @@ const GroupByDashboard = (SelectedProp: any) => {
             {
                 accessorFn: (row) => row?.descriptionsHelpInformationSarch,
                 cell: ({ row }) => (
-                    <>
+                    <div className="alignCenter">
                         <span>{row?.original?.descriptionsHelpInformationSarch ? row?.original?.descriptionsHelpInformationSarch?.length : ""}</span>
                         {row?.original?.descriptionsHelpInformationSarch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Help_x0020_Information"} />}
-                    </>
+                    </div>
                 ),
                 id: "descriptionsHelpInformationSarch",
                 placeholder: "Help Information",
@@ -437,10 +437,10 @@ const GroupByDashboard = (SelectedProp: any) => {
             {
                 accessorFn: (row) => row?.descriptionsShortDescriptionSearch,
                 cell: ({ row }) => (
-                    <>
-                        <span>{row?.original?.descriptionsShortDescriptionSearch ? row?.original?.descriptionsShortDescriptionSearch?.length : ""}</span>
+                     <div className="alignCenter">
+                        <span>{row?.original?.descriptionsShortDescriptionSearch ? row?.original?.descriptionsShortDescriptionSearch?.trim()?.length : ""}</span>
                         {row?.original?.descriptionsShortDescriptionSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Short_x0020_Description_x0020_On"} />}
-                    </>
+                    </div>
                 ),
                 id: "descriptionsShortDescriptionSearch",
                 placeholder: "Short Description",
@@ -452,10 +452,10 @@ const GroupByDashboard = (SelectedProp: any) => {
             {
                 accessorFn: (row) => row?.descriptionsTechnicalExplanationsSearch,
                 cell: ({ row }) => (
-                    <>
+                     <div className="alignCenter">
                         <span>{row?.original?.descriptionsTechnicalExplanationsSearch ? row?.original?.descriptionsTechnicalExplanationsSearch?.length : ""}</span>
                         {row?.original?.descriptionsTechnicalExplanationsSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"TechnicalExplanations"} />}
-                    </>
+                    </div>
                 ),
                 id: "descriptionsTechnicalExplanationsSearch",
                 placeholder: "Technical Explanations",
@@ -467,10 +467,10 @@ const GroupByDashboard = (SelectedProp: any) => {
             {
                 accessorFn: (row) => row?.descriptionsBodySearch,
                 cell: ({ row }) => (
-                    <>
+                    <div className="alignCenter">
                         <span>{row?.original?.descriptionsBodySearch ? row?.original?.descriptionsBodySearch?.length : ""}</span>
                         {row?.original?.descriptionsBodySearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Body"} />}
-                    </>
+                   </div>
                 ),
                 id: "descriptionsBodySearch",
                 placeholder: "Body",
@@ -482,10 +482,10 @@ const GroupByDashboard = (SelectedProp: any) => {
             {
                 accessorFn: (row) => row?.descriptionsAdminNotesSearch,
                 cell: ({ row }) => (
-                    <>
+                     <div className="alignCenter">
                         <span>{row?.original?.descriptionsAdminNotesSearch ? row?.original?.descriptionsAdminNotesSearch?.length : ""}</span>
                         {row?.original?.descriptionsAdminNotesSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"AdminNotes"} />}
-                    </>
+                    </div>
                 ),
                 id: "descriptionsAdminNotesSearch",
                 placeholder: "AdminNotes",
@@ -497,10 +497,10 @@ const GroupByDashboard = (SelectedProp: any) => {
             {
                 accessorFn: (row) => row?.descriptionsValueAddedSearch,
                 cell: ({ row }) => (
-                    <>
+                    <div className="alignCenter">
                         <span>{row?.original?.descriptionsValueAddedSearch ? row?.original?.descriptionsValueAddedSearch?.length : ""}</span>
                         {row?.original?.descriptionsValueAddedSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"ValueAdded"} />}
-                    </>
+                    </div>
                 ),
                 id: "descriptionsValueAddedSearch",
                 placeholder: "ValueAdded",
@@ -512,10 +512,10 @@ const GroupByDashboard = (SelectedProp: any) => {
             {
                 accessorFn: (row) => row?.descriptionsIdeaSearch,
                 cell: ({ row }) => (
-                    <>
+                    <div className="alignCenter">
                         <span>{row?.original?.descriptionsIdeaSearch ? row?.original?.descriptionsIdeaSearch?.length : ""}</span>
                         {row?.original?.descriptionsIdeaSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Idea"} />}
-                    </>
+                    </div>
                 ),
                 id: "descriptionsIdeaSearch",
                 placeholder: "Idea",
@@ -527,10 +527,10 @@ const GroupByDashboard = (SelectedProp: any) => {
             {
                 accessorFn: (row) => row?.descriptionsBackgroundSearch,
                 cell: ({ row }) => (
-                    <>
+                     <div className="alignCenter">
                         <span>{row?.original?.descriptionsBackgroundSearch ? row?.original?.descriptionsBackgroundSearch?.length : ""}</span>
                         {row?.original?.descriptionsBackgroundSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Background"} />}
-                    </>
+                   </div>
                 ),
                 id: "descriptionsBackgroundSearch",
                 placeholder: "Background",
@@ -542,12 +542,12 @@ const GroupByDashboard = (SelectedProp: any) => {
             {
                 accessorFn: (row) => row?.HelpInformationVerified,
                 cell: ({ row }) => (
-                    <>
+                    <div className="alignCenter">
                         <span> <TrafficLightComponent columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>
-                    </>
+                   </div>
                 ),
                 id: "HelpInformationVerified",
-                placeholder: "verified",
+                placeholder: "Verified",
                 header: "",
                 resetColumnFilters: false,
                 size: 140,
@@ -556,7 +556,7 @@ const GroupByDashboard = (SelectedProp: any) => {
             {
                 accessorFn: (row) => row?.FeatureTypeTitle,
                 cell: ({ row }) => (
-                    <>
+                   <div className="alignCenter">
                         <InlineEditingcolumns
                             AllListId={ContextValue}
                             TaskUsers={AllUsers}
@@ -564,7 +564,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                             columnName='FeatureType'
                             item={row?.original}
                         />
-                    </>
+                    </div>
                 ),
                 id: "FeatureTypeTitle",
                 placeholder: "FeatureTypeTitle",
@@ -633,7 +633,8 @@ const GroupByDashboard = (SelectedProp: any) => {
             },
             {
                 header: ({ table }: any) => (
-                    <>{
+                    <>
+                    {
                         topCompoIcon ?
                             <span style={{ backgroundColor: `${portfolioColor}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
                                 <span className="svg__iconbox svg__icon--re-structure"></span>
