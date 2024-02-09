@@ -1137,12 +1137,12 @@ let ID: any;
         if (res === "Close") {
             Calls(res);
         } else {
-
-
+ 
+ 
             const date = moment(res?.Created);
-            const formattedDate = date.format('DD-MM-YYYY');
+            const formattedDate = date.format('DD/MM/YYYY');
             const datedue = moment(res?.DueDate);
-            const formattedDateDue = datedue.format('DD-MM-YYYY');
+            const formattedDateDue = datedue.format('DD/MM/YYYY');
             if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
                 $.map(TaskAssignedTo, (Assig: any) => {
                     if (Assig.Id != undefined) {
@@ -1159,7 +1159,7 @@ let ID: any;
                     }
                 });
             }
-
+ 
             if (TaskTeamMembers != undefined && TaskTeamMembers.length > 0) {
                 $.map(TaskTeamMembers, (Assig: any) => {
                     if (Assig.Id != undefined) {
@@ -1182,7 +1182,7 @@ let ID: any;
                 res.ClientCategory = clientarray;
             }
             res.DisplayCreateDate = formattedDate;
-
+ 
             if (formattedDateDue === "Invalid date") {
                 res.DisplayDueDate = "";
             } else {
