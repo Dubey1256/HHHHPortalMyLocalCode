@@ -601,6 +601,7 @@ const SmartInformation = (props: any, ref: any) => {
             }
 
           }
+          GetResult();
           handleClose();
 
         })
