@@ -333,7 +333,7 @@ const TaskDashboard = (props: any) => {
         setPageLoader(false)
     };
     const currentUserTimeEntryCalculation = () => {
-        const timesheetDistribution = ['Today', 'This Week', 'This Month'];
+        const timesheetDistribution = ['Today','Yesterday','This Week', 'This Month'];
 
         const allTimeCategoryTime = timesheetDistribution.reduce((totals, start) => {
             const startDate = getStartingDate(start);
@@ -370,6 +370,7 @@ const TaskDashboard = (props: any) => {
             return { ...totals, [start.toLowerCase()]: total };
         }, {
             today: 0,
+            yesterday:0,
             thisWeek: 0,
             thisMonth: 0,
         });
@@ -1603,11 +1604,14 @@ const TaskDashboard = (props: any) => {
         setisSendEODReport(false)
     }
 
-    const shareTaskInEmail = (input: any) => {
+    const shareTaskInEmail = (input: any,day:any) => {
 
         let currentLoginUser = currentUserData?.Title;
         let CurrentUserSpace = currentLoginUser.replace(' ', '%20');
         let currentDate = Moment(new Date()).format("DD/MM/YYYY")
+        today = new Date();
+        const yesterdays = new Date(today.setDate(today.getDate() - 1))
+        const yesterday = Moment(yesterdays).format("DD/MM/YYYY")
         let body: any = '';
         let text = '';
         let to: any = [];
@@ -1643,7 +1647,6 @@ const TaskDashboard = (props: any) => {
                     if (item.EstimatedTime == undefined || item.EstimatedTime == '' || item.EstimatedTime == null) {
                         item.EstimatedTime = ''
                     }
-
 
                     text =
                         '<tr>' +
@@ -1704,7 +1707,13 @@ const TaskDashboard = (props: any) => {
                    updatedCategoryTime[newKey] = timeSheetData[key];
                  }
                }
-               var subject = "Daily Timesheet - " + currentLoginUser + ' - '+  currentDate  +  ' - ' + (updatedCategoryTime.today) + ' hours '
+               if(day == 'Today'){
+                var subject = "Daily Timesheet - " + currentLoginUser + ' - '+  currentDate  +  ' - ' + (updatedCategoryTime.today) + ' hours '
+               }
+               if(day == 'Yesterday'){
+                var subject = "Daily Timesheet - " + currentLoginUser + ' - '+  yesterday  +  ' - ' + (updatedCategoryTime.yesterday) + ' hours '
+               }
+               
                weeklyTimeReport.map((item: any) => {
                 item.ClientCategories = ''
                 item.ClientCategory.forEach((val: any, index: number) => {
@@ -1715,13 +1724,14 @@ const TaskDashboard = (props: any) => {
                         item.ClientCategories += '; ';
                     }
                 });
-                  
+                 
                      
                 text =
                 '<tr>' +
                 '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.siteType + '</td>'
                 + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">'+ '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Project-Management.aspx?ProjectId=' + item.Project?.Id +'><span style="font-size:13px">'+  (item?.Project == undefined?'':item?.Project.Title) + '</span></a>' + '</p>' +  '</td>'
-                + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:135px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Portfolio-Profile.aspx?taskId=' + item?.Portfolio?.Id +'><span style="font-size:13px">'+ (item.Portfolio == undefined?'':item.Portfolio.Title) +'</span></a>' + '</p>' + '</td>'
+                +'<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:135px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Portfolio-Profile.aspx?taskId=' + item?.Portfolio?.Id +'><span style="font-size:13px">'+ (item.Portfolio == undefined?'':item.Portfolio.Title) +'</span></a>' + '</p>' + '</td>'
+
                 + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px">' + item.Title + '</span></a>' + '</p>' + '</td>'
                 + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.TaskTime + '</td>'
                 + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;text-align:center">' + item?.Description + '</td>'
@@ -1735,7 +1745,7 @@ const TaskDashboard = (props: any) => {
                  `<table width="100%" align="center" cellpadding="0" cellspacing="0" border="0">
              <thead>
              <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Username: </td><td style="padding: 5px 0px;"> <a style="text-decoration:none;" href='${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${currentUserId}'>${currentLoginUser}</a></td></tr>
-             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours today :</td><td style="padding: 5px 0px;">${updatedCategoryTime.today} Hours</td></tr>
+             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours ${day} :</td><td style="padding: 5px 0px;">${day=='Today'?updatedCategoryTime.today:updatedCategoryTime.yesterday} Hours</td></tr>
              <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours this week :</td><td style="padding: 5px 0px;">${updatedCategoryTime.thisWeek} Hours</td></tr>
              <tr valign="middle" style="font-size:15px;"><td style="font-weight:600;padding: 5px 0px;width: 210px;">Total hours this month :</td><td style="padding: 5px 0px;">${updatedCategoryTime.thisMonth} Hours</td></tr>
              <tr valign="middle" style="font-size:15px;"><td colspan="2" style="padding: 5px 0px;"><a style="text-decoration:none;" href ='${AllListId?.siteUrl}/SitePages/UserTimeEntry.aspx?userId=${currentUserId}'>Click here to open Online-Timesheet</a></td></tr>
@@ -2130,7 +2140,7 @@ const TaskDashboard = (props: any) => {
                                         {
                                             <>
                                                 {currentUserId == 242 && <span className="align-autoplay d-flex float-end" onClick={() => sendEmail()}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Send EOD Email</span>}
-                                                <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today working tasks')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share Today Working Tasks</span>
+                                                <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today working tasks','Today')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share Today Working Tasks</span>
                                             </>}
                                     </summary>
                                     <div className='AccordionContent'>
@@ -2234,19 +2244,18 @@ const TaskDashboard = (props: any) => {
                                         <div>
                                             <a className='accordion-Btn-right mt-2' title='Refresh Time Entries' onClick={() => { loadAllTimeEntry() }}><span className="svg__iconbox svg__icon--refresh mx-1 mt--3" ></span></a>
                                             <details open>
-                                                {timeEntryTotal > 1 ?
+                                            {timeEntryTotal > 1 ?
                                                     <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal.toFixed(2) + ' Hours)'}
                                                         {
-                                                            currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end me-5" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
+                                                            currentUserId == currentUserData?.AssingedToUserId && (selectedTimeReport == "Today" || selectedTimeReport == "Yesterday") ? <span className="align-autoplay d-flex float-end me-5" onClick={() => shareTaskInEmail('today time entries',selectedTimeReport)}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
                                                         }
                                                     </summary> :
                                                     <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal.toFixed(2) + ' Hour)'}
                                                         {
-                                                            currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end me-5" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1 me" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
+                                                            currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end me-5" onClick={() => shareTaskInEmail('today time entries',selectedTimeReport)}><span className="svg__iconbox svg__icon--mail mx-1 me" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
                                                         }
                                                     </summary>
                                                 }
-
                                                 <div className='AccordionContent timeEntryReport'  >
                                                     {weeklyTimeReport?.length > 0 ?
                                                         <>

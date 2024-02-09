@@ -65,7 +65,7 @@ export default function VersionHistory(props: any) {
 
                 const employeesWithoutLastName = result.map(employee => {
                     employee.childs = []
-                    const { VersionId, IsCurrentVersion, ClientTime, PreviouslyAssignedTo, Portfolio_x005f_x0020_x005f_Type,Portfolio_x005f_x003a_x005f_ID, Project_x005f_x003a_x005f_ID, VersionLabel, UniqueId, ParentUniqueId, ScopeId, SMLastModifiedDate, GUID, FileRef, FileDirRef, OData__x005f_Moderation, WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, ...rest } = employee;
+                    const { VersionId, IsCurrentVersion, ClientTime, SmartInformation_x005f_x003a_x005f_ID,PreviouslyAssignedTo,Portfolio_x005f_x003a_x005f_ID, Project_x005f_x003a_x005f_ID, VersionLabel, UniqueId, ParentUniqueId, ScopeId, SMLastModifiedDate, GUID, FileRef, FileDirRef, OData__x005f_Moderation, WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, ...rest } = employee;
                     return rest;
                 });
                 console.log(employeesWithoutLastName)
@@ -126,7 +126,7 @@ export default function VersionHistory(props: any) {
 
                 employeesWithoutLastName?.forEach((val: any) => {
                     val.childs?.forEach((ele: any) => {
-                        const { VersionId, IsCurrentVersion, ClientTime, PreviouslyAssignedTo, Portfolio_x005f_x0020_x005f_Type, Portfolio_x005f_x003a_x005f_ID, VersionLabel, Project_x005f_x003a_x005f_ID, UniqueId, ParentUniqueId, ScopeId, SMLastModifiedDate, GUID, FileRef, FileDirRef, OData__x005f_Moderation, WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, Editor, ...rest } = ele;
+                        const { VersionId, IsCurrentVersion, ClientTime,SmartInformation_x005f_x003a_x005f_ID ,PreviouslyAssignedTo, Portfolio_x005f_x003a_x005f_ID, VersionLabel, Project_x005f_x003a_x005f_ID, UniqueId, ParentUniqueId, ScopeId, SMLastModifiedDate, GUID, FileRef, FileDirRef, OData__x005f_Moderation, WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, Editor, ...rest } = ele;
                         return rest;
                     })
                 })
@@ -233,28 +233,89 @@ export default function VersionHistory(props: any) {
                 const currentObj = data[i];
                 const nextObj = data[i + 1];
                 const differingPairs: any = {};
-                differingPairs['TaskID'] = currentObj.ID;
+                //differingPairs['TaskID'] = currentObj.ID;
                 differingPairs['TaskTitle'] = currentObj.Title;
-                
-                for (let key in currentObj) {
-                    differingPairs['version'] = currentObj.VersionId;
-                    differingPairs['ID'] = currentObj.ID;
-                    if(key === 'PercentComplete')
-                     key = '%Complete';
-                    if (currentObj.hasOwnProperty(key) && (!nextObj.hasOwnProperty(key) || !isEqual(currentObj[key], nextObj[key]))) {
-                        differingPairs[key] = currentObj[key];
-                        differingPairs['Editor'] = currentObj.Editor;                                              
-                    }
-                }
+                differingPairs['version'] = currentObj.VersionId;
+                differingPairs['ID'] = currentObj.ID;
+                let editor = currentObj.Editor;
 
+                for (let key in currentObj) {
+                    let newKey;
+                    let status;
+                    // Apply key transformations
+                    switch (key) {
+                        case 'Team_x005f_x0020_x005f_Members':
+                            newKey = 'TeamMembers';
+                            break;
+                        case 'Reference_x005f_x0020_x005f_Item_x005f_x0020_x005f_Json':
+                            newKey = 'Reference Item Json';
+                            break;
+                        case 'component_x005f_x0020_x005f_link':
+                            newKey = 'ComponentLink';
+                            break;
+                        case 'Responsible_x005f_x0020_x005f_Team':
+                            newKey = 'ResponsibleTeam';
+                            break;
+                        case 'SharewebCategories':
+                            newKey = 'TaskCategories';
+                            break;
+                        case 'Portfolio_x005f_x0020_x005f_Type':
+                            newKey = 'PortfolioType';
+                            break;
+                        case 'Created_x005f_x0020_x005f_Date':
+                            newKey = 'Created';
+                            break;
+                        case 'SmartInformation_x005f_x003a_x005f_Title':
+                            newKey = 'SmartInformation';
+                            break;                       
+                        case 'Shareweb_x005f_x0020_x005f_ID':
+                            newKey = 'TaskID';
+                            break;
+                        case 'Priority_x005f_x0020_x005f_Rank':
+                            newKey = 'PriorityRank';
+                            break;    
+                        default:
+                            newKey = key; // If no transformation needed, keep the same key
+                            break;
+                    }     
+                    if (currentObj.hasOwnProperty(key) && (!nextObj.hasOwnProperty(key) || !isEqual(currentObj[key], nextObj[key]))) {
+                        // if (key === 'PercentComplete')
+                        //     newKey = '%Complete';
+                        // if((currentObj['PercentComplete'] != undefined && currentObj['PercentComplete'] != 'NaN' && currentObj['PercentComplete'] != null) && (currentObj['Status'] != undefined && currentObj['Status'] != '')){
+                        //     newKey = 'Status';
+                        //     status = currentObj['PercentComplete']*100 + "%" + currentObj['Status'];
+                        //     differingPairs[newKey] = status;
+                        // }
+                        // differingPairs[newKey] = currentObj[key];
+                        if (key === 'PercentComplete') {
+                            newKey = '%Complete';                        
+                        } else if (key === 'Status' && currentObj['PercentComplete'] !== undefined && currentObj['PercentComplete'] !== 'NaN' && currentObj['PercentComplete'] !== null && currentObj['Status'] !== undefined && currentObj['Status'] !== '') {
+                            newKey = 'Status';
+                            const status = (currentObj['PercentComplete'] * 100) + '% ' + currentObj['Status'];
+                            differingPairs[newKey] = status;
+                        }else if(key === 'Body'){
+                            newKey = 'Body';
+                            const Bodyvalue = currentObj.Body.replace(/<[^>]*>/g, '');
+                            differingPairs[newKey] = Bodyvalue;
+                        } 
+                        else if(key === 'TaskID'){
+                            newKey = 'TaskID';
+                            differingPairs[newKey] = currentObj.TaskID;
+                        }
+                        else {
+                            differingPairs[newKey] = currentObj[key];
+                        }
+                        
+                    }                         
+                }
+                
                 // Check for properties in n+1 but not in n           
                 for (const key in nextObj) {
                     if (nextObj.hasOwnProperty(key) && !currentObj.hasOwnProperty(key)) {
-                        differingPairs[key] = currentObj[key];
-                        differingPairs['Editor'] = currentObj.Editor;
+                        differingPairs[key] = currentObj[key];                       
                     }
                 }
-
+                differingPairs['Editor'] = editor;
                 if (Object.keys(differingPairs).length > 0) {                                        
                     differingValues.push(differingPairs);
                 }
@@ -263,21 +324,65 @@ export default function VersionHistory(props: any) {
                 const currentObj = data[i];
                 const prevObj = data[i - 1];
                 const differingPairs: any = {};
-                differingPairs['TaskID'] = currentObj.ID;
+                //differingPairs['TaskID'] = currentObj.ID;
                 differingPairs['TaskTitle'] = currentObj.Title;
-                
-                for (const key in currentObj) {
-                    differingPairs['version'] = currentObj.VersionId;
-                    differingPairs['ID'] = currentObj.ID;
-                    differingPairs['owshiddenversion'] = currentObj.owshiddenversion;
-                    if (currentObj.PercentComplete != undefined && currentObj.PercentComplete != null && currentObj.PercentComplete !== 'NaN')
-                        differingPairs['% Complete'] = currentObj.PercentComplete;
+                differingPairs['version'] = currentObj.VersionId;
+                differingPairs['ID'] = currentObj.ID;
+                differingPairs['owshiddenversion'] = currentObj.owshiddenversion;
+                let editor = currentObj.Editor;
+
+                for (const key in currentObj) {   
+                    let newKey;
+                    switch (key) {
+                        case 'Team_x005f_x0020_x005f_Members':
+                            newKey = 'TeamMembers';
+                            break;
+                        case 'Reference_x005f_x0020_x005f_Item_x005f_x0020_x005f_Json':
+                            newKey = 'Reference Item Json';
+                            break;
+                        case 'component_x005f_x0020_x005f_link':
+                            newKey = 'ComponentLink';
+                            break;
+                        case 'Responsible_x005f_x0020_x005f_Team':
+                            newKey = 'ResponsibleTeam';
+                            break;
+                        case 'SharewebCategories':
+                            newKey = 'TaskCategories';
+                            break;
+                        case 'Portfolio_x005f_x0020_x005f_Type':
+                            newKey = 'PortfolioType';
+                            break;
+                        default:
+                            newKey = key; // If no transformation needed, keep the same key
+                            break;
+                    }                                                               
                     if ((currentObj[key] !== undefined && currentObj[key] !== null && currentObj[key] !== '' && currentObj.hasOwnProperty(key)) && (key !== 'Checkmark' && key !== 'odata.type' && key !== 'ItemChildCount' && key !== 'SMTotalFileStreamSize' && key !== 'ContentVersion' && key !== 'FolderChildCount' && key !== 'NoExecute' && key !== 'FSObjType' && key !== 'FileLeafRef' && key !== 'Order' && key !== 'Created_x005f_x0020_x005f_Date' && key !== 'Last_x005f_x0020_x005f_Modified')) {
                         if (!isEmpty(currentObj[key]) && key != 'Project_x005f_x003a_x005f_ID' && key != 'SyncClientId' && key != 'SMTotalSize' && key != 'SMTotalFileCount') {
-                            differingPairs[key] = currentObj[key];
-                            differingPairs['Editor'] = currentObj.Editor;
+                            // if (key === 'PercentComplete')
+                            //     newKey = '%Complete';
+                            // differingPairs[newKey] = currentObj[key];
+                            // differingPairs['Editor'] = currentObj.Editor;
+                            if (key === 'PercentComplete') {
+                                newKey = '%Complete';
+                            } else if (key === 'Status' && currentObj['PercentComplete'] !== undefined && currentObj['PercentComplete'] !== 'NaN' && currentObj['PercentComplete'] !== null && currentObj['Status'] !== undefined && currentObj['Status'] !== '') {
+                                newKey = 'Status';
+                                const status = (currentObj['PercentComplete'] * 100) + '% ' + currentObj['Status'];
+                                differingPairs[newKey] = status;
+                            }else if(key === 'Body'){
+                                newKey = 'Body';
+                                const Bodyvalue = currentObj.Body.replace(/<[^>]*>/g, '');
+                                differingPairs[newKey] = Bodyvalue;
+                            }
+                            else if(key === 'TaskID'){
+                                newKey = 'TaskID';
+                                differingPairs[newKey] = currentObj.TaskID;
+                            }
+                             else {
+                                differingPairs[newKey] = currentObj[key];
+                            }
                         }                        
                     }
+                    differingPairs['Editor'] = editor;
                 }
                 if (Object.keys(differingPairs).length > 0) {
                     differingValues.push(differingPairs);
@@ -592,7 +697,7 @@ export default function VersionHistory(props: any) {
                                                                     return (
                                                                         <>
                                                                             {(key != 'odata.editLink' && key != 'odata.id' && key != 'owshiddenversion' && key != 'Editor' && key != 'childs' &&
-                                                                                key != 'Modified' && key != 'ModifiedDate' && key != 'BasicImageInfoArray' && key != 'OffshoreImageUrlArray' && key != 'No' && key != 'CommentsDescription' && key != 'Created' && key != 'ModifiedBy' && key !== 'version' && key !== 'TaskTitle' && key !== 'TaskID' && key !== 'FeedBackDescription' && key !== 'ID' && key !== 'EstimatedTimeDescriptionArray' && key !== 'TotalEstimatedTime') &&
+                                                                                key != 'Modified' &&  key != 'ModifiedDate' && key != 'BasicImageInfoArray' && key != 'OffshoreImageUrlArray' && key != 'No' && key != 'CommentsDescription' && key != 'Created' && key != 'ModifiedBy' && key !== 'version' && key !== 'TaskTitle' && key !== 'FeedBackDescription' && key !== 'ID' && key !== 'EstimatedTimeDescriptionArray' && key !== 'TotalEstimatedTime') &&
                                                                                 <li key={index}>
                                                                                     <span className='vh-textLabel'>{key}</span>
                                                                                     <span className='vh-textData'>{Array.isArray(item[key])
@@ -602,7 +707,7 @@ export default function VersionHistory(props: any) {
                                                                                             : key === 'FeedBack'
                                                                                                 ? <div className='feedbackItm-text'>
                                                                                                     {(item?.FeedBackDescription != undefined && item?.FeedBackDescription != '' && item?.FeedBackDescription?.length > 0) ? <span className='d-flex'><p className='text-ellips mb-0'>{`${item?.FeedBackDescription[0]?.Title}`}</p> <InfoIconsToolTip Discription='' row={item} versionHistory={true} /></span> : ''}
-                                                                                                </div> : key === '%Complete' ? (item['% Complete']) * 100 : key === 'BasicImageInfo'
+                                                                                                </div> : key === '%Complete' ? (item['%Complete']) * 100 : key === 'BasicImageInfo'
                                                                                                     ? <div className='BasicimagesInfo_groupImages'>
                                                                                                         {item?.BasicImageInfoArray != undefined && item?.BasicImageInfoArray.map((image: any, indx: any) => {
                                                                                                             return (

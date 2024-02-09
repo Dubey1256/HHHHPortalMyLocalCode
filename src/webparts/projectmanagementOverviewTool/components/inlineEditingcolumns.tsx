@@ -579,9 +579,25 @@ const inlineEditingcolumns = (props: any) => {
     }
     let CategoryTitle: any = "";
     let selectedCategoriesId = selectedCatId?.length > 0 ? selectedCatId : [];
-    selectedCategoriesId?.map((category: any) => {
-      taskCategoryType?.map((item: any) => {
-        if (category === item.Id) {
+
+    if (selectedCategoriesId != undefined) {
+      selectedCategoriesId?.map((category: any) => {
+        taskCategoryType?.map((item: any) => {
+          if (category === item.Id) {
+            if (CategoryTitle?.length == 0) {
+              CategoryTitle = item.Title + ";";
+            } else {
+              CategoryTitle += item.Title + ";";
+            }
+          }
+        });
+      });
+    }
+    
+    if (CategoriesData != undefined) {
+      CategoriesData?.map((item: any) => {
+        if (!selectedCategoriesId?.some((cat: any) => cat == item?.Id)) {
+          selectedCategoriesId.push(item?.Id);
           if (CategoryTitle?.length == 0) {
             CategoryTitle = item.Title + ";";
           } else {
@@ -589,17 +605,7 @@ const inlineEditingcolumns = (props: any) => {
           }
         }
       });
-    });
-    CategoriesData?.map((item: any) => {
-      if (!selectedCategoriesId?.some((cat: any) => cat == item?.Id)) {
-        selectedCategoriesId.push(item?.Id);
-        if (CategoryTitle?.length == 0) {
-          CategoryTitle = item.Title + ";";
-        } else {
-          CategoryTitle += item.Title + ";";
-        }
-      }
-    });
+    }
 
     setPercentCompleteCheck(false);
     let newDueDate: any = new Date(editDate);
@@ -629,7 +635,7 @@ const inlineEditingcolumns = (props: any) => {
         postData.PriorityRank = priorityRank;
         if (props?.mypriority != true) {
           postData.Categories = CategoryTitle;
-          postData.TaskCategoriesId = { results: selectedCategoriesId };
+          postData.TaskCategoriesId = { results: selectedCategoriesId ? selectedCategoriesId : [] };
         }
         break;
 
@@ -1012,9 +1018,12 @@ const inlineEditingcolumns = (props: any) => {
   };
   const handleCategoryChange = (event: any, CategoryId: any) => {
     if (event.target.checked) {
-      setSelectedCatId([...selectedCatId, CategoryId]);
+        setSelectedCatId([...selectedCatId, CategoryId]);
     } else {
-      setSelectedCatId(selectedCatId.filter((val: any) => val !== CategoryId));
+        const filteredID = selectedCatId.filter((val: any) => val !== CategoryId);
+        setSelectedCatId(filteredID);
+        const filteredCategory = CategoriesData.filter((itm: any) => itm?.Id !== CategoryId)
+        setCategoriesData(filteredCategory)
     }
   };
   const closeTaskDueDate = () => {

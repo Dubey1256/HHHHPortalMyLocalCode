@@ -8,7 +8,7 @@ const Smartmetadatapickerin = (props: any) => {
   let usedfor = props?.usedFor;
   const [opensmartmetapopup, setopensmartmetapopup] = useState(true);
   const [allsmartmetdata, setAllSmartMetadata] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([props?.selectedFeaturedata != undefined ? props.selectedFeaturedata : undefined]);
+  const [selectedItems, setSelectedItems] = useState([props?.selectedFeaturedata != undefined && props?.selectedFeaturedata?.length > 0 ? props.selectedFeaturedata : undefined]);
   useEffect(() => {
     getSmartmetadata();
   }, []);
@@ -52,11 +52,11 @@ const Smartmetadatapickerin = (props: any) => {
     props.Call(selectedItems);
   }
   const handleItemClick = (item: any) => {
-    if(usedfor === "Single"){
-      setSelectedItems([item]); 
+    if (usedfor === "Single") {
+      setSelectedItems([item]);
     }
-    if(usedfor === "Multi"){
-      setSelectedItems((prevSelectedItems:any) => [...prevSelectedItems, item]);
+    if (usedfor === "Multi") {
+      setSelectedItems((prevSelectedItems: any) => [...prevSelectedItems, item]);
     }
 
   };

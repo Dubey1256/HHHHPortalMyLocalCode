@@ -965,7 +965,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                       <div className="d-flex justify-content-between align-items-center">
                                         <span className="comment-date ng-binding">
                                           <span className="round  pe-1">
-                                            <img className="align-self-start " title={ReplyMsg?.AuthorName}onClick={()=>globalCommon?.openUsersDashboard(this.props?.AllListId?.siteUrl,undefined,ReplyMsg?.AuthorName,this?.taskUsers)}
+                                            <img className="align-self-start hreflink " title={ReplyMsg?.AuthorName}onClick={()=>globalCommon?.openUsersDashboard(this.props?.AllListId?.siteUrl,undefined,ReplyMsg?.AuthorName,this?.taskUsers)}
                                               src={ReplyMsg?.AuthorImage != undefined && ReplyMsg?.AuthorImage != '' ?
                                                 ReplyMsg?.AuthorImage :
                                                 "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
