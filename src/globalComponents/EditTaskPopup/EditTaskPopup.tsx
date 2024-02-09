@@ -2547,6 +2547,7 @@ const EditTaskPopup = (Items: any) => {
                         let UpdatedDataObject: any = TaskDetailsFromCall[0]
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
                         UpdatedDataObject.SmartPriority = NewSmartPriority;
+                        UpdatedDataObject.siteType = EditData.siteType;
 
                         // When task assigned to user, send a notification on MS Teams 
 
@@ -2952,10 +2953,19 @@ const EditTaskPopup = (Items: any) => {
         }
         // FeedBackBackupArray = [];
         let CategoriesTitle: any = "";
-        if (tempShareWebTypeData != undefined && tempShareWebTypeData?.length > 0) {
-            tempShareWebTypeData.map((typeData: any) => {
+        let uniqueIds: any = {};
+
+        const result: any = tempShareWebTypeData.filter((item: any) => {
+            if (!uniqueIds[item.Id]) {
+                uniqueIds[item.Id] = true;
+                return true;
+            }
+            return false;
+        });
+        if (result != undefined && result?.length > 0) {
+            result.map((typeData: any) => {
                 CategoryTypeID.push(typeData.Id);
-                if (CategoriesTitle?.length) {
+                if (CategoriesTitle?.length > 2) {
                     CategoriesTitle = CategoriesTitle + ";" + typeData.Title;
                 } else {
                     CategoriesTitle = typeData.Title;

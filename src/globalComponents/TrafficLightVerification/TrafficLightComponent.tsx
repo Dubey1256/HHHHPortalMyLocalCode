@@ -73,15 +73,15 @@ const TrafficLightComponent = (props: any) => {
             })
 
 
-            UpdateJsonColumn = columnLevelVerificationJson
+            UpdateJsonColumn=columnLevelVerificationJson
         }
-        console.log(JsonColumnCopy.current)
+     console.log(JsonColumnCopy.current)
         let postData: any = {
-            [JsonColumnCopy.current]: JSON.stringify(UpdateJsonColumn)
+         [JsonColumnCopy.current]: JSON.stringify(UpdateJsonColumn)
         };
-
+        
         if (props?.columnName !== undefined) {
-            postData[props.columnName] = columnVerificationStatus;
+            postData[props.columnName] = columnVerificationStatus === "Yes" ? true : false;
         }
         const web = new Web(siteUrl);
         await web.lists.getById(ListId)
@@ -93,9 +93,10 @@ const TrafficLightComponent = (props: any) => {
             });
     }
 
+
     return (
         <>  {props?.columnData != undefined &&
-            <myContextValue.Provider value={{ ...myContextValue.default, updateJson, trafficValue: trafficValue, CommentData: CommentData, SetCommentData, setTrafficValue, columnVerificationStatus: columnVerificationStatus, setcolumnVerificationStatus }}>
+            <myContextValue.Provider value={{ ...myContextValue.default,updateJson, trafficValue: trafficValue, CommentData: CommentData, SetCommentData, setTrafficValue, columnVerificationStatus: columnVerificationStatus, setcolumnVerificationStatus }}>
                 <div className="alignCenter">
                     <span title="Incorrect" className={trafficValue == "Incorrect" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"} onClick={() => changeTrafficLight("Incorrect")}></span>
                     <span title="Maybe" className={trafficValue == "Maybe" ? "circlelight br_yellow pull-left yellow mx-1" : "circlelight br_yellow pull-left mx-1"} onClick={() => changeTrafficLight("Maybe")}></span>
@@ -103,7 +104,7 @@ const TrafficLightComponent = (props: any) => {
                     <span title="NA" className={trafficValue == "NA" ? "circlelight br_green pull-left notable mx-1" : "circlelight br_black pull-left mx-1"} onClick={() => changeTrafficLight("NA")}></span>
                     <div className="alignCenter">
                         <span className="">{columnVerificationStatus != undefined && columnVerificationStatus}</span>
-                        <FaCommentDots className="ms-1" title={CommentData} />
+                        <FaCommentDots className="ms-1"style={CommentData==""&&{color: "floralwhite"}} title={CommentData} />
                         <span className="svg__iconbox svg__icon--editBox alignIcon" onClick={() => setOpenCommentpopup(true)}></span>
                     </div>
                 </div>

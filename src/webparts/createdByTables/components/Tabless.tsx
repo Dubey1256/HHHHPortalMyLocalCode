@@ -27,14 +27,17 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 import { RiFileExcel2Fill } from 'react-icons/ri';
 import "bootstrap/dist/css/bootstrap.min.css";
 import PageLoad from '../../../globalComponents/pageLoader';
+import * as globalCommon from "../../../globalComponents/globalCommon";
 import "bootstrap/dist/js/bootstrap.min.js";
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import HighlightableCell from '../../../globalComponents/GroupByReactTableComponents/highlight';
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
+import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 
 
-let TaskUserBackup:any=[]
-const Tabless = (props: any) => { let UserId:any = ''
+let TaskUserBackup: any = []
+const Tabless = (props: any) => {
+  let UserId: any = ''
   let count: any = 0;
   let AllListId: any = {
     MasterTaskListID: props?.Items?.MasterTaskListID,
@@ -83,7 +86,7 @@ const Tabless = (props: any) => { let UserId:any = ''
   const [masterTaskData, setmasterTaskData] = React.useState([]);
   const [copyData, setCopyData]: any = React.useState([]);
   const [date, setDate]: any = React.useState({ due: null, modify: null, created: null });
-  const [loading,setloading] = React.useState(false);
+  const [loading, setloading] = React.useState(false);
   const [priorAndPerc, setPriorAndPerc]: any = React.useState({ priority: true, percentage: true })
   const [selectAllChecks, setSelectAllChecks]: any = React.useState({ idType: false, priority: false, percentage: false, catogries: false, teamMembers: false });
   const [radio, setRadio]: any = React.useState({ due: true, modify: true, created: true, priority: true, percentage: true });
@@ -201,7 +204,7 @@ const Tabless = (props: any) => { let UserId:any = ''
   const getQueryVariable = () => {
     const params = new URLSearchParams(window.location.search);
     let CreatedBy = params.get("CreatedBy");
-    if(CreatedBy == null){
+    if (CreatedBy == null) {
       params.set('CreatedBy', props?.Items?.userDisplayName.split(" ")[0]);
       const newUrl = `${window.location.pathname}?${params.toString()}`;
       window.history.pushState({}, '', newUrl);
@@ -223,9 +226,9 @@ const Tabless = (props: any) => { let UserId:any = ''
 
     setQueryId(CreatedBy);
     console.log(CreatedBy);
-    if(TaskUserBackup != undefined && TaskUserBackup.length > 0){
-      TaskUserBackup.map((val:any)=>{
-        if(val.Title.indexOf(CreatedByQueryId) !== -1){
+    if (TaskUserBackup != undefined && TaskUserBackup.length > 0) {
+      TaskUserBackup.map((val: any) => {
+        if (val.Title.indexOf(CreatedByQueryId) !== -1) {
           UserId = val.AssingedToUser.Id
         }
       })
@@ -240,7 +243,7 @@ const Tabless = (props: any) => { let UserId:any = ''
       .getById(props.Items.MasterTaskListID)
       .items
       .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "StructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
-        "DueDate", "Body", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
+        "DueDate", "Body", "Item_x0020_Type", "FeedBack", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
         "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
         "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id",
       )
@@ -275,12 +278,12 @@ const Tabless = (props: any) => { let UserId:any = ''
     const web = new Web(items.siteUrl);
     await web.lists
       .getById(items.listId)
-      .items.select("Title", "PercentComplete","TaskLevel","TeamMembers/Id","TaskID","ParentTask/Title","ParentTask/Id","TeamMembers/Title","ResponsibleTeam/Id","ResponsibleTeam/Title",'EstimatedTimeDescription',"EstimatedTime" ,"SharewebTaskType/Title", "TaskType/Id", "TaskType/Title","TaskType/Level", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "Categories", "Priority_x0020_Rank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
-      .expand("Team_x0020_Members", "ResponsibleTeam" , "TeamMembers","ParentTask" , "Author", "PortfolioType", "Portfolio", "TaskType", "SharewebTaskType", "Editor", "Responsible_x0020_Team", "AssignedTo")
+      .items.select("Title", "PercentComplete", "TaskLevel", "TeamMembers/Id", "TaskID", "ParentTask/Title", "ParentTask/Id", "TeamMembers/Title", "ResponsibleTeam/Id", "ResponsibleTeam/Title", 'EstimatedTimeDescription', "EstimatedTime", "FeedBack", "SharewebTaskType/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "Categories", "Priority_x0020_Rank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
+      .expand("Team_x0020_Members", "ResponsibleTeam", "TeamMembers", "ParentTask", "Author", "PortfolioType", "Portfolio", "TaskType", "SharewebTaskType", "Editor", "Responsible_x0020_Team", "AssignedTo")
       .filter(`${filter}`).top(5000)
       .getAll()
       .then((data: any) => {
-        const filteredItems = data.filter((item:any) => !item?.Categories?.includes('Draft'));
+        const filteredItems = data.filter((item: any) => !item?.Categories?.includes('Draft'));
 
         filteredItems?.map((dataItem: any) => {
           const jsonObject = JSON.parse(dataItem?.EstimatedTimeDescription);
@@ -302,42 +305,49 @@ const Tabless = (props: any) => { let UserId:any = ''
               dataItem.idType = "T" + dataItem.Id;
             }
 
-            dataItem["newCreated"] = dataItem.Created != null ? moment(dataItem.Created).format('DD/MM/YYYY')+'' : "";
-            dataItem["newModified"] = dataItem.Modified != null ? moment(dataItem.Modified).format('DD/MM/YYYY')+'' : "";
-            dataItem["newDueDate"] = dataItem.DueDate != null ? moment(dataItem.DueDate).format('DD/MM/YYYY')+'' : "";
+            dataItem["newCreated"] = dataItem.Created != null ? moment(dataItem.Created).format('DD/MM/YYYY') + '' : "";
+            dataItem["newModified"] = dataItem.Modified != null ? moment(dataItem.Modified).format('DD/MM/YYYY') + '' : "";
+            dataItem["newDueDate"] = dataItem.DueDate != null ? moment(dataItem.DueDate).format('DD/MM/YYYY') + '' : "";
 
             if (userItem.AssingedToUser != undefined && userItem.AssingedToUser.Id == dataItem.Author.Id) {
               dataItem.AuthorImg = userItem?.Item_x0020_Cover?.Url;
               dataItem.AuthorSuffix = userItem?.Suffix;
+            }
+
+            if (dataItem?.FeedBack != undefined) {
+              dataItem.descriptionsSearch = globalCommon.descriptionSearchData(dataItem)
+            } else {
+              dataItem.descriptionsSearch = '';
             }
             if (userItem.AssingedToUser != undefined && userItem.AssingedToUser.Id == dataItem.Editor.Id
             ) {
               dataItem.EditorImg = userItem?.Item_x0020_Cover?.Url;
               dataItem.EditorSuffix = userItem?.Suffix;
             }
+
           });
 
-            
-         // Ensure dataItem.AllTeamName is initialized as an empty string
-dataItem.AllTeamName = dataItem.AllTeamName || '';
 
-const processTeamMembers = (teamMembers:any) => {
-  if (teamMembers != undefined && teamMembers != null && teamMembers?.length > 0) {
-    teamMembers.forEach((items:any) => {
-      dataItem.AllTeamName += items.Title + ";";
-    });
-  }
-};
+          // Ensure dataItem.AllTeamName is initialized as an empty string
+          dataItem.AllTeamName = dataItem.AllTeamName || '';
 
-processTeamMembers(dataItem.Responsible_x0020_Team);
-processTeamMembers(dataItem.Team_x0020_Members);
-processTeamMembers(dataItem.AssignedTo);
+          const processTeamMembers = (teamMembers: any) => {
+            if (teamMembers != undefined && teamMembers != null && teamMembers?.length > 0) {
+              teamMembers.forEach((items: any) => {
+                dataItem.AllTeamName += items.Title + ";";
+              });
+            }
+          };
 
-// Use join to concatenate array elements with a separator
-dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';');
+          processTeamMembers(dataItem.Responsible_x0020_Team);
+          processTeamMembers(dataItem.Team_x0020_Members);
+          processTeamMembers(dataItem.AssignedTo);
 
-          
-       
+          // Use join to concatenate array elements with a separator
+          dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';');
+
+
+
           const matchingTask = masterTasks?.find((task: any) => dataItem?.Portfolio?.Id === task?.Id);
           if (matchingTask) {
             dataItem.PortfolioType = matchingTask.PortfolioType;
@@ -347,28 +357,29 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
           let cleanedString = dataItem?.AllTeamName?.replace(/\bundefined\b/g, '');
 
 
-           allData.push({
+          allData.push({
             ...dataItem,
             idType: dataItem.idType,
             Categories: dataItem.Categories,
             percentage: dataItem.percentage,
             newDueDate: dataItem.newDueDate,
+            FeedBack: dataItem.FeedBack,
             newModified: dataItem.newModified,
             newCreated: dataItem.newCreated,
             editorImg: dataItem.EditorImg,
-            EditorSuffix:dataItem.EditorSuffix,
-            AuthorSuffix:dataItem.AuthorSuffix,
+            EditorSuffix: dataItem.EditorSuffix,
+            AuthorSuffix: dataItem.AuthorSuffix,
             authorImg: dataItem.AuthorImg,
             SiteIcon: items.Title == "Migration" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png" : items.ImageUrl,
             siteUrl: items.siteUrl,
-            EstimatedTime:(jsonObject != null && jsonObject !=undefined && jsonObject[0]?.EstimatedTime != undefined && jsonObject[0]?.EstimatedTime != null ? jsonObject[0]?.EstimatedTime : ''),
-            priority: dataItem.Priority_x0020_Rank ,
+            EstimatedTime: (jsonObject != null && jsonObject != undefined && jsonObject[0]?.EstimatedTime != undefined && jsonObject[0]?.EstimatedTime != null ? jsonObject[0]?.EstimatedTime : ''),
+            priority: dataItem.Priority_x0020_Rank,
             Author: dataItem.Author,
             Editor: dataItem.Editor,
             Editorss: dataItem.Editor.Title,
             Team_x0020_Members: dataItem.Team_x0020_Members,
             Responsible_x0020_Team: dataItem.Responsible_x0020_Team,
-            AllTeamName : cleanedString,
+            AllTeamName: cleanedString,
             ResponsibleTeam: dataItem.ResponsibleTeam,
             TeamMembers: dataItem.TeamMembers,
             AssignedTo: dataItem.AssignedTo,
@@ -487,6 +498,7 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
             >
               {row?.original?.Title}
             </a>
+            {row?.original?.FeedBack?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} /></span>}
           </div>
         ),
         id: "Title",
@@ -497,7 +509,7 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
       {
         accessorFn: (row: any) => row?.Categories,
         cell: ({ row, getValue }: any) => (
-            <>{row?.original?.Categories}</>
+          <>{row?.original?.Categories}</>
         ),
         id: "Categories",
         placeholder: "Categories",
@@ -510,7 +522,7 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
 
         accessorFn: (row: any) => row?.percentage,
         cell: ({ row, getValue }: any) => (
-            <>{row?.original?.percentage}</>
+          <>{row?.original?.percentage}</>
         ),
         id: "percentage",
         placeholder: "%",
@@ -544,63 +556,63 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
         size: 50,
       },
       {
-        accessorFn: (row:any) => row?.dueDate,
-        cell: ({ row, column, getValue }:any) => (
-            <HighlightableCell value={row?.original?.newDueDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+        accessorFn: (row: any) => row?.dueDate,
+        cell: ({ row, column, getValue }: any) => (
+          <HighlightableCell value={row?.original?.newDueDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
         ),
         filterFn: (row: any, columnName: any, filterValue: any) => {
-            if (row?.original?.newDueDate?.includes(filterValue)) {
-                return true
-            } else {
-                return false
-            }
+          if (row?.original?.newDueDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
         },
         id: "dueDate",
         placeholder: "Due Date",
         header: "",
         resetColumnFilters: false,
         size: 75,
-    },
-
-    {
-      accessorFn: (row:any) => row?.modified,
-      cell: ({ row, column, getValue }:any) => (
-          <HighlightableCell value={row?.original?.newModified} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
-      ),
-      filterFn: (row: any, columnName: any, filterValue: any) => {
-          if (row?.original?.newModified?.includes(filterValue)) {
-              return true
-          } else {
-              return false
-          }
       },
-      id: "modified",
-      placeholder: "Modified",
-      header: "",
-      resetColumnFilters: false,
-      size: 120,
-  },
-  {
-    accessorFn: (row:any) => row?.created,
-    cell: ({ row, column, getValue }:any) => (
-        <HighlightableCell value={row?.original?.newCreated} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
-    ),
-    filterFn: (row: any, columnName: any, filterValue: any) => {
-        if (row?.original?.newCreated?.includes(filterValue)) {
+
+      {
+        accessorFn: (row: any) => row?.modified,
+        cell: ({ row, column, getValue }: any) => (
+          <HighlightableCell value={row?.original?.newModified} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+        ),
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.newModified?.includes(filterValue)) {
             return true
-        } else {
+          } else {
             return false
-        }
-    },
-    id: "created",
-    placeholder: "Created",
-    header: "",
-    isColumnDefultSortingDesc: true ,
-    resetColumnFilters: false,
-    size: 120,
-},
- 
-      { 
+          }
+        },
+        id: "modified",
+        placeholder: "Modified",
+        header: "",
+        resetColumnFilters: false,
+        size: 120,
+      },
+      {
+        accessorFn: (row: any) => row?.created,
+        cell: ({ row, column, getValue }: any) => (
+          <HighlightableCell value={row?.original?.newCreated} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+        ),
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.newCreated?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        id: "created",
+        placeholder: "Created",
+        header: "",
+        isColumnDefultSortingDesc: true,
+        resetColumnFilters: false,
+        size: 120,
+      },
+
+      {
         accessorFn: (row: any) => row?.AllTeamName,
         cell: ({ row, getValue }: any) => (
           <span>
@@ -651,7 +663,7 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
           <input className='form-check-input me-1 mt-0' type="checkbox" value={'Component'} onChange={(e: any) => filterCom(e)} /> Component
           <input className='form-check-input me-1 mt-0 ms-2' type="checkbox" value={'Service'} onChange={(e: any) => filterCom(e)} /> Service
           <a
-          target='_blank'
+            target='_blank'
             href={`${props.Items.siteUrl}/SitePages/Tasks%20View.aspx?CreatedBy=${queryId}`}
             rel='noopener noreferrer'
             data-interception="off"
@@ -667,16 +679,15 @@ dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';')
         <div className='Alltable'>
           <GlobalCommanTable expandIcon={true} showHeader={true} showPagination={true} columns={columns} data={data} callBackData={callBackData} />
         </div>
-       
+
       </section>
       <span>
         {editPopup && <EditTaskPopup Items={result} context={props.Items.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
 
       </span>
-      {loading && <PageLoad />} 
+      {loading && <PageLoad />}
     </div>
   )
 }
 
 export default Tabless;
-

@@ -8,7 +8,7 @@ const Smartmetadatapickerin = (props: any) => {
   let usedfor = props?.usedFor;
   const [opensmartmetapopup, setopensmartmetapopup] = useState(true);
   const [allsmartmetdata, setAllSmartMetadata] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([props?.selectedFeaturedata != undefined ? props.selectedFeaturedata : undefined]);
+  const [selectedItems, setSelectedItems] = useState(props?.selectedFeaturedata != undefined && props?.selectedFeaturedata?.length > 0 ? props.selectedFeaturedata : []);
   useEffect(() => {
     getSmartmetadata();
   }, []);
@@ -39,7 +39,7 @@ const Smartmetadatapickerin = (props: any) => {
   const customHeader = () => (
     <>
       <div className="subheading">Select Feature Type</div>
-      <Tooltip ComponentId="1741" />
+      <Tooltip ComponentId="1626" />
     </>
   );
 
@@ -52,11 +52,11 @@ const Smartmetadatapickerin = (props: any) => {
     props.Call(selectedItems);
   }
   const handleItemClick = (item: any) => {
-    if(usedfor === "Single"){
-      setSelectedItems([item]); 
+    if (usedfor === "Single") {
+      setSelectedItems([item]);
     }
-    if(usedfor === "Multi"){
-      setSelectedItems((prevSelectedItems:any) => [...prevSelectedItems, item]);
+    if (usedfor === "Multi") {
+      setSelectedItems((prevSelectedItems: any) => [...prevSelectedItems, item]);
     }
 
   };
@@ -73,7 +73,7 @@ const Smartmetadatapickerin = (props: any) => {
       isOpen={opensmartmetapopup}
       type={PanelType.medium}
       onDismiss={closePopupSmartPopup}
-      isBlocking={opensmartmetapopup}
+      isBlocking={false}
     >
       <div className='modal-body mb-5'>
         {selectedItems?.length > 0 ? (
@@ -97,8 +97,7 @@ const Smartmetadatapickerin = (props: any) => {
               </li>
             ))}
           </ul></div></div>
-      <footer className="fixed-bottom bg-f4 p-3">
-
+      <footer className="fixed-bottom bg-f4 p-3 text-end">
         <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveselectctedData} >
           Save
         </button>
