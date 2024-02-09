@@ -20,6 +20,14 @@ let allSite: any = {
     HrSite: false,
     MainSite: true,
 }
+
+interface StatusItem {
+    Id: number;
+    Title: string;
+    selectItem: boolean;
+    showTextInput: boolean;
+    siteName: string;
+}
 let OldEmployeeProfile: any
 const Profilcandidate = ({ props }: any) => {
     const params = new URLSearchParams(window.location.search);
@@ -28,6 +36,7 @@ const Profilcandidate = ({ props }: any) => {
     const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
     const [selectedItem, setSelectedItem]: any = useState(null);
     const [TaggedDocuments, setTaggedDocuments] = useState<any[]>([]);
+    const [AllAvlStatusdata, setAllAvlStatusdata] = useState<StatusItem[]>([]);
     const [loaded, setLoaded] = useState(false)
     let allListId = {
         // Context: props?.props.Context,
@@ -39,6 +48,7 @@ const Profilcandidate = ({ props }: any) => {
     }
     useEffect(() => {
         EmployeeDetails(params.get('CandidateId'));
+        loadAdminConfigurations();
     }, [])
     const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/');
     const EmployeeDetails = async (Id: any) => {
@@ -81,6 +91,24 @@ const Profilcandidate = ({ props }: any) => {
             return [];
         }
     };
+
+    const loadAdminConfigurations = () => {
+        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR/')
+        web.lists
+            .getById("2e5ed76d-63ae-4f4a-887a-6d56f0b925c3")
+            .items.select("Id,Title,Value,Key,Description,Configurations")
+            .filter(`Key eq 'RecruitmentStatus'`)
+            .getAll().then((data: any) => {
+                if (data.length > 0) {
+                    data.forEach((status: { Configurations: any; }) => {
+                        setAllAvlStatusdata(JSON.parse(status.Configurations))
+                    });
+
+                }
+            }).catch((error: any) => {
+                console.log(error)
+            })
+    }
     const EditPopupOpen = (item: any) => {
         setSelectedItem(item);
         setIsEditPopupOpen(true);
@@ -130,7 +158,7 @@ const Profilcandidate = ({ props }: any) => {
         <>
         {loaded ? <PageLoader/> : null}
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props?.userDisplayName }}>
-            {isEditPopupOpen ? <EditPopup siteUrl={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/'} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={'298bc01c-710d-400e-bf48-8604d297c3c6'} skillsList={'e79dfd6d-18aa-40e2-8d6e-930a37fe54e4'} /> : ''}
+            {isEditPopupOpen ? <EditPopup siteUrl={'https://hhhhteams.sharepoint.com/sites/HHHH/HR/'} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={'298bc01c-710d-400e-bf48-8604d297c3c6'} skillsList={'e79dfd6d-18aa-40e2-8d6e-930a37fe54e4'} statusData={AllAvlStatusdata}/> : ''}
             <div className='alignCenter border-bottom pb-2'>
                 <div>
                     <img className='user-dp' src={EmployeeData?.Item_x0020_Cover?.Url != undefined ? EmployeeData?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />

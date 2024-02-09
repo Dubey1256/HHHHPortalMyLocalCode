@@ -4,12 +4,13 @@ import "@pnp/sp/sputilities";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import * as Moment from 'moment';
 
-
+let count = 0;
 const EmailNotificationMail = (props: any) => {
   useEffect(() => {
     sendEmail(props.emailStatus);
   }, [])
   const sendEmail = async (send: any) => {
+    count++
     let mention_To: any = [];
     mention_To.push(props?.items.TaskCreatorData[0].Email);
     if (mention_To.length > 0) {
@@ -19,7 +20,10 @@ const EmailNotificationMail = (props: any) => {
         Body: props.items.Title
       }
       console.log(EmailProps);
-      await SendEmailFinal(EmailProps);
+      if(count == 1){
+        await SendEmailFinal(EmailProps);
+      }
+     
     }
   }
   const BindHtmlBody = () => {
@@ -62,7 +66,7 @@ const EmailNotificationMail = (props: any) => {
                 <div style={{ color: "var(--black, #333)", textAlign: "center", fontFamily: "Segoe UI", fontSize: "14px", fontStyle: "normal", fontWeight: "600", marginLeft: "4px" }}></div>
             </div>
             <div style={{ marginBottom: "12px", fontSize: "16px", fontWeight: "400", fontFamily: "Segoe UI" }}>
-              Hi {props?.items.TaskCreatorData[0].Title},
+              Hi {props?.items?.TaskCreatorData[0]?.Title},
             </div>
             <div style={{ marginBottom: "12px", fontSize: "16px", fontWeight: "400", fontFamily: "Segoe UI" }}>
               Task created from your end has been marked to {props?.statusValue}%. Please follow the below link to review it.
