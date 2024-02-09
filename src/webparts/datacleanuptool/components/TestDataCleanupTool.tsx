@@ -16,7 +16,6 @@ function DataCleancupTool(SelectedProp: any) {
     const [data, setData] = React.useState([])
     const [count, setCount] = React.useState(0)
     const [ItemChecked, setItemChecked] = useState<any>(false);
-    const [SelectedBulkItem, setSelectedBulkItem] = useState<any>({});
     const [loaded, setLoaded] = React.useState(true);
     let TodayDate = new Date().setHours(0, 0, 0, 0)
    
@@ -188,6 +187,7 @@ const SaveItem = async (SelectedItem: any) => {
 }
    const RemovedItems = () => {
     var flag: any = confirm('Do you want to delete these selected items')
+    showProgressBar();
     var count = 0;
     if (flag) {
      var RomovedSelectedItems = SelectedData
@@ -202,7 +202,8 @@ const SaveItem = async (SelectedItem: any) => {
                         renderData = renderData.concat(AllDataCleanUpItems)
                         refreshData(); 
                         if(RomovedSelectedItems.length == count){
-                            alert("Selected Items Deleted Successfully.... ")  
+                            alert("Selected Items Deleted Successfully.... ") 
+                            showProgressHide(); 
                         }
                                                            
                     }
@@ -290,13 +291,15 @@ const SaveItem = async (SelectedItem: any) => {
     ],
         [data]);
     const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
-    
+     
         if (elem != undefined) {
-            SelectedData.push(elem);
-            setSelectedBulkItem(elem);
+            SelectedData = elem.map((val:any)=>{
+                return  val.original
+            })
+           
         
         } else {
-            setSelectedBulkItem({});           
+                   
             SelectedData = [];
         }       
         console.log(SelectedData);
@@ -318,7 +321,7 @@ const SaveItem = async (SelectedItem: any) => {
                 <div className="TableContentSection">
                     <div className='Alltable mt-2 mb-2'>
                         <div className='col-md-12 p-0 '>
-                            <GlobalCommanTable columns={columns} data={data} showHeader={true} callBackData={callBackData} expandIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} customHeaderButtonAvailable={true}
+                            <GlobalCommanTable columns={columns} multiSelect={true} data={data} showHeader={true} callBackData={callBackData} expandIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} customHeaderButtonAvailable={true}
                             customTableHeaderButtons={customTableHeaderButtons}/>
                             
                         </div>

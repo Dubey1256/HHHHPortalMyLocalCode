@@ -88,7 +88,7 @@ const AllMasterTaskLoad = (props: any) => {
 
     totalll.forEach((result: any) => {
       allCSFdata?.map((type: any) => {
-        if ((result?.Item_x0020_Type === type.Title) && (result.PortfolioType == undefined)) {
+        if ((result?.Item_x0020_Type === type.Title) && ((result.PortfolioType == undefined) || (result.PortfolioType != undefined))) {
           type[type.Title + 'number'] += 1;
           type[type.Title + 'filterNumber'] += 1;
           allCSFcount.push(type)
