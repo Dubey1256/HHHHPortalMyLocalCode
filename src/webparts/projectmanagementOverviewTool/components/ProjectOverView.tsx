@@ -13,8 +13,8 @@ import { Web } from "sp-pnp-js";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import * as Moment from 'moment';
 import AddProject from './AddProject'
-import EditProjectPopup from './EditProjectPopup';
-import InlineEditingcolumns from './inlineEditingcolumns';
+import EditProjectPopup from '../../../globalComponents/EditProjectPopup';
+import InlineEditingcolumns from '../../../globalComponents/inlineEditingcolumns';
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import ShowTeamMembers from '../../../globalComponents/ShowTeamMember';
