@@ -12,7 +12,8 @@ import FroalaEditorView from 'react-froala-wysiwyg/FroalaEditorView';
 
 
 export default function MainComponent() {
-    const [model, setModel] = React.useState("Example Set");
+    const [model, setModel] = React.useState("");
+    const [ShowOutPut, setShowOutPut] = React.useState(false);
 
     const handleModelChange = (event: any) => {
         setModel(event)
@@ -59,11 +60,13 @@ export default function MainComponent() {
                     onModelChange={handleModelChange}
                 />
             </div>
-            <div className="border p-1 my-5">
-                <FroalaEditorView
-                    model={model}
-                />
-            </div>
+            <button onClick={() => setShowOutPut(!ShowOutPut)}>Show Output</button>
+            {ShowOutPut ?
+                <div className="border p-1 my-5">
+                    <FroalaEditorView
+                        model={model}
+                    />
+                </div> : null}
         </div>
     );
 }
