@@ -59,7 +59,7 @@ const AllMasterTaskLoad = (props: any) => {
       .items
       .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "ItemRank", "Portfolio_x0020_Type",
         "DueDate", "Item_x0020_Type", "ItemType", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
-        "PercentComplete", "AssignedToId", "Created", "Modified", "Parent/Id", "Parent/Title", "Parent/ItemType", "PortfoliosId", "Portfolios/Id", "Portfolios/Title", "PortfolioType/Id", "PortfolioType/Title"
+        "PercentComplete", "AssignedToId", "Created", "Modified", "Parent/Id", "Parent/Title", "Parent/ItemType", "PortfoliosId", "Portfolios/Id", "Portfolios/Title", "PortfolioType/Id", "PortfolioType/Title","PortfolioType/Color"
       )
       .expand("Parent", "Portfolios", "PortfolioType")
       .getAll();
@@ -294,7 +294,7 @@ const AllMasterTaskLoad = (props: any) => {
                 item={SharewebComponent}
                 Calls={EditComponentCallback}
                 SelectD={listIds}
-                portfolioTypeData={Portfoliotyped}
+                // portfolioTypeData={Portfoliotyped}
               >
                 {" "}
               </EditInstituton>
