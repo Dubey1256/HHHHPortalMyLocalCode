@@ -2547,6 +2547,7 @@ const EditTaskPopup = (Items: any) => {
                         let UpdatedDataObject: any = TaskDetailsFromCall[0]
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
                         UpdatedDataObject.SmartPriority = NewSmartPriority;
+                        UpdatedDataObject.siteType = EditData.siteType;
 
                         // When task assigned to user, send a notification on MS Teams 
 
