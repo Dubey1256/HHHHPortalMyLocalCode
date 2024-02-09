@@ -547,7 +547,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                    </div>
                 ),
                 id: "HelpInformationVerified",
-                placeholder: "verified",
+                placeholder: "Verified",
                 header: "",
                 resetColumnFilters: false,
                 size: 140,
