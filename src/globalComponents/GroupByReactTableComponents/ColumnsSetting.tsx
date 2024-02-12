@@ -9,8 +9,8 @@ const ColumnsSetting = (props: any) => {
     const handleChangeDateAndDataCallBack = () => {
         const updatedData = { ...props?.columnVisibilityData };
         for (let key in columnSettingVisibility) {
-            if (columnSettingVisibility.hasOwnProperty(key)) {
-                if (props?.columnVisibilityData.hasOwnProperty(key)) {
+            if (columnSettingVisibility?.hasOwnProperty(key)) {
+                if (props?.columnVisibilityData?.hasOwnProperty(key)) {
                     updatedData[key] = columnSettingVisibility[key];
                 } else {
                     updatedData[key] = columnSettingVisibility[key];
