@@ -909,6 +909,16 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 })
             })
             setRowSelection(selectedRow);
+        }else if (items?.defultSelectedPortFolio?.length > 0) {
+            let selectedRow: any = {}
+            table?.getRowModel()?.rows?.map((elem: any) => {
+                items?.defultSelectedPortFolio?.map((selectedId: any) => {
+                    if (elem?.original?.Id == selectedId?.Id) {
+                        selectedRow = { ...selectedRow, [elem.id]: true }
+                    }
+                })
+            })
+            setRowSelection(selectedRow);
         }
     }, [items?.defultSelectedRows?.length > 0])
 
