@@ -1363,7 +1363,7 @@ export default function ProjectOverview(props: any) {
                         items.descriptionsSearch = globalCommon?.descriptionSearchData(items)
                     }
                     items.commentsSearch = items?.Comments != null && items?.Comments != undefined ? items.Comments.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '') : '';
-                    items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
+                    // items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
                     items.DisplayDueDate =
                         items.DueDate != null
                             ? Moment(items.DueDate).format("DD/MM/YYYY")

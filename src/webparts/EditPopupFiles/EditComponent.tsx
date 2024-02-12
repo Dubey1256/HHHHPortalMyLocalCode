@@ -196,7 +196,7 @@ let ID: any;
         setModalIsOpen(true);
         let targetDiv: any = document?.querySelector('.ms-Panel-main');
         setTimeout(() => {
-            if (targetDiv) {
+            if (targetDiv && PortfolioTypeColor?.length > 0) {
                 // Change the --SiteBlue variable for elements under the targetDiv
                 targetDiv?.style?.setProperty('--SiteBlue', PortfolioTypeColor); // Change the color to your desired value
             }
@@ -2660,7 +2660,7 @@ let ID: any;
     React.useEffect(() => {
         setTimeout(() => {
             const panelMain: any = document.querySelector('.ms-Panel-main');
-            if (panelMain && PortfolioTypeColor) {
+            if (panelMain && PortfolioTypeColor?.length > 0) {
                 panelMain.style.setProperty('--SiteBlue', PortfolioTypeColor); // Set the desired color value here
             }
         }, 2000)
