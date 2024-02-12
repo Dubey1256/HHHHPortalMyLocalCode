@@ -86,6 +86,9 @@ const CreateActivity = (props: any) => {
   const globalContextData: any = React.useContext<any>(myContextValue)
   React.useEffect(() => {
     AllListId = props?.AllListId;
+    if ( props?.selectedItem?.NoteCall != "Task" && props?.selectedItem?.NoteCall != "Activities") {
+      setTaskTitle(`${ props?.selectedItem?.NoteCall} - ${props?.selectedItem?.Title}`);
+    }
     getTaskUsers();
     GetSmartMetadata();
     if (props?.pageName == "QuickTask") {
@@ -311,7 +314,9 @@ const CreateActivity = (props: any) => {
         if (item?.Title == props?.selectedItem?.NoteCall  && !item.ActiveTile) {
           selectSubTaskCategory(item?.Title, item?.Id, item);
           if( props?.selectedItem?.NoteCall == "Development"){
+            props.selectedItem.CopyNoteCall="Development"
             props.selectedItem.NoteCall = "Activity"
+
           }else{
             props.selectedItem.NoteCall = "Task"
           }
