@@ -1659,37 +1659,69 @@ const ProjectManagementMain = (props: any) => {
                           </div>
                           </>
                         )}
-                        {suggestedPortfolios?.length > 0 ? (
-                          <div>
-                          <input type="text" value={suggestedItems} onChange={(e) => searchSuggestedPortfolio(e)} placeholder="Suggested Portfolio Items"/>
-                          <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar">
-                            {suggestedPortfolios?.map((component: any, index: any) => {
-                              return (
-                                <li key={index} className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
-                                  <div className="alignCenter">
-                                    <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank" onClick={() => filterPotfolioTasks(component, index, "taskComponent")}>
-                                      {component?.Title}
-                                    </a>
-                                  <span
-                                  className="ml-auto wid30 svg__iconbox svg__icon--Plus light hreflink"
-                                  onClick={(e) =>
-                                  ComponentServicePopupCallBack([component],'','')}
-                                  >
-                                  </span>
+                        <div>
+                          <input
+                            type="search"
+                            value={suggestedItems}
+                            onChange={(e) => searchSuggestedPortfolio(e)}
+                            placeholder="Suggested Portfolio Items"
+                          />
+                             {suggestedPortfolios?.length > 0 ? (
+                              <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar">
+                                {suggestedPortfolios?.map(
+                                  (component: any, index: any) => (
+                                    <li
+                                      key={index}
+                                      className={
+                                      component?.Id ==
+                                      createTaskId?.portfolioData?.Id
+                                      ? "nav__item bg-ee ps-1"
+                                      : "mb-1 bg-shade hreflink"
+                                      }
+                                    >
+                                      <div className="alignCenter">
+                                        <a
+                                          className={
+                                            component?.Id ==
+                                            createTaskId?.portfolioData?.Id
+                                            ? "hreflink "
+                                            : "text-white hreflink"
+                                          }
+                                              data-interception="off"
+                                              target="blank"
+                                              onClick={() =>
+                                                filterPotfolioTasks(
+                                                  component,
+                                                  index,
+                                                  "taskComponent"
+                                                )
+                                              }
+                                            >
+                                              {component?.Title}
+                                            </a>
+                                            <span
+                                              className="ml-auto wid30 svg__iconbox svg__icon--Plus light hreflink"
+                                              onClick={(e) =>
+                                                ComponentServicePopupCallBack(
+                                                  [component],
+                                                  "",
+                                                  ""
+                                                )
+                                              }
+                                            ></span>
+                                          </div>
+                                        </li>
+                                      )
+                                    )}
+                                  </ul>
+                                ) : (
+                                  <>
+                                  <div className="nontag mt-2 text-center">
+                                    No Tagged Portfolio
                                   </div>
-                                </li>
-                                )
-                              })}
-                          </ul>
-                        </div>
-                        ) : (
-                          <>
-                        <span className="nav__text">Suggested Portfolio Items</span>  
-                          <div className="nontag mt-2 text-center">
-                              No Tagged Portfolio
-                          </div>
-                          </>
-                        )}
+                                </>
+                              )}
+                            </div>
                         </>
                         </div>
                         </li>
