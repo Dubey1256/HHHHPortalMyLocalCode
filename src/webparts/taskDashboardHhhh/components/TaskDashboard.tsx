@@ -2252,7 +2252,7 @@ const TaskDashboard = (props: any) => {
                                                     </summary> :
                                                     <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal.toFixed(2) + ' Hour)'}
                                                         {
-                                                            currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end me-5" onClick={() => shareTaskInEmail('today time entries',selectedTimeReport)}><span className="svg__iconbox svg__icon--mail mx-1 me" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
+                                                            currentUserId == currentUserData?.AssingedToUserId && (selectedTimeReport == "Today" || selectedTimeReport == "Yesterday") ? <span className="align-autoplay d-flex float-end me-5" onClick={() => shareTaskInEmail('today time entries',selectedTimeReport)}><span className="svg__iconbox svg__icon--mail mx-1 me" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
                                                         }
                                                     </summary>
                                                 }

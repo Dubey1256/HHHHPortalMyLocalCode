@@ -107,6 +107,7 @@ const ProjectManagementMain = (props: any) => {
   const [remarkData, setRemarkData] = React.useState(null);
   const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
   const [editSmartInfo, setEditSmartInfo] = React.useState(false)
+  const [suggestedItems, setSuggestedItems] = React.useState('')
   const childRef = React.useRef<any>();
   const StatusArray = [
     { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
@@ -344,10 +345,9 @@ const ProjectManagementMain = (props: any) => {
               if (suggestedKeywords.length > 0) {
                 suggestedPortfolioItems = MasterListData.filter((masterItm: any) => {
                     const titleWords = masterItm?.Title.toLowerCase();
-                    return (
-                        suggestedKeywords.some((keyword: any) => titleWords.includes(keyword)) &&
-                        (titleWords !== fetchedProject?.Title.toLowerCase() && titleWords !== 'latest annual report')
-                    );
+                    const includesAnyKeyword = suggestedKeywords.some((keyword: any) => titleWords.includes(keyword));
+                    const isNotMatchingTitles = titleWords !== fetchedProject?.Title.toLowerCase() && titleWords !== 'latest annual report';
+                    return includesAnyKeyword && isNotMatchingTitles
                 });
             }
           }
@@ -913,11 +913,11 @@ const ProjectManagementMain = (props: any) => {
       } else {
         propsItems.DisplayCreateDate = '';
       }
-      if (propsItems?.Portfolios != undefined) {
-        let filteredSmartPortfolios = propsItems?.Portfolios.filter((tagPort: any) => tagPort?.Id !== undefined).map((tagPort: any) => smartPortfoliosData.find((port: any) => port?.Id === tagPort?.Id));
+      if (propsItems?.taggedPortfolios != undefined) {
+        let filteredSmartPortfolios = propsItems?.taggedPortfolios.filter((tagPort: any) => tagPort?.Id !== undefined).map((tagPort: any) => smartPortfoliosData.find((port: any) => port?.Id === tagPort?.Id));
         smartPortfoliosData = filteredSmartPortfolios
       }
-      }
+    }  
     if (propsItems?.Item_x0020_Type == "Project") {
       setMasterdata(propsItems)
     } else if (propsItems?.Item_x0020_Type == "Sprint") {
@@ -942,7 +942,8 @@ const ProjectManagementMain = (props: any) => {
       setIsOpenWorkstream(false)
       LoadAllSiteTasks();
     }
-    setIsComponent(false);
+      setIsComponent(false);
+      GetMasterData(false)
   };
 
   const LoadAllSiteAllTasks = async function () {
@@ -1536,6 +1537,15 @@ const ProjectManagementMain = (props: any) => {
       relevantDocRef?.current?.loadAllSitesDocuments()
     }
   }, [])
+
+  const searchSuggestedPortfolio = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const searchQuery = e?.target?.value
+    setSuggestedItems(searchQuery);
+    const filteredPortfolioItems = suggestedPortfolioItems.filter((item: any) =>
+        item?.Title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setSuggestedPortfolios(searchQuery === '' ? suggestedPortfolioItems : filteredPortfolioItems);
+  }
   return (
     <myContextValue.Provider value={{ ...myContextValue, user: AllUser, ProjectLandingPageDetails: Masterdata, FunctionCall: contextCall, keyDoc: keydoc, FileDirRef: FileDirRef, closeCompTaskPopup: tagAndCreateCallBack, projectCallBackTask: LoadAllSiteTasks, portfolioCreationCallBack: ComponentServicePopupCallBack, tagProjectFromTable: true }}>
 
@@ -1584,8 +1594,7 @@ const ProjectManagementMain = (props: any) => {
                                 onClick={(e) =>
                                   EditPortfolio(Masterdata, "Portfolios")
                                 }
-                              >
-                              </span>
+                              ></span>
                             </span>
                           </a>
                         </li>
@@ -1620,7 +1629,7 @@ const ProjectManagementMain = (props: any) => {
                         {TaskTaggedPortfolios?.length > 0 ? (
                           <div>
                           <span className="nav__text">Relevant Portfolio Items</span>
-                          <ul className="nav__subList wrapper ps-0 pe-2">
+                          <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar">
                             {TaskTaggedPortfolios?.map((component: any, index: any) => {
                               return (
                                 <li key={index} className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
@@ -1648,37 +1657,69 @@ const ProjectManagementMain = (props: any) => {
                           </div>
                           </>
                         )}
-                        {suggestedPortfolios?.length > 0 ? (
-                          <div>
-                          <span className="nav__text">Suggested Portfolio Items</span>
-                          <ul className="nav__subList wrapper ps-0 pe-2">
-                            {suggestedPortfolios?.map((component: any, index: any) => {
-                              return (
-                                <li key={index} className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
-                                  <div className="alignCenter">
-                                    <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank" onClick={() => filterPotfolioTasks(component, index, "taskComponent")}>
-                                      {component?.Title}
-                                    </a>
-                                  <span
-                                  className="ml-auto wid30 svg__iconbox svg__icon--Plus light hreflink"
-                                  onClick={(e) =>
-                                  ComponentServicePopupCallBack([component],'','')}
-                                  >
-                                  </span>
+                        <div>
+                          <input
+                            type="search"
+                            value={suggestedItems}
+                            onChange={(e) => searchSuggestedPortfolio(e)}
+                            placeholder="Suggested Portfolio Items"
+                          />
+                             {suggestedPortfolios?.length > 0 ? (
+                              <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar">
+                                {suggestedPortfolios?.map(
+                                  (component: any, index: any) => (
+                                    <li
+                                      key={index}
+                                      className={
+                                      component?.Id ==
+                                      createTaskId?.portfolioData?.Id
+                                      ? "nav__item bg-ee ps-1"
+                                      : "mb-1 bg-shade hreflink"
+                                      }
+                                    >
+                                      <div className="alignCenter">
+                                        <a
+                                          className={
+                                            component?.Id ==
+                                            createTaskId?.portfolioData?.Id
+                                            ? "hreflink "
+                                            : "text-white hreflink"
+                                          }
+                                              data-interception="off"
+                                              target="blank"
+                                              onClick={() =>
+                                                filterPotfolioTasks(
+                                                  component,
+                                                  index,
+                                                  "taskComponent"
+                                                )
+                                              }
+                                            >
+                                              {component?.Title}
+                                            </a>
+                                            <span
+                                              className="ml-auto wid30 svg__iconbox svg__icon--Plus light hreflink"
+                                              onClick={(e) =>
+                                                ComponentServicePopupCallBack(
+                                                  [component],
+                                                  "",
+                                                  ""
+                                                )
+                                              }
+                                            ></span>
+                                          </div>
+                                        </li>
+                                      )
+                                    )}
+                                  </ul>
+                                ) : (
+                                  <>
+                                  <div className="nontag mt-2 text-center">
+                                    No Tagged Portfolio
                                   </div>
-                                </li>
-                                )
-                              })}
-                          </ul>
-                        </div>
-                        ) : (
-                          <>
-                        <span className="nav__text">Suggested Portfolio Items</span>  
-                          <div className="nontag mt-2 text-center">
-                              No Tagged Portfolio
-                          </div>
-                          </>
-                        )}
+                                </>
+                              )}
+                            </div>
                         </>
                         </div>
                         </li>
