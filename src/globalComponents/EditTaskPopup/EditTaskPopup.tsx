@@ -218,7 +218,7 @@ const EditTaskPopup = (Items: any) => {
         { value: 9, status: "9% Ready To Go", taskStatusComment: "Ready To Go" },
         { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
         { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
-        { value: 75, status: "70% Deployment Pending", taskStatusComment: "Deployment Pending" },
+        { value: 75, status: "75% Deployment Pending", taskStatusComment: "Deployment Pending" },
         { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
         { value: 90, status: "90% Task completed", taskStatusComment: "Task completed" },
         { value: 100, status: "100% Closed", taskStatusComment: "Closed" },
