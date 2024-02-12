@@ -5461,14 +5461,13 @@ const EditTaskPopup = (Items: any) => {
                                                             className="svg__iconbox svg__icon--editBox"
                                                         ></span>
                                                     </span>
-                                                </div>
-                                                {SearchedServiceCompnentData?.length > 0 ? (
+                                                    {SearchedServiceCompnentData?.length > 0 ? (
                                                     <div className="SmartTableOnTaskPopup">
-                                                        <ul className="list-group">
+                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                             {SearchedServiceCompnentData.map((Item: any) => {
                                                                 return (
                                                                     <li
-                                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                        className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
                                                                         key={Item.id}
                                                                         onClick={() =>
                                                                             setSelectedServiceAndCompnentData(
@@ -5484,6 +5483,8 @@ const EditTaskPopup = (Items: any) => {
                                                         </ul>
                                                     </div>
                                                 ) : null}
+                                                </div>
+                                               
                                                 <div className="input-group mb-2">
                                                     <label className="form-label full-width">
                                                         Categories
@@ -5498,12 +5499,12 @@ const EditTaskPopup = (Items: any) => {
                                                             onChange={(e) => autoSuggestionsForCategory(e)}
                                                         />
                                                         {SearchedCategoryData?.length > 0 ? (
-                                                            <div className="SmartTableOnTaskPopup w-100" style={{ marginTop: "53px" }}>
-                                                                <ul className="list-group">
+                                                            <div className="SmartTableOnTaskPopup">
+                                                                <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                     {SearchedCategoryData.map((item: any) => {
                                                                         return (
                                                                             <li
-                                                                                className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
                                                                                 key={item.id}
                                                                                 onClick={() =>
                                                                                     setSelectedCategoryData(
@@ -5581,12 +5582,12 @@ const EditTaskPopup = (Items: any) => {
                                                                         onChange={(e) => autoSuggestionsForCategory(e)}
                                                                     />
                                                                     {SearchedCategoryData?.length > 0 ? (
-                                                                        <div className="SmartTableOnTaskPopup  w-100">
-                                                                            <ul className="list-group">
+                                                                        <div className="SmartTableOnTaskPopup">
+                                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                                 {SearchedCategoryData.map((item: any) => {
                                                                                     return (
                                                                                         <li
-                                                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
                                                                                             key={item.id}
                                                                                             onClick={() =>
                                                                                                 setSelectedCategoryData(
@@ -5765,12 +5766,12 @@ const EditTaskPopup = (Items: any) => {
                                                                         }
                                                                     />
                                                                     {ApproverSearchedData?.length > 0 ? (
-                                                                        <div className="SmartTableOnTaskPopup w-100">
-                                                                            <ul className="list-group">
+                                                                        <div className="SmartTableOnTaskPopup">
+                                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                                 {ApproverSearchedData.map((item: any) => {
                                                                                     return (
                                                                                         <li
-                                                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                            className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
                                                                                             key={item.id}
                                                                                             onClick={() =>
                                                                                                 SelectApproverFromAutoSuggestion(
@@ -5838,8 +5839,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                     onChange={(e) => autoSuggestionsForApprover(e, "OnTaskPopup")}
                                                                                 />
                                                                                 {ApproverSearchedDataForPopup?.length > 0 ? (
-                                                                                    <div className="SmartTableOnTaskPopup  w-100">
-                                                                                        <ul className="list-group">
+                                                                                    <div className="SmartTableOnTaskPopup">
+                                                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                                             {ApproverSearchedDataForPopup.map((item: any) => {
                                                                                                 return (
                                                                                                     <li
@@ -6087,15 +6088,14 @@ const EditTaskPopup = (Items: any) => {
                                                                 className="svg__iconbox svg__icon--editBox"
                                                             ></span>
                                                         </span>
-                                                    </div>
-                                                    {SearchedLinkedPortfolioData?.length > 0 ? (
+                                                        {SearchedLinkedPortfolioData?.length > 0 ? (
                                                         <div className="SmartTableOnTaskPopup">
-                                                            <ul className="list-group">
+                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                 {SearchedLinkedPortfolioData.map(
                                                                     (Item: any) => {
                                                                         return (
                                                                             <li
-                                                                                className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
                                                                                 key={Item.id}
                                                                                 onClick={() =>
                                                                                     setSelectedServiceAndCompnentData(
@@ -6112,6 +6112,8 @@ const EditTaskPopup = (Items: any) => {
                                                             </ul>
                                                         </div>
                                                     ) : null}
+                                                    </div>
+                                                    
                                                     {linkedPortfolioData?.length > 0 ? (
                                                         <div className="full-width">
                                                             {linkedPortfolioData?.map(
@@ -6189,10 +6191,9 @@ const EditTaskPopup = (Items: any) => {
                                                         >
                                                             <span className="svg__iconbox svg__icon--editBox"></span>
                                                         </span>
-                                                    </div>
-                                                    {SearchedProjectData?.length > 0 ? (
+                                                        {SearchedProjectData?.length > 0 ? (
                                                         <div className="SmartTableOnTaskPopup">
-                                                            <ul className="list-group">
+                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                 {SearchedProjectData.map((item: any) => {
                                                                     return (
                                                                         <li
@@ -6209,6 +6210,8 @@ const EditTaskPopup = (Items: any) => {
                                                             </ul>
                                                         </div>
                                                     ) : null}
+                                                    </div>
+                                                   
 
                                                 </div>
                                             </div>
@@ -7603,10 +7606,9 @@ const EditTaskPopup = (Items: any) => {
                                                                         className="svg__iconbox svg__icon--editBox"
                                                                     ></span>
                                                                 </span>
-                                                            </div>
-                                                            {SearchedServiceCompnentData?.length > 0 ? (
+                                                                {SearchedServiceCompnentData?.length > 0 ? (
                                                                 <div className="SmartTableOnTaskPopup">
-                                                                    <ul className="list-group">
+                                                                    <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                         {SearchedServiceCompnentData.map(
                                                                             (Item: any) => {
                                                                                 return (
@@ -7630,6 +7632,8 @@ const EditTaskPopup = (Items: any) => {
                                                                     </ul>
                                                                 </div>
                                                             ) : null}
+                                                            </div>
+                                                            
                                                             <div className="input-group mb-2">
                                                                 <label className="form-label full-width">
                                                                     Categories
@@ -7644,12 +7648,12 @@ const EditTaskPopup = (Items: any) => {
                                                                         onChange={(e) => autoSuggestionsForCategory(e)}
                                                                     />
                                                                     {SearchedCategoryData?.length > 0 ? (
-                                                                        <div className="SmartTableOnTaskPopup w-100" style={{ marginTop: "53px" }}>
-                                                                            <ul className="list-group">
+                                                                        <div className="SmartTableOnTaskPopup">
+                                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                                 {SearchedCategoryData.map((item: any) => {
                                                                                     return (
                                                                                         <li
-                                                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
                                                                                             key={item.id}
                                                                                             onClick={() =>
                                                                                                 setSelectedCategoryData(
@@ -7727,12 +7731,12 @@ const EditTaskPopup = (Items: any) => {
                                                                                     onChange={(e) => autoSuggestionsForCategory(e)}
                                                                                 />
                                                                                 {SearchedCategoryData?.length > 0 ? (
-                                                                                    <div className="SmartTableOnTaskPopup w-100">
-                                                                                        <ul className="list-group">
+                                                                                    <div className="SmartTableOnTaskPopup">
+                                                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                                             {SearchedCategoryData.map((item: any) => {
                                                                                                 return (
                                                                                                     <li
-                                                                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                                        className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
                                                                                                         key={item.id}
                                                                                                         onClick={() =>
                                                                                                             setSelectedCategoryData(
@@ -7955,15 +7959,14 @@ const EditTaskPopup = (Items: any) => {
                                                                                 >
                                                                                     <span className="svg__iconbox svg__icon--editBox mt--10"></span>
                                                                                 </span>
-                                                                            </div>
-                                                                            {ApproverSearchedData?.length > 0 ? (
+                                                                                {ApproverSearchedData?.length > 0 ? (
                                                                                 <div className="SmartTableOnTaskPopup">
-                                                                                    <ul className="list-group">
+                                                                                    <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                                         {ApproverSearchedData.map(
                                                                                             (item: any) => {
                                                                                                 return (
                                                                                                     <li
-                                                                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                                        className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
                                                                                                         key={item.id}
                                                                                                         onClick={() =>
                                                                                                             SelectApproverFromAutoSuggestion(
@@ -7979,6 +7982,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                     </ul>
                                                                                 </div>
                                                                             ) : null}
+                                                                            </div>
+                                                                            
 
 
                                                                         </div>
@@ -8183,15 +8188,14 @@ const EditTaskPopup = (Items: any) => {
                                                                             className="svg__iconbox svg__icon--editBox"
                                                                         ></span>
                                                                     </span>
-                                                                </div>
-                                                                {SearchedLinkedPortfolioData?.length > 0 ? (
+                                                                    {SearchedLinkedPortfolioData?.length > 0 ? (
                                                                     <div className="SmartTableOnTaskPopup">
-                                                                        <ul className="list-group">
+                                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                             {SearchedLinkedPortfolioData.map(
                                                                                 (Item: any) => {
                                                                                     return (
                                                                                         <li
-                                                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
                                                                                             key={Item.id}
                                                                                             onClick={() =>
                                                                                                 setSelectedServiceAndCompnentData(
@@ -8208,6 +8212,8 @@ const EditTaskPopup = (Items: any) => {
                                                                         </ul>
                                                                     </div>
                                                                 ) : null}
+                                                                </div>
+                                                               
                                                                 {linkedPortfolioData?.length > 0 ? (
                                                                     <div className="full-width">
                                                                         {linkedPortfolioData?.map(
@@ -8289,10 +8295,9 @@ const EditTaskPopup = (Items: any) => {
                                                                     >
                                                                         <span className="svg__iconbox svg__icon--editBox"></span>
                                                                     </span>
-                                                                </div>
-                                                                {SearchedProjectData?.length > 0 ? (
+                                                                    {SearchedProjectData?.length > 0 ? (
                                                                     <div className="SmartTableOnTaskPopup">
-                                                                        <ul className="list-group">
+                                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                             {SearchedProjectData.map((item: any) => {
                                                                                 return (
                                                                                     <li
@@ -8311,6 +8316,8 @@ const EditTaskPopup = (Items: any) => {
                                                                         </ul>
                                                                     </div>
                                                                 ) : null}
+                                                                </div>
+                                                               
 
                                                             </div>
                                                         </div>
