@@ -1009,7 +1009,7 @@ const EditTaskPopup = (Items: any) => {
                         item.PercentComplete = statusValue;
                         if (
                             (statusValue < 70 && statusValue > 10) ||
-                            (statusValue < 80 && statusValue > 70)
+                            (statusValue < 80 && statusValue > 70 && statusValue !== 75)
                         ) {
                             setTaskStatus("In Progress");
                             setPercentCompleteStatus(
@@ -2729,11 +2729,11 @@ const EditTaskPopup = (Items: any) => {
                             }
                             if (
                                 (CalculateStatusPercentage == 5 || CalculateStatusPercentage == 10 || CalculateStatusPercentage == 80 ||
-                                CalculateStatusPercentage == 90) && ImmediateStatus && EditData.PercentComplete != CalculateStatusPercentage) {
+                                    CalculateStatusPercentage == 90) && ImmediateStatus && EditData.PercentComplete != CalculateStatusPercentage) {
                                 ValueStatus = CalculateStatusPercentage;
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
-                            } 
+                            }
                             else {
                                 setSendEmailComponentStatus(false);
                                 Items.StatusUpdateMail = false;
@@ -3689,7 +3689,7 @@ const EditTaskPopup = (Items: any) => {
     const UpdateBasicImageInfoJSON = (JsonData: any, usedFor: string, ImageIndex: any) => {
         return new Promise<void>(async (resolve, reject) => {
             var UploadImageArray: any = [];
-           
+
             if (JsonData != undefined && JsonData.length > 0) {
                 JsonData?.map((imgItem: any, Index: any) => {
                     if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
