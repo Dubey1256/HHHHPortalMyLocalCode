@@ -416,7 +416,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     let obj = { 'id': sortDec.id, desc: false }
                     sortingDescData.push(obj);
                 }
-                if (localStorage.getItem('preSetColumnSettingVisibility') && Object.keys(JSON.parse(localStorage.getItem('preSetColumnSettingVisibility')))?.length > 0) {
+                if (localStorage.getItem('preSetColumnSettingVisibility') && Object.keys(JSON.parse(localStorage.getItem('preSetColumnSettingVisibility')))?.length > 0 && (items?.columnSettingIcon === true)) {
                     preSetColumnSettingVisibility = JSON.parse(localStorage.getItem('preSetColumnSettingVisibility'))
                     if (Object.keys(preSetColumnSettingVisibility)?.length) {
                         const columnId = sortDec.id;
@@ -425,7 +425,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         }
                     }
 
-                } else if (sortDec?.isColumnVisible === false) {
+                } else if (sortDec?.isColumnVisible === false && items?.columnSettingIcon === true) {
                     columnVisibilityResult[sortDec.id] = sortDec.isColumnVisible;
                 }
             })
@@ -1281,7 +1281,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCount={selectedFilterCount} setSelectedFilterCount={setSelectedFilterCount} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
             {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
             {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} />}
-            {columnSettingPopup && <ColumnsSetting isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility}/>}
+            {columnSettingPopup && <ColumnsSetting isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility} />}
         </>
     )
 }
