@@ -1953,7 +1953,7 @@ const inlineEditingcolumns = (props: any) => {
       {UpdateFeatureType && (
         <Smartmetadatapickerin
           Call={Smartmetadatafeature}
-          selectedFeaturedata={selectedFeatureTypeData?.Id != undefined ? selectedFeatureTypeData : []}
+          selectedFeaturedata={selectedFeatureTypeData?.Id != undefined ? [selectedFeatureTypeData] : []}
           AllListId={props?.AllListId}
           TaxType='Feature Type'
           usedFor="Single"

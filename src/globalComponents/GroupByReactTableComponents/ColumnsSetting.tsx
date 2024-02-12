@@ -2,11 +2,23 @@ import * as React from "react";
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import Tooltip from "../../globalComponents/Tooltip";
 const ColumnsSetting = (props: any) => {
-    const [columnSettingVisibility, setColumnSettingVisibility] = React.useState({});
+    const [columnSettingVisibility, setColumnSettingVisibility] = React.useState<any>({});
     const handleClosePopup = () => {
         props?.columnSettingCallBack('close')
     };
     const handleChangeDateAndDataCallBack = () => {
+        const updatedData = { ...props?.columnVisibilityData };
+        for (let key in columnSettingVisibility) {
+            if (columnSettingVisibility?.hasOwnProperty(key)) {
+                if (props?.columnVisibilityData?.hasOwnProperty(key)) {
+                    updatedData[key] = columnSettingVisibility[key];
+                } else {
+                    updatedData[key] = columnSettingVisibility[key];
+                }
+            }
+        }
+        const dataString = JSON.stringify(updatedData);
+        localStorage.setItem('preSetColumnSettingVisibility', dataString);
         props?.columnSettingCallBack(columnSettingVisibility)
     };
     const coustomColumnsSetting = (item: any, event: any) => {
@@ -40,7 +52,7 @@ const ColumnsSetting = (props: any) => {
                 <div className="alignCenter subheading">
                     <span style={{ color: `${props?.portfolioColor}` }} className="siteColor">Column Settings</span>
                 </div>
-                <Tooltip ComponentId={839} />
+                <Tooltip ComponentId={7464} />
             </>
         );
     };

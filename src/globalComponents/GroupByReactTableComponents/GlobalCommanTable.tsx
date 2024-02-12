@@ -252,6 +252,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     let fixedWidth = items?.fixedWidth;
     let portfolioTypeData = items?.portfolioTypeData;
     let showingAllPortFolioCount = items?.showingAllPortFolioCount
+    let columnVisibilityDataValue: any = {}
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
     );
@@ -270,6 +271,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [trueRestructuring, setTrueRestructuring] = React.useState(false);
     // const [clickFlatView, setclickFlatView] = React.useState(false);
     const [columnVisibility, setColumnVisibility] = React.useState({ descriptionsSearch: false, commentsSearch: false, timeSheetsDescriptionSearch: false });
+    // const [columnVisibility, setColumnVisibility] = React.useState({});
     const [selectedFilterPannelData, setSelectedFilterPannelData] = React.useState<any>({
         Title: { Title: 'Title', Selected: true, lebel: 'Title' },
         commentsSearch: { commentsSearch: 'commentsSearch', Selected: true, lebel: 'Comments' },
@@ -405,21 +407,33 @@ const GlobalCommanTable = (items: any, ref: any) => {
         if (columns?.length > 0 && columns != undefined) {
             let sortingDescData: any = [];
             let columnVisibilityResult: any = {}
+            let preSetColumnSettingVisibility: any = {}
             columns.map((sortDec: any) => {
                 if (sortDec.isColumnDefultSortingDesc === true) {
                     let obj = { 'id': sortDec.id, desc: true }
                     sortingDescData.push(obj);
                 } else if (sortDec.isColumnDefultSortingAsc === true) {
                     let obj = { 'id': sortDec.id, desc: false }
-                    sortingDescData.push(obj)
+                    sortingDescData.push(obj);
                 }
-                if (sortDec?.isColumnVisible === false) {
+                if (localStorage.getItem('preSetColumnSettingVisibility') && Object.keys(JSON.parse(localStorage.getItem('preSetColumnSettingVisibility')))?.length > 0 && (items?.columnSettingIcon === true)) {
+                    preSetColumnSettingVisibility = JSON.parse(localStorage.getItem('preSetColumnSettingVisibility'))
+                    if (Object.keys(preSetColumnSettingVisibility)?.length) {
+                        const columnId = sortDec.id;
+                        if (preSetColumnSettingVisibility[columnId] !== undefined) {
+                            sortDec.isColumnVisible = preSetColumnSettingVisibility[columnId];
+                        }
+                    }
+
+                } else if (sortDec?.isColumnVisible === false && items?.columnSettingIcon === true) {
                     columnVisibilityResult[sortDec.id] = sortDec.isColumnVisible;
                 }
             })
-            if (columnVisibilityResult) {
-                setColumnVisibility((prevCheckboxes: any) => ({ ...prevCheckboxes, ...columnVisibilityResult }));
-                // setColumnVisibility(columnVisibilityResult)
+            if (Object.keys(preSetColumnSettingVisibility)?.length > 0) {
+                setColumnVisibility(preSetColumnSettingVisibility)
+            } else if (Object.keys(columnVisibilityResult)?.length > 0) {
+                setColumnVisibility(columnVisibilityResult)
+                columnVisibilityDataValue = { ...columnVisibilityResult }
             }
             if (sortingDescData.length > 0) {
                 setSorting(sortingDescData);
@@ -428,7 +442,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
             }
         }
     }, [columns])
-
     /****************** defult Expend Other Section  part *******************/
     React.useEffect(() => {
         if (table?.getRowModel()?.rows.length > 0) {
@@ -909,12 +922,23 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 })
             })
             setRowSelection(selectedRow);
+        } else if (items?.defultSelectedPortFolio?.length > 0) {
+            let selectedRow: any = {}
+            table?.getRowModel()?.rows?.map((elem: any) => {
+                items?.defultSelectedPortFolio?.map((selectedId: any) => {
+                    if (elem?.original?.Id == selectedId?.Id) {
+                        selectedRow = { ...selectedRow, [elem.id]: true }
+                    }
+                })
+            })
+            setRowSelection(selectedRow);
         }
-    }, [items?.defultSelectedRows?.length > 0])
+    }, [items?.defultSelectedRows?.length > 0 || items?.defultSelectedPortFolio])
 
     const columnSettingCallBack = React.useCallback((eventSetting: any) => {
         if (eventSetting != 'close') {
             setColumnSettingPopup(false)
+            columnVisibilityDataValue = { ...eventSetting }
             setColumnVisibility((prevCheckboxes: any) => ({ ...prevCheckboxes, ...eventSetting }));
         } else {
             setColumnSettingPopup(false)
@@ -1257,7 +1281,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCount={selectedFilterCount} setSelectedFilterCount={setSelectedFilterCount} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
             {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
             {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} />}
-            {columnSettingPopup && <ColumnsSetting isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} />}
+            {columnSettingPopup && <ColumnsSetting isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility} />}
         </>
     )
 }

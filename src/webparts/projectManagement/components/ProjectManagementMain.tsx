@@ -107,6 +107,7 @@ const ProjectManagementMain = (props: any) => {
   const [remarkData, setRemarkData] = React.useState(null);
   const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
   const [editSmartInfo, setEditSmartInfo] = React.useState(false)
+  const [suggestedItems, setSuggestedItems] = React.useState('')
   const childRef = React.useRef<any>();
   const StatusArray = [
     { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
@@ -1536,6 +1537,15 @@ const ProjectManagementMain = (props: any) => {
       relevantDocRef?.current?.loadAllSitesDocuments()
     }
   }, [])
+
+  const searchSuggestedPortfolio = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const searchQuery = e?.target?.value
+    setSuggestedItems(searchQuery);
+    const filteredPortfolioItems = suggestedPortfolioItems.filter((item: any) =>
+        item?.Title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setSuggestedPortfolios(searchQuery === '' ? suggestedPortfolioItems : filteredPortfolioItems);
+  }
   return (
     <myContextValue.Provider value={{ ...myContextValue, user: AllUser, ProjectLandingPageDetails: Masterdata, FunctionCall: contextCall, keyDoc: keydoc, FileDirRef: FileDirRef, closeCompTaskPopup: tagAndCreateCallBack, projectCallBackTask: LoadAllSiteTasks, portfolioCreationCallBack: ComponentServicePopupCallBack, tagProjectFromTable: true }}>
 
@@ -1620,7 +1630,7 @@ const ProjectManagementMain = (props: any) => {
                         {TaskTaggedPortfolios?.length > 0 ? (
                           <div>
                           <span className="nav__text">Relevant Portfolio Items</span>
-                          <ul className="nav__subList wrapper ps-0 pe-2">
+                          <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar">
                             {TaskTaggedPortfolios?.map((component: any, index: any) => {
                               return (
                                 <li key={index} className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
@@ -1650,8 +1660,8 @@ const ProjectManagementMain = (props: any) => {
                         )}
                         {suggestedPortfolios?.length > 0 ? (
                           <div>
-                          <span className="nav__text">Suggested Portfolio Items</span>
-                          <ul className="nav__subList wrapper ps-0 pe-2">
+                          <input type="text" value={suggestedItems} onChange={(e) => searchSuggestedPortfolio(e)} placeholder="Suggested Portfolio Items"/>
+                          <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar">
                             {suggestedPortfolios?.map((component: any, index: any) => {
                               return (
                                 <li key={index} className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
