@@ -914,8 +914,8 @@ const ProjectManagementMain = (props: any) => {
       } else {
         propsItems.DisplayCreateDate = '';
       }
-      if (propsItems?.Portfolios != undefined) {
-        let filteredSmartPortfolios = propsItems?.Portfolios.filter((tagPort: any) => tagPort?.Id !== undefined).map((tagPort: any) => smartPortfoliosData.find((port: any) => port?.Id === tagPort?.Id));
+      if (propsItems?.taggedPortfolios != undefined) {
+        let filteredSmartPortfolios = propsItems?.taggedPortfolios.filter((tagPort: any) => tagPort?.Id !== undefined).map((tagPort: any) => smartPortfoliosData.find((port: any) => port?.Id === tagPort?.Id));
         smartPortfoliosData = filteredSmartPortfolios
       }
       }
@@ -944,6 +944,7 @@ const ProjectManagementMain = (props: any) => {
       LoadAllSiteTasks();
     }
     setIsComponent(false);
+    GetMasterData(false);
   };
 
   const LoadAllSiteAllTasks = async function () {
