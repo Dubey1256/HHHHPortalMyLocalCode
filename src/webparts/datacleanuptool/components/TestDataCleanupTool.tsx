@@ -9,14 +9,19 @@ let AllDataCleanUpdata: any = [];
 let AllDataCleanUpItems: any = [];
 let SelectedData: any = [];
 let AllUsers: any = [];
+let deleteRefdata: any = [];
 let renderData: any = [];
 function DataCleancupTool(SelectedProp: any) {
+    const deleteRef = React.useRef<any>();
+    if (deleteRef != null) {
+        deleteRefdata = { ...deleteRef };
+ 
+    }
     const refreshData = () => setData(() => renderData);
     const [siteConfig, setsiteConfigData] = React.useState([])
     const [data, setData] = React.useState([])
     const [count, setCount] = React.useState(0)
     const [ItemChecked, setItemChecked] = useState<any>(false);
-    const [SelectedBulkItem, setSelectedBulkItem] = useState<any>({});
     const [loaded, setLoaded] = React.useState(true);
     let TodayDate = new Date().setHours(0, 0, 0, 0)
    
@@ -132,7 +137,7 @@ function DataCleancupTool(SelectedProp: any) {
     }
     const deleteData = (dlData: any) => {
 
-        var flag: any = confirm('Do you want to delete this item')      
+        var flag: any = confirm('Do you want to delete this item ?')      
         if (flag) {
             let web = new Web(SelectedProp.SelectedProp.siteUrl+ '/')
             web.lists.getById(dlData.ListId).items.getById(dlData.Id).recycle().then(() => {
@@ -187,7 +192,8 @@ const SaveItem = async (SelectedItem: any) => {
     }
 }
    const RemovedItems = () => {
-    var flag: any = confirm('Do you want to delete these selected items')
+    var flag: any = confirm('Do you want to delete these selected items?')
+    showProgressBar();
     var count = 0;
     if (flag) {
      var RomovedSelectedItems = SelectedData
@@ -202,7 +208,9 @@ const SaveItem = async (SelectedItem: any) => {
                         renderData = renderData.concat(AllDataCleanUpItems)
                         refreshData(); 
                         if(RomovedSelectedItems.length == count){
-                            alert("Selected Items Deleted Successfully.... ")  
+                            alert("Selected Items Deleted Successfully.... ") 
+                            deleteRef?.current?.setRowSelection({});
+                            showProgressHide(); 
                         }
                                                            
                     }
@@ -290,13 +298,15 @@ const SaveItem = async (SelectedItem: any) => {
     ],
         [data]);
     const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
-    
+     
         if (elem != undefined) {
-            SelectedData.push(elem);
-            setSelectedBulkItem(elem);
+            SelectedData = elem.map((val:any)=>{
+                return  val.original
+            })
+           
         
         } else {
-            setSelectedBulkItem({});           
+                   
             SelectedData = [];
         }       
         console.log(SelectedData);
@@ -318,7 +328,7 @@ const SaveItem = async (SelectedItem: any) => {
                 <div className="TableContentSection">
                     <div className='Alltable mt-2 mb-2'>
                         <div className='col-md-12 p-0 '>
-                            <GlobalCommanTable columns={columns} data={data} showHeader={true} callBackData={callBackData} expandIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} customHeaderButtonAvailable={true}
+                            <GlobalCommanTable columns={columns} multiSelect={true} data={data} showHeader={true} callBackData={callBackData} expandIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} ref={deleteRef} customHeaderButtonAvailable={true}
                             customTableHeaderButtons={customTableHeaderButtons}/>
                             
                         </div>

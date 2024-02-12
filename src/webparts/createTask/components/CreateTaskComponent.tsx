@@ -1779,7 +1779,7 @@ function CreateTaskComponent(props: any) {
                                     ) : (<input type="text" className="form-control" value={SearchedProjectKey}
                                         onChange={(e) => autoSuggestionsForProject(e)} placeholder="Search Project/Sprints" />)}
                                     <span className="input-group-text">
-                                        <span title="Component Popup" onClick={(e) => EditPortfolio(save, 'Component')}
+                                        <span title="Component Popup" onClick={(e) => EditPortfolio(save, 'Project')}
                                             className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
                                 </div>

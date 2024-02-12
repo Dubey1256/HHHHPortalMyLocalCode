@@ -8,6 +8,7 @@ const RestructuringCom = (props: any, ref: any) => {
   let restructureCallBack = props?.restructureCallBack;
 
   const [OldArrayBackup, setOldArrayBackup]: any = React.useState([]);
+  const [selectedItems, setSelectedItems]:any = React.useState([]);
   const [allData, setAllData]: any = React.useState([]);
   const [restructureItem, setRestructureItem]: any = React.useState([]);
   const [NewArrayBackup, setNewArrayBackup]: any = React.useState([]);
@@ -47,6 +48,7 @@ const RestructuringCom = (props: any, ref: any) => {
         array?.push(obj.original);
       });
       setRestructureItem(array);
+      setSelectedItems(array);
 
       const setPortfolioTypeCheck = (arr: any, portfolioTypeCheck: any) => {
         arr?.forEach((obj: any) => {
@@ -1568,6 +1570,22 @@ const RestructuringCom = (props: any, ref: any) => {
       restructureCallBack(array, topCompo);
   }
 
+  // const handleCheckboxChange = (itemId:any) => {
+  //   if (restructureItem.includes(itemId)) {
+  //     setRestructureItem(restructureItem.filter((Id:any) => Id !== itemId));
+  //   } else {
+  //     setRestructureItem([...restructureItem, itemId]);
+  //   }
+  // };
+
+  const handleCheckboxChange = (itemId:any) => {
+    const updatedSelectedItems = restructureItem.includes(itemId)
+      ? restructureItem.filter((Id:any) => Id !== itemId)
+      : [...restructureItem, itemId];
+
+    setRestructureItem(updatedSelectedItems);
+  };
+
   const buttonRestructuring = () => {
     let topCompo: any = false;
     let array = allData;
@@ -1797,8 +1815,12 @@ const RestructuringCom = (props: any, ref: any) => {
                           setCheckSubChilds(sub);
                           newChildarray?.push(newObj.newSubChild);
                           setRestructureChecked(newChildarray);
-                          ArrayTest?.push(newObj);
                           obj.isRestructureActive = false;
+                          ArrayTest?.push(newObj);
+                          if(obj?.Item_x0020_Type == 'Component' && items?.subRows?.length == 0){
+                            obj.isRestructureActive = true;
+                          }
+                          
                         }
                         if (sub.Title == "Others") {
                           sub.isRestructureActive = false;
@@ -2041,7 +2063,9 @@ const RestructuringCom = (props: any, ref: any) => {
                     newChildarray?.push(newObj.newSubChild);
                     setRestructureChecked(newChildarray);
                     ArrayTest?.push(newObj);
-                    obj.isRestructureActive = false;
+                    if(obj?.Item_x0020_Type !== 'Component'){
+                     obj.isRestructureActive = false;
+                    }
                     sub.isRestructureActive = false;
                   }
                   if (sub.Title == "Others") {
@@ -5051,7 +5075,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
         Restructure
       </button>
 
-      {ResturuningOpen === true && restructureItem?.length == 1 ? (
+      {ResturuningOpen === true && selectedItems?.length == 1? (
         <Panel
           onRenderHeader={onRenderCustomCalculateSC}
           type={PanelType.large}
@@ -5774,9 +5798,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                 );
               })}
             </div>
-            {restructureItem != undefined &&
-            restructureItem?.length > 0 &&
-            restructureItem[0]?.Item_x0020_Type != "Task" &&
+            {selectedItems != undefined &&
+            selectedItems?.length > 0 &&
+            selectedItems[0]?.Item_x0020_Type != "Task" &&
             checkSubChilds?.subRows[0]?.Item_x0020_Type !== "Feature" ? (
               <div className="mt-2">
                 {newItemBackUp?.Item_x0020_Type == "SubComponent" ? (
@@ -5838,14 +5862,14 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
               newItemBackUp?.TaskType?.Id == 1 && newItemBackUp?.subRows?.some((item: any) => item?.Id === restructureItem[0]?.Id && item?.Title === restructureItem[0]?.Title) ?
               "" :
               <>
-               {restructureItem != undefined &&
-            restructureItem?.length > 0 &&
-            restructureItem[0]?.Item_x0020_Type === "Task" &&
+               {selectedItems != undefined &&
+            selectedItems?.length > 0 &&
+            selectedItems[0]?.Item_x0020_Type === "Task" &&
             newItemBackUp?.TaskType?.Id == 1 &&
             newItemBackUp?.Item_x0020_Type == "Task" &&
-            (restructureItem[0]?.TaskType?.Id == 1 ||
-              restructureItem[0]?.TaskType?.Id == 3 ||
-              restructureItem[0]?.TaskType?.Id == 2) ? (
+            (selectedItems[0]?.TaskType?.Id == 1 ||
+              selectedItems[0]?.TaskType?.Id == 3 ||
+              selectedItems[0]?.TaskType?.Id == 2) ? (
               <div className="mt-2">
                 <span>
                   {"Select Task Type :"}
@@ -5890,15 +5914,15 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
 
             }
 
-            {restructureItem != undefined &&
-            restructureItem?.length > 0 &&
-            restructureItem[0]?.Item_x0020_Type === "Task" &&
+            {selectedItems != undefined &&
+            selectedItems?.length > 0 &&
+            selectedItems[0]?.Item_x0020_Type === "Task" &&
             newItemBackUp?.Item_x0020_Type != "Task" &&
-            ((restructureItem[0]?.TaskType?.Id == 3 &&
-              restructureItem[0]?.subRows?.length == 0) ||
-              restructureItem[0]?.TaskType?.Id == 2 ||
-              (restructureItem[0]?.TaskType?.Id == 1 &&
-                restructureItem[0]?.subRows?.length == 0)) ? (
+            ((selectedItems[0]?.TaskType?.Id == 3 &&
+              selectedItems[0]?.subRows?.length == 0) ||
+              selectedItems[0]?.TaskType?.Id == 2 ||
+              (selectedItems[0]?.TaskType?.Id == 1 &&
+                selectedItems[0]?.subRows?.length == 0)) ? (
               <div className="mt-2">
                 <span>
                   {"Select Task Type :"}
@@ -5940,9 +5964,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
             )}
 
             <footer className="mt-2 text-end">
-              {restructureItem != undefined &&
-              restructureItem?.length > 0 &&
-              restructureItem[0]?.Item_x0020_Type === "Task" ? (
+              {selectedItems != undefined &&
+              selectedItems?.length > 0 &&
+              selectedItems[0]?.Item_x0020_Type === "Task" ? (
                 <button
                   type="button"
                   className="btn btn-primary "
@@ -5973,11 +5997,12 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
         ""
       )}
 
-      {ResturuningOpen === true && restructureItem?.length > 1 ? (
+      {ResturuningOpen === true  && selectedItems?.length > 1 ? (
         <Panel
           isOpen={ResturuningOpen}
           onRenderHeader={onRenderCustomCalculateSC}
           isBlocking={false}
+          type={PanelType.medium}
           onDismiss={closePanel}
         >
           <div className="mt-2">
@@ -5989,7 +6014,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                 </span>
               ) : (
                   <img
-                    className="workmember"
+                    className="workmember mx-1"
                     src={newItemBackUp?.SiteIcon}
                   />
               )}
@@ -6024,11 +6049,37 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                 </a>
               )}
             </span>
+            <div>
+            <table className="my-2 border" style={{width:"100%"}}>
+                <tr className="bg-ee border">
+                  <th className="p-1" style={{width:"25px"}}></th>
+                  <th className="p-1" style={{width:"40px"}}>Icon</th>
+                  <th className="p-1" style={{width:"120px"}}>Id</th>
+                  <th className="p-1">Title</th>  
+                </tr>
+                {selectedItems.map((val:any) => {
+                    return (
+                        <tr className="border-bottom" key={val.Id}>
+                          <td className="p-1"> 
+                            <input type="checkbox" className="form-check-input rounded-0"
+                              checked={restructureItem.includes(val)} onChange={() => handleCheckboxChange(val)}
+                              /></td>
+                            <td className="p-1"><img className="workmember" src={val.SiteIcon}/></td>
+                            <td  className="p-1">
+                            <ReactPopperTooltipSingleLevel ShareWebId={val?.TaskID} row={val} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                         
+                              </td>
+                            <td className="p-1">{val.Title}</td>
+                        </tr>
+                    )
+                })}
+            </table>
+            </div>
           </div>
-          {restructureItem != undefined &&
-          restructureItem?.length > 1 &&
-          restructureItem[0]?.Item_x0020_Type == "Task" &&
-          restructureItem[0]?.TaskType?.Id == 2 ? (
+          {selectedItems != undefined &&
+          selectedItems?.length > 1 &&
+          selectedItems[0]?.Item_x0020_Type == "Task" &&
+          selectedItems[0]?.TaskType?.Id == 2 ? (
             <div className="mt-2">
               <span>
                
@@ -6258,9 +6309,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                               "/SitePages/Project-Management.aspx?ProjectId=" +
                               obj?.newSubChild?.Id}
                           >
-                            {/* <div className="alignCenter">{obj?.newSubChild?.TaskID}</div> */}
-                           
-                            {obj?.newSubChild?.Title}
+                             {obj?.newSubChild?.Title}
                           </a></div>
                           </div>
                         </div>
@@ -6422,7 +6471,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                 <span className="Dyicons me-1 ms-1">
                   X
                 </span> : (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ?  <img
-                            className="workmember"
+                            className="workmember "
                               src={newItemBackUp?.SiteIcon}
                             /> : <span className="Dyicons me-1 ms-1">
                             P
