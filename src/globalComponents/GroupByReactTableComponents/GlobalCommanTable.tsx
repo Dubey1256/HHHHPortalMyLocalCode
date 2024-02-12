@@ -270,8 +270,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [trueRestructuring, setTrueRestructuring] = React.useState(false);
     // const [clickFlatView, setclickFlatView] = React.useState(false);
-    // const [columnVisibility, setColumnVisibility] = React.useState({ descriptionsSearch: false, commentsSearch: false, timeSheetsDescriptionSearch: false });
-    const [columnVisibility, setColumnVisibility] = React.useState({});
+    const [columnVisibility, setColumnVisibility] = React.useState({ descriptionsSearch: false, commentsSearch: false, timeSheetsDescriptionSearch: false });
+    // const [columnVisibility, setColumnVisibility] = React.useState({});
     const [selectedFilterPannelData, setSelectedFilterPannelData] = React.useState<any>({
         Title: { Title: 'Title', Selected: true, lebel: 'Title' },
         commentsSearch: { commentsSearch: 'commentsSearch', Selected: true, lebel: 'Comments' },

@@ -1430,7 +1430,7 @@ const switchGroupbyData = () => {
             {getValue()}
           </>
         ),
-        id: "row?.original.Id",
+        id: "TimesheetPopup",
         canSort: false,
         placeholder: "",
         header: "",
@@ -1476,7 +1476,7 @@ const switchGroupbyData = () => {
             {getValue()}
           </>
         ),
-        id: "row?.original.Id",
+        id: "Restructure",
         canSort: false,
         placeholder: "",
         size: 1
@@ -1519,7 +1519,7 @@ const switchGroupbyData = () => {
             {getValue()}
           </>
         ),
-        id: "row?.original.Id",
+        id: "EditTaskPopup",
         canSort: false,
         placeholder: "",
         header: "",
