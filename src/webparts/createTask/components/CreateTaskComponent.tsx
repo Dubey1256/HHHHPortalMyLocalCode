@@ -1,6 +1,5 @@
 import * as React from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import { Web, sp } from "sp-pnp-js";
 import pnp from "sp-pnp-js";
@@ -13,7 +12,6 @@ import * as globalCommon from '../../../globalComponents/globalCommon';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
 import InlineEditingcolumns from '../../../globalComponents/inlineEditingcolumns';
-import { Item } from '@pnp/sp/items';
 let AllMetadata: any = []
 let siteConfig: any = []
 let AssignedToUsers: any = []
@@ -752,18 +750,7 @@ function CreateTaskComponent(props: any) {
             return Promise.reject(error);
         }
     }
-    var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
-        var Items: any = [];
-        metadataItems?.map((taxItem: any) => {
-            if (taxItem.TaxType === taxType)
-                Items.push(taxItem);
-        });
-
-        Items.sort((a: any, b: any) => {
-            return a.SortOrder - b.SortOrder;
-        });
-        return Items;
-    }
+    
     const getChilds = (item: any, items: any) => {
         item.childs = [];
         items?.map((childItem: any) => {
@@ -1431,6 +1418,7 @@ function CreateTaskComponent(props: any) {
             },
             {
                 accessorKey: "TaskID",
+                id:'TaskID',
                 placeholder: "Task Id",
                 header: "",
                 resetColumnFilters: false,
@@ -1649,7 +1637,7 @@ function CreateTaskComponent(props: any) {
                         ></span>
                     </span>
                 ),
-                id: 'Actions',
+                id: 'EditPopup',
                 accessorKey: "",
                 canSort: false,
                 resetSorting: false,

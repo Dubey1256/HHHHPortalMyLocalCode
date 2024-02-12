@@ -915,7 +915,7 @@ const TaskDashboard = (props: any) => {
 
             {
                 accessorKey: "",
-                id: "Id", // 'id' is required
+                id: "EditPopup", // 'id' is required
                 isSorted: false,
                 showSortIcon: false,
                 cell: ({ row }: any) => (
@@ -1127,7 +1127,7 @@ const TaskDashboard = (props: any) => {
                         ></span>
                     </>
                 ),
-                id: 'Id',
+                id: 'EditPopup',
                 canSort: false,
                 placeholder: "",
                 header: "",
