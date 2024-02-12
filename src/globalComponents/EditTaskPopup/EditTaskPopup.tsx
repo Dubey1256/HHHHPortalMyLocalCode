@@ -3630,6 +3630,7 @@ const EditTaskPopup = (Items: any) => {
 
     const UploadImageFunction = (Data: any, imageName: any, DataJson: any): Promise<any> => {
         return new Promise<void>(async (resolve, reject) => {
+            setIsImageUploaded(false);
             let listId = Items.Items.listId;
             let listName = Items.Items.listName;
             let Id = Items.Items.Id;
@@ -3678,7 +3679,7 @@ const EditTaskPopup = (Items: any) => {
                         }
                     })();
                 }
-            }, 2500);
+            }, 2000);
         });
     };
 
@@ -3688,7 +3689,7 @@ const EditTaskPopup = (Items: any) => {
     const UpdateBasicImageInfoJSON = (JsonData: any, usedFor: string, ImageIndex: any) => {
         return new Promise<void>(async (resolve, reject) => {
             var UploadImageArray: any = [];
-            setIsImageUploaded(false);
+           
             if (JsonData != undefined && JsonData.length > 0) {
                 JsonData?.map((imgItem: any, Index: any) => {
                     if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
@@ -3752,6 +3753,7 @@ const EditTaskPopup = (Items: any) => {
     const RemoveImageFunction = (imageIndex: any, imageName: any, FunctionType: any) => {
         return new Promise<void>(async (resolve, reject) => {
             let tempArray: any = [];
+            setIsImageUploaded(false);
             if (FunctionType == "Remove") {
                 TaskImages?.map((imageData, index) => {
                     if (index != imageIndex) {
@@ -3802,6 +3804,7 @@ const EditTaskPopup = (Items: any) => {
 
     const ReplaceImageFunction = (Data: any, ImageIndex: any) => {
         return new Promise<void>(async (resolve, reject) => {
+            setIsImageUploaded(false);
             let ImageName = EditData?.UploadedImage[ImageIndex]?.ImageName;
             var src = Data?.data_url?.split(",")[1];
             var byteArray = new Uint8Array(
