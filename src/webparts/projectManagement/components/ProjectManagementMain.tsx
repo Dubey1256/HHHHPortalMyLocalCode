@@ -1456,7 +1456,7 @@ const ProjectManagementMain = (props: any) => {
             {getValue()}
           </>
         ),
-        id: "row?.original.Id",
+        id: "Restructure",
         canSort: false,
         placeholder: "",
         size: 1,
@@ -1471,7 +1471,7 @@ const ProjectManagementMain = (props: any) => {
             ></span>
           </span>
         ),
-        id: 'Actions',
+        id: 'EditPopup',
         accessorKey: "",
         canSort: false,
         resetSorting: false,
