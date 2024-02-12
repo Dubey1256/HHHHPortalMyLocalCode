@@ -345,10 +345,9 @@ const ProjectManagementMain = (props: any) => {
               if (suggestedKeywords.length > 0) {
                 suggestedPortfolioItems = MasterListData.filter((masterItm: any) => {
                     const titleWords = masterItm?.Title.toLowerCase();
-                    return (
-                        suggestedKeywords.some((keyword: any) => titleWords.includes(keyword)) &&
-                        (titleWords !== fetchedProject?.Title.toLowerCase() && titleWords !== 'latest annual report')
-                    );
+                    const includesAnyKeyword = suggestedKeywords.some((keyword: any) => titleWords.includes(keyword));
+                    const isNotMatchingTitles = titleWords !== fetchedProject?.Title.toLowerCase() && titleWords !== 'latest annual report';
+                    return includesAnyKeyword && isNotMatchingTitles
                 });
             }
           }
@@ -918,7 +917,7 @@ const ProjectManagementMain = (props: any) => {
         let filteredSmartPortfolios = propsItems?.taggedPortfolios.filter((tagPort: any) => tagPort?.Id !== undefined).map((tagPort: any) => smartPortfoliosData.find((port: any) => port?.Id === tagPort?.Id));
         smartPortfoliosData = filteredSmartPortfolios
       }
-      }
+    }  
     if (propsItems?.Item_x0020_Type == "Project") {
       setMasterdata(propsItems)
     } else if (propsItems?.Item_x0020_Type == "Sprint") {
@@ -943,8 +942,8 @@ const ProjectManagementMain = (props: any) => {
       setIsOpenWorkstream(false)
       LoadAllSiteTasks();
     }
-    setIsComponent(false);
-    GetMasterData(false);
+      setIsComponent(false);
+      GetMasterData(false)
   };
 
   const LoadAllSiteAllTasks = async function () {
@@ -1595,8 +1594,7 @@ const ProjectManagementMain = (props: any) => {
                                 onClick={(e) =>
                                   EditPortfolio(Masterdata, "Portfolios")
                                 }
-                              >
-                              </span>
+                              ></span>
                             </span>
                           </a>
                         </li>
