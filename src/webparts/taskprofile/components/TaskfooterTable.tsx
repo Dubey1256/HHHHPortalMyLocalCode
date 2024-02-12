@@ -1233,7 +1233,6 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
                 showHeader={true}
                 portfolioColor={props?.props?.PortfolioType?.Color}
                 AllMasterTasksData={AllMasterTasksData}
-                portfolioColor={props?.props?.PortfolioType?.Color} 
                 // portfolioTypeData={portfolioTypeDataItem}
                 //  taskTypeDataItem={taskTypeDataItem} 
                 // portfolioTypeConfrigration={portfolioTypeConfrigration } 
