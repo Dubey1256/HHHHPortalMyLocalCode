@@ -257,9 +257,31 @@ const EmailComponenet = (props: any) => {
   const qaleavetotal = AllTaskuser.filter((qaleave: any) => (qaleave?.UserGroupId === 11));
   const designttotal = AllTaskuser.filter((designt: any) => (designt?.UserGroupId === 10));
 
+
+
+
   Allteamoforganization = juniortotal.length + smalleadtotal.length + seniodevtotal.length + qaleavetotal.length + designttotal.length + 2;
 
 
+
+const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.Group === "SPFx" && Junior?.Team === "SPFx"));
+  const Mobiletotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId === 388  && Junior?.Team === "Mobile" ));
+  const Managementtotal = AllTaskuser.filter((smallead: any) => (smallead?.UserGroupId === 216 && smallead?.Team === "Management"));
+  // const hhhteamtotal =  AllTaskuser.filter((hhhteam:any)=>(hhhteam?.UserGroupId===7 && hhhteam?.AssingedToUserId != 9));
+  const Sharewebtotal = AllTaskuser.filter((seniodev: any) => ( seniodev?.Group == "Shareweb" && seniodev?.Team === "Shareweb"));
+  const qatotal = AllTaskuser.filter((qaleave: any) => (qaleave?.Group == "QA" && qaleave?.Team === "QA"));
+  const designtotal = AllTaskuser.filter((designt: any) => (designt?.Group == "Design" && designt?.Team === "Design"));
+  const HRtotal = AllTaskuser.filter((designt: any) => (designt?.Group == "HR" && designt?.Team === "HR"));
+  const JTMTotal = AllTaskuser.filter((Junior) => ( Junior?.Team === "Junior Task Manager"))
+
+  const SPFxTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "SPFx"))
+  const ManagementTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "Management"))
+  const MobileTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "Mobile"))
+  const SharewebTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "Shareweb"))
+  const DesignTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "Design"))
+  const QATrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "QA"))
+  const HRTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "HR"))
+  // const JTMTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "Junior Task Manager"))
 
 
   const juniordevleave = data.filter((item: any) => item.Juniordev.length != 0 && item.eventType != 'Work From Home');
@@ -314,31 +336,64 @@ const EmailComponenet = (props: any) => {
         <div>
         <table style="height: 88px;border-collapse: collapse;">
             <tr>
-                <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;text-align: center;">Smalsus Lead Team</td>
-                <td width="190px" height="48px" style="color: #333;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Senior Developer Team</td>
-                <td width="185px" height="48px" style="color: #333;width:185px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Junior Developer Team</td>
-                <td width="103px" height="48px" style="color: #333;width:103px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Design Team</td>
-                <td width="104px" height="48px" style="color: #333;width:104px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">QA Team</td>
-                <td width="96px" height="48px" style="color: #333;width:96px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;text-align: center; background: #FAFAFA;">HR</td>
+                <td width="190px" height="48px" style="background: #2F5596;color: #ffffff;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2">Management</td>
+                <td width="190px" height="48px" style="background: #2F5596;color: #ffffff;width:190px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2">SPFX</td>
+                <td width="185px" height="48px" style="background: #2F5596;color: #ffffff;width:185px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2">Shareweb</td>
+                <td width="103px" height="48px" style="background: #2F5596;color: #ffffff;width:103px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2"> Mobile</td>
+                <td width="104px" height="48px" style="background: #2F5596;color: #ffffff;width:104px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE; text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;" colspan="2"> Design</td>
+                <td width="96px" height="48px" style="background: #2F5596;color: #ffffff;width:96px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;text-align: center;"colspan="2">QA</td>
+                <td width="96px" height="48px" style="background: #2F5596;color: #ffffff;width:96px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;text-align: center;" colspan="2"> HR </td>
+                <td width="96px" height="48px" style="background: #2F5596;color: #ffffff;width:96px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;text-align: center;" colspan="2"> JTM </td>
             </tr>
+            <tr><td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;text-align: center;" >Staff</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;text-align: center;">Trainee</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;text-align: center;" >Staff</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;text-align: center;">Trainee</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;text-align: center;" >Staff</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;text-align: center;">Trainee</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;text-align: center;" >Staff</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;text-align: center;">Trainee</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;text-align: center;" >Staff</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;text-align: center;">Trainee</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;text-align: center;" >Staff</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;text-align: center;">Trainee</td>
+            
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;text-align: center;" >Staff</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;text-align: center;">Trainee</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #FAFAFA;text-align: center;" >Staff</td>
+            
+          
+            
+            </tr>
+            
             <tr>
-                <td width="158px" height="40px" style="color: #333;width:158px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;border-left: 1px solid #EEE;padding: 0px 8px;text-align: center;">${smalsusleadavailabel}</td>
-                <td width="190px" height="40px" style="color: #333;width:190px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 0px 8px;text-align: center;">${seniordevavailabel}</td>
-                <td width="185px" height="40px" style="color: #333;width:185px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 0px 8px;text-align: center;">${Juniordevavailabel}</td>
-                <td width="103px" height="40px" style="color: #333;width:103px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 0px 8px;text-align: center;">${designteamavailabel}</td>
-                <td width="104px" height="40px" style="color: #333;width:104px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 0px 8px;text-align: center;">${qateamavailabel}</td>
-                <td width="96px" height="40px" style="color: #333;width:96px;height:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;padding: 0px 8px;text-align: center;">${1}</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #ffffff;text-align: center;" >${Managementtotal?.length}</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #ffffff;text-align: center;">${ManagementTrainee?.length}</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #ffffff;text-align: center;" >${SPfxtotal?.length}</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #ffffff;text-align: center;">${SPFxTrainee?.length}</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #ffffff;text-align: center;" >${Sharewebtotal?.length}</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #ffffff;text-align: center;">${SharewebTrainee?.length}</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #ffffff;text-align: center;" >${Mobiletotal?.length}</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #ffffff;text-align: center;">${MobileTrainee?.length}</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #ffffff;text-align: center;" >${designtotal?.length}</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #ffffff;text-align: center;">${DesignTrainee?.length}</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #ffffff;text-align: center;" >${qatotal?.length}</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #ffffff;text-align: center;">${QATrainee?.length}</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #ffffff;text-align: center;" >${HRtotal?.length}</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #ffffff;text-align: center;">${HRTrainee?.length}</td>
+            <td width="158px" height="48px" style="color: #333;width:158px;height:48px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE;background: #ffffff;text-align: center;" >${JTMTotal?.length}</td>
+           
             </tr>
         </table>
     </div>
     <div width="100%">
-              <table style="height: 32px;border-collapse: collapse;" border="0" width="100%" height="32px">
-                <tr>
-                  <td width="100%" height="32px">&nbsp;</td>
-                </tr>
-              </table>
-            </div>
-    <div>
+    <table style="height: 32px;border-collapse: collapse;" border="0" width="100%" height="32px">
+      <tr>
+        <td width="100%" height="32px">&nbsp;</td>
+      </tr>
+    </table>
+  </div>
+<div>
     <table style="border-collapse: collapse;">
         <tr>
             <td width="40px" height="48px" style="color: #333;height:48px;width:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">No.</td>

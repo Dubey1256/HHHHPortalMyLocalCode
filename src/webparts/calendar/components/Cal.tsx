@@ -1,7 +1,7 @@
 import * as React from "react";
 // import { render } from 'react-dom';
 // import { Calendar, Views, momentLocalizer } from "react-big-calendar";
-import { Calendar, momentLocalizer } from "react-big-calendar";
+import { Calendar, momentLocalizer, View } from "react-big-calendar";
 // import * as moment from "moment";
 import moment from 'moment';
 // import './style.css';
@@ -45,7 +45,7 @@ import {
   PeoplePicker,
   PrincipalType
 } from "@pnp/spfx-controls-react/lib/PeoplePicker";
-import  {MonthlyLeaveReport } from "./MonthlyLeaveReport";
+import { MonthlyLeaveReport } from "./MonthlyLeaveReport";
 import { Download } from "react-bootstrap-icons";
 
 interface IPeoplePickerComponentProps {
@@ -138,7 +138,7 @@ const App = (props: any) => {
   let compareData: any = [];
   // const [isOpsetIsOpen]:any = React.useState(false);
   // const [name, setName]:any = React.useState('');
-  
+
   const [leaveReport, setleaveReport] = React.useState(false);
   const [startDate, setStartDate]: any = React.useState(null);
   const [endDate, setEndDate]: any = React.useState(null);
@@ -179,7 +179,9 @@ const App = (props: any) => {
   const [returnedRecurrenceInfo, setReturnedRecurrenceInfo] =
     React.useState(null);
   const [recurrenceData, setRecurrenceData] = React.useState(null);
-  const [selectedKey, setselectedKey] = React.useState('daily');
+  // const [selectedKey, setselectedKey] = React.useState('daily');
+  const [view, setview] = React.useState('month');
+
   // People picker function start
   const [selectedUsers, setSelectedUsers] = React.useState([]);
 
@@ -1670,9 +1672,9 @@ const App = (props: any) => {
     setTodayEvent(currentDayEvents);
     setEmail(true);
   };
- const DownloadLeaveReport = () =>{
+  const DownloadLeaveReport = () => {
     setleaveReport(true);
- }
+  }
 
   // var a:any=false
   // if(a==true){
@@ -1713,7 +1715,7 @@ const App = (props: any) => {
       // }
     }
     else {
-      // setInputValueName('');
+      setInputValueName('');
       setIsChecked(false);
       allDay = false
       setIsDisableField(false)
@@ -1724,10 +1726,11 @@ const App = (props: any) => {
     }
     setType(option)
   }
-
   //  If type === work from home 
-
-
+  // const localizer = momentLocalizer(moment);
+  const handleNavigate = (newDate: Date, newView: View) => {
+    setview(newView || 'months');
+  };
   return (
     <div>
       <div className="w-100 text-end">
@@ -1741,10 +1744,9 @@ const App = (props: any) => {
         </a>
       </div>
       <div className="w-100 text-end">
-       <a  href="#" onClick={DownloadLeaveReport}>
-           <span>Generate Monthly Report |</span>
-        </a> 
-        |
+      <a  href="#" onClick={DownloadLeaveReport}>
+           <span>Generate Monthly Report  | </span>
+        </a>
         <a
           target="_blank"
           data-interception="off"
@@ -1755,9 +1757,10 @@ const App = (props: any) => {
         </a>
       </div>
       <div style={{ height: "500pt" }}>
-     <a className="mailBtn me-4" href="#" onClick={emailComp}>
-          <FaPaperPlane></FaPaperPlane> <span>Send Leave Summary</span>
-        </a>
+        
+          <a className="mailBtn me-4" href="#" onClick={emailComp}>
+            <FaPaperPlane></FaPaperPlane> <span>Send Leave Summary</span>
+          </a>
         
         {/* <button type="button" className="mailBtn" >
           Email
@@ -1770,13 +1773,16 @@ const App = (props: any) => {
           startAccessor="start"
           endAccessor="end"
           defaultDate={moment().toDate()}
-          // defaultView={Views.MONTH}
           onShowMore={handleShowMore}
           views={{ month: true, week: true, day: true, agenda: true }}
           localizer={localizer}
           onSelectEvent={handleDateClick}
           eventPropGetter={eventStyleGetter}
+          onView={(newView: View) => setview(newView)}
+          onNavigate={handleNavigate}
+          view={view as View}
         />
+
       </div>
 
       {email ? (
@@ -1990,9 +1996,8 @@ const App = (props: any) => {
                   recurrenceData={recurrenceData}
                   startDate={startDate}
                   siteUrl={props.props.siteUrl}
-                  returnRecurrenceData={returnRecurrenceInfo}
-                  selectedKey={selectedKey}
-                  selectedRecurrenceRule={selectedKey}
+                  returnRecurrenceData={returnRecurrenceInfo} selectedKey={undefined} selectedRecurrenceRule={undefined}                // selectedKey={selectedKey}
+                // selectedRecurrenceRule={selectedKey}
                 ></EventRecurrenceInfo>
               )}
             </div>
@@ -2141,7 +2146,7 @@ const App = (props: any) => {
 
       </Panel>
 
-      {leaveReport ? <MonthlyLeaveReport props={props.props} Context={props.props.context} trueval ={ leaveReport} settrue={setleaveReport}/>:""}
+      {leaveReport ? <MonthlyLeaveReport props={props.props} Context={props.props.context} /> : ""}
     </div>
   );
 };

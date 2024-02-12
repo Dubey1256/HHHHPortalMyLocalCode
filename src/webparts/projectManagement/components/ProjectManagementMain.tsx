@@ -1,10 +1,10 @@
 import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
+import InlineEditingcolumns from "../../../globalComponents/inlineEditingcolumns";
 import { FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import { Web } from "sp-pnp-js";
-import EditProjectPopup from "../../projectmanagementOverviewTool/components/EditProjectPopup";
+import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
 import * as Moment from "moment";
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import {
@@ -65,6 +65,7 @@ let isColumnDefultSortingAsc: any = false;
 let relevantDocRef: any;
 let smartInfoRef: any;
 let keyDocRef: any;
+let suggestedPortfolioItems: any;
 const ProjectManagementMain = (props: any) => {
   relevantDocRef = React.useRef();
   smartInfoRef = React.useRef();
@@ -93,6 +94,7 @@ const ProjectManagementMain = (props: any) => {
   const [isOpenWorkstream, setIsOpenWorkstream] = React.useState(false);
   const [passdata, setpassdata] = React.useState("");
   const [TaskTaggedPortfolios, setTaskTaggedPortfolios] = React.useState([]);
+  const [suggestedPortfolios, setSuggestedPortfolios] = React.useState([]);
   const [projectTitle, setProjectTitle] = React.useState("");
   const [projectId, setProjectId] = React.useState(null);
   const [IsTaggedCompTask, setIsTaggedCompTask] = React.useState(false);
@@ -337,6 +339,18 @@ const ProjectManagementMain = (props: any) => {
             if (fetchedProject?.taggedPortfolios != undefined) {
               smartPortfoliosData = fetchedProject.taggedPortfolios
             }
+            if (fetchedProject?.Title != undefined) {
+              const suggestedKeywords = fetchedProject?.Title.toLowerCase().split(/\s+/);
+              if (suggestedKeywords.length > 0) {
+                suggestedPortfolioItems = MasterListData.filter((masterItm: any) => {
+                    const titleWords = masterItm?.Title.toLowerCase();
+                    return (
+                        suggestedKeywords.some((keyword: any) => titleWords.includes(keyword)) &&
+                        (titleWords !== fetchedProject?.Title.toLowerCase() && titleWords !== 'latest annual report')
+                    );
+                });
+            }
+          }
             projectData = fetchedProject;
             if (loadtask == true) {
               LoadAllSiteTasks();
@@ -633,6 +647,17 @@ const ProjectManagementMain = (props: any) => {
             taskComponent.push(comp?.Id)
             taskTaggedComponents.push(comp)
           }
+          suggestedPortfolioItems = suggestedPortfolioItems.filter((itms: any) => {
+            if (smartPortfoliosData !== undefined || taskTaggedComponents !== undefined) {
+                const isKeyTitleMatch = smartPortfoliosData.some((tagPort: any) => tagPort?.Title === itms?.Title); 
+                const isRelevantTitleMatch = taskTaggedComponents.some((taskTag: any) => taskTag?.Title === itms?.Title);
+                const isProjectOrSprint = itms?.Item_x0020_Type === 'Project' || itms?.Item_x0020_Type === 'Sprint';    
+                if (isKeyTitleMatch || isRelevantTitleMatch || isProjectOrSprint) {
+                    return false;
+                }
+            }
+            return itms?.Item_x0020_Type !== 'Project' && itms?.Item_x0020_Type !== 'Sprint';
+        });
           items.PortfolioTitle = '';
           items.portfolio = items?.Portfolio;
           items.PortfolioTitle = items?.Portfolio?.Title;
@@ -811,6 +836,7 @@ const ProjectManagementMain = (props: any) => {
       setProjectTableData(allSprints);
       backupTableData = allSprints;
       setTaskTaggedPortfolios(taskTaggedComponents)
+      setSuggestedPortfolios(suggestedPortfolioItems)
       setPageLoader(false);
     } catch (error) {
       console.log(error)
@@ -887,7 +913,11 @@ const ProjectManagementMain = (props: any) => {
       } else {
         propsItems.DisplayCreateDate = '';
       }
-    }
+      if (propsItems?.Portfolios != undefined) {
+        let filteredSmartPortfolios = propsItems?.Portfolios.filter((tagPort: any) => tagPort?.Id !== undefined).map((tagPort: any) => smartPortfoliosData.find((port: any) => port?.Id === tagPort?.Id));
+        smartPortfoliosData = filteredSmartPortfolios
+      }
+      }
     if (propsItems?.Item_x0020_Type == "Project") {
       setMasterdata(propsItems)
     } else if (propsItems?.Item_x0020_Type == "Sprint") {
@@ -1546,68 +1576,111 @@ const ProjectManagementMain = (props: any) => {
                             className="nav__link border-bottom pb-1"
                           >
                             <span className="nav__icon nav__icon--home"></span>
-                            <span className="nav__text">
+                            <span className="nav__text alignCenter">
                               Portfolios Item{" "}
                               <span
-                                className="float-end "
+                                className="ml-auto svg__iconbox svg__icon--Plus light"
                                 style={{ cursor: "pointer" }}
                                 onClick={(e) =>
                                   EditPortfolio(Masterdata, "Portfolios")
                                 }
                               >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="25"
-                                  height="25"
-                                  viewBox="0 0 48 48"
-                                  fill="none"
-                                >
-                                  <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
-                                    d="M22.8746 14.3436C22.8774 18.8722 22.8262 22.6308 22.7608 22.6962C22.6954 22.7616 18.9893 22.8128 14.525 22.8101C10.0606 22.8073 6.32545 22.8876 6.22467 22.9884C5.99582 23.2172 6.00541 24.6394 6.23742 24.8714C6.33182 24.9658 10.0617 25.0442 14.526 25.0455C18.9903 25.0469 22.6959 25.1009 22.7606 25.1657C22.8254 25.2304 22.8808 28.9921 22.8834 33.5248L22.8884 41.7663L23.9461 41.757L25.0039 41.7476L25.0012 33.3997L24.9986 25.0516L33.2932 25.0542C37.8555 25.0556 41.6431 25.0017 41.7105 24.9343C41.8606 24.7842 41.8537 23.0904 41.7024 22.9392C41.6425 22.8793 37.8594 22.8258 33.2955 22.8204L24.9975 22.8104L24.9925 14.4606L24.9874 6.11084L23.9285 6.11035L22.8695 6.10998L22.8746 14.3436Z"
-                                    fill="#fff"
-                                  />
-                                </svg>
                               </span>
                             </span>
                           </a>
                         </li>
                         <li className="nav__item  pb-1 pt-0 mt-1">
-                          <div className="nav__text">
-                            {Masterdata?.taggedPortfolios?.length > 0 || TaskTaggedPortfolios?.length > 0 ? (
-                              <ul className="nav__subList wrapper  ps-0 pe-2">
-                                {Masterdata?.taggedPortfolios?.map(
-                                  (component: any, index: any) => {
-                                    return (
-                                      <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
-                                        <span>
-                                          <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank"
-                                            onClick={() => filterPotfolioTasks(component, index, "Component")}>{component?.Title}</a>
-                                        </span>
-                                      </li>
-                                    );
-                                  }
-                                )}
-                                {TaskTaggedPortfolios?.map(
-                                  (component: any, index: any) => {
-                                    return (
-                                      <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"} >
-                                        <span>
-                                          <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank"
-                                            onClick={() => filterPotfolioTasks(component, index, "taskComponent")}>{component?.Title}</a>
-                                        </span>
-                                      </li>
-                                    );
-                                  }
-                                )}
-                              </ul>
-                            ) : (
-                              <div className="nontag mt-2 text-center">
-                                No Tagged Portfolio
-                              </div>
-                            )}
+                        <div className="nav__text">
+                        <>
+                        {Masterdata?.taggedPortfolios?.length > 0 ? (
+                          <div>
+                          <span className="nav__text">Key Portfolio Items</span>
+                            <ul className="nav__subList wrapper ps-0 pe-2">
+                              {Masterdata?.taggedPortfolios?.map((component: any, index: any) => {
+                                return (
+                                  <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
+                                    <span>
+                                      <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank" onClick={() => filterPotfolioTasks(component, index, "Component")}>
+                                        {component?.Title}
+                                      </a>
+                                    </span>
+                                  </li>
+                                )
+                              })}
+                            </ul>
+                        </div>
+                        ) : (
+                        <>
+                        <span className="nav__text">Key Portfolio Items</span>  
+                          <div className="nontag mt-2 text-center">
+                              No Tagged Portfolio
                           </div>
+                        </>  
+                        )}
+                        {TaskTaggedPortfolios?.length > 0 ? (
+                          <div>
+                          <span className="nav__text">Relevant Portfolio Items</span>
+                          <ul className="nav__subList wrapper ps-0 pe-2">
+                            {TaskTaggedPortfolios?.map((component: any, index: any) => {
+                              return (
+                                <li key={index} className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
+                                  <div className="alignCenter">
+                                    <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank" onClick={() => filterPotfolioTasks(component, index, "taskComponent")}>
+                                      {component?.Title}
+                                    </a>
+                                  <span
+                                  className="ml-auto wid30 svg__iconbox svg__icon--Plus light hreflink"
+                                  onClick={(e) =>
+                                  ComponentServicePopupCallBack([component],'','')}
+                                  >
+                                  </span>
+                                  </div>
+                                </li>
+                                )
+                              })}
+                          </ul>
+                        </div>
+                        ) : (
+                          <>
+                        <span className="nav__text">Relevant Portfolio Items</span>  
+                          <div className="nontag mt-2 text-center">
+                              No Tagged Portfolio
+                          </div>
+                          </>
+                        )}
+                        {suggestedPortfolios?.length > 0 ? (
+                          <div>
+                          <span className="nav__text">Suggested Portfolio Items</span>
+                          <ul className="nav__subList wrapper ps-0 pe-2">
+                            {suggestedPortfolios?.map((component: any, index: any) => {
+                              return (
+                                <li key={index} className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
+                                  <div className="alignCenter">
+                                    <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank" onClick={() => filterPotfolioTasks(component, index, "taskComponent")}>
+                                      {component?.Title}
+                                    </a>
+                                  <span
+                                  className="ml-auto wid30 svg__iconbox svg__icon--Plus light hreflink"
+                                  onClick={(e) =>
+                                  ComponentServicePopupCallBack([component],'','')}
+                                  >
+                                  </span>
+                                  </div>
+                                </li>
+                                )
+                              })}
+                          </ul>
+                        </div>
+                        ) : (
+                          <>
+                        <span className="nav__text">Suggested Portfolio Items</span>  
+                          <div className="nontag mt-2 text-center">
+                              No Tagged Portfolio
+                          </div>
+                          </>
+                        )}
+                        </>
+                        </div>
                         </li>
                       </ul>
                     </nav>
@@ -1754,7 +1827,7 @@ const ProjectManagementMain = (props: any) => {
                                     {/* <div className="col-md-12 url"><div className="d-flex p-0"><div className="bg-fxdark p-2"><label>Url</label></div><div className="bg-light p-2 text-break full-width"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></div></div></div> */}
                                     <div className="col-md-12 pe-0"><dl><dt className="bg-fxdark UrlLabel">Url</dt><dd className="bg-light UrlField"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></dd></dl></div>
                                     {
-                                      Masterdata?.Body != undefined ? <div className="mt-2 row pe-0 detailsbox">
+                                      Masterdata?.Body != undefined ? <div className="mt-2 col-md-12  detailsbox">
                                         <details className="pe-0" open>
                                           <summary>Description</summary>
                                           <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Body }}></div>
@@ -1764,7 +1837,7 @@ const ProjectManagementMain = (props: any) => {
                                     }
 
                                     {
-                                      Masterdata?.Background != undefined ? <div className="mt-2 row pe-0 detailsbox">
+                                      Masterdata?.Background != undefined ? <div className="mt-2 col-md-12  detailsbox">
                                         <details className="pe-0">
                                           <summary>Background</summary>
                                           <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Background }}></div>
@@ -1774,7 +1847,7 @@ const ProjectManagementMain = (props: any) => {
                                     }
 
                                     {
-                                      Masterdata?.Idea != undefined ? <div className="mt-2 row pe-0 detailsbox">
+                                      Masterdata?.Idea != undefined ? <div className="mt-2 col-md-12  detailsbox">
                                         <details className="pe-0">
                                           <summary>Idea</summary>
                                           <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Idea }}></div>
@@ -1784,7 +1857,7 @@ const ProjectManagementMain = (props: any) => {
                                     }
 
                                     {
-                                      Masterdata?.Deliverables != undefined ? <div className="mt-2 row pe-0 detailsboxp 41_
+                                      Masterdata?.Deliverables != undefined ? <div className="mt-2 col-md-12  detailsbox 41_
                                 0=][9\
                                 -p/\otyty5/">
                                         <details className="pe-0">
@@ -1796,7 +1869,7 @@ const ProjectManagementMain = (props: any) => {
 
                                   </div>
                                 </div>
-                                <div className='p-0'> {Masterdata?.Id != undefined && <KeyDocuments ref={relevantDocRef} AllListId={AllListId} Context={props?.Context} siteUrl={AllListId?.siteUrl} DocumentsListID={AllListId.DocumentsListID} siteName={"Master Tasks"} folderName={Masterdata?.Title} keyDoc={true}></KeyDocuments>}</div>
+                                <div className='col-md-12 bg-white'> {Masterdata?.Id != undefined && <KeyDocuments ref={relevantDocRef} AllListId={AllListId} Context={props?.Context} siteUrl={AllListId?.siteUrl} DocumentsListID={AllListId.DocumentsListID} siteName={"Master Tasks"} folderName={Masterdata?.Title} keyDoc={true}></KeyDocuments>}</div>
                               </div>
                             </div>
                           </section>

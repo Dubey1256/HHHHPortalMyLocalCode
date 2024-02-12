@@ -12,7 +12,7 @@ import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPo
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
-import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
+import InlineEditingcolumns from '../../../globalComponents/inlineEditingcolumns';
 import { Item } from '@pnp/sp/items';
 let AllMetadata: any = []
 let siteConfig: any = []
@@ -1779,7 +1779,7 @@ function CreateTaskComponent(props: any) {
                                     ) : (<input type="text" className="form-control" value={SearchedProjectKey}
                                         onChange={(e) => autoSuggestionsForProject(e)} placeholder="Search Project/Sprints" />)}
                                     <span className="input-group-text">
-                                        <span title="Component Popup" onClick={(e) => EditPortfolio(save, 'Component')}
+                                        <span title="Component Popup" onClick={(e) => EditPortfolio(save, 'Project')}
                                             className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
                                 </div>

@@ -206,13 +206,16 @@ const EditTaskPopup = (Items: any) => {
     const [TeamMemberChanged, setTeamMemberChanged] = useState(false);
     const [CurrentImageIndex, setCurrentImageIndex] = useState("");
     const [loaded, setLoaded] = React.useState(true);
+    const [IsImageUploaded, setIsImageUploaded] = React.useState(true);
 
     let [StatusOptions, setStatusOptions] = useState([
         { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "2% Follow Up", taskStatusComment: "Follow Up" },
         { value: 3, status: "3% Approved", taskStatusComment: "Approved" },
+        { value: 4, status: "4% Checking", taskStatusComment: "Checking" },
         { value: 5, status: "5% Acknowledged", taskStatusComment: "Acknowledged" },
+        { value: 9, status: "9% Ready To Go", taskStatusComment: "Ready To Go" },
         { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
         { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
         { value: 75, status: "70% Deployment Pending", taskStatusComment: "Deployment Pending" },
@@ -2547,6 +2550,7 @@ const EditTaskPopup = (Items: any) => {
                         let UpdatedDataObject: any = TaskDetailsFromCall[0]
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
                         UpdatedDataObject.SmartPriority = NewSmartPriority;
+                        UpdatedDataObject.siteType = EditData.siteType;
 
                         // When task assigned to user, send a notification on MS Teams 
 
@@ -2724,16 +2728,13 @@ const EditTaskPopup = (Items: any) => {
                                 }
                             }
                             if (
-                                (CalculateStatusPercentage == 5 ||
-                                    CalculateStatusPercentage == 10 ||
-                                    CalculateStatusPercentage == 80 ||
-                                    CalculateStatusPercentage == 90) &&
-                                ImmediateStatus
-                            ) {
+                                (CalculateStatusPercentage == 5 || CalculateStatusPercentage == 10 || CalculateStatusPercentage == 80 ||
+                                CalculateStatusPercentage == 90) && ImmediateStatus && EditData.PercentComplete != CalculateStatusPercentage) {
                                 ValueStatus = CalculateStatusPercentage;
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
-                            } else {
+                            } 
+                            else {
                                 setSendEmailComponentStatus(false);
                                 Items.StatusUpdateMail = false;
                             }
@@ -2761,10 +2762,10 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.DisplayDueDate = Moment(EditData?.DueDate).format("DD/MM/YYYY");
                                     if (dataEditor.data.DisplayDueDate == "Invalid date" || "") {
                                         dataEditor.data.DisplayDueDate = dataEditor.data.DisplayDueDate.replaceAll(
-                                          "Invalid date",
-                                          ""
+                                            "Invalid date",
+                                            ""
                                         );
-                                      }
+                                    }
                                     dataEditor.data.PercentComplete = Number(UpdateTaskInfo.PercentCompleteStatus);
                                     dataEditor.data.FeedBack = JSON.stringify(
                                         dataEditor.data.FeedBack
@@ -2955,16 +2956,25 @@ const EditTaskPopup = (Items: any) => {
         }
         // FeedBackBackupArray = [];
         let CategoriesTitle: any = "";
-        if (tempShareWebTypeData != undefined && tempShareWebTypeData?.length > 0) {
-            tempShareWebTypeData.map((typeData: any) => {
+        let uniqueIds: any = {};
+
+        const result: any = tempShareWebTypeData.filter((item: any) => {
+            if (!uniqueIds[item.Id]) {
+                uniqueIds[item.Id] = true;
+                return true;
+            }
+            return false;
+        });
+        if (result != undefined && result?.length > 0) {
+            result.map((typeData: any) => {
                 CategoryTypeID.push(typeData.Id);
-                if (CategoriesTitle?.length) {
+                if (CategoriesTitle?.length > 2) {
                     CategoriesTitle = CategoriesTitle + ";" + typeData.Title;
                 } else {
                     CategoriesTitle = typeData.Title;
                 }
             });
-        } 
+        }
         if (TaggedPortfolioData != undefined && TaggedPortfolioData?.length > 0) {
             TaggedPortfolioData?.map((com: any) => {
                 smartComponentsIds = com.Id;
@@ -3620,6 +3630,7 @@ const EditTaskPopup = (Items: any) => {
 
     const UploadImageFunction = (Data: any, imageName: any, DataJson: any): Promise<any> => {
         return new Promise<void>(async (resolve, reject) => {
+            setIsImageUploaded(false);
             let listId = Items.Items.listId;
             let listName = Items.Items.listName;
             let Id = Items.Items.Id;
@@ -3668,7 +3679,7 @@ const EditTaskPopup = (Items: any) => {
                         }
                     })();
                 }
-            }, 2500);
+            }, 2000);
         });
     };
 
@@ -3678,6 +3689,7 @@ const EditTaskPopup = (Items: any) => {
     const UpdateBasicImageInfoJSON = (JsonData: any, usedFor: string, ImageIndex: any) => {
         return new Promise<void>(async (resolve, reject) => {
             var UploadImageArray: any = [];
+           
             if (JsonData != undefined && JsonData.length > 0) {
                 JsonData?.map((imgItem: any, Index: any) => {
                     if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
@@ -3722,7 +3734,9 @@ const EditTaskPopup = (Items: any) => {
                 await web.lists
                     .getById(Items.Items.listId)
                     .items.getById(Items.Items.Id)
-                    .update({ BasicImageInfo: UploadImageArray?.length > 0 ? JSON.stringify(UploadImageArray) : null });
+                    .update({ BasicImageInfo: UploadImageArray?.length > 0 ? JSON.stringify(UploadImageArray) : null }).then(() => {
+                        setIsImageUploaded(true);
+                    });
                 console.log("Image JSON Updated !!");
                 AddImageDescriptionsIndex = undefined;
                 resolve();
@@ -3739,6 +3753,7 @@ const EditTaskPopup = (Items: any) => {
     const RemoveImageFunction = (imageIndex: any, imageName: any, FunctionType: any) => {
         return new Promise<void>(async (resolve, reject) => {
             let tempArray: any = [];
+            setIsImageUploaded(false);
             if (FunctionType == "Remove") {
                 TaskImages?.map((imageData, index) => {
                     if (index != imageIndex) {
@@ -3789,6 +3804,7 @@ const EditTaskPopup = (Items: any) => {
 
     const ReplaceImageFunction = (Data: any, ImageIndex: any) => {
         return new Promise<void>(async (resolve, reject) => {
+            setIsImageUploaded(false);
             let ImageName = EditData?.UploadedImage[ImageIndex]?.ImageName;
             var src = Data?.data_url?.split(",")[1];
             var byteArray = new Uint8Array(
@@ -4875,7 +4891,7 @@ const EditTaskPopup = (Items: any) => {
                             )}
                             <span>
                                 <button
-                                    className="btn btn-primary mx-1 px-3"
+                                    className={IsImageUploaded ? "btn btn-primary mx-1 px-3" : "btn btn-primary disabled mx-1 px-3"}
                                     onClick={UpdateTaskInfoFunction}
                                 >
                                     Save

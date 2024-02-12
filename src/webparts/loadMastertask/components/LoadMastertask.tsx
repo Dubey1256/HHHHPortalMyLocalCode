@@ -14,6 +14,17 @@ export default class LoadMastertask extends React.Component<ILoadMastertaskProps
       userDisplayName,
       siteUrl,
       MasterTaskListID,
+      TaskTypeID,
+      TaskUsertListID,
+      SmartMetadataListID,
+      SmartInformationListID,
+      DocumentsListID,
+      TaskTimeSheetListID,
+      PortFolioTypeID,
+      TimeEntry,
+      SiteCompostion,
+      SmartHelptListID
+
     } = this.props;
 
     return (   
