@@ -12,8 +12,8 @@ import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPo
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
-import InlineEditingcolumns from '../../../globalComponents/inlineEditingcolumns';
 import { Item } from '@pnp/sp/items';
+import InlineEditingcolumns from '../../../globalComponents/inlineEditingcolumns';
 let AllMetadata: any = []
 let siteConfig: any = []
 let AssignedToUsers: any = []
@@ -1742,13 +1742,12 @@ function CreateTaskComponent(props: any) {
                                         <span title="Component Popup" onClick={(e) => EditPortfolio(save, 'Component')}
                                             className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                </div>
-                                {SearchedServiceCompnentData?.length > 0 ? (
+                                    {SearchedServiceCompnentData?.length > 0 ? (
                                     <div className="SmartTableOnTaskPopup">
                                         <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                             {SearchedServiceCompnentData.map((Item: any) => {
                                                 return (
-                                                    <li className='hreflink list-group-item rounded-0 list-group-item-action' key={Item.id} onClick={() => ComponentServicePopupCallBack([Item], undefined, undefined)} >
+                                                    <li className='hreflink list-group-item rounded-0 list-group-item-action p-1' key={Item.id} onClick={() => ComponentServicePopupCallBack([Item], undefined, undefined)} >
                                                         <a>{Item.Path}</a>
                                                     </li>
                                                 )
@@ -1756,6 +1755,8 @@ function CreateTaskComponent(props: any) {
                                             )}
                                         </ul>
                                     </div>) : null}
+                                </div>
+                               
 
 
                             </div>
@@ -1782,13 +1783,12 @@ function CreateTaskComponent(props: any) {
                                         <span title="Component Popup" onClick={(e) => EditPortfolio(save, 'Project')}
                                             className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                </div>
-                                {SearchedProjectItems?.length > 0 ? (
+                                    {SearchedProjectItems?.length > 0 ? (
                                     <div className="SmartTableOnTaskPopup">
                                         <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                             {SearchedProjectItems.map((Item: any) => {
                                                 return (
-                                                    <li className='hreflink list-group-item rounded-0 list-group-item-action' key={Item.id} onClick={() => ComponentServicePopupCallBack([Item], undefined, undefined)} >
+                                                    <li className='hreflink list-group-item rounded-0 list-group-item-action p-1' key={Item.id} onClick={() => ComponentServicePopupCallBack([Item], undefined, undefined)} >
                                                         <a>{Item.Path}</a>
                                                     </li>
                                                 )
@@ -1796,6 +1796,8 @@ function CreateTaskComponent(props: any) {
                                             )}
                                         </ul>
                                     </div>) : null}
+                                </div>
+                               
 
 
                             </div>
