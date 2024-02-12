@@ -15,6 +15,17 @@ import { ILoadMastertaskProps } from './components/ILoadMastertaskProps';
 export interface ILoadMastertaskWebPartProps {
   description: string;
   MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
+  TaskTypeID:'21b55c7b-5748-483a-905a-62ef663972dc';
+  TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
+  SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
+  SmartInformationListID: 'edf0a6fb-f80e-4772-ab1e-666af03f7ccd';
+  DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08';
+  TaskTimeSheetListID: '464fb776-e4b3-404c-8261-7d3c50ff343f';
+  PortFolioTypeID:"c21ab0e4-4984-4ef7-81b5-805efaa3752e";
+  SmartHelptListID:'9cf872fc-afcd-42a5-87c0-aab0c80c5457';
+  TimeEntry: any;
+  Context:any;
+  SiteCompostion: any;
 }
 
 export default class LoadMastertaskWebPart extends BaseClientSideWebPart<ILoadMastertaskWebPartProps> {
@@ -33,7 +44,17 @@ export default class LoadMastertaskWebPart extends BaseClientSideWebPart<ILoadMa
         siteUrl: this.context.pageContext.web.absoluteUrl,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        MasterTaskListID: this.properties.MasterTaskListID
+        MasterTaskListID: this.properties.MasterTaskListID,
+        TaskTypeID: this.properties.TaskTypeID,     
+        TaskUsertListID: this.properties.TaskUsertListID,
+        SmartMetadataListID: this.properties.SmartMetadataListID,
+        SmartInformationListID: this.properties.SmartInformationListID,
+        DocumentsListID: this.properties.DocumentsListID,
+        PortFolioTypeID: this.properties.PortFolioTypeID,
+        TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
+        SmartHelptListID: this.properties.SmartHelptListID,
+        TimeEntry: this.properties.TimeEntry,
+        SiteCompostion: this.properties.SiteCompostion
       }
     );
 
@@ -115,6 +136,36 @@ export default class LoadMastertaskWebPart extends BaseClientSideWebPart<ILoadMa
                 }),
                 PropertyPaneTextField('MasterTaskListID', {
                   label: "MasterTaskListID"
+                }),
+                PropertyPaneTextField('TaskTypeID', {
+                  label: "TaskTypeID"
+                }),
+                PropertyPaneTextField('TaskUsertListID', {
+                  label: "TaskUsertListID"
+                }),
+                PropertyPaneTextField('SmartMetadataListID', {
+                  label: "SmartMetadataListID"
+                }),
+                PropertyPaneTextField('SmartInformationListID', {
+                  label: 'SmartInformationListID'
+                }),
+                PropertyPaneTextField('DocumentsListID', {
+                  label: "DocumentsListID"
+                }),
+                PropertyPaneTextField('TaskTimeSheetListID', {
+                  label: "TaskTimeSheetListID"
+                }),
+                PropertyPaneTextField('PortFolioTypeID', {
+                  label: "PortFolioTypeID"
+                }),
+                PropertyPaneTextField('SmartHelptListID',{
+                  label:'SmartHelptListID'
+                }),
+                PropertyPaneTextField('TimeEntry', {
+                  label: "TimeEntry"
+                }),
+                PropertyPaneTextField('SiteCompostion', {
+                  label: "SiteCompostion"
                 })
               ]
             }
