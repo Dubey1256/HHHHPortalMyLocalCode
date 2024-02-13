@@ -2515,3 +2515,65 @@ export const getBreadCrumbHierarchyAllData = async (item: any, AllListId: any, A
     }
     return { withGrouping: item, flatdata: AllItems };
 }
+
+export const AwtGroupingAndUpdatePrarticularColumn = async (findGrouping: any, AllTask: any,UpdateColumnObject?:any) => {
+    let flatdata: any = []
+    if (findGrouping?.TaskType?.Title == "Activities") {
+        findGrouping.subRows = AllTask?.filter((ws: any) =>{if( ws.TaskType?.Title == "Workstream" && ws?.ParentTask?.Id == findGrouping?.Id){
+            flatdata.push(ws)
+            return true
+        }})
+
+        findGrouping?.subRows?.map((ws: any) => {
+            ws.subRows = AllTask?.filter((task: any) =>{ if(task.TaskType?.Title == "Task" && task?.ParentTask?.Id == ws?.Id){
+                flatdata.push(task)
+                return true
+            } })
+        })
+        let directTask = AllTask?.filter((task: any) => {
+          if(task.TaskType?.Title == "Task" && task?.ParentTask?.Id == findGrouping?.Id){
+             flatdata.push(task)
+             return true
+             }
+        })
+        // findGrouping.subRows = findGrouping?.subRows?.concat(directTask)
+        // flatdata.push(directTask)
+    }
+    if (findGrouping?.TaskType?.Title == "Workstream") {
+        findGrouping.subRows = AllTask?.filter((task: any) => {
+           if( task.TaskType?.Title == "Task" && task?.ParentTask?.Id == findGrouping?.Id){
+            flatdata.push(task)
+            return true
+           }
+        })
+    }
+   
+    if(UpdateColumnObject!=undefined){
+     
+        for(let i=0; i<flatdata?.length;){
+          
+            let web = new Web(findGrouping.siteUrl);
+            await web.lists
+              .getById(findGrouping?.listId)
+              // .getById(this.props.SiteTaskListID)
+              .items
+              .getById(flatdata[i]?.Id)
+              .update(UpdateColumnObject).then(async(data: any) => {
+                console.log(data)
+              i++;
+              }).catch((error: any) => {
+                console.log(error)
+              });
+        }
+       }
+    return {findGrouping,flatdata} ;
+}
+export const  replaceURLsWithAnchorTags=(text:any)=> {
+    // Regular expression to match URLs
+    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    // Replace URLs with anchor tags
+    var replacedText = text.replace(urlRegex, function(url:any) {
+        return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
+    });
+    return replacedText;
+}
