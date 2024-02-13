@@ -91,8 +91,9 @@ const AddCommentComponent = (FbData: any) => {
     }
 
     const getCurrentUserDetails = async () => {
-        let currentUserId: number;
-        await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
+        let currentUserId = Context.pageContext._legacyPageContext.userId;
+        // let currentUserId: number;
+        // await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
         if (currentUserId != undefined) {
             if (FbData.allUsers != null && FbData.allUsers?.length > 0) {
                 FbData.allUsers?.map((userData: any) => {
