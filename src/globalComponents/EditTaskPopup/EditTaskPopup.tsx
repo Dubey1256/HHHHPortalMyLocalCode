@@ -206,16 +206,19 @@ const EditTaskPopup = (Items: any) => {
     const [TeamMemberChanged, setTeamMemberChanged] = useState(false);
     const [CurrentImageIndex, setCurrentImageIndex] = useState("");
     const [loaded, setLoaded] = React.useState(true);
+    const [IsImageUploaded, setIsImageUploaded] = React.useState(true);
 
     let [StatusOptions, setStatusOptions] = useState([
         { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "2% Follow Up", taskStatusComment: "Follow Up" },
         { value: 3, status: "3% Approved", taskStatusComment: "Approved" },
+        { value: 4, status: "4% Checking", taskStatusComment: "Checking" },
         { value: 5, status: "5% Acknowledged", taskStatusComment: "Acknowledged" },
+        { value: 9, status: "9% Ready To Go", taskStatusComment: "Ready To Go" },
         { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
         { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
-        { value: 75, status: "70% Deployment Pending", taskStatusComment: "Deployment Pending" },
+        { value: 75, status: "75% Deployment Pending", taskStatusComment: "Deployment Pending" },
         { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
         { value: 90, status: "90% Task completed", taskStatusComment: "Task completed" },
         { value: 100, status: "100% Closed", taskStatusComment: "Closed" },
@@ -1006,7 +1009,7 @@ const EditTaskPopup = (Items: any) => {
                         item.PercentComplete = statusValue;
                         if (
                             (statusValue < 70 && statusValue > 10) ||
-                            (statusValue < 80 && statusValue > 70)
+                            (statusValue < 80 && statusValue > 70 && statusValue !== 75)
                         ) {
                             setTaskStatus("In Progress");
                             setPercentCompleteStatus(
@@ -2519,24 +2522,24 @@ const EditTaskPopup = (Items: any) => {
                             TaskDetailsFromCall = await web.lists
                                 .getById(Items.Items.listId)
                                 .items.select(
-                                    "Id,Title,PriorityRank,workingThisWeek,Approvee/Id,Approvee/Title,waitForResponse,Project/Id, Project/Title,Project/PriorityRank,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
+                                    "Id,Title,PriorityRank,workingThisWeek,Comments,waitForResponse,Approvee/Id,Approvee/Title,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
                                 )
                                 .top(5000)
                                 .filter(`Id eq ${Items.Items.Id}`)
                                 .expand(
-                                    "AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee,Project"
+                                    "AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee"
                                 )
                                 .get();
                         } else {
                             TaskDetailsFromCall = await web.lists
                                 .getById(Items.Items.listName)
                                 .items.select(
-                                    "Id,Title,PriorityRank,workingThisWeek,Approvee/Id,Approvee/Title,waitForResponse,Project/Id, Project/Title,Project/PriorityRank,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
+                                    "Id,Title,PriorityRank,workingThisWeek,Comments,Approvee/Id,Approvee/Title,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
                                 )
                                 .top(5000)
                                 .filter(`Id eq ${Items.Items.Id}`)
                                 .expand(
-                                    "AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee,Project"
+                                    "AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee"
                                 )
                                 .get();
                         }
@@ -2544,87 +2547,8 @@ const EditTaskPopup = (Items: any) => {
                         TaskDetailsFromCall[0].TaskId = globalCommon.GetTaskId(
                             TaskDetailsFromCall[0]
                         );
-                        let UpdatedDataObject: any = TaskDetailsFromCall[0]
-                        let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
-                        UpdatedDataObject.SmartPriority = NewSmartPriority;
-                        UpdatedDataObject.siteType = EditData.siteType;
-
-                        // When task assigned to user, send a notification on MS Teams 
-
-                        if (!IsUserFromHHHHTeam && SendCategoryName !== "Bottleneck") {
-                            try {
-                                let sendUserEmails: any = [];
-                                let AssignedUserName: string = '';
-                                TaskAssignedTo?.map((userDtl: any) => {
-                                    taskUsers?.map((allUserItem: any) => {
-                                        if (userDtl.Id == allUserItem.AssingedToUserId) {
-                                            sendUserEmails.push(allUserItem.Email);
-                                            if (AssignedUserName?.length > 0) {
-                                                AssignedUserName = "Team";
-                                            } else {
-                                                AssignedUserName = allUserItem.Title;
-                                            }
-                                        }
-                                    });
-                                });
-                                let uniqueIds: any = {};
-                                const result: any = tempShareWebTypeData.filter((item: any) => {
-                                    if (!uniqueIds[item.Id]) {
-                                        uniqueIds[item.Id] = true;
-                                        return true;
-                                    }
-                                    return false;
-                                });
-                                let TaskCategories = result?.map((item: any) => item.Title).join(', ');
-                                let SendMessage: string = '';
-                                let CommonMsg: string = '';
-                                if (TeamMemberChanged) {
-                                    CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`
-                                }
-                                if (IsTaskStatusUpdated) {
-                                    if ((Number(taskPercentageValue) * 100) == 80) {
-                                        CommonMsg = `Below task has been set to 80%, please review it.`
-                                    }
-                                    if ((Number(taskPercentageValue) * 100) == 70) {
-                                        CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`
-                                    }
-                                }
-
-                                SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> </br> 
-                                <p>
-                                Task Link:  <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
-                                 ${UpdatedDataObject.TaskId}-${UpdatedDataObject.Title}
-                                </a>
-                                </br>
-                                Task Category: ${TaskCategories}</br>
-                                Smartpriority: <b>${UpdatedDataObject?.SmartPriority}</b></br>
-                                </p>
-                                <p></p>
-                                <b>
-                                Thanks, </br>
-                                Task Management Team
-                                </b>
-                                `
-                                try {
-                                    if ((IsTaskStatusUpdated || TeamMemberChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85)) {
-                                        if (sendUserEmails?.length > 0) {
-                                            await globalCommon.SendTeamMessage(
-                                                sendUserEmails,
-                                                SendMessage,
-                                                Items.context
-                                            );
-                                        }
-                                    }
-
-                                } catch (error) {
-                                    console.log("Error", error.message);
-                                }
-                            } catch (error) {
-                                console.log("Error", error.message)
-                            }
-
-                        }
-
+                        TaskDetailsFromCall[0].Comments = JSON.parse(TaskDetailsFromCall[0].Comments);
+                        TaskDetailsFromCall[0].saveImages = []
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             taskUsers.forEach((val: any) => {
                                 if (
@@ -2632,6 +2556,14 @@ const EditTaskPopup = (Items: any) => {
                                     ApproverData[0].Company == undefined
                                 ) {
                                     EditData.TaskApprovers = ApproverData;
+                                }
+                            });
+                        }
+                        if (TaskDetailsFromCall[0].Approvee != undefined) {
+                            taskUsers.forEach((val: any) => {
+                                if (
+                                    TaskDetailsFromCall[0].Approvee?.Id == val?.AssignedToUserId) {
+                                    TaskDetailsFromCall[0].Approvee = val?.Item_x0020_Cover.Url;
                                 }
                             });
                         }
@@ -2645,6 +2577,7 @@ const EditTaskPopup = (Items: any) => {
                                 }
                             });
                         }
+
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             if (
                                 ApproverData[0].Id == currentUserId &&
@@ -2653,6 +2586,9 @@ const EditTaskPopup = (Items: any) => {
                                 EditData.TaskApprovers = EditData.TaskCreatorData;
                                 //EditData.TaskApprovers.push(EditData?.Author)
                             }
+                        }
+                        if (TaskDetailsFromCall[0].BasicImageInfo != null && TaskDetailsFromCall[0].Attachments) {
+                            TaskDetailsFromCall[0].saveImages.push(JSON.parse(TaskDetailsFromCall[0].BasicImageInfo));
                         }
 
                         if (
@@ -2670,9 +2606,21 @@ const EditTaskPopup = (Items: any) => {
                             TaskDetailsFromCall[0].siteUrl = siteUrls;
                             TaskDetailsFromCall[0].siteIcon = Items.Items.SiteIcon;
                         }
-                        // if(TaskDetailsFromCall[0].TaskID == null && TaskDetailsFromCall[0].TaskID ==  undefined){
-                        //     TaskDetailsFromCall[0].TaskID = 'T'+ TaskDetailsFromCall[0].Id
-                        // }
+                        TaskDetailsFromCall[0].Created = Moment(EditData.Created).format("DD-MM-YYYY")
+                        if (TaskDetailsFromCall[0].TaskID == null && TaskDetailsFromCall[0].TaskID == undefined) {
+                            TaskDetailsFromCall[0].TaskID = 'T' + TaskDetailsFromCall[0].Id
+                        }
+                        let spaceIndex = EditData.TaskCreatorData[0]?.Title.lastIndexOf(' ');
+
+                        // Check if spaceIndex is valid (i.e., last name is present)
+                        if (spaceIndex !== -1) {
+                            // Extract the first name by slicing the string up to the space before the last name
+                            TaskDetailsFromCall[0].CreatorTitle = EditData.TaskCreatorData[0]?.Title.substring(0, spaceIndex);
+                           
+                        } else {
+                            // No last name found, handle this case as needed
+                            console.log("No last name found");
+                        }
 
                         let CalculateStatusPercentages: any = TaskDetailsFromCall[0]
                             .PercentComplete
@@ -2726,12 +2674,11 @@ const EditTaskPopup = (Items: any) => {
                             }
                             if (
                                 (CalculateStatusPercentage == 5 || CalculateStatusPercentage == 10 || CalculateStatusPercentage == 80 ||
-                                CalculateStatusPercentage == 90) && ImmediateStatus && EditData.PercentComplete != CalculateStatusPercentage) {
+                                    CalculateStatusPercentage == 90) && ImmediateStatus && EditData.PercentComplete != CalculateStatusPercentage) {
                                 ValueStatus = CalculateStatusPercentage;
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
-                            } 
-                            else {
+                            } else {
                                 setSendEmailComponentStatus(false);
                                 Items.StatusUpdateMail = false;
                             }
@@ -2756,21 +2703,9 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.SiteIcon = Items?.Items?.SiteIcon;
                                     dataEditor.data.DisplayCreateDate =
                                         Items?.Items?.DisplayCreateDate;
-                                    dataEditor.data.DisplayDueDate = Moment(EditData?.DueDate).format("DD/MM/YYYY");
-                                    if (dataEditor.data.DisplayDueDate == "Invalid date" || "") {
-                                        dataEditor.data.DisplayDueDate = dataEditor.data.DisplayDueDate.replaceAll(
-                                          "Invalid date",
-                                          ""
-                                        );
-                                      }
-                                    dataEditor.data.PercentComplete = Number(UpdateTaskInfo.PercentCompleteStatus);
                                     dataEditor.data.FeedBack = JSON.stringify(
                                         dataEditor.data.FeedBack
                                     );
-                                    let portfoliostructureIds = AllProjectBackupArray?.filter((item: any) => item?.Id === (selectedProject?.length > 0 ? selectedProject[0].Id : ""));
-                                    const structureiddata = portfoliostructureIds?.length > 0 ? portfoliostructureIds[0]?.PortfolioStructureID : "";
-
-                                    dataEditor.data.projectStructerId = structureiddata;
                                     Items.Call(dataEditor, "UpdatedData");
                                 } else {
                                     Items.Call(DataJSONUpdate, "UpdatedData");
@@ -2971,7 +2906,7 @@ const EditTaskPopup = (Items: any) => {
                     CategoriesTitle = typeData.Title;
                 }
             });
-        } 
+        }
         if (TaggedPortfolioData != undefined && TaggedPortfolioData?.length > 0) {
             TaggedPortfolioData?.map((com: any) => {
                 smartComponentsIds = com.Id;
@@ -3627,6 +3562,7 @@ const EditTaskPopup = (Items: any) => {
 
     const UploadImageFunction = (Data: any, imageName: any, DataJson: any): Promise<any> => {
         return new Promise<void>(async (resolve, reject) => {
+            setIsImageUploaded(false);
             let listId = Items.Items.listId;
             let listName = Items.Items.listName;
             let Id = Items.Items.Id;
@@ -3675,7 +3611,7 @@ const EditTaskPopup = (Items: any) => {
                         }
                     })();
                 }
-            }, 2500);
+            }, 2000);
         });
     };
 
@@ -3685,6 +3621,7 @@ const EditTaskPopup = (Items: any) => {
     const UpdateBasicImageInfoJSON = (JsonData: any, usedFor: string, ImageIndex: any) => {
         return new Promise<void>(async (resolve, reject) => {
             var UploadImageArray: any = [];
+
             if (JsonData != undefined && JsonData.length > 0) {
                 JsonData?.map((imgItem: any, Index: any) => {
                     if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
@@ -3729,7 +3666,9 @@ const EditTaskPopup = (Items: any) => {
                 await web.lists
                     .getById(Items.Items.listId)
                     .items.getById(Items.Items.Id)
-                    .update({ BasicImageInfo: UploadImageArray?.length > 0 ? JSON.stringify(UploadImageArray) : null });
+                    .update({ BasicImageInfo: UploadImageArray?.length > 0 ? JSON.stringify(UploadImageArray) : null }).then(() => {
+                        setIsImageUploaded(true);
+                    });
                 console.log("Image JSON Updated !!");
                 AddImageDescriptionsIndex = undefined;
                 resolve();
@@ -3746,6 +3685,7 @@ const EditTaskPopup = (Items: any) => {
     const RemoveImageFunction = (imageIndex: any, imageName: any, FunctionType: any) => {
         return new Promise<void>(async (resolve, reject) => {
             let tempArray: any = [];
+            setIsImageUploaded(false);
             if (FunctionType == "Remove") {
                 TaskImages?.map((imageData, index) => {
                     if (index != imageIndex) {
@@ -3796,6 +3736,7 @@ const EditTaskPopup = (Items: any) => {
 
     const ReplaceImageFunction = (Data: any, ImageIndex: any) => {
         return new Promise<void>(async (resolve, reject) => {
+            setIsImageUploaded(false);
             let ImageName = EditData?.UploadedImage[ImageIndex]?.ImageName;
             var src = Data?.data_url?.split(",")[1];
             var byteArray = new Uint8Array(
@@ -4882,7 +4823,7 @@ const EditTaskPopup = (Items: any) => {
                             )}
                             <span>
                                 <button
-                                    className="btn btn-primary mx-1 px-3"
+                                    className={IsImageUploaded ? "btn btn-primary mx-1 px-3" : "btn btn-primary disabled mx-1 px-3"}
                                     onClick={UpdateTaskInfoFunction}
                                 >
                                     Save
@@ -5452,14 +5393,13 @@ const EditTaskPopup = (Items: any) => {
                                                             className="svg__iconbox svg__icon--editBox"
                                                         ></span>
                                                     </span>
-                                                </div>
-                                                {SearchedServiceCompnentData?.length > 0 ? (
+                                                    {SearchedServiceCompnentData?.length > 0 ? (
                                                     <div className="SmartTableOnTaskPopup">
-                                                        <ul className="list-group">
+                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                             {SearchedServiceCompnentData.map((Item: any) => {
                                                                 return (
                                                                     <li
-                                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                        className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
                                                                         key={Item.id}
                                                                         onClick={() =>
                                                                             setSelectedServiceAndCompnentData(
@@ -5475,6 +5415,8 @@ const EditTaskPopup = (Items: any) => {
                                                         </ul>
                                                     </div>
                                                 ) : null}
+                                                </div>
+                                               
                                                 <div className="input-group mb-2">
                                                     <label className="form-label full-width">
                                                         Categories
@@ -5489,12 +5431,12 @@ const EditTaskPopup = (Items: any) => {
                                                             onChange={(e) => autoSuggestionsForCategory(e)}
                                                         />
                                                         {SearchedCategoryData?.length > 0 ? (
-                                                            <div className="SmartTableOnTaskPopup w-100" style={{ marginTop: "53px" }}>
-                                                                <ul className="list-group">
+                                                            <div className="SmartTableOnTaskPopup">
+                                                                <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                     {SearchedCategoryData.map((item: any) => {
                                                                         return (
                                                                             <li
-                                                                                className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
                                                                                 key={item.id}
                                                                                 onClick={() =>
                                                                                     setSelectedCategoryData(
@@ -5572,12 +5514,12 @@ const EditTaskPopup = (Items: any) => {
                                                                         onChange={(e) => autoSuggestionsForCategory(e)}
                                                                     />
                                                                     {SearchedCategoryData?.length > 0 ? (
-                                                                        <div className="SmartTableOnTaskPopup  w-100">
-                                                                            <ul className="list-group">
+                                                                        <div className="SmartTableOnTaskPopup">
+                                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                                 {SearchedCategoryData.map((item: any) => {
                                                                                     return (
                                                                                         <li
-                                                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
                                                                                             key={item.id}
                                                                                             onClick={() =>
                                                                                                 setSelectedCategoryData(
@@ -5756,12 +5698,12 @@ const EditTaskPopup = (Items: any) => {
                                                                         }
                                                                     />
                                                                     {ApproverSearchedData?.length > 0 ? (
-                                                                        <div className="SmartTableOnTaskPopup w-100">
-                                                                            <ul className="list-group">
+                                                                        <div className="SmartTableOnTaskPopup">
+                                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                                 {ApproverSearchedData.map((item: any) => {
                                                                                     return (
                                                                                         <li
-                                                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                            className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
                                                                                             key={item.id}
                                                                                             onClick={() =>
                                                                                                 SelectApproverFromAutoSuggestion(
@@ -5829,8 +5771,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                     onChange={(e) => autoSuggestionsForApprover(e, "OnTaskPopup")}
                                                                                 />
                                                                                 {ApproverSearchedDataForPopup?.length > 0 ? (
-                                                                                    <div className="SmartTableOnTaskPopup  w-100">
-                                                                                        <ul className="list-group">
+                                                                                    <div className="SmartTableOnTaskPopup">
+                                                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                                             {ApproverSearchedDataForPopup.map((item: any) => {
                                                                                                 return (
                                                                                                     <li
@@ -6078,15 +6020,14 @@ const EditTaskPopup = (Items: any) => {
                                                                 className="svg__iconbox svg__icon--editBox"
                                                             ></span>
                                                         </span>
-                                                    </div>
-                                                    {SearchedLinkedPortfolioData?.length > 0 ? (
+                                                        {SearchedLinkedPortfolioData?.length > 0 ? (
                                                         <div className="SmartTableOnTaskPopup">
-                                                            <ul className="list-group">
+                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                 {SearchedLinkedPortfolioData.map(
                                                                     (Item: any) => {
                                                                         return (
                                                                             <li
-                                                                                className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
                                                                                 key={Item.id}
                                                                                 onClick={() =>
                                                                                     setSelectedServiceAndCompnentData(
@@ -6103,6 +6044,8 @@ const EditTaskPopup = (Items: any) => {
                                                             </ul>
                                                         </div>
                                                     ) : null}
+                                                    </div>
+                                                    
                                                     {linkedPortfolioData?.length > 0 ? (
                                                         <div className="full-width">
                                                             {linkedPortfolioData?.map(
@@ -6180,10 +6123,9 @@ const EditTaskPopup = (Items: any) => {
                                                         >
                                                             <span className="svg__iconbox svg__icon--editBox"></span>
                                                         </span>
-                                                    </div>
-                                                    {SearchedProjectData?.length > 0 ? (
+                                                        {SearchedProjectData?.length > 0 ? (
                                                         <div className="SmartTableOnTaskPopup">
-                                                            <ul className="list-group">
+                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                 {SearchedProjectData.map((item: any) => {
                                                                     return (
                                                                         <li
@@ -6200,6 +6142,8 @@ const EditTaskPopup = (Items: any) => {
                                                             </ul>
                                                         </div>
                                                     ) : null}
+                                                    </div>
+                                                   
 
                                                 </div>
                                             </div>
@@ -7594,10 +7538,9 @@ const EditTaskPopup = (Items: any) => {
                                                                         className="svg__iconbox svg__icon--editBox"
                                                                     ></span>
                                                                 </span>
-                                                            </div>
-                                                            {SearchedServiceCompnentData?.length > 0 ? (
+                                                                {SearchedServiceCompnentData?.length > 0 ? (
                                                                 <div className="SmartTableOnTaskPopup">
-                                                                    <ul className="list-group">
+                                                                    <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                         {SearchedServiceCompnentData.map(
                                                                             (Item: any) => {
                                                                                 return (
@@ -7621,6 +7564,8 @@ const EditTaskPopup = (Items: any) => {
                                                                     </ul>
                                                                 </div>
                                                             ) : null}
+                                                            </div>
+                                                            
                                                             <div className="input-group mb-2">
                                                                 <label className="form-label full-width">
                                                                     Categories
@@ -7635,12 +7580,12 @@ const EditTaskPopup = (Items: any) => {
                                                                         onChange={(e) => autoSuggestionsForCategory(e)}
                                                                     />
                                                                     {SearchedCategoryData?.length > 0 ? (
-                                                                        <div className="SmartTableOnTaskPopup w-100" style={{ marginTop: "53px" }}>
-                                                                            <ul className="list-group">
+                                                                        <div className="SmartTableOnTaskPopup">
+                                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                                 {SearchedCategoryData.map((item: any) => {
                                                                                     return (
                                                                                         <li
-                                                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
                                                                                             key={item.id}
                                                                                             onClick={() =>
                                                                                                 setSelectedCategoryData(
@@ -7718,12 +7663,12 @@ const EditTaskPopup = (Items: any) => {
                                                                                     onChange={(e) => autoSuggestionsForCategory(e)}
                                                                                 />
                                                                                 {SearchedCategoryData?.length > 0 ? (
-                                                                                    <div className="SmartTableOnTaskPopup w-100">
-                                                                                        <ul className="list-group">
+                                                                                    <div className="SmartTableOnTaskPopup">
+                                                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                                             {SearchedCategoryData.map((item: any) => {
                                                                                                 return (
                                                                                                     <li
-                                                                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                                        className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
                                                                                                         key={item.id}
                                                                                                         onClick={() =>
                                                                                                             setSelectedCategoryData(
@@ -7946,15 +7891,14 @@ const EditTaskPopup = (Items: any) => {
                                                                                 >
                                                                                     <span className="svg__iconbox svg__icon--editBox mt--10"></span>
                                                                                 </span>
-                                                                            </div>
-                                                                            {ApproverSearchedData?.length > 0 ? (
+                                                                                {ApproverSearchedData?.length > 0 ? (
                                                                                 <div className="SmartTableOnTaskPopup">
-                                                                                    <ul className="list-group">
+                                                                                    <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                                         {ApproverSearchedData.map(
                                                                                             (item: any) => {
                                                                                                 return (
                                                                                                     <li
-                                                                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                                        className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
                                                                                                         key={item.id}
                                                                                                         onClick={() =>
                                                                                                             SelectApproverFromAutoSuggestion(
@@ -7970,6 +7914,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                     </ul>
                                                                                 </div>
                                                                             ) : null}
+                                                                            </div>
+                                                                            
 
 
                                                                         </div>
@@ -8174,15 +8120,14 @@ const EditTaskPopup = (Items: any) => {
                                                                             className="svg__iconbox svg__icon--editBox"
                                                                         ></span>
                                                                     </span>
-                                                                </div>
-                                                                {SearchedLinkedPortfolioData?.length > 0 ? (
+                                                                    {SearchedLinkedPortfolioData?.length > 0 ? (
                                                                     <div className="SmartTableOnTaskPopup">
-                                                                        <ul className="list-group">
+                                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                             {SearchedLinkedPortfolioData.map(
                                                                                 (Item: any) => {
                                                                                     return (
                                                                                         <li
-                                                                                            className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
                                                                                             key={Item.id}
                                                                                             onClick={() =>
                                                                                                 setSelectedServiceAndCompnentData(
@@ -8199,6 +8144,8 @@ const EditTaskPopup = (Items: any) => {
                                                                         </ul>
                                                                     </div>
                                                                 ) : null}
+                                                                </div>
+                                                               
                                                                 {linkedPortfolioData?.length > 0 ? (
                                                                     <div className="full-width">
                                                                         {linkedPortfolioData?.map(
@@ -8280,10 +8227,9 @@ const EditTaskPopup = (Items: any) => {
                                                                     >
                                                                         <span className="svg__iconbox svg__icon--editBox"></span>
                                                                     </span>
-                                                                </div>
-                                                                {SearchedProjectData?.length > 0 ? (
+                                                                    {SearchedProjectData?.length > 0 ? (
                                                                     <div className="SmartTableOnTaskPopup">
-                                                                        <ul className="list-group">
+                                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                             {SearchedProjectData.map((item: any) => {
                                                                                 return (
                                                                                     <li
@@ -8302,6 +8248,8 @@ const EditTaskPopup = (Items: any) => {
                                                                         </ul>
                                                                     </div>
                                                                 ) : null}
+                                                                </div>
+                                                               
 
                                                             </div>
                                                         </div>

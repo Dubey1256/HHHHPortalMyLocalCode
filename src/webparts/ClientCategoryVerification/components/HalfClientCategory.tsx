@@ -446,9 +446,10 @@ const HalfClientCategory = (props: any) => {
                 });
             } catch (error) {
                 console.log(error)
-
+                setPageLoader(false);
             }
         } else {
+            setPageLoader(false);
             alert('Site Config Length less than 0')
         }
     };
@@ -577,7 +578,7 @@ const HalfClientCategory = (props: any) => {
 
                         }
                     } catch (error) {
-
+                        setPageLoader(false);
                     }
                     AllCSFMasterTasks.push(items)
                 }
@@ -589,6 +590,7 @@ const HalfClientCategory = (props: any) => {
             //  console.log(AllCSFMasterTasks);
 
         } else {
+            setPageLoader(false);
             alert('Master Task List Id Not Available')
         }
 
@@ -1253,22 +1255,6 @@ const HalfClientCategory = (props: any) => {
     };
     return (
         <div className='TaskView-Any-CC'>
-
-
-            <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
-                color={"#000069"}
-                speed={2}
-                trail={60}
-                shadow={false}
-                hwaccel={false}
-                className="spinner"
-                zIndex={2e9}
-                top="28%"
-                left="50%"
-                scale={1.0}
-                loadedClassName="loadedContent"
-            />
-
             <div id='ExandTableIds'>
                 <section className="ContentSection smartFilterSection">
                     <div className="align-items-center d-flex justify-content-between  mt-1">
@@ -1335,7 +1321,7 @@ const HalfClientCategory = (props: any) => {
                 <CentralizedSiteComposition ItemDetails={selectedItem} usedFor={'CSF'} closePopupCallBack={MasterSiteComp} RequiredListIds={AllListId} />
                 : null
             }
-            {/* {pageLoaderActive ? <PageLoader /> : ''} */}
+            {pageLoaderActive ? <PageLoader /> : ''}
         </div>
     )
 }

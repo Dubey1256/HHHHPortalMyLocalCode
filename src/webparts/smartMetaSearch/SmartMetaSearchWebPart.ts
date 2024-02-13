@@ -14,9 +14,9 @@ import { ISmartMetaSearchProps } from './components/ISmartMetaSearchProps';
 
 export interface ISmartMetaSearchWebPartProps {  
   description: string;
-  SmartMetadataListId:'01a34938-8c7e-4ea6-a003-cee649e8c67a';
+  SmartMetadataListID:'01a34938-8c7e-4ea6-a003-cee649e8c67a';
   ContextValue:any;
-  TaskUserListId:'b318ba84-e21d-4876-8851-88b94b9dc300';
+  TaskUsertListID:'b318ba84-e21d-4876-8851-88b94b9dc300';
   PortFolioTypeID:'c21ab0e4-4984-4ef7-81b5-805efaa3752e';
   MasterTaskListID:'ec34b38f-0669-480a-910c-f84e92e58adf';
   TaskTimeSheetListID:'464fb776-e4b3-404c-8261-7d3c50ff343f';
@@ -40,10 +40,10 @@ export default class SmartMetaSearchWebPart extends BaseClientSideWebPart<ISmart
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        SmartMetadataListID:this.properties.SmartMetadataListId,
+        SmartMetadataListID:this.properties.SmartMetadataListID,
         ContextValue:this.context,
         siteUrl: this.context.pageContext.web.absoluteUrl,
-        TaskUsertListID: this.properties.TaskUserListId, 
+        TaskUsertListID: this.properties.TaskUsertListID, 
         PortFolioTypeID:this.properties.PortFolioTypeID, 
         MasterTaskListID: this.properties.MasterTaskListID,                                  
         TaskTimeSheetListID:this.properties.TaskTimeSheetListID,
@@ -132,10 +132,10 @@ export default class SmartMetaSearchWebPart extends BaseClientSideWebPart<ISmart
                   label: strings.DescriptionFieldLabel
                 }),
                 PropertyPaneTextField('SmartMetadataListID', {
-                  label:"SmartMetadataListId"
+                  label:"SmartMetadataListID"
                 }),
                 PropertyPaneTextField('TaskUsertListID', {
-                  label:"TaskUserListId"
+                  label:"TaskUsertListID"
                 }),                              
                 PropertyPaneTextField("PortFolioTypeID", {
                   label: "Portfolio Type List",
