@@ -13,6 +13,7 @@ var currentUserData: any;
 let DashboardConfig: any = [];
 let DashboardConfigBackUp: any = [];
 let allData: any = [];
+let LoginUserTeamMembers: any = [];
 let ActiveTile = ''
 const EmployeProfile = (props: any) => {
   const params = new URLSearchParams(window.location.search);
@@ -135,12 +136,19 @@ const EmployeProfile = (props: any) => {
     }
   }
   const loadTaskUsers = async () => {
-    let taskUser;
     try {
       taskUsers = await globalCommon.loadAllTaskUsers(props?.props);
       let mailApprover: any;
       let currentUserId: any = props?.props?.Context?.pageContext?.legacyPageContext?.userId
       taskUsers?.map((item: any) => {
+        item.WorkingTask = [];
+        item.IsShowTask = false;
+        if (item?.Approver != undefined && item?.Approver?.length > 0) {
+          item?.Approver?.forEach((approver: any) => {
+            if (approver?.Id === currentUserId && !isTaskUserExist(LoginUserTeamMembers, item))
+              LoginUserTeamMembers.push(item)
+          })
+        }
         if (item.UserGroupId == undefined) {
           getChilds(item, taskUsers);
           GroupByUsers.push(item);
@@ -204,6 +212,17 @@ const EmployeProfile = (props: any) => {
     }
     return isExists;
   }
+  const isTaskUserExist = (array: any, items: any) => {
+    let isExists = false;
+    for (let index = 0; index < array.length; index++) {
+      let item = array[index];
+      if (items?.AssingedToUserId != undefined && item?.AssingedToUserId != undefined && items?.AssingedToUserId == item?.AssingedToUserId) {
+        isExists = true;
+        break;
+      }
+    }
+    return isExists;
+  }
   const groupView = (Tasks: any) => {
     Tasks.map((item: any) => {
       Tasks.map((val: any) => {
@@ -237,7 +256,32 @@ const EmployeProfile = (props: any) => {
       else if (config?.DataSource == 'TaskUsers') {
         config.LoadDefaultFilter = false;
         config.Tasks = GroupByUsers.filter((User: any) => User?.Id == config?.smartFevId);
+      }
+      else if (config?.DataSource == 'Portfolio Team Lead') {
+        config.LoadDefaultFilter = false;
+        config['9%PercentTask'] = [];
+        config['LoginUserTeamMembers'] = LoginUserTeamMembers;
 
+        if (Array.isArray(array) && array.length > 0) {
+          array.filter(item => item?.PercentComplete === '9' && Array.isArray(item.ResponsibleTeam)).forEach(task => {
+            if (task.ResponsibleTeam.some((responsibleTeam: any) => responsibleTeam.Id === currentUserData?.AssingedToUser?.Id)) {
+              config['9%PercentTask'].push(task);
+            }
+          });
+        }
+        if (config?.LoginUserTeamMembers != undefined && config?.LoginUserTeamMembers?.length > 0) {
+          config?.LoginUserTeamMembers.map((User: any) => {
+            array.map((Task: any) => {
+              if (Task?.AssignedTo != undefined && Task?.AssignedTo?.length > 0) {
+                Task?.AssignedTo?.forEach((assign: any) => {
+                  if (assign.Id != undefined && User.AssingedToUserId != undefined && assign.Id === User.AssingedToUserId && Task.IsTodaysTask === true && !isTaskItemExists(User?.WorkingTask, Task)) {
+                    User.WorkingTask.push(Task);
+                  }
+                })
+              }
+            })
+          })
+        }
       }
     })
     array?.forEach((items: any) => {

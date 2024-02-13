@@ -1663,6 +1663,7 @@ const ProjectManagementMain = (props: any) => {
                             value={suggestedItems}
                             onChange={(e) => searchSuggestedPortfolio(e)}
                             placeholder="Suggested Portfolio Items"
+                            className="bg-transparent full-width px-1 py-0 mt-1"
                           />
                              {suggestedPortfolios?.length > 0 ? (
                               <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar">
