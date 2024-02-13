@@ -113,6 +113,7 @@ function PortfolioTable(SelectedProp: any) {
     const [portfolioTypeDataItemBackup, setPortFolioTypeIconBackup] = React.useState([]);
     const [taskTypeDataItemBackup, setTaskTypeDataItemBackup] = React.useState([]);
     const globalContextData: any = React.useContext<any>(myContextValue)
+    const [ActiveCompareToolButton, setActiveCompareToolButton] = React.useState(false);
   let ComponetsData: any = {};
   let Response: any = [];
   let props = undefined;
@@ -2201,9 +2202,28 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
         setOpenCompareToolPopup(false);
     }
 }, []);
-const openCompareTool =()=>{
-    setOpenCompareToolPopup(true);
+
+const trigerAllEventButton = (eventValue: any) => {
+  if (eventValue === "Compare") {
+      setOpenCompareToolPopup(true);
+  }
 }
+React.useEffect(() => {
+  if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length === 2) {
+      if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined &&  (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Tasks' || childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Tasks')) {
+          setActiveCompareToolButton(true);
+      } else if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType != undefined) {
+          setActiveCompareToolButton(true);
+      }
+  } else {
+      setActiveCompareToolButton(false);
+  }
+}, [childRef?.current?.table?.getSelectedRowModel()?.flatRows])
+const customTableHeaderButtons = (
+  (ActiveCompareToolButton) ?
+      < button type="button" className="btn btn-primary" title='Compare' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
+      <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Compare</button>
+)
   //-------------------------------------------------------------End---------------------------------------------------------------------------------
   return (
     <myContextValue.Provider value={{ ...globalContextData,  tagProjectFromTable:TagProjectToStructure}}>
@@ -2324,7 +2344,8 @@ const openCompareTool =()=>{
                   <div className="">
                     <div className="">
                   
-                      <GlobalCommanTable openCompareTool={openCompareTool}  showRestructureButton={true} showCompareButton={true} columnSettingIcon={true} bulkEditIcon={true} 
+                      <GlobalCommanTable  customHeaderButtonAvailable={true}
+                                            customTableHeaderButtons={customTableHeaderButtons}  showRestructureButton={true} columnSettingIcon={true} bulkEditIcon={true} 
                       AllSitesTaskData={flatviewTasklist} masterTaskData={flatviewmastertask}
                         smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                         portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData}
