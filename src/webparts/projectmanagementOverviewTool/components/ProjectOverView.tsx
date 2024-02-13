@@ -326,7 +326,7 @@ export default function ProjectOverview(props: any) {
                     </>
 
                 ),
-                id: "Project Title",
+                id: "ProjectTitle",
                 placeholder: "Project Title",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -339,7 +339,7 @@ export default function ProjectOverview(props: any) {
                         {row?.original?.ProjectPriority != 0 ? row?.original?.ProjectPriority : ''}
                     </span>
                 ),
-                id: 'projectPriority_x0020_Rank',
+                id: 'ProjectPriority',
                 placeholder: "Project Priority",
                 resetColumnFilters: false,
                 enableMultiSort: true,
@@ -528,7 +528,7 @@ export default function ProjectOverview(props: any) {
                         </> : ''}
                     </>
                 ),
-                id: 'Id',
+                id: 'EditPopup',
                 canSort: false,
                 placeholder: "",
                 header: "",
@@ -754,7 +754,7 @@ export default function ProjectOverview(props: any) {
                         {getValue()}
                     </>
                 ),
-                id: "row?.original.Id",
+                id: "Restructure",
                 canSort: false,
                 placeholder: "",
                 size: 1,
@@ -767,7 +767,7 @@ export default function ProjectOverview(props: any) {
 
                     </>
                 ),
-                id: 'Id',
+                id: 'EditPopup',
                 canSort: false,
                 placeholder: "",
                 header: "",
