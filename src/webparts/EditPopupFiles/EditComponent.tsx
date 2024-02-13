@@ -1634,10 +1634,9 @@ let ID: any;
                     Categories: categoriesItem ? categoriesItem : null,
                     SharewebCategoriesId: { results: CategoryID },
                     // ClientCategoryId: { "results": RelevantPortfolioIds },
-                    ServicePortfolioId:
-                                ((RelevantPortfolioIds != "" ? RelevantPortfolioIds : null)? (RelevantProjectIds != "" ? RelevantProjectIds : null):null)? (RelevantProjectIdRemove != "" ? RelevantProjectIdRemove : null):null ,
-                              PortfoliosId: ({ results: (PortfolioIds?.length != 0 ? PortfolioIds : []) } ? { results: (ProjectId?.length != 0 ? ProjectId : []) } :null)?{ results: (ProjectIdRemove?.length >= 0 ? ProjectIdRemove : []) }:null,
-                    Synonyms: JSON.stringify(Items["Synonyms"]),
+                    ServicePortfolioId:((RelevantPortfolioIds != "" ? RelevantPortfolioIds : null)) ,
+                  PortfoliosId: ({ results: (PortfolioIds?.length != 0 ? PortfolioIds : []) } ? { results: (PortfolioIds?.length != 0 ? PortfolioIds : []) } :null)?{ results: (PortfolioIds?.length >= 0 ? PortfolioIds : []) }:null,
+                 Synonyms: JSON.stringify(Items["Synonyms"]),
                     Package: Items.Package,
                     AdminStatus: Items.AdminStatus,
                     Priority: Items.Priority,
@@ -4560,7 +4559,7 @@ let ID: any;
 
                    {isopenProjectpopup ? (
                    <ServiceComponentPortfolioPopup
-                   props={setSharewebComponent}
+                   props={EditData}
                    Dynamic={SelectD}
                    ComponentType={"Component"}
                    selectionType={"Multi"}
