@@ -181,7 +181,7 @@ const CreateActivity = (props: any) => {
     // setIsClientPopup(false);
     item1.map((cats2: any) => {
       cats2.ActiveTile = true
-    }) // code by Anupam
+    })
     if (type == "Category-Task-Footertable") {
       setCategoriesData(item1);
     }
@@ -305,7 +305,7 @@ const CreateActivity = (props: any) => {
         itms.ActiveTile = true
       })
       setCategoriesData(quickCategory);
-    } // code by Anupam
+    }
 
     if (loggedInUser?.IsApprovalMail?.toLowerCase() == "approve all") {
       IsapprovalTask = true;
