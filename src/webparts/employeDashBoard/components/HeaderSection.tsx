@@ -5,31 +5,10 @@ import TaskStatusTbl from './TaskStausTable';
 import EmployeePieChart from './EmployeePieChart';
 import { Web } from 'sp-pnp-js';
 import { Panel, PanelType } from 'office-ui-fabric-react';
+import { Col, Container, Row } from "react-bootstrap";
 import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
 import Slider from "react-slick";
-////import "slick-carousel/slick/slick.css";
-///import "slick-carousel/slick/slick-theme.css";
-import { Col, Container, Row } from "react-bootstrap";
 let DashboardConfig: any = [];
-function SamplePrevArrow(props: any) {
-  const { className, style, onClick } = props;
-  return (
-    <div
-      className={className}
-      style={{ ...style, display: "block" }}
-      onClick={onClick}>
-      <HiArrowCircleRight></HiArrowCircleRight>
-    </div>
-  );
-}
-function SamplnextvArrow(props: any) {
-  const { className, style, onClick } = props;
-  return (
-    <div className={className} style={{ ...style, display: "block" }} onClick={onClick}>
-      <HiArrowCircleLeft></HiArrowCircleLeft></div>
-  );
-}
-
 const Header = () => {
   const params = new URLSearchParams(window.location.search);
   let DashboardId: any = params.get('DashBoardId');
@@ -48,8 +27,36 @@ const Header = () => {
     DashboardConfig = JSON.parse(JSON.stringify(ContextData?.DashboardConfig));
     DashboardConfig.sort((a: any, b: any) => a.Id - b.Id);
   }
-  // if (ContextData != undefined && ContextData?.ActiveTile != undefined && ContextData?.ActiveTile != '')
-  //   setActiveTile(ContextData?.ActiveTile)
+  function SamplePrevArrow(props: any) {
+    const { className, style, onClick } = props;
+    return (
+      <div
+        className={className}
+        style={{ ...style, display: "block" }}
+        onClick={onClick}>
+        <HiArrowCircleRight></HiArrowCircleRight>
+      </div>
+    );
+  }
+  function SamplnextvArrow(props: any) {
+    const { className, style, onClick } = props;
+    return (
+      <div className={className} style={{ ...style, display: "block" }} onClick={onClick}>
+        <HiArrowCircleLeft></HiArrowCircleLeft></div>
+    );
+  }
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 1000,
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    //autoplay: true, // Enable autoplay
+    // autoplaySpeed: 500
+    nextArrow: <SamplePrevArrow />,
+    prevArrow: <SamplnextvArrow />
+
+  };
   const handleTileClick = (tileName: any) => {
     if (tileName == 'TimeSheet')
       setIsOpenTimeSheetPopup(true)
@@ -116,23 +123,7 @@ const Header = () => {
   }
   useEffect(() => {
     handleTileClick(ContextData?.ActiveTile)
-    if (DashboardId != undefined && DashboardId != "") {
-
-    }
   }, [ContextData?.ActiveTile]);
-  const settings = {
-    dots: false,
-    infinite: true,
-    speed: 1000,
-    slidesToShow: 6,
-    slidesToScroll: 1,
-    //autoplay: true, // Enable autoplay
-    // autoplaySpeed: 500
-    nextArrow: <SamplePrevArrow />,
-    prevArrow: <SamplnextvArrow />
-
-  };
-
 
   return (
     <div>
@@ -192,90 +183,74 @@ const Header = () => {
 
       <section className="tabSec">
         <div className="d-flex justify-content-center">
-          <div className='container-fluid p-0'>
-            <div className="carouselSlider">
-              <Row>
-        
-                {DashboardId != undefined && DashboardId != '' ? <Col md={10} className='px-2'>
-                  <Slider className='DashBoardslider' {...settings}>
-                    {DashboardConfig?.map((items: any, index: any) => (
-                      // items?.TileName && index != 0 && (
-                      <>
-                        <div className={`${activeTile === items?.TileName ? 'col alignCenter  mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white mb-3 hreflink shadow-sm'}`}
-                          onClick={() => handleTileClick(items?.TileName)}>
-                          <span className="iconSec" title={items?.TileName}>
-                            {items?.AdditonalHeader == true ? <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
-                              <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
-                              <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
-                            </svg> : <span title={items?.TileName} className="svg__iconbox svg__icon--calendar"></span>}
-                          </span>
-                          {items?.AdditonalHeader && <span className="ms-2 tabText">
-                            <div>{items?.WebpartTitle}</div>
-                            <span className='fw-semibold ms-1'>{items?.Tasks?.length}</span>
-                            {items?.AdditonalHeader != true && <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>}
-                          </span>}
-                          {items?.AdditonalHeader != true && <span className='ms-2'>
-                            <div>{items?.WebpartTitle}</div>
-                            <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>
-                          </span>}
-                        </div>
-
-                      </>
-                      // )
-                    ))}
-                  </Slider>
-                </Col>
-                  :
-                  <Col md={10} className='px-2'>
-                    <Row className='deffrenttiles'>
-                      {DashboardConfig?.map((items: any, index: any) => (
-                        items?.TileName && (
-                          <>
-                            <div className={`${activeTile === items?.TileName ? 'col alignCenter  mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white mb-3 hreflink shadow-sm'}`}
-                              onClick={() => handleTileClick(items?.TileName)}>
-                              <span className="iconSec" title={items?.TileName}>
-                                {items?.AdditonalHeader == true ? <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
-                                  <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
-                                  <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
-                                </svg> : <span title={items?.TileName} className="svg__iconbox svg__icon--calendar"></span>}
-                              </span>
-                              {items?.AdditonalHeader && <span className="ms-2 tabText">
-                                <div>{items?.WebpartTitle}</div>
-                                <span className='fw-semibold ms-1'>{items?.Tasks?.length}</span>
-                                {items?.AdditonalHeader != true && <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>}
-                              </span>}
-                              {items?.AdditonalHeader != true && <span className='ms-2'>
-                                <div>{items?.WebpartTitle}</div>
-                                <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>
-                              </span>}
-                            </div>
-                          </>
-                        )
-                      ))}
-                    </Row>
-                  </Col>
-                }
-                <Col className='ps-0 timesheet'>
-                  <div className={`${activeTile === 'TimeSheet' ? 'col alignCenter hreflink  mb-3 p-3 empBg shadow-sm active empBg' : 'col alignCenter p-3 hreflink  bg-white mb-3 shadow-sm'}`}
-                    onClick={() => handleTileClick('TimeSheet')}>
-                    <span className="iconSec">
-                      <span title='TimeSheet' style={{ width: '24px', height: '24px' }} className=" svg__iconbox svg__icon--draftOther"></span>
+          {DashboardId == '4' ? <Slider className='DashBoardslider' {...settings}>
+            {DashboardConfig.map((items: any, index: any) => (
+              items?.TileName && (
+                <>
+                  <div className={`${activeTile === items?.TileName ? 'col alignCenter me-3 mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white mb-3 hreflink shadow-sm'}`}
+                    onClick={() => handleTileClick(items?.TileName)}>
+                    <span className="iconSec" title={items?.TileName}>
+                      {items?.AdditonalHeader == true ? <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
+                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
+                        <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
+                      </svg> : <span title={items?.TileName} className="svg__iconbox svg__icon--calendar"></span>}
                     </span>
-                    <span className='ms-2'>
-                      <div>TimeSheet</div>
-                    </span>
+                    {items?.AdditonalHeader && <span className="ms-2 tabText">
+                      <div>{items?.WebpartTitle}</div>
+                      <span className='fw-semibold ms-1'>{items?.Tasks?.length}</span>
+                      {items?.AdditonalHeader != true && <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>}
+                    </span>}
+                    {items?.AdditonalHeader != true && <span className='ms-2'>
+                      <div>{items?.WebpartTitle}</div>
+                      <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>
+                    </span>}
                   </div>
-                </Col>
-              </Row>
-            </div>
+                </>
+              )
+            ))}
+          </Slider>
+            :
+            <>
+              {DashboardConfig.map((items: any, index: any) => (
+                items?.TileName && (
+                  <>
+                    <div className={`${activeTile === items?.TileName ? 'col alignCenter me-3 mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white mb-3 hreflink shadow-sm'}`}
+                      onClick={() => handleTileClick(items?.TileName)}>
+                      <span className="iconSec" title={items?.TileName}>
+                        {items?.AdditonalHeader == true ? <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
+                          <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
+                          <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
+                        </svg> : <span title={items?.TileName} className="svg__iconbox svg__icon--calendar"></span>}
+                      </span>
+                      {items?.AdditonalHeader && <span className="ms-2 tabText">
+                        <div>{items?.WebpartTitle}</div>
+                        <span className='fw-semibold ms-1'>{items?.Tasks?.length}</span>
+                        {items?.AdditonalHeader != true && <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>}
+                      </span>}
+                      {items?.AdditonalHeader != true && <span className='ms-2'>
+                        <div>{items?.WebpartTitle}</div>
+                        <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>
+                      </span>}
+                    </div>
+                  </>
+                )
+              ))}
+            </>}
+
+          <div className={`${activeTile === 'TimeSheet' ? 'col alignCenter hreflink  mb-3 p-3 empBg shadow-sm active empBg' : 'col alignCenter p-3 hreflink  bg-white mb-3 shadow-sm'}`}
+            onClick={() => handleTileClick('TimeSheet')}>
+            <span className="iconSec">
+              <span title='TimeSheet' style={{ width: '24px', height: '24px' }} className=" svg__iconbox svg__icon--draftOther"></span>
+            </span>
+            <span className='ms-2'>
+              <div>TimeSheet</div>
+            </span>
           </div>
         </div>
         {
           DashboardConfig?.length > 0 && <div><TaskStatusTbl activeTile={activeTile} /></div>
         }
-        {/* {DashboardConfig.map((items: any, index: any) => (
-          activeTile === items?.TileName && <div><TaskStatusTbl activeTile={activeTile} /></div>
-        ))} */}
+
       </section>
       <span>
         {IsOpenTimeSheetPopup == true && <EmployeePieChart IsOpenTimeSheetPopup={IsOpenTimeSheetPopup} Call={() => { CallBack() }} />}
