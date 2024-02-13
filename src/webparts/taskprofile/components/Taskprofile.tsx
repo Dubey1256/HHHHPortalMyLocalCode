@@ -1644,7 +1644,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     }
 
   }
-  private ComponentServicePopupCallBack = (DataItem: any, Type: any, functionType: any) => {
+  private ComponentServicePopupCallBack = async (DataItem: any, Type: any, functionType: any) => {
     console.log(DataItem)
     console.log(Type)
     console.log(functionType)
@@ -1732,7 +1732,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       
             }
           }));
+        
+          // console.log(childData)
           this?.updateProjectComponentServices(dataUpdate)
+         if(this.state.Result?.TaskType?.Title!="Task"){
+          await globalCommon?.AwtGroupingAndUpdatePrarticularColumn(this.state.Result, this.allDataOfTask,dataUpdate)
+         }
+          
         }
       }
 
@@ -1751,8 +1757,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       // .getById(this.props.SiteTaskListID)
       .items
       .getById(this.state?.itemID)
-      .update(dataUpdate).then((data: any) => {
+      .update(dataUpdate).then(async(data: any) => {
         console.log(data)
+      
       }).catch((error: any) => {
         console.log(error)
       });
