@@ -17,7 +17,7 @@ import {
 } from '@fluentui/react';
 import { useBoolean, useId } from '@fluentui/react-hooks';
 import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';
-
+import * as globalCommon from "../globalCommon";
 const AddCommentComponent = (FbData: any) => {
     const FeedBackData = FbData.Data;
     const Context = FbData.Context;
@@ -292,7 +292,7 @@ const AddCommentComponent = (FbData: any) => {
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <span dangerouslySetInnerHTML={{ __html: commentDtl.Title }}></span>
+                                                    <span dangerouslySetInnerHTML={{ __html:globalCommon?.replaceURLsWithAnchorTags(commentDtl.Title)  }}></span>
                                                 </div>
                                                 {commentDtl.ReplyMessages != undefined && commentDtl.ReplyMessages?.length > 0 ?
                                                     <div>
@@ -315,7 +315,7 @@ const AddCommentComponent = (FbData: any) => {
                                                                             </span>
                                                                         </div>
                                                                         <div>
-                                                                            <span dangerouslySetInnerHTML={{ __html: ReplyDtl.Title }}></span>
+                                                                            <span dangerouslySetInnerHTML={{ __html: globalCommon?.replaceURLsWithAnchorTags(ReplyDtl.Title) }}></span>
                                                                         </div>
                                                                     </div>
                                                                 </div>

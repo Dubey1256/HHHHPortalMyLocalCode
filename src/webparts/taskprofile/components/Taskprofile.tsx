@@ -35,7 +35,7 @@ import KeyDocuments from './KeyDocument';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import { EditableField } from "../../componentProfile/components/Portfoliop";
-import inlineEditingcolumns from '../../../globalComponents/inlineEditingcolumns';
+
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 import CentralizedSiteComposition from '../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition';
 import { IoHandRightOutline } from 'react-icons/io5';
@@ -1566,7 +1566,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   //****** remove extra space in folora editor  */
 
   private cleanHTML = (html: any, folora: any, index: any) => {
-    html= this?. replaceURLsWithAnchorTags(html)
+    html= globalCommon?.replaceURLsWithAnchorTags(html)
     const div = document.createElement('div');
     div.innerHTML = html;
    const paragraphs = div.querySelectorAll('p');
@@ -1769,15 +1769,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
   }
   
-  private replaceURLsWithAnchorTags=(text:any)=> {
-    // Regular expression to match URLs
-    var urlRegex = /(https?:\/\/[^\s]+)/g;
-    // Replace URLs with anchor tags
-    var replacedText = text.replace(urlRegex, function(url:any) {
-        return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
-    });
-    return replacedText;
-}
+ 
 
   //********** */ Inline editing End************
   public render(): React.ReactElement<ITaskprofileProps> {
