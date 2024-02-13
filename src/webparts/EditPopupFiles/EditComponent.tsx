@@ -7,6 +7,7 @@ import "bootstrap/js/dist/tab.js";
 import * as moment from "moment";
 import { Web } from "sp-pnp-js";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
+import * as globalCommon from "../../globalComponents/globalCommon";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { map } from "lodash";
 import "react-datepicker/dist/react-datepicker.css";
@@ -105,6 +106,8 @@ let ID: any;
     const [filterdata, setfilterData] = React.useState([]);
     const [Completiondate, setCompletiondate] = React.useState(undefined);
     const [AssignUser, setAssignUser] = React.useState(undefined);
+    const [allProjectData, SetAllProjectData] = React.useState([]);
+    const [searchedProjectData, setSearchedProjectData] = React.useState([]);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [IsService, setIsService] = React.useState(false);
     const [editorState, setEditorState] = React.useState(
@@ -156,6 +159,8 @@ let ID: any;
     const [SiteCompositionShow, setSiteCompositionShow] = React.useState(false);
     const [composition, setComposition] = React.useState(true);
     const [FeatureTypeData, setFeatureTypeData] = React.useState([]);
+    const [autoSearchFeatureType, setAutoSearchFeatureType] = React.useState([]);
+    const [searchFeatureType, setSearchFeatureType] = React.useState([]);
   
     const handleCheckboxChange = () => {
         setShortDescriptionVerifieds((prevChecked: any) => !prevChecked);
@@ -196,7 +201,7 @@ let ID: any;
         setModalIsOpen(true);
         let targetDiv: any = document?.querySelector('.ms-Panel-main');
         setTimeout(() => {
-            if (targetDiv && PortfolioTypeColor?.length > 0) {
+            if (targetDiv) {
                 // Change the --SiteBlue variable for elements under the targetDiv
                 targetDiv?.style?.setProperty('--SiteBlue', PortfolioTypeColor); // Change the color to your desired value
             }
@@ -269,6 +274,107 @@ let ID: any;
       }
     };
   
+    
+    const autoSuggestionsForProject = (e: any) => {
+        let searchedKey: any = e.target.value;
+        let tempArray: any = [];
+        if (searchedKey?.length > 0) {
+            allProjectData?.map((itemData: any) => {
+                if (itemData.Title.toLowerCase().includes(searchedKey.toLowerCase())) {
+                    tempArray.push(itemData);
+                }
+            });
+            setSearchedProjectData(tempArray);
+            // callServiceComponent(tempArray,"Multi","Save");
+
+        } else {
+            setSearchedProjectData([]);
+        }
+    };
+
+    const autoSuggestionsForFeatureType = (e: any) => {
+        let searchedKey: any = e.target.value;
+        let tempArray: any = [];
+        if (searchedKey?.length > 0) {
+            autoSearchFeatureType?.map((itemData: any) => {
+                if (itemData.Title.toLowerCase().includes(searchedKey.toLowerCase())) {
+                    tempArray.push(itemData);
+                }
+            });
+            setSearchFeatureType(tempArray);
+            // callServiceComponent(tempArray,"Multi","Save");
+
+        } else {
+            setSearchFeatureType([]);
+        }
+    };
+
+    const handleSuggestionProject = (suggestion: any) => {
+        allProjectData?.map((items:any)=>{
+          if(items?.Id === suggestion?.Id){
+            callServiceComponent([items],"Multi","Save");
+          }
+        })
+        setSearchedProjectData([]);
+      };
+
+      const handleSuggestionFeature = (suggestion: any) => {
+        autoSearchFeatureType?.map((items:any)=>{
+          if(items?.Id === suggestion?.Id){
+            Smartmetadatafeature([items]);
+          }
+        })
+        setSearchFeatureType([]);
+      };
+    
+
+    const GetAllComponentAndServiceData = async () => {
+        let PropsObject: any = {
+            MasterTaskListID: RequireData.MasterTaskListID,
+            siteUrl: RequireData?.siteUrl,
+            ComponentType: "Component",
+            TaskUserListId: RequireData.TaskUsertListID,
+        };
+        let CallBackData = await globalCommon.GetServiceAndComponentAllData(
+            PropsObject
+        );
+        SetAllProjectData(CallBackData?.FlatProjectData);
+        console.log(CallBackData);
+        // if (CallBackData?.AllData != undefined && CallBackData?.AllData?.length > 0) {
+        //     GlobalServiceAndComponentData = CallBackData.AllData;
+        //     SetAllProjectData(CallBackData?.FlatProjectData);
+        //     AllProjectBackupArray = CallBackData?.FlatProjectData;
+        // }
+    };
+
+
+    React.useEffect(()=>{
+        GetAllComponentAndServiceData();
+    },[])
+
+
+    // const getSmartmetadata = async () => {
+    //     try {
+    //       const web = new Web(Urls);
+    //       const smartmetaDetails = await web.lists
+    //         .getById(props?.AllListId?.SmartMetadataListID)
+    //         .items.select(
+    //           'ID,Title,IsVisible,ParentID,Parent/Id,Parent/Title,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable'
+    //         )
+    //         .expand('Parent')
+    //         .top(4999)
+    //         .get();
+    
+    //       console.log(smartmetaDetails);
+    
+    //       const filteredSmartMetadata = smartmetaDetails.filter(
+    //         (item: any) => item.TaxType === props.TaxType
+    //       );
+    //       setAllSmartMetadata(filteredSmartMetadata);
+    //     } catch (error) {
+    //       console.error('Error fetching smart metadata:', error);
+    //     }
+    //   };
 
     const Call = React.useCallback((item1: any, type: any, functionType: any) => {
         if (type == "SmartComponent") {
@@ -480,7 +586,24 @@ let ID: any;
         }
     };
 
-   
+
+    // const GetAllComponentAndServiceData = async (ComponentType: any) => {
+    //     let PropsObject: any = {
+    //         MasterTaskListID: RequireData.MasterTaskListID,
+    //         siteUrl: RequireData.siteUrl,
+    //         ComponentType: ComponentType,
+    //         TaskUserListId: AllListIdData.TaskUsertListID,
+    //     };
+    //     let CallBackData = await globalCommon.GetServiceAndComponentAllData(
+    //         PropsObject
+    //     );
+    //     if (CallBackData?.AllData != undefined && CallBackData?.AllData?.length > 0) {
+    //         GlobalServiceAndComponentData = CallBackData.AllData;
+    //         SetAllProjectData(CallBackData?.FlatProjectData);
+    //         AllProjectBackupArray = CallBackData?.FlatProjectData;
+    //     }
+    // };
+
     var getMasterTaskListTasks = async function () {
         //  var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,DeliverableSynonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title";
         
@@ -963,6 +1086,8 @@ let ID: any;
                 }
                
             });
+          const featureTypeItems = smartmetaDetails.filter((item:any) => item.TaxType === "Feature Type");
+          setAutoSearchFeatureType(featureTypeItems);
            
             site.forEach(function (val: any) {
                 if (
@@ -1137,8 +1262,8 @@ let ID: any;
         if (res === "Close") {
             Calls(res);
         } else {
- 
- 
+
+
             const date = moment(res?.Created);
             const formattedDate = date.format('DD/MM/YYYY');
             const datedue = moment(res?.DueDate);
@@ -1159,7 +1284,7 @@ let ID: any;
                     }
                 });
             }
- 
+
             if (TaskTeamMembers != undefined && TaskTeamMembers.length > 0) {
                 $.map(TaskTeamMembers, (Assig: any) => {
                     if (Assig.Id != undefined) {
@@ -1182,7 +1307,7 @@ let ID: any;
                 res.ClientCategory = clientarray;
             }
             res.DisplayCreateDate = formattedDate;
- 
+
             if (formattedDateDue === "Invalid date") {
                 res.DisplayDueDate = "";
             } else {
@@ -2660,7 +2785,7 @@ let ID: any;
     React.useEffect(() => {
         setTimeout(() => {
             const panelMain: any = document.querySelector('.ms-Panel-main');
-            if (panelMain && PortfolioTypeColor?.length > 0) {
+            if (panelMain && PortfolioTypeColor) {
                 panelMain.style.setProperty('--SiteBlue', PortfolioTypeColor); // Set the desired color value here
             }
         }, 2000)
@@ -3620,32 +3745,23 @@ let ID: any;
                                                <div className="col-sm-12 mt-2">
                           <div className="col-sm-12 padding-0 input-group">
                             <label className="full_width">Project</label>
-                            <input type="text" className="form-control" />
+                            <input type="text" className="form-control"    onChange={(e) =>
+                                                                            autoSuggestionsForProject(e)
+                                                                        } />
+             
                             <span className="input-group-text" placeholder="Project">
                               <span title="Project" onClick={(e) => openPortfolioPopup("Project")} className="svg__iconbox svg__icon--editBox"></span>
                             </span>
-                        </div>
-                        <div className="col-sm-12 padding-0 input-group">
-                            <label className="full_width">Feature Type </label>
-                            <input type="text" className="form-control" />
-                            
-                            <span className="input-group-text" placeholder="Feature Type">
-                              <span title="Feature Type" onClick={(e) => opensmartmetadatapopup(EditData?.FeatureType)} className="svg__iconbox svg__icon--editBox"></span>
-                            </span>
-                            {FeatureTypeData?.map((item:any)=>{
-                                return(
-                                <>
-                                {item != undefined && 
-                                    <div className="block d-flex full-width justify-content-between mb-1 p-2">
-                                    <a style={{ color: "#fff !important" }}>{item?.Title}</a><span  className="bg-light svg__iconbox svg__icon--cross" onClick={() => deleteFeatureItem(item?.Id)}
-                                    ></span>
-                                    </div>
-                            }
-                              
-                              </>)
-                            })}
-                        </div>
-                            <div className="col-sm-12  inner-tabb">
+                            <div className="SmartTableOnTaskPopup">
+            <ul className="autosuggest-list maXh-200 scrollbar list-group">
+              {searchedProjectData.map((suggestion: any, index: any) => (
+                <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={index} onClick={() => handleSuggestionProject(suggestion)}>
+                  {suggestion?.Title}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="col-sm-12  inner-tabb">
                             {filterdata && filterdata.length > 0 ? 
                             (
                               <div >
@@ -3674,7 +3790,38 @@ let ID: any;
                   
                             }
                           
-                          </div>                                  
+                          </div>    
+                        </div>
+                        <div className="col-sm-12 padding-0 input-group">
+                            <label className="full_width">Feature Type </label>
+                            <input type="text" className="form-control" onChange={(e) =>autoSuggestionsForFeatureType(e)} />
+                            
+                            <span className="input-group-text" placeholder="Feature Type"   >
+                              <span title="Feature Type" onClick={(e) => opensmartmetadatapopup(EditData?.FeatureType)} className="svg__iconbox svg__icon--editBox"></span>
+                            </span>
+                            <div className="SmartTableOnTaskPopup">
+            <ul className="autosuggest-list maXh-200 scrollbar list-group">
+              {searchFeatureType.map((suggestion: any, index: any) => (
+                <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={index} onClick={() => handleSuggestionFeature(suggestion)}>
+                  {suggestion?.Title}
+                </li>
+              ))}
+            </ul>
+          </div>
+                            {FeatureTypeData?.map((item:any)=>{
+                                return(
+                                <>
+                                {item != undefined && 
+                                    <div className="block d-flex full-width justify-content-between mb-1 p-2">
+                                    <a style={{ color: "#fff !important" }}>{item?.Title}</a><span  className="bg-light svg__iconbox svg__icon--cross" onClick={() => deleteFeatureItem(item?.Id)}
+                                    ></span>
+                                    </div>
+                            }
+                              
+                              </>)
+                            })}
+                        </div>
+                                                        
                         </div>
 
                        </div>
