@@ -748,7 +748,7 @@ export const loadAllTaskUsers = async (AllListId: any) => {
         taskUser = await web.lists
             .getById(AllListId?.TaskUsertListID)
             .items
-            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name,UserGroup/Id,UserGroup/Title&$expand=UserGroup,AssingedToUser,Approver").get();
+            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name,UserGroup/Id,UserGroup/Title,TeamLeader/Id,TeamLeader/Title&$expand=UserGroup,AssingedToUser,Approver,TeamLeader").get();
     }
     catch (error) {
         return Promise.reject(error);
@@ -1822,8 +1822,8 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
                 "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "Help_x0020_Information", "PriorityRank",
                 "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id",
                 "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "Deliverables",
-                "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "FeatureType/Title", "FeatureType/Id","Editor/Id","Modified", "Editor/Title")
-            .expand("Parent", "PortfolioType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "FeatureType", "ResponsibleTeam","Editor").filter(filter != null ? filter : '')
+                "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "FeatureType/Title", "FeatureType/Id", "Editor/Id", "Modified", "Editor/Title")
+            .expand("Parent", "PortfolioType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "FeatureType", "ResponsibleTeam", "Editor").filter(filter != null ? filter : '')
             .getAll();
 
         // console.log("all Service and Coponent data form global Call=======", AllMasterTaskData);
@@ -1839,7 +1839,7 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
             result.isSelected = Props?.selectedItems?.find((obj: any) => obj.Id === result.ID);
             result.TeamLeaderUser = [];
             result.SmartPriority;
-            
+
             result.DisplayDueDate = moment(result.DueDate).format("DD/MM/YYYY");
             result.DisplayCreateDate = moment(result.Created).format("DD/MM/YYYY");
             result.DueDate = moment(result.DueDate).format('DD/MM/YYYY')
@@ -2474,7 +2474,7 @@ export const getBreadCrumbHierarchyAllData = async (item: any, AllListId: any, A
         try {
             Object = await web.lists.getById(AllListId?.MasterTaskListID)
                 .items.getById(useId).select("Id, Title, Parent/Id, Parent/Title, PortfolioStructureID, PortfolioType/Id,PortfolioType/Title")
-                .expand("Parent","PortfolioType")
+                .expand("Parent", "PortfolioType")
                 .get()
         }
         catch (error) {
@@ -2493,87 +2493,91 @@ export const getBreadCrumbHierarchyAllData = async (item: any, AllListId: any, A
             return getBreadCrumbHierarchyAllData(Object, AllListId, AllItems);
         } else if (Object?.Id === item?.Parent?.Id) {
             Object.subRows = [item]; AllItems?.push(item)
-            if(Object?.Parent==undefined){
-                Object.subRows = [item]; AllItems?.push(Object)  
-            }else{
+            if (Object?.Parent == undefined) {
+                Object.subRows = [item]; AllItems?.push(Object)
+            } else {
                 return getBreadCrumbHierarchyAllData(Object, AllListId, AllItems);
             }
-           
+
         } else if (
             item?.Portfolio != undefined &&
             Object?.Id === item?.Portfolio?.Id &&
             (item?.ParentTask?.TaskID == null || item?.ParentTask?.TaskID == undefined)
         ) {
             Object.subRows = [item];
-             AllItems?.push(item)
-            if(Object?.Parent==undefined){
+            AllItems?.push(item)
+            if (Object?.Parent == undefined) {
                 Object.subRows = [Object];
                 AllItems?.push(Object)
             }
-          return getBreadCrumbHierarchyAllData(Object, AllListId, AllItems);
+            return getBreadCrumbHierarchyAllData(Object, AllListId, AllItems);
         }
 
     }
     return { withGrouping: item, flatdata: AllItems };
 }
 
-export const AwtGroupingAndUpdatePrarticularColumn = async (findGrouping: any, AllTask: any,UpdateColumnObject?:any) => {
+export const AwtGroupingAndUpdatePrarticularColumn = async (findGrouping: any, AllTask: any, UpdateColumnObject?: any) => {
     let flatdata: any = []
     if (findGrouping?.TaskType?.Title == "Activities") {
-        findGrouping.subRows = AllTask?.filter((ws: any) =>{if( ws.TaskType?.Title == "Workstream" && ws?.ParentTask?.Id == findGrouping?.Id){
-            flatdata.push(ws)
-            return true
-        }})
+        findGrouping.subRows = AllTask?.filter((ws: any) => {
+            if (ws.TaskType?.Title == "Workstream" && ws?.ParentTask?.Id == findGrouping?.Id) {
+                flatdata.push(ws)
+                return true
+            }
+        })
 
         findGrouping?.subRows?.map((ws: any) => {
-            ws.subRows = AllTask?.filter((task: any) =>{ if(task.TaskType?.Title == "Task" && task?.ParentTask?.Id == ws?.Id){
-                flatdata.push(task)
-                return true
-            } })
+            ws.subRows = AllTask?.filter((task: any) => {
+                if (task.TaskType?.Title == "Task" && task?.ParentTask?.Id == ws?.Id) {
+                    flatdata.push(task)
+                    return true
+                }
+            })
         })
         let directTask = AllTask?.filter((task: any) => {
-          if(task.TaskType?.Title == "Task" && task?.ParentTask?.Id == findGrouping?.Id){
-             flatdata.push(task)
-             return true
-             }
+            if (task.TaskType?.Title == "Task" && task?.ParentTask?.Id == findGrouping?.Id) {
+                flatdata.push(task)
+                return true
+            }
         })
         // findGrouping.subRows = findGrouping?.subRows?.concat(directTask)
         // flatdata.push(directTask)
     }
     if (findGrouping?.TaskType?.Title == "Workstream") {
         findGrouping.subRows = AllTask?.filter((task: any) => {
-           if( task.TaskType?.Title == "Task" && task?.ParentTask?.Id == findGrouping?.Id){
-            flatdata.push(task)
-            return true
-           }
+            if (task.TaskType?.Title == "Task" && task?.ParentTask?.Id == findGrouping?.Id) {
+                flatdata.push(task)
+                return true
+            }
         })
     }
-   
-    if(UpdateColumnObject!=undefined){
-     
-        for(let i=0; i<flatdata?.length;){
-          
+
+    if (UpdateColumnObject != undefined) {
+
+        for (let i = 0; i < flatdata?.length;) {
+
             let web = new Web(findGrouping.siteUrl);
             await web.lists
-              .getById(findGrouping?.listId)
-              // .getById(this.props.SiteTaskListID)
-              .items
-              .getById(flatdata[i]?.Id)
-              .update(UpdateColumnObject).then(async(data: any) => {
-                console.log(data)
-              i++;
-              }).catch((error: any) => {
-                console.log(error)
-              });
+                .getById(findGrouping?.listId)
+                // .getById(this.props.SiteTaskListID)
+                .items
+                .getById(flatdata[i]?.Id)
+                .update(UpdateColumnObject).then(async (data: any) => {
+                    console.log(data)
+                    i++;
+                }).catch((error: any) => {
+                    console.log(error)
+                });
         }
-       }
-    return {findGrouping,flatdata} ;
+    }
+    return { findGrouping, flatdata };
 }
-export const  replaceURLsWithAnchorTags=(text:any)=> {
+export const replaceURLsWithAnchorTags = (text: any) => {
     // Regular expression to match URLs
     var urlRegex = /(https?:\/\/[^\s]+)/g;
     // Replace URLs with anchor tags
-    var replacedText = text.replace(urlRegex, function(url:any) {
+    var replacedText = text.replace(urlRegex, function (url: any) {
         return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
     });
     return replacedText;
