@@ -34,6 +34,7 @@ export default function VersionHistory(props: any) {
     const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = React.useState(false);
     const usedFor: any = props?.usedFor;
     const Context = props?.context;
+    
 
     const handleClose = () => setShow(false);
     const handleShow = () => {
@@ -47,6 +48,7 @@ export default function VersionHistory(props: any) {
         loadTaskUsers();
         LoadAllClientCategories();
     }, [show]);
+
     //------------------------this use used for getting Version History for Selected Item from backend--------------------------------
     const GetItemsVersionHistory = async () => {
         var versionData: any = []
@@ -65,7 +67,7 @@ export default function VersionHistory(props: any) {
 
                 const employeesWithoutLastName = result.map(employee => {
                     employee.childs = []
-                    const { VersionId, IsCurrentVersion, ClientTime, SmartInformation_x005f_x003a_x005f_ID,PreviouslyAssignedTo,Portfolio_x005f_x003a_x005f_ID, Project_x005f_x003a_x005f_ID, VersionLabel, UniqueId, ParentUniqueId, ScopeId, SMLastModifiedDate, GUID, FileRef, FileDirRef, OData__x005f_Moderation, WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, ...rest } = employee;
+                    const { VersionId, IsCurrentVersion, ClientTime,FeatureType_x005f_x003a_x005f_Title, SmartInformation_x005f_x003a_x005f_ID,PreviouslyAssignedTo,Portfolio_x005f_x003a_x005f_ID, Project_x005f_x003a_x005f_ID, VersionLabel, UniqueId, ParentUniqueId, ScopeId, SMLastModifiedDate, GUID, FileRef, FileDirRef, OData__x005f_Moderation, WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, ...rest } = employee;
                     return rest;
                 });
                 console.log(employeesWithoutLastName)
@@ -103,20 +105,29 @@ export default function VersionHistory(props: any) {
 
                         }
                     }
-
                     if (val.EstimatedTimeDescription !== undefined && val.EstimatedTimeDescription !== null && val.EstimatedTimeDescription !== '[]') {
-                        tempEstimatedArrayData = JSON.parse(val?.EstimatedTimeDescription);
-                        let TotalEstimatedTimecopy: any = 0;
-                        if (tempEstimatedArrayData?.length > 0) {
-                            tempEstimatedArrayData?.map((TimeDetails: any) => {
-                                TotalEstimatedTimecopy = TotalEstimatedTimecopy + Number(TimeDetails.EstimatedTime);
-                            })
+                        try{
+                            tempEstimatedArrayData = JSON.parse(val?.EstimatedTimeDescription);
+                            let TotalEstimatedTimecopy: any = 0;
+                            if (tempEstimatedArrayData?.length > 0) {
+                                tempEstimatedArrayData?.map((TimeDetails: any) => {
+                                    TotalEstimatedTimecopy = TotalEstimatedTimecopy + Number(TimeDetails.EstimatedTime);
+                                })
+                            }
+                            val.EstimatedTimeDescriptionArray = tempEstimatedArrayData
+                            val.TotalEstimatedTime = TotalEstimatedTimecopy
                         }
-                        val.EstimatedTimeDescriptionArray = tempEstimatedArrayData
-                        val.TotalEstimatedTime = TotalEstimatedTimecopy
+                        catch(e){
+
+                        }                        
                     }
                     if (val.Comments !== undefined && val.Comments !== null && val.Comments !== '[]') {
-                        val.CommentsDescription = JSON.parse(val?.Comments)
+                        try{
+                            val.CommentsDescription = JSON.parse(val?.Comments)
+                        }
+                        catch(e){
+
+                        }                           
                     }                                        
                     val.No = val.owshiddenversion;
                     val.ModifiedDate = moment(val?.Modified).format("DD/MM/YYYY h:mmA");
@@ -126,10 +137,25 @@ export default function VersionHistory(props: any) {
 
                 employeesWithoutLastName?.forEach((val: any) => {
                     val.childs?.forEach((ele: any) => {
-                        const { VersionId, IsCurrentVersion, ClientTime,SmartInformation_x005f_x003a_x005f_ID ,PreviouslyAssignedTo, Portfolio_x005f_x003a_x005f_ID, VersionLabel, Project_x005f_x003a_x005f_ID, UniqueId, ParentUniqueId, ScopeId, SMLastModifiedDate, GUID, FileRef, FileDirRef, OData__x005f_Moderation, WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, Editor, ...rest } = ele;
+                        const { VersionId, IsCurrentVersion, ClientTime,FeatureType_x005f_x003a_x005f_Title,SmartInformation_x005f_x003a_x005f_ID ,PreviouslyAssignedTo, Portfolio_x005f_x003a_x005f_ID, VersionLabel, Project_x005f_x003a_x005f_ID, UniqueId, ParentUniqueId, ScopeId, SMLastModifiedDate, GUID, FileRef, FileDirRef, OData__x005f_Moderation, WorkflowVersion, OData__x005f_IsCurrentVersion, OData__x005f_UIVersion, OData__x005f_UIVersionString, odata, Editor, ...rest } = ele;
                         return rest;
                     })
                 })
+                try{
+                    employeesWithoutLastName.map((itm:any)=>{
+                        if(itm.childs != undefined){
+                            itm.childs.map((childitem:any)=>{
+                                taskUsers.map((user:any)=>{
+                                    if(childitem.Editor.LookupId === user.AssingedToUserId){
+                                        childitem.ItemImage = user.Item_x0020_Cover.Url;
+                                        childitem.UserId = user.AssingedToUserId;
+                                    }
+                                })
+                            })
+                        }
+                    })
+                }
+                catch(e){}             
                 setSCVersionHistoryData(TempSCDataItems)
                 setData(employeesWithoutLastName);
 
@@ -140,7 +166,6 @@ export default function VersionHistory(props: any) {
             console.error('Error fetching version history:', error);
         }
     }
-
 
     // this is used for getting all tagged CC from Smart Meta Data List 
 
@@ -201,7 +226,7 @@ export default function VersionHistory(props: any) {
                     }
                     AllTaskUsers.push(user);
                 }
-                AllTaskUser = taskUsers;
+                AllTaskUser = taskUsers;                
                 if (user.AssingedToUserId == currentUserId) {
                     let temp: any = [];
                     temp.push(user);
@@ -284,7 +309,16 @@ export default function VersionHistory(props: any) {
                             break; 
                         case 'PortfolioType_x005f_x003a_x005f_IdRange':
                             newKey = 'PortfolioTypeIdRange';
-                            break;                       
+                            break;  
+                        case 'Item_x005f_x002d_x005f_Image':
+                            newKey = 'ItemImage';
+                            break;     
+                        case 'FeatureType_x005f_x003a_x005f_ID':
+                            newKey = 'FeatureTypeID';
+                            break;  
+                        case 'Client_x005f_x003a_x005f_Category':
+                            newKey = 'ClientCategory';
+                            break;                                        
                         default:
                             newKey = key; // If no transformation needed, keep the same key
                             break;
@@ -292,10 +326,17 @@ export default function VersionHistory(props: any) {
                     if (currentObj.hasOwnProperty(key) && (!nextObj.hasOwnProperty(key) || !isEqual(currentObj[key], nextObj[key]))) {                       
                         if (key === 'PercentComplete') {
                             newKey = '%Complete';                        
-                        } else if (key === 'Status' && currentObj['PercentComplete'] !== undefined && currentObj['PercentComplete'] !== 'NaN' && currentObj['PercentComplete'] !== null && currentObj['Status'] !== undefined && currentObj['Status'] !== '') {
-                            newKey = 'Status';
-                            const status = (currentObj['PercentComplete'] * 100) + '% ' + currentObj['Status'];
-                            differingPairs[newKey] = status;
+                        } else if (key === 'Status' && (currentObj['PercentComplete'] !== undefined && currentObj['PercentComplete'] !== 'NaN' && currentObj['PercentComplete'] !== null)) {
+                            if(currentObj['Status'] !== undefined && currentObj['Status'] !== '' && currentObj['Status'] !== null){
+                                newKey = 'Status';
+                                const status = (currentObj['PercentComplete'] * 100) + '% ' + currentObj['Status'];
+                                differingPairs[newKey] = status;
+                            }
+                            else{
+                                newKey = 'Status';
+                                const status = (currentObj['PercentComplete'] * 100) + '% ';
+                                differingPairs[newKey] = status;
+                            }
                         }else if(key === 'Body'){
                             newKey = 'Body';
                             const Bodyvalue = currentObj.Body.replace(/<[^>]*>/g, '');
@@ -310,6 +351,11 @@ export default function VersionHistory(props: any) {
                             newKey = 'TechnicalExplanations';                            
                             const shortvalue = $.parseHTML(currentObj.TechnicalExplanations)[0].textContent;
                             differingPairs[newKey] = shortvalue;
+                        }    
+                        else if(key === 'Deliverables'){
+                            newKey = 'Deliverables';                            
+                            const Deliverablesvalue = $.parseHTML(currentObj.Deliverables)[0].textContent;
+                            differingPairs[newKey] = Deliverablesvalue;
                         }                      
                         else {
                             differingPairs[newKey] = currentObj[key];
@@ -371,7 +417,16 @@ export default function VersionHistory(props: any) {
                             break; 
                         case 'PortfolioType_x005f_x003a_x005f_IdRange':
                             newKey = 'PortfolioTypeIdRange';
-                            break;                       
+                            break; 
+                        case 'Item_x005f_x002d_x005f_Image':
+                            newKey = 'ItemImage';
+                            break;     
+                        case 'FeatureType_x005f_x003a_x005f_ID':
+                            newKey = 'FeatureTypeID';
+                            break;  
+                        case 'Client_x005f_x003a_x005f_Category':
+                            newKey = 'ClientCategory';
+                            break;                                                 
                         default:
                             newKey = key; // If no transformation needed, keep the same key
                             break;
@@ -384,10 +439,18 @@ export default function VersionHistory(props: any) {
                             // differingPairs['Editor'] = currentObj.Editor;
                             if (key === 'PercentComplete') {
                                 newKey = '%Complete';
-                            } else if (key === 'Status' && currentObj['PercentComplete'] !== undefined && currentObj['PercentComplete'] !== 'NaN' && currentObj['PercentComplete'] !== null && currentObj['Status'] !== undefined && currentObj['Status'] !== '') {
-                                newKey = 'Status';
-                                const status = (currentObj['PercentComplete'] * 100) + '% ' + currentObj['Status'];
-                                differingPairs[newKey] = status;
+                            } else if (key === 'Status' && (currentObj['PercentComplete'] !== undefined && currentObj['PercentComplete'] !== 'NaN' && currentObj['PercentComplete'] !== null)) {
+                                if(currentObj['Status'] !== undefined && currentObj['Status'] !== '' && currentObj['Status'] !== null){
+                                    newKey = 'Status';
+                                    const status = (currentObj['PercentComplete'] * 100) + '% ' + currentObj['Status'];
+                                    differingPairs[newKey] = status;
+                                }
+                                else{
+                                    newKey = 'Status';
+                                    const status = (currentObj['PercentComplete'] * 100) + '% ';
+                                    differingPairs[newKey] = status;
+                                }
+                                
                             }else if(key === 'Body'){
                                 newKey = 'Body';
                                 const Bodyvalue = currentObj.Body.replace(/<[^>]*>/g, '');
@@ -403,6 +466,11 @@ export default function VersionHistory(props: any) {
                                 const shortvalue = $.parseHTML(currentObj.TechnicalExplanations)[0].textContent;
                                 differingPairs[newKey] = shortvalue;
                             }
+                            else if(key === 'Deliverables'){
+                                newKey = 'Deliverables';                            
+                                const Deliverablesvalue = $.parseHTML(currentObj.Deliverables)[0].textContent;
+                                differingPairs[newKey] = Deliverablesvalue;
+                            }    
                             else {
                                 differingPairs[newKey] = currentObj[key];
                             }
@@ -463,7 +531,7 @@ export default function VersionHistory(props: any) {
                 <div className='subheading mb-0'>
                     Version History
                 </div>  
-                <Tooltip ComponentId='8796' />
+                <Tooltip ComponentId='1950' />
             </>
         );
     };
@@ -672,10 +740,10 @@ export default function VersionHistory(props: any) {
                 <table className="table VersionHistoryTable mt-2">
                     <thead>
                         <tr>
-                            <th style={{ width: "80px" }} scope="col">No</th>
-                            <th style={{ width: "210px" }} scope="col">Modified</th>
+                            <th style={{ width: "50px" }} scope="col">No</th>
+                            {/* <th style={{ width: "210px" }} scope="col">Modified</th> */}
                             <th scope="col">Info</th>
-                            <th style={{ width: "170px" }} scope="col">Modified by</th>
+                            <th style={{ width: "220px" }} scope="col">Modified by</th>
                         </tr>
                     </thead>
                     {usedFor === "Site-Composition" ?
@@ -710,9 +778,9 @@ export default function VersionHistory(props: any) {
                                             <td>
                                                 {itm?.No}
                                             </td>
-                                            <td>
+                                            {/* <td>
                                                 <span className="siteColor"><a href={`${siteTypeUrl}/Lists/${sitetype}/DispForm.aspx?ID=${itm.ID}&VersionNo=${itm.version}`} target='_blank' data-interception="off">{itm?.ModifiedDate}</a></span>
-                                            </td>
+                                            </td> */}
                                             <td>
                                                 <div className='Info-VH-Col'>
                                                     {itm?.childs.map((item: any, index: any) => {
@@ -724,7 +792,7 @@ export default function VersionHistory(props: any) {
                                                                     return (
                                                                         <>
                                                                             {(key != 'odata.editLink' && key != 'odata.id' && key != 'owshiddenversion' && key != 'Editor' && key != 'childs' &&
-                                                                                key != 'Modified' && key != 'TaskID' && key != 'ModifiedDate' && key != 'BasicImageInfoArray' && key != 'OffshoreImageUrlArray' && key != 'No' && key != 'CommentsDescription' && key != 'Created' && key != 'ModifiedBy' && key !== 'version' && key !== 'TaskTitle' && key !== 'FeedBackDescription' && key !== 'ID' && key !== 'EstimatedTimeDescriptionArray' && key !== 'TotalEstimatedTime') &&
+                                                                                key != 'Modified' && key != 'ItemImage' && key != 'UserId' && key != 'TaskID' && key != 'ModifiedDate' && key != 'BasicImageInfoArray' && key != 'OffshoreImageUrlArray' && key != 'No' && key != 'CommentsDescription' && key != 'Created' && key != 'ModifiedBy' && key !== 'version' && key !== 'TaskTitle' && key !== 'FeedBackDescription' && key !== 'ID' && key !== 'EstimatedTimeDescriptionArray' && key !== 'TotalEstimatedTime') &&
                                                                                 <li key={index}>
                                                                                     <span className='vh-textLabel'>{key}</span>
                                                                                     <span className='vh-textData'>{Array.isArray(item[key])
@@ -832,7 +900,10 @@ export default function VersionHistory(props: any) {
 
                                             </td>
                                             <td>
-                                                <span className="siteColor">{itm?.ModifiedBy}</span>
+                                                <div className="alignCenter">
+                                                    <a href={`${siteTypeUrl}/Lists/${sitetype}/DispForm.aspx?ID=${itm.ID}&VersionNo=${itm.version}`} target='_blank' data-interception="off">{itm?.ModifiedDate}</a>
+                                                    <a href={`${siteTypeUrl}/SitePages/TaskDashboard.aspx?UserId=${itm.UserId}`} target='_blank' data-interception='off'><img className='workmember hreflink ms-1' src={itm?.ItemImage} title={itm?.ModifiedBy}/></a>
+                                                </div>
                                             </td>
                                         </tr>
                                     </>
@@ -877,6 +948,34 @@ export default function VersionHistory(props: any) {
                                                 <h6 className='userid m-0 fs-6'>   {cmtData?.Header != '' && <b>{cmtData?.Header}</b>}</h6>
                                                 <p className='m-0' id="pageContent"> <span dangerouslySetInnerHTML={{ __html: cmtData?.Description }}></span></p>
                                             </div>
+                                        </div>
+                                        <div className="commentMedia">
+                                            {cmtData?.ReplyMessages != null && cmtData?.ReplyMessages != undefined && cmtData?.ReplyMessages?.length > 0 &&
+                                                <div>
+                                                <ul className="list-unstyled subcomment">
+                                                    {cmtData?.ReplyMessages != null && cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((ReplyMsg: any, j: any) => {
+                                                    return <li className="media  p-1 my-1">
+                                                        <div className="media-bodyy">
+                                                        <div className="d-flex justify-content-between align-items-center">
+                                                            <span className="comment-date ng-binding">
+                                                            <span className="round  pe-1">
+                                                                <img className="align-self-start " title={ReplyMsg?.AuthorName}
+                                                                src={ReplyMsg?.AuthorImage != undefined && ReplyMsg?.AuthorImage != '' ?
+                                                                    ReplyMsg?.AuthorImage :
+                                                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                                                />
+                                                            </span>
+                                                            {ReplyMsg?.Created}</span>                                                           
+                                                        </div>
+                                                        <div className="media-text">                                                            
+                                                            {ReplyMsg?.Description}
+                                                        </div>
+                                                        </div>
+                                                    </li>
+                                                    })}
+                                                </ul>
+                                                </div>
+                                            }
                                         </div>
                                     </div>
                                 })}
