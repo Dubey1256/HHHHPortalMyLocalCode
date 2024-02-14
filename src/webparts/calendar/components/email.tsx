@@ -274,7 +274,7 @@ const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.Group === "SPFx" 
   const HRtotal = AllTaskuser.filter((designt: any) => (designt?.Group == "HR" && designt?.Team === "HR"));
   const JTMTotal = AllTaskuser.filter((Junior) => ( Junior?.Team === "Junior Task Manager"))
 
-  const SPFxTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "SPFx"))
+  const SPFxTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && (Junior?.Team === "SPFx" || Junior?.Team === "SPFX")))
   const ManagementTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "Management"))
   const MobileTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "Mobile"))
   const SharewebTrainee = AllTaskuser.filter((Junior) => (Junior?.UserGroupId === 10 && Junior?.Team === "Shareweb"))

@@ -1497,8 +1497,8 @@ const ProjectManagementMain = (props: any) => {
     }
     setSelectedItem(portfolio)
     setMasterdata(projectData);
-    setProjectTableData(displayTasks);
-    backupTableData = displayTasks;
+    // setProjectTableData(displayTasks);
+    // backupTableData = displayTasks;
   };
   const AncCallback = (type: any) => {
     switch (type) {
@@ -1658,14 +1658,16 @@ const ProjectManagementMain = (props: any) => {
                           </>
                         )}
                         <div>
+                        <span className="nav__text">Suggested Portfolio Items</span>
                           <input
                             type="search"
                             value={suggestedItems}
                             onChange={(e) => searchSuggestedPortfolio(e)}
-                            placeholder="Suggested Portfolio Items"
+                            placeholder="Search Suggested Portfolio Items"
+                            className="bg-transparent full-width px-1 py-0 mt-1 text-bg-secondary"
                           />
                              {suggestedPortfolios?.length > 0 ? (
-                              <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar">
+                              <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar mt-2">
                                 {suggestedPortfolios?.map(
                                   (component: any, index: any) => (
                                     <li
