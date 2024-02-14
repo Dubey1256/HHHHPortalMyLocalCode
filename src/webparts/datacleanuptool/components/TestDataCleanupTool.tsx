@@ -92,8 +92,9 @@ function DataCleancupTool(SelectedProp: any) {
         if (count === siteConfig.length)
             console.log(AllDataItems)
 
-        AllDataItems?.map((Item: any) => {          
-            Item.CreatedDate = moment(Item?.Created).format('DD/MM/YYYY');
+        AllDataItems?.map((Item: any) => { 
+        if(Item.DoNotAllow==false) { 
+            Item.CreatedDate = moment(Item?.Created).format('DD/MM/YYYY');      
             Item.ModifiedDate = moment(Item?.Modified).format('DD/MM/YYYY HH:mm')
             if (Item?.Created != null && Item?.Created != undefined)
              Item.serverCreatedDate = new Date(Item?.Created).setHours(0, 0, 0, 0)
@@ -104,32 +105,133 @@ function DataCleancupTool(SelectedProp: any) {
                 AllDataCleanUpdata.push(Item)
             }
         }
+    }
         })
        
         AllDataCleanUpItems = AllDataCleanUpdata.concat();
 
         AllDataCleanUpItems?.map((ItemUser: any) => { 
-            ItemUser.AllModifiedImages = [];
-            ItemUser.AllCreatedImages = [];
-            let CreatedUserObj: any = {};
-            let ModifiedUserObj: any = {};
-            AllUsers?.map((User: any) => { 
-            if (User.AssingedToUser != undefined && User.AssingedToUser.Id != undefined && ItemUser.Author.Id == User.AssingedToUser.Id && User.Item_x0020_Cover != undefined) {
-                CreatedUserObj['UserImage'] = User.Item_x0020_Cover.Url;
-                CreatedUserObj['Suffix'] = User.Suffix;
-                CreatedUserObj['Title'] = User.Title;
-                CreatedUserObj['UserId'] = User.AssingedToUserId;
-            }
-            if (User.AssingedToUser != undefined && User.AssingedToUser.Id != undefined && ItemUser.Editor.Id == User.AssingedToUser.Id && User.Item_x0020_Cover != undefined) {
-                ModifiedUserObj['UserImage'] = User.Item_x0020_Cover.Url;
-                ModifiedUserObj['Suffix'] = User.Suffix;
-                ModifiedUserObj['Title'] = User.Title;
-                ModifiedUserObj['UserId'] = User.AssingedToUserId;
-            }
-        })
-        ItemUser.AllCreatedImages.push(CreatedUserObj);
-        ItemUser.AllModifiedImages.push(ModifiedUserObj)
-        })
+           
+                if (ItemUser.Author != undefined) { 
+                    AllUsers?.map((User: any) => {                                     
+                      if (ItemUser.Author.Id === User?.AssingedToUser?.Id) {
+                        ItemUser.authorImage = User.Item_x0020_Cover?.Url;
+                        ItemUser.authorSuffix = User.Suffix;
+                        ItemUser.authorName = User?.AssingedToUser?.Title;
+                        ItemUser.authorId = User?.AssingedToUser?.Id;       
+                      }
+                     else if(ItemUser.Author?.Id ==43)
+                        {
+                            ItemUser.authorImage = SelectedProp.SelectedProp.siteUrl+"/PublishingImages/TeamMembers/Nusrat_Potrait.jpg";
+                            ItemUser.authorSuffix = "NS";
+                            ItemUser.authorName = "Nusrat Sheikh";
+                            ItemUser.authorId =43; 
+                        } 
+                        else if(ItemUser.Author?.Id ==158)
+                        {
+                            ItemUser.authorImage = SelectedProp.SelectedProp.siteUrl+"/PublishingImages/TeamMembers/Ravi.jpg";
+                            ItemUser.authorSuffix = "RK";
+                            ItemUser.authorName = "Ravi Kumar";
+                            ItemUser.authorId =158; 
+                        } 
+                        else if(ItemUser.Author?.Id ==170)
+                        {
+                            ItemUser.authorImage = SelectedProp.SelectedProp.siteUrl+"/PublishingImages/TeamMembers/Robin.jpg";
+                            ItemUser.authorSuffix = "RS";
+                            ItemUser.authorName = "Robin Singh";
+                            ItemUser.authorId =170; 
+                        }
+                        else if(ItemUser.Author?.Id == 38){
+                        
+                            ItemUser.authorImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
+                            ItemUser.authorSuffix = "JT";
+                            ItemUser.authorName = "Jayom Thakur";
+                            ItemUser.authorId =38;
+                            } 
+                            else if(ItemUser.Author?.Id == 53){
+                        
+                                ItemUser.authorImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
+                                ItemUser.authorSuffix = "Hochhuth Consulting (Support)";
+                                ItemUser.authorName = "Hochhuth Consulting (Support)";
+                                ItemUser.authorId =53;
+                                }   
+                        else if(ItemUser.Author?.Id == 155){
+                        
+                            ItemUser.authorImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
+                            ItemUser.authorSuffix = "Trainee04";
+                            ItemUser.authorName = "Trainee04";
+                            ItemUser.authorId =155;
+                            }                       
+                     else{
+                        if (ItemUser?.authorImage == undefined && ItemUser.authorSuffix == undefined) {
+                            ItemUser.authorDefaultName = ItemUser.Author?.Title;
+                            ItemUser.authorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
+                        }
+                     }
+                    
+                });
+                  }
+                  if (ItemUser.Editor != undefined) {
+                    AllUsers?.map((User: any) => {
+                        
+                      if (ItemUser.Editor.Id === User?.AssingedToUser?.Id) {
+                        ItemUser.editorImage = User.Item_x0020_Cover?.Url;
+                        ItemUser.editorSuffix = User.Suffix;
+                        ItemUser.editorName = User?.AssingedToUser?.Title;
+                        ItemUser.editorId = User?.AssingedToUser?.Id;
+                      }
+                      else if(ItemUser.Editor?.Id == 43){
+                        
+                            ItemUser.editorImage = SelectedProp.SelectedProp.siteUrl+"/PublishingImages/TeamMembers/Nusrat_Potrait.jpg";
+                            ItemUser.editorSuffix = "NS";
+                            ItemUser.editorName = "Nusrat Sheikh";
+                            ItemUser.editorId =43;
+                            } 
+                            else if(ItemUser.Editor?.Id == 158){
+                        
+                                ItemUser.editorImage = SelectedProp.SelectedProp.siteUrl+"/PublishingImages/TeamMembers/Ravi.jpg";
+                                ItemUser.editorSuffix = "RK";
+                                ItemUser.editorName = "Ravi Kumar";
+                                ItemUser.editorId =158;
+                                }
+                                else if(ItemUser.Editor?.Id == 170){
+                        
+                                    ItemUser.editorImage = SelectedProp.SelectedProp.siteUrl+"/PublishingImages/TeamMembers/Robin.jpg";
+                                    ItemUser.editorSuffix = "RS";
+                                    ItemUser.editorName = "Robin Singh";
+                                    ItemUser.editorId =170;
+                                    }
+                                    else if(ItemUser.Editor?.Id == 53){
+                        
+                                        ItemUser.editorImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
+                                        ItemUser.editorSuffix = "Hochhuth Consulting (Support)";
+                                        ItemUser.editorName = "Hochhuth Consulting (Support)";
+                                        ItemUser.editorId =53;
+                                        }
+                                    else if(ItemUser.Editor?.Id == 38){
+                        
+                                        ItemUser.editorImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
+                                        ItemUser.editorSuffix = "JT";
+                                        ItemUser.editorName = "Jayom Thakur";
+                                        ItemUser.editorId =38;
+                                        }
+                                    else if(ItemUser.Editor?.Id == 155){
+                        
+                                        ItemUser.editorImage = SelectedProp.SelectedProp.siteUrl+"/PublishingImages/TeamMembers/Trainee04.jpg";
+                                        ItemUser.editorSuffix = "Trainee04";
+                                        ItemUser.editorName = "Trainee04";
+                                        ItemUser.editorId =155;
+                                        }
+                            else{
+                                if (ItemUser?.editorImage == undefined && ItemUser.editorSuffix == undefined) {
+                                    ItemUser.editorDefaultName = ItemUser.Editor.Title;
+                                    ItemUser.editorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
+                                  }
+                            }                       
+                      
+                    })
+                }
+             });
         setData(AllDataCleanUpItems)
         showProgressHide();
         console.log(AllDataCleanUpItems);   
@@ -177,7 +279,7 @@ const SaveItem = async (SelectedItem: any) => {
             .then(async (res: any) => {
                 alert("These items will not show further on this page... ")
                 AllDataCleanUpItems?.map((val:any,index:any)=>{
-                    if(val.Id == SelectedItem.Id && val.DoNotAllow==true){
+                    if(val.Id == SelectedItem.Id){
                         AllDataCleanUpItems.splice(index,1)
                         renderData = [];
                         renderData = renderData.concat(AllDataCleanUpItems)
@@ -259,28 +361,66 @@ const SaveItem = async (SelectedItem: any) => {
             accessorKey: "Created", placeholder: "Created Date", header: "", size: 120, id: "Created", isColumnDefultSortingDesc: true,
             cell: ({ row }) => (
                 <>
-                    {row?.original?.CreatedDate}
-                    {row?.original?.AllCreatedImages.map((item: any) => (
-                        <a className='ms-1' target="_blank" data-interception="off" href={`${SelectedProp.SelectedProp.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
-                            {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${SelectedProp.SelectedProp.siteUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
-                        </a>
-                    ))}
+                 {row.original.CreatedDate}        
+              <a data-interception="off" target='_blank' href={`${SelectedProp.SelectedProp.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
+                {row.original.authorImage != undefined ?
+                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+              </a>
                 </>
             ),
+            filterFn: (row: any, columnName: any, filterValue: any) => {
+                if (row?.original?.authorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.CreatedDate?.includes(filterValue)) {
+                  return true
+                } else {
+                  return false
+                }
+              },
         },
-        {
-            accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 172, id: "Modified",
-            cell: ({ row }) => (
-                <>
-                    {row?.original?.ModifiedDate}
-                    {row?.original?.AllModifiedImages.map((item: any) => (
-                        <a className='ms-1' target="_blank" data-interception="off" href={`${SelectedProp.SelectedProp.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
-                            {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${SelectedProp.SelectedProp.siteUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
-                        </a>
-                    ))}
-                </>
+    {
+        accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 172, id: "Modified", 
+        cell: ({ row }) =>(
+            <>
+              {row.original.ModifiedDate}
+              <a target='_blank' href={`${SelectedProp.SelectedProp.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
+                {row.original.editorImage != undefined ?
+                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
+              </a>
+            </>
             ),
+          filterFn: (row: any, columnName: any, filterValue: any) => {
+            if (row?.original?.editorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.ModifiedDate?.includes(filterValue)) {
+              return true
+            } else {
+              return false
+            }
+          },
+   
         },
+
+        // {
+        //     accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 172, id: "Modified",
+        //     cell: ({ row }) => (
+        //         <>
+        //             {row?.original?.ModifiedDate}
+        //             {row?.original?.AllModifiedImages.map((item: any) => (
+        //                 <a className='ms-1' target="_blank" data-interception="off" href={`${SelectedProp.SelectedProp.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
+        //                     {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${SelectedProp.SelectedProp.siteUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
+        //                 </a>
+        //             ))}
+        //         </>
+        //     ),
+        //     filterFn: (row: any, columnName: any, filterValue: any) => {
+        //         if (row?.original?.AllModifiedImages?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.ModifiedDate?.includes(filterValue)) {
+        //           return true
+        //         } else {
+        //           return false
+        //         }
+        //       },
+        // },
         {
             cell: ({ row }) => (
                 <div className='alignCenter'>

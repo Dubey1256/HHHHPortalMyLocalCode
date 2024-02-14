@@ -20,7 +20,7 @@ export default function VersionHistory(props: any) {
     const siteTypeUrl = props.siteUrls;
     const listId = props?.listId
     const ItemId = props?.taskId;
-    let sitetype = window?.location?.search?.split("&Site=")[1];
+    let sitetype = window?.location?.search?.split("&Site=")[1] || "Master Tasks";
     const RequiredListIds: any = props?.RequiredListIds;
     let tempEstimatedArrayData: any;
     const [show, setShow] = React.useState(false);
@@ -233,11 +233,13 @@ export default function VersionHistory(props: any) {
                 const currentObj = data[i];
                 const nextObj = data[i + 1];
                 const differingPairs: any = {};
-                //differingPairs['TaskID'] = currentObj.ID;
+                // differingPairs['TaskID'] = currentObj.ID;
                 differingPairs['TaskTitle'] = currentObj.Title;
                 differingPairs['version'] = currentObj.VersionId;
+                differingPairs['Modified'] = currentObj.Modified;
                 differingPairs['ID'] = currentObj.ID;
                 let editor = currentObj.Editor;
+                let ID = currentObj.ID;
 
                 for (let key in currentObj) {
                     let newKey;
@@ -273,20 +275,21 @@ export default function VersionHistory(props: any) {
                             break;
                         case 'Priority_x005f_x0020_x005f_Rank':
                             newKey = 'PriorityRank';
-                            break;    
+                            break;   
+                        case 'Item_x005f_x0020_x005f_Type':
+                            newKey = 'ItemType';
+                            break;
+                        case 'PortfolioType_x005f_x003a_x005f_Color':
+                            newKey = 'PortfolioTypeColor';
+                            break; 
+                        case 'PortfolioType_x005f_x003a_x005f_IdRange':
+                            newKey = 'PortfolioTypeIdRange';
+                            break;                       
                         default:
                             newKey = key; // If no transformation needed, keep the same key
                             break;
                     }     
-                    if (currentObj.hasOwnProperty(key) && (!nextObj.hasOwnProperty(key) || !isEqual(currentObj[key], nextObj[key]))) {
-                        // if (key === 'PercentComplete')
-                        //     newKey = '%Complete';
-                        // if((currentObj['PercentComplete'] != undefined && currentObj['PercentComplete'] != 'NaN' && currentObj['PercentComplete'] != null) && (currentObj['Status'] != undefined && currentObj['Status'] != '')){
-                        //     newKey = 'Status';
-                        //     status = currentObj['PercentComplete']*100 + "%" + currentObj['Status'];
-                        //     differingPairs[newKey] = status;
-                        // }
-                        // differingPairs[newKey] = currentObj[key];
+                    if (currentObj.hasOwnProperty(key) && (!nextObj.hasOwnProperty(key) || !isEqual(currentObj[key], nextObj[key]))) {                       
                         if (key === 'PercentComplete') {
                             newKey = '%Complete';                        
                         } else if (key === 'Status' && currentObj['PercentComplete'] !== undefined && currentObj['PercentComplete'] !== 'NaN' && currentObj['PercentComplete'] !== null && currentObj['Status'] !== undefined && currentObj['Status'] !== '') {
@@ -297,11 +300,17 @@ export default function VersionHistory(props: any) {
                             newKey = 'Body';
                             const Bodyvalue = currentObj.Body.replace(/<[^>]*>/g, '');
                             differingPairs[newKey] = Bodyvalue;
-                        } 
-                        else if(key === 'TaskID'){
-                            newKey = 'TaskID';
-                            differingPairs[newKey] = currentObj.TaskID;
+                        }                         
+                        else if(key === 'Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On'){
+                            newKey = 'ShortDescriptionOnline';
+                            const shortvalue = currentObj.Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On.replace(/<[^>]*>/g, '');
+                            differingPairs[newKey] = shortvalue;
                         }
+                        else if(key === 'TechnicalExplanations'){
+                            newKey = 'TechnicalExplanations';                            
+                            const shortvalue = $.parseHTML(currentObj.TechnicalExplanations)[0].textContent;
+                            differingPairs[newKey] = shortvalue;
+                        }                      
                         else {
                             differingPairs[newKey] = currentObj[key];
                         }
@@ -316,6 +325,7 @@ export default function VersionHistory(props: any) {
                     }
                 }
                 differingPairs['Editor'] = editor;
+                differingPairs['TaskID'] = ID;
                 if (Object.keys(differingPairs).length > 0) {                                        
                     differingValues.push(differingPairs);
                 }
@@ -330,6 +340,7 @@ export default function VersionHistory(props: any) {
                 differingPairs['ID'] = currentObj.ID;
                 differingPairs['owshiddenversion'] = currentObj.owshiddenversion;
                 let editor = currentObj.Editor;
+                let ID = currentObj.ID;
 
                 for (const key in currentObj) {   
                     let newKey;
@@ -352,6 +363,15 @@ export default function VersionHistory(props: any) {
                         case 'Portfolio_x005f_x0020_x005f_Type':
                             newKey = 'PortfolioType';
                             break;
+                        case 'Item_x005f_x0020_x005f_Type':
+                            newKey = 'ItemType';
+                            break;  
+                        case 'PortfolioType_x005f_x003a_x005f_Color':
+                            newKey = 'PortfolioTypeColor';
+                            break; 
+                        case 'PortfolioType_x005f_x003a_x005f_IdRange':
+                            newKey = 'PortfolioTypeIdRange';
+                            break;                       
                         default:
                             newKey = key; // If no transformation needed, keep the same key
                             break;
@@ -372,17 +392,24 @@ export default function VersionHistory(props: any) {
                                 newKey = 'Body';
                                 const Bodyvalue = currentObj.Body.replace(/<[^>]*>/g, '');
                                 differingPairs[newKey] = Bodyvalue;
+                            }                           
+                            else if(key === 'Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On'){
+                                newKey = 'ShortDescriptionOnline';
+                                const shortvalue = currentObj.Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On.replace(/<[^>]*>/g, '');
+                                differingPairs[newKey] = shortvalue;
                             }
-                            else if(key === 'TaskID'){
-                                newKey = 'TaskID';
-                                differingPairs[newKey] = currentObj.TaskID;
+                            else if(key === 'TechnicalExplanations'){
+                                newKey = 'TechnicalExplanations';                            
+                                const shortvalue = $.parseHTML(currentObj.TechnicalExplanations)[0].textContent;
+                                differingPairs[newKey] = shortvalue;
                             }
-                             else {
+                            else {
                                 differingPairs[newKey] = currentObj[key];
                             }
                         }                        
                     }
                     differingPairs['Editor'] = editor;
+                    differingPairs['TaskID'] = ID;
                 }
                 if (Object.keys(differingPairs).length > 0) {
                     differingValues.push(differingPairs);
@@ -646,7 +673,7 @@ export default function VersionHistory(props: any) {
                     <thead>
                         <tr>
                             <th style={{ width: "80px" }} scope="col">No</th>
-                            <th style={{ width: "170px" }} scope="col">Modified</th>
+                            <th style={{ width: "210px" }} scope="col">Modified</th>
                             <th scope="col">Info</th>
                             <th style={{ width: "170px" }} scope="col">Modified by</th>
                         </tr>
@@ -697,7 +724,7 @@ export default function VersionHistory(props: any) {
                                                                     return (
                                                                         <>
                                                                             {(key != 'odata.editLink' && key != 'odata.id' && key != 'owshiddenversion' && key != 'Editor' && key != 'childs' &&
-                                                                                key != 'Modified' &&  key != 'ModifiedDate' && key != 'BasicImageInfoArray' && key != 'OffshoreImageUrlArray' && key != 'No' && key != 'CommentsDescription' && key != 'Created' && key != 'ModifiedBy' && key !== 'version' && key !== 'TaskTitle' && key !== 'FeedBackDescription' && key !== 'ID' && key !== 'EstimatedTimeDescriptionArray' && key !== 'TotalEstimatedTime') &&
+                                                                                key != 'Modified' && key != 'TaskID' && key != 'ModifiedDate' && key != 'BasicImageInfoArray' && key != 'OffshoreImageUrlArray' && key != 'No' && key != 'CommentsDescription' && key != 'Created' && key != 'ModifiedBy' && key !== 'version' && key !== 'TaskTitle' && key !== 'FeedBackDescription' && key !== 'ID' && key !== 'EstimatedTimeDescriptionArray' && key !== 'TotalEstimatedTime') &&
                                                                                 <li key={index}>
                                                                                     <span className='vh-textLabel'>{key}</span>
                                                                                     <span className='vh-textData'>{Array.isArray(item[key])
@@ -728,7 +755,7 @@ export default function VersionHistory(props: any) {
                                                                                                                         <p className="pb-0 mb-0 ">Estimated Task Time Details</p>
                                                                                                                     </div>
                                                                                                                 </a>
-                                                                                                                <div className="spxdropdown-menu" style={{ display: ShowEstimatedTimeDescription ? 'block' : 'none' }}>
+                                                                                                                <div className="spxdropdown-menu">
                                                                                                                     <div className="col-12" style={{ fontSize: "14px" }}>
                                                                                                                         {item?.EstimatedTimeDescriptionArray != null && item?.EstimatedTimeDescriptionArray?.length > 0 ?
                                                                                                                             <div>
