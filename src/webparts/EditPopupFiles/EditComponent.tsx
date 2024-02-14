@@ -619,8 +619,6 @@ let ID: any;
         componentDetails = await web.lists
             .getById(RequireData.MasterTaskListID)
             .items.select(
-                "ServicePortfolio/Id",
-                "ServicePortfolio/Title",
                 "SiteCompositionSettings",
                 "PortfolioStructureID",
                 "ItemRank",
