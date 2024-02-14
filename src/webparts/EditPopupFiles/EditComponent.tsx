@@ -988,7 +988,7 @@ let ID: any;
         if (Tasks[0]?.ClientCategory?.results?.length > 0) {
             let TempCCItems: any = [];
             AllClientCategoryDataBackup?.map((AllCCItem: any) => {
-                item.ClientCategory?.results?.map((SelectedCCItem: any) => {
+                Tasks[0]?.ClientCategory?.results?.map((SelectedCCItem: any) => {
                     if (SelectedCCItem?.Id == AllCCItem?.Id) {
                         TempCCItems.push(AllCCItem);
                     }
