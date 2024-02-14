@@ -23,6 +23,7 @@ import CentralizedSiteComposition from "../../globalComponents/SiteCompositionCo
 import ImagesC from "./ImageInformation";
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 import  Smartmetadatapickerin  from "../../globalComponents/Smartmetadatapickerindependent/SmartmetadatapickerSingleORMulti";
+import { EditableField } from "../componentProfile/components/Portfoliop";
 var PostTechnicalExplanations = "";
 var PostHelp_x0020_Information = "";
 var PostQuestionDescription = "";
@@ -207,6 +208,12 @@ let ID: any;
             }
         }, 1000)
     };
+
+    const handleFieldChange = (fieldName: any) => (e: any) => {
+        // const updatedItem = { ...data[0], [fieldName]: e.target.value };
+        // setItem(updatedItem);
+      };
+    
     const onEditorStateChange = React.useCallback(
         (rawcontent) => {
             setEditorState(rawcontent.blocks[0].text);
@@ -1634,9 +1641,9 @@ let ID: any;
                     Categories: categoriesItem ? categoriesItem : null,
                     SharewebCategoriesId: { results: CategoryID },
                     // ClientCategoryId: { "results": RelevantPortfolioIds },
-                    ServicePortfolioId:((RelevantPortfolioIds != "" ? RelevantPortfolioIds : null)) ,
-                  PortfoliosId: ({ results: (PortfolioIds?.length != 0 ? PortfolioIds : []) } ? { results: (PortfolioIds?.length != 0 ? PortfolioIds : []) } :null)?{ results: (PortfolioIds?.length >= 0 ? PortfolioIds : []) }:null,
-                 Synonyms: JSON.stringify(Items["Synonyms"]),
+                    ServicePortfolioId: ((RelevantPortfolioIds != "" ? RelevantPortfolioIds : null)) ,
+                    PortfoliosId: ({ results: (PortfolioIds?.length != 0 ? PortfolioIds : []) } ? { results: (PortfolioIds?.length != 0 ? PortfolioIds : []) } :null)?{ results: (PortfolioIds?.length >= 0 ? PortfolioIds : []) }:null,
+                   Synonyms: JSON.stringify(Items["Synonyms"]),
                     Package: Items.Package,
                     AdminStatus: Items.AdminStatus,
                     Priority: Items.Priority,
@@ -1697,9 +1704,9 @@ let ID: any;
                         PostBody != undefined && PostBody != "" ? PostBody : EditData?.Body,
                     AssignedToId: {
                         results:
-                            AssignedToIds != undefined && AssignedToIds?.length > 0
-                                ? AssignedToIds
-                                : []
+                        TeamMemberIds != undefined && TeamMemberIds?.length > 0
+                            ? TeamMemberIds
+                            : []
                     },
                     ResponsibleTeamId: {
                         results:
@@ -1709,9 +1716,10 @@ let ID: any;
                     },
                     TeamMembersId: {
                         results:
-                            TeamMemberIds != undefined && TeamMemberIds?.length > 0
-                                ? TeamMemberIds
+                            AssignedToIds != undefined && AssignedToIds?.length > 0
+                                ? AssignedToIds
                                 : []
+                       
                     }
                 })
                 .then((res: any) => {
@@ -3385,15 +3393,30 @@ let ID: any;
                                                         <label className="form-label  full-width">
                                                             Status
                                                         </label>
-                                                        <input
+                                                        {/* <input
                                                             type="text"
                                                             className="form-control"
                                                             value={EditData?.AdminStatus}
                                                             onChange={(e) => ChangeStatus(e, EditData)}
-                                                        />
+                                                        /> */}
+                                                          <EditableField
+                                                           key={1}
+                                                            listName="Master Tasks"
+                                                           itemId={EditData.Id}
+                                                           fieldName="PercentComplete"
+                                                             value={
+                                                                EditData?.PercentComplete != undefined
+                                                              ? (EditData?.PercentComplete * 100).toFixed(0)
+                                                                  : ""
+                                                                 }
+                                                             TaskProfilePriorityCallback={null}
+                                                           onChange={handleFieldChange("PercentComplete")}
+                                                                      type={EditData.Status}
+                                                           web={RequireData?.siteUrl}
+                              />
                                                     </div>
 
-                                                    <div className="SpfxCheckRadio">
+                                                    {/* <div className="SpfxCheckRadio">
                                                         <input
                                                             className="radio"
                                                             name="NotStarted"
@@ -3483,7 +3506,7 @@ let ID: any;
                                                         <label className="form-check-label">
                                                             Archived{" "}
                                                         </label>
-                                                    </div>
+                                                    </div> */}
                                                 </div>
                                                 <div className="col-sm-6">
                                                     <div className="input-group mb-2">
@@ -3744,26 +3767,56 @@ let ID: any;
                                                <div className="col-sm-12 mt-2">
                           <div className="col-sm-12 padding-0 input-group">
                             <label className="full_width">Project</label>
-                            <input type="text" className="form-control"    onChange={(e) =>
-                                                                            autoSuggestionsForProject(e)
-                                                                        } />
-             
-                            <span className="input-group-text" placeholder="Project">
+                            {
+                                filterdata?.length == 0 || filterdata.length !== 1 && 
+                                <>
+                                <input type="text" className="form-control"    onChange={(e) =>
+                                    autoSuggestionsForProject(e)
+                                } />
+                                <span className="input-group-text" placeholder="Project">
+                              <span title="Project" onClick={(e) => openPortfolioPopup("Project")} className="svg__iconbox svg__icon--editBox"></span>
+                            </span></>
+                            }
+                           
+                               {filterdata && filterdata.length == 1 ? 
+                            (
+                              <div className="w-100" >
+                                {filterdata?.map((items:any, Index: any)=>
+                                 <div className="full-width replaceInput alignCenter" key={Index}>
+                              
+                                  <a
+                                    href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?=${items.Id}`}
+                                    className="textDotted hreflink"         
+                                    data-interception="off"
+                                    target="_blank"
+                                  >
+                                    {items?.Title}
+                                  </a>
+                                  <span className="input-group-text" placeholder="Project">
                               <span title="Project" onClick={(e) => openPortfolioPopup("Project")} className="svg__iconbox svg__icon--editBox"></span>
                             </span>
-                            <div className="SmartTableOnTaskPopup">
-            <ul className="autosuggest-list maXh-200 scrollbar list-group">
-              {searchedProjectData.map((suggestion: any, index: any) => (
-                <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={index} onClick={() => handleSuggestionProject(suggestion)}>
-                  {suggestion?.Title}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="col-sm-12  inner-tabb">
-                            {filterdata && filterdata.length > 0 ? 
+                                </div>)}
+                                </div>) : ""
+                  
+                            }
+                           
+                            {
+                                searchedProjectData?.length > 0 && 
+                                <div className="SmartTableOnTaskPopup">
+                                <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                  {searchedProjectData.map((suggestion: any, index: any) => (
+                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={index} onClick={() => handleSuggestionProject(suggestion)}>
+                                      {suggestion?.Title}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            }
+                      
+                             <div className="col-sm-12  inner-tabb">
+                            {filterdata && filterdata.length > 1 ? 
                             (
-                              <div >
+                              <div  className="w=100" >
                                 {filterdata?.map((items:any, Index: any)=>
                                  <div className="block d-flex justify-content-between mb-1" key={Index}>
                               
@@ -3785,29 +3838,49 @@ let ID: any;
                                             ></span>
                                           </a>
                                 </div>)}
-                                </div>) : ""
-                  
-                            }
-                          
+                                </div>) : ""}
                           </div>    
                         </div>
                         <div className="col-sm-12 padding-0 input-group">
                             <label className="full_width">Feature Type </label>
-                            <input type="text" className="form-control" onChange={(e) =>autoSuggestionsForFeatureType(e)} />
+                            {
+                                FeatureTypeData?.length == 0 || FeatureTypeData[0] == undefined &&
+                                <>
+                                  <input type="text" className="form-control" onChange={(e) =>autoSuggestionsForFeatureType(e)} />
+                                  <span className="input-group-text" placeholder="Feature Type"   >
+                              <span title="Feature Type" onClick={(e) => opensmartmetadatapopup(EditData?.FeatureType)} className="svg__iconbox svg__icon--editBox"></span>
+                            </span></>
+                            }
                             
-                            <span className="input-group-text" placeholder="Feature Type"   >
+                            {FeatureTypeData && FeatureTypeData?.length == 1 &&  FeatureTypeData?.map((item:any)=>{
+                                return(
+                                <>
+                                {item != undefined && 
+                                    <div className="full-width replaceInput alignCenter">
+                                    <a  style={{ color: "#fff !important" }}>{item?.Title}</a>
+                                    <span className="input-group-text" placeholder="Feature Type"   >
                               <span title="Feature Type" onClick={(e) => opensmartmetadatapopup(EditData?.FeatureType)} className="svg__iconbox svg__icon--editBox"></span>
                             </span>
-                            <div className="SmartTableOnTaskPopup">
-            <ul className="autosuggest-list maXh-200 scrollbar list-group">
-              {searchFeatureType.map((suggestion: any, index: any) => (
-                <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={index} onClick={() => handleSuggestionFeature(suggestion)}>
-                  {suggestion?.Title}
-                </li>
-              ))}
-            </ul>
-          </div>
-                            {FeatureTypeData?.map((item:any)=>{
+                                    </div>
+                            }
+                              
+                              </>)
+                            })}
+                            
+                            {
+                                searchFeatureType?.length > 0 && 
+                                <div className="SmartTableOnTaskPopup">
+                                <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                  {searchFeatureType.map((suggestion: any, index: any) => (
+                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={index} onClick={() => handleSuggestionFeature(suggestion)}>
+                                      {suggestion?.Title}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            }
+                           
+                            {FeatureTypeData && FeatureTypeData?.length > 1 &&  FeatureTypeData?.map((item:any)=>{
                                 return(
                                 <>
                                 {item != undefined && 
@@ -4558,15 +4631,15 @@ let ID: any;
                         ) : null}
 
                    {isopenProjectpopup ? (
-                   <ServiceComponentPortfolioPopup
-                   props={EditData}
-                   Dynamic={SelectD}
-                   ComponentType={"Component"}
-                   selectionType={"Multi"}
-                   Call={(Call:any, type: any, functionType: any)=>{callServiceComponent(Call, type,functionType)}}
-                   updateMultiLookup={updateMultiLookup}
-                   showProject={isopenProjectpopup}
-                  />
+                    <ServiceComponentPortfolioPopup
+                    props={filterdata}
+                    Dynamic={SelectD}
+                    ComponentType={"Component"}
+                    selectionType={"Multi"}
+                    Call={(Call:any, type: any, functionType: any)=>{callServiceComponent(Call, type,functionType)}}
+                    updateMultiLookup={updateMultiLookup}
+                    showProject={isopenProjectpopup}
+                   />
                   ) : null}
 
                         {IsComponentPicker && (
