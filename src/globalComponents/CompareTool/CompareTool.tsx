@@ -1548,7 +1548,7 @@ const CompareTool = (props: any) => {
             let ClientCategoryIds: any = [];
             if (Item.ClientCategory.length > 0) {
                 Item.ClientCategory.forEach((cate: any) => {
-                    portfolioIds.push(cate.Id);
+                    ClientCategoryIds.push(cate.Id);
                 })
             }
 
@@ -1684,7 +1684,12 @@ const CompareTool = (props: any) => {
                 })
             }
 
-
+            let ClientCategoryIds: any = [];
+            if (Item.ClientCategory.length > 0) {
+                Item.ClientCategory.forEach((cate: any) => {
+                    ClientCategoryIds.push(cate.Id);
+                })
+            }
             let postData: any = {
                 'Title': Item.Title,
                 'Background': Item.Background,
@@ -1719,6 +1724,7 @@ const CompareTool = (props: any) => {
                 AssignedToId: { "results": AssignedToIds },
                 TeamMembersId: { "results": TeamMembersIds },
                 ResponsibleTeamId: { "results": ResponsibleTeamIds },
+                ClientCategoryId: { "results": ClientCategoryIds },
             }
             if (Item?.Synonyms?.length > 0) {
                 postData.Synonyms = JSON.stringify(Item.Synonyms);
@@ -2565,7 +2571,7 @@ const CompareTool = (props: any) => {
                                             {SmartMetaDataAllItems?.ClientCategory.map((item: any) => {
                                                 return (
                                                     <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                        <a>{item.Newlabel || item.Path}</a>
+                                                        <a>{item.newTitle}</a>
                                                     </li>
                                                 )
                                             }
@@ -2604,7 +2610,7 @@ const CompareTool = (props: any) => {
                                             {SmartMetaDataAllItems?.ClientCategory?.map((item: any) => {
                                                 return (
                                                     <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                        <a>{item.Newlabel || item.Path}</a>
+                                                        <a>{item.newTitle}</a>
                                                     </li>
                                                 )
                                             }
