@@ -1193,6 +1193,48 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                                         {showHeaderLocalStored === false && (headerGroup?.headers?.length - 1 === index) && <div className='position-relative hreflink' style={{ display: "flex" }}>
                                                             <div className='dotFilterIcon'><BiDotsVertical style={{ color: 'gray', height: '25px', width: '25px' }} onClick={(event) => coustomButtonMenuToolBox('buttonMenu')} /></div>
                                                         </div>}
+
+                                                        {header?.column?.columnDef?.id === "Id" && showHeaderLocalStored === false && <>
+                                                            {items?.hideShowingTaskCountToolTip != true ? <>
+                                                                {!items?.pageName ? <span className="popover__wrapper ms-1" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                    <span className='svg__iconbox svg__icon--info alignIcon dark mt--2'></span>
+                                                                    <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
+                                                                        <label style={{ color: "#333333" }}>
+                                                                            Showing
+                                                                        </label>
+                                                                        {portfolioTypeData?.map((type: any, index: any) => {
+                                                                            return (
+                                                                                <>
+                                                                                    {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: "#333333" }} className="ms-1"> | </label></> :
+                                                                                        <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: "#333333" }} className="ms-1"> | </label></>}
+                                                                                </>
+                                                                            )
+                                                                        })}
+                                                                        {items?.taskTypeDataItem?.map((type: any, index: any) => {
+                                                                            return (
+                                                                                <>
+                                                                                    {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
+                                                                                        <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
+                                                                                </>
+                                                                            )
+                                                                        })}
+                                                                    </span>
+                                                                </span> :
+                                                                    <>
+                                                                        <div className='alignCenter mt--2'>
+                                                                            {items?.taskTypeDataItem?.map((type: any, index: any) => {
+                                                                                return (
+                                                                                    <>
+                                                                                        {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
+                                                                                            <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
+                                                                                    </>
+                                                                                )
+                                                                            })}
+                                                                        </div>
+                                                                    </>}
+                                                            </> : ''}
+
+                                                        </>}
                                                     </div>
                                                 )}
                                             </th>
