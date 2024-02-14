@@ -1316,14 +1316,14 @@ export default function ProjectOverview(props: any) {
 
     }, []);
 
-    const restructureCallback = React.useCallback((getData: any, topCompoIcon: any, callback: any) => {
+    const restructureCallback = React.useCallback((getData: any, topCompoIcon: any,callback:any) => {
         setTopCompoIcon(topCompoIcon);
         renderData = [];
         renderData = renderData.concat(getData)
         refreshData()
-        if (callback == true) {
-            GetMasterData();
-        }
+       if(callback == true){
+        GetMasterData();
+       }
 
     }, []);
 
@@ -1575,10 +1575,10 @@ export default function ProjectOverview(props: any) {
                                     <div className='wrapper'>
                                         {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                         {selectedView == 'Projects' ? <GlobalCommanTable expandIcon={true} hideAddActivityBtn={true} ref={childRef} callChildFunction={callChildFunction} AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false} showCreationAllButton={true}
-                                            customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} OpenAddStructureModal={OpenAddStructureModal} pageProjectOverview={true} AllSitesTaskData={AllSitesAllTasks} masterTaskData={MyAllData} multiSelect={true} columns={column2}
+                                            customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} OpenAddStructureModal={OpenAddStructureModal} showRestructureButton={true} restructurebtn={true} restructureCallBack={restructureCallback}AllSitesTaskData={AllSitesAllTasks} masterTaskData={MyAllData} multiSelect={true} columns={column2}
                                             data={workingTodayFiltered ? data : flatData} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                     </div>
-                                    {/* restructurebtn={true} restructureCallBack={restructureCallback} */}
+                                   
                                 </div>
                                 </div>
 
