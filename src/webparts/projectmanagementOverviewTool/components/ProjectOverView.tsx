@@ -357,7 +357,7 @@ export default function ProjectOverview(props: any) {
                 isColumnDefultSortingDesc: true,
                 resetSorting: false,
                 header: "",
-                size: 100,
+                size: 45,
             },
             {
                 accessorFn: (row) => row?.PercentComplete,
@@ -394,7 +394,7 @@ export default function ProjectOverview(props: any) {
                 isColumnDefultSortingDesc: true,
                 enableMultiSort: true,
                 header: "",
-                size: 100,
+                size: 50,
             },
             {
                 accessorKey: "descriptionsSearch",
@@ -425,7 +425,7 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
-                size: 155,
+                size: 85,
             },
             {
                 accessorFn: (row) => row?.DueDate,
@@ -446,7 +446,7 @@ export default function ProjectOverview(props: any) {
                     return row?.original?.DisplayDueDate?.includes(filterValue)
                 },
                 resetSorting: false,
-                size: 100,
+                size: 80,
             },
             {
                 accessorFn: (row) => row?.EstimatedTime,
@@ -521,7 +521,7 @@ export default function ProjectOverview(props: any) {
                     }
                 },
                 header: "",
-                size: 125
+                size: 115
             },
             {
 
@@ -589,7 +589,7 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
-                size: 450,
+                size: 530,
             },
             {
                 accessorFn: (row) => row?.PercentComplete,
@@ -603,7 +603,7 @@ export default function ProjectOverview(props: any) {
                 header: "",
                 resetSorting: false,
                 resetColumnFilters: false,
-                size: 55,
+                size: 45,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
                     return row?.original?.PercentComplete == filterValue
                 },
@@ -619,7 +619,7 @@ export default function ProjectOverview(props: any) {
                 id: "PriorityRank",
                 placeholder: "Priority",
                 resetColumnFilters: false,
-                size: 100,
+                size: 50,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
                     return row?.original?.PriorityRank == filterValue
                 },
@@ -647,7 +647,7 @@ export default function ProjectOverview(props: any) {
                 resetSorting: false,
                 placeholder: "TeamMembers",
                 header: "",
-                size: 152,
+                size: 85,
             },
             {
                 accessorKey: "descriptionsSearch",
@@ -685,7 +685,7 @@ export default function ProjectOverview(props: any) {
                     return row?.original?.DisplayDueDate?.includes(filterValue)
                 },
                 header: "",
-                size: 100,
+                size: 80,
             },
             {
                 accessorFn: (row) => row?.TaskTypeValue,
@@ -740,7 +740,7 @@ export default function ProjectOverview(props: any) {
                     }
                 },
                 header: "",
-                size: 125
+                size: 115
             },
             {
                 header: ({ table }: any) => (
