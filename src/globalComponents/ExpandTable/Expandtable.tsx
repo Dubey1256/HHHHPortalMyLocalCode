@@ -16,6 +16,18 @@ const ExpndTable = (props: any) => {
     props.prop(prope)
   }
 
+  React.useEffect(() => {
+    const spPageCanvasContentDiv = document.getElementById('spPageCanvasContent');
+
+    if (spPageCanvasContentDiv) {
+      const seventhChild = spPageCanvasContentDiv.querySelector(':scope > div > div > div > div > div > div > div');
+
+      if (seventhChild) {
+        seventhChild.id = 'increasePageWidth';
+      }
+    }
+  }, []);
+
   return (
     <>
       <svg data-bs-toggle="modal" data-bs-target="#exampleModal"

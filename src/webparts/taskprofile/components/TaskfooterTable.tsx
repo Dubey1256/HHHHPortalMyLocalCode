@@ -302,7 +302,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
         list.items
           .inBatch(batch)
           .select(select).orderBy("orderby", false)
-          .getAll(4000)
+          .getAll()
 
           .then((AllTasksMatches) => {
             console.log(AllTasksMatches);
@@ -345,6 +345,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
                     result.chekbox = false;
                     result.descriptionsSearch = '';
                     result.commentsSearch = "";
+                    result["TaskID"] = globalCommon.GetTaskId(result);
                     // result.DueDate = moment(result.DueDate).format("DD/MM/YYYY");
                     result.DisplayDueDate = moment(result.DueDate).format("DD/MM/YYYY");
                     result.DisplayCreateDate = moment(result.Created).format("DD/MM/YYYY");
@@ -362,9 +363,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
                     }
                     result.SmartPriority = globalCommon.calculateSmartPriority(result);
                   
-                    result.PercentComplete = (
-                      result.PercentComplete * 100
-                    ).toFixed(0);
+                    result.PercentComplete = (result?.PercentComplete * 100).toFixed(0);
                     result.chekbox = false;
                     if (result?.FeedBack != undefined) {
                       let DiscriptionSearchData: any = '';
@@ -450,7 +449,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
                     } else {
                       result.ClientCategorySearch = "";
                     }
-                    result["TaskID"] = globalCommon.GetTaskId(result);
+                   
                     if (result.Project) {
                       result.ProjectTitle = result?.Project?.Title;
                       result.ProjectId = result?.Project?.Id;

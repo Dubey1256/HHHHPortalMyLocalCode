@@ -37,7 +37,7 @@ function DataCleancupTool(SelectedProp: any) {
             const LoadBackups = await web.lists.getById(SelectedProp.SelectedProp.BackupConfigurationsListID).items.getAll();
             if (LoadBackups?.length > 0 && LoadBackups !== undefined) {
                 LoadBackups.forEach((element: any) => {
-                    if (element.Columns != undefined && element.Backup == true && element.Title != "TaskTimeSheetListNew" && element.Title != "HHHH" && element.Title != "TasksTimesheet2" && element.Title != "TaskTimesheet") {                        
+                    if (element.Columns != undefined && element.Backup == true && element.Title != "TaskTimeSheetListNew" && element.Title != "TasksTimesheet2" && element.Title != "TaskTimesheet") {                        
                         element.MainUrl = SelectedProp.SelectedProp.siteUrl;                 
                         siteConfig.push(element);
                     }
@@ -93,6 +93,7 @@ function DataCleancupTool(SelectedProp: any) {
             console.log(AllDataItems)
 
         AllDataItems?.map((Item: any) => { 
+    
         if(Item.DoNotAllow==false) { 
             Item.CreatedDate = moment(Item?.Created).format('DD/MM/YYYY');      
             Item.ModifiedDate = moment(Item?.Modified).format('DD/MM/YYYY HH:mm')
@@ -238,7 +239,7 @@ function DataCleancupTool(SelectedProp: any) {
 
     }
     const deleteData = (dlData: any) => {
-
+       
         var flag: any = confirm('Do you want to delete this item ?')      
         if (flag) {
             let web = new Web(SelectedProp.SelectedProp.siteUrl+ '/')
@@ -399,28 +400,7 @@ const SaveItem = async (SelectedItem: any) => {
             }
           },
    
-        },
-
-        // {
-        //     accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 172, id: "Modified",
-        //     cell: ({ row }) => (
-        //         <>
-        //             {row?.original?.ModifiedDate}
-        //             {row?.original?.AllModifiedImages.map((item: any) => (
-        //                 <a className='ms-1' target="_blank" data-interception="off" href={`${SelectedProp.SelectedProp.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${item.UserId}&Name=${item.Title}`}>
-        //                     {item?.UserImage != undefined && item?.UserImage != '' ? <img title={item?.Title} className="workmember" src={item?.UserImage}></img> : <img title={item?.Title} className="workmember" src={`${SelectedProp.SelectedProp.siteUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg`}></img>}
-        //                 </a>
-        //             ))}
-        //         </>
-        //     ),
-        //     filterFn: (row: any, columnName: any, filterValue: any) => {
-        //         if (row?.original?.AllModifiedImages?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.ModifiedDate?.includes(filterValue)) {
-        //           return true
-        //         } else {
-        //           return false
-        //         }
-        //       },
-        // },
+        },     
         {
             cell: ({ row }) => (
                 <div className='alignCenter'>
