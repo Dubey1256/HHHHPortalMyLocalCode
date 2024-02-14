@@ -4548,6 +4548,7 @@ let ID: any;
                                                     taskId={EditData?.ID}
                                                     listId={RequireData.MasterTaskListID}
                                                     siteUrls={RequireData?.siteUrl}
+                                                    RequiredListIds = {RequireData}
                                                 />
                                             ) : (
                                                 ""
@@ -4801,6 +4802,7 @@ let ID: any;
                                             taskId={dataUpdate?.ID}
                                             listId={RequireData?.SmartHelpListID}
                                             siteUrls={RequireData?.siteUrl}
+                                            RequiredListIds = {RequireData}
                                         />
                                     ) : (
                                         ""
@@ -4916,6 +4918,7 @@ let ID: any;
                                             taskId={helpDataUpdate?.ID}
                                             listId={RequireData?.SmartHelpListID}
                                             siteUrls={RequireData?.siteUrl}
+                                            RequiredListIds = {RequireData}
                                         />
                                     ) : (
                                         ""
@@ -4993,6 +4996,7 @@ let ID: any;
                                             taskId={EditData?.ID}
                                             listId={RequireData.MasterTaskListID}
                                             siteUrls={RequireData?.siteUrl}
+                                            RequiredListIds = {RequireData}
                                         />
                                     ) : (
                                         ""
