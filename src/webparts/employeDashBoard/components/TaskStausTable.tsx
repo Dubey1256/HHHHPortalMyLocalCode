@@ -69,8 +69,8 @@ const TaskStatusTbl = (Tile: any) => {
   }, []);
   const ShowWorkingTask = (config: any, User: any) => {
     DashboardConfig.forEach((configuration: any) => {
-      if (configuration?.WebpartTitle == config?.WebpartTitle && configuration?.LoginUserTeamMembers != undefined && configuration?.LoginUserTeamMembers?.length > 0) {
-        configuration?.LoginUserTeamMembers.forEach((user: any) => {
+      if (configuration?.WebpartTitle == config?.WebpartTitle && configuration?.Tasks != undefined && configuration?.Tasks?.length > 0) {
+        configuration?.Tasks.forEach((user: any) => {
           if (user?.AssingedToUserId != undefined && User?.AssingedToUserId != undefined && user?.AssingedToUserId == User?.AssingedToUserId) {
             user.IsShowTask = !user.IsShowTask
           }
@@ -85,7 +85,7 @@ const TaskStatusTbl = (Tile: any) => {
     e.dataTransfer.setData("DataId", JSON.stringify(Item))
     console.log('Drag successfuly');
   }
-  const onDropUser = (e: any, User: any) => {
+  const onDropUser = (e: any, User: any, config: any) => {
     let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
     let TeamMemberIds = [];
     let AssignedToIds = [];
@@ -124,14 +124,16 @@ const TaskStatusTbl = (Tile: any) => {
                 task.TeamMembers = Item?.TeamMembers;
               }
             });
-            if (item?.LoginUserTeamMembers != undefined) {
-              item?.LoginUserTeamMembers.map((user: any) => {
-                if (user?.AssingedToUserId == User?.AssingedToUserId)
-                  user?.WorkingTask.push(Item);
-              });
+            if (item?.Tasks != undefined) {
+              item.Tasks = item?.Tasks.filter((task: any) => task?.Id != Item.Id);
             }
-            if (item['9%PercentTask'] != undefined) {
-              item['9%PercentTask'] = item['9%PercentTask'].filter((task: any) => task?.Id != Item.Id);
+          }
+          if (item?.WebpartTitle != undefined && config?.WebpartTitle != undefined && item?.WebpartTitle == config?.WebpartTitle) {
+            if (item?.Tasks != undefined) {
+              item?.Tasks.map((user: any) => {
+                if (user?.AssingedToUserId == User?.AssingedToUserId)
+                  user?.Tasks.push(Item);
+              });
             }
           }
         });
@@ -409,7 +411,7 @@ const TaskStatusTbl = (Tile: any) => {
     let currentRow: any = [];
     DashboardConfig.forEach((config: any, index: any) => {
       if (Tile.activeTile === config?.TileName || config?.TileName === "") {
-        if (config?.DataSource != undefined && config?.DataSource != '' && config?.DataSource != 'Portfolio Team Lead') {
+        if (config?.DataSource != undefined && config?.DataSource != '') {
           const box = (
             <div className={`col-${12 / config.highestColumn} px-1 mb-2 `} key={index}>
               {config?.ShowWebpart == true && config?.GroupByView != undefined && <section>
@@ -449,7 +451,7 @@ const TaskStatusTbl = (Tile: any) => {
                         {`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}
                       </span>
                     </div>
-                    <div className="dashbord-teamBox">
+                    {config?.selectFilterType != 'custom' && <div className="dashbord-teamBox">
                       {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => {
                         return <div ui-on-drop="onDropRemoveTeam($event,$data,taskUsers)" className="top-assign ng-scope">
                           {user.childs.length > 0 &&
@@ -462,7 +464,7 @@ const TaskStatusTbl = (Tile: any) => {
                                   return <div className="marginR41 ng-scope">
                                     {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined &&
                                       <span>
-                                        <img draggable={false} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, item)} className="large_teamsimg" src={item.Item_x0020_Cover.Url} title={item.AssingedToUser.Title} />
+                                        <img draggable={false} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, item, config)} className="large_teamsimg" src={item.Item_x0020_Cover.Url} title={item.AssingedToUser.Title} />
                                       </span>
                                     }
                                   </div>
@@ -473,7 +475,40 @@ const TaskStatusTbl = (Tile: any) => {
                         </div>
                       })
                       }
-                    </div>
+                    </div>}
+                    {config?.selectFilterType == 'custom' &&
+                      <>
+                        <div className={`col-12 px-1 mb-2 my-2`}>
+                          <div className="border">
+                            {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => (
+                              <div className="top-assign p-1">
+                                {user.Item_x0020_Cover != undefined && user.AssingedToUser != undefined &&
+                                  <span>
+                                    {/* draggable={false} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user)} */}
+                                    <img className={user.IsShowTask == true ? 'activeimg large_teamsimg' : 'large_teamsimg'} onClick={() => ShowWorkingTask(config, user)} src={user.Item_x0020_Cover.Url} title={user.AssingedToUser.Title} />
+                                  </span>
+                                }
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className={`col-12 px-1 mb-2 py-4`}>
+                          <>
+                            {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => (
+                              user.IsShowTask == true && (
+                                <>
+                                  <h3 className="f-15">{user?.Title} Today's Task</h3>
+                                  <div key={index} className="Alltable maXh-300 mb-2" draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config)} style={{ height: "300px" }}>
+                                    <GlobalCommanTable wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={user.Tasks}
+                                      callBackData={callBackData} />
+                                  </div>
+                                </>
+                              )
+                            ))}
+                          </>
+                        </div>
+                      </>
+                    }
                   </>
                 }
               </section>}
@@ -499,62 +534,6 @@ const TaskStatusTbl = (Tile: any) => {
             rows.push(row);
             currentRow = [];
           }
-        } else {
-          const box = (
-            <>
-              <Row>
-                <Col>
-                  {/* draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, '9%Task', undefined)}  */}
-                  <h3 className="f-16 fw-semibold">9% Tasks</h3>
-                  <div className="Alltable maXh-300" style={{ height: "300px" }}>
-                    {config['9%PercentTask'] != undefined && (
-                      <GlobalCommanTable wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config['9%PercentTask']} callBackData={callBackData} />
-                    )}
-                  </div>
-                </Col>
-              </Row>
-              <Row className="my-2">
-                <Col>
-                  <h3 className="f-15 fw-semibold">Task Users</h3>
-                  <div className="border">
-                    {config?.LoginUserTeamMembers != null && config?.LoginUserTeamMembers?.length > 0 && config.LoginUserTeamMembers.map((user: any, index: number) => (
-                      <div className="top-assign p-1">
-                        {user.Item_x0020_Cover != undefined && user.AssingedToUser != undefined &&
-                          <span>
-                            {/* draggable={false} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user)} */}
-                            <img className={user.IsShowTask == true ? 'activeimg large_teamsimg' : 'large_teamsimg'} onClick={() => ShowWorkingTask(config, user)} src={user.Item_x0020_Cover.Url} title={user.AssingedToUser.Title} />
-                          </span>
-                        }
-                      </div>
-                    ))
-                    }
-                  </div>
-                </Col>
-                <Col>
-                </Col>
-              </Row>
-              <Row className="py-4">
-                <Col>
-                  <>
-                    {config?.LoginUserTeamMembers != null && config?.LoginUserTeamMembers?.length > 0 && config.LoginUserTeamMembers.map((user: any, index: number) => (
-                      user.IsShowTask == true && (
-                        <>
-                          <h3 className="f-15 fw-semibold">{user?.Title} Today's Task</h3>
-                          <div key={index} className="Alltable maXh-300 mb-2" draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user)} style={{ height: "300px" }}>
-                            <GlobalCommanTable wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={user.WorkingTask}
-                              callBackData={callBackData} />
-                          </div>
-                        </>
-                      )
-                    ))}
-                  </>
-                </Col>
-                <Col>
-                </Col>
-              </Row>
-            </>
-          );
-          rows.push(box);
         }
       }
     });

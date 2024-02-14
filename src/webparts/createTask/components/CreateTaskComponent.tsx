@@ -880,6 +880,16 @@ function CreateTaskComponent(props: any) {
                     try {
                         if (selectedPortfolio !== undefined && selectedPortfolio.length >= 0) {
                             $.each(selectedPortfolio, function (index: any, smart: any) {
+                                if(smart?.AssignedTo && smart?.AssignedTo?.length>0){
+                                    smart?.AssignedTo.forEach(function(i:any){
+                                        ResponsibleIds.push(i.Id)
+                                    })
+                                 }
+                                 if(smart?.TeamMembers && smart?.TeamMembers?.length>0){
+                                    smart?.TeamMembers.forEach(function(i:any){
+                                        TeamMembersIds.push(i.Id)
+                                    })
+                                 }
                                 selectedComponent.push(smart.Id);
                                 portfolioId = smart?.Id
                                 if (selectedSite?.Parent?.Title == "SDC Sites") {
