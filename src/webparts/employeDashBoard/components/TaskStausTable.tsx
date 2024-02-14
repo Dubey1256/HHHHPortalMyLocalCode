@@ -12,6 +12,7 @@ import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-P
 import EmailComponenet from "../../taskprofile/components/emailComponent";
 import ManageConfigPopup from "../../../globalComponents/ManageConfigPopup";
 import { Web } from "sp-pnp-js";
+import { Col, Row } from "react-bootstrap";
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -23,6 +24,7 @@ let IsShowConfigBtn = false;
 let dragItem: any;
 const TaskStatusTbl = (Tile: any) => {
   const ContextData: any = React.useContext(myContextValue);
+  const [state, rerender] = React.useReducer(() => ({}), {});
   const AllTaskUser: any = ContextData?.AlltaskData?.AllTaskUser;
   const AllMasterTasks: any = ContextData?.AllMasterTasks;
   const [editPopup, setEditPopup]: any = React.useState(false);
@@ -57,6 +59,7 @@ const TaskStatusTbl = (Tile: any) => {
     flagApproval = true
     setapprovalTask(AllapprovalTask)
   }
+
   useEffect(() => {
     Count += 1
     if (ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
@@ -64,15 +67,32 @@ const TaskStatusTbl = (Tile: any) => {
       DashboardConfigCopy = [...DashboardConfig]
     }
   }, []);
+  const ShowWorkingTask = (config: any, User: any) => {
+    DashboardConfig.forEach((configuration: any) => {
+      if (configuration?.WebpartTitle == config?.WebpartTitle && configuration?.LoginUserTeamMembers != undefined && configuration?.LoginUserTeamMembers?.length > 0) {
+        configuration?.LoginUserTeamMembers.forEach((user: any) => {
+          if (user?.AssingedToUserId != undefined && User?.AssingedToUserId != undefined && user?.AssingedToUserId == User?.AssingedToUserId) {
+            user.IsShowTask = !user.IsShowTask
+          }
+        })
+      }
+    })
+    setActiveTile((prevString: any) => Tile?.activeTile);
+    rerender();
+  }
   const startDrag = (e: any, Item: any, ItemId: any, draggedItem: any) => {
     dragItem = draggedItem;
     e.dataTransfer.setData("DataId", JSON.stringify(Item))
     console.log('Drag successfuly');
   }
   const onDropUser = (e: any, User: any) => {
+    let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
     let TeamMemberIds = [];
     let AssignedToIds = [];
-    let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
+    if (Item?.AssignedTo == undefined)
+      Item.AssignedTo = [];
+    if (Item?.TeamMembers == undefined)
+      Item.TeamMembers = [];
     if (Item?.TeamMembers != undefined && Item?.TeamMembers?.length > 0) {
       Item?.TeamMembers?.map((teamMember: any) => {
         TeamMemberIds.push(teamMember.Id);
@@ -92,9 +112,11 @@ const TaskStatusTbl = (Tile: any) => {
       web.lists.getById(Item.listId).items.getById(Item?.Id).update({
         AssignedToId: { results: AssignedToIds != undefined && AssignedToIds.length > 0 ? AssignedToIds : [], },
         TeamMembersId: { results: TeamMemberIds != undefined && TeamMemberIds.length > 0 ? TeamMemberIds : [], },
+        IsTodaysTask: true,
+        PercentComplete: 10 / 100,
       }).then((res: any) => {
         console.log('Drop successfuly');
-        DashboardConfig?.map((item: any) => {
+        DashboardConfig?.forEach((item: any) => {
           if (item?.WebpartTitle != undefined && dragItem?.WebpartTitle != undefined && item?.WebpartTitle == dragItem?.WebpartTitle) {
             item?.Tasks.map((task: any) => {
               if (task?.Id == Item.Id) {
@@ -102,14 +124,42 @@ const TaskStatusTbl = (Tile: any) => {
                 task.TeamMembers = Item?.TeamMembers;
               }
             });
+            if (item?.LoginUserTeamMembers != undefined) {
+              item?.LoginUserTeamMembers.map((user: any) => {
+                if (user?.AssingedToUserId == User?.AssingedToUserId)
+                  user?.WorkingTask.push(Item);
+              });
+            }
+            if (item['9%PercentTask'] != undefined) {
+              item['9%PercentTask'] = item['9%PercentTask'].filter((task: any) => task?.Id != Item.Id);
+            }
           }
         });
+        DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
         setActiveTile(Tile?.activeTile)
+        rerender();
       }).catch((err: any) => {
         console.log(err);
       })
     }
-
+  }
+  const onDropTable = (e: any, Type: any, User: any) => {
+    let Status = 0;
+    if (Type == '9%Task')
+      Status = 9;
+    let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
+    if (Item != undefined && Item != '') {
+      let web = new Web(ContextData?.propsValue?.siteUrl);
+      web.lists.getById(Item.listId).items.getById(Item?.Id).update({
+        PercentComplete: Status / 100,
+      }).then((res: any) => {
+        console.log('Drop successfuly');
+        setActiveTile(Tile?.activeTile)
+        rerender();
+      }).catch((err: any) => {
+        console.log(err);
+      })
+    }
   }
   const generateDynamicColumns = (item: any) => {
     return [{
@@ -148,7 +198,7 @@ const TaskStatusTbl = (Tile: any) => {
       accessorFn: (row: any) => row?.Title,
       cell: ({ row, getValue }: any) => (
         <div>
-          <a className="hreflink" draggable onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.TaskID, item)} target='_blank' style={{ textDecoration: 'none', cursor: 'pointer' }} href={`${ContextData.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
+          <a className="hreflink" draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)} target='_blank' style={{ textDecoration: 'none', cursor: 'pointer' }} href={`${ContextData.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
             rel='noopener noreferrer' data-interception="off" > {row?.original?.Title}
           </a>
           {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != "" && (
@@ -177,6 +227,8 @@ const TaskStatusTbl = (Tile: any) => {
       id: "SmartPriority",
       placeholder: "SmartPriority",
       resetColumnFilters: false,
+      resetSorting: false,
+      isColumnDefultSortingDesc: true,
       header: "",
       size: 190,
     },
@@ -207,7 +259,6 @@ const TaskStatusTbl = (Tile: any) => {
         </div>
       ),
       id: 'Created',
-      isColumnDefultSortingDesc: true,
       resetColumnFilters: false,
       resetSorting: false,
       placeholder: "Created",
@@ -358,94 +409,152 @@ const TaskStatusTbl = (Tile: any) => {
     let currentRow: any = [];
     DashboardConfig.forEach((config: any, index: any) => {
       if (Tile.activeTile === config?.TileName || config?.TileName === "") {
-        const box = (
-          <div className={`col-${12 / config.highestColumn} px-1 mb-2 `} key={index}>
-            {config?.ShowWebpart == true && config?.GroupByView != undefined && <section>
-              {config?.DataSource == 'Tasks' && <div className="workingSec empAllSec clearfix">
-                <div className="alignCenter mb-2 justify-content-between">
-                  <span className="fw-bold">
-                    {`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}
-                  </span>
-                  <span className="alignCenter">
-                    {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
-                    {config?.WebpartTitle != 'Draft Tasks' && config?.WebpartTitle != 'Waiting for Approval' && <a className="empCol hreflink me-2"
-                      target="_blank" data-interception="off" title="Create New Task" href="/sites/HHHH/SP/SitePages/CreateTask.aspx">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none">
-                        <path d="M27.9601 22.2H26.0401V26.0399H22.2002V27.9599H26.0401V31.8H27.9601V27.9599H31.8002V26.0399H27.9601V22.2Z" fill="#057BD0" />
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M32.3996 9.60001H9.59961V32.4H15.5996V38.4H38.3996V15.6H15.5996V31.2968H10.7028V10.7032H31.2964V15.4839H32.3996V9.60001ZM16.7028 16.7032H37.2964V37.2968H16.7028V16.7032Z" fill="#057BD0" />
-                        <path d="M9.59956 9.59999V9.29999H9.29956V9.59999H9.59956ZM32.3996 9.59999H32.6996V9.29999H32.3996V9.59999ZM9.59956 32.4H9.29956V32.7H9.59956V32.4ZM15.5996 32.4H15.8996V32.1H15.5996V32.4ZM15.5996 38.4H15.2996V38.7H15.5996V38.4ZM38.3996 38.4V38.7H38.6996V38.4H38.3996ZM38.3996 15.6H38.6996V15.3H38.3996V15.6ZM15.5996 15.6V15.3H15.2996V15.6H15.5996ZM15.5996 31.2968V31.5968H15.8996V31.2968H15.5996ZM10.7028 31.2968H10.4028V31.5968H10.7028V31.2968ZM10.7028 10.7032V10.4032H10.4028V10.7032H10.7028ZM31.2964 10.7032H31.5963V10.4032H31.2964V10.7032ZM31.2964 15.4839H30.9964V15.7839H31.2964V15.4839ZM32.3996 15.4839V15.7839H32.6996V15.4839H32.3996ZM37.2963 16.7032H37.5964V16.4032H37.2963V16.7032ZM16.7028 16.7032V16.4032H16.4028V16.7032H16.7028ZM37.2963 37.2968V37.5968H37.5964V37.2968H37.2963ZM16.7028 37.2968H16.4028V37.5968H16.7028V37.2968ZM9.59956 9.89999H32.3996V9.29999H9.59956V9.89999ZM9.89956 32.4V9.59999H9.29956V32.4H9.89956ZM15.5996 32.1H9.59956V32.7H15.5996V32.1ZM15.2996 32.4V38.4H15.8996V32.4H15.2996ZM15.5996 38.7H38.3996V38.1H15.5996V38.7ZM38.6996 38.4V15.6H38.0996V38.4H38.6996ZM38.3996 15.3H15.5996V15.9H38.3996V15.3ZM15.2996 15.6V31.2968H15.8996V15.6H15.2996ZM10.7028 31.5968H15.5996V30.9968H10.7028V31.5968ZM10.4028 10.7032V31.2968H11.0028V10.7032H10.4028ZM31.2964 10.4032H10.7028V11.0032H31.2964V10.4032ZM31.5963 15.4839V10.7032H30.9964V15.4839H31.5963ZM32.3996 15.1839H31.2964V15.7839H32.3996V15.1839ZM32.0996 9.59999V15.4839H32.6996V9.59999H32.0996ZM37.2963 16.4032H16.7028V17.0032H37.2963V16.4032ZM37.5964 37.2968V16.7032H36.9963V37.2968H37.5964ZM16.7028 37.5968H37.2963V36.9968H16.7028V37.5968ZM16.4028 16.7032V37.2968H17.0028V16.7032H16.4028Z" fill="#057BD0" />
-                      </svg>
-                    </a>}
-                    {config?.WebpartTitle == 'Draft Tasks' && <a className="empCol hreflink me-3">Approve</a>}
-                    {config?.WebpartTitle == 'Waiting for Approval' && <span className="empCol me-3 hreflink" onClick={sendEmail}>Approve</span>}
-                    {<span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
-                  </span>
-                </div>
-                <div className="Alltable maXh-300" style={{ height: "300px" }}>
-                  {config?.Tasks != undefined && (
-                    <GlobalCommanTable wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
-                  )}
-                  {config?.WebpartTitle == 'Waiting for Approval' && <span>
-                    {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={ContextData.Context} emailStatus={"Approved"} items={approveItem} />}
-                  </span>}
-                </div>
-              </div>}
-              {config?.DataSource == 'TaskUsers' &&
-                <>
+        if (config?.DataSource != undefined && config?.DataSource != '' && config?.DataSource != 'Portfolio Team Lead') {
+          const box = (
+            <div className={`col-${12 / config.highestColumn} px-1 mb-2 `} key={index}>
+              {config?.ShowWebpart == true && config?.GroupByView != undefined && <section>
+                {config?.DataSource == 'Tasks' && <div className="workingSec empAllSec clearfix">
                   <div className="alignCenter mb-2 justify-content-between">
                     <span className="fw-bold">
                       {`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}
                     </span>
+                    <span className="alignCenter">
+                      {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
+                      {config?.WebpartTitle != 'Draft Tasks' && config?.WebpartTitle != 'Waiting for Approval' && <a className="empCol hreflink me-2"
+                        target="_blank" data-interception="off" title="Create New Task" href="/sites/HHHH/SP/SitePages/CreateTask.aspx">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none">
+                          <path d="M27.9601 22.2H26.0401V26.0399H22.2002V27.9599H26.0401V31.8H27.9601V27.9599H31.8002V26.0399H27.9601V22.2Z" fill="#057BD0" />
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M32.3996 9.60001H9.59961V32.4H15.5996V38.4H38.3996V15.6H15.5996V31.2968H10.7028V10.7032H31.2964V15.4839H32.3996V9.60001ZM16.7028 16.7032H37.2964V37.2968H16.7028V16.7032Z" fill="#057BD0" />
+                          <path d="M9.59956 9.59999V9.29999H9.29956V9.59999H9.59956ZM32.3996 9.59999H32.6996V9.29999H32.3996V9.59999ZM9.59956 32.4H9.29956V32.7H9.59956V32.4ZM15.5996 32.4H15.8996V32.1H15.5996V32.4ZM15.5996 38.4H15.2996V38.7H15.5996V38.4ZM38.3996 38.4V38.7H38.6996V38.4H38.3996ZM38.3996 15.6H38.6996V15.3H38.3996V15.6ZM15.5996 15.6V15.3H15.2996V15.6H15.5996ZM15.5996 31.2968V31.5968H15.8996V31.2968H15.5996ZM10.7028 31.2968H10.4028V31.5968H10.7028V31.2968ZM10.7028 10.7032V10.4032H10.4028V10.7032H10.7028ZM31.2964 10.7032H31.5963V10.4032H31.2964V10.7032ZM31.2964 15.4839H30.9964V15.7839H31.2964V15.4839ZM32.3996 15.4839V15.7839H32.6996V15.4839H32.3996ZM37.2963 16.7032H37.5964V16.4032H37.2963V16.7032ZM16.7028 16.7032V16.4032H16.4028V16.7032H16.7028ZM37.2963 37.2968V37.5968H37.5964V37.2968H37.2963ZM16.7028 37.2968H16.4028V37.5968H16.7028V37.2968ZM9.59956 9.89999H32.3996V9.29999H9.59956V9.89999ZM9.89956 32.4V9.59999H9.29956V32.4H9.89956ZM15.5996 32.1H9.59956V32.7H15.5996V32.1ZM15.2996 32.4V38.4H15.8996V32.4H15.2996ZM15.5996 38.7H38.3996V38.1H15.5996V38.7ZM38.6996 38.4V15.6H38.0996V38.4H38.6996ZM38.3996 15.3H15.5996V15.9H38.3996V15.3ZM15.2996 15.6V31.2968H15.8996V15.6H15.2996ZM10.7028 31.5968H15.5996V30.9968H10.7028V31.5968ZM10.4028 10.7032V31.2968H11.0028V10.7032H10.4028ZM31.2964 10.4032H10.7028V11.0032H31.2964V10.4032ZM31.5963 15.4839V10.7032H30.9964V15.4839H31.5963ZM32.3996 15.1839H31.2964V15.7839H32.3996V15.1839ZM32.0996 9.59999V15.4839H32.6996V9.59999H32.0996ZM37.2963 16.4032H16.7028V17.0032H37.2963V16.4032ZM37.5964 37.2968V16.7032H36.9963V37.2968H37.5964ZM16.7028 37.5968H37.2963V36.9968H16.7028V37.5968ZM16.4028 16.7032V37.2968H17.0028V16.7032H16.4028Z" fill="#057BD0" />
+                        </svg>
+                      </a>}
+                      {config?.WebpartTitle == 'Draft Tasks' && <a className="empCol hreflink me-3">Approve</a>}
+                      {config?.WebpartTitle == 'Waiting for Approval' && <span className="empCol me-3 hreflink" onClick={sendEmail}>Approve</span>}
+                      {<span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
+                    </span>
                   </div>
-                  <div className="dashbord-teamBox">
-                    {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => {
-                      return <div ui-on-drop="onDropRemoveTeam($event,$data,taskUsers)" className="top-assign ng-scope">
-                        {user.childs.length > 0 &&
-                          <div className="team ng-scope">
-                            <label className="BdrBtm">
-                              {user.Title}
-                            </label>
-                            <div className='d-flex'>
-                              {user.childs.map((item: any, i: number) => {
-                                return <div className="marginR41 ng-scope">
-                                  {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined &&
-                                    <span>
-                                      <img draggable onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, item)} className="large_teamsimg" src={item.Item_x0020_Cover.Url} title={item.AssingedToUser.Title} />
-                                    </span>
-                                  }
-                                </div>
-                              })}
+                  <div className="Alltable maXh-300" style={{ height: "300px" }}>
+                    {config?.Tasks != undefined && (
+                      <GlobalCommanTable wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                    )}
+                    {config?.WebpartTitle == 'Waiting for Approval' && <span>
+                      {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={ContextData.Context} emailStatus={"Approved"} items={approveItem} />}
+                    </span>}
+                  </div>
+                </div>}
+                {config?.DataSource == 'TaskUsers' &&
+                  <>
+                    <div className="alignCenter mb-2 justify-content-between">
+                      <span className="fw-bold">
+                        {`${config?.WebpartTitle}`}  {config?.Tasks != undefined && `(${config?.Tasks?.length})`}
+                      </span>
+                    </div>
+                    <div className="dashbord-teamBox">
+                      {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => {
+                        return <div ui-on-drop="onDropRemoveTeam($event,$data,taskUsers)" className="top-assign ng-scope">
+                          {user.childs.length > 0 &&
+                            <div className="team ng-scope">
+                              <label className="BdrBtm">
+                                {user.Title}
+                              </label>
+                              <div className='d-flex'>
+                                {user.childs.map((item: any, i: number) => {
+                                  return <div className="marginR41 ng-scope">
+                                    {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined &&
+                                      <span>
+                                        <img draggable={false} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, item)} className="large_teamsimg" src={item.Item_x0020_Cover.Url} title={item.AssingedToUser.Title} />
+                                      </span>
+                                    }
+                                  </div>
+                                })}
+                              </div>
                             </div>
-                          </div>
-                        }
-                      </div>
-                    })
-                    }
-                  </div>
-                </>
+                          }
+                        </div>
+                      })
+                      }
+                    </div>
+                  </>
+                }
+              </section>}
+              {config.IsMyNotes == true && config?.ShowWebpart == true && config?.GroupByView == undefined &&
+                <div className="empAllSec notesSec shadow-sm clearfix">
+                  <MyNotes config={config} IsShowConfigBtn={IsShowConfigBtn} />
+                </div>
               }
-            </section>}
-            {config.IsMyNotes == true && config?.ShowWebpart == true && config?.GroupByView == undefined &&
-              <div className="empAllSec notesSec shadow-sm clearfix">
-                <MyNotes config={config} IsShowConfigBtn={IsShowConfigBtn} />
-              </div>
-            }
-            {config.IsUpcomingBday == true && config?.ShowWebpart == true && config?.GroupByView == undefined &&
-              <div className="empAllSec birthSec shadow-sm clearfix">
-                <ComingBirthday config={config} IsShowConfigBtn={IsShowConfigBtn} />
-              </div>
-            }
-          </div>
-        );
-        currentRow.push(box);
-        if (currentRow.length === config.highestColumn || index === DashboardConfig.length - 1) {
-          const row = (
-            <div className="row m-0 empMainSec" key={`row_${index}`}>
-              {currentRow}
+              {config.IsUpcomingBday == true && config?.ShowWebpart == true && config?.GroupByView == undefined &&
+                <div className="empAllSec birthSec shadow-sm clearfix">
+                  <ComingBirthday config={config} IsShowConfigBtn={IsShowConfigBtn} />
+                </div>
+              }
             </div>
           );
-          rows.push(row);
-          currentRow = [];
+          currentRow.push(box);
+          if (currentRow.length === config.highestColumn || index === DashboardConfig.length - 1) {
+            const row = (
+              <div className="row m-0 empMainSec" key={`row_${index}`}>
+                {currentRow}
+              </div>
+            );
+            rows.push(row);
+            currentRow = [];
+          }
+        } else {
+          const box = (
+            <>
+              <Row>
+                <Col>
+                  {/* draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, '9%Task', undefined)}  */}
+                  <h3 className="f-16 fw-semibold">9% Tasks</h3>
+                  <div className="Alltable maXh-300" style={{ height: "300px" }}>
+                    {config['9%PercentTask'] != undefined && (
+                      <GlobalCommanTable wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config['9%PercentTask']} callBackData={callBackData} />
+                    )}
+                  </div>
+                </Col>
+              </Row>
+              <Row className="my-2">
+                <Col>
+                  <h3 className="f-15 fw-semibold">Task Users</h3>
+                  <div className="border">
+                    {config?.LoginUserTeamMembers != null && config?.LoginUserTeamMembers?.length > 0 && config.LoginUserTeamMembers.map((user: any, index: number) => (
+                      <div className="top-assign p-1">
+                        {user.Item_x0020_Cover != undefined && user.AssingedToUser != undefined &&
+                          <span>
+                            {/* draggable={false} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user)} */}
+                            <img className={user.IsShowTask == true ? 'activeimg large_teamsimg' : 'large_teamsimg'} onClick={() => ShowWorkingTask(config, user)} src={user.Item_x0020_Cover.Url} title={user.AssingedToUser.Title} />
+                          </span>
+                        }
+                      </div>
+                    ))
+                    }
+                  </div>
+                </Col>
+                <Col>
+                </Col>
+              </Row>
+              <Row className="py-4">
+                <Col>
+                  <>
+                    {config?.LoginUserTeamMembers != null && config?.LoginUserTeamMembers?.length > 0 && config.LoginUserTeamMembers.map((user: any, index: number) => (
+                      user.IsShowTask == true && (
+                        <>
+                          <h3 className="f-15 fw-semibold">{user?.Title} Today's Task</h3>
+                          <div key={index} className="Alltable maXh-300 mb-2" draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user)} style={{ height: "300px" }}>
+                            <GlobalCommanTable wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={user.WorkingTask}
+                              callBackData={callBackData} />
+                          </div>
+                        </>
+                      )
+                    ))}
+                  </>
+                </Col>
+                <Col>
+                </Col>
+              </Row>
+            </>
+          );
+          rows.push(box);
         }
       }
     });
@@ -464,3 +573,4 @@ const TaskStatusTbl = (Tile: any) => {
   );
 };
 export default TaskStatusTbl;
+

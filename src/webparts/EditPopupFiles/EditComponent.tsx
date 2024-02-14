@@ -7,6 +7,7 @@ import "bootstrap/js/dist/tab.js";
 import * as moment from "moment";
 import { Web } from "sp-pnp-js";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
+import * as globalCommon from "../../globalComponents/globalCommon";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { map } from "lodash";
 import "react-datepicker/dist/react-datepicker.css";
@@ -22,6 +23,7 @@ import CentralizedSiteComposition from "../../globalComponents/SiteCompositionCo
 import ImagesC from "./ImageInformation";
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 import  Smartmetadatapickerin  from "../../globalComponents/Smartmetadatapickerindependent/SmartmetadatapickerSingleORMulti";
+import { EditableField } from "../componentProfile/components/Portfoliop";
 var PostTechnicalExplanations = "";
 var PostHelp_x0020_Information = "";
 var PostQuestionDescription = "";
@@ -105,6 +107,8 @@ let ID: any;
     const [filterdata, setfilterData] = React.useState([]);
     const [Completiondate, setCompletiondate] = React.useState(undefined);
     const [AssignUser, setAssignUser] = React.useState(undefined);
+    const [allProjectData, SetAllProjectData] = React.useState([]);
+    const [searchedProjectData, setSearchedProjectData] = React.useState([]);
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [IsService, setIsService] = React.useState(false);
     const [editorState, setEditorState] = React.useState(
@@ -156,6 +160,8 @@ let ID: any;
     const [SiteCompositionShow, setSiteCompositionShow] = React.useState(false);
     const [composition, setComposition] = React.useState(true);
     const [FeatureTypeData, setFeatureTypeData] = React.useState([]);
+    const [autoSearchFeatureType, setAutoSearchFeatureType] = React.useState([]);
+    const [searchFeatureType, setSearchFeatureType] = React.useState([]);
   
     const handleCheckboxChange = () => {
         setShortDescriptionVerifieds((prevChecked: any) => !prevChecked);
@@ -196,12 +202,18 @@ let ID: any;
         setModalIsOpen(true);
         let targetDiv: any = document?.querySelector('.ms-Panel-main');
         setTimeout(() => {
-            if (targetDiv && PortfolioTypeColor?.length > 0) {
+            if (targetDiv) {
                 // Change the --SiteBlue variable for elements under the targetDiv
                 targetDiv?.style?.setProperty('--SiteBlue', PortfolioTypeColor); // Change the color to your desired value
             }
         }, 1000)
     };
+
+    const handleFieldChange = (fieldName: any) => (e: any) => {
+        // const updatedItem = { ...data[0], [fieldName]: e.target.value };
+        // setItem(updatedItem);
+      };
+    
     const onEditorStateChange = React.useCallback(
         (rawcontent) => {
             setEditorState(rawcontent.blocks[0].text);
@@ -269,6 +281,107 @@ let ID: any;
       }
     };
   
+    
+    const autoSuggestionsForProject = (e: any) => {
+        let searchedKey: any = e.target.value;
+        let tempArray: any = [];
+        if (searchedKey?.length > 0) {
+            allProjectData?.map((itemData: any) => {
+                if (itemData.Title.toLowerCase().includes(searchedKey.toLowerCase())) {
+                    tempArray.push(itemData);
+                }
+            });
+            setSearchedProjectData(tempArray);
+            // callServiceComponent(tempArray,"Multi","Save");
+
+        } else {
+            setSearchedProjectData([]);
+        }
+    };
+
+    const autoSuggestionsForFeatureType = (e: any) => {
+        let searchedKey: any = e.target.value;
+        let tempArray: any = [];
+        if (searchedKey?.length > 0) {
+            autoSearchFeatureType?.map((itemData: any) => {
+                if (itemData.Title.toLowerCase().includes(searchedKey.toLowerCase())) {
+                    tempArray.push(itemData);
+                }
+            });
+            setSearchFeatureType(tempArray);
+            // callServiceComponent(tempArray,"Multi","Save");
+
+        } else {
+            setSearchFeatureType([]);
+        }
+    };
+
+    const handleSuggestionProject = (suggestion: any) => {
+        allProjectData?.map((items:any)=>{
+          if(items?.Id === suggestion?.Id){
+            callServiceComponent([items],"Multi","Save");
+          }
+        })
+        setSearchedProjectData([]);
+      };
+
+      const handleSuggestionFeature = (suggestion: any) => {
+        autoSearchFeatureType?.map((items:any)=>{
+          if(items?.Id === suggestion?.Id){
+            Smartmetadatafeature([items]);
+          }
+        })
+        setSearchFeatureType([]);
+      };
+    
+
+    const GetAllComponentAndServiceData = async () => {
+        let PropsObject: any = {
+            MasterTaskListID: RequireData.MasterTaskListID,
+            siteUrl: RequireData?.siteUrl,
+            ComponentType: "Component",
+            TaskUserListId: RequireData.TaskUsertListID,
+        };
+        let CallBackData = await globalCommon.GetServiceAndComponentAllData(
+            PropsObject
+        );
+        SetAllProjectData(CallBackData?.FlatProjectData);
+        console.log(CallBackData);
+        // if (CallBackData?.AllData != undefined && CallBackData?.AllData?.length > 0) {
+        //     GlobalServiceAndComponentData = CallBackData.AllData;
+        //     SetAllProjectData(CallBackData?.FlatProjectData);
+        //     AllProjectBackupArray = CallBackData?.FlatProjectData;
+        // }
+    };
+
+
+    React.useEffect(()=>{
+        GetAllComponentAndServiceData();
+    },[])
+
+
+    // const getSmartmetadata = async () => {
+    //     try {
+    //       const web = new Web(Urls);
+    //       const smartmetaDetails = await web.lists
+    //         .getById(props?.AllListId?.SmartMetadataListID)
+    //         .items.select(
+    //           'ID,Title,IsVisible,ParentID,Parent/Id,Parent/Title,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable'
+    //         )
+    //         .expand('Parent')
+    //         .top(4999)
+    //         .get();
+    
+    //       console.log(smartmetaDetails);
+    
+    //       const filteredSmartMetadata = smartmetaDetails.filter(
+    //         (item: any) => item.TaxType === props.TaxType
+    //       );
+    //       setAllSmartMetadata(filteredSmartMetadata);
+    //     } catch (error) {
+    //       console.error('Error fetching smart metadata:', error);
+    //     }
+    //   };
 
     const Call = React.useCallback((item1: any, type: any, functionType: any) => {
         if (type == "SmartComponent") {
@@ -480,7 +593,24 @@ let ID: any;
         }
     };
 
-   
+
+    // const GetAllComponentAndServiceData = async (ComponentType: any) => {
+    //     let PropsObject: any = {
+    //         MasterTaskListID: RequireData.MasterTaskListID,
+    //         siteUrl: RequireData.siteUrl,
+    //         ComponentType: ComponentType,
+    //         TaskUserListId: AllListIdData.TaskUsertListID,
+    //     };
+    //     let CallBackData = await globalCommon.GetServiceAndComponentAllData(
+    //         PropsObject
+    //     );
+    //     if (CallBackData?.AllData != undefined && CallBackData?.AllData?.length > 0) {
+    //         GlobalServiceAndComponentData = CallBackData.AllData;
+    //         SetAllProjectData(CallBackData?.FlatProjectData);
+    //         AllProjectBackupArray = CallBackData?.FlatProjectData;
+    //     }
+    // };
+
     var getMasterTaskListTasks = async function () {
         //  var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,DeliverableSynonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title";
         
@@ -963,6 +1093,8 @@ let ID: any;
                 }
                
             });
+          const featureTypeItems = smartmetaDetails.filter((item:any) => item.TaxType === "Feature Type");
+          setAutoSearchFeatureType(featureTypeItems);
            
             site.forEach(function (val: any) {
                 if (
@@ -1137,8 +1269,8 @@ let ID: any;
         if (res === "Close") {
             Calls(res);
         } else {
- 
- 
+
+
             const date = moment(res?.Created);
             const formattedDate = date.format('DD/MM/YYYY');
             const datedue = moment(res?.DueDate);
@@ -1159,7 +1291,7 @@ let ID: any;
                     }
                 });
             }
- 
+
             if (TaskTeamMembers != undefined && TaskTeamMembers.length > 0) {
                 $.map(TaskTeamMembers, (Assig: any) => {
                     if (Assig.Id != undefined) {
@@ -1182,7 +1314,7 @@ let ID: any;
                 res.ClientCategory = clientarray;
             }
             res.DisplayCreateDate = formattedDate;
- 
+
             if (formattedDateDue === "Invalid date") {
                 res.DisplayDueDate = "";
             } else {
@@ -1509,10 +1641,9 @@ let ID: any;
                     Categories: categoriesItem ? categoriesItem : null,
                     SharewebCategoriesId: { results: CategoryID },
                     // ClientCategoryId: { "results": RelevantPortfolioIds },
-                    ServicePortfolioId:
-                                ((RelevantPortfolioIds != "" ? RelevantPortfolioIds : null)? (RelevantProjectIds != "" ? RelevantProjectIds : null):null)? (RelevantProjectIdRemove != "" ? RelevantProjectIdRemove : null):null ,
-                              PortfoliosId: ({ results: (PortfolioIds?.length != 0 ? PortfolioIds : []) } ? { results: (ProjectId?.length != 0 ? ProjectId : []) } :null)?{ results: (ProjectIdRemove?.length >= 0 ? ProjectIdRemove : []) }:null,
-                    Synonyms: JSON.stringify(Items["Synonyms"]),
+                    ServicePortfolioId: ((RelevantPortfolioIds != "" ? RelevantPortfolioIds : null)) ,
+                    PortfoliosId: ({ results: (PortfolioIds?.length != 0 ? PortfolioIds : []) } ? { results: (PortfolioIds?.length != 0 ? PortfolioIds : []) } :null)?{ results: (PortfolioIds?.length >= 0 ? PortfolioIds : []) }:null,
+                   Synonyms: JSON.stringify(Items["Synonyms"]),
                     Package: Items.Package,
                     AdminStatus: Items.AdminStatus,
                     Priority: Items.Priority,
@@ -1573,9 +1704,9 @@ let ID: any;
                         PostBody != undefined && PostBody != "" ? PostBody : EditData?.Body,
                     AssignedToId: {
                         results:
-                            AssignedToIds != undefined && AssignedToIds?.length > 0
-                                ? AssignedToIds
-                                : []
+                        TeamMemberIds != undefined && TeamMemberIds?.length > 0
+                            ? TeamMemberIds
+                            : []
                     },
                     ResponsibleTeamId: {
                         results:
@@ -1585,9 +1716,10 @@ let ID: any;
                     },
                     TeamMembersId: {
                         results:
-                            TeamMemberIds != undefined && TeamMemberIds?.length > 0
-                                ? TeamMemberIds
+                            AssignedToIds != undefined && AssignedToIds?.length > 0
+                                ? AssignedToIds
                                 : []
+                       
                     }
                 })
                 .then((res: any) => {
@@ -2660,7 +2792,7 @@ let ID: any;
     React.useEffect(() => {
         setTimeout(() => {
             const panelMain: any = document.querySelector('.ms-Panel-main');
-            if (panelMain && PortfolioTypeColor?.length > 0) {
+            if (panelMain && PortfolioTypeColor) {
                 panelMain.style.setProperty('--SiteBlue', PortfolioTypeColor); // Set the desired color value here
             }
         }, 2000)
@@ -3261,15 +3393,30 @@ let ID: any;
                                                         <label className="form-label  full-width">
                                                             Status
                                                         </label>
-                                                        <input
+                                                        {/* <input
                                                             type="text"
                                                             className="form-control"
                                                             value={EditData?.AdminStatus}
                                                             onChange={(e) => ChangeStatus(e, EditData)}
-                                                        />
+                                                        /> */}
+                                                          <EditableField
+                                                           key={1}
+                                                            listName="Master Tasks"
+                                                           itemId={EditData.Id}
+                                                           fieldName="PercentComplete"
+                                                             value={
+                                                                EditData?.PercentComplete != undefined
+                                                              ? (EditData?.PercentComplete * 100).toFixed(0)
+                                                                  : ""
+                                                                 }
+                                                             TaskProfilePriorityCallback={null}
+                                                           onChange={handleFieldChange("PercentComplete")}
+                                                                      type={EditData.Status}
+                                                           web={RequireData?.siteUrl}
+                              />
                                                     </div>
 
-                                                    <div className="SpfxCheckRadio">
+                                                    {/* <div className="SpfxCheckRadio">
                                                         <input
                                                             className="radio"
                                                             name="NotStarted"
@@ -3359,7 +3506,7 @@ let ID: any;
                                                         <label className="form-check-label">
                                                             Archived{" "}
                                                         </label>
-                                                    </div>
+                                                    </div> */}
                                                 </div>
                                                 <div className="col-sm-6">
                                                     <div className="input-group mb-2">
@@ -3620,35 +3767,56 @@ let ID: any;
                                                <div className="col-sm-12 mt-2">
                           <div className="col-sm-12 padding-0 input-group">
                             <label className="full_width">Project</label>
-                            <input type="text" className="form-control" />
-                            <span className="input-group-text" placeholder="Project">
+                            {
+                                filterdata?.length == 0 || filterdata.length !== 1 && 
+                                <>
+                                <input type="text" className="form-control"    onChange={(e) =>
+                                    autoSuggestionsForProject(e)
+                                } />
+                                <span className="input-group-text" placeholder="Project">
+                              <span title="Project" onClick={(e) => openPortfolioPopup("Project")} className="svg__iconbox svg__icon--editBox"></span>
+                            </span></>
+                            }
+                           
+                               {filterdata && filterdata.length == 1 ? 
+                            (
+                              <div className="w-100" >
+                                {filterdata?.map((items:any, Index: any)=>
+                                 <div className="full-width replaceInput alignCenter" key={Index}>
+                              
+                                  <a
+                                    href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?=${items.Id}`}
+                                    className="textDotted hreflink"         
+                                    data-interception="off"
+                                    target="_blank"
+                                  >
+                                    {items?.Title}
+                                  </a>
+                                  <span className="input-group-text" placeholder="Project">
                               <span title="Project" onClick={(e) => openPortfolioPopup("Project")} className="svg__iconbox svg__icon--editBox"></span>
                             </span>
-                        </div>
-                        <div className="col-sm-12 padding-0 input-group">
-                            <label className="full_width">Feature Type </label>
-                            <input type="text" className="form-control" />
-                            
-                            <span className="input-group-text" placeholder="Feature Type">
-                              <span title="Feature Type" onClick={(e) => opensmartmetadatapopup(EditData?.FeatureType)} className="svg__iconbox svg__icon--editBox"></span>
-                            </span>
-                            {FeatureTypeData?.map((item:any)=>{
-                                return(
-                                <>
-                                {item != undefined && 
-                                    <div className="block d-flex full-width justify-content-between mb-1 p-2">
-                                    <a style={{ color: "#fff !important" }}>{item?.Title}</a><span  className="bg-light svg__iconbox svg__icon--cross" onClick={() => deleteFeatureItem(item?.Id)}
-                                    ></span>
-                                    </div>
+                                </div>)}
+                                </div>) : ""
+                  
                             }
-                              
-                              </>)
-                            })}
-                        </div>
-                            <div className="col-sm-12  inner-tabb">
-                            {filterdata && filterdata.length > 0 ? 
+                           
+                            {
+                                searchedProjectData?.length > 0 && 
+                                <div className="SmartTableOnTaskPopup">
+                                <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                  {searchedProjectData.map((suggestion: any, index: any) => (
+                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={index} onClick={() => handleSuggestionProject(suggestion)}>
+                                      {suggestion?.Title}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            }
+                      
+                             <div className="col-sm-12  inner-tabb">
+                            {filterdata && filterdata.length > 1 ? 
                             (
-                              <div >
+                              <div  className="w=100" >
                                 {filterdata?.map((items:any, Index: any)=>
                                  <div className="block d-flex justify-content-between mb-1" key={Index}>
                               
@@ -3670,11 +3838,62 @@ let ID: any;
                                             ></span>
                                           </a>
                                 </div>)}
-                                </div>) : ""
-                  
+                                </div>) : ""}
+                          </div>    
+                        </div>
+                        <div className="col-sm-12 padding-0 input-group">
+                            <label className="full_width">Feature Type </label>
+                            {
+                                FeatureTypeData?.length == 0 || FeatureTypeData[0] == undefined &&
+                                <>
+                                  <input type="text" className="form-control" onChange={(e) =>autoSuggestionsForFeatureType(e)} />
+                                  <span className="input-group-text" placeholder="Feature Type"   >
+                              <span title="Feature Type" onClick={(e) => opensmartmetadatapopup(EditData?.FeatureType)} className="svg__iconbox svg__icon--editBox"></span>
+                            </span></>
                             }
-                          
-                          </div>                                  
+                            
+                            {FeatureTypeData && FeatureTypeData?.length == 1 &&  FeatureTypeData?.map((item:any)=>{
+                                return(
+                                <>
+                                {item != undefined && 
+                                    <div className="full-width replaceInput alignCenter">
+                                    <a  style={{ color: "#fff !important" }}>{item?.Title}</a>
+                                    <span className="input-group-text" placeholder="Feature Type"   >
+                              <span title="Feature Type" onClick={(e) => opensmartmetadatapopup(EditData?.FeatureType)} className="svg__iconbox svg__icon--editBox"></span>
+                            </span>
+                                    </div>
+                            }
+                              
+                              </>)
+                            })}
+                            
+                            {
+                                searchFeatureType?.length > 0 && 
+                                <div className="SmartTableOnTaskPopup">
+                                <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                  {searchFeatureType.map((suggestion: any, index: any) => (
+                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={index} onClick={() => handleSuggestionFeature(suggestion)}>
+                                      {suggestion?.Title}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            }
+                           
+                            {FeatureTypeData && FeatureTypeData?.length > 1 &&  FeatureTypeData?.map((item:any)=>{
+                                return(
+                                <>
+                                {item != undefined && 
+                                    <div className="block d-flex full-width justify-content-between mb-1 p-2">
+                                    <a style={{ color: "#fff !important" }}>{item?.Title}</a><span  className="bg-light svg__iconbox svg__icon--cross" onClick={() => deleteFeatureItem(item?.Id)}
+                                    ></span>
+                                    </div>
+                            }
+                              
+                              </>)
+                            })}
+                        </div>
+                                                        
                         </div>
 
                        </div>
@@ -4329,6 +4548,7 @@ let ID: any;
                                                     taskId={EditData?.ID}
                                                     listId={RequireData.MasterTaskListID}
                                                     siteUrls={RequireData?.siteUrl}
+                                                    RequiredListIds = {RequireData}
                                                 />
                                             ) : (
                                                 ""
@@ -4412,15 +4632,15 @@ let ID: any;
                         ) : null}
 
                    {isopenProjectpopup ? (
-                   <ServiceComponentPortfolioPopup
-                   props={setSharewebComponent}
-                   Dynamic={SelectD}
-                   ComponentType={"Component"}
-                   selectionType={"Multi"}
-                   Call={(Call:any, type: any, functionType: any)=>{callServiceComponent(Call, type,functionType)}}
-                   updateMultiLookup={updateMultiLookup}
-                   showProject={isopenProjectpopup}
-                  />
+                    <ServiceComponentPortfolioPopup
+                    props={filterdata}
+                    Dynamic={SelectD}
+                    ComponentType={"Component"}
+                    selectionType={"Multi"}
+                    Call={(Call:any, type: any, functionType: any)=>{callServiceComponent(Call, type,functionType)}}
+                    updateMultiLookup={updateMultiLookup}
+                    showProject={isopenProjectpopup}
+                   />
                   ) : null}
 
                         {IsComponentPicker && (
@@ -4582,6 +4802,7 @@ let ID: any;
                                             taskId={dataUpdate?.ID}
                                             listId={RequireData?.SmartHelpListID}
                                             siteUrls={RequireData?.siteUrl}
+                                            RequiredListIds = {RequireData}
                                         />
                                     ) : (
                                         ""
@@ -4697,6 +4918,7 @@ let ID: any;
                                             taskId={helpDataUpdate?.ID}
                                             listId={RequireData?.SmartHelpListID}
                                             siteUrls={RequireData?.siteUrl}
+                                            RequiredListIds = {RequireData}
                                         />
                                     ) : (
                                         ""
@@ -4774,6 +4996,7 @@ let ID: any;
                                             taskId={EditData?.ID}
                                             listId={RequireData.MasterTaskListID}
                                             siteUrls={RequireData?.siteUrl}
+                                            RequiredListIds = {RequireData}
                                         />
                                     ) : (
                                         ""

@@ -522,6 +522,18 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
     }
   }
 
+
+  function removeHtmlAndNewline(text: any) {
+    if (text) {
+        return text.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/<\/?[^>]+(>|$)/g, '').replace(/&#160;/g, '');
+    } else {
+        return ''; // or any other default value you prefer
+    }
+}
+
+
+
+
   // Common Function for filtering the Data According to Tax Type
 
   const getSmartMetadataItemsByTaxType = function (
@@ -1690,7 +1702,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                         )}
                         {/* Project Management Box End */}
                         {/* Description */}
-                        {data[0]?.Body !== null && (
+                        {data[0]?.Body !== null && removeHtmlAndNewline(data[0]?.Body).trim() !== '' && (
                           <details open>
                             <summary className="alignCenter">
                               <label className="toggler full_width">
@@ -1710,7 +1722,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
 
                         {/* Short description */}
 
-                        {data[0]?.Short_x0020_Description_x0020_On != null && (
+                        {data[0]?.Short_x0020_Description_x0020_On != null && removeHtmlAndNewline(data[0]?.Short_x0020_Description_x0020_On).trim() !== '' && (
                           <details open>
                             <summary className="alignCenter">
                               <label className="toggler full_width">
@@ -2139,7 +2151,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         {isopenProjectpopup && (
           <ServiceComponentPortfolioPopup
 
-            props={data[0]}
+            props={filterdata}
             Dynamic={SelectedProp}
             ComponentType={"Component"}
             selectionType={"Multi"}

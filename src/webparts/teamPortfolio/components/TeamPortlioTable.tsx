@@ -123,6 +123,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const [flatViewDataAll, setFlatViewDataAll] = React.useState([]);
     const [openCompareToolPopup, setOpenCompareToolPopup] = React.useState(false);
     const rerender = React.useReducer(() => ({}), {})[1];
+    const [ActiveCompareToolButton, setActiveCompareToolButton] = React.useState(false);
     // const [tableHeight, setTableHeight] = React.useState(window.innerHeight);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
     let ComponetsData: any = {};
@@ -2568,9 +2569,28 @@ function TeamPortlioTable(SelectedProp: any) {
             setOpenCompareToolPopup(false);
         }
     }, []);
-    const openCompareTool = () => {
-        setOpenCompareToolPopup(true);
+    
+    const trigerAllEventButton = (eventValue: any) => {
+        if (eventValue === "Compare") {
+            setOpenCompareToolPopup(true);
+        }
     }
+    React.useEffect(() => {
+        if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length === 2) {
+            if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined && (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Tasks' || childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Tasks')) {
+                setActiveCompareToolButton(true);
+            } else if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType != undefined) {
+                setActiveCompareToolButton(true);
+            }
+        } else {
+            setActiveCompareToolButton(false);
+        }
+    }, [childRef?.current?.table?.getSelectedRowModel()?.flatRows])
+    const customTableHeaderButtons = (
+        (ActiveCompareToolButton) ?
+            < button type="button" className="btn btn-primary" title='Compare' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
+            <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Compare</button>
+    )
     /////end////////////
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
 
@@ -2625,13 +2645,14 @@ function TeamPortlioTable(SelectedProp: any) {
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
                                         <div>
-                                            <GlobalCommanTable showRestructureButton={true} showCompareButton={true} openCompareTool={openCompareTool} columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup}
+                                            <GlobalCommanTable showRestructureButton={true}   columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup}
                                                 masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup}
                                                 flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
                                                 flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef}
                                                 callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers}
                                                 showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration}
-                                                showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity} />
+                                                showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity}
+                                                customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} />
                                         </div>
                                     </div>
                                 </div>

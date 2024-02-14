@@ -29,6 +29,8 @@ import CreateActivity from "../../../globalComponents/CreateActivity";
 import CreateWS from "../../../globalComponents/CreateWS";
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
+import TrafficLightComponent from "../../../globalComponents/TrafficLightVerification/TrafficLightComponent";
+import moment from "moment";
 //import RestructuringCom from "../../../globalComponents/Restructuring/RestructuringCom";
 
 var filt: any = "";
@@ -111,6 +113,7 @@ function PortfolioTable(SelectedProp: any) {
     const [portfolioTypeDataItemBackup, setPortFolioTypeIconBackup] = React.useState([]);
     const [taskTypeDataItemBackup, setTaskTypeDataItemBackup] = React.useState([]);
     const globalContextData: any = React.useContext<any>(myContextValue)
+    const [ActiveCompareToolButton, setActiveCompareToolButton] = React.useState(false);
   let ComponetsData: any = {};
   let Response: any = [];
   let props = undefined;
@@ -375,18 +378,33 @@ function PortfolioTable(SelectedProp: any) {
               });
             
                 map(AllTasks, (result: any) => {
+
                   result.Id = result.Id != undefined ? result.Id : result.ID;
                   result.TeamLeaderUser = [];
                   result.AllTeamName =
                     result.AllTeamName === undefined ? "" : result.AllTeamName;
                   result.chekbox = false;
                   result.descriptionsSearch = "";
+                  result.descriptionsDeliverablesSearch = '';
+                  result.descriptionsHelpInformationSarch = '';
+                  result.descriptionsShortDescriptionSearch = '';
+                  result.descriptionsTechnicalExplanationsSearch = '';
+                  result.descriptionsBodySearch = '';
+                  result.descriptionsAdminNotesSearch = '';
+                  result.descriptionsValueAddedSearch = '';
+                  result.descriptionsIdeaSearch = '';
+                  result.descriptionsBackgroundSearch = '';
+                  result.FeatureTypeTitle = ''
                   result.commentsSearch = "";
                   result.TaskTypeValue = '';
                   result.portfolioItemsSearch = '';
                   result.SmartPriority = globalCommon.calculateSmartPriority(result);
                   if (result?.DueDate != null && result?.DueDate != undefined) {
                     result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
+                }
+                result.DisplayModifiedDate = Moment(result.Modified).format("DD/MM/YYYY");
+                if (result?.Editor) {
+                    result.Editor.autherImage = findUserByName(result?.Editor?.Id)
                 }
                   result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
                   result.DisplayDueDate = Moment(result.DueDate).format("DD/MM/YYYY");
@@ -585,6 +603,10 @@ function PortfolioTable(SelectedProp: any) {
         componentDetails = results?.AllData;
         ProjectData=results?.ProjectData;
         componentDetails?.map((items: any) => {
+          items.DisplayModifiedDate = moment(items.Modified).format("DD/MM/YYYY");
+            if (items?.Editor) {
+              items.Editor.autherImage = findUserByName(items?.Editor?.Id)
+            }
           items.SmartPriority;
           items.TaskTypeValue = '';
       });
@@ -765,6 +787,7 @@ const switchGroupbyData = () => {
       });
       var temp: any = {};
       temp.Title = "Others";
+      temp.DisplayModifiedDate = null;
       temp.TaskID = "";
       temp.subRows = [];
       temp.PercentComplete = "";
@@ -1049,6 +1072,7 @@ const switchGroupbyData = () => {
         header: "",
         resetColumnFilters: false,
         size: 95,
+        isColumnVisible: true
       },
       {
         accessorFn: (row) => row?.TaskID,
@@ -1066,6 +1090,7 @@ const switchGroupbyData = () => {
         isColumnDefultSortingAsc: isColumnDefultSortingAsc,
         // isColumnDefultSortingAsc:true,
         size: 190,
+        isColumnVisible: true
       },
     
   
@@ -1181,7 +1206,8 @@ const switchGroupbyData = () => {
         placeholder: "Title",
         resetColumnFilters: false,
         header: "",
-        size: 410
+        size: 410,
+        isColumnVisible: true
       },
       {
         accessorFn: (row) => row?.FeatureTypeTitle,
@@ -1195,6 +1221,7 @@ const switchGroupbyData = () => {
         resetColumnFilters: false,
         size: 110,
         id: "FeatureTypeTitle",
+        isColumnVisible: true
     },
       {
         accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
@@ -1230,7 +1257,8 @@ const switchGroupbyData = () => {
         placeholder: "Project",
         resetColumnFilters: false,
         header: "",
-        size: 70
+        size: 70,
+        isColumnVisible: true
       },
       {
         accessorFn: (row) => row?.TaskTypeValue,
@@ -1244,6 +1272,7 @@ const switchGroupbyData = () => {
         resetColumnFilters: false,
         size: 110,
         id: "TaskTypeValue",
+        isColumnVisible: true
     },
       {
         accessorFn: (row) => row?.ClientCategorySearch,
@@ -1259,7 +1288,8 @@ const switchGroupbyData = () => {
         placeholder: "Client Category",
         header: "",
         resetColumnFilters: false,
-        size: 100
+        size: 100,
+        isColumnVisible: true
       },
       {
         accessorFn: (row) => row?.AllTeamName,
@@ -1277,15 +1307,8 @@ const switchGroupbyData = () => {
         placeholder: "Team",
         resetColumnFilters: false,
         header: "",
-        size: 100
-      },
-      {
-        accessorKey: "PriorityRank",
-        placeholder: "Priority",
-        header: "",
-        resetColumnFilters: false,
-        size: 42,
-        id: "PriorityRank"
+        size: 100,
+        isColumnVisible: true
       },
       {
         accessorKey: "PercentComplete",
@@ -1293,7 +1316,8 @@ const switchGroupbyData = () => {
         header: "",
         resetColumnFilters: false,
         size: 42,
-        id: "PercentComplete"
+        id: "PercentComplete",
+        isColumnVisible: true
       },
       {
         accessorKey: "ItemRank",
@@ -1301,7 +1325,8 @@ const switchGroupbyData = () => {
         header: "",
         resetColumnFilters: false,
         size: 42,
-        id: "ItemRank"
+        id: "ItemRank",
+        isColumnVisible: true
       },
       {
         accessorFn: (row) => row?.SmartPriority,
@@ -1313,6 +1338,7 @@ const switchGroupbyData = () => {
         resetColumnFilters: false,
         header: "",
         size: 42,
+        isColumnVisible: true
       },
       // {
       //   accessorKey: "DueDate",
@@ -1322,6 +1348,174 @@ const switchGroupbyData = () => {
       //   size: 100,
       //   id: "DueDate"
       // },
+      {
+        accessorFn: (row) => row?.PriorityRank,
+        cell: ({ row }) => (
+            <div className="text-center">{row?.original?.PriorityRank}</div>
+        ),
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+            if (row?.original?.PriorityRank == filterValue) {
+                return true
+            } else {
+                return false
+            }
+        },
+        id: "PriorityRank",
+        placeholder: "Priority Rank",
+        resetColumnFilters: false,
+        header: "",
+        size: 42,
+        isColumnVisible: false
+    },
+    {
+        accessorFn: (row) => row?.descriptionsDeliverablesSearch,
+        cell: ({ row }) => (
+            <div className="alignCenter">
+                <span>{row?.original?.descriptionsDeliverablesSearch ? row?.original?.descriptionsDeliverablesSearch?.length : ""}</span>
+                {row?.original?.descriptionsDeliverablesSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"descriptionsDeliverablesSearch"} />}
+            </div>
+        ),
+        id: "descriptionsDeliverablesSearch",
+        placeholder: "Deliverables",
+        header: "",
+        resetColumnFilters: false,
+        size: 56,
+        isColumnVisible: false
+    },
+    {
+        accessorFn: (row) => row?.descriptionsHelpInformationSarch,
+        cell: ({ row }) => (
+            <div className="alignCenter">
+                <span>{row?.original?.descriptionsHelpInformationSarch ? row?.original?.descriptionsHelpInformationSarch?.length : ""}</span>
+                {row?.original?.descriptionsHelpInformationSarch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Help_x0020_Information"} />}
+            </div>
+        ),
+        id: "descriptionsHelpInformationSarch",
+        placeholder: "Help Information",
+        header: "",
+        resetColumnFilters: false,
+        size: 56,
+        isColumnVisible: false
+    },
+    {
+        accessorFn: (row) => row?.descriptionsShortDescriptionSearch,
+        cell: ({ row }) => (
+            <div className="alignCenter">
+                <span>{row?.original?.descriptionsShortDescriptionSearch ? row?.original?.descriptionsShortDescriptionSearch?.length : ""}</span>
+                {row?.original?.descriptionsShortDescriptionSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Short_x0020_Description_x0020_On"} />}
+            </div>
+        ),
+        id: "descriptionsShortDescriptionSearch",
+        placeholder: "Short Description",
+        header: "",
+        resetColumnFilters: false,
+        size: 56,
+        isColumnVisible: false
+    },
+    {
+        accessorFn: (row) => row?.descriptionsTechnicalExplanationsSearch,
+        cell: ({ row }) => (
+            <div className="alignCenter">
+                <span>{row?.original?.descriptionsTechnicalExplanationsSearch ? row?.original?.descriptionsTechnicalExplanationsSearch?.length : ""}</span>
+                {row?.original?.descriptionsTechnicalExplanationsSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"TechnicalExplanations"} />}
+            </div>
+        ),
+        id: "descriptionsTechnicalExplanationsSearch",
+        placeholder: "Technical Explanations",
+        header: "",
+        resetColumnFilters: false,
+        size: 56,
+        isColumnVisible: false
+    },
+    {
+        accessorFn: (row) => row?.descriptionsBodySearch,
+        cell: ({ row }) => (
+            <div className="alignCenter">
+                <span>{row?.original?.descriptionsBodySearch ? row?.original?.descriptionsBodySearch?.length : ""}</span>
+                {row?.original?.descriptionsBodySearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Body"} />}
+            </div>
+        ),
+        id: "descriptionsBodySearch",
+        placeholder: "Body",
+        header: "",
+        resetColumnFilters: false,
+        size: 56,
+        isColumnVisible: false
+    },
+    {
+        accessorFn: (row) => row?.descriptionsAdminNotesSearch,
+        cell: ({ row }) => (
+            <div className="alignCenter">
+                <span>{row?.original?.descriptionsAdminNotesSearch ? row?.original?.descriptionsAdminNotesSearch?.length : ""}</span>
+                {row?.original?.descriptionsAdminNotesSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"AdminNotes"} />}
+            </div>
+        ),
+        id: "descriptionsAdminNotesSearch",
+        placeholder: "AdminNotes",
+        header: "",
+        resetColumnFilters: false,
+        size: 56,
+        isColumnVisible: false
+    },
+    {
+        accessorFn: (row) => row?.descriptionsValueAddedSearch,
+        cell: ({ row }) => (
+            <div className="alignCenter">
+                <span>{row?.original?.descriptionsValueAddedSearch ? row?.original?.descriptionsValueAddedSearch?.length : ""}</span>
+                {row?.original?.descriptionsValueAddedSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"ValueAdded"} />}
+            </div>
+        ),
+        id: "descriptionsValueAddedSearch",
+        placeholder: "ValueAdded",
+        header: "",
+        resetColumnFilters: false,
+        size: 56,
+        isColumnVisible: false
+    },
+    {
+        accessorFn: (row) => row?.descriptionsIdeaSearch,
+        cell: ({ row }) => (
+            <div className="alignCenter">
+                <span>{row?.original?.descriptionsIdeaSearch ? row?.original?.descriptionsIdeaSearch?.length : ""}</span>
+                {row?.original?.descriptionsIdeaSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Idea"} />}
+            </div>
+        ),
+        id: "descriptionsIdeaSearch",
+        placeholder: "Idea",
+        header: "",
+        resetColumnFilters: false,
+        size: 56,
+        isColumnVisible: false
+    },
+    {
+        accessorFn: (row) => row?.descriptionsBackgroundSearch,
+        cell: ({ row }) => (
+            <>
+                <span>{row?.original?.descriptionsBackgroundSearch ? row?.original?.descriptionsBackgroundSearch?.length : ""}</span>
+                {row?.original?.descriptionsBackgroundSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Background"} />}
+            </>
+        ),
+        id: "descriptionsBackgroundSearch",
+        placeholder: "Background",
+        header: "",
+        resetColumnFilters: false,
+        size: 80,
+        isColumnVisible: false
+    },
+    {
+        accessorFn: (row) => row?.HelpInformationVerified,
+        cell: ({ row }) => (
+            <div className="alignCenter">
+                {row?.original?.HelpInformationVerified && <span> <TrafficLightComponent columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>}
+            </div>
+        ),
+        id: "HelpInformationVerified",
+        placeholder: "verified",
+        header: "",
+        resetColumnFilters: false,
+        size: 130,
+        isColumnVisible: false
+    },
       {
         accessorFn: (row) => row?.DueDate,
         cell: ({ row }) => (
@@ -1340,7 +1534,8 @@ const switchGroupbyData = () => {
         resetSorting: false,
         placeholder: "DueDate",
         header: "",
-        size: 91
+        size: 91,
+        isColumnVisible: true
       },
       {
         accessorFn: (row) => row?.Created,
@@ -1380,15 +1575,51 @@ const switchGroupbyData = () => {
           }
         },
         header: "",
-        size: 105
+        size: 105,
+        isColumnVisible: true
       },
+      {
+        accessorFn: (row) => row?.Modified,
+        cell: ({ row, column }) => (
+            <div className="alignCenter">
+                {row?.original?.Modified == null ? ("") : (
+                    <>
+                        <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.DisplayModifiedDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
+                        {row?.original?.Editor != undefined &&
+                            <>
+                                <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
+                                    target="_blank" data-interception="off">
+                                    <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={row?.original?.Editor?.autherImage} />
+                                </a>
+                            </>
+                        }
+                    </>
+                )}
+            </div>
+        ),
+        id: 'Modified',
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Modified",
+        isColumnVisible: false,
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+            if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
+                return true
+            } else {
+                return false
+            }
+        },
+        header: "",
+        size: 115
+    },
       {
         accessorKey: "descriptionsSearch",
         placeholder: "descriptionsSearch",
         header: "",
         resetColumnFilters: false,
         size: 100,
-        id: "descriptionsSearch"
+        id: "descriptionsSearch",
+        isColumnVisible: false
       },
       {
         accessorKey: "commentsSearch",
@@ -1396,7 +1627,8 @@ const switchGroupbyData = () => {
         header: "",
         resetColumnFilters: false,
         size: 100,
-        id: "commentsSearch"
+        id: "commentsSearch",
+        isColumnVisible: false
       },
       {
         accessorFn: (row) => row?.TotalTaskTime,
@@ -1408,6 +1640,7 @@ const switchGroupbyData = () => {
         header: "",
         resetColumnFilters: false,
         size: 49,
+        isColumnVisible: true
       },
       {
         cell: ({ row, getValue }) => (
@@ -1430,11 +1663,12 @@ const switchGroupbyData = () => {
             {getValue()}
           </>
         ),
-        id: "row?.original.Id",
+        id: "TimesheetPopup",
         canSort: false,
         placeholder: "",
         header: "",
-        size: 1
+        size: 1,
+        isColumnVisible: true
       },
       {
         header: ({ table }: any) => (
@@ -1476,10 +1710,11 @@ const switchGroupbyData = () => {
             {getValue()}
           </>
         ),
-        id: "row?.original.Id",
+        id: "Restructure",
         canSort: false,
         placeholder: "",
-        size: 1
+        size: 1,
+        isColumnVisible: true
       },
       {
         cell: ({ row, getValue }) => (
@@ -1519,11 +1754,12 @@ const switchGroupbyData = () => {
             {getValue()}
           </>
         ),
-        id: "row?.original.Id",
+        id: "EditTaskPopup",
         canSort: false,
         placeholder: "",
         header: "",
-        size: 30
+        size: 30,
+        isColumnVisible: true
       }
     ],
     [data]
@@ -1966,9 +2202,28 @@ const updatedDataDataFromPortfolios = (copyDtaArray: any, dataToUpdate: any) => 
         setOpenCompareToolPopup(false);
     }
 }, []);
-const openCompareTool =()=>{
-    setOpenCompareToolPopup(true);
+
+const trigerAllEventButton = (eventValue: any) => {
+  if (eventValue === "Compare") {
+      setOpenCompareToolPopup(true);
+  }
 }
+React.useEffect(() => {
+  if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length === 2) {
+      if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined &&  (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Tasks' || childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Tasks')) {
+          setActiveCompareToolButton(true);
+      } else if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType != undefined) {
+          setActiveCompareToolButton(true);
+      }
+  } else {
+      setActiveCompareToolButton(false);
+  }
+}, [childRef?.current?.table?.getSelectedRowModel()?.flatRows])
+const customTableHeaderButtons = (
+  (ActiveCompareToolButton) ?
+      < button type="button" className="btn btn-primary" title='Compare' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
+      <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Compare</button>
+)
   //-------------------------------------------------------------End---------------------------------------------------------------------------------
   return (
     <myContextValue.Provider value={{ ...globalContextData,  tagProjectFromTable:TagProjectToStructure}}>
@@ -2089,7 +2344,8 @@ const openCompareTool =()=>{
                   <div className="">
                     <div className="">
                   
-                      <GlobalCommanTable openCompareTool={openCompareTool}  showRestructureButton={true} showCompareButton={true} bulkEditIcon={true} 
+                      <GlobalCommanTable  customHeaderButtonAvailable={true}
+                                            customTableHeaderButtons={customTableHeaderButtons}  showRestructureButton={true} columnSettingIcon={true} bulkEditIcon={true} 
                       AllSitesTaskData={flatviewTasklist} masterTaskData={flatviewmastertask}
                         smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                         portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData}

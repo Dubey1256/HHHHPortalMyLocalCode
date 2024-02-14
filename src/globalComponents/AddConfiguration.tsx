@@ -9,9 +9,10 @@ const AddConfiguration = (props: any) => {
     const [NewItem, setNewItem]: any = React.useState<any>([defaultConfig]);
     const [SmartFav, setSmartFav] = React.useState<any>([]);
     const [AllTaskUsers, setAllTaskUsers] = React.useState<any>([]);
-    const [DataSource, setDataSource] = React.useState<any>([{ "key": "Tasks", "text": "Tasks" }, { "key": "TaskUsers", "text": "TaskUsers" }]);
+    const [DataSource, setDataSource] = React.useState<any>([{ "key": "Tasks", "text": "Tasks" }, { "key": "TaskUsers", "text": "TaskUsers" }, { "key": "Portfolio Team Lead", "text": "Portfolio Team Lead" }]);
     const [DashboardTitle, setDashboardTitle] = React.useState<any>('');
     const [IsCheck, setIsCheck] = React.useState<any>(false);
+    const [IsDisabledAddMoreAndFilter, setIsDisabledAddMoreAndFilter] = React.useState<any>(false);
     const LoadSmartFav = async () => {
         let SmartFavData: any = []
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
@@ -155,6 +156,9 @@ const AddConfiguration = (props: any) => {
         setNewItem(updatedItems);
     };
     const handleDataSourceChange = (event: any, index: any, items: any) => {
+        setIsDisabledAddMoreAndFilter(false)
+        if (event == 'Portfolio Team Lead')
+            setIsDisabledAddMoreAndFilter(true)
         const updatedItems = [...NewItem]; updatedItems[index] = { ...items, DataSource: event, };
         setNewItem(updatedItems);
     };
@@ -274,13 +278,13 @@ const AddConfiguration = (props: any) => {
                                             </Row>
                                             <Row className="Metadatapannel">
                                                 <Col sm="4" md="4" lg="4">
-                                                    <label className='form-label full-width'>Select Filter</label>
-                                                    {items.DataSource == "Tasks" && <Dropdown id="FiltesSmartFav" options={[{ key: '', text: '' }, ...(SmartFav?.map((item: any) => ({ key: item?.UpdatedId, text: item?.Title })) || [])]} selectedKey={items?.smartFevId}
+                                                    {(items.DataSource == "Tasks" || items.DataSource == "TaskUsers") && < label className='form-label full-width'>Select Filter</label>}
+                                                    {items.DataSource == "Tasks" && <Dropdown id="FiltesSmartFav" disabled={IsDisabledAddMoreAndFilter == true} options={[{ key: '', text: '' }, ...(SmartFav?.map((item: any) => ({ key: item?.UpdatedId, text: item?.Title })) || [])]} selectedKey={items?.smartFevId}
                                                         onChange={(e, option) => handleSelectFilterChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }}
                                                     />
                                                     }
-                                                    {items.DataSource == "TaskUsers" && <Dropdown id="FiltesTaskUser" options={[{ key: '', text: '' }, ...(AllTaskUsers?.map((item: any) => ({ key: item?.Id, text: item?.Title })) || [])]} selectedKey={items?.smartFevId}
+                                                    {items.DataSource == "TaskUsers" && <Dropdown disabled={IsDisabledAddMoreAndFilter == true} id="FiltesTaskUser" options={[{ key: '', text: '' }, ...(AllTaskUsers?.map((item: any) => ({ key: item?.Id, text: item?.Title })) || [])]} selectedKey={items?.smartFevId}
                                                         onChange={(e, option) => handleSelectFilterChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }}
                                                     />
@@ -317,14 +321,14 @@ const AddConfiguration = (props: any) => {
 
                                                 </Col>
                                             </Row>
-                                        </div>
+                                        </div >
                                     </>
                                 )
                             })}
                         </Col>
                     </Row>
                 </div>
-                <div className='mb-5'><a className="pull-right empCol hreflink" onClick={(e) => AddMorewebpart()}> +Add More </a></div>
+                {IsDisabledAddMoreAndFilter == false && <div className='mb-5'><a className="pull-right empCol hreflink" onClick={(e) => AddMorewebpart()}> +Add More </a></div>}
                 <div className='modal-footer mt-2'>
                     <button className="btn btn-primary ms-1" onClick={SaveConfigPopup} disabled={DashboardTitle == '' || IsCheck == false}>Save</button>
                     <button className='btn btn-default ms-1' onClick={CloseConfiguationPopup}>Cancel</button>
