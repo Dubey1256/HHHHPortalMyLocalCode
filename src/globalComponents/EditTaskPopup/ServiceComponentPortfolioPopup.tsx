@@ -80,6 +80,8 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         }
         // // setModalIsOpen(false);
         if (selectionType === "Multi") {
+            setIsSelectionsBelow(true);
+            setIsSelections(true);
             Example(MultiSelectedData, selectionType, "Save");
         } else {
        
@@ -197,6 +199,13 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                     Selecteddata = GlobalArray?.AllData.filter((item: any) => {
                         if (props?.Portfolios && props?.Portfolios?.results?.length > 0) {
                             return props?.Portfolios?.results?.some((portfolio: any) => portfolio.Id === item.Id);
+                        }
+                        return false;
+                    });
+                }else if (props.length>0 && props[0]?.Id != null) {
+                    Selecteddata = GlobalArray?.AllData?.filter((item: any) => {
+                        if (props && props?.length > 0) {
+                            return props?.some((portfolio: any) => portfolio.Id === item.Id);
                         }
                         return false;
                     });
@@ -708,8 +717,8 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         <>
             <button type="button" className="btn btn-primary" onClick={() => OpenAddStructureModal()}>{showProject == true?"Add Project":"Add Structure" } </button>
             <button type="button" className="btn btn-primary" onClick={() => openCompareTool()}> Compare</button>
-            <label className="switch me-2" htmlFor="checkbox">
-            <input checked={IsSelections} onChange={() => checkSelection1("SelectionsUpper") } type="checkbox" id="checkbox" />
+            <label className="switch me-2" htmlFor="checkbox4">
+            <input checked={IsSelections} onChange={() => checkSelection1("SelectionsUpper") } type="checkbox" id="checkbox4" />
                 {IsSelections === true ? <div className="slider round" title='Switch to Multi Selection' ></div> : <div title='Switch to Single Selection' className="slider round"></div>}
             </label>
         </>
@@ -718,8 +727,8 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         <>
             <button type="button" className="btn btn-primary" onClick={() => OpenAddStructureModal()}>{showProject == true?"Add Project":"Add Structure"}</button>
             <button type="button" className="btn btn-primary" onClick={() => openCompareTool()}> Compare</button>
-            <label className="switch me-2" htmlFor="checkbox1">
-            <input checked={IsSelectionsBelow} onChange={() => checkSelection1("SelectionsBelow")} type="checkbox" id="checkbox1" />
+            <label className="switch me-2" htmlFor="checkbox5">
+            <input checked={IsSelectionsBelow} onChange={() => checkSelection1("SelectionsBelow")} type="checkbox" id="checkbox5" />
                 {IsSelectionsBelow === true ? <div className="slider round" title='Switch to Multi Selection' ></div> : <div title='Switch to Single Selection' className="slider round"></div>}
             </label>
         </>
