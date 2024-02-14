@@ -229,7 +229,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                         }
                         return false;
                     });
-                }else if (props?.length>0) {
+                }else if (props.length>0 && props[0]?.Id != null) {
                     Selecteddata = GlobalArray?.ProjectData.filter((item: any) => {
                         if (props && props?.length > 0) {
                             return props?.some((portfolio: any) => portfolio.Id === item.Id);
