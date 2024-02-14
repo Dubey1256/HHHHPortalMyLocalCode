@@ -2555,75 +2555,85 @@ const EditTaskPopup = (Items: any) => {
                         // When task assigned to user, send a notification on MS Teams 
 
                         if (!IsUserFromHHHHTeam && SendCategoryName !== "Bottleneck") {
-                            try {
-                                let sendUserEmails: any = [];
-                                let AssignedUserName: string = '';
-                                TaskAssignedTo?.map((userDtl: any) => {
-                                    taskUsers?.map((allUserItem: any) => {
-                                        if (userDtl.Id == allUserItem.AssingedToUserId) {
-                                            sendUserEmails.push(allUserItem.Email);
-                                            if (AssignedUserName?.length > 0) {
-                                                AssignedUserName = "Team";
-                                            } else {
-                                                AssignedUserName = allUserItem.Title;
+                            if (!IsUserFromHHHHTeam && SendCategoryName !== "Bottleneck") {
+                                try {
+                                    let sendUserEmails: any = [];
+                                    let AssignedUserName: string = '';
+                                    TaskAssignedTo?.map((userDtl: any) => {
+                                        taskUsers?.map((allUserItem: any) => {
+                                            if (userDtl.Id == allUserItem.AssingedToUserId) {
+                                                sendUserEmails.push(allUserItem.Email);
+                                                if (AssignedUserName?.length > 0) {
+                                                    AssignedUserName = "Team";
+                                                } else {
+                                                    AssignedUserName = allUserItem.Title;
+                                                }
+                                            }
+                                        });
+                                    });
+                                    let uniqueIds: any = {};
+                                    const result: any = tempShareWebTypeData.filter((item: any) => {
+                                        if (!uniqueIds[item.Id]) {
+                                            uniqueIds[item.Id] = true;
+                                            return true;
+                                        }
+                                        return false;
+                                    });
+                                    let TaskCategories = result?.map((item: any) => item.Title).join(', ');
+                                    let SendMessage: string = '';
+                                    let CommonMsg: string = '';
+                                    let checkStatusUpdate: any = Number(taskPercentageValue) * 100;
+                                    if (TeamMemberChanged) {
+                                        CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`
+                                    }
+                                    if (IsTaskStatusUpdated) {
+                                        if (checkStatusUpdate == 80) {
+                                            CommonMsg = `Below task has been set to 80%, please review it.`
+                                        }
+                                        if (checkStatusUpdate == 70) {
+                                            CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`
+                                        }
+                                    }
+
+                                    SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> </br> 
+                                    <p>
+                                    Task Link:  <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
+                                     ${UpdatedDataObject.TaskId}-${UpdatedDataObject.Title}
+                                    </a>
+                                    </br>
+                                    Task Category: ${TaskCategories}</br>
+                                    Smartpriority: <b>${UpdatedDataObject?.SmartPriority}</b></br>
+                                    </p>
+                                    <p></p>
+                                    <b>
+                                    Thanks, </br>
+                                    Task Management Team
+                                    </b>
+                                    `
+                                    let sendMSGCheck: any = IsTaskStatusUpdated
+                                    if ((checkStatusUpdate == 80 || checkStatusUpdate == 70) && IsTaskStatusUpdated) {
+                                        sendMSGCheck = true;
+                                    } else {
+                                        sendMSGCheck = false;
+                                    }
+                                    try {
+                                        if ((sendMSGCheck || TeamMemberChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
+                                            if (sendUserEmails?.length > 0) {
+                                                await globalCommon.SendTeamMessage(
+                                                    sendUserEmails,
+                                                    SendMessage,
+                                                    Items.context
+                                                );
                                             }
                                         }
-                                    });
-                                });
-                                let uniqueIds: any = {};
-                                const result: any = tempShareWebTypeData.filter((item: any) => {
-                                    if (!uniqueIds[item.Id]) {
-                                        uniqueIds[item.Id] = true;
-                                        return true;
-                                    }
-                                    return false;
-                                });
-                                let TaskCategories = result?.map((item: any) => item.Title).join(', ');
-                                let SendMessage: string = '';
-                                let CommonMsg: string = '';
-                                if (TeamMemberChanged) {
-                                    CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`
-                                }
-                                if (IsTaskStatusUpdated) {
-                                    if ((Number(taskPercentageValue) * 100) == 80) {
-                                        CommonMsg = `Below task has been set to 80%, please review it.`
-                                    }
-                                    if ((Number(taskPercentageValue) * 100) == 70) {
-                                        CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`
-                                    }
-                                }
 
-                                SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> </br> 
-                                <p>
-                                Task Link:  <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
-                                 ${UpdatedDataObject.TaskId}-${UpdatedDataObject.Title}
-                                </a>
-                                </br>
-                                Task Category: ${TaskCategories}</br>
-                                Smartpriority: <b>${UpdatedDataObject?.SmartPriority}</b></br>
-                                </p>
-                                <p></p>
-                                <b>
-                                Thanks, </br>
-                                Task Management Team
-                                </b>
-                                `
-                                try {
-                                    if ((IsTaskStatusUpdated || TeamMemberChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
-                                        if (sendUserEmails?.length > 0) {
-                                            await globalCommon.SendTeamMessage(
-                                                sendUserEmails,
-                                                SendMessage,
-                                                Items.context
-                                            );
-                                        }
+                                    } catch (error) {
+                                        console.log("Error", error.message);
                                     }
-
                                 } catch (error) {
-                                    console.log("Error", error.message);
+                                    console.log("Error", error.message)
                                 }
-                            } catch (error) {
-                                console.log("Error", error.message)
+
                             }
 
                         }
