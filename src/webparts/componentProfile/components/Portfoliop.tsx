@@ -2139,7 +2139,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         {isopenProjectpopup && (
           <ServiceComponentPortfolioPopup
 
-            props={data[0]}
+            props={filterdata}
             Dynamic={SelectedProp}
             ComponentType={"Component"}
             selectionType={"Multi"}
