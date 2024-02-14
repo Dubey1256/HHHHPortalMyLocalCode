@@ -86,6 +86,9 @@ const CreateActivity = (props: any) => {
   const globalContextData: any = React.useContext<any>(myContextValue)
   React.useEffect(() => {
     AllListId = props?.AllListId;
+    if ( props?.selectedItem?.NoteCall != "Task" && props?.selectedItem?.NoteCall != "Activities") {
+      setTaskTitle(`${ props?.selectedItem?.NoteCall} - ${props?.selectedItem?.Title}`);
+    }
     getTaskUsers();
     GetSmartMetadata();
     if (props?.pageName == "QuickTask") {
@@ -176,6 +179,9 @@ const CreateActivity = (props: any) => {
   const Call = React.useCallback((item1: any, type: any) => {
     setIsComponentPicker(false);
     // setIsClientPopup(false);
+    item1.map((cats2: any) => {
+      cats2.ActiveTile = true
+    }) // code by Anupam
     if (type == "Category-Task-Footertable") {
       setCategoriesData(item1);
     }
@@ -241,12 +247,6 @@ const CreateActivity = (props: any) => {
       });
     }
     TaskTypes = getSmartMetadataItemsByTaxType(AllMetadata, "Categories");
-    quickCategory = TaskTypes?.filter((item: any) => {
-      return item?.Title == "Quick";
-    });
-    if (props?.pageName != undefined && props?.pageName == "QuickTask") {
-      setCategoriesData(quickCategory);
-    }
     let instantCat: any = [];
     TaskTypes?.map((cat: any) => {
       cat.ActiveTile = false;
@@ -296,6 +296,17 @@ const CreateActivity = (props: any) => {
       });
     });
 
+    if (props?.pageName != undefined && props?.pageName == "QuickTask") {
+      quickCategory = TaskTypes?.filter((item: any) => {
+        return item?.Title == "Quick";
+      });
+
+      quickCategory.map((itms: any) => {
+        itms.ActiveTile = true
+      })
+      setCategoriesData(quickCategory);
+    } // code by Anupam
+
     if (loggedInUser?.IsApprovalMail?.toLowerCase() == "approve all") {
       IsapprovalTask = true;
     }
@@ -311,7 +322,9 @@ const CreateActivity = (props: any) => {
         if (item?.Title == props?.selectedItem?.NoteCall  && !item.ActiveTile) {
           selectSubTaskCategory(item?.Title, item?.Id, item);
           if( props?.selectedItem?.NoteCall == "Development"){
+            props.selectedItem.CopyNoteCall="Development"
             props.selectedItem.NoteCall = "Activity"
+
           }else{
             props.selectedItem.NoteCall = "Task"
           }

@@ -279,12 +279,12 @@ const Picker = (item: any) => {
 
     const customHeader = () => {
         return (
-            <div className={isServiceTask || item?.props?.Portfolio_x0020_Type == "Service" ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
-                <div className="subheading siteColor">
+            <>
+                <div className="subheading">
                     Select Category
                 </div>
                 <Tooltip ComponentId="1741" />
-            </div>
+            </>
         )
     }
     const HoverFirstLevel = (itemId: any) => {
@@ -320,11 +320,11 @@ const Picker = (item: any) => {
                     <div className={isServiceTask ? "modal-body serviepannelgreena" : "modal-body"}>
 
                         <div className="mb-2">
-                            <div className="mb-2 col-sm-5 p-0">
+                            <div className="mb-2 col-sm-5 p-0" style={{width:"42.5%"}}>
                                 <div className="position-relative">
                                     <input type="checkbox" defaultChecked={isSearchWithDesciptions} onChange={() => setIsSearchWithDesciptions(isSearchWithDesciptions ? false : true)} className="form-check-input me-1 rounded-0" style={{ width: "15px", height: "15px" }} /> <label>Include description (info-icons) in search</label>
                                     <input type="text" className="form-control  searchbox_height mt-20 mb-3" value={value} onChange={onChange} placeholder="Search Category" />
-                                    <span style={{ position: 'absolute', top: '44px', right: '5px' }}><BsSearch /></span>
+                                    <span style={{ position: 'absolute', top: '44px', right: '10px' }}><BsSearch /></span>
                                     {searchedData?.length > 0 ? (
                                         <div className="SearchTableCategoryComponent">
                                             <ul className="list-group">
@@ -360,16 +360,13 @@ const Picker = (item: any) => {
                                         <>
                                             <li onMouseEnter={() => HoverFirstLevel(item.Id)} onMouseLeave={HoverOutFirstLevel} key={item.Id}>
                                                 {item.Item_x005F_x0020_Cover != null &&
-                                                    <p onClick={() => selectPickerData(item)} className='mb-0 hreflink' >
-                                                        <span className={`${FirstHoveredItemId == item?.Id ? 'boldOnHover' : ''}`}>
-                                                            <a>
-                                                                <img className="flag_icon"
-                                                                    style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
-                                                                {item.Title}
-                                                            </a>
-                                                        </span>
-                                                        {item?.childs?.length > 0 && <span className="pull-right"><SlArrowRight /></span>}
-                                                    </p>
+                                                    <div onClick={() => selectPickerData(item)} className='alignCenter hreflink justify-content-between'>
+                                                        <a className={`${FirstHoveredItemId == item?.Id ? 'boldOnHover flag_icon alignCenter' : 'flag_icon alignCenter'}`}>
+                                                            <img className="flag_icon" style={{ height: "12px", width: "18px" }} src={item.Item_x005F_x0020_Cover.Url} />
+                                                            {item.Title}
+                                                        </a>
+                                                        {item?.childs?.length > 0 && <SlArrowRight />}
+                                                    </div>
                                                 }
                                                 <ul className="sub-menu clr mar0">
                                                     {item.childs?.map(function (child1: any) {
@@ -377,48 +374,40 @@ const Picker = (item: any) => {
                                                             <>
                                                                 {child1.Title != null ?
                                                                     <li onMouseEnter={() => HoverSecondLevel(child1.Id)} onMouseLeave={HoverOutSecondLevel}>
-                                                                        <p onClick={() => selectPickerData(child1)} className='mb-0 hreflink'>
-                                                                            <span className={`${SecondHoveredItemId == child1?.Id ? 'boldOnHover' : ''}`}>
-                                                                                <a>
-                                                                                    {child1.Item_x005F_x0020_Cover ? <img className="flag_icon"
-                                                                                        style={{ height: "12px", width: "18px;" }}
+                                                                        <div onClick={() => selectPickerData(child1)} className='alignCenter hreflink justify-content-between'>
+                                                                                <a className={`${SecondHoveredItemId == child1?.Id ? 'boldOnHover alignCenter' : 'alignCenter'}`}>
+                                                                                    {child1.Item_x005F_x0020_Cover ? 
+                                                                                    <img className="flag_icon" style={{ height: "12px", width: "18px;" }}
                                                                                         src={child1.Item_x005F_x0020_Cover.Url} /> :
                                                                                         <span className="me-4"></span>}
                                                                                     {child1.Title}
-                                                                                    {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                        <span className="alignIcon  svg__iconbox svg__icon--info"></span>
+                                                                                    {child1.Description1 ? 
+                                                                                    <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                        <span className="svg__iconbox svg__icon--info"></span>
                                                                                         <div className="popover__content">
                                                                                             <span>{child1.Description1}</span>
                                                                                         </div>
-                                                                                    </div> : null}
-                                                                                    {child1?.childs?.length > 0 && <span className="pull-right"><SlArrowRight /></span>}
-                                                                                </a>
-                                                                            </span>
-                                                                        </p>
+                                                                                    </div> : null} 
+                                                                                </a>{child1?.childs?.length > 0 && <SlArrowRight />}
+                                                                        </div>
 
                                                                         <ul className="sub-menu clr mar0">
                                                                             {
                                                                                 child1.childs?.map((subChilds: any) => {
                                                                                     return (
                                                                                         <li onMouseEnter={() => HoverThirdLevel(subChilds.Id)} onMouseLeave={HoverOutThirdLevel}>
-                                                                                            <p onClick={() => selectPickerData(subChilds)} className='mb-0 hreflink'>
-                                                                                                <span className={`${ThirdHoveredItemId == subChilds?.Id ? 'boldOnHover' : ''}`}>
-                                                                                                    <a>
-                                                                                                        {subChilds.Item_x005F_x0020_Cover ? <img className="flag_icon"
-                                                                                                            style={{ height: "12px", width: "18px;" }}
-                                                                                                            src={subChilds.Item_x005F_x0020_Cover.Url} /> :
-                                                                                                            null}
-                                                                                                        {subChilds.Title}
-                                                                                                        {subChilds.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                                                                                            <span className="alignIcon   svg__iconbox svg__icon--info"></span>
-                                                                                                            <div className="popover__content">
-                                                                                                                <span ng-bind-html="child1.Description1 | trustedHTML">{subChilds.Description1}</span>
-                                                                                                            </div>
-                                                                                                        </div> : null}
-
-                                                                                                    </a>
-                                                                                                </span>
-                                                                                            </p>
+                                                                                            <a onClick={() => selectPickerData(subChilds)} className={`${ThirdHoveredItemId == subChilds?.Id ? 'boldOnHover alignCenter' : 'alignCenter'}`}>
+                                                                                                {subChilds.Item_x005F_x0020_Cover ? <img className="flag_icon"
+                                                                                                    style={{ height: "12px", width: "18px;" }} src={subChilds.Item_x005F_x0020_Cover.Url} /> :
+                                                                                                    <span className="me-4"></span>}
+                                                                                                {subChilds.Title}
+                                                                                                {subChilds.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                                    <span className="alignIcon   svg__iconbox svg__icon--info"></span>
+                                                                                                    <div className="popover__content">
+                                                                                                        <span ng-bind-html="child1.Description1 | trustedHTML">{subChilds.Description1}</span>
+                                                                                                    </div>
+                                                                                                </div> : null}
+                                                                                            </a>
                                                                                         </li>
                                                                                     )
                                                                                 })

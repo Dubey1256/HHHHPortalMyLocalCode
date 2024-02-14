@@ -326,7 +326,7 @@ export default function ProjectOverview(props: any) {
                     </>
 
                 ),
-                id: "Project Title",
+                id: "ProjectTitle",
                 placeholder: "Project Title",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -339,7 +339,7 @@ export default function ProjectOverview(props: any) {
                         {row?.original?.ProjectPriority != 0 ? row?.original?.ProjectPriority : ''}
                     </span>
                 ),
-                id: 'projectPriority_x0020_Rank',
+                id: 'ProjectPriority',
                 placeholder: "Project Priority",
                 resetColumnFilters: false,
                 enableMultiSort: true,
@@ -528,7 +528,7 @@ export default function ProjectOverview(props: any) {
                         </> : ''}
                     </>
                 ),
-                id: 'Id',
+                id: 'EditPopup',
                 canSort: false,
                 placeholder: "",
                 header: "",
@@ -754,7 +754,7 @@ export default function ProjectOverview(props: any) {
                         {getValue()}
                     </>
                 ),
-                id: "row?.original.Id",
+                id: "Restructure",
                 canSort: false,
                 placeholder: "",
                 size: 1,
@@ -767,7 +767,7 @@ export default function ProjectOverview(props: any) {
 
                     </>
                 ),
-                id: 'Id',
+                id: 'EditPopup',
                 canSort: false,
                 placeholder: "",
                 header: "",
@@ -1316,14 +1316,14 @@ export default function ProjectOverview(props: any) {
 
     }, []);
 
-    const restructureCallback = React.useCallback((getData: any, topCompoIcon: any, callback: any) => {
+    const restructureCallback = React.useCallback((getData: any, topCompoIcon: any,callback:any) => {
         setTopCompoIcon(topCompoIcon);
         renderData = [];
         renderData = renderData.concat(getData)
         refreshData()
-        if (callback == true) {
-            GetMasterData();
-        }
+       if(callback == true){
+        GetMasterData();
+       }
 
     }, []);
 
@@ -1575,10 +1575,10 @@ export default function ProjectOverview(props: any) {
                                     <div className='wrapper'>
                                         {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                         {selectedView == 'Projects' ? <GlobalCommanTable expandIcon={true} hideAddActivityBtn={true} ref={childRef} callChildFunction={callChildFunction} AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false} showCreationAllButton={true}
-                                            customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} OpenAddStructureModal={OpenAddStructureModal} pageProjectOverview={true} AllSitesTaskData={AllSitesAllTasks} masterTaskData={MyAllData} multiSelect={true} columns={column2}
+                                            customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} OpenAddStructureModal={OpenAddStructureModal} showRestructureButton={true} restructurebtn={true} restructureCallBack={restructureCallback}AllSitesTaskData={AllSitesAllTasks} masterTaskData={MyAllData} multiSelect={true} columns={column2}
                                             data={workingTodayFiltered ? data : flatData} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                     </div>
-                                    {/* restructurebtn={true} restructureCallBack={restructureCallback} */}
+                                   
                                 </div>
                                 </div>
 

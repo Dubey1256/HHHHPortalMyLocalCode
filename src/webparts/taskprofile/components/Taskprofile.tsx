@@ -35,10 +35,11 @@ import KeyDocuments from './KeyDocument';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import { EditableField } from "../../componentProfile/components/Portfoliop";
-import InlineEditingcolumns from '../../../globalComponents/inlineEditingcolumns';
+
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 import CentralizedSiteComposition from '../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition';
 import { IoHandRightOutline } from 'react-icons/io5';
+import InlineEditingcolumns from '../../../globalComponents/inlineEditingcolumns';
 var ClientTimeArray: any = [];
 
 var AllListId: any;
@@ -1565,6 +1566,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   //****** remove extra space in folora editor  */
 
   private cleanHTML = (html: any, folora: any, index: any) => {
+    html= globalCommon?.replaceURLsWithAnchorTags(html)
     const div = document.createElement('div');
     div.innerHTML = html;
    const paragraphs = div.querySelectorAll('p');
@@ -1644,7 +1646,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     }
 
   }
-  private ComponentServicePopupCallBack = (DataItem: any, Type: any, functionType: any) => {
+  private ComponentServicePopupCallBack = async (DataItem: any, Type: any, functionType: any) => {
     console.log(DataItem)
     console.log(Type)
     console.log(functionType)
@@ -1732,7 +1734,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       
             }
           }));
+        
+          // console.log(childData)
           this?.updateProjectComponentServices(dataUpdate)
+         if(this.state.Result?.TaskType?.Title!="Task"){
+          await globalCommon?.AwtGroupingAndUpdatePrarticularColumn(this.state.Result, this.allDataOfTask,dataUpdate)
+         }
+          
         }
       }
 
@@ -1751,14 +1759,17 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       // .getById(this.props.SiteTaskListID)
       .items
       .getById(this.state?.itemID)
-      .update(dataUpdate).then((data: any) => {
+      .update(dataUpdate).then(async(data: any) => {
         console.log(data)
+      
       }).catch((error: any) => {
         console.log(error)
       });
 
 
   }
+  
+ 
 
   //********** */ Inline editing End************
   public render(): React.ReactElement<ITaskprofileProps> {
@@ -1775,7 +1786,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     } else {
       document.title = "Task Profile"
     }
-
 
 
 
@@ -1972,7 +1982,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Status</dt>
-                        <dd className='bg-Ff'>{this.state.Result["Status"]}<br></br>
+                        <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"]?.toFixed(0) : 0} <span className='me-2'>%</span> {this.state.Result["Status"]}<br></br>
                           {this.state.Result["ApproverHistory"] != undefined && this.state.Result["ApproverHistory"].length > 1 && this.state.Result["Categories"].includes("Approval") ?
                             <span style={{ fontSize: "smaller" }}>Approved by
                               <img className="workmember" title={this.state.Result["ApproverHistory"][this.state.Result?.ApproverHistory.length - 2]?.ApproverName} src={(this.state.Result?.ApproverHistory[this.state.Result?.ApproverHistory?.length - 2]?.ApproverImage != null) ? (this.state.Result.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverImage) : (this.state.Result?.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverSuffix)}></img></span>
@@ -1985,13 +1995,13 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         </dd>
                       </dl>
 
-                      <dl>
+                      {/* <dl>
                         <dt className='bg-Fa'>% Complete</dt>
 
                         <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"]?.toFixed(0) : 0}</dd>
 
 
-                      </dl>
+                      </dl> */}
                       <dl>
                         <dt className='bg-Fa'>Priority</dt>
                         <dd className='bg-Ff'>

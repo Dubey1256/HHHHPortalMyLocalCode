@@ -738,8 +738,9 @@ const AncTool = (props: any) => {
             let web = new Web(props?.AllListId?.siteUrl);
             let PostData = {
                 [siteColName]: { "results": resultArray },
-                PortfoliosId: { "results": file?.PortfoliosId != undefined ? file?.PortfoliosId : [] }
             }
+            if (siteColName != 'PortfoliosId')
+                PostData.PortfoliosId = { "results": file?.PortfoliosId != undefined ? file?.PortfoliosId : [] }
             let itemType = 'Task';
             if (props?.item?.Item_x0020_Type != undefined) {
                 itemType = props?.item?.Item_x0020_Type
