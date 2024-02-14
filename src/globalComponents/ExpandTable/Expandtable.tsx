@@ -23,7 +23,7 @@ const ExpndTable = (props: any) => {
       const seventhChild = spPageCanvasContentDiv.querySelector(':scope > div > div > div > div > div > div > div');
 
       if (seventhChild) {
-        seventhChild.id = 'spPageCanvasContent';
+        seventhChild.id = 'increasePageWidth';
       }
     }
   }, []);

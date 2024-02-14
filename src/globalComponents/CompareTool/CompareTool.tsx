@@ -1961,7 +1961,7 @@ const CompareTool = (props: any) => {
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="iconSec">
                                     <div className="text-center">
-                                        <LuUndo2 size="25" />
+                                    <LuUndo2 size="25" onClick={undoChanges} />
                                     </div>
                                 </Col>
                             </Row>) :
@@ -2488,13 +2488,12 @@ const CompareTool = (props: any) => {
                                     <span className="input-group-text">
                                         <span title="Edit Categories" onClick={() => openCategoryPicker(data[0], true, data[0]?.TaskCategories)} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                </div>
-                                {autoSearch?.itemIndex === 0 && autoSearch?.property === 'TaskCategories' && SearchedCategoryData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup w-100">
-                                        <ul className="list-group">
+                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'TaskCategories' && SearchedCategoryData?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup">
+                                        <ul className="list-group hreflink scrollbar maXh-200">
                                             {SearchedCategoryData.map((item: any) => {
                                                 return (
-                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                         <a>{item.Newlabel}</a>
                                                     </li>
                                                 )
@@ -2502,6 +2501,8 @@ const CompareTool = (props: any) => {
                                             )}
                                         </ul>
                                     </div>) : null}
+                                </div>
+                                
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
                                 <div className="text-center">
@@ -2527,13 +2528,12 @@ const CompareTool = (props: any) => {
                                     <span className="input-group-text">
                                         <span title="Edit Categories" onClick={() => openCategoryPicker(data[1], true, data[1]?.TaskCategories)} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                </div>
-                                {autoSearch?.itemIndex === 1 && autoSearch?.property === 'TaskCategories' && SearchedCategoryData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup w-100">
-                                        <ul className="list-group">
+                                    {autoSearch?.itemIndex === 1 && autoSearch?.property === 'TaskCategories' && SearchedCategoryData?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup">
+                                        <ul className="list-group hreflink scrollbar maXh-200">
                                             {SearchedCategoryData.map((item: any) => {
                                                 return (
-                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                         <a>{item.Newlabel}</a>
                                                     </li>
                                                 )
@@ -2541,6 +2541,8 @@ const CompareTool = (props: any) => {
                                             )}
                                         </ul>
                                     </div>) : null}
+                                </div>
+                                
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('TaskCategories')} />
@@ -2564,13 +2566,12 @@ const CompareTool = (props: any) => {
                                     <span className="input-group-text">
                                         <span title="Edit Categories" onClick={() => EditClientCategory(data[0], true, 'ClientCategory')} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                </div>
-                                {autoSearch?.itemIndex === 0 && autoSearch?.property === 'ClientCategory' && SmartMetaDataAllItems?.ClientCategory?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup w-100">
-                                        <ul className="list-group">
+                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'ClientCategory' && SmartMetaDataAllItems?.ClientCategory?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup">
+                                        <ul className="list-group hreflink scrollbar maXh-200">
                                             {SmartMetaDataAllItems?.ClientCategory.map((item: any) => {
                                                 return (
-                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                    <li className="hreflink list-group-item p-1 rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                         <a>{item.newTitle}</a>
                                                     </li>
                                                 )
@@ -2578,6 +2579,8 @@ const CompareTool = (props: any) => {
                                             )}
                                         </ul>
                                     </div>) : null}
+                                </div>
+                                
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
                                 <div className="text-center">
@@ -2603,13 +2606,12 @@ const CompareTool = (props: any) => {
                                     <span className="input-group-text">
                                         <span title="Edit Categories" onClick={() => EditClientCategory(data[1], true, 'ClientCategory')} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                </div>
-                                {autoSearch?.itemIndex === 1 && autoSearch?.property === 'ClientCategory' && SmartMetaDataAllItems?.ClientCategory?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup w-100">
-                                        <ul className="list-group">
+                                    {autoSearch?.itemIndex === 1 && autoSearch?.property === 'ClientCategory' && SmartMetaDataAllItems?.ClientCategory?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup">
+                                        <ul className="list-group hreflink scrollbar maXh-200">
                                             {SmartMetaDataAllItems?.ClientCategory?.map((item: any) => {
                                                 return (
-                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                    <li className="hreflink list-group-item p-1 rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                         <a>{item.newTitle}</a>
                                                     </li>
                                                 )
@@ -2617,9 +2619,11 @@ const CompareTool = (props: any) => {
                                             )}
                                         </ul>
                                     </div>) : null}
+                                </div>
+                               
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('PortfolioItem')} />
+                                <LuUndo2 size="25" onClick={() => undoChangescolumns('ClientCategory')} />
                             </Col>
                         </Row>
                         <Row className="Metadatapannel">
@@ -2640,13 +2644,12 @@ const CompareTool = (props: any) => {
                                     <span className="input-group-text">
                                         <span title="Edit Categories" onClick={() => OpenComponentPicker(data[0], true, 'PortfolioItem')} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                </div>
-                                {autoSearch?.itemIndex === 0 && autoSearch?.property === 'PortfolioItem' && AllMasterTasksItems?.ProjectData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup w-100">
-                                        <ul className="list-group">
+                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'PortfolioItem' && AllMasterTasksItems?.ProjectData?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup">
+                                        <ul className="list-group hreflink scrollbar maXh-200">
                                             {AllMasterTasksItems?.ProjectData.map((item: any) => {
                                                 return (
-                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                         <a>{item.Newlabel || item.Path}</a>
                                                     </li>
                                                 )
@@ -2654,6 +2657,8 @@ const CompareTool = (props: any) => {
                                             )}
                                         </ul>
                                     </div>) : null}
+                                </div>
+                                
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
                                 <div className="text-center">
@@ -2679,13 +2684,12 @@ const CompareTool = (props: any) => {
                                     <span className="input-group-text">
                                         <span title="Edit Categories" onClick={() => OpenComponentPicker(data[1], true, 'PortfolioItem')} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                </div>
-                                {autoSearch?.itemIndex === 1 && autoSearch?.property === 'PortfolioItem' && AllMasterTasksItems?.AllData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup w-100">
-                                        <ul className="list-group">
+                                    {autoSearch?.itemIndex === 1 && autoSearch?.property === 'PortfolioItem' && AllMasterTasksItems?.AllData?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup">
+                                        <ul className="list-group hreflink scrollbar maXh-200">
                                             {AllMasterTasksItems?.AllData.map((item: any) => {
                                                 return (
-                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                    <li className="hreflink list-group-item p-1 rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                         <a>{item.Newlabel || item.Path}</a>
                                                     </li>
                                                 )
@@ -2693,6 +2697,8 @@ const CompareTool = (props: any) => {
                                             )}
                                         </ul>
                                     </div>) : null}
+                                </div>
+                                
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('PortfolioItem')} />
@@ -2716,13 +2722,12 @@ const CompareTool = (props: any) => {
                                     <span className="input-group-text">
                                         <span title="Edit Categories" onClick={() => OpenComponentPicker(data[0], true, 'FeatureType')} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                </div>
-                                {autoSearch?.itemIndex === 0 && autoSearch?.property === 'FeatureType' && SmartMetaDataAllItems?.AllFeatureTypeData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup w-100">
-                                        <ul className="list-group">
+                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'FeatureType' && SmartMetaDataAllItems?.AllFeatureTypeData?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup">
+                                        <ul className="list-group hreflink scrollbar maXh-200">
                                             {SmartMetaDataAllItems?.AllFeatureTypeData?.map((item: any) => {
                                                 return (
-                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                         <a>{item.Title}</a>
                                                     </li>
                                                 )
@@ -2730,6 +2735,8 @@ const CompareTool = (props: any) => {
                                             )}
                                         </ul>
                                     </div>) : null}
+                                </div>
+                               
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
                                 <div className="text-center">
@@ -2755,13 +2762,12 @@ const CompareTool = (props: any) => {
                                     <span className="input-group-text">
                                         <span title="Edit Categories" onClick={() => OpenComponentPicker(data[1], true, 'FeatureType')} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                </div>
-                                {autoSearch?.itemIndex === 1 && autoSearch?.property === 'FeatureType' && SmartMetaDataAllItems?.AllFeatureTypeData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup w-100">
-                                        <ul className="list-group">
+                                    {autoSearch?.itemIndex === 1 && autoSearch?.property === 'FeatureType' && SmartMetaDataAllItems?.AllFeatureTypeData?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup">
+                                        <ul className="list-group hreflink scrollbar maXh-200">
                                             {SmartMetaDataAllItems?.AllFeatureTypeData?.map((item: any) => {
                                                 return (
-                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                    <li className="hreflink list-group-item p-1 rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                         <a>{item.Title}</a>
                                                     </li>
                                                 )
@@ -2769,6 +2775,8 @@ const CompareTool = (props: any) => {
                                             )}
                                         </ul>
                                     </div>) : null}
+                                </div>
+                               
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('FeatureType')} />
@@ -2792,13 +2800,12 @@ const CompareTool = (props: any) => {
                                     <span className="input-group-text">
                                         <span title="Edit Project" onClick={() => OpenComponentPicker(data[0], true, 'ProjectItem')} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                </div>
-                                {autoSearch?.itemIndex === 0 && autoSearch?.property === 'ProjectItem' && AllMasterTasksItems?.ProjectData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup w-100">
-                                        <ul className="list-group">
+                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'ProjectItem' && AllMasterTasksItems?.ProjectData?.length > 0 ? (
+                                    <div className="SmartTableOnTaskPopup">
+                                        <ul className="list-group hreflink scrollbar maXh-200">
                                             {AllMasterTasksItems?.ProjectData.map((item: any) => {
                                                 return (
-                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                         <a>{item.Newlabel || item.Path}</a>
                                                     </li>
                                                 )
@@ -2806,6 +2813,8 @@ const CompareTool = (props: any) => {
                                             )}
                                         </ul>
                                     </div>) : null}
+                                </div>
+                                
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
                                 <div className="text-center">
@@ -2832,11 +2841,11 @@ const CompareTool = (props: any) => {
                                     </span>
                                 </div>
                                 {autoSearch?.itemIndex === 1 && autoSearch?.property === 'ProjectItem' && AllMasterTasksItems?.ProjectData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup w-100">
-                                        <ul className="list-group">
+                                    <div className="SmartTableOnTaskPopup">
+                                        <ul className="list-group hreflink scrollbar maXh-200">
                                             {AllMasterTasksItems?.ProjectData.map((item: any) => {
                                                 return (
-                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                         <a>{item.Newlabel || item.Path}</a>
                                                     </li>
                                                 )
