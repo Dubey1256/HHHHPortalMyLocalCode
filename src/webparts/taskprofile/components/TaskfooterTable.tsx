@@ -291,12 +291,11 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
   const LoadAllSiteTasks = async function (filter: any) {
     AllTasksData = [];
     let Counter = 0;
-    if (siteConfig != undefined && siteConfig?.length > 0) {
+  
       const batch = sp.createBatch();
-      for (let i = 0; i < siteConfig?.length; i++) {
-        const config = siteConfig[i];
+    
+        const config = siteConfig[0];
         var select = "TaskLevel,ParentTask/Title,ParentTask/Id,ClientTime,PriorityRank,SiteCompositionSettings,TaskLevel,ItemRank,Project/Id,Project/PortfolioStructureID, Project/Title,Project/PriorityRank,TimeSpent,BasicImageInfo,CompletedDate,TaskID, ResponsibleTeam/Id,ResponsibleTeam/Title,TaskCategories/Id,TaskCategories/Title,ParentTask/TaskID,TaskType/Id,TaskType/Title,TaskType/Level, PriorityRank, TeamMembers/Title, TeamMembers/Name, Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID, TeamMembers/Id, Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Project,Portfolio,TaskType,AssignedTo,ClientCategory,Author,Editor,TeamMembers,ResponsibleTeam,TaskCategories&$filter=" + filter + ""
-
         const web = new Web(props?.AllListId?.siteUrl);
         const list = web.lists.getById(config.listId);
         list.items
@@ -306,7 +305,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
 
           .then((AllTasksMatches) => {
             console.log(AllTasksMatches);
-            Counter++;
+        
             console.log(AllTasksMatches?.length);
             if (AllTasksMatches != undefined) {
               if (AllTasksMatches?.length > 0) {
@@ -333,138 +332,141 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
               AllTasks = $.grep(AllTasks, function (type: any) {
                 return type.isDrafted == false;
               });
-              if (Counter == siteConfig?.length) {
-                AllTasks?.map((result: any,Index:any) => {
-                  SmartTimeData(result)
+            AllTasks?.map(async(result: any,Index:any) => {
+              result.Id = result.Id != undefined ? result.Id : result.ID;
+              result.TeamLeaderUser = [];
+              result.AllTeamName =
+                result.AllTeamName === undefined ? "" : result.AllTeamName;
+              result.chekbox = false;
+              result.descriptionsSearch = '';
+              result.commentsSearch = "";
+              result["TaskID"] = globalCommon.GetTaskId(result);
+              // result.DueDate = moment(result.DueDate).format("DD/MM/YYYY");
+              result.DisplayDueDate = moment(result.DueDate).format("DD/MM/YYYY");
+              result.DisplayCreateDate = moment(result.Created).format("DD/MM/YYYY");
+              if (result.DisplayDueDate == "Invalid date" || "") {
+                result.DisplayDueDate = result.DisplayDueDate.replaceAll(
+                  "Invalid date",
+                  ""
+                );
+              }
+              if (result.DisplayCreateDate == "Invalid date" || "") {
+                result.DisplayCreateDate = result.DisplayCreateDate.replaceAll(
+                  "Invalid date",
+                  ""
+                );
+              }
+              result.SmartPriority = globalCommon.calculateSmartPriority(result);
+            
+              result.PercentComplete = (result?.PercentComplete * 100).toFixed(0);
+              result.chekbox = false;
+              if (result?.FeedBack != undefined) {
+                let DiscriptionSearchData: any = '';
+                let feedbackdata: any = JSON.parse(result?.FeedBack)
+                DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+                  const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+                  const subtextText = (child?.Subtext || [])?.map((elem: any) =>
+                    elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
+                  ).join('');
+                  return childText + subtextText;
+                }).join('');
+                result.descriptionsSearch = DiscriptionSearchData
+              }
+
+              if (result?.Comments != null) {
+                result.commentsSearch = result?.Comments?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, "");
+              }
+              if (
+                result.AssignedTo != undefined &&
+                result?.AssignedTo?.length > 0
+              ) {
+                $.map(result.AssignedTo, (Assig: any) => {
+                  if (Assig.Id != undefined) {
+                    $.map(taskUsers, (users: any) => {
+                      if (
+                        Assig.Id != undefined &&
+                        users.AssingedToUser != undefined &&
+                        Assig.Id == users.AssingedToUser.Id
+                      ) {
+                        users.ItemCover = users.Item_x0020_Cover;
+                        result.TeamLeaderUser.push(users);
+                        result.AllTeamName += users.Title + ";";
+                      }
+                    });
+                  }
+                });
+              }
+            
+              if (
+                result.ResponsibleTeam != undefined &&
+                result?.ResponsibleTeam?.length > 0
+              ) {
+                $.map(result?.ResponsibleTeam, (Assig: any) => {
+                  if (Assig.Id != undefined) {
+                    $.map(taskUsers, (users: any) => {
+                      if (
+                        Assig.Id != undefined &&
+                        users.AssingedToUser != undefined &&
+                        Assig.Id == users.AssingedToUser.Id
+                      ) {
+                        users.ItemCover = users.Item_x0020_Cover;
+                        result.TeamLeaderUser.push(users);
+                        result.AllTeamName += users.Title + ";";
+                      }
+                    });
+                  }
+                });
+              }
+              if (
+                result.TeamMembers != undefined &&
+                result.TeamMembers?.length > 0
+              ) {
+                $.map(result.TeamMembers, (Assig: any) => {
+                  if (Assig.Id != undefined) {
+                    $.map(taskUsers, (users: any) => {
+                      if (
+                        Assig.Id != undefined &&
+                        users.AssingedToUser != undefined &&
+                        Assig.Id == users.AssingedToUser.Id
+                      ) {
+                        users.ItemCover = users.Item_x0020_Cover;
+                        result.TeamLeaderUser.push(users);
+                        result.AllTeamName += users.Title + ";";
+                      }
+                    });
+                  }
+                });
+              }
+              if (result?.ClientCategory?.length > 0) {
+                result.ClientCategorySearch = result?.ClientCategory?.map(
+                  (elem: any) => elem.Title
+                ).join(" ");
+              } else {
+                result.ClientCategorySearch = "";
+              }
+             
+              if (result.Project) {
+                result.ProjectTitle = result?.Project?.Title;
+                result.ProjectId = result?.Project?.Id;
+                result.projectStructerId =
+                  result?.Project?.PortfolioStructureID;
+                const title = result?.Project?.Title || "";
+                const dueDate = moment(new Date(result?.DueDate)).format(
+                  "DD/MM/YYYY"
+              );
+                result.joinedData = [];
+                if (title) result.joinedData.push(`Title: ${title}`);
+                if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
+              }
+              result["Item_x0020_Type"] = "Task";
+
+
+                 await SmartTimeData(result)
                   .then((returnresult) => {
                     result.smartTime = String(returnresult)
-                    result.Id = result.Id != undefined ? result.Id : result.ID;
-                    result.TeamLeaderUser = [];
-                    result.AllTeamName =
-                      result.AllTeamName === undefined ? "" : result.AllTeamName;
-                    result.chekbox = false;
-                    result.descriptionsSearch = '';
-                    result.commentsSearch = "";
-                    result["TaskID"] = globalCommon.GetTaskId(result);
-                    // result.DueDate = moment(result.DueDate).format("DD/MM/YYYY");
-                    result.DisplayDueDate = moment(result.DueDate).format("DD/MM/YYYY");
-                    result.DisplayCreateDate = moment(result.Created).format("DD/MM/YYYY");
-                    if (result.DisplayDueDate == "Invalid date" || "") {
-                      result.DisplayDueDate = result.DisplayDueDate.replaceAll(
-                        "Invalid date",
-                        ""
-                      );
-                    }
-                    if (result.DisplayCreateDate == "Invalid date" || "") {
-                      result.DisplayCreateDate = result.DisplayCreateDate.replaceAll(
-                        "Invalid date",
-                        ""
-                      );
-                    }
-                    result.SmartPriority = globalCommon.calculateSmartPriority(result);
-                  
-                    result.PercentComplete = (result?.PercentComplete * 100).toFixed(0);
-                    result.chekbox = false;
-                    if (result?.FeedBack != undefined) {
-                      let DiscriptionSearchData: any = '';
-                      let feedbackdata: any = JSON.parse(result?.FeedBack)
-                      DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-                        const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
-                        const subtextText = (child?.Subtext || [])?.map((elem: any) =>
-                          elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')
-                        ).join('');
-                        return childText + subtextText;
-                      }).join('');
-                      result.descriptionsSearch = DiscriptionSearchData
-                    }
-  
-                    if (result?.Comments != null) {
-                      result.commentsSearch = result?.Comments?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, "");
-                    }
-                    if (
-                      result.AssignedTo != undefined &&
-                      result?.AssignedTo?.length > 0
-                    ) {
-                      $.map(result.AssignedTo, (Assig: any) => {
-                        if (Assig.Id != undefined) {
-                          $.map(taskUsers, (users: any) => {
-                            if (
-                              Assig.Id != undefined &&
-                              users.AssingedToUser != undefined &&
-                              Assig.Id == users.AssingedToUser.Id
-                            ) {
-                              users.ItemCover = users.Item_x0020_Cover;
-                              result.TeamLeaderUser.push(users);
-                              result.AllTeamName += users.Title + ";";
-                            }
-                          });
-                        }
-                      });
-                    }
-                  
-                    if (
-                      result.ResponsibleTeam != undefined &&
-                      result?.ResponsibleTeam?.length > 0
-                    ) {
-                      $.map(result?.ResponsibleTeam, (Assig: any) => {
-                        if (Assig.Id != undefined) {
-                          $.map(taskUsers, (users: any) => {
-                            if (
-                              Assig.Id != undefined &&
-                              users.AssingedToUser != undefined &&
-                              Assig.Id == users.AssingedToUser.Id
-                            ) {
-                              users.ItemCover = users.Item_x0020_Cover;
-                              result.TeamLeaderUser.push(users);
-                              result.AllTeamName += users.Title + ";";
-                            }
-                          });
-                        }
-                      });
-                    }
-                    if (
-                      result.TeamMembers != undefined &&
-                      result.TeamMembers?.length > 0
-                    ) {
-                      $.map(result.TeamMembers, (Assig: any) => {
-                        if (Assig.Id != undefined) {
-                          $.map(taskUsers, (users: any) => {
-                            if (
-                              Assig.Id != undefined &&
-                              users.AssingedToUser != undefined &&
-                              Assig.Id == users.AssingedToUser.Id
-                            ) {
-                              users.ItemCover = users.Item_x0020_Cover;
-                              result.TeamLeaderUser.push(users);
-                              result.AllTeamName += users.Title + ";";
-                            }
-                          });
-                        }
-                      });
-                    }
-                    if (result?.ClientCategory?.length > 0) {
-                      result.ClientCategorySearch = result?.ClientCategory?.map(
-                        (elem: any) => elem.Title
-                      ).join(" ");
-                    } else {
-                      result.ClientCategorySearch = "";
-                    }
                    
-                    if (result.Project) {
-                      result.ProjectTitle = result?.Project?.Title;
-                      result.ProjectId = result?.Project?.Id;
-                      result.projectStructerId =
-                        result?.Project?.PortfolioStructureID;
-                      const title = result?.Project?.Title || "";
-                      const dueDate = moment(new Date(result?.DueDate)).format(
-                        "DD/MM/YYYY"
-                    );
-                      result.joinedData = [];
-                      if (title) result.joinedData.push(`Title: ${title}`);
-                      if (dueDate) result.joinedData.push(`Due Date: ${dueDate}`);
-                    }
-                    result["Item_x0020_Type"] = "Task";
                     if(Index==AllTasks?.length-1){
+                      
                       let allParentTasks = $.grep(AllTasks, function (type: any) { return (type.ParentTask != undefined && type.ParentTask.Id === props.props.Id && type?.siteType == props?.props?.siteType) && (type.TaskType != undefined && type.TaskType.Title != 'Workstream') });
                       if (props?.props?.TaskType != undefined && props.props.TaskType != undefined && props.props.TaskType?.Title === 'Activities')
                         allworkstreamTasks = $.grep(AllTasks, function (task: any) { return (task.TaskType != undefined && task?.TaskType?.Title === 'Workstream' && task?.siteType == props?.props?.siteType) });
@@ -505,8 +507,6 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
                         })
       
                       setData(allworkstreamTasks);
-      
-                      
                       setmaidataBackup(allworkstreamTasks)
                     }
                   })
@@ -515,14 +515,10 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
                   });
                  
                 })
-              
-               
-
-              }
-            }
+               }
           });
-      }
-    }
+      
+    
   };
 
   const GetComponents = async (Item: any) => {
