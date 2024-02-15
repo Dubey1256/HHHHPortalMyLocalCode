@@ -3629,7 +3629,7 @@ const EditTaskPopup = (Items: any) => {
                     "-Image" +
                     imageIndex +
                     "-" +
-                    EditData.Title?.replace(/["/':?]/g, "")?.slice(0, 40) +
+                    EditData.Title?.replace(/["/':?%]/g, "")?.slice(0, 40) +
                     " " +
                     timeStamp +
                     ".jpg";
