@@ -272,14 +272,17 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
 
     //    add New Edit component 
     const EditComponentPopup = (item: any) => {
-        item["siteUrl"] = Dynamic?.siteUrl;
-        item["listName"] = "Master Tasks";
-        setIsComponent(true);
-        setSharewebComponent(item);
         if(showProject == true){
             setIsProjectPopup(true)
             setSharewebComponent(item);
+        }else{
+            item["siteUrl"] = Dynamic?.siteUrl;
+            item["listName"] = "Master Tasks";
+            setIsComponent(true);
+            setSharewebComponent(item);
         }
+       
+      
     };
 
     const callBackData = React.useCallback((elem: any, ShowingData: any, selectedArray: any) => {
@@ -719,7 +722,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             <button type="button" className="btn btn-primary" onClick={() => openCompareTool()}> Compare</button>
             <label className="switch me-2" htmlFor="checkbox4">
             <input checked={IsSelections} onChange={() => checkSelection1("SelectionsUpper") } type="checkbox" id="checkbox4" />
-                {IsSelections === true ? <div className="slider round" title='Switch to Multi Selection' ></div> : <div title='Switch to Single Selection' className="slider round"></div>}
+                {IsSelections === true ? <div className="slider round" title='Switch to Single Selection' ></div> : <div title='Switch to Multi Selection ' className="slider round"></div>}
             </label>
         </>
     )
@@ -729,7 +732,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             <button type="button" className="btn btn-primary" onClick={() => openCompareTool()}> Compare</button>
             <label className="switch me-2" htmlFor="checkbox5">
             <input checked={IsSelectionsBelow} onChange={() => checkSelection1("SelectionsBelow")} type="checkbox" id="checkbox5" />
-                {IsSelectionsBelow === true ? <div className="slider round" title='Switch to Multi Selection' ></div> : <div title='Switch to Single Selection' className="slider round"></div>}
+                {IsSelectionsBelow === true ? <div className="slider round" title='Switch to Single Selection' ></div> : <div title='Switch to  Multi Selection' className="slider round"></div>}
             </label>
         </>
     )
@@ -751,7 +754,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                     <div className="Alltable mt-10">
                     <div className="col-sm-12 p-0 smart" >
                             <div className="">
-                                <GlobalCommanTable columns={columns} wrapperHeight="240px"  showHeader={true} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} defultSelectedPortFolio={dataUpper} data={dataUpper} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={IsSelections} />
+                                <GlobalCommanTable columns={columns} wrapperHeight="240px"  showHeader={true} customHeaderButtonAvailable={true} ref={childRef} customTableHeaderButtons={customTableHeaderButtons} defultSelectedPortFolio={dataUpper} data={dataUpper} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={IsSelections} />
                             </div>
                         </div>
                         {showProject !== true &&
@@ -784,7 +787,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                        
                         <div className="col-sm-12 p-0 smart">
                             <div className="">
-                                <GlobalCommanTable columns={columns}  customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons1} showHeader={true} data={data} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={IsSelectionsBelow} />
+                                <GlobalCommanTable columns={columns}  customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons1}  ref={childRef} showHeader={true} data={data} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={IsSelectionsBelow} />
                             </div>
                         </div>
                     </div>
