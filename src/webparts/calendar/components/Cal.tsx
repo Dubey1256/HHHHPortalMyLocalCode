@@ -559,8 +559,8 @@ const App = (props: any) => {
             item.clickable = false;
           if (item.fAllDayEvent === false) {
             startdate = new Date(item.EventDate);
-            startdate.setHours(startdate.getHours() - 13);
-            startdate.setMinutes(startdate.getMinutes() - 30);
+            startdate.setHours(startdate.getHours() - 10);
+            startdate.setMinutes(startdate.getMinutes() );
             createdAt = new Date(item.Created);
             modifyAt = new Date(item.Modified);
             enddate = new Date(item.EndDate);

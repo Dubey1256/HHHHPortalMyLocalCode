@@ -348,8 +348,10 @@ function PortfolioTable(SelectedProp: any) {
         countAllTasksData=[]
         componentData=[]
         countsrun = 0;
+        
         let filter = "PercentComplete lt '0.90'";
         AllTasksMatches  = await globalCommon?.loadAllSiteTasks(ContextValue, filter)
+        setLoaded(false)
       }
      
      }

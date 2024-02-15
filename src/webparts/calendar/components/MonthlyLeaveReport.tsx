@@ -309,7 +309,7 @@ export const MonthlyLeaveReport = (props: any) => {
                 <th className='py-2 border-bottom'>Name</th>
                 <th className='py-2 border-bottom'>Planned</th>
                 <th className='py-2 border-bottom'>Unplanned</th>
-                <th className='py-2 border-bottom'>Hlaf-Day</th>
+                <th className='py-2 border-bottom'>Half-Day</th>
                 <th className='py-2 border-bottom'>TotalLeave</th>
               </tr>
             </thead>

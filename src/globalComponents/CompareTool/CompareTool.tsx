@@ -820,7 +820,7 @@ const CompareTool = (props: any) => {
     const changeData = (index: any, property: any, value: any) => {
         setHistory((prevHistory) => [...prevHistory, _.cloneDeep(data)]);
         const updatedItems = _.cloneDeep(data);
-        if (property === 'ItemRank' && value !=null)
+        if (property === 'ItemRank' && value != null)
             value = parseInt(value);
         updatedItems[index][property] = value;
         setData(updatedItems);
@@ -1974,7 +1974,7 @@ const CompareTool = (props: any) => {
     return (
         <>
             <Panel onRenderHeader={onRenderCustomHeaderMain} type={PanelType.large} isOpen={props?.isOpen} isBlocking={false}
-             className={`${data[0]?.PortfolioType?.Title == "Service" ? " serviepannelgreena" : ""}`}  onDismiss={() => props?.compareToolCallBack("close")}>
+                className={`${data[0]?.PortfolioType?.Title == "Service" ? " serviepannelgreena" : ""}`} onDismiss={() => props?.compareToolCallBack("close")}>
                 <Modal.Body className="mb-5">
                     <Container fluid className="CompareSmartpopup">
                         {data[0]?.Item_x0020_Type === "Component" || data[0]?.Item_x0020_Type === "SubComponent" || data[0]?.Item_x0020_Type === "Feature" || data[0]?.Item_x0020_Type === "Project" || data[0]?.Item_x0020_Type === "Sprint" ?
@@ -2099,7 +2099,7 @@ const CompareTool = (props: any) => {
                                                 data[0]?.subRows?.map((items: any) => (
                                                     <div className="SpfxCheckRadio alignCenter" key={items.Id}>
                                                         {items?.subRows && items?.subRows?.length > 0 ? (
-                                                            <>
+                                                            <div className="alignCenter">
                                                                 <span onClick={() => toggleExpand(items, data[0], 'subRows')}>    {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
 
                                                                 <span className="me-1">
@@ -2114,8 +2114,8 @@ const CompareTool = (props: any) => {
                                                                 </span>
                                                                 {items.isExpanded &&
                                                                     <TreeNode items={items} taggedItems={data[0]} handleRadioChange={'subRows'} />}
-                                                            </>) :
-                                                            <> <span className="me-1">
+                                                            </div>) :
+                                                            <div className="alignCenter"> <span className="me-1">
                                                                 <img className="workmember" src={items.SiteIcon} alt="Site Icon" />
                                                             </span>
                                                                 <span>{items.TaskID}</span>
@@ -2124,7 +2124,7 @@ const CompareTool = (props: any) => {
                                                                     <a target="_blank" className="mx-2" data-interception="off" href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}  >
                                                                         {items?.Title}
                                                                     </a>
-                                                                </span></>}
+                                                                </span></div>}
                                                     </div>
                                                 ))}
                                         </span>
@@ -2145,12 +2145,12 @@ const CompareTool = (props: any) => {
                                                 data[1]?.subRows?.map((items: any) => (
                                                     <div className="SpfxCheckRadio alignCenter" key={items.Id}>
                                                         {items?.subRows && items?.subRows?.length > 0 ? (
-                                                            <>
+                                                            <div className="alignCenter">
                                                                 <span onClick={() => toggleExpand(items, data[1], 'subRows')}>    {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
 
 
                                                                 <span className="me-1">
-                                                                    <img className="workmember" src={items.SiteIcon} alt="Site Icon" />
+                                                                    <img className="workmember" src={items?.SiteIcon} alt="Site Icon" />
                                                                 </span>
                                                                 <div style={{ flex: "0 0 60px" }}>{items.TaskID}</div>
                                                                 <input type="radio" checked={taggedItems?.Id === items?.Id} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
@@ -2161,8 +2161,8 @@ const CompareTool = (props: any) => {
                                                                 </span>
                                                                 {items.isExpanded &&
                                                                     <TreeNode items={items} taggedItems={data[0]} handleRadioChange={'subRows'} />}
-                                                            </>) :
-                                                            <> <span className="me-1">
+                                                            </div>) :
+                                                            <div className="alignCenter"> <span className="me-1">
                                                                 <img className="workmember" src={items.SiteIcon} alt="Site Icon" />
                                                             </span>
                                                                 <span>{items.TaskID}</span>
@@ -2171,7 +2171,7 @@ const CompareTool = (props: any) => {
                                                                     <a target="_blank" className="mx-2" data-interception="off" href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}  >
                                                                         {items?.Title}
                                                                     </a>
-                                                                </span></>}
+                                                                </span></div>}
                                                     </div>
                                                 ))}
                                         </span>
@@ -2188,10 +2188,10 @@ const CompareTool = (props: any) => {
                                     <div className="ms-3 SearchTableCategoryComponent my-1"> {
                                         data[0]?.subRows?.length > 0 && data[0]?.subRows?.map((items: any) => {
                                             return <div className="SpfxCheckRadio alignCenter">
-                                                <span className="Dyicons me-1">{items.IconTitle}</span>
+                                                <span className="Dyicons me-1">{items?.IconTitle}</span>
                                                 <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
                                                 <span> <a target="_blank" className="ms-2" data-interception="off"
-                                                    href={`${items.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items?.Id}&Site=${items?.Id}`}>
+                                                    href={`${items?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items?.Id}&Site=${items?.Id}`}>
                                                     {items?.Title}
                                                 </a></span>
                                             </div>
@@ -2209,10 +2209,10 @@ const CompareTool = (props: any) => {
                                     <div className="ms-3 SearchTableCategoryComponent my-1">{
                                         data[1]?.subRows?.length > 0 && data[1]?.subRows?.map((items: any) => {
                                             return <div className="SpfxCheckRadio alignCenter">
-                                                <span className="Dyicons me-1">{items.IconTitle}</span>
+                                                <span className="Dyicons me-1">{items?.IconTitle}</span>
                                                 <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
                                                 <span> <a target="_blank" className="mx-2" data-interception="off"
-                                                    href={`${items.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items?.Id}`}>
+                                                    href={`${items?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items?.Id}`}>
                                                     {items?.Title}
                                                 </a></span>
                                             </div>
@@ -2296,29 +2296,29 @@ const CompareTool = (props: any) => {
                                             data[0]?.taggedTasks?.length > 0 && data[0]?.taggedTasks?.map((items: any) => {
                                                 return <div className="SpfxCheckRadio alignCenter" key={items.Id}>
                                                     {items?.subRows && items?.subRows?.length > 0 ? (
-                                                        <>
+                                                        <div className="alignCenter">
                                                             <span style={{ flex: "0 0 60px" }} onClick={() => toggleExpand(items, data[0], 'taggedTasks')}>  {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
                                                             <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span>  <div style={{ flex: "0 0 60px" }}>{items.TaskID}</div>
                                                             <input type="checkbox" checked={items.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />
                                                             <span> <a target="_blank" className="mx-2" data-interception="off"
-                                                                href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
+                                                                href={`${items?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
                                                                 {items?.Title}
                                                             </a></span>
                                                             {items.isExpanded &&
                                                                 <TreeNodeTasks items={items} taggedItems={data[0]} handleRadioChange={'taggedTasks'} />}
-                                                        </>) : <>
+                                                        </div>) : <div className="alignCenter">
 
                                                         <img className="workmember me-1" src={items.SiteIcon}></img>
                                                         <div style={{ flex: "0 0 60px" }}>{items.TaskID}</div>
 
-                                                        <input type="checkbox" checked={items.checked} className="form-check-input mx-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />
+                                                        <input type="checkbox" checked={items?.checked} className="form-check-input mx-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />
 
                                                         <a target="_blank" data-interception="off"
-                                                            href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
+                                                            href={`${items?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
                                                             {items?.Title}
                                                         </a>
 
-                                                    </>}
+                                                    </div>}
                                                 </div>
                                             })
                                         }</span>
@@ -2337,27 +2337,27 @@ const CompareTool = (props: any) => {
                                             data[1]?.taggedTasks?.length > 0 && data[1]?.taggedTasks?.map((items: any) => {
                                                 return <div className="SpfxCheckRadio alignCenter" key={items.Id}>
                                                     {items?.subRows && items?.subRows?.length > 0 ? (
-                                                        <>
+                                                        <div className="alignCenter">
                                                             <span style={{ flex: "0 0 60px" }} onClick={() => toggleExpand(items, data[1], 'taggedTasks')}>   {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
                                                             <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span>  <div style={{ flex: "0 0 60px" }}>{items.TaskID}</div>
-                                                            <input type="checkbox" checked={items.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />
+                                                            <input type="checkbox" checked={items?.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />
                                                             <span> <a target="_blank" className="mx-2" data-interception="off"
-                                                                href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
+                                                                href={`${items?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
                                                                 {items?.Title}
                                                             </a></span>
                                                             {items.isExpanded &&
                                                                 <TreeNodeTasks items={items} taggedItems={data[0]} handleRadioChange={'taggedTasks'} />}
-                                                        </>) : <>
+                                                        </div>) : <div className="alignCenter">
 
                                                         <img className="workmember me-1" src={items.SiteIcon}></img>
-                                                        <div style={{ flex: "0 0 60px" }}>{items.TaskID}</div>
-                                                        <input type="checkbox" checked={items.checked} className="form-check-input mx-1 mt-0" name="radiotask" onClick={() => handleCheckboxChange(1, items, 'taggedTask')} />
+                                                        <div style={{ flex: "0 0 60px" }}>{items?.TaskID}</div>
+                                                        <input type="checkbox" checked={items?.checked} className="form-check-input mx-1 mt-0" name="radiotask" onClick={() => handleCheckboxChange(1, items, 'taggedTask')} />
                                                         <a target="_blank" data-interception="off"
-                                                            href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
+                                                            href={`${items?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
                                                             {items?.Title}
                                                         </a>
 
-                                                    </>}
+                                                    </div>}
                                                 </div>
                                             })
                                         }</span>}</div>
@@ -2482,17 +2482,17 @@ const CompareTool = (props: any) => {
                                 <div className="px-3"> {
                                     data[0]?.SiteComposition?.length > 0 && data[0]?.SiteComposition?.map((items: any) => {
                                         return <div className="bg-Ff border row mb-1 p-1">
-                                            <div className="col-sm-4"><img className="workmember ml20 me-1" src={items?.SiteImages}></img></div><div className="col-sm-4"> {items?.ClienTimeDescription &&  <span className="mx-2">
-                                                  {Number(
-                                                    items.ClienTimeDescription
-                                                  ).toFixed(1)}
-                                                  %
-                                                </span>}</div>
+                                            <div className="col-sm-4"><img className="workmember ml20 me-1" src={items?.SiteImages}></img></div><div className="col-sm-4"> {items?.ClienTimeDescription && <span className="mx-2">
+                                                {Number(
+                                                    items?.ClienTimeDescription
+                                                ).toFixed(1)}
+                                                %
+                                            </span>}</div>
                                             <div className="col-sm-4">
                                                 <span className="d-inline">
-                                                    {items.ClientCategory != undefined && items.ClientCategory.length > 0 ? items.ClientCategory?.map((clientcat: any, Index: any) => {
+                                                    {items?.ClientCategory != undefined && items?.ClientCategory?.length > 0 ? items?.ClientCategory?.map((clientcat: any, Index: any) => {
                                                         return (
-                                                            <div className={Index == items.ClientCategory?.length - 1 ? "mb-0" : "mb-0 border-bottom"}>{clientcat.Title}</div>
+                                                            <div className={Index == items?.ClientCategory?.length - 1 ? "mb-0" : "mb-0 border-bottom"}>{clientcat.Title}</div>
                                                         )
                                                     }) : null}
                                                 </span>
@@ -2518,18 +2518,18 @@ const CompareTool = (props: any) => {
                                         return <div className="bg-Ff border row mb-1 p-1">
                                             <div className="col-sm-4"><img className="workmember ml20 me-1" src={items?.SiteImages}></img> </div><div className="col-sm-4">
                                                 {items?.ClienTimeDescription && (
-                                                <span className="mx-2">
-                                                  {Number(
-                                                    items.ClienTimeDescription
-                                                  ).toFixed(1)}
-                                                  %
-                                                </span>
-                                              )}</div>
+                                                    <span className="mx-2">
+                                                        {Number(
+                                                            items?.ClienTimeDescription
+                                                        ).toFixed(1)}
+                                                        %
+                                                    </span>
+                                                )}</div>
                                             <div className="col-sm-4">
                                                 <span className="d-inline">
-                                                    {items.ClientCategory != undefined && items.ClientCategory.length > 0 ? items.ClientCategory?.map((clientcat: any, Index: any) => {
+                                                    {items?.ClientCategory != undefined && items?.ClientCategory?.length > 0 ? items?.ClientCategory?.map((clientcat: any, Index: any) => {
                                                         return (
-                                                            <div className={Index == items.ClientCategory?.length - 1 ? "mb-0" : "mb-0 border-bottom"}>{clientcat.Title}</div>
+                                                            <div className={Index == items?.ClientCategory?.length - 1 ? "mb-0" : "mb-0 border-bottom"}>{clientcat.Title}</div>
                                                         )
                                                     }) : null}
                                                 </span>
@@ -2567,7 +2567,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Categories</label>
                                     <input type="text" className="form-control" placeholder="Search Category Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'TaskCategories0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'TaskCategories', 0, AutoCompleteItemsArray)} />
 
-                                    {data[0]?.TaskCategories != undefined && data[0]?.TaskCategories.map((type: any, index: number) => {
+                                    {data[0]?.TaskCategories?.map((type: any, index: number) => {
                                         return (
                                             <div className="block w-100">
                                                 <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
@@ -2607,7 +2607,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Categories</label>
                                     <input type="text" defaultValue={data[1]?.TaskCategories} className="form-control" placeholder="Search Category Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'TaskCategories1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'TaskCategories', 1, AutoCompleteItemsArray)} />
 
-                                    {data[1]?.TaskCategories != undefined && data[1]?.TaskCategories.map((type: any, index: number) => {
+                                    {data[1]?.TaskCategories?.map((type: any, index: number) => {
                                         return (
                                             <div className="block w-100">
                                                 <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
@@ -2723,7 +2723,7 @@ const CompareTool = (props: any) => {
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Portfolio Item</label>
                                     <input type="text" defaultValue={data[1]?.TaskCategories} className="form-control" placeholder="Search Portfolio Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'PortfolioItem0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'PortfolioItem', 0, AllMasterTasksItems?.AllData)} />
-                                    {data[0]?.PortfolioItem != undefined && data[0]?.PortfolioItem.map((type: any, index: number) => {
+                                    {data[0]?.PortfolioItem != undefined && data[0]?.PortfolioItem?.map((type: any, index: number) => {
                                         return (
                                             <div className="block w-100">
                                                 <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
@@ -2763,7 +2763,7 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold full-width form-label">Portfolio Item</label>
                                     <input type="text" className="form-control" placeholder="Search Portfolio Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'PortfolioItem1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'PortfolioItem', 1, AllMasterTasksItems?.AllData)} />
 
-                                    {data[1]?.PortfolioItem != undefined && data[1]?.PortfolioItem.map((type: any, index: number) => {
+                                    {data[1]?.PortfolioItem != undefined && data[1]?.PortfolioItem?.map((type: any, index: number) => {
                                         return (
                                             <div className="block w-100">
                                                 <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
@@ -2879,7 +2879,7 @@ const CompareTool = (props: any) => {
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Project</label>
                                     <input type="text" className="form-control" placeholder="Search Project Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ProjectItem0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 0, AllMasterTasksItems?.ProjectData)} />
-                                    {data[0]?.ProjectItem != undefined && data[0]?.ProjectItem.map((type: any, index: number) => {
+                                    {data[0]?.ProjectItem != undefined && data[0]?.ProjectItem?.map((type: any, index: number) => {
                                         return (
                                             <div className="block w-100">
                                                 <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
@@ -2918,7 +2918,7 @@ const CompareTool = (props: any) => {
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Project</label>
                                     <input type="text" className="form-control" placeholder="Search Project Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ProjectItem1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 1, AllMasterTasksItems?.ProjectData)} />
-                                    {data[1]?.ProjectItem != undefined && data[1]?.ProjectItem.map((type: any, index: number) => {
+                                    {data[1]?.ProjectItem != undefined && data[1]?.ProjectItem?.map((type: any, index: number) => {
                                         return (
                                             <div className="block w-100">
                                                 <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
@@ -3042,7 +3042,7 @@ const CompareTool = (props: any) => {
                                     <Col sm="10" md="10" lg="10">
                                         <Dropdown className='full-width'
                                             id="ItemRankUpload"
-                                            options={ItemRankArray.map((rank: any) => ({ key: rank?.rank, text: rank?.rankTitle }))}
+                                            options={ItemRankArray?.map((rank: any) => ({ key: rank?.rank, text: rank?.rankTitle }))}
                                             selectedKey={data[0]?.ItemRank}
                                             onChange={(e, option) => changeData(0, 'ItemRank', option.key)}
                                             styles={{ dropdown: { width: '100%' } }}
@@ -3068,7 +3068,7 @@ const CompareTool = (props: any) => {
                                     <Col sm="10" md="10" lg="10">
                                         <Dropdown className='full-width'
                                             id="ItemRankUpload"
-                                            options={ItemRankArray.map((rank: any) => ({ key: rank?.rank, text: rank?.rankTitle }))}
+                                            options={ItemRankArray?.map((rank: any) => ({ key: rank?.rank, text: rank?.rankTitle }))}
                                             selectedKey={data[1]?.ItemRank}
                                             onChange={(e, option) => changeData(1, 'ItemRank', option.key)}
                                             styles={{ dropdown: { width: '100%' } }}
@@ -3369,7 +3369,7 @@ const CompareTool = (props: any) => {
                                         <label className="fw-semibold full-width form-label">Description
                                             <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Body", true) }}></span>
                                         </label>
-                                        <textarea rows={3} className="form-control" value={data[0]?.Body != undefined && data[0]?.Body != null ? data[0]?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}>
+                                        <textarea rows={3} className="form-control" value={data[0]?.Body != undefined && data[0]?.Body != null ? data[0]?.Body?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}>
 
                                         </textarea>
                                     </div>
@@ -3385,7 +3385,7 @@ const CompareTool = (props: any) => {
                                         <label className="fw-semibold full-width form-label">Description
                                             <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Body", true) }}></span>
                                         </label>
-                                        <textarea className="form-control" rows={3} value={data[1]?.Body != undefined && data[1]?.Body != null ? data[1]?.Body.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ') : ''}></textarea>
+                                        <textarea className="form-control" rows={3} value={data[1]?.Body != undefined && data[1]?.Body != null ? data[1]?.Body?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
                                     </div>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -3400,7 +3400,7 @@ const CompareTool = (props: any) => {
                                         <label className="fw-semibold full-width form-label">Help Information
                                             <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Help_x0020_Information", true) }}></span>
                                         </label>
-                                        <textarea className="form-control" rows={3} value={data[0]?.Help_x0020_Information != undefined && data[0]?.Help_x0020_Information != null ? data[0]?.Help_x0020_Information.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                        <textarea className="form-control" rows={3} value={data[0]?.Help_x0020_Information != undefined && data[0]?.Help_x0020_Information != null ? data[0]?.Help_x0020_Information?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
                                     </div>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="iconSec">
@@ -3414,7 +3414,7 @@ const CompareTool = (props: any) => {
                                         <label className="fw-semibold full-width form-label">Help Information
                                             <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Help_x0020_Information", true) }}></span>
                                         </label>
-                                        <textarea className="form-control" rows={3} value={data[1]?.Help_x0020_Information != undefined && data[1]?.Help_x0020_Information != null ? data[1]?.Help_x0020_Information.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                        <textarea className="form-control" rows={3} value={data[1]?.Help_x0020_Information != undefined && data[1]?.Help_x0020_Information != null ? data[1]?.Help_x0020_Information?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
 
                                     </div>
                                 </Col>
@@ -3428,7 +3428,7 @@ const CompareTool = (props: any) => {
                                         <label className="fw-semibold full-width form-label">Technical Explanations
                                             <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "TechnicalExplanations", true) }}></span>
                                         </label>
-                                        <textarea className="form-control" rows={3} value={data[0]?.TechnicalExplanations != null && data[0]?.TechnicalExplanations != undefined ? data[0]?.TechnicalExplanations.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                        <textarea className="form-control" rows={3} value={data[0]?.TechnicalExplanations != null && data[0]?.TechnicalExplanations != undefined ? data[0]?.TechnicalExplanations?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
                                     </div>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="iconSec">
@@ -3442,7 +3442,7 @@ const CompareTool = (props: any) => {
                                         <label className="fw-semibold full-width form-label">Technical Explanations
                                             <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "TechnicalExplanations", true) }}></span>
                                         </label>
-                                        <textarea className="form-control" rows={3} value={data[1]?.TechnicalExplanations != null && data[1]?.TechnicalExplanations != undefined ? data[1]?.TechnicalExplanations.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                        <textarea className="form-control" rows={3} value={data[1]?.TechnicalExplanations != null && data[1]?.TechnicalExplanations != undefined ? data[1]?.TechnicalExplanations?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
                                     </div>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -3455,7 +3455,7 @@ const CompareTool = (props: any) => {
                                         <label className="fw-semibold full-width form-label">Deliverables
                                             <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Deliverables", true) }}></span>
                                         </label>
-                                        <textarea className="form-control" rows={3} value={data[0]?.Deliverables != null && data[0]?.Deliverables != undefined ? data[0]?.Deliverables.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                        <textarea className="form-control" rows={3} value={data[0]?.Deliverables != null && data[0]?.Deliverables != undefined ? data[0]?.Deliverables?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
                                     </div>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="iconSec">
@@ -3469,7 +3469,7 @@ const CompareTool = (props: any) => {
                                         <label className="fw-semibold full-width form-label">Deliverables
                                             <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Deliverables", true) }}></span>
                                         </label>
-                                        <textarea className="form-control" rows={3} value={data[1]?.Deliverables != undefined && data[1]?.Deliverables != null ? data[1]?.Deliverables.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                        <textarea className="form-control" rows={3} value={data[1]?.Deliverables != undefined && data[1]?.Deliverables != null ? data[1]?.Deliverables?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
                                     </div>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -3482,7 +3482,7 @@ const CompareTool = (props: any) => {
                                         <label className="fw-semibold full-width form-label">Short Description
                                             <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Short_x0020_Description_x0020_On", true) }}></span>
                                         </label>
-                                        <textarea className="form-control" rows={3} value={data[0]?.Short_x0020_Description_x0020_On != null && data[0]?.Short_x0020_Description_x0020_On != undefined ? data[0]?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                        <textarea className="form-control" rows={3} value={data[0]?.Short_x0020_Description_x0020_On != null && data[0]?.Short_x0020_Description_x0020_On != undefined ? data[0]?.Short_x0020_Description_x0020_On?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
                                     </div>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="iconSec">
@@ -3496,7 +3496,7 @@ const CompareTool = (props: any) => {
                                         <label className="fw-semibold full-width form-label">Short Description
                                             <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Short_x0020_Description_x0020_On", true) }}></span>
                                         </label>
-                                        <textarea className="form-control" rows={3} value={data[1]?.Short_x0020_Description_x0020_On != undefined && data[1]?.Short_x0020_Description_x0020_On != null ? data[1]?.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                        <textarea className="form-control" rows={3} value={data[1]?.Short_x0020_Description_x0020_On != undefined && data[1]?.Short_x0020_Description_x0020_On != null ? data[1]?.Short_x0020_Description_x0020_On?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
                                     </div>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -3727,6 +3727,7 @@ const CompareTool = (props: any) => {
                 </footer>
                 {showLoader ? <PageLoader /> : ''}
             </Panel>
+          
             {
                 categories?.condition && <Picker
                     props={categories?.data}
