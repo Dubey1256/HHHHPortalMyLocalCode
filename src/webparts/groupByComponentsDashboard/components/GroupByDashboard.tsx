@@ -582,7 +582,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                                 <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.DisplayCreateDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
                                 {row?.original?.Author != undefined &&
                                     <>
-                                        <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                        <a className="alignCenter" href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
                                             target="_blank" data-interception="off">
                                             <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
                                         </a>
@@ -637,7 +637,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                     {
                         topCompoIcon ?
                             <span style={{ backgroundColor: `${portfolioColor}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
-                                <span className="svg__iconbox svg__icon--re-structure"></span>
+                                <span className="alignIcon  svg__iconbox svg__icon--re-structure"></span>
                             </span>
                             : ''
                     }
@@ -647,7 +647,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                     <>
                         {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
                             <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
-                                <span className="svg__iconbox svg__icon--re-structure"> </span>
+                                <span className="alignIcon  svg__iconbox svg__icon--re-structure"> </span>
                             </span>
                         )}
                         {/* {getValue()} */}
@@ -664,7 +664,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                     <>
                         {row?.original?.siteType === "Master Tasks" &&
                             row?.original?.Title !== "Others" && (
-                                <a className="alignCenter"
+                                <a
                                     href="#"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="auto"
@@ -672,7 +672,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                                 >
                                     {" "}
                                     <span
-                                        className="svg__iconbox svg__icon--edit"
+                                        className="alignIcon svg__iconbox svg__icon--edit"
                                         onClick={(e) => EditComponentPopup(row?.original)}
                                     ></span>
                                 </a>
