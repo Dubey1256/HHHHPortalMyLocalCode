@@ -17,7 +17,7 @@ import {
 } from '@fluentui/react';
 import { useBoolean, useId } from '@fluentui/react-hooks';
 import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';
-
+import * as globalCommon from "../globalCommon";
 const AddCommentComponent = (FbData: any) => {
     const FeedBackData = FbData.Data;
     const Context = FbData.Context;
@@ -91,8 +91,9 @@ const AddCommentComponent = (FbData: any) => {
     }
 
     const getCurrentUserDetails = async () => {
-        let currentUserId: number;
-        await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
+        let currentUserId = Context.pageContext._legacyPageContext.userId;
+        // let currentUserId: number;
+        // await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
         if (currentUserId != undefined) {
             if (FbData.allUsers != null && FbData.allUsers?.length > 0) {
                 FbData.allUsers?.map((userData: any) => {
@@ -291,7 +292,7 @@ const AddCommentComponent = (FbData: any) => {
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <span dangerouslySetInnerHTML={{ __html: commentDtl.Title }}></span>
+                                                    <span dangerouslySetInnerHTML={{ __html:globalCommon?.replaceURLsWithAnchorTags(commentDtl.Title)  }}></span>
                                                 </div>
                                                 {commentDtl.ReplyMessages != undefined && commentDtl.ReplyMessages?.length > 0 ?
                                                     <div>
@@ -314,7 +315,7 @@ const AddCommentComponent = (FbData: any) => {
                                                                             </span>
                                                                         </div>
                                                                         <div>
-                                                                            <span dangerouslySetInnerHTML={{ __html: ReplyDtl.Title }}></span>
+                                                                            <span dangerouslySetInnerHTML={{ __html: globalCommon?.replaceURLsWithAnchorTags(ReplyDtl.Title) }}></span>
                                                                         </div>
                                                                     </div>
                                                                 </div>

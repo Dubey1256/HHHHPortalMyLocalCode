@@ -2555,75 +2555,85 @@ const EditTaskPopup = (Items: any) => {
                         // When task assigned to user, send a notification on MS Teams 
 
                         if (!IsUserFromHHHHTeam && SendCategoryName !== "Bottleneck") {
-                            try {
-                                let sendUserEmails: any = [];
-                                let AssignedUserName: string = '';
-                                TaskAssignedTo?.map((userDtl: any) => {
-                                    taskUsers?.map((allUserItem: any) => {
-                                        if (userDtl.Id == allUserItem.AssingedToUserId) {
-                                            sendUserEmails.push(allUserItem.Email);
-                                            if (AssignedUserName?.length > 0) {
-                                                AssignedUserName = "Team";
-                                            } else {
-                                                AssignedUserName = allUserItem.Title;
+                            if (!IsUserFromHHHHTeam && SendCategoryName !== "Bottleneck") {
+                                try {
+                                    let sendUserEmails: any = [];
+                                    let AssignedUserName: string = '';
+                                    TaskAssignedTo?.map((userDtl: any) => {
+                                        taskUsers?.map((allUserItem: any) => {
+                                            if (userDtl.Id == allUserItem.AssingedToUserId) {
+                                                sendUserEmails.push(allUserItem.Email);
+                                                if (AssignedUserName?.length > 0) {
+                                                    AssignedUserName = "Team";
+                                                } else {
+                                                    AssignedUserName = allUserItem.Title;
+                                                }
+                                            }
+                                        });
+                                    });
+                                    let uniqueIds: any = {};
+                                    const result: any = tempShareWebTypeData.filter((item: any) => {
+                                        if (!uniqueIds[item.Id]) {
+                                            uniqueIds[item.Id] = true;
+                                            return true;
+                                        }
+                                        return false;
+                                    });
+                                    let TaskCategories = result?.map((item: any) => item.Title).join(', ');
+                                    let SendMessage: string = '';
+                                    let CommonMsg: string = '';
+                                    let checkStatusUpdate: any = Number(taskPercentageValue) * 100;
+                                    if (TeamMemberChanged) {
+                                        CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`
+                                    }
+                                    if (IsTaskStatusUpdated) {
+                                        if (checkStatusUpdate == 80) {
+                                            CommonMsg = `Below task has been set to 80%, please review it.`
+                                        }
+                                        if (checkStatusUpdate == 70) {
+                                            CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`
+                                        }
+                                    }
+
+                                    SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> </br> 
+                                    <p>
+                                    Task Link:  <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
+                                     ${UpdatedDataObject.TaskId}-${UpdatedDataObject.Title}
+                                    </a>
+                                    </br>
+                                    Task Category: ${TaskCategories}</br>
+                                    Smartpriority: <b>${UpdatedDataObject?.SmartPriority}</b></br>
+                                    </p>
+                                    <p></p>
+                                    <b>
+                                    Thanks, </br>
+                                    Task Management Team
+                                    </b>
+                                    `
+                                    let sendMSGCheck: any = IsTaskStatusUpdated
+                                    if ((checkStatusUpdate == 80 || checkStatusUpdate == 70) && IsTaskStatusUpdated) {
+                                        sendMSGCheck = true;
+                                    } else {
+                                        sendMSGCheck = false;
+                                    }
+                                    try {
+                                        if ((sendMSGCheck || TeamMemberChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
+                                            if (sendUserEmails?.length > 0) {
+                                                await globalCommon.SendTeamMessage(
+                                                    sendUserEmails,
+                                                    SendMessage,
+                                                    Items.context
+                                                );
                                             }
                                         }
-                                    });
-                                });
-                                let uniqueIds: any = {};
-                                const result: any = tempShareWebTypeData.filter((item: any) => {
-                                    if (!uniqueIds[item.Id]) {
-                                        uniqueIds[item.Id] = true;
-                                        return true;
-                                    }
-                                    return false;
-                                });
-                                let TaskCategories = result?.map((item: any) => item.Title).join(', ');
-                                let SendMessage: string = '';
-                                let CommonMsg: string = '';
-                                if (TeamMemberChanged) {
-                                    CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`
-                                }
-                                if (IsTaskStatusUpdated) {
-                                    if ((Number(taskPercentageValue) * 100) == 80) {
-                                        CommonMsg = `Below task has been set to 80%, please review it.`
-                                    }
-                                    if ((Number(taskPercentageValue) * 100) == 70) {
-                                        CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`
-                                    }
-                                }
 
-                                SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> </br> 
-                                <p>
-                                Task Link:  <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
-                                 ${UpdatedDataObject.TaskId}-${UpdatedDataObject.Title}
-                                </a>
-                                </br>
-                                Task Category: ${TaskCategories}</br>
-                                Smartpriority: <b>${UpdatedDataObject?.SmartPriority}</b></br>
-                                </p>
-                                <p></p>
-                                <b>
-                                Thanks, </br>
-                                Task Management Team
-                                </b>
-                                `
-                                try {
-                                    if ((IsTaskStatusUpdated || TeamMemberChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85)) {
-                                        if (sendUserEmails?.length > 0) {
-                                            await globalCommon.SendTeamMessage(
-                                                sendUserEmails,
-                                                SendMessage,
-                                                Items.context
-                                            );
-                                        }
+                                    } catch (error) {
+                                        console.log("Error", error.message);
                                     }
-
                                 } catch (error) {
-                                    console.log("Error", error.message);
+                                    console.log("Error", error.message)
                                 }
-                            } catch (error) {
-                                console.log("Error", error.message)
+
                             }
 
                         }
@@ -2673,10 +2683,13 @@ const EditTaskPopup = (Items: any) => {
                             TaskDetailsFromCall[0].siteUrl = siteUrls;
                             TaskDetailsFromCall[0].siteIcon = Items.Items.SiteIcon;
                         }
-                        // if(TaskDetailsFromCall[0].TaskID == null && TaskDetailsFromCall[0].TaskID ==  undefined){
-                        //     TaskDetailsFromCall[0].TaskID = 'T'+ TaskDetailsFromCall[0].Id
-                        // }
 
+                        let spaceIndex = EditData.TaskCreatorData[0]?.Title.lastIndexOf(' ');
+                        if (spaceIndex !== -1) {
+                            TaskDetailsFromCall[0].CreatorTitle = EditData.TaskCreatorData[0]?.Title.substring(0, spaceIndex);
+                        } else {
+                            console.log("No last name found");
+                        }
                         let CalculateStatusPercentages: any = TaskDetailsFromCall[0]
                             .PercentComplete
                             ? TaskDetailsFromCall[0].PercentComplete * 100
@@ -5462,29 +5475,29 @@ const EditTaskPopup = (Items: any) => {
                                                         ></span>
                                                     </span>
                                                     {SearchedServiceCompnentData?.length > 0 ? (
-                                                    <div className="SmartTableOnTaskPopup">
-                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                            {SearchedServiceCompnentData.map((Item: any) => {
-                                                                return (
-                                                                    <li
-                                                                        className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
-                                                                        key={Item.id}
-                                                                        onClick={() =>
-                                                                            setSelectedServiceAndCompnentData(
-                                                                                Item,
-                                                                                "Single"
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <a>{Item.Path}</a>
-                                                                    </li>
-                                                                );
-                                                            })}
-                                                        </ul>
-                                                    </div>
-                                                ) : null}
+                                                        <div className="SmartTableOnTaskPopup">
+                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                {SearchedServiceCompnentData.map((Item: any) => {
+                                                                    return (
+                                                                        <li
+                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                                                            key={Item.id}
+                                                                            onClick={() =>
+                                                                                setSelectedServiceAndCompnentData(
+                                                                                    Item,
+                                                                                    "Single"
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            <a>{Item.Path}</a>
+                                                                        </li>
+                                                                    );
+                                                                })}
+                                                            </ul>
+                                                        </div>
+                                                    ) : null}
                                                 </div>
-                                               
+
                                                 <div className="input-group mb-2">
                                                     <label className="form-label full-width">
                                                         Categories
@@ -6089,31 +6102,31 @@ const EditTaskPopup = (Items: any) => {
                                                             ></span>
                                                         </span>
                                                         {SearchedLinkedPortfolioData?.length > 0 ? (
-                                                        <div className="SmartTableOnTaskPopup">
-                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                {SearchedLinkedPortfolioData.map(
-                                                                    (Item: any) => {
-                                                                        return (
-                                                                            <li
-                                                                                className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
-                                                                                key={Item.id}
-                                                                                onClick={() =>
-                                                                                    setSelectedServiceAndCompnentData(
-                                                                                        Item,
-                                                                                        "Multi"
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                <a>{Item.Path}</a>
-                                                                            </li>
-                                                                        );
-                                                                    }
-                                                                )}
-                                                            </ul>
-                                                        </div>
-                                                    ) : null}
+                                                            <div className="SmartTableOnTaskPopup">
+                                                                <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                    {SearchedLinkedPortfolioData.map(
+                                                                        (Item: any) => {
+                                                                            return (
+                                                                                <li
+                                                                                    className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                                                                    key={Item.id}
+                                                                                    onClick={() =>
+                                                                                        setSelectedServiceAndCompnentData(
+                                                                                            Item,
+                                                                                            "Multi"
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    <a>{Item.Path}</a>
+                                                                                </li>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                                </ul>
+                                                            </div>
+                                                        ) : null}
                                                     </div>
-                                                    
+
                                                     {linkedPortfolioData?.length > 0 ? (
                                                         <div className="full-width">
                                                             {linkedPortfolioData?.map(
@@ -6192,26 +6205,26 @@ const EditTaskPopup = (Items: any) => {
                                                             <span className="svg__iconbox svg__icon--editBox"></span>
                                                         </span>
                                                         {SearchedProjectData?.length > 0 ? (
-                                                        <div className="SmartTableOnTaskPopup">
-                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                {SearchedProjectData.map((item: any) => {
-                                                                    return (
-                                                                        <li
-                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
-                                                                            key={item.id}
-                                                                            onClick={() =>
-                                                                                SelectProjectFromAutoSuggestion([item])
-                                                                            }
-                                                                        >
-                                                                            <a>{item?.Path}</a>
-                                                                        </li>
-                                                                    );
-                                                                })}
-                                                            </ul>
-                                                        </div>
-                                                    ) : null}
+                                                            <div className="SmartTableOnTaskPopup">
+                                                                <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                    {SearchedProjectData.map((item: any) => {
+                                                                        return (
+                                                                            <li
+                                                                                className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                                                                key={item.id}
+                                                                                onClick={() =>
+                                                                                    SelectProjectFromAutoSuggestion([item])
+                                                                                }
+                                                                            >
+                                                                                <a>{item?.Path}</a>
+                                                                            </li>
+                                                                        );
+                                                                    })}
+                                                                </ul>
+                                                            </div>
+                                                        ) : null}
                                                     </div>
-                                                   
+
 
                                                 </div>
                                             </div>
@@ -7607,33 +7620,33 @@ const EditTaskPopup = (Items: any) => {
                                                                     ></span>
                                                                 </span>
                                                                 {SearchedServiceCompnentData?.length > 0 ? (
-                                                                <div className="SmartTableOnTaskPopup">
-                                                                    <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                        {SearchedServiceCompnentData.map(
-                                                                            (Item: any) => {
-                                                                                return (
-                                                                                    <li
-                                                                                        className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
-                                                                                        key={Item.id}
-                                                                                        onClick={() =>
-                                                                                            setSelectedServiceAndCompnentData(
-                                                                                                Item,
-                                                                                                "Single"
-                                                                                            )
-                                                                                        }
-                                                                                    >
-                                                                                        <a className="siteColor">
-                                                                                            {Item.Path}
-                                                                                        </a>
-                                                                                    </li>
-                                                                                );
-                                                                            }
-                                                                        )}
-                                                                    </ul>
-                                                                </div>
-                                                            ) : null}
+                                                                    <div className="SmartTableOnTaskPopup">
+                                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                            {SearchedServiceCompnentData.map(
+                                                                                (Item: any) => {
+                                                                                    return (
+                                                                                        <li
+                                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                                                                            key={Item.id}
+                                                                                            onClick={() =>
+                                                                                                setSelectedServiceAndCompnentData(
+                                                                                                    Item,
+                                                                                                    "Single"
+                                                                                                )
+                                                                                            }
+                                                                                        >
+                                                                                            <a className="siteColor">
+                                                                                                {Item.Path}
+                                                                                            </a>
+                                                                                        </li>
+                                                                                    );
+                                                                                }
+                                                                            )}
+                                                                        </ul>
+                                                                    </div>
+                                                                ) : null}
                                                             </div>
-                                                            
+
                                                             <div className="input-group mb-2">
                                                                 <label className="form-label full-width">
                                                                     Categories
@@ -7960,30 +7973,30 @@ const EditTaskPopup = (Items: any) => {
                                                                                     <span className="svg__iconbox svg__icon--editBox mt--10"></span>
                                                                                 </span>
                                                                                 {ApproverSearchedData?.length > 0 ? (
-                                                                                <div className="SmartTableOnTaskPopup">
-                                                                                    <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                                        {ApproverSearchedData.map(
-                                                                                            (item: any) => {
-                                                                                                return (
-                                                                                                    <li
-                                                                                                        className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
-                                                                                                        key={item.id}
-                                                                                                        onClick={() =>
-                                                                                                            SelectApproverFromAutoSuggestion(
-                                                                                                                item
-                                                                                                            )
-                                                                                                        }
-                                                                                                    >
-                                                                                                        <a>{item.NewLabel}</a>
-                                                                                                    </li>
-                                                                                                );
-                                                                                            }
-                                                                                        )}
-                                                                                    </ul>
-                                                                                </div>
-                                                                            ) : null}
+                                                                                    <div className="SmartTableOnTaskPopup">
+                                                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                                            {ApproverSearchedData.map(
+                                                                                                (item: any) => {
+                                                                                                    return (
+                                                                                                        <li
+                                                                                                            className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                                                                                            key={item.id}
+                                                                                                            onClick={() =>
+                                                                                                                SelectApproverFromAutoSuggestion(
+                                                                                                                    item
+                                                                                                                )
+                                                                                                            }
+                                                                                                        >
+                                                                                                            <a>{item.NewLabel}</a>
+                                                                                                        </li>
+                                                                                                    );
+                                                                                                }
+                                                                                            )}
+                                                                                        </ul>
+                                                                                    </div>
+                                                                                ) : null}
                                                                             </div>
-                                                                            
+
 
 
                                                                         </div>
@@ -8189,31 +8202,31 @@ const EditTaskPopup = (Items: any) => {
                                                                         ></span>
                                                                     </span>
                                                                     {SearchedLinkedPortfolioData?.length > 0 ? (
-                                                                    <div className="SmartTableOnTaskPopup">
-                                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                            {SearchedLinkedPortfolioData.map(
-                                                                                (Item: any) => {
-                                                                                    return (
-                                                                                        <li
-                                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
-                                                                                            key={Item.id}
-                                                                                            onClick={() =>
-                                                                                                setSelectedServiceAndCompnentData(
-                                                                                                    Item,
-                                                                                                    "Multi"
-                                                                                                )
-                                                                                            }
-                                                                                        >
-                                                                                            <a>{Item.Path}</a>
-                                                                                        </li>
-                                                                                    );
-                                                                                }
-                                                                            )}
-                                                                        </ul>
-                                                                    </div>
-                                                                ) : null}
+                                                                        <div className="SmartTableOnTaskPopup">
+                                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                                {SearchedLinkedPortfolioData.map(
+                                                                                    (Item: any) => {
+                                                                                        return (
+                                                                                            <li
+                                                                                                className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                                                                                key={Item.id}
+                                                                                                onClick={() =>
+                                                                                                    setSelectedServiceAndCompnentData(
+                                                                                                        Item,
+                                                                                                        "Multi"
+                                                                                                    )
+                                                                                                }
+                                                                                            >
+                                                                                                <a>{Item.Path}</a>
+                                                                                            </li>
+                                                                                        );
+                                                                                    }
+                                                                                )}
+                                                                            </ul>
+                                                                        </div>
+                                                                    ) : null}
                                                                 </div>
-                                                               
+
                                                                 {linkedPortfolioData?.length > 0 ? (
                                                                     <div className="full-width">
                                                                         {linkedPortfolioData?.map(
@@ -8296,28 +8309,28 @@ const EditTaskPopup = (Items: any) => {
                                                                         <span className="svg__iconbox svg__icon--editBox"></span>
                                                                     </span>
                                                                     {SearchedProjectData?.length > 0 ? (
-                                                                    <div className="SmartTableOnTaskPopup">
-                                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                            {SearchedProjectData.map((item: any) => {
-                                                                                return (
-                                                                                    <li
-                                                                                        className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
-                                                                                        key={item.id}
-                                                                                        onClick={() =>
-                                                                                            SelectProjectFromAutoSuggestion([
-                                                                                                item,
-                                                                                            ])
-                                                                                        }
-                                                                                    >
-                                                                                        <a>{item?.Path}</a>
-                                                                                    </li>
-                                                                                );
-                                                                            })}
-                                                                        </ul>
-                                                                    </div>
-                                                                ) : null}
+                                                                        <div className="SmartTableOnTaskPopup">
+                                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                                {SearchedProjectData.map((item: any) => {
+                                                                                    return (
+                                                                                        <li
+                                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                                                                            key={item.id}
+                                                                                            onClick={() =>
+                                                                                                SelectProjectFromAutoSuggestion([
+                                                                                                    item,
+                                                                                                ])
+                                                                                            }
+                                                                                        >
+                                                                                            <a>{item?.Path}</a>
+                                                                                        </li>
+                                                                                    );
+                                                                                })}
+                                                                            </ul>
+                                                                        </div>
+                                                                    ) : null}
                                                                 </div>
-                                                               
+
 
                                                             </div>
                                                         </div>

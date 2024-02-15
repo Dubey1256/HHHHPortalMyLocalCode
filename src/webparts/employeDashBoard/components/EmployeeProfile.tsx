@@ -13,6 +13,7 @@ var currentUserData: any;
 let DashboardConfig: any = [];
 let DashboardConfigBackUp: any = [];
 let allData: any = [];
+let LoginUserTeamMembers: any = [];
 let ActiveTile = ''
 const EmployeProfile = (props: any) => {
   const params = new URLSearchParams(window.location.search);
@@ -135,12 +136,13 @@ const EmployeProfile = (props: any) => {
     }
   }
   const loadTaskUsers = async () => {
-    let taskUser;
     try {
       taskUsers = await globalCommon.loadAllTaskUsers(props?.props);
       let mailApprover: any;
       let currentUserId: any = props?.props?.Context?.pageContext?.legacyPageContext?.userId
       taskUsers?.map((item: any) => {
+        item.Tasks = [];
+        item.IsShowTask = false;
         if (item.UserGroupId == undefined) {
           getChilds(item, taskUsers);
           GroupByUsers.push(item);
@@ -204,6 +206,17 @@ const EmployeProfile = (props: any) => {
     }
     return isExists;
   }
+  const isTaskUserExist = (array: any, items: any) => {
+    let isExists = false;
+    for (let index = 0; index < array.length; index++) {
+      let item = array[index];
+      if (items?.AssingedToUserId != undefined && item?.AssingedToUserId != undefined && items?.AssingedToUserId == item?.AssingedToUserId) {
+        isExists = true;
+        break;
+      }
+    }
+    return isExists;
+  }
   const groupView = (Tasks: any) => {
     Tasks.map((item: any) => {
       Tasks.map((val: any) => {
@@ -225,19 +238,61 @@ const EmployeProfile = (props: any) => {
       if (config?.Tasks == undefined)
         config.Tasks = [];
       if (config?.DataSource == 'Tasks') {
-        if (config?.smartFevId != undefined && config?.smartFevId != '' && config?.isShowEveryone === false && currentUserData.AssingedToUser.Id == config?.CurrentUserID) {
-          config.LoadDefaultFilter = false;
-          FilterDataOnCheck(config);
+        if (config?.selectFilterType != 'custom') {
+          if (config?.smartFevId != undefined && config?.smartFevId != '' && config?.isShowEveryone === false && currentUserData.AssingedToUser.Id == config?.CurrentUserID) {
+            config.LoadDefaultFilter = false;
+            FilterDataOnCheck(config);
+          }
+          else if (config?.smartFevId != undefined && config?.smartFevId != '' && config?.isShowEveryone === true) {
+            config.LoadDefaultFilter = false;
+            FilterDataOnCheck(config);
+          }
         }
-        else if (config?.smartFevId != undefined && config?.smartFevId != '' && config?.isShowEveryone === true) {
+        else if (config?.selectFilterType == 'custom') {
           config.LoadDefaultFilter = false;
-          FilterDataOnCheck(config);
+          if (Array.isArray(array) && array.length > 0) {
+            array.filter(item => item?.PercentComplete == config?.Status && Array.isArray(item[config['selectUserFilterType']])).forEach(task => {
+              if (task[config['selectUserFilterType']].some((AssignUser: any) => AssignUser.Id === currentUserData?.AssingedToUser?.Id)) {
+                config.Tasks.push(task);
+              }
+            });
+          }
         }
       }
       else if (config?.DataSource == 'TaskUsers') {
-        config.LoadDefaultFilter = false;
-        config.Tasks = GroupByUsers.filter((User: any) => User?.Id == config?.smartFevId);
-
+        if (config?.selectFilterType != 'custom') {
+          config.LoadDefaultFilter = false;
+          config.Tasks = GroupByUsers.filter((User: any) => User?.Id == config?.smartFevId);
+        }
+        else if (config?.selectFilterType == 'custom') {
+          config.LoadDefaultFilter = false;
+          taskUsers?.map((item: any) => {
+            if (item[config['Status']] != undefined && Array.isArray(item[config['Status']]) && item[config['Status']]?.length > 0) {
+              item[config['Status']].forEach((teamMember: any) => {
+                if (teamMember?.Id === props?.props?.Context?.pageContext?.legacyPageContext?.userId && !isTaskUserExist(LoginUserTeamMembers, item))
+                  LoginUserTeamMembers.push(item)
+              })
+            }
+            else if (item[config['Status']] != undefined && typeof item[config['Status']] === 'object' && item[config['Status']] !== null) {
+              if ((item[config['Status']]?.Id == props?.props?.Context?.pageContext?.legacyPageContext?.userId || item[config['Status']]?.Id == currentUserData?.Id) && !isTaskUserExist(LoginUserTeamMembers, item))
+                LoginUserTeamMembers.push(item)
+            }
+          })
+          config.Tasks = LoginUserTeamMembers;
+          if (config?.Tasks != undefined && config?.Tasks?.length > 0) {
+            config?.Tasks.map((User: any) => {
+              array.map((Task: any) => {
+                if (Task?.AssignedTo != undefined && Task?.AssignedTo?.length > 0) {
+                  Task?.AssignedTo?.forEach((assign: any) => {
+                    if (assign.Id != undefined && User.AssingedToUserId != undefined && assign.Id === User.AssingedToUserId && Task.IsTodaysTask === true && !isTaskItemExists(User?.Tasks, Task)) {
+                      User.Tasks.push(Task);
+                    }
+                  })
+                }
+              })
+            })
+          }
+        }
       }
     })
     array?.forEach((items: any) => {
