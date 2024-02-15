@@ -24,7 +24,8 @@ import Smartmetadatapickerin from "../../globalComponents/Smartmetadatapickerind
 import { Item } from "@pnp/sp/items";
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 import EditInstituton from "../../webparts/EditPopupFiles/EditComponent";
-import EditProjectPopup from "../EditProjectPopup"; 
+import EditProjectPopup from "../EditProjectPopup";
+import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 let renderData: any = [];
 let AutoCompleteItemsArray: any = [];
 let catItem: any = {};
@@ -50,7 +51,7 @@ const CompareTool = (props: any) => {
     const [floraData, setFoloraData] = useState<any>('');
     const [autoSearch, setautoSearch] = useState<any>('');
     const [taggedItems, setTaggedItems] = useState<any>({});
-    const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]); 
+    const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
     const [PortFolioType, setPortfolioTypeData] = React.useState([]);
     const [categorySearchKey, setCategorySearchKey] = React.useState<any>({});
     const [AllMasterTasksItems, setAllMasterTasksItems] = React.useState<any>({});
@@ -60,7 +61,7 @@ const CompareTool = (props: any) => {
     const [Smartdatapopup, setSmartdatapopup] = React.useState(false);
     const rerender = React.useReducer(() => ({}), {})[1]
     const [isExpanded, setIsExpanded] = useState(false);
-
+    const [SiteCompositionShow, setSiteCompositionShow] = React.useState(false);
 
     const [ItemRankArray, setItemRankArray]: any = useState([
         { rankTitle: 'Select Item Rank', rank: null },
@@ -591,8 +592,36 @@ const CompareTool = (props: any) => {
                 if (datas?.length > 0) {
                     datas[0].Comments = globalCommon.parseJSON(datas[0]?.Comments);
                     datas[0].Comments = datas[0].Comments == undefined ? [] : datas[0].Comments;
-                    datas[0].SiteComposition = globalCommon.parseJSON(datas[0]?.Sitestagging);
-                    datas[0].SiteComposition = datas[0].SiteComposition == undefined ? [] : datas[0].SiteComposition;
+                    datas[0].ClientCategory = datas[0]?.ClientCategory === undefined ? [] : datas[0]?.ClientCategory;
+                    let SiteCompositionTemp: any = [];
+                    SiteCompositionTemp = globalCommon.parseJSON(datas[0]?.Sitestagging);
+                    //  datas[0].SiteComposition = datas[0].SiteComposition == undefined ? [] : datas[0].SiteComposition;
+
+
+                    if (datas[0].ClientCategory?.length > 0) {
+                        let TempCCItems: any = [];
+                        SmartMetaDataAllItems?.ClientCategory?.map((AllCCItem: any) => {
+                            datas[0]?.ClientCategory?.map((SelectedCCItem: any) => {
+                                if (SelectedCCItem?.Id == AllCCItem?.Id) {
+                                    TempCCItems.push(AllCCItem);
+                                }
+                            })
+                        })
+                        if (TempCCItems?.length > 0) {
+                            SiteCompositionTemp?.map((TaggedSC: any) => {
+                                TempCCItems?.map((TaggedCC: any) => {
+                                    if (TaggedSC.Title == TaggedCC.siteName) {
+                                        if (TaggedSC?.ClientCategory?.length > 0) {
+                                            TaggedSC.ClientCategory?.push(TaggedCC)
+                                        } else {
+                                            TaggedSC.ClientCategory = [TaggedCC]
+                                        }
+                                    }
+                                })
+                            })
+                        }
+                    }
+                    datas[0].SiteComposition = SiteCompositionTemp;
                     datas[0].Synonyms = globalCommon.parseJSON(datas[0]?.Synonyms);
                     datas[0].AssignToUsers = [];
                     datas[0].TeamMembersUsers = [];
@@ -606,7 +635,7 @@ const CompareTool = (props: any) => {
                     //datas[0]["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
                     datas[0].TaskTimeSheetCategoriesGrouping = JSON.parse(JSON.stringify(SmartMetaDataAllItems?.TimeSheetCategory));
                     datas[0].TaskCategories = datas[0]?.TaskCategories === undefined ? [] : datas[0]?.TaskCategories;
-                    datas[0].ClientCategory = datas[0]?.ClientCategory === undefined ? [] : datas[0]?.ClientCategory;
+
                     datas[0].PortfolioItem = [];
                     datas[0].ProjectItem = [];
                     datas[0]?.Portfolios?.forEach((obj: any) => {
@@ -751,14 +780,14 @@ const CompareTool = (props: any) => {
         }
     }, [AllMasterTasksItems])
 
- useEffect(() => {
-        let columns ="Id,Title,Color,IdRange";
-        let PortFolioType:any =[];
-         globalCommon.getData(props?.contextValue?.siteUrl,props?.contextValue?.PortFolioTypeID,columns)
-         .then(async (datas: any) => {
-            setPortfolioTypeData(datas);
-           })
-      
+    useEffect(() => {
+        let columns = "Id,Title,Color,IdRange";
+        let PortFolioType: any = [];
+        globalCommon.getData(props?.contextValue?.siteUrl, props?.contextValue?.PortFolioTypeID, columns)
+            .then(async (datas: any) => {
+                setPortfolioTypeData(datas);
+            })
+
     }, [])
 
     useEffect(() => {
@@ -1732,7 +1761,7 @@ const CompareTool = (props: any) => {
             else {
                 postData.Synonyms = null;
             }
-           
+
             globalCommon.updateItemById(props?.contextValue?.siteUrl, Item.listId, postData, Item.Id)
                 .then((returnresult) => {
                     console.log(returnresult);
@@ -1760,7 +1789,7 @@ const CompareTool = (props: any) => {
             if (Item?.ItemType?.Id != undefined)
                 TaskPost(Item, type);
             else componentPost(Item, type);
-               
+
 
         } catch (error) {
             // Handle the error, you can log it or perform any other actions
@@ -1851,6 +1880,18 @@ const CompareTool = (props: any) => {
 
         setData(updatedItems);
     };
+    const onClickSiteComposition = (item: any) => {
+        catItem = item;
+        setSiteCompositionShow(true);
+    }
+    const ClosePopupCallBack = (FnType: any) => {
+        if (FnType = "Close") {
+            setSiteCompositionShow(false);
+        }
+        if (FnType = "Save") {
+            setSiteCompositionShow(false);
+        }
+    }
     const TreeNode: React.FC<any> = ({ items, taggedItems, handleRadioChange }) => (
         <>
             {items?.subRows?.length > 0 &&
@@ -1932,7 +1973,7 @@ const CompareTool = (props: any) => {
 
     return (
         <>
-            <Panel onRenderHeader={onRenderCustomHeaderMain} type={PanelType.large} isOpen={props?.isOpen} isBlocking={false} onDismiss={() => props?.compareToolCallBack("close")}>
+            <Panel onRenderHeader={onRenderCustomHeaderMain} type={PanelType.large} isOpen={props?.isOpen} isBlocking={false} style={color = data[0]?.PortfolioType?.Color} onDismiss={() => props?.compareToolCallBack("close")}>
                 <Modal.Body className="mb-5">
                     <Container fluid className="CompareSmartpopup">
                         {data[0]?.Item_x0020_Type === "Component" || data[0]?.Item_x0020_Type === "SubComponent" || data[0]?.Item_x0020_Type === "Feature" || data[0]?.Item_x0020_Type === "Project" || data[0]?.Item_x0020_Type === "Sprint" ?
@@ -1961,7 +2002,7 @@ const CompareTool = (props: any) => {
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="iconSec">
                                     <div className="text-center">
-                                    <LuUndo2 size="25" onClick={undoChanges} />
+                                        <LuUndo2 size="25" onClick={undoChanges} />
                                     </div>
                                 </Col>
                             </Row>) :
@@ -2046,25 +2087,141 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('Title')} />
                             </Col>
                         </Row>
-                        {/* <Row className="Metadatapannel ">
-                            <Col sm="5" md="5" lg="5">
-                                <label className="fw-semibold form-label">Shareweb Feedback Linked Component</label>
-                                <span className="ms-3">{ }</span>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" /></div>
-                                    <div><FaRightLong size="16" /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5">
-                                <label className="fw-semibold form-label">Shareweb Feedback Linked Component</label>
-                                <span className="ms-3">{ }</span>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <LuUndo2 size="25" />
-                            </Col>
-                        </Row> */}
+                        {data[0]?.TaskType?.Id != undefined ?
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <label className="fw-semibold form-label">Child Items</label>
+
+                                    <div className="ms-3 SearchTableCategoryComponent my-1">
+                                        <span className="ms-3">
+                                            {data[0]?.subRows?.length > 0 &&
+                                                data[0]?.subRows?.map((items: any) => (
+                                                    <div className="SpfxCheckRadio alignCenter" key={items.Id}>
+                                                        {items?.subRows && items?.subRows?.length > 0 ? (
+                                                            <>
+                                                                <span onClick={() => toggleExpand(items, data[0], 'subRows')}>    {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
+
+                                                                <span className="me-1">
+                                                                    <img className="workmember" src={items.SiteIcon} alt="Site Icon" />
+                                                                </span>
+                                                                <div style={{ flex: "0 0 60px" }}>{items.TaskID}</div>
+                                                                <input type="radio" checked={taggedItems?.Id === items?.Id} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
+                                                                <span>
+                                                                    <a target="_blank" className="mx-2" data-interception="off" href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}  >
+                                                                        {items?.Title}
+                                                                    </a>
+                                                                </span>
+                                                                {items.isExpanded &&
+                                                                    <TreeNode items={items} taggedItems={data[0]} handleRadioChange={'subRows'} />}
+                                                            </>) :
+                                                            <> <span className="me-1">
+                                                                <img className="workmember" src={items.SiteIcon} alt="Site Icon" />
+                                                            </span>
+                                                                <span>{items.TaskID}</span>
+                                                                <input type="radio" checked={taggedItems?.Id === items?.Id} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
+                                                                <span>
+                                                                    <a target="_blank" className="mx-2" data-interception="off" href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}  >
+                                                                        {items?.Title}
+                                                                    </a>
+                                                                </span></>}
+                                                    </div>
+                                                ))}
+                                        </span>
+
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="iconSec">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'subRows', data[1]?.subRows)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'subRows', data[0]?.subRows)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <label className="fw-semibold form-label">Child Items</label>
+                                    <div className="ms-3 my-1 SearchTableCategoryComponent">
+                                        <span className="ms-3">
+                                            {data[1]?.subRows?.length > 0 &&
+                                                data[1]?.subRows?.map((items: any) => (
+                                                    <div className="SpfxCheckRadio alignCenter" key={items.Id}>
+                                                        {items?.subRows && items?.subRows?.length > 0 ? (
+                                                            <>
+                                                                <span onClick={() => toggleExpand(items, data[1], 'subRows')}>    {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
+
+
+                                                                <span className="me-1">
+                                                                    <img className="workmember" src={items.SiteIcon} alt="Site Icon" />
+                                                                </span>
+                                                                <div style={{ flex: "0 0 60px" }}>{items.TaskID}</div>
+                                                                <input type="radio" checked={taggedItems?.Id === items?.Id} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
+                                                                <span>
+                                                                    <a target="_blank" className="mx-2" data-interception="off" href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}  >
+                                                                        {items?.Title}
+                                                                    </a>
+                                                                </span>
+                                                                {items.isExpanded &&
+                                                                    <TreeNode items={items} taggedItems={data[0]} handleRadioChange={'subRows'} />}
+                                                            </>) :
+                                                            <> <span className="me-1">
+                                                                <img className="workmember" src={items.SiteIcon} alt="Site Icon" />
+                                                            </span>
+                                                                <span>{items.TaskID}</span>
+                                                                <input type="radio" checked={taggedItems?.Id === items?.Id} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
+                                                                <span>
+                                                                    <a target="_blank" className="mx-2" data-interception="off" href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}  >
+                                                                        {items?.Title}
+                                                                    </a>
+                                                                </span></>}
+                                                    </div>
+                                                ))}
+                                        </span>
+                                    </div>
+
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('subRows')} />
+                                </Col>
+                            </Row> :
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <label className="fw-semibold form-label">Child Items</label>
+                                    <div className="ms-3 SearchTableCategoryComponent my-1"> {
+                                        data[0]?.subRows?.length > 0 && data[0]?.subRows?.map((items: any) => {
+                                            return <div className="SpfxCheckRadio alignCenter">
+                                                <span className="Dyicons me-1">{items.IconTitle}</span>
+                                                <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
+                                                <span> <a target="_blank" className="ms-2" data-interception="off"
+                                                    href={`${items.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items?.Id}&Site=${items?.Id}`}>
+                                                    {items?.Title}
+                                                </a></span>
+                                            </div>
+                                        })
+                                    }</div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="iconSec">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'subRows', data[1]?.subRows)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'subRows', data[0]?.subRows)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <label className="fw-semibold form-label">Child Items</label>
+                                    <div className="ms-3 SearchTableCategoryComponent my-1">{
+                                        data[1]?.subRows?.length > 0 && data[1]?.subRows?.map((items: any) => {
+                                            return <div className="SpfxCheckRadio alignCenter">
+                                                <span className="Dyicons me-1">{items.IconTitle}</span>
+                                                <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
+                                                <span> <a target="_blank" className="mx-2" data-interception="off"
+                                                    href={`${items.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items?.Id}`}>
+                                                    {items?.Title}
+                                                </a></span>
+                                            </div>
+                                        })
+                                    }</div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('subRows')} />
+                                </Col>
+                            </Row>}
                         <Row className="Metadatapannel ">
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <label className="fw-semibold form-label me-2">Tagged Documents</label>
@@ -2315,141 +2472,75 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('ResponsibileUsers')} />
                             </Col>
                         </Row>}
-                        {data[0]?.TaskType?.Id != undefined ?
-                            <Row className="Metadatapannel">
-                                <Col sm="5" md="5" lg="5" className="contentSec">
-                                    <label className="fw-semibold form-label">Child Items</label>
-
-                                    <div className="ms-3 SearchTableCategoryComponent my-1">
-                                        <span className="ms-3">
-                                            {data[0]?.subRows?.length > 0 &&
-                                                data[0]?.subRows?.map((items: any) => (
-                                                    <div className="SpfxCheckRadio alignCenter" key={items.Id}>
-                                                        {items?.subRows && items?.subRows?.length > 0 ? (
-                                                            <>
-                                                                <span onClick={() => toggleExpand(items, data[0], 'subRows')}>    {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
-
-                                                                <span className="me-1">
-                                                                    <img className="workmember" src={items.SiteIcon} alt="Site Icon" />
-                                                                </span>
-                                                                <div style={{ flex: "0 0 60px" }}>{items.TaskID}</div>
-                                                                <input type="radio" checked={taggedItems?.Id === items?.Id} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
-                                                                <span>
-                                                                    <a target="_blank" className="mx-2" data-interception="off" href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}  >
-                                                                        {items?.Title}
-                                                                    </a>
-                                                                </span>
-                                                                {items.isExpanded &&
-                                                                    <TreeNode items={items} taggedItems={data[0]} handleRadioChange={'subRows'} />}
-                                                            </>) :
-                                                            <> <span className="me-1">
-                                                                <img className="workmember" src={items.SiteIcon} alt="Site Icon" />
-                                                            </span>
-                                                                <span>{items.TaskID}</span>
-                                                                <input type="radio" checked={taggedItems?.Id === items?.Id} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
-                                                                <span>
-                                                                    <a target="_blank" className="mx-2" data-interception="off" href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}  >
-                                                                        {items?.Title}
-                                                                    </a>
-                                                                </span></>}
-                                                    </div>
-                                                ))}
-                                        </span>
-
-                                    </div>
-                                </Col>
-                                <Col sm="1" md="1" lg="1" className="iconSec">
-                                    <div className="text-center">
-                                        <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'subRows', data[1]?.subRows)} /></div>
-                                        <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'subRows', data[0]?.subRows)} /></div>
-                                    </div>
-                                </Col>
-                                <Col sm="5" md="5" lg="5" className="contentSec">
-                                    <label className="fw-semibold form-label">Child Items</label>
-                                    <div className="ms-3 my-1 SearchTableCategoryComponent">
-                                        <span className="ms-3">
-                                            {data[1]?.subRows?.length > 0 &&
-                                                data[1]?.subRows?.map((items: any) => (
-                                                    <div className="SpfxCheckRadio alignCenter" key={items.Id}>
-                                                        {items?.subRows && items?.subRows?.length > 0 ? (
-                                                            <>
-                                                                <span onClick={() => toggleExpand(items, data[1], 'subRows')}>    {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
-
-
-                                                                <span className="me-1">
-                                                                    <img className="workmember" src={items.SiteIcon} alt="Site Icon" />
-                                                                </span>
-                                                                <div style={{ flex: "0 0 60px" }}>{items.TaskID}</div>
-                                                                <input type="radio" checked={taggedItems?.Id === items?.Id} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
-                                                                <span>
-                                                                    <a target="_blank" className="mx-2" data-interception="off" href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}  >
-                                                                        {items?.Title}
-                                                                    </a>
-                                                                </span>
-                                                                {items.isExpanded &&
-                                                                    <TreeNode items={items} taggedItems={data[0]} handleRadioChange={'subRows'} />}
-                                                            </>) :
-                                                            <> <span className="me-1">
-                                                                <img className="workmember" src={items.SiteIcon} alt="Site Icon" />
-                                                            </span>
-                                                                <span>{items.TaskID}</span>
-                                                                <input type="radio" checked={taggedItems?.Id === items?.Id} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
-                                                                <span>
-                                                                    <a target="_blank" className="mx-2" data-interception="off" href={`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}  >
-                                                                        {items?.Title}
-                                                                    </a>
-                                                                </span></>}
-                                                    </div>
-                                                ))}
-                                        </span>
-                                    </div>
-
-                                </Col>
-                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('subRows')} />
-                                </Col>
-                            </Row> :
-                            <Row className="Metadatapannel">
-                                <Col sm="5" md="5" lg="5" className="contentSec">
-                                    <label className="fw-semibold form-label">Child Items</label>
-                                    <div className="ms-3 SearchTableCategoryComponent my-1"> {
-                                        data[0]?.subRows?.length > 0 && data[0]?.subRows?.map((items: any) => {
-                                            return <div className="SpfxCheckRadio alignCenter">
-                                                <span className="Dyicons me-1">{items.IconTitle}</span>
-                                                <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
-                                                <span> <a target="_blank" className="ms-2" data-interception="off"
-                                                    href={`${items.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items?.Id}&Site=${items?.Id}`}>
-                                                    {items?.Title}
-                                                </a></span>
+                        <Row className="Metadatapannel">
+                            <Col sm="5" md="5" lg="5" className="contentSec">
+                                <label className="fw-semibold form-label">Site Composition <span className="svg__iconbox svg__icon--editBox hreflink"
+                                    title="Edit Site Composition"
+                                    onClick={() => onClickSiteComposition(data[0])}
+                                ></span></label>
+                                <div className="px-3"> {
+                                    data[0]?.SiteComposition?.length > 0 && data[0]?.SiteComposition?.map((items: any) => {
+                                        return <div className="bg-Ff border row mb-1 p-1">
+                                            <div className="col-sm-4"><img className="workmember ml20 me-1" src={items?.SiteImages}></img></div><div className="col-sm-4"> {items?.ClienTimeDescription &&  <span className="mx-2">
+                                                  {Number(
+                                                    items.ClienTimeDescription
+                                                  ).toFixed(1)}
+                                                  %
+                                                </span>}</div>
+                                            <div className="col-sm-4">
+                                                <span className="d-inline">
+                                                    {items.ClientCategory != undefined && items.ClientCategory.length > 0 ? items.ClientCategory?.map((clientcat: any, Index: any) => {
+                                                        return (
+                                                            <div className={Index == items.ClientCategory?.length - 1 ? "mb-0" : "mb-0 border-bottom"}>{clientcat.Title}</div>
+                                                        )
+                                                    }) : null}
+                                                </span>
                                             </div>
-                                        })
-                                    }</div>
-                                </Col>
-                                <Col sm="1" md="1" lg="1" className="iconSec">
-                                    <div className="text-center">
-                                        <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'subRows', data[1]?.subRows)} /></div>
-                                        <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'subRows', data[0]?.subRows)} /></div>
-                                    </div>
-                                </Col>
-                                <Col sm="5" md="5" lg="5" className="contentSec">
-                                    <label className="fw-semibold form-label">Child Items</label>
-                                    <div className="ms-3 SearchTableCategoryComponent my-1">{
-                                        data[1]?.subRows?.length > 0 && data[1]?.subRows?.map((items: any) => {
-                                            return <div className="SpfxCheckRadio alignCenter">
-                                                <span className="Dyicons me-1">{items.IconTitle}</span>
-                                                <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
-                                                <span> <a target="_blank" className="mx-2" data-interception="off"
-                                                    href={`${items.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items?.Id}`}>
-                                                    {items?.Title}
-                                                </a></span>
+                                        </div>
+                                    })
+                                }</div>
+                            </Col>
+                            <Col sm="1" md="1" lg="1" className="iconSec">
+                                <div className="text-center">
+                                    {/* <div><FaLeftLong size="16" onClick={() => changeData(0, 'SiteComposition', data[1]?.SiteComposition)} /></div>
+                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'SiteComposition', data[0]?.SiteComposition)} /></div> */}
+                                </div>
+                            </Col>
+
+                            <Col sm="5" md="5" lg="5" className="contentSec">
+                                <label className="fw-semibold form-label">Site Composition <span className="svg__iconbox svg__icon--editBox hreflink"
+                                    title="Edit Site Composition"
+                                    onClick={() => onClickSiteComposition(data[1])}
+                                ></span></label>
+                                <div className="px-3"> {
+                                    data[1]?.SiteComposition?.length > 0 && data[1]?.SiteComposition?.map((items: any) => {
+                                        return <div className="bg-Ff border row mb-1 p-1">
+                                            <div className="col-sm-4"><img className="workmember ml20 me-1" src={items?.SiteImages}></img> </div><div className="col-sm-4">
+                                                {items?.ClienTimeDescription && (
+                                                <span className="mx-2">
+                                                  {Number(
+                                                    items.ClienTimeDescription
+                                                  ).toFixed(1)}
+                                                  %
+                                                </span>
+                                              )}</div>
+                                            <div className="col-sm-4">
+                                                <span className="d-inline">
+                                                    {items.ClientCategory != undefined && items.ClientCategory.length > 0 ? items.ClientCategory?.map((clientcat: any, Index: any) => {
+                                                        return (
+                                                            <div className={Index == items.ClientCategory?.length - 1 ? "mb-0" : "mb-0 border-bottom"}>{clientcat.Title}</div>
+                                                        )
+                                                    }) : null}
+                                                </span>
                                             </div>
-                                        })
-                                    }</div>
-                                </Col>
-                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('subRows')} />
-                                </Col>
-                            </Row>}
+                                        </div>
+                                    })
+                                }</div>
+                            </Col>
+                            <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                <LuUndo2 size="25" onClick={() => undoChangescolumns('SiteComposition')} />
+                            </Col>
+                        </Row>
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="sit-preview contentSec">
                                 <label className="fw-semibold form-label">Image</label>
@@ -2489,20 +2580,20 @@ const CompareTool = (props: any) => {
                                         <span title="Edit Categories" onClick={() => openCategoryPicker(data[0], true, data[0]?.TaskCategories)} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
                                     {autoSearch?.itemIndex === 0 && autoSearch?.property === 'TaskCategories' && SearchedCategoryData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
-                                        <ul className="list-group hreflink scrollbar maXh-200">
-                                            {SearchedCategoryData.map((item: any) => {
-                                                return (
-                                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                        <a>{item.Newlabel}</a>
-                                                    </li>
-                                                )
-                                            }
-                                            )}
-                                        </ul>
-                                    </div>) : null}
+                                        <div className="SmartTableOnTaskPopup">
+                                            <ul className="list-group hreflink scrollbar maXh-200">
+                                                {SearchedCategoryData.map((item: any) => {
+                                                    return (
+                                                        <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                            <a>{item.Newlabel}</a>
+                                                        </li>
+                                                    )
+                                                }
+                                                )}
+                                            </ul>
+                                        </div>) : null}
                                 </div>
-                                
+
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
                                 <div className="text-center">
@@ -2529,26 +2620,26 @@ const CompareTool = (props: any) => {
                                         <span title="Edit Categories" onClick={() => openCategoryPicker(data[1], true, data[1]?.TaskCategories)} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
                                     {autoSearch?.itemIndex === 1 && autoSearch?.property === 'TaskCategories' && SearchedCategoryData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
-                                        <ul className="list-group hreflink scrollbar maXh-200">
-                                            {SearchedCategoryData.map((item: any) => {
-                                                return (
-                                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                        <a>{item.Newlabel}</a>
-                                                    </li>
-                                                )
-                                            }
-                                            )}
-                                        </ul>
-                                    </div>) : null}
+                                        <div className="SmartTableOnTaskPopup">
+                                            <ul className="list-group hreflink scrollbar maXh-200">
+                                                {SearchedCategoryData.map((item: any) => {
+                                                    return (
+                                                        <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                            <a>{item.Newlabel}</a>
+                                                        </li>
+                                                    )
+                                                }
+                                                )}
+                                            </ul>
+                                        </div>) : null}
                                 </div>
-                                
+
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('TaskCategories')} />
                             </Col>
                         </Row>
-                        <Row className="Metadatapannel">
+                        {/* <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Client Categories</label>
@@ -2566,21 +2657,21 @@ const CompareTool = (props: any) => {
                                     <span className="input-group-text">
                                         <span title="Edit Categories" onClick={() => EditClientCategory(data[0], true, 'ClientCategory')} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'ClientCategory' && SmartMetaDataAllItems?.ClientCategory?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
-                                        <ul className="list-group hreflink scrollbar maXh-200">
-                                            {SmartMetaDataAllItems?.ClientCategory.map((item: any) => {
-                                                return (
-                                                    <li className="hreflink list-group-item p-1 rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                        <a>{item.newTitle}</a>
-                                                    </li>
-                                                )
-                                            }
-                                            )}
-                                        </ul>
-                                    </div>) : null}
+                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'ClientCategory' && SearchedCategoryData?.length > 0 ? (
+                                        <div className="SmartTableOnTaskPopup">
+                                            <ul className="list-group hreflink scrollbar maXh-200">
+                                                {SearchedCategoryData?.map((item: any) => {
+                                                    return (
+                                                        <li className="hreflink list-group-item p-1 rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                            <a>{item.newTitle}</a>
+                                                        </li>
+                                                    )
+                                                }
+                                                )}
+                                            </ul>
+                                        </div>) : null}
                                 </div>
-                                
+
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
                                 <div className="text-center">
@@ -2606,26 +2697,26 @@ const CompareTool = (props: any) => {
                                     <span className="input-group-text">
                                         <span title="Edit Categories" onClick={() => EditClientCategory(data[1], true, 'ClientCategory')} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                    {autoSearch?.itemIndex === 1 && autoSearch?.property === 'ClientCategory' && SmartMetaDataAllItems?.ClientCategory?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
-                                        <ul className="list-group hreflink scrollbar maXh-200">
-                                            {SmartMetaDataAllItems?.ClientCategory?.map((item: any) => {
-                                                return (
-                                                    <li className="hreflink list-group-item p-1 rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                        <a>{item.newTitle}</a>
-                                                    </li>
-                                                )
-                                            }
-                                            )}
-                                        </ul>
-                                    </div>) : null}
+                                    {autoSearch?.itemIndex === 1 && autoSearch?.property === 'ClientCategory' && SearchedCategoryData?.length > 0 ? (
+                                        <div className="SmartTableOnTaskPopup">
+                                            <ul className="list-group hreflink scrollbar maXh-200">
+                                                {SearchedCategoryData?.map((item: any) => {
+                                                    return (
+                                                        <li className="hreflink list-group-item p-1 rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                            <a>{item.newTitle}</a>
+                                                        </li>
+                                                    )
+                                                }
+                                                )}
+                                            </ul>
+                                        </div>) : null}
                                 </div>
-                               
+
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('ClientCategory')} />
                             </Col>
-                        </Row>
+                        </Row> */}
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
@@ -2644,21 +2735,21 @@ const CompareTool = (props: any) => {
                                     <span className="input-group-text">
                                         <span title="Edit Categories" onClick={() => OpenComponentPicker(data[0], true, 'PortfolioItem')} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'PortfolioItem' && AllMasterTasksItems?.ProjectData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
-                                        <ul className="list-group hreflink scrollbar maXh-200">
-                                            {AllMasterTasksItems?.ProjectData.map((item: any) => {
-                                                return (
-                                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                        <a>{item.Newlabel || item.Path}</a>
-                                                    </li>
-                                                )
-                                            }
-                                            )}
-                                        </ul>
-                                    </div>) : null}
+                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'PortfolioItem' && SearchedCategoryData?.length > 0 ? (
+                                        <div className="SmartTableOnTaskPopup">
+                                            <ul className="list-group hreflink scrollbar maXh-200">
+                                                {SearchedCategoryData?.map((item: any) => {
+                                                    return (
+                                                        <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                            <a>{item.Newlabel || item.Path}</a>
+                                                        </li>
+                                                    )
+                                                }
+                                                )}
+                                            </ul>
+                                        </div>) : null}
                                 </div>
-                                
+
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
                                 <div className="text-center">
@@ -2684,21 +2775,21 @@ const CompareTool = (props: any) => {
                                     <span className="input-group-text">
                                         <span title="Edit Categories" onClick={() => OpenComponentPicker(data[1], true, 'PortfolioItem')} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                    {autoSearch?.itemIndex === 1 && autoSearch?.property === 'PortfolioItem' && AllMasterTasksItems?.AllData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
-                                        <ul className="list-group hreflink scrollbar maXh-200">
-                                            {AllMasterTasksItems?.AllData.map((item: any) => {
-                                                return (
-                                                    <li className="hreflink list-group-item p-1 rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                        <a>{item.Newlabel || item.Path}</a>
-                                                    </li>
-                                                )
-                                            }
-                                            )}
-                                        </ul>
-                                    </div>) : null}
+                                    {autoSearch?.itemIndex === 1 && autoSearch?.property === 'PortfolioItem' && SearchedCategoryData?.length > 0 ? (
+                                        <div className="SmartTableOnTaskPopup">
+                                            <ul className="list-group hreflink scrollbar maXh-200">
+                                                {SearchedCategoryData?.map((item: any) => {
+                                                    return (
+                                                        <li className="hreflink list-group-item p-1 rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                            <a>{item.Newlabel || item.Path}</a>
+                                                        </li>
+                                                    )
+                                                }
+                                                )}
+                                            </ul>
+                                        </div>) : null}
                                 </div>
-                                
+
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('PortfolioItem')} />
@@ -2722,21 +2813,21 @@ const CompareTool = (props: any) => {
                                     <span className="input-group-text">
                                         <span title="Edit Categories" onClick={() => OpenComponentPicker(data[0], true, 'FeatureType')} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'FeatureType' && SmartMetaDataAllItems?.AllFeatureTypeData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
-                                        <ul className="list-group hreflink scrollbar maXh-200">
-                                            {SmartMetaDataAllItems?.AllFeatureTypeData?.map((item: any) => {
-                                                return (
-                                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                        <a>{item.Title}</a>
-                                                    </li>
-                                                )
-                                            }
-                                            )}
-                                        </ul>
-                                    </div>) : null}
+                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'FeatureType' && SearchedCategoryData?.length > 0 ? (
+                                        <div className="SmartTableOnTaskPopup">
+                                            <ul className="list-group hreflink scrollbar maXh-200">
+                                                {SearchedCategoryData?.map((item: any) => {
+                                                    return (
+                                                        <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                            <a>{item.Title}</a>
+                                                        </li>
+                                                    )
+                                                }
+                                                )}
+                                            </ul>
+                                        </div>) : null}
                                 </div>
-                               
+
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
                                 <div className="text-center">
@@ -2762,21 +2853,21 @@ const CompareTool = (props: any) => {
                                     <span className="input-group-text">
                                         <span title="Edit Categories" onClick={() => OpenComponentPicker(data[1], true, 'FeatureType')} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                    {autoSearch?.itemIndex === 1 && autoSearch?.property === 'FeatureType' && SmartMetaDataAllItems?.AllFeatureTypeData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
-                                        <ul className="list-group hreflink scrollbar maXh-200">
-                                            {SmartMetaDataAllItems?.AllFeatureTypeData?.map((item: any) => {
-                                                return (
-                                                    <li className="hreflink list-group-item p-1 rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                        <a>{item.Title}</a>
-                                                    </li>
-                                                )
-                                            }
-                                            )}
-                                        </ul>
-                                    </div>) : null}
+                                    {autoSearch?.itemIndex === 1 && autoSearch?.property === 'FeatureType' && SearchedCategoryData?.length > 0 ? (
+                                        <div className="SmartTableOnTaskPopup">
+                                            <ul className="list-group hreflink scrollbar maXh-200">
+                                                {SearchedCategoryData?.map((item: any) => {
+                                                    return (
+                                                        <li className="hreflink list-group-item p-1 rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                            <a>{item.Title}</a>
+                                                        </li>
+                                                    )
+                                                }
+                                                )}
+                                            </ul>
+                                        </div>) : null}
                                 </div>
-                               
+
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('FeatureType')} />
@@ -2800,21 +2891,21 @@ const CompareTool = (props: any) => {
                                     <span className="input-group-text">
                                         <span title="Edit Project" onClick={() => OpenComponentPicker(data[0], true, 'ProjectItem')} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'ProjectItem' && AllMasterTasksItems?.ProjectData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
-                                        <ul className="list-group hreflink scrollbar maXh-200">
-                                            {AllMasterTasksItems?.ProjectData.map((item: any) => {
-                                                return (
-                                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                        <a>{item.Newlabel || item.Path}</a>
-                                                    </li>
-                                                )
-                                            }
-                                            )}
-                                        </ul>
-                                    </div>) : null}
+                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'ProjectItem' && SearchedCategoryData?.length > 0 ? (
+                                        <div className="SmartTableOnTaskPopup">
+                                            <ul className="list-group hreflink scrollbar maXh-200">
+                                                {SearchedCategoryData?.map((item: any) => {
+                                                    return (
+                                                        <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                            <a>{item.Newlabel || item.Path}</a>
+                                                        </li>
+                                                    )
+                                                }
+                                                )}
+                                            </ul>
+                                        </div>) : null}
                                 </div>
-                                
+
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
                                 <div className="text-center">
@@ -2839,20 +2930,21 @@ const CompareTool = (props: any) => {
                                     <span className="input-group-text">
                                         <span title="Edit Project" onClick={() => OpenComponentPicker(data[1], true, 'ProjectItem')} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
+                                    {autoSearch?.itemIndex === 1 && autoSearch?.property === 'ProjectItem' && SearchedCategoryData?.length > 0 ? (
+                                        <div className="SmartTableOnTaskPopup">
+                                            <ul className="list-group hreflink scrollbar maXh-200">
+                                                {SearchedCategoryData?.map((item: any) => {
+                                                    return (
+                                                        <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                            <a>{item.Newlabel || item.Path}</a>
+                                                        </li>
+                                                    )
+                                                }
+                                                )}
+                                            </ul>
+                                        </div>) : null}
                                 </div>
-                                {autoSearch?.itemIndex === 1 && autoSearch?.property === 'ProjectItem' && AllMasterTasksItems?.ProjectData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
-                                        <ul className="list-group hreflink scrollbar maXh-200">
-                                            {AllMasterTasksItems?.ProjectData.map((item: any) => {
-                                                return (
-                                                    <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                        <a>{item.Newlabel || item.Path}</a>
-                                                    </li>
-                                                )
-                                            }
-                                            )}
-                                        </ul>
-                                    </div>) : null}
+
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('ProjectItem')} />
@@ -3592,38 +3684,7 @@ const CompareTool = (props: any) => {
                                 </Col>
                             </Row>
                         }
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <label className="fw-semibold form-label">Site Composition</label>
-                                <div className="px-3"> {
-                                    data[0]?.SiteComposition?.length > 0 && data[0]?.SiteComposition?.map((items: any) => {
-                                        return <div className="bg-Ff border row mb-1 p-1">
-                                            <div className="col-sm-4"><img className="workmember ml20 me-1" src={items?.SiteImages}></img>{items.Title} </div><div className="col-sm-4">{items?.ClienTimeDescription}</div><div className="col-sm-4">{items?.Date}</div>
-                                        </div>
-                                    })
-                                }</div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="iconSec">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'SiteComposition', data[1]?.SiteComposition)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'SiteComposition', data[0]?.SiteComposition)} /></div>
-                                </div>
-                            </Col>
 
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <label className="fw-semibold form-label">Site Composition</label>
-                                <div className="px-3"> {
-                                    data[1]?.SiteComposition?.length > 0 && data[1]?.SiteComposition?.map((items: any) => {
-                                        return <div className="bg-Ff border row mb-1 p-1">
-                                            <div className="col-sm-4"><img className="workmember ml20 me-1" src={items?.SiteImages}></img>{items.Title} </div><div className="col-sm-4">{items?.ClienTimeDescription}</div><div className="col-sm-4">{items?.Date}</div>
-                                        </div>
-                                    })
-                                }</div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('SiteComposition')} />
-                            </Col>
-                        </Row>
                     </Container>
                 </Modal.Body>
                 <footer className="bg-f4 fixed-bottom position-absolute">
@@ -3686,10 +3747,12 @@ const CompareTool = (props: any) => {
                 />
             }
             {(componentItem?.Item_x0020_Type === "Project" || componentItem?.Item_x0020_Type === "Sprint") && (
-                <EditProjectPopup AllListId={props.contextValue} props={componentItem} Call={Call}  > {" "} </EditProjectPopup>) }
+                <EditProjectPopup AllListId={props.contextValue} props={componentItem} Call={Call}  > {" "} </EditProjectPopup>)}
+
+            {SiteCompositionShow && (<CentralizedSiteComposition ItemDetails={catItem} RequiredListIds={props.contextValue} closePopupCallBack={ClosePopupCallBack} usedFor={"CSF"} />)}
 
             {(componentItem?.Item_x0020_Type === "Component" || componentItem?.Item_x0020_Type === "SubComponent" || componentItem?.Item_x0020_Type === "Feature") && (
-            <EditInstituton item={componentItem} Calls={Call} SelectD={props.contextValue} portfolioTypeData={PortFolioType}  > </EditInstituton>)}
+                <EditInstituton item={componentItem} Calls={Call} SelectD={props.contextValue} portfolioTypeData={PortFolioType}  > </EditInstituton>)}
 
             {isPicker?.condition && isPicker?.PortfolioTitle === 'FeatureType' && (<Smartmetadatapickerin props={catItem} Call={Smartmetadatafeature} selectedFeaturedata={catItem?.FeatureType != undefined ? catItem?.FeatureType[0] : catItem?.FeatureType} AllListId={props.contextValue} TaxType='Feature Type' usedFor="Single" ></Smartmetadatapickerin>)}
 

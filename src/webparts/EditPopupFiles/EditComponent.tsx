@@ -619,8 +619,7 @@ let ID: any;
         componentDetails = await web.lists
             .getById(RequireData.MasterTaskListID)
             .items.select(
-                "ServicePortfolio/Id",
-                "ServicePortfolio/Title",
+                "ServicePortfolio/Id","ServicePortfolio/Title",
                 "SiteCompositionSettings",
                 "PortfolioStructureID",
                 "ItemRank",
@@ -653,7 +652,6 @@ let ID: any;
                 "AdminStatus",
                 "Background",
                 "Help_x0020_Information",
-                "SharewebComponent/Id",
                 "TaskCategories/Id",
                 "TaskCategories/Title",
                 "PriorityRank",
@@ -701,19 +699,20 @@ let ID: any;
                 "FeatureType/Title","FeatureType/Id",
                 "Parent/Title",
                 "Parent/ItemType",
+                "Portfolios/Id","Portfolios/Title",
                 "PortfolioType/Color"
             )
             .expand(
-                "ClientCategory",
-                "AssignedTo",
                 "ServicePortfolio",
+                "ClientCategory",
+                "Portfolios",
+                "AssignedTo",
                 "AttachmentFiles",
                 "Author",
                 "FeatureType",
                 "Editor",
                 "PortfolioType",
                 "TeamMembers",
-                "SharewebComponent",
                 "TaskCategories",
                 "ResponsibleTeam",
                 "Parent"
@@ -988,7 +987,7 @@ let ID: any;
         if (Tasks[0]?.ClientCategory?.results?.length > 0) {
             let TempCCItems: any = [];
             AllClientCategoryDataBackup?.map((AllCCItem: any) => {
-                Tasks[0]?.ClientCategory?.results?.map((SelectedCCItem: any) => {
+                item.ClientCategory?.results?.map((SelectedCCItem: any) => {
                     if (SelectedCCItem?.Id == AllCCItem?.Id) {
                         TempCCItems.push(AllCCItem);
                     }
@@ -1643,7 +1642,7 @@ let ID: any;
                     // ClientCategoryId: { "results": RelevantPortfolioIds },
                     ServicePortfolioId: ((RelevantPortfolioIds != "" ? RelevantPortfolioIds : null)) ,
                     PortfoliosId: ({ results: (PortfolioIds?.length != 0 ? PortfolioIds : []) } ? { results: (PortfolioIds?.length != 0 ? PortfolioIds : []) } :null)?{ results: (PortfolioIds?.length >= 0 ? PortfolioIds : []) }:null,
-                   Synonyms: JSON.stringify(Items["Synonyms"]),
+                  Synonyms: JSON.stringify(Items["Synonyms"]),
                     Package: Items.Package,
                     AdminStatus: Items.AdminStatus,
                     Priority: Items.Priority,
@@ -3393,13 +3392,8 @@ let ID: any;
                                                         <label className="form-label  full-width">
                                                             Status
                                                         </label>
-                                                        {/* <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            value={EditData?.AdminStatus}
-                                                            onChange={(e) => ChangeStatus(e, EditData)}
-                                                        /> */}
-                                                          <EditableField
+                                                        <div className="border p-1 px-2">
+                                                        <EditableField
                                                            key={1}
                                                             listName="Master Tasks"
                                                            itemId={EditData.Id}
@@ -3414,6 +3408,8 @@ let ID: any;
                                                                       type={EditData.Status}
                                                            web={RequireData?.siteUrl}
                               />
+                                                        </div>
+                                                         
                                                     </div>
 
                                                     {/* <div className="SpfxCheckRadio">
@@ -3768,7 +3764,7 @@ let ID: any;
                           <div className="col-sm-12 padding-0 input-group">
                             <label className="full_width">Project</label>
                             {
-                                filterdata?.length == 0 || filterdata.length !== 1 && 
+                                (filterdata?.length == 0 || filterdata.length !== 1) && 
                                 <>
                                 <input type="text" className="form-control"    onChange={(e) =>
                                     autoSuggestionsForProject(e)
@@ -4548,7 +4544,6 @@ let ID: any;
                                                     taskId={EditData?.ID}
                                                     listId={RequireData.MasterTaskListID}
                                                     siteUrls={RequireData?.siteUrl}
-                                                    RequiredListIds = {RequireData}
                                                 />
                                             ) : (
                                                 ""
@@ -4632,15 +4627,15 @@ let ID: any;
                         ) : null}
 
                    {isopenProjectpopup ? (
-                    <ServiceComponentPortfolioPopup
-                    props={filterdata}
-                    Dynamic={SelectD}
-                    ComponentType={"Component"}
-                    selectionType={"Multi"}
-                    Call={(Call:any, type: any, functionType: any)=>{callServiceComponent(Call, type,functionType)}}
-                    updateMultiLookup={updateMultiLookup}
-                    showProject={isopenProjectpopup}
-                   />
+                   <ServiceComponentPortfolioPopup
+                   props={filterdata}
+                   Dynamic={SelectD}
+                   ComponentType={"Component"}
+                   selectionType={"Multi"}
+                   Call={(Call:any, type: any, functionType: any)=>{callServiceComponent(Call, type,functionType)}}
+                   updateMultiLookup={updateMultiLookup}
+                   showProject={isopenProjectpopup}
+                  />
                   ) : null}
 
                         {IsComponentPicker && (
@@ -4802,7 +4797,6 @@ let ID: any;
                                             taskId={dataUpdate?.ID}
                                             listId={RequireData?.SmartHelpListID}
                                             siteUrls={RequireData?.siteUrl}
-                                            RequiredListIds = {RequireData}
                                         />
                                     ) : (
                                         ""
@@ -4918,7 +4912,6 @@ let ID: any;
                                             taskId={helpDataUpdate?.ID}
                                             listId={RequireData?.SmartHelpListID}
                                             siteUrls={RequireData?.siteUrl}
-                                            RequiredListIds = {RequireData}
                                         />
                                     ) : (
                                         ""
@@ -4996,7 +4989,6 @@ let ID: any;
                                             taskId={EditData?.ID}
                                             listId={RequireData.MasterTaskListID}
                                             siteUrls={RequireData?.siteUrl}
-                                            RequiredListIds = {RequireData}
                                         />
                                     ) : (
                                         ""
