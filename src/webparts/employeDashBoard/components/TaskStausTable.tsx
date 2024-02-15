@@ -80,6 +80,9 @@ const TaskStatusTbl = (Tile: any) => {
     setActiveTile((prevString: any) => Tile?.activeTile);
     rerender();
   }
+  const handleDragStart = (e: any, sourceUser: any) => {
+    e.dataTransfer.setData("sourceUser", JSON.stringify(sourceUser));
+  };
   const startDrag = (e: any, Item: any, ItemId: any, draggedItem: any) => {
     dragItem = draggedItem;
     e.dataTransfer.setData("DataId", JSON.stringify(Item))
@@ -87,6 +90,7 @@ const TaskStatusTbl = (Tile: any) => {
   }
   const onDropUser = (e: any, User: any, config: any) => {
     let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
+    let sourceUser = globalCommon.parseJSON(e.dataTransfer.getData("sourceUser"))
     let TeamMemberIds = [];
     let AssignedToIds = [];
     if (Item?.AssignedTo == undefined)
@@ -107,6 +111,10 @@ const TaskStatusTbl = (Tile: any) => {
     }
     AssignedToIds.push(User?.AssingedToUserId);
     Item?.AssignedTo.push({ "Id": User?.AssingedToUserId, "Title": User?.Title })
+    if (sourceUser != undefined && sourceUser?.AssingedToUserId != undefined && sourceUser?.AssingedToUserId != '') {
+      AssignedToIds = AssignedToIds.filter((Id: any) => Id != sourceUser?.AssingedToUserId);
+      Item.AssignedTo = Item?.AssignedTo.filter((user: any) => user?.Id != sourceUser?.AssingedToUserId);
+    }
     if (Item != undefined && Item != '') {
       let web = new Web(ContextData?.propsValue?.siteUrl);
       web.lists.getById(Item.listId).items.getById(Item?.Id).update({
@@ -133,6 +141,8 @@ const TaskStatusTbl = (Tile: any) => {
               item?.Tasks.map((user: any) => {
                 if (user?.AssingedToUserId == User?.AssingedToUserId)
                   user?.Tasks.push(Item);
+                if (user?.AssingedToUserId == sourceUser?.AssingedToUserId)
+                  user.Tasks = user?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
               });
             }
           }
@@ -498,7 +508,7 @@ const TaskStatusTbl = (Tile: any) => {
                               user.IsShowTask == true && (
                                 <>
                                   <h3 className="f-15">{user?.Title} Today's Task</h3>
-                                  <div key={index} className="Alltable maXh-300 mb-2" draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config)} style={{ height: "300px" }}>
+                                  <div key={index} className="Alltable maXh-300 mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config)} style={{ height: "300px" }}>
                                     <GlobalCommanTable wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={user.Tasks}
                                       callBackData={callBackData} />
                                   </div>
