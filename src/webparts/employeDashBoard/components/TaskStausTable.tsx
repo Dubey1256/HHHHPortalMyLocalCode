@@ -157,8 +157,9 @@ const TaskStatusTbl = (Tile: any) => {
   }
   const onDropTable = (e: any, Type: any, User: any) => {
     let Status = 0;
-    if (Type == '9%Task')
+    if (Type == '9%Task') {
       Status = 9;
+    }
     let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
     if (Item != undefined && Item != '') {
       let web = new Web(ContextData?.propsValue?.siteUrl);
@@ -235,7 +236,8 @@ const TaskStatusTbl = (Tile: any) => {
       filterFn: (row: any, columnName: any, filterValue: any) => {
         if (row?.original?.SmartPriority?.includes(filterValue)) {
           return true
-        } else {
+        }
+        else {
           return false
         }
       },
