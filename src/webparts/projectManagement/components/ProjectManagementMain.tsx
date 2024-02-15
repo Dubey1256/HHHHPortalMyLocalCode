@@ -1658,11 +1658,12 @@ const ProjectManagementMain = (props: any) => {
                           </>
                         )}
                         <div>
+                        <span className="nav__text">Suggested Portfolio Items</span>
                           <input
                             type="search"
                             value={suggestedItems}
                             onChange={(e) => searchSuggestedPortfolio(e)}
-                            placeholder="Suggested Portfolio Items"
+                            placeholder="Search Suggested Portfolio Items"
                             className="bg-transparent full-width px-1 py-0 mt-1 text-bg-secondary"
                           />
                              {suggestedPortfolios?.length > 0 ? (
