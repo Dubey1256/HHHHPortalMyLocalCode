@@ -15,10 +15,9 @@ import "bootstrap/js/dist/carousel.js";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
 import {
     Panel,
-    PanelType,
-    resetControlledWarnings,
+    PanelType
 } from "office-ui-fabric-react";
-import { Label, Modal } from "@fluentui/react";
+
 import { FaExpandAlt } from "react-icons/fa";
 import { RiDeleteBin6Line, RiH6 } from "react-icons/ri";
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
@@ -216,6 +215,7 @@ const EditTaskPopup = (Items: any) => {
         { value: 3, status: "3% Approved", taskStatusComment: "Approved" },
         { value: 4, status: "4% Checking", taskStatusComment: "Checking" },
         { value: 5, status: "5% Acknowledged", taskStatusComment: "Acknowledged" },
+        { value: 8, status: "8% Priority Check", taskStatusComment: "Priority Check" },
         { value: 9, status: "9% Ready To Go", taskStatusComment: "Ready To Go" },
         { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
         { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
