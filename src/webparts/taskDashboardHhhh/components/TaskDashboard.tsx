@@ -1906,11 +1906,11 @@ const TaskDashboard = (props: any) => {
                             teamsTaskBody.push(body);
                         }
                     })
-                    let TeamTitle = '<h2><strong>'
-                        + userGroup.Title
-                        + '</strong></h2>'
-                        + teamsTaskBody
-                    finalBody.push(TeamTitle)
+                    let TeamTitle = '<h2><strong><span style="background-color: #ffff00;">'
+                    + userGroup.Title
+                    + '</span></strong></h2>'
+                    + teamsTaskBody
+                finalBody.push(TeamTitle)
                 }
             })
             let sendAllTasks =
