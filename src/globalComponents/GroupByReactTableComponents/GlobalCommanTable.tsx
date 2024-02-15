@@ -38,6 +38,7 @@ import { BiDotsVertical } from 'react-icons/bi';
 import BulkEditingFeature from './BulkEditingFeature';
 import BulkEditingConfrigation from './BulkEditingConfrigation';
 import ColumnsSetting from './ColumnsSetting';
+import HeaderButtonMenuPopup from './HeaderButtonMenuPopup';
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
     interface FilterFns {
@@ -244,7 +245,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
     let callBackDataToolTip = items?.callBackDataToolTip;
     let pageName = items?.pageName;
     let siteUrl: any = '';
-    let showHeader = items?.showHeader;
+    let showHeader = items?.showHeader
+    let showPopupHeader = items?.showPopupHeader
     let showPagination: any = items?.showPagination;
     let usedFor: any = items?.usedFor;
     let portfolioColor = items?.portfolioColor != undefined ? items?.portfolioColor : "#000066";
@@ -285,7 +287,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [columnSettingPopup, setColumnSettingPopup] = React.useState<any>(false);
     const [projectTiles, setProjectTiles] = React.useState<any>([]);
     const [categoriesTiles, setCategoriesTiles] = React.useState([]);
-
+    const [coustomButtonMenuPopup, setCoustomButtonMenuPopup] = React.useState(false);
+    const [showHeaderLocalStored, setShowHeaderLocalStored] = React.useState(items?.showHeader ? items?.showHeader : false);
     React.useEffect(() => {
 
         if (fixedWidth === true) {
@@ -381,6 +384,15 @@ const GlobalCommanTable = (items: any, ref: any) => {
             setDateColumnFilter(true);
         }
     }
+
+    const coustomButtonMenuToolBoxCallback = React.useCallback((compareItemsValue: any) => {
+
+    }, []);
+    const coustomButtonMenuToolBox = (valueEvents: any) => {
+        if (valueEvents === "buttonMenu") {
+            setCoustomButtonMenuPopup(true);
+        }
+    }
     /****************** DateColumns Filter End ***************/
     /// ******************* Bulk Editing Setting ******************/
 
@@ -417,7 +429,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     sortingDescData.push(obj);
                 }
                 if (localStorage.getItem('preSetColumnSettingVisibility') && Object.keys(JSON.parse(localStorage.getItem('preSetColumnSettingVisibility')))?.length > 0 && (items?.columnSettingIcon === true)) {
-                    preSetColumnSettingVisibility = JSON.parse(localStorage.getItem('preSetColumnSettingVisibility'))
+                    const preSetColumnsValue = JSON.parse(localStorage.getItem('preSetColumnSettingVisibility'));
+                    preSetColumnSettingVisibility = preSetColumnsValue?.columnSettingVisibility;
+                    setShowHeaderLocalStored(preSetColumnsValue?.showHeader)
                     if (Object.keys(preSetColumnSettingVisibility)?.length) {
                         const columnId = sortDec.id;
                         if (preSetColumnSettingVisibility[columnId] !== undefined) {
@@ -938,8 +952,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const columnSettingCallBack = React.useCallback((eventSetting: any) => {
         if (eventSetting != 'close') {
             setColumnSettingPopup(false)
-            columnVisibilityDataValue = { ...eventSetting }
-            setColumnVisibility((prevCheckboxes: any) => ({ ...prevCheckboxes, ...eventSetting }));
+            columnVisibilityDataValue = { ...eventSetting?.columnSettingVisibility }
+            setColumnVisibility((prevCheckboxes: any) => ({ ...prevCheckboxes, ...eventSetting?.columnSettingVisibility }));
+            setShowHeaderLocalStored(eventSetting?.showHeader)
         } else {
             setColumnSettingPopup(false)
         }
@@ -951,7 +966,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 <BulkEditingFeature categoriesTiles={categoriesTiles} masterTaskData={items?.masterTaskData} data={data} columns={items?.columns} setData={items?.setData} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView} ContextValue={items?.AllListId}
                     dragedTask={dragedTask} bulkEditingCongration={bulkEditingCongration} selectedData={table?.getSelectedRowModel()?.flatRows} projectTiles={projectTiles} AllTaskUser={items.TaskUsers} />
             </span>}
-            {showHeader === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
+            {showHeaderLocalStored === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
                     {showingAllPortFolioCount === true ? <div className='alignCenter mt--2'>
                         <label>
@@ -1092,6 +1107,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         items?.siteStructureCreation === true &&
                         <button type="button" className="btn btn-primary" title='Add Site-Structure' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Site-Structure")}>Add +</button>
                     }
+
+
                     {items?.hideTeamIcon != true ? <>
                         {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team"></span></a>
                             : <a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team"></span></a>}
@@ -1142,10 +1159,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
             <div ref={parentRef} style={{ overflow: "auto" }}>
                 <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
                     <table className="SortingTable table table-hover mb-0" id='my-table' style={{ width: "100%" }}>
-                        <thead className={showHeader === true ? 'fixedSmart-Header top-0' : 'fixed-Header top-0'}>
+                        <thead className={showHeaderLocalStored === true ? 'fixedSmart-Header top-0' : 'fixed-Header top-0'}>
                             {table.getHeaderGroups().map((headerGroup: any) => (
                                 <tr key={headerGroup.id} >
-                                    {headerGroup.headers.map((header: any) => {
+                                    {headerGroup.headers.map((header: any, index: any) => {
                                         return (
                                             <th key={header.id} colSpan={header.colSpan} style={header.column.columnDef.size != undefined && header.column.columnDef.size != 150 ? { width: header.column.columnDef.size + "px" } : {}}>
                                                 {header.isPlaceholder ? null : (
@@ -1172,6 +1189,62 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                                                 : <FaSort style={{ color: "gray" }} />}
                                                         </div> : ""}
                                                         {items?.clickFlatView === true && header?.column?.columnDef?.placeholder === 'DueDate' && <div className='dotFilterIcon' style={{ position: "absolute", top: "8px", right: "5px" }} ><BiDotsVertical style={Object?.keys(dateColumnFilterData)?.length ? { color: `${portfolioColor}`, height: '15px', width: '15px' } : { color: 'gray', height: '15px', width: '15px' }} onClick={(event) => coustomFilterColumns('DueDate', event)} /></div>}
+
+                                                        {showHeaderLocalStored === false && (headerGroup?.headers?.length - 1 === index) && <div className='position-relative hreflink' style={{ display: "flex" }}>
+                                                            <div className='dotFilterIcon'><BiDotsVertical style={{ color: 'gray', height: '25px', width: '25px' }} onClick={(event) => coustomButtonMenuToolBox('buttonMenu')} /></div>
+                                                        </div>}
+
+                                                        {header?.column?.columnDef?.id === "Id" && showHeaderLocalStored === false && <>
+                                                            {showingAllPortFolioCount === true ? <>
+                                                                {items?.hideShowingTaskCountToolTip != true ? <>
+                                                                    {!items?.pageName ? <span className="popover__wrapper ms-1" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                        <span className='svg__iconbox svg__icon--info alignIcon dark mt--2'></span>
+                                                                        <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
+                                                                            <label style={{ color: "#333333" }}>
+                                                                                Showing
+                                                                            </label>
+                                                                            {portfolioTypeData?.map((type: any, index: any) => {
+                                                                                return (
+                                                                                    <>
+                                                                                        {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: "#333333" }} className="ms-1"> | </label></> :
+                                                                                            <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: "#333333" }} className="ms-1"> | </label></>}
+                                                                                    </>
+                                                                                )
+                                                                            })}
+                                                                            {items?.taskTypeDataItem?.map((type: any, index: any) => {
+                                                                                return (
+                                                                                    <>
+                                                                                        {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
+                                                                                            <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
+                                                                                    </>
+                                                                                )
+                                                                            })}
+                                                                        </span>
+                                                                    </span> :
+                                                                        <>
+                                                                            <div className='alignCenter mt--2'>
+                                                                                {items?.taskTypeDataItem?.map((type: any, index: any) => {
+                                                                                    return (
+                                                                                        <>
+                                                                                            {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
+                                                                                                <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
+                                                                                        </>
+                                                                                    )
+                                                                                })}
+                                                                            </div>
+                                                                        </>}
+                                                                </> : ''}
+                                                            </> :
+                                                                <span className="popover__wrapper ms-1" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                    <span className='svg__iconbox svg__icon--info alignIcon dark mt--2'></span>
+                                                                    <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
+                                                                        <span style={{ color: "#333333", flex: "none" }} className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} of ${items?.catogryDataLength ? items?.catogryDataLength : data?.length}`}</span>
+                                                                        <span className="mx-1">{items?.showDateTime}</span>
+                                                                    </span>
+                                                                </span>
+                                                            }
+
+                                                        </>}
                                                     </div>
                                                 )}
                                             </th>
@@ -1281,7 +1354,20 @@ const GlobalCommanTable = (items: any, ref: any) => {
             {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCount={selectedFilterCount} setSelectedFilterCount={setSelectedFilterCount} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
             {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
             {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} />}
-            {columnSettingPopup && <ColumnsSetting isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility} />}
+            {columnSettingPopup && <ColumnsSetting showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility} />}
+
+            {coustomButtonMenuPopup && <HeaderButtonMenuPopup isOpen={coustomButtonMenuPopup} coustomButtonMenuToolBoxCallback={coustomButtonMenuToolBoxCallback} setCoustomButtonMenuPopup={setCoustomButtonMenuPopup}
+                selectedRow={table?.getSelectedRowModel()?.flatRows} ShowTeamFunc={ShowTeamFunc} portfolioColor={portfolioColor}
+                hideTeamIcon={items?.hideTeamIcon} showEmailIcon={items?.showEmailIcon} openCreationAllStructure={openCreationAllStructure}
+                hideOpenNewTableIcon={items?.hideOpenNewTableIcon} openTaskAndPortfolioMulti={openTaskAndPortfolioMulti}
+                exportToExcel={exportToExcel} SmartTimeIconShow={items?.SmartTimeIconShow} AllListId={items?.AllListId}
+                flatView={items?.flatView} updatedSmartFilterFlatView={items?.updatedSmartFilterFlatView} clickFlatView={items?.clickFlatView}
+                setGlobalFilter={setGlobalFilter} setColumnFilters={setColumnFilters} setRowSelection={setRowSelection}
+                downloadPdf={downloadPdf}
+                bulkEditIcon={items?.bulkEditIcon} bulkEditingSettingPopupEvent={bulkEditingSettingPopupEvent}
+                expandIcon={items?.expandIcon} expndpopup={expndpopup} tablecontiner={tablecontiner}
+                columnSettingIcon={items?.columnSettingIcon} setColumnSettingPopup={setColumnSettingPopup}
+            />}
         </>
     )
 }
