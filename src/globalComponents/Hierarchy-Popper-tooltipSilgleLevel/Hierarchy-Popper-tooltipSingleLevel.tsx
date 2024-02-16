@@ -239,20 +239,23 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     const expandData = (itemData: any) => {
         const hasChildren = itemData?.subRows?.length > 0;
         let lastChild = false;
-        let firstChild = false;
-        if (paddingCount >= 0) {
-            firstChild = true
-        }
-        if (hasChildren == true) {
-            paddingCount++
-        } else{
-            if (paddingCount == 0) {
-                paddingCount++
-            }
-            if (firstChild == true) {
-                marginCount = paddingCount;
-                lastChild = true
-            }
+        // let firstChild = false;
+        // if (paddingCount >= 0) {
+        //     firstChild = true
+        // }
+        // if (hasChildren == true) {
+        //     paddingCount++
+        // } else{
+        //     if (paddingCount == 0) {
+        //         paddingCount++
+        //     }
+        //     if (firstChild == true) {
+        //         marginCount = paddingCount;
+        //         lastChild = true
+        //     }
+        // }
+        if(hasChildren!=true){
+            lastChild = true;
         }
 
         return (
@@ -260,8 +263,8 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
             <>
                 <div className={itemData.Item_x0020_Type=="Component"?' d-flex p-1 f-bg borderBottomWhite':
                         itemData.Item_x0020_Type=="SubComponent"?'d-flex p-1 a-bg borderBottomWhite':itemData.Item_x0020_Type=='Feature'?"d-flex p-1 borderBottomWhite w-bg":"d-flex p-1 border-top"}>
-                    <div style={{flex: "0 0 155px" }}>
-                        <div className={lastChild == true ? `alignCenter bg-white levelml-1`:`alignCenter`}>
+                    <div style={{flex: "0 0 160px" }}>
+                        <div className={lastChild == true ? `alignCenter levelml-1`:`alignCenter`}>
                             {hasChildren &&
                                 <span style={{ width: "20px" }} className="mt--3" onClick={() => onToggle(itemData)}>
                                     {hasChildren && (
@@ -282,8 +285,8 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                                 : ""}</>}
                         </div>
                     </div>
-                    <div className={lastChild == true ? "lastlevel" : ''} style={{ flex: "0 0 335px" }}>
-                        <div className="aligncenter textDotted" style={{ width: "335px" }}>
+                    <div className={lastChild == true ? "lastlevel" : ''} style={{ flex: "0 0 330px" }}>
+                        <div className="aligncenter textDotted" style={{ width: "330px" }}>
                             {itemData?.SiteIcon != undefined ? <>
                                 
                                 <a
@@ -349,7 +352,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
             </span>
 
             {action === "click" && visible && (
-                <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container position-absolute p-3 m-0" })} style={{width:"550px"}}>
+                <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container p-3 m-0" })}>
                     <div className="alignCenter mb-2">
                         <span className="fw-normal">{row?.Title}</span>
                         <span onClick={handleCloseClick} style={{ marginRight: "3px" }} title="Close" className="ml-auto hreflink svg__iconbox svg__icon--cross dark"></span>

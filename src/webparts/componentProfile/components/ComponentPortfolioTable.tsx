@@ -407,14 +407,7 @@ function PortfolioTable(SelectedProp: any) {
                 if (result?.Editor) {
                     result.Editor.autherImage = findUserByName(result?.Editor?.Id)
                 }
-                  result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
-                  result.DisplayDueDate = Moment(result.DueDate).format("DD/MM/YYYY");
-                  if (result.DisplayDueDate == "Invalid date" || "") {
-                    result.DisplayDueDate = result.DisplayDueDate.replaceAll(
-                      "Invalid date",
-                      ""
-                    );
-                  }
+                 
                   if (result.DisplayCreateDate == "Invalid date" || "") {
                     result.DisplayCreateDate = result.DisplayCreateDate.replaceAll(
                       "Invalid date",
