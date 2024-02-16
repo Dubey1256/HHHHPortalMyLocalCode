@@ -17,7 +17,7 @@ let allSite: any = {
     HrSite: false,
     MainSite: true,
 }
-
+const HRweb = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/HR');
 let updatedStatusData: any[] = [];
 // eslint-disable-next-line prefer-const
 let statusKeyID: number;
@@ -36,7 +36,7 @@ interface RowData {
 }
 let overallRatings: any
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export default function InterviewFeedbackForm(props: any) {
+export default function GetData(props: any) {
     const [listData, setListData]: any = useState([]);
     const [activeTab, setactiveTab] = useState('All Candidates');
     const [NewCandidates, setNewCandidates] = useState([]);
@@ -57,7 +57,6 @@ export default function InterviewFeedbackForm(props: any) {
     const [newStatus, setNewStatus] = useState('')
     const [isAddStatusButtonDisabld, setIsAddStatusButonDisabled] = useState(true)
 
-    const HRweb = new Web(props?.props?.siteUrl);
     const EditPopupOpen = (item: any) => {
         setSelectedItem(item);
         setIsEditPopupOpen(true);
@@ -131,9 +130,7 @@ export default function InterviewFeedbackForm(props: any) {
             "Configurations": JSON.stringify(AllAvlStatusdata)
         }
         try {
-            await HRweb.lists.getById('2e5ed76d-63ae-4f4a-887a-6d56f0b925c3').items.getById(statusKeyID).update(postData).then((response: any) => {
-                setNewStatus('')
-            })
+            await HRweb.lists.getById('2e5ed76d-63ae-4f4a-887a-6d56f0b925c3').items.getById(statusKeyID).update(postData);
         } catch (error) {
             if (!isDEL) {
                 setopenModalPopup(false)
@@ -255,6 +252,7 @@ export default function InterviewFeedbackForm(props: any) {
         if (JobPositionId !== undefined && JobPositionId !== null) {
             query = query.filter("Positions/Id eq " + JobPositionId + "")
         }
+        query
         query.get().then((response: any) => {
             const itemsWithPosition = response.map((item: any) => {
                 let skills = JSON.parse(item?.SkillRatings)
@@ -383,10 +381,9 @@ export default function InterviewFeedbackForm(props: any) {
             MAIN_HR_LISTID: props?.props?.MAIN_HR_LISTID,
             GMBH_CONTACT_SEARCH_LISTID: props?.props?.GMBH_CONTACT_SEARCH_LISTID,
             HR_EMPLOYEE_DETAILS_LIST_ID: props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID,
-            siteUrl: props?.props?.siteUrl,
+            siteUrl: props?.props.Context.pageContext.web.absoluteUrl,
             jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH",
-            ContractListID: props?.props?.ContractListID,
-            SkillsPortfolioListID: props?.props?.SkillsPortfolioListID
+            ContractListID: props?.props?.ContractListID
         }
         getListData();
         loadAdminConfigurations();
@@ -428,7 +425,7 @@ export default function InterviewFeedbackForm(props: any) {
         return (
             <>
                 <div className='subheading'>
-                    Add / Remove Status
+                    Add / Edit Status
                 </div>
                 <Tooltip ComponentId='7930' />
             </>
@@ -487,23 +484,23 @@ export default function InterviewFeedbackForm(props: any) {
                 <div className="tab-content border border-top-0 clearfix " id="nav-tabContent">
                     <div className={`tab-pane fade px-1 ${activeTab === 'All Candidates' ? 'show active' : ''}`} id="AllCandidates"
                         role="tabpanel" aria-labelledby="home-tab">
-                        {listData && <div className='Alltable'><GlobalCommanTable columns={columns} data={listData} multiSelect={true} showHeader={true} callBackData={callBackData} showEmailIcon={true}/></div>}
+                        {listData && <div className='Alltable'><GlobalCommanTable columns={columns} data={listData} multiSelect={true} showHeader={true} callBackData={callBackData} /></div>}
                     </div>
                     <div className={`tab-pane fade px-1 ${activeTab === 'New Candidates' ? 'show active' : ''}`} id="NewCandidates"
                         role="tabpanel" aria-labelledby="profile-tab">
-                        {NewCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={NewCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} showEmailIcon={true}/></div>}
+                        {NewCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={NewCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} /></div>}
                     </div>
                     <div className={`tab-pane fade px-1 ${activeTab === 'In Process' ? 'show active' : ''}`} id="inProcessCand"
                         role="tabpanel" aria-labelledby="profile-tab">
-                        {inProcessCand && <div className='Alltable'><GlobalCommanTable columns={columns} data={inProcessCand} multiSelect={true} showHeader={true} callBackData={callBackData} showEmailIcon={true}/></div>}
+                        {inProcessCand && <div className='Alltable'><GlobalCommanTable columns={columns} data={inProcessCand} multiSelect={true} showHeader={true} callBackData={callBackData} /></div>}
                     </div>
                     <div className={`tab-pane fade px-1 ${activeTab === 'Archive' ? 'show active' : ''}`} id="ArchiveCandidates"
                         role="tabpanel" aria-labelledby="profile-tab">
-                        {ArchiveCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={ArchiveCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} showEmailIcon={true}/></div>}
+                        {ArchiveCandidates && <div className='Alltable'><GlobalCommanTable columns={columns} data={ArchiveCandidates} multiSelect={true} showHeader={true} callBackData={callBackData} /></div>}
                     </div>
                 </div>
                 {isEditPopupOpen ? <EditPopup siteUrl={props?.props?.siteUrl} EditPopupClose={EditPopupClose} callbackEdit={callbackEdit} item={selectedItem} ListID={props?.props?.InterviewFeedbackFormListId} skillsList={props?.props?.SkillsPortfolioListID} statusData={AllAvlStatusdata}/> : ''}
-                {isAddPopupOpen ? <AddPopup siteUrl={props?.props?.siteUrl} context={props?.props?.Context} AddPopupClose={AddPopupClose} callbackAdd={callbackAdd} ListID={props?.props?.InterviewFeedbackFormListId} skillsList={props?.props?.SkillsPortfolioListID}/> : ''}
+                {isAddPopupOpen ? <AddPopup context={props?.props?.Context} AddPopupClose={AddPopupClose} callbackAdd={callbackAdd} ListID={props?.props?.InterviewFeedbackFormListId} siteUrl={props?.props?.siteUrl} skillsList={props?.props?.SkillsPortfolioListID}/> : ''}
                 {isAddEditPositionOpen ? <AddEditPostion AddEditPositionCLose={AddEditPositionCLose} props={props?.props}/> : ''}
             </div>
 
