@@ -2392,7 +2392,7 @@ function EditProjectPopup(item: any) {
 
             {IsPortfolio && (
               <ServiceComponentPortfolioPopup
-                props={TaggedPortfolios}
+                props={projectTaggedPortfolios}
                 Dynamic={AllListId}
                 ComponentType={portfolioType}
                 Call={ComponentServicePopupCallBack}
