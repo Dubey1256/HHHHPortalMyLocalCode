@@ -66,6 +66,11 @@ const RelevantDocuments = (props: any, ref: any) => {
                 } else {
                     let deleteKeyData: any = MyContextdata?.keyDoc?.filter((item: any) => item.Id != copyEditData?.Id)
                     MyContextdata.keyDoc = deleteKeyData;
+                    // getKeyDoc()
+                //   setKeyDocument(deleteKeyData)
+                 if (deleteKeyData?.length <=3) {
+                     setCopyKeyDocument([])
+                  }
 
                     MyContextdata.FunctionCall(null, null, false)
                 }
@@ -187,7 +192,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                 size: 42,
             }
 
-        ], [copykeyDocument?.length > 0 ? copykeyDocument : keyDocument]);
+        ], [copykeyDocument?.length > 0 ? copykeyDocument : keyDocument?.length>0]);
 
 
     const ShowData = () => {
