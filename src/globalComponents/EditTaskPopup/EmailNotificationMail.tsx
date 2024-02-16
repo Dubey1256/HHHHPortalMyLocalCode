@@ -18,7 +18,7 @@ const EmailNotificationMail = (props: any) => {
       let category = joinObjectValues(props.items?.TaskCategories)
       let EmailProps = {
         To: mention_To,
-        Subject: `[${props.ValueStatu == '90'?'Your Task has been completed':''} ${props.items.TaskId}:${category} -${props?.statusValue}%  - ${props.items.Title}]`,
+        Subject: `[${props.ValueStatu == '90'?'Your Task has been completed':''} ${props.items.TaskId}:${category} _${props?.statusValue}%  - ${props.items.Title}]`,
         Body: props.items.Title
       }
       console.log(EmailProps);
@@ -172,7 +172,7 @@ const EmailNotificationMail = (props: any) => {
                         <b style={{ fontSize: '10.0pt', color: 'black' }}>Created:</b>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '5pt' }}>
-                        <span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Created"]}</span>
+                        <span style={{ fontSize: '10.0pt', color: 'black' }}>{Moment(props.items["Created"]).format("DD-MM-YYYY")}</span>
                       </td>
                       <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '5pt',width:'80pt' }}>
                         <b style={{ fontSize: '10.0pt', color: 'black' }}>Created By:</b>

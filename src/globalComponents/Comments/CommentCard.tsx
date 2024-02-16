@@ -54,14 +54,12 @@ export interface ICommentCardState {
   topCommenterShow: boolean;
   keyPressed: boolean;
   onHoldCallBack: any;
-
 }
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
   private taskUsers: any = [];
   private currentUser: any;
   private mentionUsers: any = [];
   private topCommenters: any = [];
-
   private params1: any;
   constructor(props: ICommentCardProps) {
     super(props);
@@ -105,7 +103,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     const sp = spfi().using(spSPFx(this.context));
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleMouseClick = this.handleMouseClick.bind(this);
-
   }
   private async GetResult() {
     let web = new Web(this.props.siteUrl);
@@ -127,7 +124,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           .select("ID", "Title", "DueDate", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "Sitestagging", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
           .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "SharewebTaskType", "Portfolio", "Editor")
           .get()
-
       }
     } else {
       taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "DueDate", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
@@ -182,7 +178,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         //     item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
         // })
       })
-
       tempTask["Comments"].sort(function (a: any, b: any) {
         // let keyA = a.ID,
         //   keyB = b.ID;
@@ -220,7 +215,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       }
       return userDeatails;
     }
-
   }
   private async GetTaskUsers() {
     console.log("this is GetTaskUsers function")
@@ -231,7 +225,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     //}); 
     let taskUsers = [];
     taskUsers = await web.lists.getById(this.props?.AllListId?.TaskUsertListID).items.select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail').filter("ItemType eq 'User'").expand('AssingedToUser').get();
-
     this.taskUsers = taskUsers;
     if (this.taskUsers != undefined && this.taskUsers.length > 0) {
       for (let index = 0; index < this.taskUsers.length; index++) {
@@ -239,9 +232,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           id: this.taskUsers[index].Title + "{" + this.taskUsers[index]?.AssingedToUser?.EMail + "}",
           display: this.taskUsers[index].Title
         });
-
-
-
         if (this.taskUsers[index].Title == "Deepak Trivedi" || this.taskUsers[index].Title == "Stefan Hochhuth" || this.taskUsers[index].Title == "Robert Ungethuem" || this.taskUsers[index].Title == "Mattis Hahn" || this.taskUsers[index].Title == "Prashant Kumar") {
           this.topCommenters.push({
             id: this.taskUsers[index].Title + "{" + this.taskUsers[index]?.AssingedToUser?.EMail + "}",
@@ -252,7 +242,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
           })
         }
-
         if (this.taskUsers[index].AssingedToUser != null && this.taskUsers[index].AssingedToUser.Title == currentUser['Title'])
           this.currentUser = this.taskUsers[index];
       }
@@ -500,7 +489,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       }
       return userDeatails;
     }
-
   }
   private GetUserObject(username: any) {
     let userDeatails = {};
@@ -509,7 +497,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         if (user.AssingedToUser != undefined) {
           return user.AssingedToUser['Title'] == username
         }
-
       });
       if (senderObject.length > 0) {
         userDeatails = {
@@ -541,9 +528,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }
   }
   private openEditModal(cmdData: any, indexOfDeleteElement: any, ItemLevel: any) {
-     this.setState({
+    this.setState({
       isModalOpen: true,
-      editorValue: cmdData.Description?.replace(/\n/g, '<br>') ,
+      editorValue: cmdData.Description?.replace(/\n/g, '<br>'),
       ChildLevel: ItemLevel,
       updateCommentPost: cmdData
     })
@@ -641,14 +628,27 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           }
           console.log(emailprops);
           let TeamMsg = ''
+          let MsgURL = `${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID}&Site=${this.state.listName}`
+          let MsgTitle = `${this.state?.Result?.TaskId}-${this.state?.Result?.Title}`
+          if (window.location.href.toLowerCase().indexOf('project-management.aspx?projectid=') > -1) {
+            MsgURL = `${this.props.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${this.state.itemID}`
+            MsgTitle = `${this.state?.Result?.Title}`
+          }
+          if (window.location.href.toLowerCase().indexOf('portfolio-profile.aspx?taskid=') > -1) {
+            MsgURL = `${this.props.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${this.state.itemID}`
+            MsgTitle = `${this.state?.Result?.Title}`
+          }
+          // if (window.location.href.toLowerCase().indexOf('workbench.aspx?projectid=') > -1) {
+          //   MsgURL = `${this.props.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${this.state.itemID}`
+          //   MsgTitle = `${this.state?.Result?.Title}`
+          // }
           if (this.state?.ChildLevel == true) {
             if (this.state?.ReplyParent?.MsTeamCreated == undefined)
               this.state.ReplyParent.MsTeamCreated = ''
-            TeamMsg = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')} </br> <a href=${`${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID}&Site=${this.state.listName}`}>${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</a></blockquote>${txtComment}`;
-
+            TeamMsg = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')} </br> <a href=${MsgURL}>${MsgTitle}</a></blockquote>${txtComment}`;
           }
           else {
-            TeamMsg = txtComment + `</br> <a href=${`${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID}&Site=${this.state.listName}`}>${this.state?.Result?.TaskId}-${this.state?.Result?.Title}</a>`
+            TeamMsg = txtComment + `</br> <a href=${MsgURL}>${MsgTitle}</a>`
           }
           await globalCommon.SendTeamMessage(mention_To, TeamMsg, this.props.Context)
           this.SendEmail(emailprops);
@@ -656,10 +656,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             ChildLevel: false,
             ReplyParent: {}
           });
-
-
         }
-
       }
     }
     if (this.props.commentFor == "On-Hold") {
@@ -695,11 +692,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   }*/
   private customHeaderforEditCommentpopup() {
     return (
-
       <>
         <div className={color ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
           <div className='subheading'>
-
             <span className="siteColor">
               Update Comment
             </span>
@@ -707,7 +702,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           <Tooltip ComponentId="588" />
         </div>
       </>
-
     )
   }
   private customHeaderforALLcomments() {
@@ -800,31 +794,26 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   //     return part;
   //   });
   // };
-  private detectAndRenderLinks = (html:any) => {
+  private detectAndRenderLinks = (html: any) => {
     const div = document.createElement('div');
     div.innerHTML = html;
-   const paragraphs = div.querySelectorAll('p');
- // Filter out empty <p> tags
+    const paragraphs = div.querySelectorAll('p');
+    // Filter out empty <p> tags
     paragraphs.forEach((p) => {
       if (p.innerText.trim() === '') {
         p.parentNode.removeChild(p); // Remove empty <p> tags
       }
     });
-   div.innerHTML = div.innerHTML.replace(/\n/g, '<br>')  // Convert newlines to <br> tags first
-  div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
-  
- 
- return div.innerHTML;
+    div.innerHTML = div.innerHTML.replace(/\n/g, '<br>')  // Convert newlines to <br> tags first
+    div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
+    return div.innerHTML;
   };
   public render(): React.ReactElement<ICommentCardProps> {
-
     return (
       <div >
         <div className='mb-3 card commentsection'>
           <div className='card-header'>
-
             <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Comments<span><Tooltip ComponentId='586' /></span></div>
-
           </div>
           <div className='card-body'>
             <div className="comment-box  mb-2">
@@ -851,11 +840,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                   } */}
                 </MentionsInput>
               </span>
-
             </div>
             <div>
               <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e) => this.handleInputChange(e)} placeholder="Enter your comments here" className='form-control' ></textarea>
-
               {this.state.postButtonHide ?
                 <button disabled onClick={() => this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 my-1  float-end px-3">
                   Post
@@ -863,23 +850,19 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 <button onClick={() => this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 my-1  float-end px-3">
                   Post
                 </button>}
-
             </div>
-
             <div className="clearfix"></div>
-
             <div className="commentMedia">
               {this.state.Result["Comments"] != null && this.state.Result["Comments"] != undefined && this.state.Result["Comments"].length > 0 &&
                 <div>
                   <ul className="list-unstyled">
                     {this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 0 && this.state.Result["Comments"]?.slice(0, 3)?.map((cmtData: any, i: any) => {
                       return cmtData?.Description && <li className="media  p-1 my-1">
-
                         <div className="media-bodyy">
                           <div className="d-flex justify-content-between align-items-center">
                             <span className="comment-date ng-binding">
                               <span className="round  pe-1">
-                                <img className="align-self-start " title={cmtData?.AuthorName} onClick={()=>globalCommon?.openUsersDashboard(this.props?.AllListId?.siteUrl,undefined,cmtData?.AuthorName,this?.taskUsers)}
+                                <img className="align-self-start " title={cmtData?.AuthorName} onClick={() => globalCommon?.openUsersDashboard(this.props?.AllListId?.siteUrl, undefined, cmtData?.AuthorName, this?.taskUsers)}
                                   src={cmtData?.AuthorImage != undefined && cmtData?.AuthorImage != '' ?
                                     cmtData?.AuthorImage :
                                     "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
@@ -888,16 +871,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               {cmtData.Created}</span>
                             <div className="d-flex ml-auto media-icons px-1 " >
                               <a ><div data-toggle="tooltip" id={"Reply-" + i}
-                                onClick={() => this.openReplycommentPopup(cmtData, i)}
-                                data-placement="bottom"
-                              >
+                                onClick={() => this.openReplycommentPopup(cmtData, i)}  data-placement="bottom"  >
                                 <span className="svg__iconbox svg__icon--reply"></span>
                               </div></a>
                               {/* <a onClick={() => this.replyMailFunction(cmtData, i)}><span><ImReply /></span></a> */}
                               <a onClick={() => this.openEditModal(cmtData, i, false)}>
                                 {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
                                 <span className='svg__iconbox svg__icon--edit'></span>
-
                               </a>
                               <a title="Delete" onClick={() => this.clearComment(i, undefined, undefined)}>
                                 {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" /> */}
@@ -905,14 +885,12 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               </a>
                             </div>
                           </div>
-
                           <div className="media-text">
                             {cmtData.Header != '' && <h6 className="userid m-0"><a className="align-top">{cmtData?.Header}</a></h6>}
                             {/* <p className='m-0'>
                             <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}>
-
                             </span></p> */}
-                       <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}></span>
+                            <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}></span>
                             {/* {this.detectAndRenderLinks(cmtData?.Description)} */}
                           </div>
 
@@ -933,23 +911,18 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                 {replyerData.Created}</span>
                               <div className="d-flex ml-auto media-icons ">
                                 <a onClick={()=>this.replyMailFunction(replyerData,i)}><span className="svg__icon--mailreply svg__iconbox"></span></a>
-                                <a  onClick={() => this.openEditModal(replyerData, i)}>
-                              
-                                  <span className='svg__iconbox svg__icon--edit'></span>
-                                 
+                                <a  onClick={() => this.openEditModal(replyerData, i)}>                      
+                                  <span className='svg__iconbox svg__icon--edit'></span>                           
                                 </a>
-                                <a title="Delete" onClick={() => this.clearComment(i)}>
-                              
+                                <a title="Delete" onClick={() => this.clearComment(i)}>                             
                                   <span className='svg__iconbox svg__icon--trash'></span>
                                 </a>
                               </div>
                             </div>
-  
                             <div className="media-text">
                               {replyerData.Header != '' && <h6 className="userid m-0"><a className="ng-binding">{replyerData?.Header}</a></h6>}
                               <p className='m-0'><span dangerouslySetInnerHTML={{ __html: replyerData?.Description }}></span></p>
                             </div>
-  
                           </div>
                           </li>
                           )
@@ -960,12 +933,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               <ul className="list-unstyled subcomment">
                                 {cmtData?.ReplyMessages != null && cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((ReplyMsg: any, j: any) => {
                                   return <li className="media  p-1 my-1">
-
                                     <div className="media-bodyy">
                                       <div className="d-flex justify-content-between align-items-center">
                                         <span className="comment-date ng-binding">
                                           <span className="round  pe-1">
-                                            <img className="align-self-start hreflink " title={ReplyMsg?.AuthorName}onClick={()=>globalCommon?.openUsersDashboard(this.props?.AllListId?.siteUrl,undefined,ReplyMsg?.AuthorName,this?.taskUsers)}
+                                            <img className="align-self-start hreflink " title={ReplyMsg?.AuthorName} onClick={() => globalCommon?.openUsersDashboard(this.props?.AllListId?.siteUrl, undefined, ReplyMsg?.AuthorName, this?.taskUsers)}
                                               src={ReplyMsg?.AuthorImage != undefined && ReplyMsg?.AuthorImage != '' ?
                                                 ReplyMsg?.AuthorImage :
                                                 "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
@@ -1007,10 +979,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 </div>
               }
             </div>
-
           </div>
         </div>
-
         <Panel isOpen={this.state.isModalOpen} isBlocking={false}
           type={PanelType.custom}
           customWidth="500px"
@@ -1027,16 +997,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           </div>
         </Panel>
         <Panel
-
           onRenderHeader={this.customHeaderforALLcomments}
           type={PanelType.custom}
           customWidth="500px"
           onDismiss={(e) => this.closeAllCommentModal(e)}
           isOpen={this.state.AllCommentModal}
           isBlocking={false}>
-
           <div id='ShowAllCommentsId' className={color ? "serviepannelgreena" : ""}>
-
             <div className='modal-body mt-2'>
               <div className="col-sm-12 " id="ShowAllComments">
                 <div className="col-sm-12">
@@ -1046,7 +1013,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                       <span role="status" aria-live="polite" className="ui-helper-hidden-accessible"></span>
                     </div>
                     <div className='text-end mt-1'> <span className='btn btn-primary hreflink' onClick={() => this.PostComment('txtCommentModal')} >Post</span></div>
-
                   </div>
                   {this.state.Result["Comments"] != null && this.state.Result["Comments"]?.length > 0 && this.state.Result["Comments"]?.map((cmtData: any, i: any) => {
                     return <div className="p-1 mb-2">
@@ -1059,7 +1025,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                 "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                             />
                               {cmtData?.Created}
-
                             </span>
                           </span>
                           <div className='d-flex media-icons ml-auto '>
@@ -1067,15 +1032,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               <span className='svg__iconbox svg__icon--edit'></span>
                             </a>
                             <a className="hreflink" title="Delete" onClick={() => this.clearComment(i, undefined, undefined)}>
-
                               <span className='svg__iconbox svg__icon--trash'></span>
                             </a>
-
                           </div>
-
-
                         </div>
-
                         <div className="media-text">
                           <h6 className='userid m-0 fs-6'>   {cmtData?.Header != '' && <b>{cmtData?.Header}</b>}</h6>
                           <p className='m-0' id="pageContent">  <span dangerouslySetInnerHTML={{ __html: cmtData?.Description }}></span></p>
@@ -1083,21 +1043,16 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                       </div>
                     </div>
                   })}
-
-                </div>
-
+              </div>
               </div>
             </div>
             <footer className='text-end'>
               <button type="button" className="btn btn-default" onClick={(e) => this.closeAllCommentModal(e)}>Cancel</button>
             </footer>
-
           </div>
-
         </Panel>
         {
           this?.state?.isCalloutVisible ? (
-
             <FocusTrapCallout
               className='p-2 replyTooltip'
               role="alertdialog"
@@ -1115,13 +1070,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                     onChange={(e) => this.updateReplyMessagesFunction(e)}
                   ></textarea>
                 </div>
-
               </Text>
               <FocusZone handleTabKey={FocusZoneTabbableElements.all} isCircularNavigation>
                 <Stack
                   className='modal-footer'
                   gap={8} horizontal>
-
                   <button className='btn btn-primary'
                     onClick={this.SaveReplyMessageFunction}
                   >Save</button>
@@ -1138,7 +1091,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         {
           this.state.Result != null && this.state.Result?.Comments != null && this.state.Result?.Comments.length > 0 &&
           <div id='htmlMailBody' style={{ display: 'none' }}>
-
             <div style={{ marginTop: "11.25pt" }}>
               <a href={this.state.Result?.TaskUrl} target="_blank">{this.state.Result?.Title}</a></div>
             <table cellPadding="0" width="100%" style={{ width: "100.0%" }}>
@@ -1147,7 +1099,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                   <td width="70%" valign="top" style={{ width: '70.0%', padding: '4pt' }}>
                     <table cellPadding="0" width="99%" style={{ width: "99.0%" }}>
                       <tbody>
-
                         <tr>
                           <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
                             <p style={{ margin: '4pt 0pt' }}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Task Id:</span></b></p>
@@ -1252,8 +1203,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                           </td>
                           <td style={{ padding: '4pt' }}></td>
                         </tr>
-
-
                       </tbody>
                     </table>
                     <table cellPadding="0" width="99%" style={{ width: "99.0%" }}>
@@ -1261,8 +1210,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                         <tr>
                           <td style={{ padding: '4pt' }}></td>
                         </tr>
-
-
                         {this.state.Result["FeedBack"] != null &&
                           this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                           this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' &&
@@ -1280,7 +1227,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                       </div>
                                       <p style={{ marginLeft: '1.5pt' }}><span><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span></span></p>
                                     </div>
-
                                   })}
                                 </td>
                               </tr>
@@ -1298,18 +1244,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                           </div>
                                           <p style={{ marginLeft: '1.5pt' }}><span style={{ fontSize: '10.0pt', color: 'black' }}><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span></span></p>
                                         </div>
-
                                       })}
                                     </td>
                                   </tr>
                                 </>
                               })}
-
-
-
                             </>
                           })}
-
                       </tbody>
                     </table>
                   </td>
@@ -1341,12 +1282,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                 </tr>
               </tbody>
             </table>
-
           </div>
         }
-      </div >
+      </div>
     );
   }
 }
-
 export default CommentCard;

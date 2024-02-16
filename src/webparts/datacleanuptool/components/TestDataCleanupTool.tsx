@@ -345,8 +345,10 @@ const SaveItem = async (SelectedItem: any) => {
         {
             accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
             cell: ({ row }) => (
+                
                 <div className='alignCenter '>
-                    {row?.original?.Title != undefined && row?.original?.Title != null && row?.original?.Title != '' ? <a className='ms-2'>{row?.original?.Title}</a> : ""}
+                    {row?.original?.Title != undefined && row?.original?.Title != null && row?.original?.Title != '' ? 
+                    <a className='ms-2' data-interception="off" target='_blank' href={`${SelectedProp.SelectedProp.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.ListName}`}>{row?.original?.Title}</a> : ""}
                 </div>
             ),
         },
@@ -384,7 +386,7 @@ const SaveItem = async (SelectedItem: any) => {
         cell: ({ row }) =>(
             <>
               {row.original.ModifiedDate}
-              <a target='_blank' href={`${SelectedProp.SelectedProp.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
+              <a  data-interception="off" target='_blank' href={`${SelectedProp.SelectedProp.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
                   <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
                   : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
