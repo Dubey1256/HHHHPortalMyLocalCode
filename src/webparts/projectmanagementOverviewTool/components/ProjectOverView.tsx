@@ -1378,7 +1378,9 @@ export default function ProjectOverview(props: any) {
                 })
                 setCheckBoxData(selectedItem)
                 setTableProperty(childRef.current.table.getSelectedRowModel().flatRows)
-                setTrueRestructuring(true)
+                if (childRef.current.table.getSelectedRowModel().flatRows) {
+                    setTrueRestructuring(true)
+                }
             } else {
                 setCheckBoxData([])
                 setTableProperty([])
