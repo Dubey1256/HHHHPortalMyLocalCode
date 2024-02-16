@@ -2664,11 +2664,12 @@ const EditTaskPopup = (Items: any) => {
                                 } else {
                                     sendMSGCheck = false;
                                 }
+                                let SendUserEmailFinal: any = sendUserEmails.filter((item: any, index: any) => sendUserEmails.indexOf(item) === index);
                                 try {
                                     if ((sendMSGCheck || TeamMemberChanged || TeamLeaderChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
                                         if (sendUserEmails?.length > 0) {
                                             await globalCommon.SendTeamMessage(
-                                                sendUserEmails,
+                                                SendUserEmailFinal,
                                                 SendMessage,
                                                 Items.context
                                             );
@@ -6302,8 +6303,6 @@ const EditTaskPopup = (Items: any) => {
                                                             </div>
                                                         ) : null}
                                                     </div>
-
-
                                                 </div>
                                             </div>
                                         </div>
