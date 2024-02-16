@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
@@ -96,13 +92,17 @@ export default function InterviewFeedbackForm(props: any) {
         setSelectedStatus('');
         setisChangeStatusPopup(false)
     }
-
     const handleNewStatus = (e: any) => {
         const statusValue = e.target.value
         setNewStatus(statusValue)
         setIsAddStatusButonDisabled(statusValue.trim() === '')
     }
 
+    const inlineEditStatus = (inl: any) => {
+        setSelectedItem([inl])
+        setisChangeStatusPopup(true)
+        setSelectedStatus(inl?.Status0)
+    }
     const AddnewStatusTitle = () => {
         const newStatusObj = {
             "Id": AllAvlStatusdata.length,
@@ -125,7 +125,7 @@ export default function InterviewFeedbackForm(props: any) {
             if(confirmDeletion) {
                 const updatedStatusDatas = AllAvlStatusdata.filter(item => item.Id !== values.Id);
                 setAllAvlStatusdata(updatedStatusDatas);
-            }
+            }    
         }
         const postData = {
             "Configurations": JSON.stringify(AllAvlStatusdata)
@@ -147,11 +147,8 @@ export default function InterviewFeedbackForm(props: any) {
             }
         }
     };
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const DeleteItem = async (values: any, isDEL: boolean) => {
 
-    };
-    const columns = React.useMemo<ColumnDef<RowData, unknown>[]>(() =>
+    const columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
         [{
             accessorKey: "",
             placeholder: "",
@@ -185,7 +182,14 @@ export default function InterviewFeedbackForm(props: any) {
         },
         { accessorKey: "Email", placeholder: "Email", header: "", id: 'Email' },
         { accessorKey: "OverallRatings", placeholder: "Overall Rating", header: "", id: 'OverallRatings'},
-        { accessorKey: "Status0", placeholder: "Status", header: "", id: 'Status0' }, {
+        { accessorKey: "Status0", placeholder: "Status", header: "", id: 'Status0', 
+            cell: ({row}) => (
+                <div className='alignCenter'>
+                {row?.original?.Status0}
+                <span className="svg__iconbox svg__icon--editBox" title='Edit Status' onClick={() => inlineEditStatus(row?.original)}></span>   
+                </div>
+            )
+        }, {
             cell: ({ row }) => (
                 <div className='alignCenter'>
                     <span onClick={() => EditPopupOpen(row.original)} title="Edit" className="svg__iconbox hreflink svg__icon--edit"></span>
@@ -450,7 +454,6 @@ export default function InterviewFeedbackForm(props: any) {
     
     return (
         <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: allListId, loggedInUserName: props.props?.userDisplayName, }}>
-          
             <div>
                 <div className='alignCenter'>
                 <h2 className='heading'>Recruiting-Tool</h2>
@@ -460,19 +463,19 @@ export default function InterviewFeedbackForm(props: any) {
                 <ul className="nav nav-tabs" id="myTab" role="tablist">
                     <li className="nav-item" role="presentation">
                         <button onClick={() => handleTabChange('All Candidates')} className={`nav-link ${activeTab === 'All Candidates'
-                            ? 'active' : ''}`} data-bs-target="#AllCandidates" id="home-tab" type="button" role="tab" aria-controls="home" aria-selected="true">All Candidates</button>
+                            ? 'active' : ''}`} data-bs-target="#AllCandidates" id="home-tab" type="button" role="tab" aria-controls="home" aria-selected="true">All Candidates({listData.length})</button>
                     </li>
                     <li className="nav-item" role="presentation">
                         <button onClick={() => handleTabChange('New Candidates')} className={`nav-link ${activeTab === 'New Candidates' ?
-                            'active' : ''}`} data-bs-target="#NewCandidates" id="profile-tab" type="button" role="tab" aria-controls="profile" aria-selected="false">New Candidates</button>
+                            'active' : ''}`} data-bs-target="#NewCandidates" id="profile-tab" type="button" role="tab" aria-controls="profile" aria-selected="false">New Candidates({NewCandidates.length})</button>
                     </li>
                     <li className="nav-item" role="presentation">
                         <button onClick={() => handleTabChange('In Process')} className={`nav-link ${activeTab === 'In Process' ?
-                            'active' : ''}`} data-bs-target="#inProcessCand" id="profile-tab" type="button" role="tab" aria-controls="profile" aria-selected="false">In Process</button>
+                            'active' : ''}`} data-bs-target="#inProcessCand" id="profile-tab" type="button" role="tab" aria-controls="profile" aria-selected="false">In Process({inProcessCand.length})</button>
                     </li>
                     <li className="nav-item" role="presentation">
                         <button onClick={() => handleTabChange('Archive')} className={`nav-link ${activeTab === 'Archive' ?
-                            'active' : ''}`} data-bs-target="#ArchiveCandidates" id="profile-tab" type="button" role="tab" aria-controls="profile" aria-selected="false">Archive</button>
+                            'active' : ''}`} data-bs-target="#ArchiveCandidates" id="profile-tab" type="button" role="tab" aria-controls="profile" aria-selected="false">Archive({ArchiveCandidates.length})</button>
                     </li>
                     <div className='ml-auto'>
                         <span className='text-right me-1'><button type='button' className='btnCol btn btn-primary' onClick={() => AddPopupOpen()}>Add Candidate</button></span>
