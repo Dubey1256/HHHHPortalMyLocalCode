@@ -332,213 +332,214 @@ function TeamPortlioTable(SelectedProp: any) {
                         item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                         item.fontColorTask = "#000"
                     });
-                    AllTasksSiteTasks = AllTasksSiteTasks.concat(AllTasksMatches);
-                    if (Counter == siteConfig.length) {
-                        map(AllTasksSiteTasks, (result: any) => {
-                            result.Id = result.Id != undefined ? result.Id : result.ID;
-                            result.TeamLeaderUser = [];
-                            result.AllTeamName = result.AllTeamName === undefined ? "" : result.AllTeamName;
-                            result.chekbox = false;
-                            result.timeSheetsDescriptionSearch = '';
-                            result.SmartPriority = 0;
-                            result.TaskTypeValue = '';
-                            result.projectPriorityOnHover = '';
-                            result.taskPriorityOnHover = result?.PriorityRank;
-                            result.showFormulaOnHover;
-                            result.portfolioItemsSearch = '';
-                            result.commentsSearch = '';
-                            result.descriptionsSearch = '';
-                            result.descriptionsDeliverablesSearch = '';
-                            result.descriptionsHelpInformationSarch = '';
-                            result.descriptionsShortDescriptionSearch = '';
-                            result.descriptionsTechnicalExplanationsSearch = '';
-                            result.descriptionsBodySearch = '';
-                            result.descriptionsAdminNotesSearch = '';
-                            result.descriptionsValueAddedSearch = '';
-                            result.descriptionsIdeaSearch = '';
-                            result.descriptionsBackgroundSearch = '';
-                            result.FeatureTypeTitle = ''
-                            if (result?.DueDate != null && result?.DueDate != undefined) {
-                                result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
-                            }
-                            if (result?.Modified != null && result?.Modified != undefined) {
-                                result.serverModifiedDate = new Date(result?.Modified).setHours(0, 0, 0, 0)
-                            }
-                            if (result?.Created != null && result?.Created != undefined) {
-                                result.serverCreatedDate = new Date(result?.Created).setHours(0, 0, 0, 0)
-                            }
-                            result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
-                            if (result.DisplayCreateDate == "Invalid date" || "") {
-                                result.DisplayCreateDate = result.DisplayCreateDate.replaceAll("Invalid date", "");
-                            }
-                            result.DisplayModifiedDate = Moment(result.Modified).format("DD/MM/YYYY");
-                            if (result.Editor) {
-                                result.Editor.autherImage = findUserByName(result.Editor?.Id)
-                            }
-                            if (result.Author) {
-                                result.Author.autherImage = findUserByName(result.Author?.Id)
-                            }
-                            result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
-                            if (result.DisplayDueDate == "Invalid date" || "") {
-                                result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
-                            }
-                            if (result?.TaskType) {
-                                result.portfolioItemsSearch = result?.TaskType?.Title;
-                            }
+                }
+                AllTasksSiteTasks = AllTasksSiteTasks.concat(AllTasksMatches);
+                if (Counter == siteConfig.length) {
+                    map(AllTasksSiteTasks, (result: any) => {
+                        result.Id = result.Id != undefined ? result.Id : result.ID;
+                        result.TeamLeaderUser = [];
+                        result.AllTeamName = result.AllTeamName === undefined ? "" : result.AllTeamName;
+                        result.chekbox = false;
+                        result.timeSheetsDescriptionSearch = '';
+                        result.SmartPriority = 0;
+                        result.TaskTypeValue = '';
+                        result.projectPriorityOnHover = '';
+                        result.taskPriorityOnHover = result?.PriorityRank;
+                        result.showFormulaOnHover;
+                        result.portfolioItemsSearch = '';
+                        result.commentsSearch = '';
+                        result.descriptionsSearch = '';
+                        result.descriptionsDeliverablesSearch = '';
+                        result.descriptionsHelpInformationSarch = '';
+                        result.descriptionsShortDescriptionSearch = '';
+                        result.descriptionsTechnicalExplanationsSearch = '';
+                        result.descriptionsBodySearch = '';
+                        result.descriptionsAdminNotesSearch = '';
+                        result.descriptionsValueAddedSearch = '';
+                        result.descriptionsIdeaSearch = '';
+                        result.descriptionsBackgroundSearch = '';
+                        result.FeatureTypeTitle = ''
+                        if (result?.DueDate != null && result?.DueDate != undefined) {
+                            result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
+                        }
+                        if (result?.Modified != null && result?.Modified != undefined) {
+                            result.serverModifiedDate = new Date(result?.Modified).setHours(0, 0, 0, 0)
+                        }
+                        if (result?.Created != null && result?.Created != undefined) {
+                            result.serverCreatedDate = new Date(result?.Created).setHours(0, 0, 0, 0)
+                        }
+                        result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
+                        if (result.DisplayCreateDate == "Invalid date" || "") {
+                            result.DisplayCreateDate = result.DisplayCreateDate.replaceAll("Invalid date", "");
+                        }
+                        result.DisplayModifiedDate = Moment(result.Modified).format("DD/MM/YYYY");
+                        if (result.Editor) {
+                            result.Editor.autherImage = findUserByName(result.Editor?.Id)
+                        }
+                        if (result.Author) {
+                            result.Author.autherImage = findUserByName(result.Author?.Id)
+                        }
+                        result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
+                        if (result.DisplayDueDate == "Invalid date" || "") {
+                            result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
+                        }
+                        if (result?.TaskType) {
+                            result.portfolioItemsSearch = result?.TaskType?.Title;
+                        }
 
-                            result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+                        result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
 
-                            if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
-                                result.percentCompleteValue = parseInt(result?.PercentComplete);
-                            }
-                            if (result?.Portfolio != undefined) {
-                                allMasterTaskDataFlatLoadeViewBackup.map((item: any) => {
-                                    if (item.Id === result?.Portfolio?.Id) {
-                                        result.Portfolio = item
-                                        result.PortfolioType = item?.PortfolioType
-                                    }
-                                })
-                            }
-                            result.chekbox = false;
-                            if (result?.FeedBack && result?.FeedBack != undefined) {
-                                const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
-                                let descriptionSearchData = '';
-                                try {
-                                    const feedbackData = JSON.parse(result.FeedBack);
-                                    descriptionSearchData = feedbackData[0]?.FeedBackDescriptions?.map((child: any) => {
-                                        const childText = cleanText(child?.Title);
-                                        const comments = (child?.Comments || [])?.map((comment: any) => {
-                                            const commentText = cleanText(comment?.Title);
-                                            const replyText = (comment?.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
-                                            return [commentText, replyText]?.filter(Boolean).join(' ');
-                                        }).join(' ');
-
-                                        const subtextData = (child.Subtext || [])?.map((subtext: any) => {
-                                            const subtextComment = cleanText(subtext?.Title);
-                                            const subtextReply = (subtext.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
-                                            const subtextComments = (subtext.Comments || [])?.map((subComment: any) => {
-                                                const subCommentTitle = cleanText(subComment?.Title);
-                                                const subCommentReplyText = (subComment.ReplyMessages || []).map((val: any) => cleanText(val?.Title)).join(' ');
-                                                return [subCommentTitle, subCommentReplyText]?.filter(Boolean).join(' ');
-                                            }).join(' ');
-                                            return [subtextComment, subtextReply, subtextComments].filter(Boolean).join(' ');
-                                        }).join(' ');
-
-                                        return [childText, comments, subtextData].filter(Boolean).join(' ');
+                        if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
+                            result.percentCompleteValue = parseInt(result?.PercentComplete);
+                        }
+                        if (result?.Portfolio != undefined) {
+                            allMasterTaskDataFlatLoadeViewBackup.map((item: any) => {
+                                if (item.Id === result?.Portfolio?.Id) {
+                                    result.Portfolio = item
+                                    result.PortfolioType = item?.PortfolioType
+                                }
+                            })
+                        }
+                        result.chekbox = false;
+                        if (result?.FeedBack && result?.FeedBack != undefined) {
+                            const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
+                            let descriptionSearchData = '';
+                            try {
+                                const feedbackData = JSON.parse(result.FeedBack);
+                                descriptionSearchData = feedbackData[0]?.FeedBackDescriptions?.map((child: any) => {
+                                    const childText = cleanText(child?.Title);
+                                    const comments = (child?.Comments || [])?.map((comment: any) => {
+                                        const commentText = cleanText(comment?.Title);
+                                        const replyText = (comment?.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
+                                        return [commentText, replyText]?.filter(Boolean).join(' ');
                                     }).join(' ');
 
-                                    result.descriptionsSearch = descriptionSearchData;
-                                } catch (error) {
-                                    console.error("Error:", error);
-                                }
-                            }
-                            try {
-                                if (result?.Comments != null && result?.Comments != undefined) {
-                                    const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
-                                    const commentsFormData = JSON?.parse(cleanedComments);
-                                    result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
-                                        return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
-                                    }, "").trim();
-                                }
+                                    const subtextData = (child.Subtext || [])?.map((subtext: any) => {
+                                        const subtextComment = cleanText(subtext?.Title);
+                                        const subtextReply = (subtext.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
+                                        const subtextComments = (subtext.Comments || [])?.map((subComment: any) => {
+                                            const subCommentTitle = cleanText(subComment?.Title);
+                                            const subCommentReplyText = (subComment.ReplyMessages || []).map((val: any) => cleanText(val?.Title)).join(' ');
+                                            return [subCommentTitle, subCommentReplyText]?.filter(Boolean).join(' ');
+                                        }).join(' ');
+                                        return [subtextComment, subtextReply, subtextComments].filter(Boolean).join(' ');
+                                    }).join(' ');
+
+                                    return [childText, comments, subtextData].filter(Boolean).join(' ');
+                                }).join(' ');
+
+                                result.descriptionsSearch = descriptionSearchData;
                             } catch (error) {
-                                console.error("An error occurred:", error);
+                                console.error("Error:", error);
                             }
-                            if (
-                                result.AssignedTo != undefined &&
-                                result.AssignedTo.length > 0
-                            ) {
-                                map(result.AssignedTo, (Assig: any) => {
-                                    if (Assig.Id != undefined) {
-                                        map(AllUsers, (users: any) => {
-                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
-                                                users.ItemCover = users.Item_x0020_Cover;
-                                                result.TeamLeaderUser.push(users);
-                                                result.AllTeamName += users.Title + ";";
-                                            }
-                                        });
-                                    }
-                                });
+                        }
+                        try {
+                            if (result?.Comments != null && result?.Comments != undefined) {
+                                const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
+                                const commentsFormData = JSON?.parse(cleanedComments);
+                                result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
+                                    return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
+                                }, "").trim();
                             }
-                            if (result.ResponsibleTeam != undefined && result.ResponsibleTeam.length > 0) {
-                                map(result.ResponsibleTeam, (Assig: any) => {
-                                    if (Assig.Id != undefined) {
-                                        map(AllUsers, (users: any) => {
-                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
-                                                users.ItemCover = users.Item_x0020_Cover;
-                                                result.TeamLeaderUser.push(users);
-                                                result.AllTeamName += users.Title + ";";
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                            if (
-                                result.TeamMembers != undefined &&
-                                result.TeamMembers.length > 0
-                            ) {
-                                map(result.TeamMembers, (Assig: any) => {
-                                    if (Assig.Id != undefined) {
-                                        map(AllUsers, (users: any) => {
-                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
-                                                users.ItemCover = users.Item_x0020_Cover;
-                                                result.TeamLeaderUser.push(users);
-                                                result.AllTeamName += users.Title + ";";
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                            if (result?.TaskCategories?.length > 0) {
-                                result.TaskTypeValue = result?.TaskCategories?.map((val: any) => val.Title).join(",")
-                            }
-
-                            if (result?.ClientCategory?.length > 0) {
-                                result.ClientCategorySearch = result?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
-                            } else {
-                                result.ClientCategorySearch = ''
-                            }
-                            result["TaskID"] = globalCommon.GetTaskId(result);
-                            if (result.Project) {
-                                result.ProjectTitle = result?.Project?.Title;
-                                result.ProjectId = result?.Project?.Id;
-                                result.projectStructerId = result?.Project?.PortfolioStructureID
-                                const title = result?.Project?.Title || '';
-                                const formattedDueDate = Moment(result?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
-                                result.joinedData = [];
-                                if (result?.projectStructerId && title || formattedDueDate) {
-                                    result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                        } catch (error) {
+                            console.error("An error occurred:", error);
+                        }
+                        if (
+                            result.AssignedTo != undefined &&
+                            result.AssignedTo.length > 0
+                        ) {
+                            map(result.AssignedTo, (Assig: any) => {
+                                if (Assig.Id != undefined) {
+                                    map(AllUsers, (users: any) => {
+                                        if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                                            users.ItemCover = users.Item_x0020_Cover;
+                                            result.TeamLeaderUser.push(users);
+                                            result.AllTeamName += users.Title + ";";
+                                        }
+                                    });
                                 }
-                            }
-                            // result = globalCommon.findTaskCategoryParent(taskCatagory, result)
-                            result.SmartPriority = globalCommon.calculateSmartPriority(result);
-                            result["Item_x0020_Type"] = "Task";
-                            TasksItem.push(result);
-                            AllSiteTasksDataBackGroundLoad.push(result)
-                        });
-                        smartTimeUseLocalStorage(AllSiteTasksDataBackGroundLoad)
-                        console.log("loade All Data > 89% is ========", AllSiteTasksDataBackGroundLoad)
-                        // tasksDataLoadUpdate.push(AllSiteTasksData);
-                        tasksDataLoadUpdate = tasksDataLoadUpdate.concat(allTaskDataFlatLoadeViewBackup);
+                            });
+                        }
+                        if (result.ResponsibleTeam != undefined && result.ResponsibleTeam.length > 0) {
+                            map(result.ResponsibleTeam, (Assig: any) => {
+                                if (Assig.Id != undefined) {
+                                    map(AllUsers, (users: any) => {
+                                        if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                                            users.ItemCover = users.Item_x0020_Cover;
+                                            result.TeamLeaderUser.push(users);
+                                            result.AllTeamName += users.Title + ";";
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        if (
+                            result.TeamMembers != undefined &&
+                            result.TeamMembers.length > 0
+                        ) {
+                            map(result.TeamMembers, (Assig: any) => {
+                                if (Assig.Id != undefined) {
+                                    map(AllUsers, (users: any) => {
+                                        if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                                            users.ItemCover = users.Item_x0020_Cover;
+                                            result.TeamLeaderUser.push(users);
+                                            result.AllTeamName += users.Title + ";";
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        if (result?.TaskCategories?.length > 0) {
+                            result.TaskTypeValue = result?.TaskCategories?.map((val: any) => val.Title).join(",")
+                        }
 
-                        tasksDataLoadUpdate = tasksDataLoadUpdate.concat(AllSiteTasksDataBackGroundLoad);
-                        setAllSiteTasksDataLoadAll(tasksDataLoadUpdate);
-                        let taskBackup: any = []
-                        try {
-                            taskBackup = JSON.parse(JSON.stringify(tasksDataLoadUpdate));
-                        } catch (error) {
-                            console.log("backup Json parse error backGround Loade All Task Data")
+                        if (result?.ClientCategory?.length > 0) {
+                            result.ClientCategorySearch = result?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
+                        } else {
+                            result.ClientCategorySearch = ''
                         }
-                        allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
-                        let allTaskDataFlatLoadeViewBackupAllData: any = [];
-                        try {
-                            allTaskDataFlatLoadeViewBackupAllData = JSON.parse(JSON.stringify(AllSiteTasksDataBackGroundLoad))
-                        } catch (error) {
-                            console.log("backup Json parse error backGround Loade All Task Data")
+                        result["TaskID"] = globalCommon.GetTaskId(result);
+                        if (result.Project) {
+                            result.ProjectTitle = result?.Project?.Title;
+                            result.ProjectId = result?.Project?.Id;
+                            result.projectStructerId = result?.Project?.PortfolioStructureID
+                            const title = result?.Project?.Title || '';
+                            const formattedDueDate = Moment(result?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+                            result.joinedData = [];
+                            if (result?.projectStructerId && title || formattedDueDate) {
+                                result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                            }
                         }
-                        allTaskDataFlatLoadeViewBackup = allTaskDataFlatLoadeViewBackup.concat(allTaskDataFlatLoadeViewBackupAllData);
-                        firstTimeFullDataGrouping();
+                        // result = globalCommon.findTaskCategoryParent(taskCatagory, result)
+                        result.SmartPriority = globalCommon.calculateSmartPriority(result);
+                        result["Item_x0020_Type"] = "Task";
+                        TasksItem.push(result);
+                        AllSiteTasksDataBackGroundLoad.push(result)
+                    });
+                    smartTimeUseLocalStorage(AllSiteTasksDataBackGroundLoad)
+                    console.log("loade All Data > 89% is ========", AllSiteTasksDataBackGroundLoad)
+                    // tasksDataLoadUpdate.push(AllSiteTasksData);
+                    tasksDataLoadUpdate = tasksDataLoadUpdate.concat(allTaskDataFlatLoadeViewBackup);
+
+                    tasksDataLoadUpdate = tasksDataLoadUpdate.concat(AllSiteTasksDataBackGroundLoad);
+                    setAllSiteTasksDataLoadAll(tasksDataLoadUpdate);
+                    let taskBackup: any = []
+                    try {
+                        taskBackup = JSON.parse(JSON.stringify(tasksDataLoadUpdate));
+                    } catch (error) {
+                        console.log("backup Json parse error backGround Loade All Task Data")
                     }
+                    allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
+                    let allTaskDataFlatLoadeViewBackupAllData: any = [];
+                    try {
+                        allTaskDataFlatLoadeViewBackupAllData = JSON.parse(JSON.stringify(AllSiteTasksDataBackGroundLoad))
+                    } catch (error) {
+                        console.log("backup Json parse error backGround Loade All Task Data")
+                    }
+                    allTaskDataFlatLoadeViewBackup = allTaskDataFlatLoadeViewBackup.concat(allTaskDataFlatLoadeViewBackupAllData);
+                    firstTimeFullDataGrouping();
                 }
+
             });
             await Promise.all(fetchPromises)
             return tasksDataLoadUpdate
@@ -598,203 +599,204 @@ function TeamPortlioTable(SelectedProp: any) {
                         item.fontColorTask = "#000"
                         // if (item?.TaskCategories?.some((category: any) => category.Title.toLowerCase() === "draft")) { item.isDrafted = true; }
                     });
-                    AllTasks = AllTasks.concat(AllTasksMatches);
-                    if (Counter == siteConfig.length) {
-                        // AllTasks = AllTasks?.filter((type: any) => type.isDrafted === false);
-                        map(AllTasks, (result: any) => {
-                            result.Id = result.Id != undefined ? result.Id : result.ID;
-                            result.TeamLeaderUser = [];
-                            result.AllTeamName = result.AllTeamName === undefined ? "" : result.AllTeamName;
-                            result.chekbox = false;
-                            result.timeSheetsDescriptionSearch = '';
-                            result.SmartPriority = 0;
-                            result.TaskTypeValue = '';
-                            result.projectPriorityOnHover = '';
-                            result.taskPriorityOnHover = result?.PriorityRank;
-                            result.showFormulaOnHover;
-                            result.portfolioItemsSearch = '';
-                            result.descriptionsSearch = '';
-                            result.commentsSearch = '';
-                            result.descriptionsDeliverablesSearch = '';
-                            result.descriptionsHelpInformationSarch = '';
-                            result.descriptionsShortDescriptionSearch = '';
-                            result.descriptionsTechnicalExplanationsSearch = '';
-                            result.descriptionsBodySearch = '';
-                            result.descriptionsAdminNotesSearch = '';
-                            result.descriptionsValueAddedSearch = '';
-                            result.descriptionsIdeaSearch = '';
-                            result.descriptionsBackgroundSearch = '';
-                            result.FeatureTypeTitle = ''
-                            if (result?.DueDate != null && result?.DueDate != undefined) {
-                                result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
-                            }
-                            if (result?.Modified != null && result?.Modified != undefined) {
-                                result.serverModifiedDate = new Date(result?.Modified).setHours(0, 0, 0, 0)
-                            }
-                            if (result?.Created != null && result?.Created != undefined) {
-                                result.serverCreatedDate = new Date(result?.Created).setHours(0, 0, 0, 0)
-                            }
-                            result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
-                            if (result.DisplayCreateDate == "Invalid date" || "") {
-                                result.DisplayCreateDate = result.DisplayCreateDate.replaceAll("Invalid date", "");
-                            }
-                            if (result.Author) {
-                                result.Author.autherImage = findUserByName(result.Author?.Id)
-                            }
-                            result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
-                            if (result.DisplayDueDate == "Invalid date" || "") {
-                                result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
-                            }
-                            result.DisplayModifiedDate = Moment(result.Modified).format("DD/MM/YYYY");
-                            if (result.Editor) {
-                                result.Editor.autherImage = findUserByName(result.Editor?.Id)
-                            }
-                            if (result?.TaskType) {
-                                result.portfolioItemsSearch = result?.TaskType?.Title;
-                            }
+                }
 
-                            result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+                AllTasks = AllTasks.concat(AllTasksMatches);
+                if (Counter == siteConfig.length) {
+                    // AllTasks = AllTasks?.filter((type: any) => type.isDrafted === false);
+                    map(AllTasks, (result: any) => {
+                        result.Id = result.Id != undefined ? result.Id : result.ID;
+                        result.TeamLeaderUser = [];
+                        result.AllTeamName = result.AllTeamName === undefined ? "" : result.AllTeamName;
+                        result.chekbox = false;
+                        result.timeSheetsDescriptionSearch = '';
+                        result.SmartPriority = 0;
+                        result.TaskTypeValue = '';
+                        result.projectPriorityOnHover = '';
+                        result.taskPriorityOnHover = result?.PriorityRank;
+                        result.showFormulaOnHover;
+                        result.portfolioItemsSearch = '';
+                        result.descriptionsSearch = '';
+                        result.commentsSearch = '';
+                        result.descriptionsDeliverablesSearch = '';
+                        result.descriptionsHelpInformationSarch = '';
+                        result.descriptionsShortDescriptionSearch = '';
+                        result.descriptionsTechnicalExplanationsSearch = '';
+                        result.descriptionsBodySearch = '';
+                        result.descriptionsAdminNotesSearch = '';
+                        result.descriptionsValueAddedSearch = '';
+                        result.descriptionsIdeaSearch = '';
+                        result.descriptionsBackgroundSearch = '';
+                        result.FeatureTypeTitle = ''
+                        if (result?.DueDate != null && result?.DueDate != undefined) {
+                            result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
+                        }
+                        if (result?.Modified != null && result?.Modified != undefined) {
+                            result.serverModifiedDate = new Date(result?.Modified).setHours(0, 0, 0, 0)
+                        }
+                        if (result?.Created != null && result?.Created != undefined) {
+                            result.serverCreatedDate = new Date(result?.Created).setHours(0, 0, 0, 0)
+                        }
+                        result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
+                        if (result.DisplayCreateDate == "Invalid date" || "") {
+                            result.DisplayCreateDate = result.DisplayCreateDate.replaceAll("Invalid date", "");
+                        }
+                        if (result.Author) {
+                            result.Author.autherImage = findUserByName(result.Author?.Id)
+                        }
+                        result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
+                        if (result.DisplayDueDate == "Invalid date" || "") {
+                            result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
+                        }
+                        result.DisplayModifiedDate = Moment(result.Modified).format("DD/MM/YYYY");
+                        if (result.Editor) {
+                            result.Editor.autherImage = findUserByName(result.Editor?.Id)
+                        }
+                        if (result?.TaskType) {
+                            result.portfolioItemsSearch = result?.TaskType?.Title;
+                        }
 
-                            if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
-                                result.percentCompleteValue = parseInt(result?.PercentComplete);
-                            }
-                            if (result?.Portfolio != undefined) {
-                                allMasterTaskDataFlatLoadeViewBackup.map((item: any) => {
-                                    if (item.Id === result?.Portfolio?.Id) {
-                                        result.Portfolio = item
-                                        result.PortfolioType = item?.PortfolioType
-                                    }
-                                })
-                            }
+                        result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
 
-                            result.chekbox = false;
-                            if (result?.FeedBack && result?.FeedBack != undefined) {
-                                const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
-                                let descriptionSearchData = '';
-                                try {
-                                    const feedbackData = JSON.parse(result.FeedBack);
-                                    descriptionSearchData = feedbackData[0]?.FeedBackDescriptions?.map((child: any) => {
-                                        const childText = cleanText(child?.Title);
-                                        const comments = (child?.Comments || [])?.map((comment: any) => {
-                                            const commentText = cleanText(comment?.Title);
-                                            const replyText = (comment?.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
-                                            return [commentText, replyText]?.filter(Boolean).join(' ');
-                                        }).join(' ');
+                        if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
+                            result.percentCompleteValue = parseInt(result?.PercentComplete);
+                        }
+                        if (result?.Portfolio != undefined) {
+                            allMasterTaskDataFlatLoadeViewBackup.map((item: any) => {
+                                if (item.Id === result?.Portfolio?.Id) {
+                                    result.Portfolio = item
+                                    result.PortfolioType = item?.PortfolioType
+                                }
+                            })
+                        }
 
-                                        const subtextData = (child.Subtext || [])?.map((subtext: any) => {
-                                            const subtextComment = cleanText(subtext?.Title);
-                                            const subtextReply = (subtext.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
-                                            const subtextComments = (subtext.Comments || [])?.map((subComment: any) => {
-                                                const subCommentTitle = cleanText(subComment?.Title);
-                                                const subCommentReplyText = (subComment.ReplyMessages || []).map((val: any) => cleanText(val?.Title)).join(' ');
-                                                return [subCommentTitle, subCommentReplyText]?.filter(Boolean).join(' ');
-                                            }).join(' ');
-                                            return [subtextComment, subtextReply, subtextComments].filter(Boolean).join(' ');
-                                        }).join(' ');
-
-                                        return [childText, comments, subtextData].filter(Boolean).join(' ');
+                        result.chekbox = false;
+                        if (result?.FeedBack && result?.FeedBack != undefined) {
+                            const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
+                            let descriptionSearchData = '';
+                            try {
+                                const feedbackData = JSON.parse(result.FeedBack);
+                                descriptionSearchData = feedbackData[0]?.FeedBackDescriptions?.map((child: any) => {
+                                    const childText = cleanText(child?.Title);
+                                    const comments = (child?.Comments || [])?.map((comment: any) => {
+                                        const commentText = cleanText(comment?.Title);
+                                        const replyText = (comment?.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
+                                        return [commentText, replyText]?.filter(Boolean).join(' ');
                                     }).join(' ');
 
-                                    result.descriptionsSearch = descriptionSearchData;
-                                } catch (error) {
-                                    console.error("Error:", error);
-                                }
-                            }
+                                    const subtextData = (child.Subtext || [])?.map((subtext: any) => {
+                                        const subtextComment = cleanText(subtext?.Title);
+                                        const subtextReply = (subtext.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
+                                        const subtextComments = (subtext.Comments || [])?.map((subComment: any) => {
+                                            const subCommentTitle = cleanText(subComment?.Title);
+                                            const subCommentReplyText = (subComment.ReplyMessages || []).map((val: any) => cleanText(val?.Title)).join(' ');
+                                            return [subCommentTitle, subCommentReplyText]?.filter(Boolean).join(' ');
+                                        }).join(' ');
+                                        return [subtextComment, subtextReply, subtextComments].filter(Boolean).join(' ');
+                                    }).join(' ');
 
-                            try {
-                                if (result?.Comments != null && result?.Comments != undefined) {
-                                    const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
-                                    const commentsFormData = JSON?.parse(cleanedComments);
-                                    result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
-                                        return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
-                                    }, "").trim();
-                                }
+                                    return [childText, comments, subtextData].filter(Boolean).join(' ');
+                                }).join(' ');
+
+                                result.descriptionsSearch = descriptionSearchData;
                             } catch (error) {
-                                console.error("An error occurred:", error);
+                                console.error("Error:", error);
                             }
-                            if (
-                                result.AssignedTo != undefined &&
-                                result.AssignedTo.length > 0
-                            ) {
-                                map(result.AssignedTo, (Assig: any) => {
-                                    if (Assig.Id != undefined) {
-                                        map(AllUsers, (users: any) => {
-                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
-                                                users.ItemCover = users.Item_x0020_Cover;
-                                                result.TeamLeaderUser.push(users);
-                                                result.AllTeamName += users.Title + ";";
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                            if (result.ResponsibleTeam != undefined && result.ResponsibleTeam.length > 0) {
-                                map(result.ResponsibleTeam, (Assig: any) => {
-                                    if (Assig.Id != undefined) {
-                                        map(AllUsers, (users: any) => {
-                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
-                                                users.ItemCover = users.Item_x0020_Cover;
-                                                result.TeamLeaderUser.push(users);
-                                                result.AllTeamName += users.Title + ";";
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                            if (
-                                result.TeamMembers != undefined &&
-                                result.TeamMembers.length > 0
-                            ) {
-                                map(result.TeamMembers, (Assig: any) => {
-                                    if (Assig.Id != undefined) {
-                                        map(AllUsers, (users: any) => {
-                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
-                                                users.ItemCover = users.Item_x0020_Cover;
-                                                result.TeamLeaderUser.push(users);
-                                                result.AllTeamName += users.Title + ";";
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                            if (result?.TaskCategories?.length > 0) {
-                                result.TaskTypeValue = result?.TaskCategories?.map((val: any) => val.Title).join(",")
-                            }
-
-                            if (result?.ClientCategory?.length > 0) {
-                                result.ClientCategorySearch = result?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
-                            } else {
-                                result.ClientCategorySearch = ''
-                            }
-                            result["TaskID"] = globalCommon.GetTaskId(result);
-                            if (result.Project) {
-                                result.ProjectTitle = result?.Project?.Title;
-                                result.ProjectId = result?.Project?.Id;
-                                result.projectStructerId = result?.Project?.PortfolioStructureID
-                                const title = result?.Project?.Title || '';
-                                const formattedDueDate = Moment(result?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
-                                result.joinedData = [];
-                                if (result?.projectStructerId && title || formattedDueDate) {
-                                    result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
-                                }
-                            }
-                            result.SmartPriority = globalCommon.calculateSmartPriority(result);
-                            // result = globalCommon.findTaskCategoryParent(taskCatagory, result)
-                            result["Item_x0020_Type"] = "Task";
-                            TasksItem.push(result);
-                            AllTasksData.push(result);
-                        });
-                        setAllSiteTasksData(AllTasksData);
-                        countTaskAWTLevel(AllTasksData, '');
-                        // let taskBackup = JSON.parse(JSON.stringify(AllTasksData));
-                        // allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
-                        try {
-                            allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
-                        } catch (error) {
-                            console.log("backup Json parse error Page Loade Task Data");
                         }
-                        // allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
+
+                        try {
+                            if (result?.Comments != null && result?.Comments != undefined) {
+                                const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
+                                const commentsFormData = JSON?.parse(cleanedComments);
+                                result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
+                                    return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
+                                }, "").trim();
+                            }
+                        } catch (error) {
+                            console.error("An error occurred:", error);
+                        }
+                        if (
+                            result.AssignedTo != undefined &&
+                            result.AssignedTo.length > 0
+                        ) {
+                            map(result.AssignedTo, (Assig: any) => {
+                                if (Assig.Id != undefined) {
+                                    map(AllUsers, (users: any) => {
+                                        if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                                            users.ItemCover = users.Item_x0020_Cover;
+                                            result.TeamLeaderUser.push(users);
+                                            result.AllTeamName += users.Title + ";";
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        if (result.ResponsibleTeam != undefined && result.ResponsibleTeam.length > 0) {
+                            map(result.ResponsibleTeam, (Assig: any) => {
+                                if (Assig.Id != undefined) {
+                                    map(AllUsers, (users: any) => {
+                                        if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                                            users.ItemCover = users.Item_x0020_Cover;
+                                            result.TeamLeaderUser.push(users);
+                                            result.AllTeamName += users.Title + ";";
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        if (
+                            result.TeamMembers != undefined &&
+                            result.TeamMembers.length > 0
+                        ) {
+                            map(result.TeamMembers, (Assig: any) => {
+                                if (Assig.Id != undefined) {
+                                    map(AllUsers, (users: any) => {
+                                        if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                                            users.ItemCover = users.Item_x0020_Cover;
+                                            result.TeamLeaderUser.push(users);
+                                            result.AllTeamName += users.Title + ";";
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        if (result?.TaskCategories?.length > 0) {
+                            result.TaskTypeValue = result?.TaskCategories?.map((val: any) => val.Title).join(",")
+                        }
+
+                        if (result?.ClientCategory?.length > 0) {
+                            result.ClientCategorySearch = result?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
+                        } else {
+                            result.ClientCategorySearch = ''
+                        }
+                        result["TaskID"] = globalCommon.GetTaskId(result);
+                        if (result.Project) {
+                            result.ProjectTitle = result?.Project?.Title;
+                            result.ProjectId = result?.Project?.Id;
+                            result.projectStructerId = result?.Project?.PortfolioStructureID
+                            const title = result?.Project?.Title || '';
+                            const formattedDueDate = Moment(result?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+                            result.joinedData = [];
+                            if (result?.projectStructerId && title || formattedDueDate) {
+                                result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                            }
+                        }
+                        result.SmartPriority = globalCommon.calculateSmartPriority(result);
+                        // result = globalCommon.findTaskCategoryParent(taskCatagory, result)
+                        result["Item_x0020_Type"] = "Task";
+                        TasksItem.push(result);
+                        AllTasksData.push(result);
+                    });
+                    setAllSiteTasksData(AllTasksData);
+                    countTaskAWTLevel(AllTasksData, '');
+                    // let taskBackup = JSON.parse(JSON.stringify(AllTasksData));
+                    // allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
+                    try {
+                        allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
+                    } catch (error) {
+                        console.log("backup Json parse error Page Loade Task Data");
                     }
+                    // allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
                 }
             });
             // GetComponents();
@@ -2569,7 +2571,7 @@ function TeamPortlioTable(SelectedProp: any) {
             setOpenCompareToolPopup(false);
         }
     }, []);
-    
+
     const trigerAllEventButton = (eventValue: any) => {
         if (eventValue === "Compare") {
             setOpenCompareToolPopup(true);
@@ -2645,7 +2647,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
                                         <div>
-                                            <GlobalCommanTable showRestructureButton={true}   columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup}
+                                            <GlobalCommanTable showRestructureButton={true} columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup}
                                                 masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup}
                                                 flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
                                                 flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef}

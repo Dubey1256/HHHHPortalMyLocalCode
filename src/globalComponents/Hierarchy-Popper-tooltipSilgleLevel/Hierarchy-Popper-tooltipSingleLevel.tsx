@@ -258,22 +258,23 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
         return (
 
             <>
-                <div className="d-flex py-1">
-                    <div className="d-grid" style={{ maxWidth: "200px", width: "100%" }}>
-                        <div className={firstChild == false ? 'alignCenter' : lastChild == true ? `alignCenter levelml-${marginCount} bg-siteColor py-1 ps-2 roundLeft lastlevel ` : `alignCenter levelpl-${paddingCount}`}>
+                <div className={itemData.Item_x0020_Type=="Component"?' d-flex p-1 f-bg borderBottomWhite':
+                        itemData.Item_x0020_Type=="SubComponent"?'d-flex p-1 a-bg borderBottomWhite':itemData.Item_x0020_Type=='Feature'?"d-flex p-1 borderBottomWhite w-bg":"d-flex p-1 border-top"}>
+                    <div style={{flex: "0 0 155px" }}>
+                        <div className={lastChild == true ? `alignCenter bg-white levelml-1`:`alignCenter`}>
                             {hasChildren &&
-                                <span style={{ width: "20px" }} className="mt--5" onClick={() => onToggle(itemData)}>
+                                <span style={{ width: "20px" }} className="mt--3" onClick={() => onToggle(itemData)}>
                                     {hasChildren && (
                                         itemData.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }} />
                                     )}
                                 </span>
                             }
                             {itemData?.SiteIcon != undefined ? <>
-                                <img className="icon-sites-img ml20 me-1" src={itemData?.SiteIcon}></img>
+                                <img className="icon-sites-img ml20 mx-1" src={itemData?.SiteIcon}></img>
                                 <span className="fw-normal">{itemData?.TaskId != undefined ? itemData?.TaskId : itemData?.TaskID}</span>
                               
                             </> : <>{itemData?.Title != "Others" ? <>
-                                <span className='Dyicons me-1'>{itemData?.Item_x0020_Type?.toUpperCase()?.charAt(0)}
+                                <span className='Dyicons mx-1 '>{itemData?.Item_x0020_Type?.toUpperCase()?.charAt(0)}
                                 </span>
                                 <span className="fw-normal">{itemData?.PortfolioStructureID}</span>
                                 
@@ -281,37 +282,32 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                                 : ""}</>}
                         </div>
                     </div>
-                    <div className={lastChild == true ? "bg-siteColor py-1 lastlevel" : ''} style={{ width: "325px" }}>
-                        <div className="aligncenter">
+                    <div className={lastChild == true ? "lastlevel" : ''} style={{ flex: "0 0 335px" }}>
+                        <div className="aligncenter textDotted" style={{ width: "335px" }}>
                             {itemData?.SiteIcon != undefined ? <>
                                 
-                                <a className={lastChild == true ? "hreflink fw-normal text-white" : "hreflink fw-normal"}
+                                <a
                                     href={`${itemData?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${itemData?.Id}&Site=${itemData?.siteType}`}
-                                    data-interception="off"
+                                    data-interception="off" className="fw-normal hreflink" title={`${itemData?.Title}`}
                                     target="_blank">
                                     {itemData?.Title}
                                 </a> </> : <>{itemData?.Title != "Others" && itemData?.Item_x0020_Type != "Sprint" && itemData?.Item_x0020_Type  != "Project" ? <>
                                 
-                                    <a className={lastChild == true ? "hreflink fw-normal text-white" : "hreflink fw-normal"}
+                                    <a className="fw-normal hreflink" title={`${itemData?.Title}`}
                                         data-interception="off"
                                         target="blank"
                                         href={`${itemData?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${itemData?.Id}`}>
-                                        <span className="d-flex">
                                             {itemData?.Title}
-                                        </span>
                                     </a>
                                 </>
                                  :itemData?.Item_x0020_Type == "Sprint" || itemData.Item_x0020_Type == "Project" ?
-                                 <a className={lastChild == true ? "hreflink fw-normal text-white" : "hreflink fw-normal"} data-interception="off" target="blank"
+                                 <a className="fw-normal hreflink" title={`${itemData?.Title}`} data-interception="off" target="blank"
                                      href={`${itemData?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${itemData?.Id}`}>
-                             
-                                     <span className="d-flex">
                                          {itemData?.Title}
-                                     </span>
                                  </a>   : ""}</>}
                         </div>
                     </div>
-                    <div className={lastChild == true ? "bg-siteColor py-1 roundRight lastlevel text-white" : ''} style={{ width: "25px" }}>
+                    <div className={lastChild == true ? "roundRight lastlevel" : ''} style={{ flex: "0 0 25px" }}>
                         {itemData?.TaskType?.Title != 'Task'&& itemData?.Item_x0020_Type != "Sprint" && itemData?.Item_x0020_Type  != "Project" ?
                             <svg onClick={() => openActivityPopup(itemData)} className={lastChild == true ? "hreflink text-white" : "hreflink"} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48" fill="#333333">
                                 <title>Open Activity Popup</title>
@@ -353,7 +349,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
             </span>
 
             {action === "click" && visible && (
-                <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container p-3 m-0" })}>
+                <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container position-absolute p-3 m-0" })} style={{width:"550px"}}>
                     <div className="alignCenter mb-2">
                         <span className="fw-normal">{row?.Title}</span>
                         <span onClick={handleCloseClick} style={{ marginRight: "3px" }} title="Close" className="ml-auto hreflink svg__iconbox svg__icon--cross dark"></span>
