@@ -352,7 +352,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
             </span>
 
             {action === "click" && visible && (
-                <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container p-3 m-0" })}>
+                <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container clickTooltip p-3 m-0" })}>
                     <div className="alignCenter mb-2">
                         <span className="fw-normal">{row?.Title}</span>
                         <span onClick={handleCloseClick} style={{ marginRight: "3px" }} title="Close" className="ml-auto hreflink svg__iconbox svg__icon--cross dark"></span>
