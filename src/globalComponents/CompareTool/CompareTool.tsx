@@ -730,7 +730,7 @@ const CompareTool = (props: any) => {
         return (
             <>
                 <div className="subheading">
-                    Compare Components
+                    Compare {data?.length >0 && data[0]?.TaskType?.Id !=undefined ?'Task Tool' : 'Components' }
 
                 </div>
                 <Tooltip ComponentId={611} />
@@ -1805,7 +1805,7 @@ const CompareTool = (props: any) => {
         if (type == 'Keep2')
             var flag = confirm("This operation will save all changes in " + data[1].Title + " 2 and delete " + data[0].Title + " 1. Do you want to continue?");
         if (type == 'KeepBoth')
-            var flag = confirm("This operation will save all changes in both the Compare Components.  Do you want to continue?");
+            var flag = confirm("This operation will save all changes in both the Compare " +  data[0].TaskType?.Id !=undefined ? "Task" : "Components" + " .  Do you want to continue?");
 
         if (flag) {
             if (type == 'Keep1') {
@@ -2404,7 +2404,7 @@ const CompareTool = (props: any) => {
                         </Row>
                         {<Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
-                                {data[0]?.Item_x0020_Type === 'Task' ?
+                                {data[0]?.TaskType?.Id !=undefined ?
                                     <label className="fw-semibold form-label">TeamMembers</label>
                                     : <label className="fw-semibold form-label">Responsible Team</label>}
                                 {
@@ -2440,7 +2440,7 @@ const CompareTool = (props: any) => {
                             </Col>
                         </Row>}
 
-                        {data[0]?.Item_x0020_Type === 'Task' && <Row className="Metadatapannel">
+                        {data[0]?.TaskType?.Id !=undefined && <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <label className="fw-semibold form-label">Working Members</label>
                                 {
