@@ -6,7 +6,9 @@ export interface ISmartmetadataportfolioProps {
   userDisplayName: string;
   SPSiteConfigListID: string;
   SPSmartMetadataListID: string;
-  SPTopNavigationListID:string
+  SPTopNavigationListID: string
   PageUrl: any
-  SPSitesListUrl:string;
+  SPSitesListUrl: string;
+  TaskUsertListID: string;
+  siteUrl: any
 }
