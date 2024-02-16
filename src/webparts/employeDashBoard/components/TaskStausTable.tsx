@@ -157,8 +157,9 @@ const TaskStatusTbl = (Tile: any) => {
   }
   const onDropTable = (e: any, Type: any, User: any) => {
     let Status = 0;
-    if (Type == '9%Task')
+    if (Type == '9%Task') {
       Status = 9;
+    }
     let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
     if (Item != undefined && Item != '') {
       let web = new Web(ContextData?.propsValue?.siteUrl);
@@ -190,16 +191,18 @@ const TaskStatusTbl = (Tile: any) => {
         </div>
       ),
       accessorKey: "",
-      id: "row?.original.Id",
+      id: "SiteIcon",
       canSort: false,
       placeholder: "",
-      size: 80
+      size: 80,
+      isColumnVisible: true
     },
     {
       accessorKey: "TaskID",
       placeholder: "ID",
       id: 'TaskID',
       size: 180,
+      isColumnVisible: true,
       cell: ({ row, getValue }: any) => (
         <span className="d-flex">
           <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={item?.Tasks} AllListId={ContextData?.propsValue?.Context} />
@@ -222,7 +225,8 @@ const TaskStatusTbl = (Tile: any) => {
       placeholder: "Title",
       resetColumnFilters: false,
       header: "",
-      size: 460
+      size: 460,
+      isColumnVisible: true
     },
     {
       accessorFn: (row: any) => row?.SmartPriority,
@@ -232,7 +236,8 @@ const TaskStatusTbl = (Tile: any) => {
       filterFn: (row: any, columnName: any, filterValue: any) => {
         if (row?.original?.SmartPriority?.includes(filterValue)) {
           return true
-        } else {
+        }
+        else {
           return false
         }
       },
@@ -243,6 +248,7 @@ const TaskStatusTbl = (Tile: any) => {
       isColumnDefultSortingDesc: true,
       header: "",
       size: 190,
+      isColumnVisible: true
     },
     {
       accessorKey: "percentage",
@@ -250,7 +256,8 @@ const TaskStatusTbl = (Tile: any) => {
       header: "",
       resetColumnFilters: false,
       size: 140,
-      id: "percentage"
+      id: "percentage",
+      isColumnVisible: true
     },
     {
       accessorFn: (row: any) => row?.Created,
@@ -282,20 +289,22 @@ const TaskStatusTbl = (Tile: any) => {
         }
       },
       header: "",
-      size: 100
+      size: 100,
+      isColumnVisible: true
     },
     {
       cell: ({ row, getValue }: any) => (
         <span title="Edit Task" className="alignIcon svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
 
       ),
-      id: 'Id',
+      id: 'EditTaskPopup',
       canSort: false,
       placeholder: "",
       header: "",
       resetColumnFilters: false,
       resetSorting: false,
       size: 45,
+      isColumnVisible: true
     },]
   }
   if (Tile.activeTile != undefined && DashboardConfigCopy != undefined && DashboardConfigCopy?.length > 0)
@@ -447,7 +456,7 @@ const TaskStatusTbl = (Tile: any) => {
                   </div>
                   <div className="Alltable maXh-300" style={{ height: "300px" }}>
                     {config?.Tasks != undefined && (
-                      <GlobalCommanTable wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                      <GlobalCommanTable wrapperHeight="87%" columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
                     )}
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
                       {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={ContextData.Context} emailStatus={"Approved"} items={approveItem} />}
