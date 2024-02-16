@@ -9342,7 +9342,7 @@ const EditTaskPopup = (Items: any) => {
                 onDismiss={closeApproverPopup}
                 isBlocking={ApproverPopupStatus}
                 type={PanelType.medium}
-            >
+                className="mb-2">
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
                     <div className="">
                         <div className="col-sm-12 categScroll" style={{ height: "auto" }}>
