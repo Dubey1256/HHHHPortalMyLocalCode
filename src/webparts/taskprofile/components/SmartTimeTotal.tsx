@@ -241,7 +241,7 @@ let allTaskUsers:any;
             {console.log(timeEntry)}
             {console.log(AllAvailableTitle)}
             {console.log(additionalTime)}
-            {smartTimeTotal.toFixed(2)}
+            {smartTimeTotal.toFixed(1)}
             <span className='openhoverpopup hoverimg'>
             <span className="svg__iconbox svg__icon--clock dark" onClick={OpenTimeEntry}></span>
                <div className={additionalTime?.length > 0 ? "hoverpopup overlay" :'hoverpopup overlay blankTooltip'}>
