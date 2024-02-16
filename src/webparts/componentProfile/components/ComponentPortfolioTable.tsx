@@ -339,7 +339,7 @@ function PortfolioTable(SelectedProp: any) {
       countAllComposubData=[]
       componentData=[]
       countAllTasksData=[]
-      
+      setLoaded(true)
     }
     else{
       if(loadAllTaskType == false){
@@ -348,7 +348,6 @@ function PortfolioTable(SelectedProp: any) {
         countAllTasksData=[]
         componentData=[]
         countsrun = 0;
-        setLoaded(false)
         let filter = "PercentComplete lt '0.90'";
         AllTasksMatches  = await globalCommon?.loadAllSiteTasks(ContextValue, filter)
         
