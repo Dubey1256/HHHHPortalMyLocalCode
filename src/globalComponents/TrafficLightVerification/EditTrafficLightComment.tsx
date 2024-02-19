@@ -45,13 +45,20 @@ const EditTrafficLightComment = (props: any) => {
         props?.setOpenCommentpopup(false)
     }
     const updateData = () => {
-       myContextValue2.trafficValue=copyTrafficlight;
-        myContextValue2.CommentData=copyCommentData;
-        myContextValue2?.setTrafficValue(copyTrafficlight);
+       myContextValue2?.setTrafficValue(copyTrafficlight);
         myContextValue2?.SetCommentData(copyCommentData)
         myContextValue2?.setcolumnVerificationStatus(copycolumnVerificationStatus)
-        myContextValue2?.updateJson()
+        props?.setOpenCommentpopup(false)
+        let UpdateData={
+            trafficValue:copyTrafficlight,
+            CommentData:copyCommentData,
+            columnVerificationStatus:copycolumnVerificationStatus
+        }
+        myContextValue2?.updateJson(UpdateData) 
+        
+     
     }
+    
     return (
         <>
             <Panel
