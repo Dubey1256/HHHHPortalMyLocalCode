@@ -80,8 +80,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         }
         // // setModalIsOpen(false);
         if (selectionType === "Multi") {
-            setIsSelectionsBelow(true);
-            setIsSelections(true);
+            
             Example(MultiSelectedData, selectionType, "Save");
         } else {
        
