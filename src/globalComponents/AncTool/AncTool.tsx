@@ -1,26 +1,16 @@
 import React, { useRef } from 'react'
-import DefaultFolderContent from './DefaultFolderContent'
-import axios from 'axios';
-import { usePopperTooltip } from "react-popper-tooltip";
-import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
-import { SlArrowRight, SlArrowLeft, SlArrowUp, SlArrowDown } from "react-icons/sl";
-import { Card, CardBody, CardFooter, CardHeader, CardTitle, Col, CustomInput, Pagination, PaginationItem, PaginationLink, Progress, Row, Table } from "reactstrap";
+import { SlArrowRight, SlArrowDown } from "react-icons/sl";
+import {  CardBody,  CardTitle, Col, Row, Table } from "reactstrap";
 import "react-popper-tooltip/dist/styles.css";
 import Tooltip from '../Tooltip';
 import { Web } from 'sp-pnp-js'
-import { IList } from "@pnp/sp/lists";
-
 import pptxgen from 'pptxgenjs';
-import { Button, Modal, ModalBody } from "react-bootstrap";
+import { Button,  ModalBody } from "react-bootstrap";
 import * as GlobalFunction from '../globalCommon';
 import SmartInformation from '../../webparts/taskprofile/components/SmartInformation';
 import ExcelJS from 'exceljs';
-import { IFileAddResult } from "@pnp/sp/files";
 import { Dropdown, Panel, PanelType } from 'office-ui-fabric-react';
-import ConnectExistingDoc from './ConnectExistingDoc';
 import MsgReader from "@kenjiuno/msgreader"
-import { Items } from '@pnp/sp/items';
-import { AttachFile } from '@material-ui/icons';
 import PageLoader from '../pageLoader';
 let backupExistingFiles: any = [];
 let backupCurrentFolder: any = [];
@@ -508,43 +498,17 @@ const AncTool = (props: any) => {
                     reader.onloadend = async () => {
                         const fileContent = reader.result as ArrayBuffer;
                         setCreateNewDocType(getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name));
-                        // if (getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == 'msg') {
+                        if (getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == 'msg') {
 
-                        //     const reader = new FileReader();
-                        //     attachmentFile = true;
-                        //     const testMsg = new MsgReader(fileContent)
-                        //     const testMsgInfo = testMsg.getFileData()
-                        //     console.log(testMsgInfo);
-                        //     msgfile = testMsgInfo
-                        //     if (msgfile?.attachments?.length > 0) {
-                        //         msgfile?.attachments?.map((attach: any) => {
-                        //             attach.extension = getFileType(attach?.fileName)
-                        //         })
-                        //     }
+                            const reader = new FileReader();
+                            attachmentFile = true;
+                            const testMsg = new MsgReader(fileContent)
+                            const testMsgInfo = testMsg.getFileData()
+                            console.log(testMsgInfo);
+                            msgfile = testMsgInfo
 
-                        //     reader.readAsArrayBuffer(selectedFile != undefined ? selectedFile : uploadselectedFile);
-                        //     emailDoc = emailDoc.concat(selectedFile != undefined ? selectedFile : uploadselectedFile);
-                        //     emailDoc = emailDoc.concat(msgfile.attachments);
-                        //     emailDoc?.map((AttachFile: any, index: any) => {
-                        //         if (AttachFile?.extension?.toLowerCase() != "png" && AttachFile?.extension?.toLowerCase() != "jpg" && AttachFile?.extension?.toLowerCase() != "jpeg" && AttachFile?.extension?.toLowerCase() != "svg") {
-                        //             attachmentFileIndex = index
-
-                        //             if (renamedFileName?.length > 0 && selectedFile.name?.length > 0 && getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == "msg") {
-                        //                 filetype = getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name)
-                        //                 fileName = renamedFileName + `.${filetype}`;
-                        //             } else {
-                        //                 fileName = AttachFile.fileName != undefined ? AttachFile?.fileName : AttachFile?.name;
-                        //             }
-                        //             uploadFile(AttachFile)
-                        //         }
-                        //     })
-                        //     // };
-
-                        // } else {
-
-                        //     uploadFile(fileContent)
-                        // }
-                        uploadFile(fileContent)
+                        } 
+                      uploadFile(fileContent)
 
 
                     };
@@ -1895,9 +1859,7 @@ const AncTool = (props: any) => {
                 isBlocking={false}>
                 <div>
                     {selectedPath?.displayPath?.length > 0 ?
-                        // <DefaultFolderContent Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.displayPath} />
                         <div className='panel  mb-2'>
-                            {/* <h3 className='pageTitle'>1. Default Folder Content  <hr></hr></h3> */}
                             <div>
                                 <input id="searchinput" type="search" onChange={(e) => { searchCurrentFolder(e.target.value) }} placeholder="Search..." className="form-control" />
                                 <div className="Alltable mt-2">
