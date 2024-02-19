@@ -8,7 +8,7 @@ const Smartmetadatapickerin = (props: any) => {
   let usedfor = props?.usedFor;
   const [opensmartmetapopup, setopensmartmetapopup] = useState(true);
   const [allsmartmetdata, setAllSmartMetadata] = useState([]);
-  const [selectedItems, setSelectedItems] = useState(props?.selectedFeaturedata != undefined && props?.selectedFeaturedata?.length > 0 ? props.selectedFeaturedata : []);
+  const [selectedItems, setSelectedItems] = useState([props?.selectedFeaturedata != undefined ? props.selectedFeaturedata : undefined]);
   useEffect(() => {
     getSmartmetadata();
   }, []);
@@ -39,7 +39,7 @@ const Smartmetadatapickerin = (props: any) => {
   const customHeader = () => (
     <>
       <div className="subheading">Select Feature Type</div>
-      <Tooltip ComponentId="1626" />
+      <Tooltip ComponentId="1741" />
     </>
   );
 
@@ -71,26 +71,29 @@ const Smartmetadatapickerin = (props: any) => {
     <Panel
       onRenderHeader={customHeader}
       isOpen={opensmartmetapopup}
-      type={PanelType.medium}
+      type={PanelType.custom}
+      customWidth="375px"
       onDismiss={closePopupSmartPopup}
-      isBlocking={false}
+      isBlocking={opensmartmetapopup}
     >
-      <div className='modal-body mb-5'>
+      <div className='modal-body'>
         {selectedItems?.length > 0 ? (
           <div className="full-width">
             {selectedItems?.map((val: any) => (
-              <span className="block me-1" key={val?.Id}>
-                <span>{val?.Title}</span>
-                <span
-                  className="bg-light hreflink ms-2 svg__icon--cross svg__iconbox"
-                  onClick={() => deleteSelectedFeature(val)}
-                ></span>
-              </span>
+              <>
+                {val != undefined && val != '' && val?.Title != undefined && val?.Title != '' && <span className="block me-1" key={val?.Id}>
+                  <span>{val?.Title}</span>
+                  <span
+                    className="bg-light hreflink ms-2 svg__icon--cross svg__iconbox"
+                    onClick={() => deleteSelectedFeature(val)}
+                  >
+                  </span>
+                </span>}</>
             ))}
           </div>
         ) : null}
         <div className='mt-3'>
-          <ul className='categories-menu p-0'>
+          <ul className='categories-menu p-0  w-100'>
             {allsmartmetdata.map((item, index) => (
               <li key={index} onClick={() => handleItemClick(item)}>
                 {item.Title}
@@ -98,6 +101,7 @@ const Smartmetadatapickerin = (props: any) => {
             ))}
           </ul></div></div>
       <footer className="fixed-bottom bg-f4 p-3 text-end">
+
         <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveselectctedData} >
           Save
         </button>

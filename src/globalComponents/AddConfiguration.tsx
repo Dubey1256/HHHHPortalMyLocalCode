@@ -5,18 +5,22 @@ import { Col, Row } from "react-bootstrap";
 import Tooltip from "./Tooltip";
 let portfolioColor: any = '#057BD0';
 const AddConfiguration = (props: any) => {
-    let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": '', "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks" }
+    let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": '', "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks", "selectFilterType": "smartFav", "selectUserFilterType": "AssignedTo" }
     const [NewItem, setNewItem]: any = React.useState<any>([defaultConfig]);
     const [SmartFav, setSmartFav] = React.useState<any>([]);
     const [AllTaskUsers, setAllTaskUsers] = React.useState<any>([]);
-    const [DataSource, setDataSource] = React.useState<any>([{ "key": "Tasks", "text": "Tasks" }, { "key": "TaskUsers", "text": "TaskUsers" }, { "key": "Portfolio Team Lead", "text": "Portfolio Team Lead" }]);
+    const [DataSource, setDataSource] = React.useState<any>([{ "key": "Tasks", "text": "Tasks" }, { "key": "TaskUsers", "text": "TaskUsers" },]);
     const [DashboardTitle, setDashboardTitle] = React.useState<any>('');
     const [IsCheck, setIsCheck] = React.useState<any>(false);
-    const [IsDisabledAddMoreAndFilter, setIsDisabledAddMoreAndFilter] = React.useState<any>(false);
-    const LoadSmartFav = async () => {
+    let [StatusOptions, setStatusOptions] = React.useState([{ value: 0, status: "0% Not Started", }, { value: 1, status: "1% For Approval", }, { value: 2, status: "2% Follow Up", }, { value: 3, status: "3% Approved", },
+    { value: 4, status: "4% Checking", }, { value: 5, status: "5% Acknowledged", }, { value: 9, status: "9% Ready To Go", }, { value: 10, status: "10% working on it", },
+    { value: 70, status: "70% Re-Open", }, { value: 75, status: "75% Deployment Pending", }, { value: 80, status: "80% In QA Review", }, { value: 90, status: "90% Task completed", },
+    { value: 100, status: "100% Closed", },]);
+    let [CutomUserFilter, setCutomUserFilter] = React.useState([{ value: 'Approver', status: "Me As Approver", }, { value: 'TeamLeader', status: "Me As Team Lead", }]);
+    const LoadSmartFav = () => {
         let SmartFavData: any = []
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
-        await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'Smartfavorites'").getAll().then(async (data: any) => {
+        web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'Smartfavorites'").getAll().then((data: any) => {
             data.forEach((config: any) => {
                 config.configurationData = JSON.parse(config?.Configurations);
                 config?.configurationData?.forEach((elem: any) => {
@@ -33,7 +37,9 @@ const AddConfiguration = (props: any) => {
                 let newArray = JSON.parse(JSON.stringify(props?.EditItem?.Configurations));
                 newArray?.forEach((item: any, Itemindex: any) => {
                     item.IsDefaultTile = false;
-                    item.IsShowTile = false
+                    item.IsShowTile = false;
+                    if (item?.selectFilterType == undefined)
+                        item.selectFilterType = 'smartFav'
                     if (item.AdditonalHeader === true) {
                         item.IsDefaultTile = true;
                         setIsCheck(true)
@@ -152,13 +158,21 @@ const AddConfiguration = (props: any) => {
     };
     const handleSelectFilterChange = (event: any, index: any, items: any) => {
         const updatedItems = [...NewItem];
-        updatedItems[index] = { ...items, smartFevId: event, };
+        updatedItems[index] = { ...items, smartFevId: event, Status: '', selectUserFilterType: '' };
         setNewItem(updatedItems);
     };
+    const handleCustomFilterChange = (event: any, index: any, items: any) => {
+        const updatedItems = [...NewItem];
+        updatedItems[index] = { ...items, Status: event, smartFevId: '' };
+        setNewItem(updatedItems);
+    };
+    const handleCustomUserFilterChange = (event: any, index: any, items: any) => {
+        const updatedItems = [...NewItem];
+        updatedItems[index] = { ...items, Status: event, smartFevId: '', selectUserFilterType: '' };
+        setNewItem(updatedItems);
+    };
+
     const handleDataSourceChange = (event: any, index: any, items: any) => {
-        setIsDisabledAddMoreAndFilter(false)
-        if (event == 'Portfolio Team Lead')
-            setIsDisabledAddMoreAndFilter(true)
         const updatedItems = [...NewItem]; updatedItems[index] = { ...items, DataSource: event, };
         setNewItem(updatedItems);
     };
@@ -192,6 +206,17 @@ const AddConfiguration = (props: any) => {
         })
         setNewItem(newArray);
     }
+    const handleFilterChange = (event: any, index: any, items: any) => {
+        const updatedItems = [...NewItem];
+        updatedItems[index] = { ...items, selectFilterType: event.target.value, };
+        setNewItem(updatedItems);
+    };
+    const handleUserFilterChange = (event: any, index: any, items: any) => {
+        const updatedItems = [...NewItem];
+        updatedItems[index] = { ...items, selectUserFilterType: event.target.value, smartFevId: '' };
+        setNewItem(updatedItems);
+    };
+
     useEffect(() => {
         LoadSmartFav()
         loadTaskUsers()
@@ -206,8 +231,10 @@ const AddConfiguration = (props: any) => {
                 <div className='border container modal-body p-1 mb-1'>
                     <Row className="Metadatapannel p-2 mb-2">
                         <Col sm="6" md="6" lg="6">
-                            <label className='form-label full-width'>Dashboard Title</label>
-                            <input className='form-control' type='text' placeholder="Dashboard Title" value={DashboardTitle} onChange={(e) => setDashboardTitle(e.target.value)} />
+                            <div className="input-group">
+                                <label className='form-label full-width'>Dashboard Title</label>
+                                <input className='form-control' type='text' placeholder="Dashboard Title" value={DashboardTitle} onChange={(e) => setDashboardTitle(e.target.value)} />
+                            </div>
                         </Col>
                     </Row>
                     <Row className="Metadatapannel p-2 mb-2">
@@ -219,12 +246,14 @@ const AddConfiguration = (props: any) => {
                                         <div key={index} className='border p-2 mb-2'>
                                             <Row className="Metadatapannel mb-2">
                                                 <Col sm="4" md="4" lg="4">
-                                                    <label className='form-label full-width'>WebPart Title</label>
-                                                    <input className='form-control' type='text' placeholder="Name"
-                                                        value={items?.WebpartTitle} onChange={(e) => {
-                                                            const updatedItems = [...NewItem]; updatedItems[index] = { ...items, WebpartTitle: e.target.value };
-                                                            setNewItem(updatedItems);
-                                                        }} />
+                                                    <div className="input-group">
+                                                        <label className='form-label full-width'>WebPart Title</label>
+                                                        <input className='form-control' type='text' placeholder="Name"
+                                                            value={items?.WebpartTitle} onChange={(e) => {
+                                                                const updatedItems = [...NewItem]; updatedItems[index] = { ...items, WebpartTitle: e.target.value };
+                                                                setNewItem(updatedItems);
+                                                            }} />
+                                                    </div>
                                                 </Col>
                                                 <Col sm="3" md="3" lg="3">
                                                     <div> Show WebPart</div>
@@ -260,35 +289,33 @@ const AddConfiguration = (props: any) => {
                                                     <label className='form-label full-width'>Webpart Position</label>
                                                 </Col>
                                                 <Col sm="6" md="6" lg="6">
-                                                    <label className='form-label full-width'>Row Position</label>
-                                                    <input className='form-control' type='text' placeholder="Row" value={items?.WebpartPosition?.Row}
-                                                        onChange={(e) => {
-                                                            const updatedItems = [...NewItem]; updatedItems[index] = { ...items, WebpartPosition: { ...items.WebpartPosition, Row: parseInt(e.target.value) } };
-                                                            setNewItem(updatedItems);
-                                                        }} />
+                                                    <div className="input-group">
+                                                        <label className='form-label full-width'>Row Position</label>
+                                                        <input className='form-control' type='text' placeholder="Row" value={items?.WebpartPosition?.Row}
+                                                            onChange={(e) => {
+                                                                const updatedItems = [...NewItem]; updatedItems[index] = { ...items, WebpartPosition: { ...items.WebpartPosition, Row: parseInt(e.target.value) } };
+                                                                setNewItem(updatedItems);
+                                                            }} />
+                                                    </div>
                                                 </Col>
                                                 <Col sm="6" md="6" lg="6">
-                                                    <label className='form-label full-width'>Column Position</label>
-                                                    <input className='form-control' type='text' placeholder="Column" value={items?.WebpartPosition?.Column}
-                                                        onChange={(e) => {
-                                                            const updatedItems = [...NewItem]; updatedItems[index] = { ...items, WebpartPosition: { ...items.WebpartPosition, Column: parseInt(e.target.value) } };
-                                                            setNewItem(updatedItems);
-                                                        }} />
+                                                    <div className="input-group">
+                                                        <label className='form-label full-width'>Column Position</label>
+                                                        <input className='form-control' type='text' placeholder="Column" value={items?.WebpartPosition?.Column}
+                                                            onChange={(e) => {
+                                                                const updatedItems = [...NewItem]; updatedItems[index] = { ...items, WebpartPosition: { ...items.WebpartPosition, Column: parseInt(e.target.value) } };
+                                                                setNewItem(updatedItems);
+                                                            }} />
+                                                    </div>
                                                 </Col>
                                             </Row>
                                             <Row className="Metadatapannel">
                                                 <Col sm="4" md="4" lg="4">
-                                                    {(items.DataSource == "Tasks" || items.DataSource == "TaskUsers") && < label className='form-label full-width'>Select Filter</label>}
-                                                    {items.DataSource == "Tasks" && <Dropdown id="FiltesSmartFav" disabled={IsDisabledAddMoreAndFilter == true} options={[{ key: '', text: '' }, ...(SmartFav?.map((item: any) => ({ key: item?.UpdatedId, text: item?.Title })) || [])]} selectedKey={items?.smartFevId}
-                                                        onChange={(e, option) => handleSelectFilterChange(option?.key, index, items)}
+                                                    <label className='form-label full-width'>Data Source</label>
+                                                    <Dropdown id="DataSource" options={[{ key: '', text: '' }, ...(DataSource?.map((item: any) => ({ key: item?.key, text: item?.text })) || [])]} selectedKey={items?.DataSource}
+                                                        onChange={(e, option) => handleDataSourceChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }}
                                                     />
-                                                    }
-                                                    {items.DataSource == "TaskUsers" && <Dropdown disabled={IsDisabledAddMoreAndFilter == true} id="FiltesTaskUser" options={[{ key: '', text: '' }, ...(AllTaskUsers?.map((item: any) => ({ key: item?.Id, text: item?.Title })) || [])]} selectedKey={items?.smartFevId}
-                                                        onChange={(e, option) => handleSelectFilterChange(option?.key, index, items)}
-                                                        styles={{ dropdown: { width: '100%' } }}
-                                                    />
-                                                    }
                                                 </Col>
                                                 <Col sm="4" md="4" lg="4">
                                                     <div className="form-check form-check-inline m-4">
@@ -307,18 +334,47 @@ const AddConfiguration = (props: any) => {
                                                 </Col>
                                             </Row>
                                             <Row className="Metadatapannel">
-                                                <Col sm="4" md="4" lg="4">
-                                                    <label className='form-label full-width'>Data Source</label>
-                                                    <Dropdown id="DataSource" options={[{ key: '', text: '' }, ...(DataSource?.map((item: any) => ({ key: item?.key, text: item?.text })) || [])]} selectedKey={items?.DataSource}
-                                                        onChange={(e, option) => handleDataSourceChange(option?.key, index, items)}
-                                                        styles={{ dropdown: { width: '100%' } }}
-                                                    />
+                                                <Col sm="12" md="12" lg="12">
+                                                    <label className='form-label full-width SpfxCheckRadio mb-1'>
+                                                        <input type="radio" className='radio' value="custom" checked={items?.selectFilterType === 'custom'} onChange={(e) => handleFilterChange(e, index, items)} />
+                                                        Custom Filter
+                                                        <input type="radio" className='radio ms-3' value="smartFav" checked={items?.selectFilterType === 'smartFav'} onChange={(e) => handleFilterChange(e, index, items)} />
+                                                        SmartFav Filter
+                                                    </label>
                                                 </Col>
+                                                {items.DataSource == "Tasks" && items?.selectFilterType == 'custom' && <Col sm="4" md="4" lg="4">
+                                                    <><label className='form-label full-width'>My Role</label>
+                                                        <label className='form-label full-width SpfxCheckRadio'>
+                                                            <input type="radio" className='radio' value="ResponsibleTeam" checked={items?.selectUserFilterType === 'ResponsibleTeam'} onChange={(e) => handleUserFilterChange(e, index, items)} />
+                                                            Task Lead
+                                                        </label>
+                                                        <label className='form-label full-width SpfxCheckRadio'>
+                                                            <input type="radio" className='radio' value="TeamMembers" checked={items?.selectUserFilterType === 'TeamMembers'} onChange={(e) => handleUserFilterChange(e, index, items)} />
+                                                            Task Member
+                                                        </label>
+                                                        <label className='form-label full-width SpfxCheckRadio'>
+                                                            <input type="radio" className='radio' value="AssignedTo" checked={items?.selectUserFilterType === 'AssignedTo'} onChange={(e) => handleUserFilterChange(e, index, items)} />
+                                                            Working Task
+                                                        </label>
+                                                    </>
+                                                </Col>}
                                                 <Col sm="4" md="4" lg="4">
-
-                                                </Col>
-                                                <Col sm="4" md="4" lg="4">
-
+                                                    {items.DataSource == "Tasks" && items?.selectFilterType == 'smartFav' && <><label className='form-label full-width'>Select Filter</label><Dropdown id="FiltesSmartFav" options={[{ key: '', text: '' }, ...(SmartFav?.map((item: any) => ({ key: item?.UpdatedId, text: item?.Title })) || [])]} selectedKey={items?.smartFevId}
+                                                        onChange={(e, option) => handleSelectFilterChange(option?.key, index, items)}
+                                                        styles={{ dropdown: { width: '100%' } }} /></>
+                                                    }
+                                                    {items.DataSource == "Tasks" && items?.selectFilterType == 'custom' && <><label className='form-label full-width'>Status</label> <Dropdown id="FiltersCustom" options={[{ key: '', text: '' }, ...(StatusOptions?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.Status}
+                                                        onChange={(e, option) => handleCustomFilterChange(option?.key, index, items)}
+                                                        styles={{ dropdown: { width: '100%' } }} /></>
+                                                    }
+                                                    {items.DataSource == "TaskUsers" && items?.selectFilterType == 'smartFav' && <><label className='form-label full-width'>Select Filter</label><Dropdown id="FiltesTaskUser" options={[{ key: '', text: '' }, ...(AllTaskUsers?.map((item: any) => ({ key: item?.Id, text: item?.Title })) || [])]} selectedKey={items?.smartFevId}
+                                                        onChange={(e, option) => handleSelectFilterChange(option?.key, index, items)}
+                                                        styles={{ dropdown: { width: '100%' } }} /></>
+                                                    }
+                                                    {items.DataSource == "TaskUsers" && items?.selectFilterType == 'custom' && <><label className='form-label full-width'>Select Filter</label><Dropdown id="FiltesCustomTaskUser" options={[{ key: '', text: '' }, ...(CutomUserFilter?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.Status}
+                                                        onChange={(e, option) => handleCustomUserFilterChange(option?.key, index, items)}
+                                                        styles={{ dropdown: { width: '100%' } }} /></>
+                                                    }
                                                 </Col>
                                             </Row>
                                         </div >
@@ -328,7 +384,7 @@ const AddConfiguration = (props: any) => {
                         </Col>
                     </Row>
                 </div>
-                {IsDisabledAddMoreAndFilter == false && <div className='mb-5'><a className="pull-right empCol hreflink" onClick={(e) => AddMorewebpart()}> +Add More </a></div>}
+                <div className='mb-5'><a className="pull-right empCol hreflink" onClick={(e) => AddMorewebpart()}> +Add More </a></div>
                 <div className='modal-footer mt-2'>
                     <button className="btn btn-primary ms-1" onClick={SaveConfigPopup} disabled={DashboardTitle == '' || IsCheck == false}>Save</button>
                     <button className='btn btn-default ms-1' onClick={CloseConfiguationPopup}>Cancel</button>

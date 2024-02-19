@@ -22,19 +22,22 @@ import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryCompone
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import PageLoader from "../../../globalComponents/pageLoader";
 import CentralizedSiteComposition from "../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition";
+import ShareTimeSheet from '../../../globalComponents/ShareTimeSheet';
 var AllListId: any;
 var siteConfig: any[] = []
 var AllPortfolios: any[] = [];
 var AllSitesAllTasks: any[] = [];
 var AllTimeSheetResult: any[] = [];
 var AllTaskUser: any[] = [];
+let totalTimedata:any=[]
 let QueryStringId: any = '';
+let DateType:any=''
 export interface IUserTimeEntryState {
-  Result: any; taskUsers: any; checked: any; expanded: any; checkedSites: any; expandedSites: any; filterItems: any; filterSites: any; ImageSelectedUsers: any; startdate: Date;
+  Result: any; taskUsers: any; checked: any; expanded: any; DateType: any, IsShareTimeEntry: boolean, checkedSites: any; expandedSites: any; filterItems: any; filterSites: any; ImageSelectedUsers: any; startdate: Date;
   enddate: Date; SitesConfig: any; AllTimeEntry: any; SelectGroupName: string; checkedAll: boolean; checkedAllSites: boolean; checkedParentNode: any; resultSummary: any;
   ShowingAllData: any; loaded: any; expandIcons: boolean; columns: ColumnDef<any, unknown>[]; IsMasterTask: any; IsTask: any; IsPresetPopup: any; PresetEndDate: any;
   PresetStartDate: any; PreSetItem: any; isStartDatePickerOne: boolean; isEndDatePickerOne: boolean; IsCheckedComponent: boolean; IsCheckedService: boolean; selectedRadio: any;
-  IsTimeEntry: boolean; SharewebTimeComponent: any; AllMetadata: any; isDirectPopup: boolean; TimeSheetLists: any
+  IsTimeEntry: boolean; showShareTimesheet: boolean; SharewebTimeComponent: any; AllMetadata: any; isDirectPopup: boolean; TimeSheetLists: any
 }
 var user: any = ''
 let portfolioColor: any = '#000066';
@@ -42,10 +45,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
   openPanel: any;
   closePanel: any;
   sheetsItems: any[];
+  showShareTimesheet: any;
   public constructor(props: IUserTimeEntryProps, state: IUserTimeEntryState) {
     super(props);
     this.state = {
-      Result: {}, taskUsers: [], checked: [], expanded: [], checkedSites: [], expandedSites: [], filterItems: [], filterSites: [], ImageSelectedUsers: [], startdate: new Date(),
+      Result: {}, taskUsers: [], DateType:'',IsShareTimeEntry:false,showShareTimesheet:false, checked: [], expanded: [], checkedSites: [], expandedSites: [], filterItems: [], filterSites: [], ImageSelectedUsers: [], startdate: new Date(),
       enddate: new Date(), SitesConfig: [], AllTimeEntry: [], SelectGroupName: '', checkedAll: false, expandIcons: false, checkedAllSites: false, checkedParentNode: [],
       resultSummary: { totalTime: 0, totalDays: 0 }, ShowingAllData: [], loaded: true, columns: [], IsTask: '', IsMasterTask: '', IsPresetPopup: false, PresetEndDate: new Date(),
       PresetStartDate: new Date(), PreSetItem: {}, isStartDatePickerOne: true, isEndDatePickerOne: false, IsCheckedComponent: true, IsCheckedService: true, selectedRadio: 'ThisWeek',
@@ -164,8 +168,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         siteConfig.map(async (config: any) => {
           if (config.Title != "SDC Sites") {
             let smartmeta = [];
-            await web.lists.getById(config.listId).items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "ParentTask/Id", "ParentTask/Title", "ParentTask/TaskID", "TaskID", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
-              .expand("TeamMembers", "ParentTask", "ClientCategory", "AssignedTo", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Portfolio").getAll().then((data: any) => {
+            await web.lists.getById(config.listId).items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id","Project/Title","Project/PriorityRank",'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "ParentTask/Id", "ParentTask/Title", "ParentTask/TaskID", "TaskID", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
+            .expand("TeamMembers", "ParentTask", "ClientCategory", "AssignedTo", "Project","TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Portfolio")
+            .getAll().then((data: any) => {
                 smartmeta = data;
                 smartmeta.map((task: any) => {
                   task.AllTeamMember = [];
@@ -175,6 +180,12 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   task.listId = config.listId;
                   task.siteUrl = config.siteUrl.Url;
                   task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
+                  task.SmartPriority = globalCommon.calculateSmartPriority(task);
+                  if (task?.ClientCategory?.length > 0) {
+                    task.ClientCategorySearch = task?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
+                } else {
+                    task.ClientCategorySearch = ''
+                }
                   task.DisplayDueDate = task.DueDate != null ? Moment(task.DueDate).format("DD/MM/YYYY") : "";
                   task.portfolio = {};
                   if (task?.Portfolio?.Id != undefined) {
@@ -191,6 +202,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             let currentCount = siteConfig?.length;
             if (arraycount === currentCount) {
               AllSitesAllTasks = AllSiteTasks;
+              totalTimedata?.map((data:any)=>{
+                data.taskDetails = this.checkTimeEntrySite(data);
+              })
             }
           } else {
             arraycount++;
@@ -201,6 +215,21 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       console.log(e)
     }
   };
+  private checkTimeEntrySite = (timeEntry: any) => { 
+    let result:any = ''
+    result = AllSitesAllTasks?.filter((task: any) => {
+        let site = '';
+        if (task?.siteType == 'Offshore Tasks') {
+            site = 'OffshoreTasks'
+        } else {
+            site = task?.siteType;
+        }
+        if (timeEntry[`Task${site}`] != undefined && task?.Id == timeEntry[`Task${site}`]?.Id) {
+            return task;
+        }
+    });
+    return result;
+}
   private checkBoxColor = (className: any) => {
     try {
       if (className != undefined) {
@@ -320,8 +349,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
     let taskUsers = [];
     let results = [];
-    results = await web.lists.getById(this.props.TaskUsertListID).items.select('Id', 'IsShowReportPage', 'UserGroupId', "UserGroup/Id", 'Suffix', 'SmartTime', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
-      .expand('AssingedToUser,UserGroup').orderBy('SortOrder', true).orderBy("Title", true).get();
+    results = await web.lists.getById(this.props.TaskUsertListID).items.select('Id', 'IsShowReportPage', 'UserGroupId', "UserGroup/Id", 'Suffix', 'SmartTime', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType','Approver/Id','Approver/Title','Approver/Name')
+      .expand('AssingedToUser,UserGroup,Approver').orderBy('SortOrder', true).orderBy("Title", true).get();
     AllTaskUser = results;
     for (let index = 0; index < results.length; index++) {
       let element = results[index];
@@ -805,21 +834,31 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let diff: number, lastday: number;
     switch (type) {
       case 'Custom':
+        this.setState({showShareTimesheet:false})
         break;
+
       case 'today':
+        DateType = 'Today';
+        this.setState({showShareTimesheet:true})
         break;
+
       case 'yesterday':
+        DateType = 'Yesterday';
+        this.setState({showShareTimesheet:true})
         startdt.setDate(startdt.getDate() - 1);
         enddt.setDate(enddt.getDate() - 1);
         break;
+
       case 'ThisWeek':
+        this.setState({showShareTimesheet:false})
         diff = startdt.getDate() - startdt.getDay() + (startdt.getDay() === 0 ? -6 : 1);
         startdt = new Date(startdt.setDate(diff));
-
         lastday = enddt.getDate() - (enddt.getDay() - 1) + 6;
         enddt = new Date(enddt.setDate(lastday));;
         break;
+
       case 'LastWeek':
+        this.setState({showShareTimesheet:false})
         tempdt = new Date();
         tempdt = new Date(tempdt.getFullYear(), tempdt.getMonth(), tempdt.getDate() - 7);
 
@@ -829,30 +868,38 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         lastday = tempdt.getDate() - (tempdt.getDay() - 1) + 6;
         enddt = new Date(tempdt.setDate(lastday));
         break;
+
       case 'EntrieMonth':
         startdt = new Date(startdt.getFullYear(), startdt.getMonth(), 1);
         enddt = new Date(enddt.getFullYear(), enddt.getMonth() + 1, 0);
         break;
+
       case 'LastMonth':
+        this.setState({showShareTimesheet:false})
         startdt = new Date(startdt.getFullYear(), startdt.getMonth() - 1);
         enddt = new Date(enddt.getFullYear(), enddt.getMonth(), 0);
         break;
+
       case 'Last3Month':
         startdt = new Date(startdt.getFullYear(), startdt.getMonth() - 3);
         enddt = new Date(enddt.getFullYear(), enddt.getMonth(), 0);
         break;
+
       case 'EntrieYear':
         startdt = new Date(new Date().getFullYear(), 0, 1);
         enddt = new Date(new Date().getFullYear(), 11, 31);
         break;
+
       case 'LastYear':
         startdt = new Date(new Date().getFullYear() - 1, 0, 1);
         enddt = new Date(new Date().getFullYear() - 1, 11, 31);
         break;
+
       case 'AllTime':
         startdt = new Date('2017/01/01');
         enddt = new Date();
         break;
+
       case 'Presettime':
         startdt = new Date(this.state?.PresetStartDate);
         enddt = new Date(this.state?.PresetEndDate);
@@ -860,8 +907,14 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     startdt.setHours(0, 0, 0, 0);
     enddt.setHours(0, 0, 0, 0);
+    //let StartDate: any
+    //StartDate = Moment(startdt).format("YYYY/MM/DD");
+    //let EndDate: any
+    // EndDate = Moment(enddt).format("YYYY/MM/DD");
     this.setState({
-      selectedRadio: type, startdate: startdt, enddate: enddt
+      selectedRadio: type,
+      startdate: startdt,
+      enddate: enddt
     })
   }
   private updatefilter(IsLoader: any) {
@@ -919,6 +972,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let ImageSelectedUsers = this.state.ImageSelectedUsers;
     if (AllTimeSheetResult != undefined && AllTimeSheetResult?.length > 0)
       FilterTimeEntry = AllTimeSheetResult.filter((item) => ImageSelectedUsers.find((items: any) => item.AuthorId == items.AssingedToUserId))
+      totalTimedata = FilterTimeEntry;
     this.LoadTimeSheetData(FilterTimeEntry);
   }
   private findUserByName = (name: any) => {
@@ -2041,6 +2095,18 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       ShowingAllData: ShowingData
     })
   }
+
+  private shareTaskInEmail=()=>{
+    
+    if(totalTimedata.length == 0){
+      alert('Data is not available in table')
+    }
+    else{
+      this.setState({IsShareTimeEntry:true})
+      globalCommon.ShareTimeSheet(totalTimedata,AllTaskUser,this?.props?.Context,DateType)
+    }
+    
+  }
   public render(): React.ReactElement<IUserTimeEntryProps> {
     const {
       description, isDarkTheme, environmentMessage, hasTeamsContext, userDisplayName, } = this.props;
@@ -2263,6 +2329,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                       </details>
                     </div>
                   </div>
+                  {/* {this.state.IsShareTimeEntry && <ShareTimeSheet  close={this.closeTimesheetCom} AllTaskTimeEntries={totalTimedata} taskUser={AllTaskUser} Context={this?.props?.Context} props={this?.props} type={DateType}/>} */}
                   <div className="col text-end mb-2">
                     <button type="button" className="btnCol btn btn-primary me-1" onClick={(e) => this.LoadAllTimeSheetaData()}>
                       Update Filters
@@ -2274,6 +2341,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 </Col>
               </Col>
             </details>
+            {this.state.showShareTimesheet && <span className="align-autoplay d-flex float-end my-1" onClick={() => this.shareTaskInEmail()}><span className="svg__iconbox svg__icon--mail ms-1" ></span>Share {DateType}'s Time Entry</span>}
           </Col>
           <div className='col'>
             <section className='TableContentSection'>

@@ -1194,14 +1194,14 @@ const inlineEditingcolumns = (props: any) => {
             className="hreflink"
           >
             {" "}
-            <span className="alignCenter">
+            <span>
               <ShowTaskTeamMembers
                 props={props?.item}
                 TaskUsers={props?.TaskUsers}
               />
               {showEditPencil && (
                 <a className="pancil-icons">
-                  <span className="svg__iconbox svg__icon--editBox"></span>
+                  <span className="svg__iconbox svg__icon--editBox alignIcon "></span>
                 </a>
               )}
             </span>
@@ -1262,7 +1262,7 @@ const inlineEditingcolumns = (props: any) => {
               if (category?.Title == "Immediate") {
                 return (
                   <a title="Immediate">
-                    <span className=" svg__iconbox svg__icon--alert "></span>
+                    <span className=" svg__iconbox svg__icon--alert alignIcon  "></span>
                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/urgent.svg")} />  */}
                   </a>
                 );
@@ -1271,14 +1271,14 @@ const inlineEditingcolumns = (props: any) => {
                 return (
                   <a title="Bottleneck">
                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/bottleneck.svg")} />  */}
-                    <span className=" svg__iconbox svg__icon--bottleneck"></span>
+                    <span className=" svg__iconbox svg__icon--bottleneck alignIcon "></span>
                   </a>
                 );
               }
               if (category?.Title == "Favorite") {
                 return (
                   <a title="Favorite">
-                    <span className=" svg__iconbox svg__icon--Star"></span>
+                    <span className=" svg__iconbox svg__icon--Star alignIcon "></span>
                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/favouriteselected.svg")} />  */}
                   </a>
                 );
@@ -1287,7 +1287,7 @@ const inlineEditingcolumns = (props: any) => {
             &nbsp;
             {showEditPencil && (
               <a className="pancil-icons">
-                <span className="svg__iconbox svg__icon--editBox"></span>
+                <span className="svg__iconbox svg__icon--editBox alignIcon "></span>
               </a>
             )}
           </span>
@@ -1347,11 +1347,11 @@ const inlineEditingcolumns = (props: any) => {
           >
             {UpdateFeatureType != true ? <span style={{overflow:'hidden',display:'inline-block', width:`${selectedFeatureTypeData?.Title != undefined ? '85px':'106px'}`,textOverflow:'ellipsis',whiteSpace:"nowrap"}} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span> : <span style={{overflow:'hidden',display:'inline-block', width:`${selectedFeatureTypeData?.Title != undefined ? '85px':'106px'}`,textOverflow:'ellipsis',whiteSpace:"nowrap"}} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span> }&nbsp;
             {selectedFeatureTypeData?.Title != undefined ? <a className="pancil-icons hreflink" onClick={() => removeFeatureType()}>
-              <span className="svg__iconbox svg__icon--cross"></span>
+              <span className="alignIcon svg__iconbox svg__icon--cross"></span>
             </a> : '' }
 
             <a className="pancil-icons hreflink" onClick={() => setUpdateFeatureType(true)}>
-              <span className="svg__iconbox svg__icon--editBox"></span>
+              <span className="alignIcon  svg__iconbox svg__icon--editBox"></span>
             </a>
 
           </span>
@@ -1399,7 +1399,7 @@ const inlineEditingcolumns = (props: any) => {
                           ) : (
                             <span
                               title={user?.Title}
-                              className="svg__iconbox svg__icon--defaultUser grey ms-1 "
+                              className="alignIcon  svg__iconbox svg__icon--defaultUser grey ms-1 "
                             ></span>
                           )}
                         </a>
@@ -1414,7 +1414,7 @@ const inlineEditingcolumns = (props: any) => {
             &nbsp;
             {showEditPencil && (
               <a className="pancil-icons ml-auto">
-                <span className="svg__iconbox svg__icon--editBox"></span>
+                <span className="alignIcon svg__iconbox svg__icon--editBox"></span>
               </a>
             )}
           </span>
@@ -1441,7 +1441,7 @@ const inlineEditingcolumns = (props: any) => {
         {props?.item?.DisplayDueDate!=undefined ?props?.item?.DisplayDueDate: <>&nbsp;</>}
           {showEditPencil && (
             <a className="pancil-icons">
-              <span className="svg__iconbox svg__icon--editBox"></span>
+              <span className="alignIcon  svg__iconbox svg__icon--editBox"></span>
             </a>
           )}
         </span>
@@ -1721,7 +1721,7 @@ const inlineEditingcolumns = (props: any) => {
                     checked={selectedCatId?.includes(option.Id)}
                     onChange={(event) => handleCategoryChange(event, option.Id)}
                   />
-                  <a title={option.Title}>
+                  <a className="alignCenter" title={option.Title}>
                     {option.Title == "Immediate" ? (
                       <span className="workmember svg__iconbox svg__icon--alert "></span>
                     ) : (
@@ -1853,7 +1853,7 @@ const inlineEditingcolumns = (props: any) => {
                 <span
                   onClick={() => EditComponentPicker(props?.item)}
                   title="Edit Categories"
-                  className="hreflink svg__iconbox svg__icon--editBox"
+                  className="hreflink svg__iconbox svg__icon--editBox alignIcon"
                 ></span>
               </span>
             </div>

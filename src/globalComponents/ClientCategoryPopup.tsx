@@ -2,30 +2,33 @@ import * as React from "react";
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 import Tooltip from "./Tooltip";
-var AllMetaData:any=[]
-var TaxonomyItems:any=[]
+var AllMetaData: any = []
+var TaxonomyItems: any = []
 var NewArray: any = []
 var AutoCompleteItemsArray: any = [];
-const ClientCategoryPupup=(props:any)=>{
+const ClientCategoryPupup = (props: any) => {
     const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(true);
     const [AllCategories, setAllCategories] = React.useState([]);
     const [searchedData, setSearchedData] = React.useState([])
     const [selectedCategory, setSelectedCategory] = React.useState([]);
     const [value, setValue] = React.useState("");
-    const [select,setSelect] = React.useState(props.selectedClientCategoryData!=undefined?props.selectedClientCategoryData:[])
+    const [select, setSelect] = React.useState(props.selectedClientCategoryData != undefined ? props.selectedClientCategoryData : [])
+    let NewArrayItems = React.useState(props.selectedClientCategoryData != undefined ? props.selectedClientCategoryData : [])
+    if (NewArrayItems?.length > 0)
+        NewArray = NewArrayItems[0]
     console.log(props)
-    React.useEffect(()=>{
+    React.useEffect(() => {
         GetCategoryData();
-    },[])
+    }, [])
     const closePopupSmartTaxanomy = () => {
         setPopupSmartTaxanomy(false)
-        props.Call();
-       // NewArray = []
-       // setSelect([])
-       // item.closePopupCallBack();
+        props.Call("","",'Close');
+        // NewArray = []
+        // setSelect([])
+        // item.closePopupCallBack();
 
     }
-    const GetCategoryData=async ()=>{
+    const GetCategoryData = async () => {
         const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
 
         const res = await web.lists.getById('01a34938-8c7e-4ea6-a003-cee649e8c67a').items
@@ -33,7 +36,7 @@ const ClientCategoryPupup=(props:any)=>{
             .filter("TaxType eq 'Client Category'")
             .get();
         console.log(res)
- 
+
         TaxonomyItems = loadSmartTaxonomyPortfolioPopup(res)
         console.log(TaxonomyItems)
         setAllCategories(TaxonomyItems)
@@ -68,7 +71,7 @@ const ClientCategoryPupup=(props:any)=>{
     const customFooter = () => {
         return (
             <footer>
-                <button type="button" className="btn btn-primary float-end me-5" onClick={()=>saveCategories()}>
+                <button type="button" className="btn btn-primary float-end me-5" onClick={() => saveCategories()}>
                     OK
                 </button>
             </footer>
@@ -77,55 +80,55 @@ const ClientCategoryPupup=(props:any)=>{
 
     const customHeader = () => {
         return (
-            <div className={props?.props?.PortFolioType?.Id == 2 ?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"} >
+            <div className={props?.props?.PortFolioType?.Id == 2 ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
                 <div className="subheading">
-                   <span>Select -Client Category</span> 
-                 </div>
+                    <span>Select -Client Category</span>
+                </div>
                 <Tooltip ComponentId="1626" />
             </div>
         )
     }
-    
+
     const selectPickerData = (item: any) => {
-            NewArray.push(item)
-            showSelectedData(NewArray);
+        NewArray.push(item)
+        showSelectedData(NewArray);
         setValue('');
         setSearchedData([]);
     }
     const showSelectedData = (itemss: any) => {
-            var categoriesItem: any = []
-            var Array: any = []
-            itemss.forEach(function (val: any) {
-                if (val.Title != undefined) {
-                    categoriesItem.push(val);
+        var categoriesItem: any = []
+        var Array: any = []
+        itemss.forEach(function (val: any) {
+            if (val.Title != undefined) {
+                categoriesItem.push(val);
 
-                }
-            })
-             Array = categoriesItem.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
+            }
+        })
+        Array = categoriesItem.filter((val: any, id: any, array: any) => {
+            return array.indexOf(val) == id;
+        })
+        // NewArray =Array;
+        setSelect(Array)
 
-            setSelect(Array)
-        
 
     }
     const deleteSelectedCat = (val: any) => {
-       
-            select.map((valuee: any, index:any) => {
-                if (val.Id == valuee.Id) {
-                    select.splice(index, 1)
-                }
 
-            })
-            NewArray.map((valuee: any, index: any) => {
-                if (val.Id == valuee.Id) {
-                    NewArray.splice(index, 1)
-                }
+        select.map((valuee: any, index: any) => {
+            if (val.Id == valuee.Id) {
+                select.splice(index, 1)
+            }
 
-            })
+        })
+        NewArray.map((valuee: any, index: any) => {
+            if (val.Id == valuee.Id) {
+                NewArray.splice(index, 1)
+            }
 
-            setSelect((select: any) => ([...select]));
-        
+        })
+
+        setSelect((select: any) => ([...select]));
+
     }
     function Example(callBack: any, type: any) {
         NewArray = []
@@ -134,39 +137,39 @@ const ClientCategoryPupup=(props:any)=>{
         props.Call(callBack.props, type);
     }
     const saveCategories = () => {
-    
+
         props.props.Clientcategories = [];
         props.props.smartClientCategories = [];
-            var title: any = {}
-            // title.Title = select;
-            props.props.smartClientCategories.push(title);
-            props.props.Clientcategories = NewArray.filter((val: any, id: any, array: any) => {
+        var title: any = {}
+        // title.Title = select;
+        props.props.smartClientCategories.push(title);
+        props.props.Clientcategories = NewArray.filter((val: any, id: any, array: any) => {
 
-                return array.indexOf(val) == id;
-                   })
-           // props.props.Clientcategories = NewArray;
-            Example(props, 'ClientCategory');
+            return array.indexOf(val) == id;
+        })
+        // props.props.Clientcategories = NewArray;
+        Example(props, 'ClientCategory');
+    }
+
+    const onChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+        setValue(event.target.value);
+        let searchedKey: any = event.target.value;
+        let tempArray: any = [];
+        if (searchedKey?.length > 0) {
+            AutoCompleteItemsArray.map((itemData: any) => {
+                if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
+                    tempArray.push(itemData);
+                }
+            })
+            setSearchedData(tempArray)
+        } else {
+            setSearchedData([]);
         }
 
-        const onChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
-            setValue(event.target.value);
-            let searchedKey: any = event.target.value;
-            let tempArray: any = [];
-            if (searchedKey?.length > 0) {
-                AutoCompleteItemsArray.map((itemData: any) => {
-                    if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
-                        tempArray.push(itemData);
-                    }
-                })
-                setSearchedData(tempArray)
-            } else {
-                setSearchedData([]);
-            }
-    
-        };
-    return(
+    };
+    return (
         <>
-           <Panel
+            <Panel
                 onRenderHeader={customHeader}
                 isOpen={PopupSmartTaxanomy}
                 type={PanelType.custom}
@@ -178,11 +181,11 @@ const ClientCategoryPupup=(props:any)=>{
             >
                 <div id="SmartTaxonomyPopup">
                     <div className="modal-body">
-                       
+
                         <section>
                             <div className="row">
                                 <div className="d-flex text-muted pt-3 showCateg">
-                                    
+
                                     <div className="pb-3 mb-0">
                                         <div id="addNewTermDescription">
                                             <p className="mb-1"> New items are added under the currently selected item.
@@ -224,21 +227,21 @@ const ClientCategoryPupup=(props:any)=>{
                                 </div>
                             </div>
                             <div className="col-sm-12 ActivityBox">
-                                 <div>
+                                <div>
                                     {select.map((val: any) => {
                                         return (
                                             <>
-                                               
-                                                    {/* <a className=" block p-1 px-2 mx-1" ng-click="removeSmartArray(item.Id)"> {val.Title}
+
+                                                {/* <a className=" block p-1 px-2 mx-1" ng-click="removeSmartArray(item.Id)"> {val.Title}
                                                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" className="ms-2" onClick={() => deleteSelectedCat(val)} /></a> */}
-                                                      <a  className=" block p-1 px-2 mx-1" ng-click="removeSmartArray(item.Id)">  {val.Title}<span  className='bg-light svg__iconbox svg__icon--cross' onClick={() => deleteSelectedCat(val)}></span></a>
-                                                      
+                                                <a className=" block p-1 px-2 mx-1" ng-click="removeSmartArray(item.Id)">  {val.Title}<span className='bg-light svg__iconbox svg__icon--cross' onClick={() => deleteSelectedCat(val)}></span></a>
+
                                             </>
                                         )
                                     })}
                                 </div>
                             </div>
-                         {/* <div className="col-sm-12 ActivityBox">
+                            {/* <div className="col-sm-12 ActivityBox">
                                     <span>
                                         <a className="hreflink block" ng-click="removeSmartArray(item.Id)"> {select}
                                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteSelectedCat(val)}/></a>
@@ -252,66 +255,66 @@ const ClientCategoryPupup=(props:any)=>{
                                 </span>
                             </div> 
                         </div> */}
-                        <div className='col-sm-12 categScroll'>
-                            <ul className="categories-menu p-0">
-                                {AllCategories.map(function (item: any) {
-                                    return (
-                                        <>
-                                            <li>
-                                               
+                            <div className='col-sm-12 categScroll'>
+                                <ul className="categories-menu p-0">
+                                    {AllCategories.map(function (item: any) {
+                                        return (
+                                            <>
+                                                <li>
+
                                                     <p onClick={() => selectPickerData(item)} className='mb-0 hreflink' >
                                                         <a>
-                                                           
+
                                                             {item.Title}
                                                         </a>
                                                     </p>
-                                                
-                                                <ul ng-if="item.childs.length>0" className="sub-menu clr mar0">
-                                                    {item.childs?.map(function (child1: any) {
-                                                        return (
-                                                            <>
-                                                                {child1.Title != null ?
-                                                                    <li>
-                                                                        <p onClick={() => selectPickerData(child1)} className='mb-0 hreflink'>
-                                                                            <a>
-                                                                                {child1.Title}
-                                                        
 
-                                                                            </a>
-                                                                        </p>
+                                                    <ul ng-if="item.childs.length>0" className="sub-menu clr mar0">
+                                                        {item.childs?.map(function (child1: any) {
+                                                            return (
+                                                                <>
+                                                                    {child1.Title != null ?
+                                                                        <li>
+                                                                            <p onClick={() => selectPickerData(child1)} className='mb-0 hreflink'>
+                                                                                <a>
+                                                                                    {child1.Title}
 
-                                                                        <ul className="sub-menu clr mar0">
-                                                                            {
-                                                                                child1.childs?.map((subChilds: any) => {
-                                                                                    return (
-                                                                                        <li>
-                                                                                            <p onClick={() => selectPickerData(subChilds)} className='mb-0 hreflink'>
-                                                                                                <a>
-                                                                                                   
-                                                                                                    {subChilds.Title}
-                                                                
 
-                                                                                                </a>
-                                                                                            </p>
-                                                                                        </li>
-                                                                                    )
-                                                                                })
-                                                                            }
-                                                                        </ul>
-                                                                    </li> : null
-                                                                }
-                                                            </>
-                                                        )
-                                                    })}
-                                                </ul>
-                                            </li>
-                                        </>
-                                    )
-                                })}
-                            </ul>
+                                                                                </a>
+                                                                            </p>
+
+                                                                            <ul className="sub-menu clr mar0">
+                                                                                {
+                                                                                    child1.childs?.map((subChilds: any) => {
+                                                                                        return (
+                                                                                            <li>
+                                                                                                <p onClick={() => selectPickerData(subChilds)} className='mb-0 hreflink'>
+                                                                                                    <a>
+
+                                                                                                        {subChilds.Title}
+
+
+                                                                                                    </a>
+                                                                                                </p>
+                                                                                            </li>
+                                                                                        )
+                                                                                    })
+                                                                                }
+                                                                            </ul>
+                                                                        </li> : null
+                                                                    }
+                                                                </>
+                                                            )
+                                                        })}
+                                                    </ul>
+                                                </li>
+                                            </>
+                                        )
+                                    })}
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
                 </div>
             </Panel>
         </>

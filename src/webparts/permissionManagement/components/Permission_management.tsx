@@ -417,7 +417,7 @@ const changeHeader=(items:any)=>{
       <div className="alignCenter">
         <div className="alignCenter">
           <h2 className="heading">{headerChange != undefined && headerChange != null && headerChange != '' ? headerChange : 'Permission-Management'} </h2>
-          <EditPage context={props?.context?.context} changeHeader={changeHeader} />
+          <EditPage context={props?.context} changeHeader={changeHeader} tooltipId={'956'} />
         </div>
         <div className="ml-auto">
               
@@ -463,7 +463,7 @@ const changeHeader=(items:any)=>{
 
       <div className="mb-3 card commentsection">
         <div className="card-header">
-          <div className="align-items-center card-title d-flex h5 justify-content-between my-2">Manage Permissions - Admins</div>
+          <div className="align-items-center card-title d-flex h5 justify-content-between my-2">Manage Permissions - Teams</div>
         </div>
         <div className="card-body d-flex justify-content-center  my-3" onClick={() => { GetUserByGroupId("HHHH Members") }}>
           <div className="card" style={{ width: "14rem" }}>
