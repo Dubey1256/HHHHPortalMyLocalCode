@@ -551,6 +551,7 @@ export default function SiteStructureTool(Props: any) {
                             <div className="text-left" onClick={() => setVersionHistoryPopup(false)}>
                                 {popupData[0]?.Id && <VersionHistory
                                     taskId={popupData[0]?.Id}
+                                    RequiredListIds={Props.Selectedprops}
                                     siteUrls={PageContext?.SPSitesListUrl}
                                     listId={PageContext?.TopNavigationListID}
                                 />}

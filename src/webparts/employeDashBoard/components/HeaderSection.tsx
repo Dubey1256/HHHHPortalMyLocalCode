@@ -7,7 +7,6 @@ import { Web } from 'sp-pnp-js';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { Col, Container, Row } from "react-bootstrap";
 import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
-import Slider from "react-slick";
 let DashboardConfig: any = [];
 const Header = () => {
   const params = new URLSearchParams(window.location.search);

@@ -9,7 +9,7 @@ import * as GlobalFunctionForUpdateItem from '../GlobalFunctionForUpdateItems';
 
 export const addedCreatedDataFromAWT = (itemData: any, dataToPush: any) => {
     for (let val of itemData) {
-        if (dataToPush?.Portfolio?.Id === val.Id && dataToPush?.ParentTask?.Id === undefined) {
+        if (dataToPush?.Portfolio?.Id === val.Id && (val?.ParentTask?.Id === 0 || val?.ParentTask?.Id === undefined)) {
             const existingIndex = val.subRows?.findIndex((subRow: any) => subRow?.Id === dataToPush?.Id);
             if (existingIndex !== -1) {
                 val.subRows[existingIndex] = dataToPush;
