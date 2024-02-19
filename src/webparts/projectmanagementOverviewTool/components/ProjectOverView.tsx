@@ -327,8 +327,6 @@ export default function ProjectOverview(props: any) {
                             <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Project?.Id}`} data-interception="off" target="_blank">
                                 {row?.original?.ProjectTitle}
                             </a>
-
-
                         </span> : ''}
                     </>
 
