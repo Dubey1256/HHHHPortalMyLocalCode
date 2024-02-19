@@ -27,6 +27,7 @@ import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-P
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 import ReactPopperTooltip from '../../../globalComponents/Hierarchy-Popper-tooltip';
 import BulkeditTask from './BulkeditTask';
+import CompareTool from '../../../globalComponents/CompareTool/CompareTool';
 var AllTasks: any = [];
 let AllTasksRendar: any = [];
 let siteConfig: any = [];
@@ -65,9 +66,10 @@ function TasksTable(props: any) {
   const [AllMasterTasksData, setAllMasterTasksData] = React.useState(props?.AllSiteTasksAndMaster)
   const [ActivityDisable, setActivityDisable] = React.useState(false);
   const [addModalOpen, setAddModalOpen] = React.useState(false);
-
+  const [groupByButtonClickData, setGroupByButtonClickData] = React.useState([]);
   const [maidataBackup, setmaidataBackup] = React.useState([])
-  
+  const [clickFlatView, setclickFlatView] = React.useState(false);
+  const [flatViewDataAll, setFlatViewDataAll] = React.useState([]);
   const [MeetingPopup, setMeetingPopup] = React.useState(false);
   const [WSPopup, setWSPopup] = React.useState(false);
 
@@ -78,6 +80,8 @@ function TasksTable(props: any) {
   const [smartmetaDetails, setsmartmetaDetails] = React.useState([]);
   const [checkData, setcheckData]: any = React.useState(null)
   const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
+  const [ActiveCompareToolButton, setActiveCompareToolButton] = React.useState(false);
+  const [openCompareToolPopup, setOpenCompareToolPopup] = React.useState(false);
   // IsUpdated = props.props.Portfolio_x0020_Type;
   IsUpdated = props.props.PortfolioType;
 
@@ -1202,6 +1206,82 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
     }
   };
 
+  const trigerAllEventButton = (eventValue: any) => {
+    if (eventValue === "Compare") {
+        setOpenCompareToolPopup(true);
+    }
+}
+React.useEffect(() => {
+    if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length === 2) {
+        if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined &&  (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Tasks' || childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Tasks')) {
+            setActiveCompareToolButton(true);
+        } else if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType != undefined) {
+            setActiveCompareToolButton(true);
+        }
+    } else {
+        setActiveCompareToolButton(false);
+    }
+}, [childRef?.current?.table?.getSelectedRowModel()?.flatRows])
+const customTableHeaderButtons = (
+    (ActiveCompareToolButton) ?
+        < button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${props?.props?.PortfolioType?.Color}`, borderColor: `${props?.props?.PortfolioType?.Color}`, color: '#fff' }} onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
+        <button type="button" className="btn btn-primary" style={{ backgroundColor: `${props?.props?.PortfolioType?.Color}`, borderColor: `${props?.props?.PortfolioType?.Color}`, color: '#fff' }} disabled={true} >Compare</button>
+)
+const compareToolCallBack = React.useCallback((compareData) => {
+  if (compareData != "close") {
+      setOpenCompareToolPopup(false);
+  } else {
+      setOpenCompareToolPopup(false);
+  }
+}, []);
+     // -----------------*************** Flat view Data  function Start--------------- **************************
+     const switchFlatViewData = (data: any) => {
+      let groupedDataItems: any = []
+      try {
+          groupedDataItems = JSON.parse(JSON.stringify(data));
+      } catch (error) {
+          console.log('Json parse error switchFlatViewData function');
+      }
+      const flattenedData = flattenData(groupedDataItems);
+      // hasCustomExpanded = false
+      // hasExpanded = false
+      // isHeaderNotAvlable = true
+      // isColumnDefultSortingAsc = true
+      setGroupByButtonClickData(data);
+      setclickFlatView(true);
+      setFlatViewDataAll(flattenedData)
+      finalData = [];
+      finalData = finalData?.concat(flattenedData)
+      console.log(finalData)
+      refreshData();
+      // setData(flattenedData);
+      // setData(smartAllFilterData);
+  }
+
+
+  function flattenData(groupedDataItems: any) {
+      const flattenedData: any = [];
+      function flatten(item: any) {
+          if (item.Title != "Others") {
+              flattenedData.push(item);
+          }
+          if (item?.subRows) {
+              item?.subRows.forEach((subItem: any) => flatten(subItem));
+              item.subRows = []
+          }
+      }
+      groupedDataItems?.forEach((item: any) => { flatten(item) });
+      return flattenedData;
+  }
+  const switchGroupbyData = () => {
+    // isColumnDefultSortingAsc = false
+    // hasCustomExpanded = true
+    // hasExpanded = true
+    // isHeaderNotAvlable = false
+    setclickFlatView(false);
+    setData(groupByButtonClickData);
+}
+  // *************** Flat view Data  function End **************************
   return (
 
     <div
@@ -1215,6 +1295,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
               <GlobalCommanTable
               AllSitesTaskData={props?.AllSiteTasks} masterTaskData={props?.AllMasterTasks}
                 queryItems={props?.props}
+                columnSettingIcon={true}
                 SmartTimeIconShow={true}
                 smartTimeTotalFunction={SmartTimeDataRefresh} 
                 ref={childRef}
@@ -1228,6 +1309,12 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
                 showHeader={true}
                 portfolioColor={props?.props?.PortfolioType?.Color}
                 AllMasterTasksData={AllMasterTasksData}
+                clickFlatView={clickFlatView}
+                switchFlatViewData={switchFlatViewData}
+                switchGroupbyData={switchGroupbyData}
+                flatViewDataAll={flatViewDataAll}
+                flatView={true}
+                updatedSmartFilterFlatView={false}
                 // portfolioTypeData={portfolioTypeDataItem}
                 //  taskTypeDataItem={taskTypeDataItem} 
                 // portfolioTypeConfrigration={portfolioTypeConfrigration } 
@@ -1237,6 +1324,8 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
                 taskProfile={true}
                 expandIcon={true}
                 multiSelect={true}
+                customHeaderButtonAvailable={true}
+                customTableHeaderButtons={customTableHeaderButtons}
               />
             </div>
 
@@ -1272,6 +1361,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
         <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={props} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
       </Panel>
       }
+       {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={props.AllListId}/>}
     </div>
   )
 
