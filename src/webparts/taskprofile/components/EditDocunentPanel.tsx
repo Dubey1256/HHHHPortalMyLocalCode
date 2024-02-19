@@ -173,6 +173,9 @@ const EditDocumentpanel = (props: any) => {
       
       }).catch((err: any) => {
         console.log(err)
+        if(err.message.includes('423')){
+          alert("That Document you are uploading is opened in the Broswer")
+        }
       }) 
     }
   const imageTabCallBack = React.useCallback((data: any) => {

@@ -2341,7 +2341,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 </Col>
               </Col>
             </details>
-            {this.state.showShareTimesheet && <span className="align-autoplay d-flex float-end my-1" onClick={() => this.shareTaskInEmail()}><span className="svg__iconbox svg__icon--mail ms-1" ></span>Share {DateType}'s Time Entry</span>}
+            {this.state.showShareTimesheet && <span className="align-autoplay d-flex float-end my-1 hreflink" onClick={() => this.shareTaskInEmail()}><span className="svg__iconbox svg__icon--mail ms-1" ></span>Share {DateType}'s Time Entry</span>}
           </Col>
           <div className='col'>
             <section className='TableContentSection'>
