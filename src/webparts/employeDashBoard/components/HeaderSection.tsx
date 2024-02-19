@@ -7,7 +7,7 @@ import { Web } from 'sp-pnp-js';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { Col, Container, Row } from "react-bootstrap";
 import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
-import { Slider } from '@fluentui/react';
+import Slider from "react-slick";
 let DashboardConfig: any = [];
 const Header = () => {
   const params = new URLSearchParams(window.location.search);
@@ -49,7 +49,7 @@ const Header = () => {
     dots: false,
     infinite: true,
     speed: 1000,
-    slidesToShow: 5,
+    slidesToShow: 8,
     slidesToScroll: 1,
     //autoplay: true, // Enable autoplay
     // autoplaySpeed: 500
@@ -189,13 +189,15 @@ const Header = () => {
                 <>
                   <div className={`${activeTile === items?.TileName ? 'col alignCenter me-3 mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white mb-3 hreflink shadow-sm'}`}
                     onClick={() => handleTileClick(items?.TileName)}>
-                    <span className="iconSec" title={items?.TileName}>
-                      {items?.AdditonalHeader == true ? <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
+                    {/* {items?.AdditonalHeader == true ? <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
                         <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
                         <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
-                      </svg> : <span title={items?.TileName} className="svg__iconbox svg__icon--calendar"></span>}
-                    </span>
-                    {items?.AdditonalHeader && <span className="ms-2 tabText">
+                      </svg> : <span title={items?.TileName} className="svg__iconbox svg__icon--calendar"></span>} */}
+                    {items?.SiteIcon != undefined && items?.SiteIcon != '' ? <span><img width={"35px"} height={"35px"} title="HHHH" src={items?.SiteIcon} /></span> : <span className="iconSec" title={items?.TileName}><svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
+                      <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
+                      <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
+                    </svg></span>}
+                    {items?.AdditonalHeader && <span className="ms-2">
                       <div>{items?.WebpartTitle}</div>
                       <span className='fw-semibold ms-1'>{items?.Tasks?.length}</span>
                       {items?.AdditonalHeader != true && <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>}
@@ -216,13 +218,16 @@ const Header = () => {
                   <>
                     <div className={`${activeTile === items?.TileName ? 'col alignCenter me-3 mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white mb-3 hreflink shadow-sm'}`}
                       onClick={() => handleTileClick(items?.TileName)}>
-                      <span className="iconSec" title={items?.TileName}>
-                        {items?.AdditonalHeader == true ? <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
-                          <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
-                          <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
-                        </svg> : <span title={items?.TileName} className="svg__iconbox svg__icon--calendar"></span>}
-                      </span>
-                      {items?.AdditonalHeader && <span className="ms-2 tabText">
+                      {/* {items?.AdditonalHeader == true ? <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
+                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
+                        <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
+                      </svg> : <span title={items?.TileName} className="svg__iconbox svg__icon--calendar"></span>} */}
+                      {items?.SiteIcon != undefined && items?.SiteIcon != '' ? <span><img className="imgWid29 pe-1 " title="HHHH" src={items?.SiteIcon} /></span> : <span className="iconSec" title={items?.TileName}><svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
+                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
+                        <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
+                      </svg></span>}
+
+                      {items?.AdditonalHeader && <span className="ms-2">
                         <div>{items?.WebpartTitle}</div>
                         <span className='fw-semibold ms-1'>{items?.Tasks?.length}</span>
                         {items?.AdditonalHeader != true && <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>}
@@ -231,7 +236,7 @@ const Header = () => {
                         <div>{items?.WebpartTitle}</div>
                         <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>
                       </span>}
-                    </div>
+                    </div >
                   </>
                 )
               ))}
@@ -251,7 +256,7 @@ const Header = () => {
           DashboardConfig?.length > 0 && <div><TaskStatusTbl activeTile={activeTile} /></div>
         }
 
-      </section>
+      </section >
       <span>
         {IsOpenTimeSheetPopup == true && <EmployeePieChart IsOpenTimeSheetPopup={IsOpenTimeSheetPopup} Call={() => { CallBack() }} />}
       </span>
