@@ -81,13 +81,16 @@ const inlineEditingcolumns = (props: any) => {
     { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
     { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
     { value: 3, status: "03% Approved", taskStatusComment: "Approved" },
+    { value: 4, status: "04% Checking", taskStatusComment: "Checking" },
     { value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged" },
+    { value: 9, status: "09% Ready To Go", taskStatusComment: "Ready To Go" },
     {
       value: 10,
       status: "10% working on it",
       taskStatusComment: "working on it"
     },
     { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
+    { value: 75, status: "75% Deployment Pending", taskStatusComment: "Deployment Pending" },
     {
       value: 80,
       status: "80% In QA Review",
