@@ -46,6 +46,9 @@ export default function CompareSmartMetaData(Props: any) {
             setIsShowCompare(true)
         }
     }
+    React.useEffect(() => {
+        openComparePopup();
+    }, [Props?.CompareButton])
     const optionsStatus: IDropdownOption[] = [
         { key: '', text: 'Select Status' },
         { key: 'Not Started', text: 'Not Started' },
@@ -482,9 +485,9 @@ export default function CompareSmartMetaData(Props: any) {
     }
     return (
         <>
-            <div>
+            {/* <div>
                 <button type="button" title="Compare" onClick={openComparePopup} className='btnCol btn btn-primary'>Compare</button>
-            </div>
+            </div> */}
             {isShowCompare && (<div>
                 <Panel
                     title="popup-title"

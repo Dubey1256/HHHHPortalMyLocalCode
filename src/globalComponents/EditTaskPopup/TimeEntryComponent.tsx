@@ -2522,10 +2522,10 @@ const TimeEntryPopup = (item: any)=> {
             ) : (
               <>
                 {" "}
-                <img title="Copy" className="hreflink"
-                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png"
+                 <span title="Copy"
+                  className="svg__iconbox svg__icon--copy"
                   onClick={() => openAddTasktimepopup(row.original, "CopyTime")}
-                ></img>
+                ></span>
 
 
                 {" "}

@@ -4,7 +4,7 @@ import { Web } from 'sp-pnp-js';
 import Tooltip from '../../../globalComponents/Tooltip';
 import { useEffect } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import GlobalCommanTable from './GlobalCommanTableSmartmetadata';
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import PageLoader from '../../../globalComponents/pageLoader';
 import moment from 'moment';
 export default function DeleteSmartMetadataOpenPopup(props: any) {

@@ -3,9 +3,9 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import * as React from 'react';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Web } from 'sp-pnp-js';
-import GlobalCommanTable from './GlobalCommanTableSmartmetadata';
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import Tooltip from '../../../globalComponents/Tooltip';
-import ImageTabComponenet from './ImageTabComponent'
+import ImageTabComponenet from '../../taskprofile/components/ImageTabComponent';
 import VersionHistory from '../../../globalComponents/VersionHistroy/VersionHistory';
 import PageLoader from '../../../globalComponents/pageLoader';
 import moment from 'moment';
