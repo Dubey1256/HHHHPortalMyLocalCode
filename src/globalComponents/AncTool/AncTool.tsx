@@ -1,26 +1,16 @@
 import React, { useRef } from 'react'
-import DefaultFolderContent from './DefaultFolderContent'
-import axios from 'axios';
-import { usePopperTooltip } from "react-popper-tooltip";
-import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
-import { SlArrowRight, SlArrowLeft, SlArrowUp, SlArrowDown } from "react-icons/sl";
-import { Card, CardBody, CardFooter, CardHeader, CardTitle, Col, CustomInput, Pagination, PaginationItem, PaginationLink, Progress, Row, Table } from "reactstrap";
+import { SlArrowRight, SlArrowDown } from "react-icons/sl";
+import {  CardBody,  CardTitle, Col, Row, Table } from "reactstrap";
 import "react-popper-tooltip/dist/styles.css";
 import Tooltip from '../Tooltip';
 import { Web } from 'sp-pnp-js'
-import { IList } from "@pnp/sp/lists";
-
 import pptxgen from 'pptxgenjs';
-import { Button, Modal, ModalBody } from "react-bootstrap";
+import { Button,  ModalBody } from "react-bootstrap";
 import * as GlobalFunction from '../globalCommon';
 import SmartInformation from '../../webparts/taskprofile/components/SmartInformation';
 import ExcelJS from 'exceljs';
-import { IFileAddResult } from "@pnp/sp/files";
 import { Dropdown, Panel, PanelType } from 'office-ui-fabric-react';
-import ConnectExistingDoc from './ConnectExistingDoc';
 import MsgReader from "@kenjiuno/msgreader"
-import { Items } from '@pnp/sp/items';
-import { AttachFile } from '@material-ui/icons';
 import PageLoader from '../pageLoader';
 let backupExistingFiles: any = [];
 let backupCurrentFolder: any = [];
@@ -508,43 +498,16 @@ const AncTool = (props: any) => {
                     reader.onloadend = async () => {
                         const fileContent = reader.result as ArrayBuffer;
                         setCreateNewDocType(getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name));
-                        // if (getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == 'msg') {
+                        if (getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == 'msg') {
 
-                        //     const reader = new FileReader();
-                        //     attachmentFile = true;
-                        //     const testMsg = new MsgReader(fileContent)
-                        //     const testMsgInfo = testMsg.getFileData()
-                        //     console.log(testMsgInfo);
-                        //     msgfile = testMsgInfo
-                        //     if (msgfile?.attachments?.length > 0) {
-                        //         msgfile?.attachments?.map((attach: any) => {
-                        //             attach.extension = getFileType(attach?.fileName)
-                        //         })
-                        //     }
+                            const reader = new FileReader();
+                            const testMsg = new MsgReader(fileContent)
+                            const testMsgInfo = testMsg.getFileData()
+                            console.log(testMsgInfo);
+                            msgfile = testMsgInfo
 
-                        //     reader.readAsArrayBuffer(selectedFile != undefined ? selectedFile : uploadselectedFile);
-                        //     emailDoc = emailDoc.concat(selectedFile != undefined ? selectedFile : uploadselectedFile);
-                        //     emailDoc = emailDoc.concat(msgfile.attachments);
-                        //     emailDoc?.map((AttachFile: any, index: any) => {
-                        //         if (AttachFile?.extension?.toLowerCase() != "png" && AttachFile?.extension?.toLowerCase() != "jpg" && AttachFile?.extension?.toLowerCase() != "jpeg" && AttachFile?.extension?.toLowerCase() != "svg") {
-                        //             attachmentFileIndex = index
-
-                        //             if (renamedFileName?.length > 0 && selectedFile.name?.length > 0 && getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == "msg") {
-                        //                 filetype = getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name)
-                        //                 fileName = renamedFileName + `.${filetype}`;
-                        //             } else {
-                        //                 fileName = AttachFile.fileName != undefined ? AttachFile?.fileName : AttachFile?.name;
-                        //             }
-                        //             uploadFile(AttachFile)
-                        //         }
-                        //     })
-                        //     // };
-
-                        // } else {
-
-                        //     uploadFile(fileContent)
-                        // }
-                        uploadFile(fileContent)
+                        } 
+                      uploadFile(fileContent)
 
 
                     };
@@ -561,82 +524,9 @@ const AncTool = (props: any) => {
                                 .files.add(fileName, fileToUpload, true).then(async (uploadedFile: any) => {
                                     console.log(uploadedFile);
                                     uploadedAttachmentFile.push(uploadedFile?.data);
-                                    if (attachmentFile == true && attachmentFileIndex == uploadedAttachmentFile?.length - 1) {
-                                        console.log(uploadedAttachmentFile)
-                                        fileItems = await getExistingUploadedDocuments()
-                                        uploadedAttachmentFile?.map((attachfile: any) => {
-                                            fileItems?.map(async (file: any) => {
-                                                if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == uploadPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == attachfile?.Name) {
-                                                    let resultArray: any = [];
-                                                    resultArray.push(props?.item?.Id)
-                                                    let siteColName = `${siteName}Id`
-                                                    let fileSize = getSizeString(fileToUpload?.byteLength)
-                                                    taggedDocument = {
-                                                        ...taggedDocument,
-                                                        fileName: fileName,
-                                                        docType: getFileType(attachfile?.Name),
-                                                        uploaded: true,
-                                                        link: `${rootSiteName}${selectedPath.displayPath}/${fileName}?web=1`,
-                                                        size: fileSize
-                                                    }
-                                                    taggedDocument.link = `${file?.EncodedAbsUrl}?web=1`;
-                                                    // Update the document file here
-                                                    let postData = {
-                                                        [siteColName]: { "results": resultArray },
-                                                        ItemRank: itemRank,
-                                                        Title: getUploadedFileName(attachfile?.Name)
-                                                    }
-                                                    if (props?.item?.Portfolio?.Id != undefined) {
-                                                        postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
-                                                    }
-                                                    if (getFileType(attachfile?.Name) == 'msg') {
-                                                        postData = {
-                                                            ...postData,
-                                                            Body: msgfile?.body != undefined ? msgfile?.body : null,
-                                                            recipients: msgfile?.recipients?.length > 0 ? JSON.stringify(msgfile?.recipients) : null,
-                                                            senderEmail: msgfile?.senderEmail != undefined ? msgfile?.senderEmail : null,
-                                                            creationTime: msgfile?.creationTime != undefined ? new Date(msgfile?.creationTime).toISOString() : null
-                                                        }
-                                                    }
-                                                    let web = new Web(props?.AllListId?.siteUrl);
-                                                    await web.lists.getByTitle('Documents').items.getById(file.Id)
-                                                        .update(postData).then((updatedFile: any) => {
-                                                            file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
-                                                            props?.callBack()
-                                                            setAllReadytagged([...AllReadytagged, ...[file]])
-                                                            msgfile.fileuploaded = true;
-                                                            myResolve()
-                                                            pathGenerator();
-                                                            cancelPathFolder()
-                                                            taggedDocument.tagged = true;
-                                                            setPageLoader(false)
-                                                            setUploadedDocDetails(taggedDocument);
-                                                            setRenamedFileName('')
-                                                            setSelectedFile(null);
-                                                            try {
-                                                                resetForm()
-                                                            } catch (e) {
-                                                                console.log(e)
-                                                            }
-                                                            return file;
-                                                        }).catch((e) => {
-                                                            setPageLoader(false)
-                                                            setSelectedFile(null);
-                                                            try {
-                                                                resetForm()
-                                                            } catch (e) {
-                                                                console.log(e)
-                                                            }
-                                                        })
-
-                                                    console.log("File uploaded successfully.", file);
-                                                }
-                                            })
-                                        }
-                                        )
-                                    } else {
+                                  
                                         setTimeout(async () => {
-                                            if (attachmentFile == false) {
+                                           
                                                 fileItems = await getExistingUploadedDocuments()
                                                 fileItems?.map(async (file: any) => {
                                                     if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == uploadPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == fileName) {
@@ -658,6 +548,15 @@ const AncTool = (props: any) => {
                                                             [siteColName]: { "results": resultArray },
                                                             ItemRank: itemRank,
                                                             Title: getUploadedFileName(fileName)
+                                                        }
+                                                        if (getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == 'msg') {
+                                                            postData = {
+                                                                ...postData,
+                                                                Body: msgfile?.body != undefined ? msgfile?.body : null,
+                                                                recipients: msgfile?.recipients?.length > 0 ? JSON.stringify(msgfile?.recipients) : null,
+                                                                senderEmail: msgfile?.senderEmail != undefined ? msgfile?.senderEmail : null,
+                                                                creationTime: msgfile?.creationTime != undefined ? new Date(msgfile?.creationTime).toISOString() : null
+                                                            }
                                                         }
                                                         if (props?.item?.Portfolio?.Id != undefined) {
                                                             postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
@@ -695,11 +594,7 @@ const AncTool = (props: any) => {
                                                         console.log("File uploaded successfully.", file);
                                                     }
                                                 })
-                                            }
                                         }, 2000);
-                                    }
-
-
                                 });
                             setUploadedDocDetails(taggedDocument);
                             setShowConfirmation(true)
@@ -2006,9 +1901,7 @@ const AncTool = (props: any) => {
                 isBlocking={false}>
                 <div>
                     {selectedPath?.displayPath?.length > 0 ?
-                        // <DefaultFolderContent Context={props.Context} AllListId={props?.AllListId} item={Item} folderPath={selectedPath?.displayPath} />
                         <div className='panel  mb-2'>
-                            {/* <h3 className='pageTitle'>1. Default Folder Content  <hr></hr></h3> */}
                             <div>
                                 <input id="searchinput" type="search" onChange={(e) => { searchCurrentFolder(e.target.value) }} placeholder="Search..." className="form-control" />
                                 <div className="Alltable mt-2">

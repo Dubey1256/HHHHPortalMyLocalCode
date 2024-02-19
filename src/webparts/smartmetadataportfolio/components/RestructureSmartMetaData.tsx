@@ -28,61 +28,60 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
             setRestructureItem(array);
         }
     }, [props?.restructureItem])
-    useEffect(() => {
-        if (props?.restructureItem?.length === 0 && checkItemLength) {
-            let topCompo: any = false;
-            let array = AllMetaData;
-            array?.map((obj: any) => {
-                obj.isRestructureActive = false;
-                if (obj?.subRows?.length > 0 && obj?.subRows != undefined) {
-                    obj?.subRows?.map((Item: any) => {
-                        Item.isRestructureActive = false;
-                        if (Item?.subRows?.length > 0 && Item?.subRows != undefined) {
-                            Item?.subRows?.map((Item1: any) => {
-                                Item1.isRestructureActive = false;
-                                if (Item1?.subRows?.length > 0 && Item1?.subRows != undefined) {
-                                    Item1?.subRows?.map((Item2: any) => {
-                                        Item2.isRestructureActive = false;
-                                        if (Item2?.subRows?.length > 0 && Item2?.subRows != undefined) {
-                                            Item2?.subRows?.map((Item3: any) => {
-                                                Item3.isRestructureActive = false;
-                                                if (Item3?.subRows?.length > 0 && Item3?.subRows != undefined) {
-                                                    Item3?.subRows?.map((Item4: any) => {
-                                                        Item4.isRestructureActive = false;
-                                                    })
-                                                }
-                                            })
-                                        }
-                                    })
-                                }
-                            })
-                        }
-                    })
-                }
-            })
-            props.SmartrestructureFunct(false);
-            restructureItemCallBack(array, topCompo);
-        }
-    }, [props.restructureItem.length === 0])
+    // useEffect(() => {
+    //     if (props?.restructureItem?.length === 0 && checkItemLength) {
+    //         let topCompo: any = false;
+    //         let array = AllMetaData;
+    //         array?.map((obj: any) => {
+    //             obj.isRestructureActive = false;
+    //             if (obj?.subRows?.length > 0 && obj?.subRows != undefined) {
+    //                 obj?.subRows?.map((Item: any) => {
+    //                     Item.isRestructureActive = false;
+    //                     if (Item?.subRows?.length > 0 && Item?.subRows != undefined) {
+    //                         Item?.subRows?.map((Item1: any) => {
+    //                             Item1.isRestructureActive = false;
+    //                             if (Item1?.subRows?.length > 0 && Item1?.subRows != undefined) {
+    //                                 Item1?.subRows?.map((Item2: any) => {
+    //                                     Item2.isRestructureActive = false;
+    //                                     if (Item2?.subRows?.length > 0 && Item2?.subRows != undefined) {
+    //                                         Item2?.subRows?.map((Item3: any) => {
+    //                                             Item3.isRestructureActive = false;
+    //                                             if (Item3?.subRows?.length > 0 && Item3?.subRows != undefined) {
+    //                                                 Item3?.subRows?.map((Item4: any) => {
+    //                                                     Item4.isRestructureActive = false;
+    //                                                 })
+    //                                             }
+    //                                         })
+    //                                     }
+    //                                 })
+    //                             }
+    //                         })
+    //                     }
+    //                 })
+    //             }
+    //         })
+    //         // props.SmartrestructureFunct(false);
+    //         restructureItemCallBack(array, topCompo);
+    //     }
+    // }, [props.restructureItem.length === 0])
     const buttonRestructureCheck = () => {
         let topCompo: any = false
-        if (AllMetaData?.length > 0 && AllMetaData !== undefined && restructureItem?.length > 0 && restructureItem !== undefined) {
-            let MetaDataArray = AllMetaData;
+        if (props?.AllMetaData?.length > 0 && props?.AllMetaData !== undefined && props?.restructureItem?.length > 0 && props?.restructureItem !== undefined) {
+            let MetaDataArray = props?.AllMetaData;
             MetaDataArray?.filter((obj: any) => {
-                topCompo = true;
-                restructureItem[0]?.Id === obj?.Id ? obj.isRestructureActive = false : obj.isRestructureActive = true;
+                props?.restructureItem[0]?.Id === obj?.Id ? obj.isRestructureActive = false : obj.isRestructureActive = true;
                 if (obj?.subRows?.length > 0 && obj?.subRows !== null) {
                     obj?.subRows?.filter((sub: any) => {
-                        restructureItem[0]?.Id === sub?.Id ? sub.isRestructureActive = false : sub.isRestructureActive = true;
+                        props?.restructureItem[0]?.Id === sub?.Id ? sub.isRestructureActive = false : sub.isRestructureActive = true;
                         if (sub?.subRows?.length > 0 && sub?.subRows !== null) {
                             sub?.subRows?.filter((sub1: any) => {
-                                restructureItem[0]?.Id === sub1?.Id ? sub1.isRestructureActive = false : sub1.isRestructureActive = true;
+                                props?.restructureItem[0]?.Id === sub1?.Id ? sub1.isRestructureActive = false : sub1.isRestructureActive = true;
                                 if (sub1?.subRows?.length > 0 && sub1?.subRows !== null) {
                                     sub1?.subRows?.filter((sub2: any) => {
-                                        restructureItem[0]?.Id === sub2?.Id ? sub2.isRestructureActive = false : sub2.isRestructureActive = true;
+                                        props?.restructureItem[0]?.Id === sub2?.Id ? sub2.isRestructureActive = false : sub2.isRestructureActive = true;
                                         if (sub2?.subRows?.length > 0 && sub2?.subRows !== null) {
                                             sub2?.subRows?.filter((sub3: any) => {
-                                                restructureItem[0]?.Id === sub3?.Id ? sub3.isRestructureActive = false : sub3.isRestructureActive = true;
+                                                props?.restructureItem[0]?.Id === sub3?.Id ? sub3.isRestructureActive = false : sub3.isRestructureActive = true;
                                             })
                                         }
                                     })
@@ -92,11 +91,14 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
                     })
                 }
             })
-            props.SmartrestructureFunct(true);
-            restructureItemCallBack(MetaDataArray, topCompo);
+            /// props.SmartrestructureFunct(true);
+            restructureItemCallBack(props?.restructureItem[0], topCompo);
             setCheckItemLength(true);
         }
     }
+    useEffect(() => {
+        buttonRestructureCheck();
+    }, [props?.RestructureButton])
     const OpenModal = (item: any) => {
         let array = AllMetaData;
         var TestArray: any = [];
@@ -198,9 +200,9 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
     }));
     return (
         <>
-            <button type="button" title="Restructure" className="btnCol btn btn-primary" style={{ backgroundColor: `${props.portfolioColor}`, borderColor: `${props.portfolioColor}`, color: '#fff' }}
+            {/* <button type="button" title="Restructure" className="btnCol btn btn-primary" style={{ backgroundColor: `${props.portfolioColor}`, borderColor: `${props.portfolioColor}`, color: '#fff' }}
                 onClick={buttonRestructureCheck}
-            >Restructure</button>
+            >Restructure</button> */}
             {
                 ResturuningOpen === true && restructureItem?.length == 1 ?
                     <Panel
