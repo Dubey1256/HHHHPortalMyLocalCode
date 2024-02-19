@@ -544,15 +544,13 @@ export default function ManageSmartMetadata(selectedProps: any) {
                     }
                     <div className="tab-pane  show active" id="URLTasks" role="tabpanel" aria-labelledby="URLTasks">
                         <div className='TableSection'>
-                            <div className='container p-0'>
-                                <div className='Alltable'>
-                                    <div className='col-md-12 p-0 smart'>
-                                        <div className='wrapper'>
-                                            {
-                                                Smartmetadata &&
-                                                <GlobalCommanTable customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRefdata} childRefdata={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} categoriesTabName={categoriesTabName} />
-                                            }
-                                        </div>
+                            <div className='Alltable'>
+                                <div className='col-md-12 p-0 smart'>
+                                    <div className='wrapper'>
+                                        {
+                                            Smartmetadata &&
+                                            <GlobalCommanTable customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRefdata} childRefdata={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} categoriesTabName={categoriesTabName} />
+                                        }
                                     </div>
                                 </div>
                             </div>
