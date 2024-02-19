@@ -59,7 +59,7 @@ const AllMasterTaskLoad = (props: any) => {
       .items
       .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "ItemRank", "Portfolio_x0020_Type",
         "DueDate", "Item_x0020_Type", "ItemType", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
-        "PercentComplete", "AssignedToId", "Created", "Modified", "Parent/Id", "Parent/Title", "Parent/ItemType", "PortfoliosId", "Portfolios/Id", "Portfolios/Title", "PortfolioType/Id", "PortfolioType/Title","PortfolioType/Color"
+        "PercentComplete", "AssignedToId", "Created", "Modified", "Parent/Id", "Parent/Title", "Parent/ItemType", "PortfoliosId", "Portfolios/Id", "Portfolios/Title", "PortfolioType/Id", "PortfolioType/Title"
       )
       .expand("Parent", "Portfolios", "PortfolioType")
       .getAll();
@@ -88,7 +88,7 @@ const AllMasterTaskLoad = (props: any) => {
 
     totalll.forEach((result: any) => {
       allCSFdata?.map((type: any) => {
-        if ((result?.Item_x0020_Type === type.Title) && ((result.PortfolioType == undefined) || (result.PortfolioType != undefined))) {
+        if ((result?.Item_x0020_Type === type.Title) && (result.PortfolioType == undefined)) {
           type[type.Title + 'number'] += 1;
           type[type.Title + 'filterNumber'] += 1;
           allCSFcount.push(type)
@@ -294,7 +294,7 @@ const AllMasterTaskLoad = (props: any) => {
                 item={SharewebComponent}
                 Calls={EditComponentCallback}
                 SelectD={listIds}
-                // portfolioTypeData={Portfoliotyped}
+                portfolioTypeData={Portfoliotyped}
               >
                 {" "}
               </EditInstituton>
