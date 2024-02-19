@@ -888,6 +888,7 @@ export default function SmartMetadataEditPopup(props: any) {
                                         <div className="text-left" onClick={() => setVersionHistoryPopup(false)}>
                                             {SmartTaxonomyItem?.Id && <VersionHistory
                                                 taskId={SmartTaxonomyItem?.Id}
+                                                RequiredListIds={props?.AllList}
                                                 siteUrls={props?.AllList?.SPSitesListUrl}
                                                 listId={props?.AllList?.SPSmartMetadataListID}
                                             />}

@@ -84,18 +84,11 @@ const EditPage = (props: any) => {
   }
 
 
-
-  // useEffect(() => {
-  //   getData();
-  // }, [])
-
-
-
   const onRenderCustomCalculateSC = () => {
     return (
       <>
         <div className='subheading siteColor'>Edit Page</div>
-        <div><Tooltip ComponentId="1126" /></div>
+        <div><Tooltip ComponentId={props?.tooltipId} /></div>
       </>
     )
   }

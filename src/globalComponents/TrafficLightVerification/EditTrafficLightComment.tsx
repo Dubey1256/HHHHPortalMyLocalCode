@@ -45,13 +45,20 @@ const EditTrafficLightComment = (props: any) => {
         props?.setOpenCommentpopup(false)
     }
     const updateData = () => {
-       myContextValue2.trafficValue=copyTrafficlight;
-        myContextValue2.CommentData=copyCommentData;
-        myContextValue2?.setTrafficValue(copyTrafficlight);
+       myContextValue2?.setTrafficValue(copyTrafficlight);
         myContextValue2?.SetCommentData(copyCommentData)
         myContextValue2?.setcolumnVerificationStatus(copycolumnVerificationStatus)
-        myContextValue2?.updateJson()
+        props?.setOpenCommentpopup(false)
+        let UpdateData={
+            trafficValue:copyTrafficlight,
+            CommentData:copyCommentData,
+            columnVerificationStatus:copycolumnVerificationStatus
+        }
+        myContextValue2?.updateJson(UpdateData) 
+        
+     
     }
+    
     return (
         <>
             <Panel
@@ -91,12 +98,12 @@ const EditTrafficLightComment = (props: any) => {
                         </div>
                         <div className="col">
                         <div className="alignCenter  float-end">
-                                <span className='me-1'>No</span>
+                                {/* <span className='me-1'>No</span> */}
                                 <label className="switch me-1" htmlFor="checkbox">
                                     <input checked={copycolumnVerificationStatus === "Yes" ? true : false} onChange={() => SetCopycolumnVerificationStatus(copycolumnVerificationStatus == "No" ? "Yes" : "No")} type="checkbox" id="checkbox" />
-                                    {copycolumnVerificationStatus === "Yes" ? <div className="slider round" title='Switch to Groupby View' ></div> : <div title='Switch to Flat-View' className="slider round"></div>}
+                                    {copycolumnVerificationStatus === "Yes" ? <div className="slider round" title='Switch to false' ></div> : <div title='Switch to true' className="slider round"></div>}
                                 </label>
-                                <span>Yes</span>
+                                {/* <span>Yes</span> */}
                                 <span> <a className="border brush ms-2 p-1" onClick={()=>setCopyTrafficlight("")}><i className="fa fa-paint-brush " aria-hidden="true" title="Clear All"></i></a>                        
                                 </span>
                             </div>
