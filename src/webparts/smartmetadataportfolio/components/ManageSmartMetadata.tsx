@@ -1,17 +1,27 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Web } from 'sp-pnp-js';
 import { ColumnDef } from '@tanstack/react-table';
-import GlobalCommanTable from './GlobalCommanTableSmartmetadata';
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import SmartMetadataEditPopup from "./SmartMetadataEditPopup";
 import DeleteSmartMetadata from "./DeleteSmartMetadata";
+import CreateMetadataItem from './CreateMetadataItem';
+import CompareSmartMetaData from './CompareSmartmetadata';
+import RestructureSmartMetaData from './RestructureSmartMetaData';
 let SmartmetadataItems: any = [];
 let TabSelected: string;
 let compareSeletected: any = [];
 let childRefdata: any;
 let ParentMetaDataItems: any = [];
 let TabsData: any = [];
+let SelectedMetadataItem: any = [];
+let CopySmartmetadata: any = []
 export default function ManageSmartMetadata(selectedProps: any) {
+    const [SmartmetadataAdd, setSmartmetadataAdd] = useState(false);
+    const [SmartmetadataCompare, setSmartmetadataCompare] = useState(false);
+    const [SmartmetadataRestructure, setSmartmetadataRestructure] = useState(false);
+    const [SmartmetadataCompareButton, setSmartmetadataCompareButton] = useState(false);
+    const [SmartmetadataRestructureButton, setSmartmetadataRestructureButton] = useState(false);
     const [categoriesTabName, setCategoriesTabName]: any = useState([]);
     const [setName]: any = useState('');
     const [AllCombinedJSON, setAllCombinedJSON] = useState(JSON);
@@ -133,9 +143,11 @@ export default function ManageSmartMetadata(selectedProps: any) {
         });
         if (TabSelected === 'Categories') {
             ShowingCategoriesTabsData(TabsFilter[0])
-        } else
+        } else {
+            CopySmartmetadata = TabsFilter;
             setSmartmetadata(TabsFilter);
-        childRefdata?.current?.setRowSelection({});
+            childRefdata?.current?.setRowSelection({});
+        }
     };
     const ShowingCategoriesTabsData = (tabData: any) => {
         TabsFilter = [];
@@ -150,6 +162,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 getFilterMetadataItems(TabsFilter);
             }
         });
+        CopySmartmetadata = TabsFilter;
         setSmartmetadata(TabsFilter);
         childRefdata?.current?.setRowSelection({});
     }
@@ -321,25 +334,69 @@ export default function ManageSmartMetadata(selectedProps: any) {
     };
     //-------------------------------------------------- RESTRUCTURING FUNCTION start---------------------------------------------------------------
 
-    const callBackSmartMetaData = useCallback((Array: any, topCompoIcon: any, Taxtype: any, checkData: any) => {
-        let array: any = [];
-        if (checkData != undefined) {
-            compareSeletected.push(checkData);
-            setSelectedItem(checkData);
-            array.push(checkData);
-        } else {
-            setSelectedItem({});
-            array = [];
-            compareSeletected = [];
-        }
-        setSelectedItem(array);
+    const callBackSmartMetaData = useCallback((Array: any, unSelectTrue: any, Taxtype: any, checkData: any) => {
         if (Array) {
-            let MetaData: any = [...Array]
-            console.log(MetaData)
-            setRestructureIcon(topCompoIcon);
+            if (!isItemExists(SelectedMetadataItem, Array.Id)) {
+                SelectedMetadataItem.push(Array);
+                if (SelectedMetadataItem.length === 2) {
+                    setSmartmetadataCompareButton(true)
+                    setSmartmetadataRestructureButton(false);
+                } else if (SelectedMetadataItem.length === 1) {
+                    setSmartmetadataRestructureButton(true)
+                    setSmartmetadataCompareButton(false);
+                } else if (SelectedMetadataItem.length >= 3) {
+                    setSmartmetadataCompareButton(false);
+                    setSmartmetadataRestructureButton(false);
+                } else {
+                    setSmartmetadataCompareButton(false);
+                    setSmartmetadataRestructureButton(false);
+                }
+            }
+        } else {
+            if (unSelectTrue) {
+                setRestructureIcon(false)
+                if (Array && CopySmartmetadata.length !== 0) {
+                    let array = CopySmartmetadata;
+                    array?.map((obj: any) => {
+                        obj.isRestructureActive = false;
+                        if (obj?.subRows?.length > 0 && obj?.subRows != undefined) {
+                            obj?.subRows?.map((Item: any) => {
+                                Item.isRestructureActive = false;
+                                if (Item?.subRows?.length > 0 && Item?.subRows != undefined) {
+                                    Item?.subRows?.map((Item1: any) => {
+                                        Item1.isRestructureActive = false;
+                                        if (Item1?.subRows?.length > 0 && Item1?.subRows != undefined) {
+                                            Item1?.subRows?.map((Item2: any) => {
+                                                Item2.isRestructureActive = false;
+                                                if (Item2?.subRows?.length > 0 && Item2?.subRows != undefined) {
+                                                    Item2?.subRows?.map((Item3: any) => {
+                                                        Item3.isRestructureActive = false;
+                                                        if (Item3?.subRows?.length > 0 && Item3?.subRows != undefined) {
+                                                            Item3?.subRows?.map((Item4: any) => {
+                                                                Item4.isRestructureActive = false;
+                                                            })
+                                                        }
+                                                    })
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    })
+                    if (array.length !== 0)
+                        setSmartmetadata(array);
+                    SelectedMetadataItem = Array;
+                    setSmartmetadataCompareButton(false);
+                    setSmartmetadataRestructureButton(false);
+
+                }
+            }
         }
         if (Taxtype) {
             SmartmetadataItems = [];
+            setRestructureIcon(false)
             setSelectedItem({});
             LoadSmartMetadata();
         }
@@ -402,6 +459,26 @@ export default function ManageSmartMetadata(selectedProps: any) {
     const CloseGenerateJSONpopup = () => {
         setIsVisible(false);
     }
+    const OpenCreateSmartMetadataPopup = () => {
+        setSmartmetadataAdd(true);
+    }
+    const openComparePopup = () => {
+        setSmartmetadataCompare(true);
+    }
+    const buttonRestructureCheck = () => {
+        setSmartmetadataRestructure(true);
+    }
+    const customTableHeaderButtons = (
+        <div>
+            <button type="button" title="Add" onClick={OpenCreateSmartMetadataPopup} className="btnCol btn btn-primary">Add +</button>
+            {SmartmetadataCompareButton
+                ? <button type="button" title="Compare" onClick={openComparePopup} className='btnCol btn btn-primary'>Compare</button> : <button type="button" title="Compare" disabled={true} onClick={openComparePopup} className='btnCol btn btn-primary'>Compare</button>
+            }
+            {SmartmetadataRestructureButton
+                ? <button type="button" title="Restructure" className="btnCol btn btn-primary" onClick={buttonRestructureCheck}>Restructure</button> : <button type="button" title="Restructure" className="btnCol btn btn-primary" disabled={true}>Restructure</button>
+            }
+        </div>
+    )
     //-------------------------------------------------- GENERATE JSON FUNCTION end---------------------------------------------------------------
     return (
         <>
@@ -411,6 +488,30 @@ export default function ManageSmartMetadata(selectedProps: any) {
                         <h3 className="heading">ManageSmartMetaData
                         </h3>
                         <span><a data-interception="off" target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/managesmartmetadata-old.aspx">Old ManageSmartMetadata</a></span>
+                    </div>
+                    <div>
+                        <span>
+                            {
+                                SmartmetadataAdd === true ?
+                                    <CreateMetadataItem AddButton={SmartmetadataAdd} childRefdata={childRefdata} AllList={selectedProps.AllList} addItemCallBack={callBackSmartMetaData} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedMetadataItem} setName={setName} ParentItem={Smartmetadata} TabSelected={TabSelected} categoriesTabName={categoriesTabName}></CreateMetadataItem>
+                                    : ''
+                            }
+                        </span>
+                        <span>
+                            {
+                                SmartmetadataCompare === true ?
+                                    <CompareSmartMetaData CompareButton={SmartmetadataCompare} childRefdata={childRefdata} AllList={selectedProps.AllList} compareSeletected={SelectedMetadataItem} ref={childRef} SelectedItem={SelectedMetadataItem} setName={setName} ParentItem={Smartmetadata} TabSelected={TabSelected}></CompareSmartMetaData>
+                                    : ''
+                            }
+                        </span>
+                        <span>
+                            {
+                                SmartmetadataRestructure === true ?
+                                    <RestructureSmartMetaData
+                                        RestructureButton={SmartmetadataRestructure} childRefdata={childRefdata} AllList={selectedProps.AllList} ref={childRef} AllMetaData={Smartmetadata} restructureItemCallBack={callBackSmartMetaData} restructureItem={SelectedMetadataItem} />
+                                    : ''
+                            }
+                        </span>
                     </div>
                 </section>
                 <ul className="nav nav-tabs" role="tablist">
@@ -449,7 +550,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                                         <div className='wrapper'>
                                             {
                                                 Smartmetadata &&
-                                                <GlobalCommanTable smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRefdata} childRefdata={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} categoriesTabName={categoriesTabName} />
+                                                <GlobalCommanTable customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRefdata} childRefdata={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} categoriesTabName={categoriesTabName} />
                                             }
                                         </div>
                                     </div>
