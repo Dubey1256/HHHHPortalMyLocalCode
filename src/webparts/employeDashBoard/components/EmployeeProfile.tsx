@@ -278,7 +278,10 @@ const EmployeProfile = (props: any) => {
                 LoginUserTeamMembers.push(item)
             }
           })
+          if (!isTaskUserExist(LoginUserTeamMembers, currentUserData))
+            LoginUserTeamMembers.push(currentUserData)
           config.Tasks = LoginUserTeamMembers;
+
           if (config?.Tasks != undefined && config?.Tasks?.length > 0) {
             config?.Tasks.map((User: any) => {
               array.map((Task: any) => {

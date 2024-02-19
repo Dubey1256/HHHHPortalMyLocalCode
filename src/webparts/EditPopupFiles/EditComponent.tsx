@@ -161,6 +161,7 @@ let ID: any;
     const [composition, setComposition] = React.useState(true);
     const [FeatureTypeData, setFeatureTypeData] = React.useState([]);
     const [autoSearchFeatureType, setAutoSearchFeatureType] = React.useState([]);
+    const [percentComplete, setPercentComplete]:any = React.useState();
     const [searchFeatureType, setSearchFeatureType] = React.useState([]);
   
     const handleCheckboxChange = () => {
@@ -208,6 +209,12 @@ let ID: any;
             }
         }, 1000)
     };
+    let statusDropDown = [
+        { rankTitle: "Select Item Rank", rank: null },
+        { rankTitle: "Not Started", rank: 0 },
+        { rankTitle: "In Progress", rank: 10 },
+        { rankTitle: "Completed", rank: 100 },
+      ];
 
     const handleFieldChange = (fieldName: any) => (e: any) => {
         // const updatedItem = { ...data[0], [fieldName]: e.target.value };
@@ -619,8 +626,7 @@ let ID: any;
         componentDetails = await web.lists
             .getById(RequireData.MasterTaskListID)
             .items.select(
-                "ServicePortfolio/Id",
-                "ServicePortfolio/Title",
+                "ServicePortfolio/Id","ServicePortfolio/Title",
                 "SiteCompositionSettings",
                 "PortfolioStructureID",
                 "ItemRank",
@@ -653,7 +659,6 @@ let ID: any;
                 "AdminStatus",
                 "Background",
                 "Help_x0020_Information",
-                "SharewebComponent/Id",
                 "TaskCategories/Id",
                 "TaskCategories/Title",
                 "PriorityRank",
@@ -701,19 +706,20 @@ let ID: any;
                 "FeatureType/Title","FeatureType/Id",
                 "Parent/Title",
                 "Parent/ItemType",
+                "Portfolios/Id","Portfolios/Title",
                 "PortfolioType/Color"
             )
             .expand(
-                "ClientCategory",
-                "AssignedTo",
                 "ServicePortfolio",
+                "ClientCategory",
+                "Portfolios",
+                "AssignedTo",
                 "AttachmentFiles",
                 "Author",
                 "FeatureType",
                 "Editor",
                 "PortfolioType",
                 "TeamMembers",
-                "SharewebComponent",
                 "TaskCategories",
                 "ResponsibleTeam",
                 "Parent"
@@ -1187,15 +1193,9 @@ let ID: any;
         initLoading();
     }, []);
 
-    const EditComponent = (items: any, title: any) => {
-        if (title == "Service") {
+    const EditComponent = (items: any) => {
             setIsComponent(true);
             setSharewebComponent(items);
-        } else {
-            setIsService(true);
-            setSharewebComponent(items);
-        }
-
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     };
 
@@ -1643,9 +1643,10 @@ let ID: any;
                     // ClientCategoryId: { "results": RelevantPortfolioIds },
                     ServicePortfolioId: ((RelevantPortfolioIds != "" ? RelevantPortfolioIds : null)) ,
                     PortfoliosId: ({ results: (PortfolioIds?.length != 0 ? PortfolioIds : []) } ? { results: (PortfolioIds?.length != 0 ? PortfolioIds : []) } :null)?{ results: (PortfolioIds?.length >= 0 ? PortfolioIds : []) }:null,
-                   Synonyms: JSON.stringify(Items["Synonyms"]),
+                  Synonyms: JSON.stringify(Items["Synonyms"]),
                     Package: Items.Package,
                     AdminStatus: Items.AdminStatus,
+                    PercentComplete: Items?.PercentComplete / 100,
                     Priority: Items.Priority,
                     Mileage: Items.Mileage,
                     ValueAdded: Items.ValueAdded,
@@ -1707,6 +1708,7 @@ let ID: any;
                         TeamMemberIds != undefined && TeamMemberIds?.length > 0
                             ? TeamMemberIds
                             : []
+                       
                     },
                     ResponsibleTeamId: {
                         results:
@@ -1716,10 +1718,10 @@ let ID: any;
                     },
                     TeamMembersId: {
                         results:
-                            AssignedToIds != undefined && AssignedToIds?.length > 0
-                                ? AssignedToIds
-                                : []
-                       
+                        AssignedToIds != undefined && AssignedToIds?.length > 0
+                            ? AssignedToIds
+                            : []
+                           
                     }
                 })
                 .then((res: any) => {
@@ -1733,7 +1735,7 @@ let ID: any;
     const AddQuestionFunc = async () => {
         try {
             let componentId = CompoenetItem[0].Id;
-            const questionDescription = PostQuestionDescription?.replace(/<[^>]+>|&nbsp;|\n/g, "");
+            const questionDescription = PostQuestionDescription;
             const newItem = {
                 ItemType: "Question",
                 // Title: `${CompoenetItem[0].Title} - ${question}`,
@@ -1758,10 +1760,17 @@ let ID: any;
         }
     }
 
-    const AddHelpFunc = async () => {
+    
+      const handleInputChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setEditData({...EditData,PercentComplete:event.target.value})
+      };
+
+
+
+      const AddHelpFunc = async () => {
         try {
             let componentId = CompoenetItem[0].Id;
-            const questionDescription = PostQuestionDescription?.replace(/<[^>]+>|&nbsp;|\n/g, "");
+            const questionDescription = PostQuestionDescription;
             const newItem = {
                 ItemType: "Help",
                 // Title: `${CompoenetItem[0].Title} - ${help}`,
@@ -3098,7 +3107,7 @@ let ID: any;
                                                     </div>
                                                 </div>
                                                 <div className="col-4 pe-0 mt-2 ">
-                                                    {EditData?.Portfolio_x0020_Type == "Service" && (
+                                                    {/* {EditData?.Portfolio_x0020_Type == "Service" && (
                                                         <div className="input-group">
                                                             <label className="form-label full-width">
                                                                 Portfolio Item
@@ -3113,8 +3122,7 @@ let ID: any;
 
                                                             </span>
                                                         </div>
-                                                    )}
-                                                    {EditData?.Portfolio_x0020_Type == "Component" && (
+                                                    )} */}
                                                         <div className="input-group">
                                                             <label className="form-label full-width">
                                                                 Portfolio Item
@@ -3122,14 +3130,12 @@ let ID: any;
                                                             <input type="text" className="form-control" />
                                                             <span className="input-group-text">
                                                                 <span onClick={(e) =>
-                                                                    EditComponent(EditData, "Service")
+                                                                    EditComponent(EditData)
                                                                 } className="svg__iconbox svg__icon--editBox">
 
                                                                 </span>
                                                             </span>
                                                         </div>
-                                                    )}
-                                                    {EditData?.Portfolio_x0020_Type == "Component" && (
                                                         <div className="col-sm-12  inner-tabb">
                                                             {linkedComponentData?.length > 0 ? (
                                                                 <div >
@@ -3162,8 +3168,7 @@ let ID: any;
                                                             ) : null}
 
                                                         </div>
-                                                    )}
-                                                    {EditData?.Portfolio_x0020_Type == "Service" && (
+                                                    {/* {EditData?.Portfolio_x0020_Type == "Service" && (
                                                         <div className="col-sm-12 inner-tabb">
                                                             {linkedComponentData?.length > 0 ? (
                                                                 <div>
@@ -3195,7 +3200,7 @@ let ID: any;
                                                             ) : null}
 
                                                         </div>
-                                                    )}
+                                                    )} */}
 
                                                     <div className="col-sm-12  inner-tabb">
                                                         <div>
@@ -3392,121 +3397,20 @@ let ID: any;
                                                     <div className="input-group mb-2">
                                                         <label className="form-label  full-width">
                                                             Status
-                                                        </label>
-                                                        {/* <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            value={EditData?.AdminStatus}
-                                                            onChange={(e) => ChangeStatus(e, EditData)}
-                                                        /> */}
-                                                          <EditableField
-                                                           key={1}
-                                                            listName="Master Tasks"
-                                                           itemId={EditData.Id}
-                                                           fieldName="PercentComplete"
-                                                             value={
-                                                                EditData?.PercentComplete != undefined
-                                                              ? (EditData?.PercentComplete * 100).toFixed(0)
-                                                                  : ""
-                                                                 }
-                                                             TaskProfilePriorityCallback={null}
-                                                           onChange={handleFieldChange("PercentComplete")}
-                                                                      type={EditData.Status}
-                                                           web={RequireData?.siteUrl}
-                              />
+                                                        </label><div className="editcolumn full-width">
+                                                          <select value={EditData?.PercentComplete} onChange={handleInputChange}>
+                                                            {statusDropDown.map((item: any, index: any) => (
+                                                              <option key={index} value={item.rank}>
+                                                              {item.rankTitle}
+                                                                     </option>
+                                                                      ))}
+                                                                   </select>
+                                                       </div>
+                                                       
+                                                    
+                                                         
                                                     </div>
 
-                                                    {/* <div className="SpfxCheckRadio">
-                                                        <input
-                                                            className="radio"
-                                                            name="NotStarted"
-                                                            type="radio"
-                                                            value="Not Started"
-                                                            checked={
-                                                                EditData?.AdminStatus === "Not Started"
-                                                                    ? true
-                                                                    : false
-                                                            }
-                                                            onChange={(e) =>
-                                                                setStatus(EditData, "Not Started")
-                                                            }
-                                                        ></input>
-                                                        <label className="form-check-label">
-                                                            Not Started{" "}
-                                                        </label>
-                                                    </div>
-                                                    <div className="SpfxCheckRadio">
-                                                        <input
-                                                            className="radio"
-                                                            name="NotStarted"
-                                                            type="radio"
-                                                            value="In Preparation"
-                                                            onChange={(e) =>
-                                                                setStatus(EditData, "In Preparation")
-                                                            }
-                                                            checked={
-                                                                EditData?.AdminStatus === "In Preparation"
-                                                                    ? true
-                                                                    : false
-                                                            }
-                                                        ></input>
-                                                        <label className="form-check-label">
-                                                            {" "}
-                                                            In Preparation
-                                                        </label>
-                                                    </div>
-                                                    <div className="SpfxCheckRadio">
-                                                        <input
-                                                            className="radio"
-                                                            name="NotStarted"
-                                                            type="radio"
-                                                            value="In Development"
-                                                            onChange={(e) =>
-                                                                setStatus(EditData, "In Development")
-                                                            }
-                                                            checked={
-                                                                EditData?.AdminStatus === "In Development"
-                                                                    ? true
-                                                                    : false
-                                                            }
-                                                        ></input>
-                                                        <label className="form-check-label">
-                                                            {" "}
-                                                            In Development{" "}
-                                                        </label>
-                                                    </div>
-                                                    <div className="SpfxCheckRadio">
-                                                        <input
-                                                            className="radio"
-                                                            name="NotStarted"
-                                                            type="radio"
-                                                            value="Active"
-                                                            onChange={(e) => setStatus(EditData, "Active")}
-                                                            checked={
-                                                                EditData?.AdminStatus === "Active"
-                                                                    ? true
-                                                                    : false
-                                                            }
-                                                        ></input>
-                                                        <label className="form-check-label">Active</label>
-                                                    </div>
-                                                    <div className="SpfxCheckRadio">
-                                                        <input
-                                                            className="radio"
-                                                            name="NotStarted"
-                                                            type="radio"
-                                                            value="Archived"
-                                                            onChange={(e) => setStatus(EditData, "Archived")}
-                                                            checked={
-                                                                EditData?.AdminStatus === "Archived"
-                                                                    ? true
-                                                                    : false
-                                                            }
-                                                        ></input>
-                                                        <label className="form-check-label">
-                                                            Archived{" "}
-                                                        </label>
-                                                    </div> */}
                                                 </div>
                                                 <div className="col-sm-6">
                                                     <div className="input-group mb-2">
@@ -3685,8 +3589,10 @@ let ID: any;
                                                 <div className="col-sm-12">
                                                     <div className="col-sm-12 padding-0 input-group">
                                                         <label className="full_width">Categories</label>
-
-                                                        <input
+                                                        {
+                                                            (CategoriesData?.length == 0 || CategoriesData[0] == undefined) &&
+                                                            <>
+                                                             <input
                                                             type="text"
                                                             className="ui-autocomplete-input form-control"
                                                             id="txtCategories"
@@ -3697,6 +3603,38 @@ let ID: any;
 
                                                             <span title="Edit Categories" onClick={() => EditComponentPicker(item)} className="svg__iconbox svg__icon--editBox"></span>
                                                         </span>
+                                                            </>
+                                                        }
+                                 { CategoriesData && CategoriesData?.length == 1 &&  CategoriesData != undefined ? (
+                                                    <div className="full-width">
+                                                        {CategoriesData?.map((type: any, index: number) => {
+                                                            return (
+                                                                <>
+                                                                    {!instantCategories?.some((selectedCat: any) => selectedCat?.Title == type?.Title) && (
+                                                                        <div className="full-width replaceInput alignCenter">
+                                                                            <a
+                                                                                style={{ color: "#fff !important" }}
+                                                                                target="_blank"
+                                                                                className="textDotted hreflink"
+                                                                                data-interception="off"
+                                                                                href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?${item?.Id}`}
+                                                                            >
+                                                                                {type.Title}
+                                                                            </a>
+                                                                            <span className="input-group-text">
+                                                                            <span className="dark mini svg__iconbox svg__icon--cross"
+                                                                                onClick={() => deleteCategories(type?.Id)}
+                                                                            ></span>
+                                                                            </span>
+                                                                            
+                                                                            {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
+                                                                        </div>
+                                                                    )}
+                                                                </>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                ) : null}
 
                                                     </div>
                                                     {
@@ -3737,7 +3675,7 @@ let ID: any;
                                                         </div>
                                                     ) : null}
                                                 </div>
-                                                {CategoriesData != undefined ? (
+                                                { CategoriesData && CategoriesData.length > 1 &&  CategoriesData != undefined ? (
                                                     <div>
                                                         {CategoriesData?.map((type: any, index: number) => {
                                                             return (
@@ -3768,7 +3706,7 @@ let ID: any;
                           <div className="col-sm-12 padding-0 input-group">
                             <label className="full_width">Project</label>
                             {
-                                filterdata?.length == 0 || filterdata.length !== 1 && 
+                                (filterdata?.length == 0 || filterdata.length !== 1) && 
                                 <>
                                 <input type="text" className="form-control"    onChange={(e) =>
                                     autoSuggestionsForProject(e)
@@ -3779,13 +3717,14 @@ let ID: any;
                             }
                            
                                {filterdata && filterdata.length == 1 ? 
+                            //    "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=4310"
                             (
                               <div className="w-100" >
                                 {filterdata?.map((items:any, Index: any)=>
                                  <div className="full-width replaceInput alignCenter" key={Index}>
                               
                                   <a
-                                    href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?=${items.Id}`}
+                                    href={`${SelectD.siteUrl}/SitePages/Project-Management.aspx?ProjectId?=${items.Id}`}
                                     className="textDotted hreflink"         
                                     data-interception="off"
                                     target="_blank"
@@ -3821,7 +3760,7 @@ let ID: any;
                                  <div className="block d-flex justify-content-between mb-1" key={Index}>
                               
                                   <a
-                                    href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?=${items.Id}`}
+                                    href={`${SelectD.siteUrl}/SitePages/Project-Management.aspx?ProjectId?=${items.Id}`}
                                     className="wid-90 light"
                                     data-interception="off"
                                     target="_blank"
@@ -3844,7 +3783,7 @@ let ID: any;
                         <div className="col-sm-12 padding-0 input-group">
                             <label className="full_width">Feature Type </label>
                             {
-                                FeatureTypeData?.length == 0 || FeatureTypeData[0] == undefined &&
+                                (FeatureTypeData?.length == 0 || FeatureTypeData[0] == undefined) &&
                                 <>
                                   <input type="text" className="form-control" onChange={(e) =>autoSuggestionsForFeatureType(e)} />
                                   <span className="input-group-text" placeholder="Feature Type"   >
@@ -4548,7 +4487,6 @@ let ID: any;
                                                     taskId={EditData?.ID}
                                                     listId={RequireData.MasterTaskListID}
                                                     siteUrls={RequireData?.siteUrl}
-                                                    RequiredListIds = {RequireData}
                                                 />
                                             ) : (
                                                 ""
@@ -4621,26 +4559,17 @@ let ID: any;
                                 selectionType={"Single"}
                             />
                         ) : null}
-                        {IsService ? (
-                            <ServiceComponentPortfolioPopup
-                                props={SharewebComponent}
-                                Dynamic={RequireData}
-                                Call={Call}
-                                ComponentType={"Component"}
-                                selectionType={"Multi"}
-                            />
-                        ) : null}
 
                    {isopenProjectpopup ? (
-                    <ServiceComponentPortfolioPopup
-                    props={filterdata}
-                    Dynamic={SelectD}
-                    ComponentType={"Component"}
-                    selectionType={"Multi"}
-                    Call={(Call:any, type: any, functionType: any)=>{callServiceComponent(Call, type,functionType)}}
-                    updateMultiLookup={updateMultiLookup}
-                    showProject={isopenProjectpopup}
-                   />
+                   <ServiceComponentPortfolioPopup
+                   props={filterdata}
+                   Dynamic={SelectD}
+                   ComponentType={"Component"}
+                   selectionType={"Multi"}
+                   Call={(Call:any, type: any, functionType: any)=>{callServiceComponent(Call, type,functionType)}}
+                   updateMultiLookup={updateMultiLookup}
+                   showProject={isopenProjectpopup}
+                  />
                   ) : null}
 
                         {IsComponentPicker && (
@@ -4667,30 +4596,6 @@ let ID: any;
                         <label className="form-label full-width">Title</label>
                         <input type="text" className="form-control" defaultValue={`${CompoenetItem[0]?.Title} - ${question}`} onChange={(e) => setQuestion(e.target.value)}></input>
                     </div>
-                    {/* <div className="input-group mb-2">
-                        <label className="full-width form-label">Permission</label>
-
-                        <label className="SpfxCheckRadio">
-                            <input type="radio" id="public" value="Public" className="radio" checked={choice === 'Public'} onChange={choiceHandler} /> Public
-                        </label>
-
-
-                        <label className="SpfxCheckRadio">
-                            <input type="radio" id="memberarea" value="Memberarea" className="radio" checked={choice === 'Memberarea'} onChange={choiceHandler} />
-                            Memberarea</label>
-
-
-                        <label className="SpfxCheckRadio">
-                            <input type="radio" id="eda Only" value="EDA Only" className="radio" checked={choice === 'EDA Only'} onChange={choiceHandler} /> EDA Only</label>
-
-
-                        <label className="SpfxCheckRadio">
-                            <input type="radio" id="team" value="Team" className="radio" checked={choice === 'Team'} onChange={choiceHandler} /> Team</label>
-
-
-                        <label className="SpfxCheckRadio">
-                            <input type="radio" id="admin" className="radio" value="Admin" checked={choice === 'Admin'} onChange={choiceHandler} /> Admin</label>
-                    </div> */}
                     <div className="mb-2">
                         <label className="form-label">Description</label>
                         <div>
@@ -4802,7 +4707,6 @@ let ID: any;
                                             taskId={dataUpdate?.ID}
                                             listId={RequireData?.SmartHelpListID}
                                             siteUrls={RequireData?.siteUrl}
-                                            RequiredListIds = {RequireData}
                                         />
                                     ) : (
                                         ""
@@ -4918,7 +4822,6 @@ let ID: any;
                                             taskId={helpDataUpdate?.ID}
                                             listId={RequireData?.SmartHelpListID}
                                             siteUrls={RequireData?.siteUrl}
-                                            RequiredListIds = {RequireData}
                                         />
                                     ) : (
                                         ""
@@ -4996,7 +4899,6 @@ let ID: any;
                                             taskId={EditData?.ID}
                                             listId={RequireData.MasterTaskListID}
                                             siteUrls={RequireData?.siteUrl}
-                                            RequiredListIds = {RequireData}
                                         />
                                     ) : (
                                         ""

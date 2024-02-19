@@ -1944,25 +1944,7 @@ const CreateActivity = (props: any) => {
                       className="hreflink svg__iconbox svg__icon--editBox"
                     ></span>
                   </span>
-                </div>
-                {instantCategories?.map((item: any) => {
-                  return (
-                    <div className="form-check">
-                      <input
-                        className="form-check-input rounded-0"
-                        type="checkbox"
-                        checked={CategoriesData?.some(
-                          (selectedCat: any) => selectedCat?.Id == item?.Id
-                        )}
-                        onClick={() =>
-                          selectSubTaskCategory(item?.Title, item?.Id, item)
-                        }
-                      />
-                      <label>{item?.Title}</label>
-                    </div>
-                  );
-                })}
-                {SearchedCategoryData?.length > 0 ? (
+                   {SearchedCategoryData?.length > 0 ? (
                   <div className="SmartTableOnTaskPopup">
                     <ul className="list-group">
                       {SearchedCategoryData.map((item: any) => {
@@ -1987,6 +1969,25 @@ const CreateActivity = (props: any) => {
                     </ul>
                   </div>
                 ) : null}
+                </div>
+                {instantCategories?.map((item: any) => {
+                  return (
+                    <div className="form-check">
+                      <input
+                        className="form-check-input rounded-0"
+                        type="checkbox"
+                        checked={CategoriesData?.some(
+                          (selectedCat: any) => selectedCat?.Id == item?.Id
+                        )}
+                        onClick={() =>
+                          selectSubTaskCategory(item?.Title, item?.Id, item)
+                        }
+                      />
+                      <label>{item?.Title}</label>
+                    </div>
+                  );
+                })}
+               
               </div>
               {CategoriesData != undefined ? (
                 <div>
@@ -2114,7 +2115,6 @@ const CreateActivity = (props: any) => {
   return (
     <>
       {props?.pageName == "QuickTask" ? (
-        <div>
           <>
 
             <h2 className="heading">
@@ -2125,7 +2125,6 @@ const CreateActivity = (props: any) => {
 
             {onRenderMainHtml}
           </>
-        </div>
       ) : (
         <Panel
           onRenderHeader={onRenderCustomHeaderMain}

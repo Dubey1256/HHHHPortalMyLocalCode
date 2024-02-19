@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { myContextValue } from '../globalCommon'
 import Tooltip from "../Tooltip";
+import Form from 'react-bootstrap/Form';
 const EditTrafficLightComment = (props: any) => {
     const myContextValue2: any = React.useContext(myContextValue)
     const [copyTrafficlight, setCopyTrafficlight] = useState("");
@@ -44,46 +45,34 @@ const EditTrafficLightComment = (props: any) => {
         props?.setOpenCommentpopup(false)
     }
     const updateData = () => {
-       myContextValue2.trafficValue=copyTrafficlight;
-        myContextValue2.CommentData=copyCommentData;
-        myContextValue2?.setTrafficValue(copyTrafficlight);
+       myContextValue2?.setTrafficValue(copyTrafficlight);
         myContextValue2?.SetCommentData(copyCommentData)
         myContextValue2?.setcolumnVerificationStatus(copycolumnVerificationStatus)
-        myContextValue2?.updateJson()
+        props?.setOpenCommentpopup(false)
+        let UpdateData={
+            trafficValue:copyTrafficlight,
+            CommentData:copyCommentData,
+            columnVerificationStatus:copycolumnVerificationStatus
+        }
+        myContextValue2?.updateJson(UpdateData) 
+        
+     
     }
+    
     return (
         <>
             <Panel
                 onRenderHeader={onRenderCustomHeadercomment}
                 isOpen={true}
                 type={PanelType.custom}
-                customWidth="950px"
+                customWidth="375px"
                 onDismiss={() => props?.setOpenCommentpopup(false)}
                 isBlocking={false}
             >
-                <div className="border-dark border-top modal-body">
+                <div className="border-top modal-body">
                     <div className="row py-3">
-                        <div className="col">
-                            <div className="editcolumn">
-
-
-                                <select className="w-100" value={copycolumnVerificationStatus} onChange={(e) => SetCopycolumnVerificationStatus(e?.target?.value === "Yes" ? "Yes" : "No")}>
-                                    <option value="No">NO</option>
-                                    <option value="Yes"> Yes </option>
-
-                                </select>
-
-                            </div>
-                        </div>
-                        <div className="col">
-                            <div className="alignCenter">
-                                <div>
-                                    <span className="fw-semilold">Select Traffic Lights</span>
-                                </div>
-                                <div className="ml-auto">
-                                    <a className="href"><span  onClick={()=>setCopyTrafficlight("")}>Clear</span></a>
-                                </div>
-                            </div>
+                     <div className="col">
+                     <span className="fw-semibold">Select Traffic Lights</span>
                             <div>
                                 <ul className="list-none">
                                     <li className="alignCenter my-1" onClick={() => changeTrafficLight("Incorrect")}>
@@ -107,11 +96,24 @@ const EditTrafficLightComment = (props: any) => {
 
 
                         </div>
+                        <div className="col">
+                        <div className="alignCenter  float-end">
+                                {/* <span className='me-1'>No</span> */}
+                                <label className="switch me-1" htmlFor="checkbox">
+                                    <input checked={copycolumnVerificationStatus === "Yes" ? true : false} onChange={() => SetCopycolumnVerificationStatus(copycolumnVerificationStatus == "No" ? "Yes" : "No")} type="checkbox" id="checkbox" />
+                                    {copycolumnVerificationStatus === "Yes" ? <div className="slider round" title='Switch to false' ></div> : <div title='Switch to true' className="slider round"></div>}
+                                </label>
+                                {/* <span>Yes</span> */}
+                                <span> <a className="border brush ms-2 p-1" onClick={()=>setCopyTrafficlight("")}><i className="fa fa-paint-brush " aria-hidden="true" title="Clear All"></i></a>                        
+                                </span>
+                            </div>
+                   
+                        </div>
                     </div>
 
                     <div className='col mt-3'>
                         <div className="alignCenter">
-                            <div className="fw-semilold">Add Comment</div>
+                            <div className="fw-semibold">Add Comment</div>
                             <div className="ml-auto">
                                 <a className="href"><span onClick={()=>setCopyCommentData("")} >Clear</span></a>
                             </div>

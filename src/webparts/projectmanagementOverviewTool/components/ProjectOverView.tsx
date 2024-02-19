@@ -23,6 +23,7 @@ var siteConfig: any = []
 let AllProjectDataWithAWT: any = [];
 var AllTaskUsers: any = [];
 let MyAllData: any = []
+let typeData: any = [];
 var Idd: number;
 var allSitesTasks: any = [];
 let AllProject: any = [];
@@ -40,6 +41,8 @@ let AllLeaves: any = [];
 var isShowTimeEntry: any = "";
 var isShowSiteCompostion: any = "";
 let renderData: any = []
+let portfolioTypeDataItemCopy: any = [];
+let flatProjectsData: any
 export default function ProjectOverview(props: any) {
     const [TableProperty, setTableProperty] = React.useState([]);
     const [openTimeEntryPopup, setOpenTimeEntryPopup] = React.useState(false);
@@ -69,6 +72,9 @@ export default function ProjectOverview(props: any) {
     const [AllSiteTasks, setAllSiteTasks]: any = React.useState([]);
     const [pageLoaderActive, setPageLoader] = React.useState(false)
     const [taskTimeDetails, setTaskTimeDetails] = React.useState([]);
+    const [taskTypeDataItem, setTaskTypeDataItem] = React.useState([]);
+    const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Project', Suffix: 'P', Level: 1 }, { Title: 'Sprint', Suffix: 'X', Level: 2 }]);
+    const [portfolioTypeDataItem, setPortFolioTypeIcon] = React.useState([]);
     const childRef = React.useRef<any>();
     const restructuringRef = React.useRef<any>();
     React.useEffect(() => {
@@ -109,8 +115,9 @@ export default function ProjectOverview(props: any) {
         loadTodaysLeave();
         setPageLoader(true);
         GetMetaData()
-
+        getTaskType()
     }, [])
+
     const TimeEntryCallBack = React.useCallback((item1) => {
         setOpenTimeEntryPopup(false);
     }, []);
@@ -157,6 +164,7 @@ export default function ProjectOverview(props: any) {
             }
 
             AllTaskUsers = taskUser;
+            findPortFolioIconsAndPortfolio();
         } else {
             alert('Task User List Id not available')
         }
@@ -1052,6 +1060,11 @@ export default function ProjectOverview(props: any) {
     }
 
     const GetMasterData = async () => {
+        let portFoliotypeCount = JSON.parse(JSON.stringify(portfolioTypeDataItemCopy?.map((taskLevelcount: any) => {
+            taskLevelcount[taskLevelcount.Title + 'number'] = 0;
+            return taskLevelcount
+        }
+        )))
         if (AllListId?.MasterTaskListID != undefined) {
             try {
                 let web = new Web(`${AllListId?.siteUrl}`);
@@ -1108,7 +1121,28 @@ export default function ProjectOverview(props: any) {
                     items.DisplayCreateDate = items.Created != null ? Moment(items.Created).format("DD/MM/YYYY") : "";
                 })
                 AllProject = AllProjectItems?.filter((item: any) => item?.Item_x0020_Type == "Project")
-
+                AllProject.map((items: any) => {
+                    if (items?.Item_x0020_Type != undefined) {
+                        portFoliotypeCount?.map((type: any) => {
+                            if (items?.Item_x0020_Type === type?.Title) {
+                                type[type.Title + 'filterNumber'] += 1;
+                                type[type.Title + 'number'] += 1;
+                            }
+                        })
+                    }
+                    if (items?.subRows.length > 0) {
+                        items?.subRows.map((child: any) => {
+                            if (child?.Item_x0020_Type != undefined) {
+                                portFoliotypeCount?.map((type: any) => {
+                                    if (child?.Item_x0020_Type === type?.Title) {
+                                        type[type.Title + 'filterNumber'] += 1;
+                                        type[type.Title + 'number'] += 1;
+                                    }
+                                })
+                            }   
+                        })
+                    }
+                })
                 AllProject = sortOnPriority(AllProject)
                 let flatDataProjects = globalCommon.deepCopy(AllProject);
                 AllProjectDataWithAWT = globalCommon.deepCopy(AllProject);
@@ -1264,7 +1298,9 @@ export default function ProjectOverview(props: any) {
 
                 // })
                 flatDataProjects = flatDataProjects?.filter((Project: any) => Project?.subRows?.length > 0)
+                flatProjectsData = flatDataProjects
                 setAllTasks(flatDataProjects);
+                setPortFolioTypeIcon(portFoliotypeCount);
                 setPageLoader(false);
                 setData(flatDataProjects);
             } catch (e) {
@@ -1275,6 +1311,48 @@ export default function ProjectOverview(props: any) {
         }
 
     }
+
+    const findPortFolioIconsAndPortfolio = async () => {
+        try {
+            let newarray: any = [];
+            const ItemTypeColumn = "Item Type";
+            console.log("Fetching portfolio icons...");
+            const field = await new Web(AllListId.siteUrl)
+                .lists.getById(AllListId?.MasterTaskListID)
+                .fields.getByTitle(ItemTypeColumn)
+                .get();
+            console.log("Data fetched successfully:", field?.Choices);
+
+            if (field?.Choices?.length > 0 && field?.Choices != undefined) {
+                field?.Choices?.forEach((obj: any) => {
+                    if (obj != undefined) {
+                        let Item: any = {};
+                        Item.Title = obj;
+                        Item[obj + 'number'] = 0;
+                        Item[obj + 'filterNumber'] = 0;
+                        Item[obj + 'numberCopy'] = 0;
+                        newarray.push(Item);
+                    }
+                })
+                if (newarray.length > 0) {
+                    newarray = newarray.filter((findShowPort: any) => {
+                        let match = portfolioTypeConfrigration.find((config: any) => findShowPort.Title === config.Title);
+                        if (match) {
+                            findShowPort.Level = match?.Level;
+                            findShowPort.Suffix = match?.Suffix;
+                            return true
+                        }
+                        return false
+                    });
+                }
+                console.log("Portfolio icons retrieved:", newarray);
+                portfolioTypeDataItemCopy = portfolioTypeDataItemCopy.concat(newarray)
+                setPortFolioTypeIcon(newarray);
+            }
+        } catch (error) {
+            console.error("Error fetching portfolio icons:", error);
+        }
+    };
     //    Save data in master task list
     const [title, settitle] = React.useState('')
     const tableStyle = {
@@ -1298,7 +1376,9 @@ export default function ProjectOverview(props: any) {
                 })
                 setCheckBoxData(selectedItem)
                 setTableProperty(childRef.current.table.getSelectedRowModel().flatRows)
-                setTrueRestructuring(true)
+                if (childRef.current.table.getSelectedRowModel().flatRows.length > 0) {
+                    setTrueRestructuring(true)
+                }
             } else {
                 setCheckBoxData([])
                 setTableProperty([])
@@ -1321,6 +1401,65 @@ export default function ProjectOverview(props: any) {
             setShowTeamMemberOnCheck(false)
         }
     }, [CheckBoxData])
+
+    React.useEffect(() => {
+        let portFoliotypeCount = JSON.parse(JSON.stringify(portfolioTypeDataItemCopy?.map((taskLevelcount: any) => {
+            taskLevelcount[taskLevelcount.Title + 'filterNumber'] = 0; return taskLevelcount
+        }
+        )))
+        if (workingTodayFiltered) {
+            flatProjectsData?.map((elem: any) => {
+                if (elem?.Item_x0020_Type != undefined) {
+                    portFoliotypeCount?.map((type: any) => {
+                        if (elem?.Item_x0020_Type === type?.Title) {
+                            type[type.Title + 'filterNumber'] += 1;
+                            type[type.Title + 'number'] += 1;                          
+                        }
+                    })
+                }
+                if (elem?.subRows.length > 0) {
+                    elem?.subRows.map((child: any) => {
+                        if (child?.Item_x0020_Type != undefined) {
+                            portFoliotypeCount?.map((type: any) => {
+                                if (child?.Item_x0020_Type === type?.Title) {
+                                    type[type.Title + 'filterNumber'] += 1;
+                                    type[type.Title + 'number'] += 1;                          
+                                }
+                            })
+                        }
+                    })
+                }
+            });
+            setPortFolioTypeIcon(portFoliotypeCount)
+            setData(flatProjectsData);
+        }
+        else{
+            AllProject?.map((elem: any) => {
+                if (elem?.Item_x0020_Type != undefined) {
+                    portFoliotypeCount?.map((type: any) => {
+                        if (elem?.Item_x0020_Type === type?.Title) {
+                            type[type.Title + 'filterNumber'] += 1;
+                            type[type.Title + 'number'] += 1;
+                        }
+                    })
+                }
+                if (elem?.subRows.length > 0) {
+                    elem?.subRows.map((child: any) => {
+                        if (child?.Item_x0020_Type != undefined) {
+                            portFoliotypeCount?.map((type: any) => {
+                                if (child?.Item_x0020_Type === type?.Title) {
+                                    type[type.Title + 'filterNumber'] += 1;
+                                    type[type.Title + 'number'] += 1;
+                                }
+                            })
+                        }
+                    })
+                }
+            });
+            setPortFolioTypeIcon(portFoliotypeCount)
+            setFlatData(AllProject)
+        }
+    }, [workingTodayFiltered])
 
 
 
@@ -1349,6 +1488,10 @@ export default function ProjectOverview(props: any) {
 
 
     const LoadAllSiteTasks = async () => {
+        typeData?.map((type: any) => {
+            type[type.Title + 'number'] = 0;
+        })
+        let taskTypeCount = JSON.parse(JSON.stringify(typeData));
         if (siteConfig?.length > 0) {
             try {
                 var AllTask: any = [];
@@ -1444,6 +1587,27 @@ export default function ProjectOverview(props: any) {
                     });
                     AllTask.push(items);
                 });
+                
+                let workingTodayTasks = smartmeta.filter((itms: any) => {
+                    return itms.IsTodaysTask
+                })
+
+                if (workingTodayTasks && taskTypeCount && typeData) {
+                    workingTodayTasks.forEach((tday: any) => {
+                        taskTypeCount.forEach((countType: any) => {
+                            if (tday?.TaskType?.Title === countType?.Title) {
+                                countType[countType.Title + 'number'] = (countType[countType.Title + 'number'] || 0) + 1;
+                                countType[countType.Title + 'filterNumber'] = (countType[countType.Title + 'filterNumber'] || 0) + 1;
+                            }
+                        });
+                
+                        typeData.forEach((dataType: any) => {
+                            if (tday?.TaskType?.Title === dataType?.Title) {
+                                dataType[dataType.Title + 'number'] = (dataType[dataType.Title + 'number'] || 0) + 1;
+                            }
+                        });
+                    });
+                }
 
                 AllTask.sort((a: any, b: any) => {
                     return b?.PriorityRank - a?.PriorityRank;
@@ -1481,6 +1645,7 @@ export default function ProjectOverview(props: any) {
                 console.log(categorizedUsers);
                 allSitesTasks = AllTask;
                 GetMasterData();
+                setTaskTypeDataItem(taskTypeCount)
 
             } catch (error) {
                 console.log(error)
@@ -1522,6 +1687,38 @@ export default function ProjectOverview(props: any) {
             console.log(peopleOnLeave);
         }
     }
+
+    const getTaskType = async () => {
+        let web = new Web(AllListId.siteUrl);
+        let taskTypeData = [];
+        taskTypeData = await web.lists
+            .getById(AllListId.TaskTypeID)
+            .items.select(
+                'Id',
+                'Level',
+                'Title',
+                'SortOrder',
+            )
+            .get();
+        if (taskTypeData?.length > 0 && taskTypeData != undefined) {
+            taskTypeData?.forEach((obj: any) => {
+                if (obj != undefined) {
+                    let Item: any = {};
+                    Item.Title = obj.Title;
+                    Item.SortOrder = obj.SortOrder;
+                    Item[obj.Title + 'number'] = 0;
+                    Item[obj.Title + 'filterNumber'] = 0;
+                    Item[obj.Title + 'numberCopy'] = 0;
+                    typeData.push(Item);
+                }
+            })
+            console.log("Task Type retrieved:", typeData);
+            typeData = typeData.sort((elem1: any, elem2: any) => elem1.SortOrder - elem2.SortOrder);
+            let setTypeData = JSON.parse(JSON.stringify(typeData))
+            setTaskTypeDataItem(setTypeData);
+            rerender()
+        }
+    };
     const OpenAddStructureModal = () => {
         setIsAddStructureOpen(true);
     }
@@ -1608,10 +1805,10 @@ export default function ProjectOverview(props: any) {
                                                     <div className="col-sm-12 p-0 smart">
                                                         <div>
                                                             <div>
-                                                                {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                                                {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} taskTypeDataItem={taskTypeDataItem} showingAllPortFolioCount={true} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                                                 {selectedView == 'Projects' ? <GlobalCommanTable fixedWidthTable={true} expandIcon={true} ref={childRef} callChildFunction={callChildFunction} AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false}
                                                                     customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} multiSelect={true} columns={column2}
-                                                                    data={workingTodayFiltered ? data : flatData} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                                                    data={workingTodayFiltered ? data : flatData} portfolioTypeData={portfolioTypeDataItem} showingAllPortFolioCount={true} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                                             </div>
                                                         </div>
                                                     </div>

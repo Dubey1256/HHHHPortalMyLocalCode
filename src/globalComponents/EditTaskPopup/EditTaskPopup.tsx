@@ -15,10 +15,9 @@ import "bootstrap/js/dist/carousel.js";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
 import {
     Panel,
-    PanelType,
-    resetControlledWarnings,
+    PanelType
 } from "office-ui-fabric-react";
-import { Label, Modal } from "@fluentui/react";
+
 import { FaExpandAlt } from "react-icons/fa";
 import { RiDeleteBin6Line, RiH6 } from "react-icons/ri";
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
@@ -204,6 +203,7 @@ const EditTaskPopup = (Items: any) => {
     const [IsTaskStatusUpdated, setIsTaskStatusUpdated] = useState(false);
     const [SendCategoryName, setSendCategoryName] = useState("");
     const [TeamMemberChanged, setTeamMemberChanged] = useState(false);
+    const [TeamLeaderChanged, setTeamLeaderChanged] = useState(false);
     const [CurrentImageIndex, setCurrentImageIndex] = useState("");
     const [loaded, setLoaded] = React.useState(true);
     const [IsImageUploaded, setIsImageUploaded] = React.useState(true);
@@ -215,6 +215,7 @@ const EditTaskPopup = (Items: any) => {
         { value: 3, status: "3% Approved", taskStatusComment: "Approved" },
         { value: 4, status: "4% Checking", taskStatusComment: "Checking" },
         { value: 5, status: "5% Acknowledged", taskStatusComment: "Acknowledged" },
+        { value: 8, status: "8% Priority Check", taskStatusComment: "Priority Check" },
         { value: 9, status: "9% Ready To Go", taskStatusComment: "Ready To Go" },
         { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
         { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
@@ -247,6 +248,7 @@ const EditTaskPopup = (Items: any) => {
     //     { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
     //     { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     // ]
+
 
     let ItemRankArray = [
         { rankTitle: "Select Item Rank", rank: null },
@@ -311,6 +313,9 @@ const EditTaskPopup = (Items: any) => {
             AddImageDescriptionsIndex = undefined;
         }
     }, [FeedBackCount]);
+
+
+
     useEffect(() => {
         setTimeout(() => {
             const panelMain: any = document.querySelector(".ms-Panel-main");
@@ -2553,15 +2558,18 @@ const EditTaskPopup = (Items: any) => {
                         UpdatedDataObject.siteType = EditData.siteType;
 
                         // When task assigned to user, send a notification on MS Teams 
+                        // && allUserItem.UserGroupId !== 7
 
                         if (!IsUserFromHHHHTeam && SendCategoryName !== "Bottleneck") {
-                            if (!IsUserFromHHHHTeam && SendCategoryName !== "Bottleneck") {
-                                try {
-                                    let sendUserEmails: any = [];
-                                    let AssignedUserName: string = '';
-                                    TaskAssignedTo?.map((userDtl: any) => {
+                            try {
+                                let currentUserId = Context.pageContext._legacyPageContext.userId;
+                                let sendUserEmails: any = [];
+                                let AssignedUserName: string = '';
+                                if (TeamLeaderChanged && TeamMemberChanged) {
+                                    let ResultantArray: any = TaskResponsibleTeam.concat(TaskAssignedTo);
+                                    ResultantArray?.map((userDtl: any) => {
                                         taskUsers?.map((allUserItem: any) => {
-                                            if (userDtl.Id == allUserItem.AssingedToUserId) {
+                                            if (userDtl.Id == allUserItem.AssingedToUserId && userDtl.Id !== currentUserId) {
                                                 sendUserEmails.push(allUserItem.Email);
                                                 if (AssignedUserName?.length > 0) {
                                                     AssignedUserName = "Team";
@@ -2571,31 +2579,71 @@ const EditTaskPopup = (Items: any) => {
                                             }
                                         });
                                     });
-                                    let uniqueIds: any = {};
-                                    const result: any = tempShareWebTypeData.filter((item: any) => {
-                                        if (!uniqueIds[item.Id]) {
-                                            uniqueIds[item.Id] = true;
-                                            return true;
+                                } else {
+                                    if (TeamLeaderChanged) {
+                                        TaskResponsibleTeam?.map((userDtl: any) => {
+                                            taskUsers?.map((allUserItem: any) => {
+                                                if (userDtl.Id == allUserItem.AssingedToUserId && userDtl.Id !== currentUserId) {
+                                                    sendUserEmails.push(allUserItem.Email);
+                                                    if (AssignedUserName?.length > 0) {
+                                                        AssignedUserName = "Team";
+                                                    } else {
+                                                        AssignedUserName = allUserItem.Title;
+                                                    }
+                                                }
+                                            });
+                                        });
+                                    }
+                                    else {
+                                        if (TeamMemberChanged) {
+                                            TaskAssignedTo?.map((userDtl: any) => {
+                                                taskUsers?.map((allUserItem: any) => {
+                                                    if (userDtl.Id == allUserItem.AssingedToUserId && userDtl.Id !== currentUserId) {
+                                                        sendUserEmails.push(allUserItem.Email);
+                                                        if (AssignedUserName?.length > 0) {
+                                                            AssignedUserName = "Team";
+                                                        } else {
+                                                            AssignedUserName = allUserItem.Title;
+                                                        }
+                                                    }
+                                                });
+                                            });
                                         }
-                                        return false;
-                                    });
-                                    let TaskCategories = result?.map((item: any) => item.Title).join(', ');
-                                    let SendMessage: string = '';
-                                    let CommonMsg: string = '';
-                                    let checkStatusUpdate: any = Number(taskPercentageValue) * 100;
+                                    }
+                                }
+                                let uniqueIds: any = {};
+                                const result: any = tempShareWebTypeData.filter((item: any) => {
+                                    if (!uniqueIds[item.Id]) {
+                                        uniqueIds[item.Id] = true;
+                                        return true;
+                                    }
+                                    return false;
+                                });
+                                let TaskCategories = result?.map((item: any) => item.Title).join(', ');
+                                let SendMessage: string = '';
+                                let CommonMsg: string = '';
+                                let checkStatusUpdate: any = Number(taskPercentageValue) * 100;
+
+                                if (TeamMemberChanged && TeamLeaderChanged) {
+                                    CommonMsg = `You have been marked as TL/working member in the below task. Please take necessary action.`
+                                } else {
                                     if (TeamMemberChanged) {
                                         CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`
                                     }
-                                    if (IsTaskStatusUpdated) {
-                                        if (checkStatusUpdate == 80) {
-                                            CommonMsg = `Below task has been set to 80%, please review it.`
-                                        }
-                                        if (checkStatusUpdate == 70) {
-                                            CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`
-                                        }
+                                    if (TeamLeaderChanged) {
+                                        CommonMsg = `You have been marked as a Lead on the below task. Please take necessary action.`
                                     }
+                                }
+                                if (IsTaskStatusUpdated) {
+                                    if (checkStatusUpdate == 80) {
+                                        CommonMsg = `Below task has been set to 80%, please review it.`
+                                    }
+                                    if (checkStatusUpdate == 70) {
+                                        CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`
+                                    }
+                                }
 
-                                    SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> </br> 
+                                SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> </br> 
                                     <p>
                                     Task Link:  <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
                                      ${UpdatedDataObject.TaskId}-${UpdatedDataObject.Title}
@@ -2610,30 +2658,29 @@ const EditTaskPopup = (Items: any) => {
                                     Task Management Team
                                     </b>
                                     `
-                                    let sendMSGCheck: any = IsTaskStatusUpdated
-                                    if ((checkStatusUpdate == 80 || checkStatusUpdate == 70) && IsTaskStatusUpdated) {
-                                        sendMSGCheck = true;
-                                    } else {
-                                        sendMSGCheck = false;
-                                    }
-                                    try {
-                                        if ((sendMSGCheck || TeamMemberChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
-                                            if (sendUserEmails?.length > 0) {
-                                                await globalCommon.SendTeamMessage(
-                                                    sendUserEmails,
-                                                    SendMessage,
-                                                    Items.context
-                                                );
-                                            }
-                                        }
-
-                                    } catch (error) {
-                                        console.log("Error", error.message);
-                                    }
-                                } catch (error) {
-                                    console.log("Error", error.message)
+                                let sendMSGCheck: any = IsTaskStatusUpdated
+                                if ((checkStatusUpdate == 80 || checkStatusUpdate == 70) && IsTaskStatusUpdated) {
+                                    sendMSGCheck = true;
+                                } else {
+                                    sendMSGCheck = false;
                                 }
+                                let SendUserEmailFinal: any = sendUserEmails.filter((item: any, index: any) => sendUserEmails.indexOf(item) === index);
+                                try {
+                                    if ((sendMSGCheck || TeamMemberChanged || TeamLeaderChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
+                                        if (sendUserEmails?.length > 0) {
+                                            await globalCommon.SendTeamMessage(
+                                                SendUserEmailFinal,
+                                                SendMessage,
+                                                Items.context
+                                            );
+                                        }
+                                    }
 
+                                } catch (error) {
+                                    console.log("Error", error.message);
+                                }
+                            } catch (error) {
+                                console.log("Error", error.message)
                             }
 
                         }
@@ -3213,10 +3260,17 @@ const EditTaskPopup = (Items: any) => {
             const timesheetDatass = teamConfigData;
             console.log(timesheetDatass);
         } else {
-            // if (ChangeTaskUserStatus) {
+
             if (teamConfigData?.AssignedTo?.length > 0) {
                 let tempArray: any = [];
-                setTeamMemberChanged(true);
+                if (teamConfigData?.AssignedTo?.length === EditDataBackup.AssignedTo?.length) {
+                    let checkSendNotification: any = areTitlesSame(teamConfigData?.AssignedTo, EditDataBackup.AssignedTo);
+                    if (!checkSendNotification) {
+                        setTeamMemberChanged(true);
+                    }
+                } else {
+                    setTeamMemberChanged(true);
+                }
                 teamConfigData.AssignedTo?.map((arrayData: any) => {
                     if (arrayData.AssingedToUser != null) {
                         tempArray.push(arrayData.AssingedToUser);
@@ -3247,6 +3301,14 @@ const EditTaskPopup = (Items: any) => {
             }
             if (teamConfigData?.ResponsibleTeam?.length > 0) {
                 let tempArray: any = [];
+                if (teamConfigData?.ResponsibleTeam?.length === EditDataBackup.ResponsibleTeam?.length) {
+                    let checkSendNotification: any = areTitlesSame(teamConfigData?.ResponsibleTeam, EditDataBackup.ResponsibleTeam);
+                    if (!checkSendNotification) {
+                        setTeamLeaderChanged(true);
+                    }
+                } else {
+                    setTeamLeaderChanged(true);
+                }
                 teamConfigData.ResponsibleTeam?.map((arrayData: any) => {
                     if (arrayData.AssingedToUser != null) {
                         tempArray.push(arrayData.AssingedToUser);
@@ -3260,9 +3322,26 @@ const EditTaskPopup = (Items: any) => {
                 setTaskResponsibleTeam([]);
                 EditData.ResponsibleTeam = [];
             }
-            // }
+
         }
     }, []);
+
+
+    function areTitlesSame(CurrentDataArray: any, PrevDataArray: any) {
+        if (CurrentDataArray.length > 0 && PrevDataArray.length > 0) {
+            if (CurrentDataArray.length !== PrevDataArray.length) {
+                return false;
+            }
+            for (let i = 0; i < CurrentDataArray.length; i++) {
+                if (CurrentDataArray[i].Title !== PrevDataArray[i].Title) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     // *************** This is footer section share This task function ***************
 
@@ -3578,7 +3657,7 @@ const EditTaskPopup = (Items: any) => {
                     "-Image" +
                     imageIndex +
                     "-" +
-                    EditData.Title?.replace(/["/':?]/g, "")?.slice(0, 40) +
+                    EditData.Title?.replace(/["/':?%]/g, "")?.slice(0, 40) +
                     " " +
                     timeStamp +
                     ".jpg";
@@ -6224,8 +6303,6 @@ const EditTaskPopup = (Items: any) => {
                                                             </div>
                                                         ) : null}
                                                     </div>
-
-
                                                 </div>
                                             </div>
                                         </div>
@@ -9291,7 +9368,7 @@ const EditTaskPopup = (Items: any) => {
                 onDismiss={closeApproverPopup}
                 isBlocking={ApproverPopupStatus}
                 type={PanelType.medium}
-            >
+                className="mb-2">
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
                     <div className="">
                         <div className="col-sm-12 categScroll" style={{ height: "auto" }}>

@@ -54,8 +54,8 @@ let AllMetadata: [] = [];
 
 const TimeEntryPopup = (item: any)=> {
   if (item?.props?.siteUrl != undefined) {
-    var Url = item?.props?.siteUrl.split("https://hhhhteams.sharepoint.com");
-    RelativeUrl = Url[1];
+    let index = item?.props?.siteUrl.indexOf('/', 'https://'.length);
+    RelativeUrl = item?.props?.siteUrl.substring(index);
     CurrentSiteUrl = item?.props?.siteUrl;
     PortfolioType = item?.props?.Portfolio_x0020_Type;
     CurntUserId = item?.Context?.pageContext?._legacyPageContext.userId;
@@ -2522,10 +2522,10 @@ const TimeEntryPopup = (item: any)=> {
             ) : (
               <>
                 {" "}
-                <img title="Copy" className="hreflink"
-                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png"
+                 <span title="Copy"
+                  className="svg__iconbox svg__icon--copy"
                   onClick={() => openAddTasktimepopup(row.original, "CopyTime")}
-                ></img>
+                ></span>
 
 
                 {" "}

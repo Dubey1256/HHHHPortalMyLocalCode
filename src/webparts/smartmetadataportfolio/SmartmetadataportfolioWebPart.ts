@@ -14,11 +14,13 @@ import { ISmartmetadataportfolioProps } from './components/ISmartmetadataportfol
 
 export interface ISmartmetadataportfolioWebPartProps {
   SPSiteConfigListID: string;
-  SPSitesListUrl:string;
+  SPSitesListUrl: string;
   SPSmartMetadataListID: string;
-  SPTopNavigationListID: string
+  SPTopNavigationListID: string;
+  TaskUsertListID: string
   description: string;
   PageUrl: any
+  siteUrl: any
 }
 
 export default class SmartmetadataportfolioWebPart extends BaseClientSideWebPart<ISmartmetadataportfolioWebPartProps> {
@@ -39,7 +41,9 @@ export default class SmartmetadataportfolioWebPart extends BaseClientSideWebPart
         SPSiteConfigListID: this.properties.SPSiteConfigListID,
         SPSmartMetadataListID: this.properties.SPSmartMetadataListID,
         SPTopNavigationListID: this.properties.SPTopNavigationListID,
-        PageUrl: this.context?.pageContext?.site?.serverRequestPath
+        TaskUsertListID: this.properties.TaskUsertListID,
+        PageUrl: this.context?.pageContext?.site?.serverRequestPath,
+        siteUrl: this.context.pageContext.web.absoluteUrl
       }
     );
 
@@ -48,7 +52,6 @@ export default class SmartmetadataportfolioWebPart extends BaseClientSideWebPart
 
   protected onInit(): Promise<void> {
     this._environmentMessage = this._getEnvironmentMessage();
-
     return super.onInit();
   }
 
@@ -105,8 +108,10 @@ export default class SmartmetadataportfolioWebPart extends BaseClientSideWebPart
                 }),
                 PropertyPaneTextField('SPTopNavigationListID', {
                   label: 'SPTopNavigationListID'
-                })
-                
+                }),
+                PropertyPaneTextField('TaskUsertListID', {
+                  label: 'TaskUsertListID'
+                }),
               ]
             }
           ]

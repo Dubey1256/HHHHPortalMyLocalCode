@@ -78,7 +78,7 @@ export const MonthlyLeaveReport = (props: any) => {
       const timezoneOffsetInHours = timezoneOffset / 60;
       const adjustedEndDate = new Date(endDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
       const adjustedEventDate: any = new Date(eventDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
-      
+
       if (
         adjustedEventDate.getFullYear() === today.getFullYear() &&
         (leaveType === "HalfDay" || leaveType === "HalfDayTwo")
@@ -95,8 +95,8 @@ export const MonthlyLeaveReport = (props: any) => {
           if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(currentDate, adjustedEndDateToToday)) {
             if (item?.Event_x002d_Type !== "Work From Home") {
               console.log(`Checking for ${leaveType} on ${currentDate}: HalfDay - ${item?.HalfDay}, HalfDayTwo - ${item?.HalfDayTwo}`);
-              
-              if ((leaveType === "HalfDay" || leaveType === "HalfDayTwo" )&&( item?.HalfDay === true || item?.HalfDayTwo === true)) {
+
+              if ((leaveType === "HalfDay" || leaveType === "HalfDayTwo") && (item?.HalfDay === true || item?.HalfDayTwo === true)) {
                 workingDays += 0.5;
               }
             }
@@ -269,64 +269,70 @@ export const MonthlyLeaveReport = (props: any) => {
   return (
 
     <div>
-      <Modal show={opendate} onHide={() => handleclose()}>
+      <Modal className='rounded-0' show={opendate} onHide={() => handleclose()}>
         <Modal.Header closeButton>
           <Modal.Title>Select a Date</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="p-2">
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formDate">
-              <Form.Label>Date:</Form.Label>
+              <Form.Label> Start Date:</Form.Label>
               <Form.Control
                 type="date"
-                placeholder="Select Start date"
+                // placeholder="Select Start date"
                 value={selectedDate}
                 onChange={handleDateChange}
               />
+              <Form.Label className='my-2'> End Date:</Form.Label>
               <Form.Control
                 type="date"
-                placeholder="Select End date"
                 value={selectendDate}
                 onChange={handleEndDateChange}
               />
             </Form.Group>
-            <Button variant="primary" type="submit">
-              Submit
-            </Button>
+            <div className="mt-2 text-end modal-footer">
+              <Button onSubmit={handleSubmit} variant="primary" className="btn btn-primary" type="submit">
+                Submit
+              </Button>
+            </div>
           </Form>
         </Modal.Body>
+
       </Modal>
       {allReportData?.length > 0 &&
         <div id="contentToConvert">
-          <h1>Monthly Report of Leave</h1>
-          <table>
+          <h2 className="heading my-3">Monthly Report of Leave</h2>
+          <table className="w-100">
             <thead>
               <tr>
-                <th>No.</th>
-                <th>Name</th>
-                <th>Planned</th>
-                <th>Unplanned</th>
-                <th>Hlaf-Day</th>
-                <th>TotalLeave</th>
+                <th className='py-2 border-bottom'>No.</th>
+                <th className='py-2 border-bottom'>Name</th>
+                <th className='py-2 border-bottom'>Planned</th>
+                <th className='py-2 border-bottom'>Unplanned</th>
+                <th className='py-2 border-bottom'>Half-Day</th>
+                <th className='py-2 border-bottom'>TotalLeave</th>
               </tr>
             </thead>
             <tbody>
               {allReportData.map((entry: any, index: any) => (
                 <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{entry.Title}</td>
-                  <td>{entry.Plannedleave}</td>
-                  <td>{entry.unplannedleave}</td>
-                  <td>{entry.Halfdayleave}</td>
-                  <td>{entry.TotalLeave}</td>
+                  <td className='py-2'>{index + 1}</td>
+                  <td className='py-2'>{entry.Title}</td>
+                  <td className='py-2'>{entry.Plannedleave}</td>
+                  <td className='py-2'>{entry.unplannedleave}</td>
+                  <td className='py-2'>{entry.Halfdayleave}</td>
+                  <td className='py-2'>{entry.TotalLeave}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       }
-      <button onClick={downloadExcel}>Download Excel</button>
-      <button onClick={downloadExcelCompleteMonth}>Download Month Excel</button>
+      <div className='text-end mt-2'>
+        <button className='btnCol btn btn-primary mx-1' onClick={downloadExcel}>Download Excel</button>
+        <button className='btnCol btn btn-primary' onClick={downloadExcelCompleteMonth}>Download Month Excel</button>
+      </div>
+
 
     </div>
 
