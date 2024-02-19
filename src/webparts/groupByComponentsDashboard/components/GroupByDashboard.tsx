@@ -401,9 +401,44 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 500,
+                size: 300,
                 isColumnVisible: true
             },
+            {
+                accessorFn: (row) => row?.FeatureTypeTitle,
+                cell: ({ row }) => (
+                   <div className="alignCenter">
+                        <InlineEditingcolumns
+                            AllListId={ContextValue}
+                            TaskUsers={AllUsers}
+                            callBack={inlineCallBack}
+                            columnName='FeatureType'
+                            item={row?.original}
+                        />
+                    </div>
+                ),
+                id: "FeatureTypeTitle",
+                placeholder: "FeatureTypeTitle",
+                header: "",
+                resetColumnFilters: false,
+                size: 200,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.HelpInformationVerified,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span> <TrafficLightComponent columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>
+                   </div>
+                ),
+                id: "HelpInformationVerified",
+                placeholder: "Verified",
+                header: "",
+                resetColumnFilters: false,
+                size: 140,
+                isColumnVisible: true
+            },
+   
             {
                 accessorFn: (row) => row?.descriptionsDeliverablesSearch,
                 cell: ({ row }) => (
@@ -539,40 +574,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 size: 80,
                 isColumnVisible: true
             },
-            {
-                accessorFn: (row) => row?.HelpInformationVerified,
-                cell: ({ row }) => (
-                    <div className="alignCenter">
-                        <span> <TrafficLightComponent columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>
-                   </div>
-                ),
-                id: "HelpInformationVerified",
-                placeholder: "Verified",
-                header: "",
-                resetColumnFilters: false,
-                size: 140,
-                isColumnVisible: true
-            },
-            {
-                accessorFn: (row) => row?.FeatureTypeTitle,
-                cell: ({ row }) => (
-                   <div className="alignCenter">
-                        <InlineEditingcolumns
-                            AllListId={ContextValue}
-                            TaskUsers={AllUsers}
-                            callBack={inlineCallBack}
-                            columnName='FeatureType'
-                            item={row?.original}
-                        />
-                    </div>
-                ),
-                id: "FeatureTypeTitle",
-                placeholder: "FeatureTypeTitle",
-                header: "",
-                resetColumnFilters: false,
-                size: 50,
-                isColumnVisible: true
-            },
+          
             {
                 accessorFn: (row) => row?.Created,
                 cell: ({ row, column }) => (
@@ -955,10 +957,10 @@ const GroupByDashboard = (SelectedProp: any) => {
     return (
         <>
             <div>
-                <section className="ContentSection">
+                <section className="row p-0">
                     <div className="col-sm-12 clearfix">
-                        <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
-                            <div>GroupByComponents-Dashboard</div>
+                        <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active heading ">
+                            <div>GroupByComponents - Dashboard</div>
                         </h2>
                     </div>
                 </section>
