@@ -1342,7 +1342,7 @@ const AncTool = (props: any) => {
                                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M9 23.5V40H19.9177H28.7609V37.9373H19.9189H11.0769V23.5V9.06249H18.3462H25.6154V13.1875V17.3125H29.7692H33.9231V21.4237V29.3325H36V21.7232V15.8513L31.5432 11.4256L27.0863 7H18.0432H9V23.5ZM30.0866 12.901L32.4515 15.25H30.0719H27.6923V12.901C27.6923 11.6091 27.699 10.5521 27.707 10.5521C27.7152 10.5521 28.7859 11.6091 30.0866 12.901Z" stroke-width="0.2" />
                                                 <path d="M36.3999 32H34.6V35.6H31V37.3999H34.6V41H36.3999V37.3999H40V35.6H36.3999V32Z" stroke-width="0.2" />
                                             </svg>
-                                            <a className='d-block siteColor hreflink f-12'>SmartNotes</a>
+                                            <a className='d-block siteColor hreflink f-12'>SmartNote</a>
                                         </div>
                                     </div>
 

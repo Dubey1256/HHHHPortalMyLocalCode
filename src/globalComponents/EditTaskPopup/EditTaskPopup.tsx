@@ -2595,7 +2595,7 @@ const EditTaskPopup = (Items: any) => {
                                         });
                                     }
                                     else {
-                                        if (TeamMemberChanged) {
+                                        if (TeamMemberChanged || IsTaskStatusUpdated) {
                                             TaskAssignedTo?.map((userDtl: any) => {
                                                 taskUsers?.map((allUserItem: any) => {
                                                     if (userDtl.Id == allUserItem.AssingedToUserId && userDtl.Id !== currentUserId) {
