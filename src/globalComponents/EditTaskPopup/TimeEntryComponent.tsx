@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable no-prototype-builtins */
 import * as React from "react";
 import { sp, Web } from "sp-pnp-js";
 import * as $ from "jquery";
@@ -15,7 +17,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Tooltip from "../Tooltip";
 import * as globalCommon from "../globalCommon";
 import HighlightableCell from "../highlight";
-import { MdKeyboardArrowLeft, MdKeyboardArrowRight, MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight } from "react-icons/Md";
+import {
+  MdKeyboardArrowLeft,
+  MdKeyboardArrowRight,
+  MdKeyboardDoubleArrowLeft,
+  MdKeyboardDoubleArrowRight,
+} from "react-icons/Md";
 
 let AllTimeSpentDetails: any = [];
 let CurntUserId = "";
@@ -28,34 +35,34 @@ let changeEdited = "";
 let CurrentUserTitle = "";
 let CategoriesIdd = "";
 let Categoryy = "";
-let  timesheetMoveData: any = [];
-let  TaskCate: any = [];
-let  TimeSheetlistId = "";
+let timesheetMoveData: any = [];
+let TaskCate: any = [];
+let TimeSheetlistId = "";
 let CategryTitle = "";
-let  CategoryyID: any = "";
-let  siteUrl = "";
-let  Flatview: any = false;
-let  PortfolioType = "";
-let  listName = "";
-let  RelativeUrl: any = "";
-let  CurrentSiteUrl: any = "";
-let  AllTimeEntry: any = [];
-let  UserName: any = "";
-let  backupEdit: any = [];
-let  AllUsers: any = [];
-let  TimesheetConfiguration: any = [];
-let  isShowCate: any = "";
+let CategoryyID: any = "";
+let siteUrl = "";
+let Flatview: any = false;
+let PortfolioType = "";
+let listName = "";
+let RelativeUrl: any = "";
+let CurrentSiteUrl: any = "";
+let AllTimeEntry: any = [];
+let UserName: any = "";
+let backupEdit: any = [];
+let AllUsers: any = [];
+let TimesheetConfiguration: any = [];
+let isShowCate: any = "";
 let expendedTrue: any = true;
 var change: any = new Date();
-var PopupType: any = ''
+var PopupType: any = "";
 var PopupTypeCat: any = false;
 const SP = spfi();
 let AllMetadata: [] = [];
 
-const TimeEntryPopup = (item: any)=> {
+const TimeEntryPopup = (item: any) => {
   if (item?.props?.siteUrl != undefined) {
-    let index = item?.props?.siteUrl.indexOf('/', 'https://'.length);
-    RelativeUrl = item?.props?.siteUrl.substring(index);
+    var Url = item?.props?.siteUrl.split("https://hhhhteams.sharepoint.com");
+    RelativeUrl = Url[1];
     CurrentSiteUrl = item?.props?.siteUrl;
     PortfolioType = item?.props?.Portfolio_x0020_Type;
     CurntUserId = item?.Context?.pageContext?._legacyPageContext.userId;
@@ -72,7 +79,7 @@ const TimeEntryPopup = (item: any)=> {
 
   const [AllTimeSheetDataNew, setTimeSheet] = React.useState([]);
   const [date, setDate] = React.useState(undefined);
-  const [showCat, setshowCat] = React.useState("");
+  const [showCat, setshowCat] = React.useState([]);
   const [modalTimeIsOpen, setTimeModalIsOpen] = React.useState(false);
   // const [AllMetadata, setMetadata] = React.useState([]);
   const [week, SetWeek] = React.useState(1);
@@ -96,11 +103,12 @@ const TimeEntryPopup = (item: any)=> {
   const [counts, setCounts] = React.useState(1);
   const [months, setMonths] = React.useState(1);
   const [demoState, setDemoState] = React.useState();
+  const [finalData1, setFinalData1] = React.useState([]);
   const [postData, setPostData] = React.useState({
     Title: "",
     TaskDate: "",
     Description: "",
-    TaskTime: ""
+    TaskTime: "",
   });
   const [newData, setNewData] = React.useState({
     Title: "",
@@ -108,9 +116,11 @@ const TimeEntryPopup = (item: any)=> {
     Description: "",
     TimeSpentInMinute: "",
     TimeSpentInHours: "",
-    TaskTime: ""
+    TaskTime: "",
   });
-  const [saveEditTaskTimeChild, setsaveEditTaskTimeChild] = React.useState<any>({});
+  const [saveEditTaskTimeChild, setsaveEditTaskTimeChild] = React.useState<any>(
+    {}
+  );
   const [AllUser, setAllUser] = React.useState([]);
   const [checkCategories, setcheckCategories] = React.useState();
   const [updateData, setupdateData] = React.useState(0);
@@ -125,7 +135,7 @@ const TimeEntryPopup = (item: any)=> {
 
   let smartTermName = "Task" + item.props.siteType;
 
-// -------------------Load TaskUse------------------------------------------------------------------------------------------
+  // -------------------Load TaskUse------------------------------------------------------------------------------------------
 
   const GetTaskUsers = async () => {
     let web = new Web(`${CurrentSiteUrl}`);
@@ -133,7 +143,6 @@ const TimeEntryPopup = (item: any)=> {
     taskUsers = await web.lists.getByTitle("Task Users").items.top(4999).get();
     AllUsers = taskUsers;
     EditData(item.props);
-
   };
 
   //-------------------------check folder of user----------------------------------------------------------------------------------------------
@@ -153,7 +162,6 @@ const TimeEntryPopup = (item: any)=> {
       .getAll();
     AllTimeEntry = taskUsers;
   };
-
 
   //---------------------------------------Change Date function--------------------------------------------------------------------------------
   const changeDate = (val: any, Type: any) => {
@@ -189,7 +197,7 @@ const TimeEntryPopup = (item: any)=> {
       }
     }
     if (val === "week") {
-      SetWeek(week + 1)
+      SetWeek(week + 1);
       change = Moment(change).add(1, "week").format();
       setMyDatee(change);
       //setMyDatee(change)
@@ -229,7 +237,7 @@ const TimeEntryPopup = (item: any)=> {
     $(" #SpfxProgressbar").hide();
   };
 
- // -----------------------------------------Decrease Date function-----------------------------------------------------------------------------
+  // -----------------------------------------Decrease Date function-----------------------------------------------------------------------------
 
   const changeDateDec = (val: any, Type: any) => {
     if (val === "Date") {
@@ -292,15 +300,12 @@ const TimeEntryPopup = (item: any)=> {
     }
   };
 
-
-
   const changeTimes = (val: any, time: any, type: any) => {
-    if (type == 'AddTime' || type == 'AddTime Category') {
+    if (type == "AddTime" || type == "AddTime Category") {
       if (val === "15") {
         changeTime = Number(changeTime);
 
         changeTime = changeTime + 15;
-
 
         if (changeTime != undefined) {
           var TimeInHour: any = changeTime / 60;
@@ -386,10 +391,8 @@ const TimeEntryPopup = (item: any)=> {
         setTimeInMinutes(changeTime);
       }
     }
-
-
   };
-//-----------------------Edit Category function-----------------------------------------------------------------------------------------------
+  //-----------------------Edit Category function-----------------------------------------------------------------------------------------------
   const Editcategorypopup = (child: any) => {
     var array: any = [];
     Categoryy = child.Category.Title;
@@ -406,19 +409,18 @@ const TimeEntryPopup = (item: any)=> {
     setEditcategory(false);
   };
 
-
-//----------------------------------Open Main Centralize popup------------------------=====------------------------------------------------------------------
+  //----------------------------------Open Main Centralize popup------------------------=====------------------------------------------------------------------
 
   const openAddTasktimepopup = async (childitem: any, Type: any) => {
-    setbuttonDisable(false)
-    if (Type == 'AddTime') {
-      PopupType = 'AddTime'
-      CategryTitle = ''
+    setbuttonDisable(false);
+    if (Type == "AddTime") {
+      PopupType = "AddTime";
+      CategryTitle = "";
       setAddTaskTimepopup(true);
       setTimeInMinutes(0);
       setTimeInHours(0);
       setNewData(undefined);
-      SetWeek(1)
+      SetWeek(1);
       setediteddata(undefined);
       setCount(1);
       change = Moment().format();
@@ -433,8 +435,8 @@ const TimeEntryPopup = (item: any)=> {
       CategryTitle = childitem.Title;
     }
 
-    if (Type == 'EditTime' || Type == 'CopyTime') {
-      PopupType = Type
+    if (Type == "EditTime" || Type == "CopyTime") {
+      PopupType = Type;
       CategryTitle = "";
       setediteddata(undefined);
       setNewData(undefined);
@@ -444,7 +446,7 @@ const TimeEntryPopup = (item: any)=> {
       setTimeInMinutes(0);
       setCount(1);
       setMonth(1);
-      SetWeek(1)
+      SetWeek(1);
       setYear(1);
       changeTime = 0;
       setMyDatee(new Date());
@@ -471,10 +473,10 @@ const TimeEntryPopup = (item: any)=> {
       // setsaveEditTaskTime(Array)
       setsaveEditTaskTimeChild(childitem);
     }
-    if (Type == 'AddTime Category') {
+    if (Type == "AddTime Category") {
       setTaskStatuspopup(true);
       await getAllTime();
-      PopupType = Type
+      PopupType = Type;
       PopupTypeCat = true;
       AllUsers.forEach((val: any) => {
         TimeSheet.forEach((time: any) => {
@@ -482,25 +484,21 @@ const TimeEntryPopup = (item: any)=> {
             isShowCate = val.TimeCategory;
             if (val.TimeCategory == time.Title) {
               setshowCat(time.Title);
+
               setcheckCategories(time.Title);
             }
           }
         });
       });
       setAddTaskTimepopup(true);
-
     }
-
   };
   let dateValue = "";
   var dp = "";
   var Dateet: any = "";
 
-
-
   const closeAddTaskTimepopup = () => {
-
-    setTaskStatuspopup(false)
+    setTaskStatuspopup(false);
     PopupTypeCat = false;
     change = Moment().format();
     setMonth(1);
@@ -509,35 +507,37 @@ const TimeEntryPopup = (item: any)=> {
     //setMyDatee(undefined)
     setMyDatee(new Date());
     setPostData(undefined);
-    setAddTaskTimepopup(false)
+    setAddTaskTimepopup(false);
     setcheckCategories(undefined);
     setTimeInHours(0);
     setNewData(undefined);
     setTimeInMinutes(0);
-    SetWeek(1)
+    SetWeek(1);
     setediteddata(undefined);
     setCount(1);
     change = Moment().format();
     setMyDatee(new Date());
-    setsaveEditTaskTimeChild({})
+    setsaveEditTaskTimeChild({});
   };
   // const closeTaskStatusUpdatePoup = () => {
   //   setTaskStatuspopup(false);
   // };
   const changeTimesDec = (items: any, time: any, type: any) => {
-    if (type == 'CopyTime') {
-      type = 'EditTime'
+    if (type == "CopyTime") {
+      type = "EditTime";
     }
-    if (type == 'AddTime Category') {
-      type = 'AddTime'
+    if (type == "AddTime Category") {
+      type = "AddTime";
     }
-    if (type == 'AddTime') {
+    if (type == "AddTime") {
       if (items === "15") {
         changeTime = Number(changeTime);
         changeTime = changeTime - 15;
 
         if (changeTime < 0) {
-          alert('The value you entered is negative, and negative entries are not allowed')
+          alert(
+            "The value you entered is negative, and negative entries are not allowed"
+          );
           changeTime = 0;
         }
         setTimeInMinutes(changeTime);
@@ -552,7 +552,9 @@ const TimeEntryPopup = (item: any)=> {
         changeTime = changeTime - 60;
 
         if (changeTime < 0) {
-          alert('The value you entered is negative, and negative entries are not allowed')
+          alert(
+            "The value you entered is negative, and negative entries are not allowed"
+          );
           changeTime = 0;
         }
         if (changeTime != undefined) {
@@ -564,7 +566,7 @@ const TimeEntryPopup = (item: any)=> {
         setTimeInMinutes(changeTime);
       }
     }
-    if (type == 'EditTime') {
+    if (type == "EditTime") {
       changeTime = Number(changeTime);
       if (type === "EditTime" && items === "15") {
         changeTime = Number(changeTime);
@@ -576,7 +578,9 @@ const TimeEntryPopup = (item: any)=> {
 
         if (changeTime != undefined) {
           if (changeTime <= 0) {
-            alert('The value you entered is negative so the filled time will be set to default beforehand')
+            alert(
+              "The value you entered is negative so the filled time will be set to default beforehand"
+            );
             changeTime = 0;
           }
           var TimeInHour: any = changeTime / 60;
@@ -595,7 +599,9 @@ const TimeEntryPopup = (item: any)=> {
 
         if (changeTime != undefined) {
           if (changeTime <= 0) {
-            alert('The value you entered is negative so the filled time will be set to default beforehand')
+            alert(
+              "The value you entered is negative so the filled time will be set to default beforehand"
+            );
             changeTime = 0;
           }
           var TimeInHour: any = changeTime / 60;
@@ -619,18 +625,20 @@ const TimeEntryPopup = (item: any)=> {
       .expand("Parent")
       .top(4999)
       .get();
-    console.log(res);
+    console.log("Result", res);
     res.map((item: any) => {
       if (item.TaxType === "TimesheetCategories") {
         TimeSheet.push(item);
       }
     });
+
     TimeSheet.forEach((val: any) => {
       if (val.Parent?.Title == "Components") {
         newArray.push(val);
       }
 
       setTimeSheets(newArray);
+      console.log("TTTTTT", TimeSheet);
     });
   };
   const selectCategories = (e: any, Title: any) => {
@@ -640,14 +648,22 @@ const TimeEntryPopup = (item: any)=> {
       setshowCat(Title);
     }
   };
+  // const selectCategories = (e: any, Title: any) => {
+  //   const target = e.target;
+  //   if (target.checked) {
+
+  //     if (!checkCategories.includes(Title)) {
+  //       setcheckCategories([...checkCategories, Title]);
+  //     }
+  //     setshowCat(Title);
+  //   }
+  // };
   React.useEffect(() => {
     GetTimeSheet();
     GetSmartMetadata();
   }, [updateData, updateData2]);
 
-
-
-//----------------------------------------Load Dynamic Lists----------------------------------------------------------------------------------------
+  //----------------------------------------Load Dynamic Lists----------------------------------------------------------------------------------------
 
   const GetSmartMetadata = async () => {
     let web = new Web(`${CurrentSiteUrl}`);
@@ -669,8 +685,6 @@ const TimeEntryPopup = (item: any)=> {
       TimeSheetlistId = val.TimesheetListId;
       siteUrl = val.siteUrl;
       listName = val.TimesheetListName;
-
-
     });
     await GetTaskUsers();
   };
@@ -706,7 +720,7 @@ const TimeEntryPopup = (item: any)=> {
     );
   };
 
-//------------------------------------*** Bind data function ***--------------------------------------------------------------------------------------------------
+  //------------------------------------*** Bind data function ***--------------------------------------------------------------------------------------------------
 
   const getStructureData = function () {
     TaskCate = AllTimeSpentDetails;
@@ -739,7 +753,6 @@ const TimeEntryPopup = (item: any)=> {
               if (!isItemExists(items.AdditionalTime, value.ID))
                 items.AdditionalTime.push(value);
             });
-
           }
         });
       }
@@ -789,12 +802,15 @@ const TimeEntryPopup = (item: any)=> {
             var NewDate = new Date(dp);
             val.sortTaskDate = NewDate;
             val.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
-            if((val.TaskTimeInMin == 0 || val?.TaskTimeInMin == undefined)  && val?.TaskTime != undefined){
-              val.TaskTimeInMin = val?.TaskTime * 60 
+            if (
+              (val.TaskTimeInMin == 0 || val?.TaskTimeInMin == undefined) &&
+              val?.TaskTime != undefined
+            ) {
+              val.TaskTimeInMin = val?.TaskTime * 60;
             }
             try {
               getDateForTimeEntry(NewDate, val);
-            } catch (e) { }
+            } catch (e) {}
           }
         });
       }
@@ -811,27 +827,51 @@ const TimeEntryPopup = (item: any)=> {
       }
     });
 
-    var newArray = [];
-    let finalData: any = [];
+    let finalData: any = {};
+
     $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
       if (items.subRows != undefined && items.subRows.length > 0) {
         $.each(items.subRows, function (index: any, child: any) {
-          finalData.push(child);
-          if (child.TimesheetTitle.Id == undefined) {
-            newArray = child.subRows.sort(datecomp);
-            console.log(newArray);
-            //child.AdditionalTime = child.AdditionalTime.reverse()
+          const title = child.Title;
+
+          if (!finalData[title]) {
+            finalData[title] = [child];
+          } else {
+            const existingEntry = finalData[title][0];
+
+            if (compareEntries(existingEntry, child)) {
+              existingEntry.subRows.push(...child.subRows);
+            } else {
+              finalData[title].push(child);
+            }
           }
         });
       }
     });
-    console.log(TaskTimeSheetCategoriesGrouping);
-    //item?.parentCallback(timesheetMoveData);
-    backupEdit = finalData;
-    setData(finalData);
-    setBackupData(finalData);
-    setTimeSheet(TaskTimeSheetCategoriesGrouping);
 
+    const mergedFinalData: any[] = [];
+    for (const key in finalData) {
+      if (finalData.hasOwnProperty(key)) {
+        mergedFinalData.push(...finalData[key]);
+      }
+    }
+
+    function compareEntries(entry1: any, entry2: any): boolean {
+      // Customize this function to compare entries based on your data structure
+      return entry1.Title === entry2.Title;
+    }
+
+    console.log("mergedFinalData", mergedFinalData);
+    console.log(
+      "TaskTimeSheetCategoriesGrouping",
+      TaskTimeSheetCategoriesGrouping
+    );
+
+    backupEdit = mergedFinalData;
+    setData(mergedFinalData);
+    console.log("finalData", finalData);
+    setBackupData(mergedFinalData);
+    setTimeSheet(TaskTimeSheetCategoriesGrouping);
 
     if (TaskStatuspopup == true) {
       setupdateData(updateData + 1);
@@ -858,8 +898,8 @@ const TimeEntryPopup = (item: any)=> {
     }
   }
 
-  const callBackData = React.useCallback((elem: any, ShowingData: any) => { },
-    []);
+  const callBackData = React.useCallback((elem: any, ShowingData: any) => {},
+  []);
   function getDateForTimeEntry(newDate: any, items: any) {
     var LatestDate = [];
     var getMonth = "";
@@ -934,7 +974,6 @@ const TimeEntryPopup = (item: any)=> {
     return Items;
   };
 
-
   //------------------------------------------------------Load Timesheet Data-----------------------------------------------------------------------------
   const EditData = async (items: any) => {
     AllTimeSpentDetails = [];
@@ -951,7 +990,7 @@ const TimeEntryPopup = (item: any)=> {
         id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(319)",
         uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(319)",
         etag: '"1"',
-        type: "SP.Data.SmartMetadataListItem"
+        type: "SP.Data.SmartMetadataListItem",
       },
       Id: 319,
       Title: "Others",
@@ -967,7 +1006,7 @@ const TimeEntryPopup = (item: any)=> {
       Selectable: true,
       ParentID: "ParentID",
       SmartSuggestions: false,
-      ID: 319
+      ID: 319,
     });
 
     $.each(
@@ -1011,15 +1050,15 @@ const TimeEntryPopup = (item: any)=> {
       //var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('9ed5c649-3b4e-42db-a186-778ba43c5c93')/items?$select=" + select + "" }]
       var allurls = [
         {
-          Url: `${CurrentSiteUrl}/_api/web/lists/getById('${TimeSheetlistId}')/items?$select=${select}`
-        }
+          Url: `${CurrentSiteUrl}/_api/web/lists/getById('${TimeSheetlistId}')/items?$select=${select}`,
+        },
       ];
     } else {
       //var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('464FB776-E4B3-404C-8261-7D3C50FF343F')/items?$select=" + select + "" },
       var allurls = [
         {
-          Url: `${CurrentSiteUrl}/_api/web/lists/getById('${TimeSheetlistId}')/items?$select=${select}`
-        }
+          Url: `${CurrentSiteUrl}/_api/web/lists/getById('${TimeSheetlistId}')/items?$select=${select}`,
+        },
       ];
     }
     $.each(allurls, async function (index: any, item: any) {
@@ -1029,7 +1068,7 @@ const TimeEntryPopup = (item: any)=> {
         method: "GET",
 
         headers: {
-          Accept: "application/json; odata=verbose"
+          Accept: "application/json; odata=verbose",
         },
 
         success: function (data: { d: { results: string | any[] } }) {
@@ -1070,7 +1109,7 @@ const TimeEntryPopup = (item: any)=> {
                     UpdatedData["Company"] = taskUser.Company;
                     UpdatedData["AuthorImage"] =
                       taskUser.Item_x0020_Cover != undefined &&
-                        taskUser.Item_x0020_Cover.Url != undefined
+                      taskUser.Item_x0020_Cover.Url != undefined
                         ? taskUser.Item_x0020_Cover.Url
                         : "";
                   }
@@ -1112,7 +1151,7 @@ const TimeEntryPopup = (item: any)=> {
                   .items.getById(NewParentId)
                   .update({
                     AdditionalTimeEntry: JSON.stringify(item.AdditionalTime),
-                    TimesheetTitleId: mainParentId
+                    TimesheetTitleId: mainParentId,
                   })
                   .then((res: any) => {
                     console.log(res);
@@ -1150,7 +1189,7 @@ const TimeEntryPopup = (item: any)=> {
                     item.AuthorName = taskUser.Title;
                     item.AuthorImage =
                       taskUser.Item_x0020_Cover != undefined &&
-                        taskUser.Item_x0020_Cover.Url != undefined
+                      taskUser.Item_x0020_Cover.Url != undefined
                         ? taskUser.Item_x0020_Cover.Url
                         : "";
                   }
@@ -1173,12 +1212,10 @@ const TimeEntryPopup = (item: any)=> {
 
             getStructureData();
           }
-        }
+        },
       });
     });
-
   };
-
 
   const setModalTimmeIsOpenToFalse = () => {
     TimeCallBack(false);
@@ -1198,7 +1235,7 @@ const TimeEntryPopup = (item: any)=> {
       var Title = titleName;
     }
   };
-  
+
   const sortBy = (Type: any) => {
     var copy: any = [];
     AllTimeSpentDetails?.forEach((val: any) => {
@@ -1216,12 +1253,11 @@ const TimeEntryPopup = (item: any)=> {
     });
 
     setTimeSheet((TaskTimeSheetCategoriesGrouping) => [
-      ...TaskTimeSheetCategoriesGrouping
+      ...TaskTimeSheetCategoriesGrouping,
     ]);
   };
 
-
-//-----------------------------------------Delete Timesheet function----------------------------------------------------------------------------------
+  //-----------------------------------------Delete Timesheet function----------------------------------------------------------------------------------
 
   const deleteTaskTime = async (childinew: any) => {
     var UpdatedData: any = [];
@@ -1259,7 +1295,7 @@ const TimeEntryPopup = (item: any)=> {
         .getById(ListId)
         .items.getById(childinew.ParentID)
         .update({
-          AdditionalTimeEntry: JSON.stringify(UpdatedData)
+          AdditionalTimeEntry: JSON.stringify(UpdatedData),
         })
         .then((res: any) => {
           console.log(res);
@@ -1284,7 +1320,7 @@ const TimeEntryPopup = (item: any)=> {
     );
   }
 
- // ------------------------------------Create Folder of user-----------------------------------------------------------------------------
+  // ------------------------------------Create Folder of user-----------------------------------------------------------------------------
   const GetOrCreateFolder = async (
     folderName: any,
     UpdatedData: any,
@@ -1296,7 +1332,7 @@ const TimeEntryPopup = (item: any)=> {
     await list.items
       .add({
         FileSystemObjectType: 1,
-        ContentTypeId: "0x0120"
+        ContentTypeId: "0x0120",
       })
       .then(async (res) => {
         const lists = sp.web.lists.getByTitle(ListId);
@@ -1304,7 +1340,7 @@ const TimeEntryPopup = (item: any)=> {
           .getById(res.data.Id)
           .update({
             Title: folderName,
-            FileLeafRef: folderNames
+            FileLeafRef: folderNames,
           })
           .then((res) => {
             console.log(res);
@@ -1343,19 +1379,19 @@ const TimeEntryPopup = (item: any)=> {
     let itemMetadataAdded = {
       Title:
         newData != undefined &&
-          newData.Title != undefined &&
-          newData.Title != ""
+        newData.Title != undefined &&
+        newData.Title != ""
           ? newData.Title
           : checkCategories,
       [smartTermId]: item.props.Id,
-      CategoryId: Category
+      CategoryId: Category,
       // 'Path': `${RelativeUrl}/Lists/${listName}/${UpdatedData.Company}`
     };
 
     let newdata = await web.lists
       .getByTitle(listNames)
       .items.add({ ...itemMetadataAdded });
-    console.log(newdata);
+    console.log("New Data", newdata);
 
     let movedata = await web
       .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
@@ -1376,6 +1412,7 @@ const TimeEntryPopup = (item: any)=> {
     if (AllTimeSpentDetails == undefined) {
       var AllTimeSpentDetails: any = [];
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
     TimeSheet.map((items: any) => {
       if (items.Title == checkCategories) {
@@ -1383,6 +1420,21 @@ const TimeEntryPopup = (item: any)=> {
       }
     });
 
+    function findCategoryById(data: any, categoryId: any): any | null {
+      let foundCategoryId: any = null;
+
+      data.forEach((categoryData: { Id: any; Category: { Id: any } }) => {
+        if (categoryData.Category.Id === categoryId) {
+          foundCategoryId = categoryData.Id;
+        }
+      });
+
+      return foundCategoryId;
+    }
+
+    const foundCategory = findCategoryById(data, Category);
+    console.log(foundCategory, "foundCategory");
+    console.log("UP DATA", UpdatedData);
     let web = new Web(`${CurrentSiteUrl}`);
 
     if (AllTimeEntry != undefined && AllTimeEntry.length > 0) {
@@ -1400,33 +1452,38 @@ const TimeEntryPopup = (item: any)=> {
             var listNames = listName;
             var listUri: string = `${RelativeUrl}/Lists/${listNames}`;
           }
-          let itemMetadataAdded = {
-            Title:
-              newData != undefined &&
+          if (foundCategory) {
+            mainParentId = foundCategory;
+            mainParentTitle = checkCategories;
+            createItemMainList();
+          } else {
+            let itemMetadataAdded = {
+              Title:
+                newData != undefined &&
                 newData.Title != undefined &&
                 newData.Title != ""
-                ? newData.Title
-                : checkCategories,
-            [smartTermId]: item.props.Id,
-            CategoryId: Category
-            // 'Path': `${RelativeUrl}/Lists/${listName}/${UpdatedData.Company}`
-          };
+                  ? newData.Title
+                  : checkCategories,
+              [smartTermId]: item.props.Id,
+              CategoryId: Category,
+              // 'Path': `${RelativeUrl}/Lists/${listName}/${UpdatedData.Company}`
+            };
 
-          let newdata = await web.lists
-            .getByTitle(listNames)
-            .items.add({ ...itemMetadataAdded });
-          console.log(newdata);
+            let newdata = await web.lists
+              .getByTitle(listNames)
+              .items.add({ ...itemMetadataAdded });
+            console.log(newdata);
 
-          let movedata = await web
-            .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
-            .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
-          console.log(movedata);
-          if (movedata != undefined) {
-            mainParentId = newdata.data.Id;
-            mainParentTitle = newdata.data.Title;
-            createItemMainList();
+            let movedata = await web
+              .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
+              .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
+            console.log(movedata);
+            if (movedata != undefined) {
+              mainParentId = newdata.data.Id;
+              mainParentTitle = newdata.data.Title;
+              createItemMainList();
+            }
           }
-
         }
       });
     }
@@ -1440,8 +1497,7 @@ const TimeEntryPopup = (item: any)=> {
     }
   };
 
-
-//---------------------------------------------------------------Save Timesheet Main function----------------------------------------------------------------------
+  //---------------------------------------------------------------Save Timesheet Main function----------------------------------------------------------------------
   const saveTimeSpent = async () => {
     var UpdatedData: any = {};
     if (item.props.siteType == "Offshore Tasks") {
@@ -1471,7 +1527,7 @@ const TimeEntryPopup = (item: any)=> {
           UpdatedData["Company"] = taskUser.Company;
           UpdatedData["UserImage"] =
             taskUser.Item_x0020_Cover != undefined &&
-              taskUser.Item_x0020_Cover.Url != undefined
+            taskUser.Item_x0020_Cover.Url != undefined
               ? taskUser.Item_x0020_Cover.Url
               : "";
           await saveOldUserTask(UpdatedData);
@@ -1488,7 +1544,7 @@ const TimeEntryPopup = (item: any)=> {
     //--------------------------------End Post----------------------------------------------------------------
   };
 
-//-------------------------------------------------Create Timesheet in folder----------------------------------------------------------------------------------
+  //-------------------------------------------------Create Timesheet in folder----------------------------------------------------------------------------------
   const createItemMainList = async () => {
     var UpdatedData: any = {};
     $.each(AllUsers, function (index: any, taskUser: any) {
@@ -1497,7 +1553,7 @@ const TimeEntryPopup = (item: any)=> {
         UpdatedData["Company"] = taskUser.Company;
         UpdatedData["UserImage"] =
           taskUser.Item_x0020_Cover != undefined &&
-            taskUser.Item_x0020_Cover.Url != undefined
+          taskUser.Item_x0020_Cover.Url != undefined
             ? taskUser.Item_x0020_Cover.Url
             : "";
       }
@@ -1517,18 +1573,18 @@ const TimeEntryPopup = (item: any)=> {
     let itemMetadataAdded = {
       Title:
         newData != undefined &&
-          newData.Title != undefined &&
-          newData.Title != ""
+        newData.Title != undefined &&
+        newData.Title != ""
           ? newData.Title
           : checkCategories,
       [smartTermId]: item.props.Id,
-      CategoryId: Category
+      CategoryId: Category,
     };
     //First Add item on top
     let newdata = await web.lists
       .getByTitle(listName)
       .items.add({ ...itemMetadataAdded });
-    console.log(newdata);
+    console.log("New Data", newdata);
 
     let movedata = await web
       .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
@@ -1542,9 +1598,7 @@ const TimeEntryPopup = (item: any)=> {
       AllTimeEntry = [];
       EditData(item.props);
     }
-
   };
-
 
   const createItemforNewUser = async (LetestFolderID: any) => {
     let web = new Web(`${CurrentSiteUrl}`);
@@ -1558,7 +1612,7 @@ const TimeEntryPopup = (item: any)=> {
         UpdatedData["Company"] = taskUser.Company;
         UpdatedData["UserImage"] =
           taskUser.Item_x0020_Cover != undefined &&
-            taskUser.Item_x0020_Cover.Url != undefined
+          taskUser.Item_x0020_Cover.Url != undefined
             ? taskUser.Item_x0020_Cover.Url
             : "";
       }
@@ -1578,12 +1632,12 @@ const TimeEntryPopup = (item: any)=> {
     let itemMetadataAdded = {
       Title:
         newData != undefined &&
-          newData.Title != undefined &&
-          newData.Title != ""
+        newData.Title != undefined &&
+        newData.Title != ""
           ? newData.Title
           : checkCategories,
       [smartTermId]: item.props.Id,
-      CategoryId: Category
+      CategoryId: Category,
     };
     //First Add item on top
     let newdata = await web.lists
@@ -1600,12 +1654,11 @@ const TimeEntryPopup = (item: any)=> {
     EditData(item.props);
   };
 
-
   //-----------------------------------------------Create Add Timesheet--------------------------------------------------------------------------------------
   const AddTaskTime = async (child: any, Type: any) => {
-    setbuttonDisable(true)
+    setbuttonDisable(true);
 
-    if (Type == 'EditTime') {
+    if (Type == "EditTime") {
       var Dateee = "";
 
       if (editeddata != undefined) {
@@ -1663,7 +1716,7 @@ const TimeEntryPopup = (item: any)=> {
           .getById(ListId)
           .items.getById(child.ParentID)
           .update({
-            AdditionalTimeEntry: JSON.stringify(UpdatedData)
+            AdditionalTimeEntry: JSON.stringify(UpdatedData),
           })
           .then((res: any) => {
             console.log(res);
@@ -1673,7 +1726,7 @@ const TimeEntryPopup = (item: any)=> {
           });
       }
     }
-    if (Type == 'CopyTime') {
+    if (Type == "CopyTime") {
       var CurrentUser: any = {};
 
       var counts = 0;
@@ -1688,7 +1741,7 @@ const TimeEntryPopup = (item: any)=> {
           CurrentUser["Company"] = taskUser.Company;
           CurrentUser["AuthorImage"] =
             taskUser.Item_x0020_Cover != undefined &&
-              taskUser.Item_x0020_Cover.Url != undefined
+            taskUser.Item_x0020_Cover.Url != undefined
               ? taskUser.Item_x0020_Cover.Url
               : "";
         }
@@ -1735,10 +1788,14 @@ const TimeEntryPopup = (item: any)=> {
               TimeInHours != undefined && TimeInHours != 0
                 ? TimeInHours
                 : child.TaskTime;
-            update["TaskTimeInMin"] = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin;
-            update["TaskDate"] = Dateee != "Invalid date"
-              ? Dateee
-              : Moment(DateFormate).format("DD/MM/YYYY");
+            update["TaskTimeInMin"] =
+              TimeInMinutes != undefined && TimeInMinutes != 0
+                ? TimeInMinutes
+                : child.TaskTimeInMin;
+            update["TaskDate"] =
+              Dateee != "Invalid date"
+                ? Dateee
+                : Moment(DateFormate).format("DD/MM/YYYY");
             update["Description"] = child?.Description;
             subItem.AdditionalTime.push(update);
             UpdatedData = subItem.AdditionalTime;
@@ -1761,7 +1818,7 @@ const TimeEntryPopup = (item: any)=> {
           .items.getById(AddParent)
           .update({
             // TaskDate:postData.TaskDate,
-            AdditionalTimeEntry: JSON.stringify(UpdatedData)
+            AdditionalTimeEntry: JSON.stringify(UpdatedData),
           })
           .then((res: any) => {
             console.log(res);
@@ -1779,7 +1836,7 @@ const TimeEntryPopup = (item: any)=> {
         });
       }
     }
-    if (Type == 'AddTime') {
+    if (Type == "AddTime") {
       var UpdatedData: any = [];
       var CurrentUser: any = {};
       var update: any = {};
@@ -1801,7 +1858,7 @@ const TimeEntryPopup = (item: any)=> {
           CurrentUser["Company"] = taskUser.Company;
           CurrentUser["AuthorImage"] =
             taskUser.Item_x0020_Cover != undefined &&
-              taskUser.Item_x0020_Cover.Url != undefined
+            taskUser.Item_x0020_Cover.Url != undefined
               ? taskUser.Item_x0020_Cover.Url
               : "";
         }
@@ -1822,7 +1879,7 @@ const TimeEntryPopup = (item: any)=> {
         .expand(`Editor,Author,Category,TimesheetTitle,${linkedSite}`)
         .filter(
           `AuthorId eq '${CurntUserId}'` &&
-          `TimesheetTitle/Id eq '${ParentId.Id}'`
+            `TimesheetTitle/Id eq '${ParentId.Id}'`
         )
         .getAll();
       CurrentUserData = CurrentAddData;
@@ -1900,7 +1957,7 @@ const TimeEntryPopup = (item: any)=> {
           .getById(ListId)
           .items.getById(AddParentId)
           .update({
-            AdditionalTimeEntry: JSON.stringify(finalData)
+            AdditionalTimeEntry: JSON.stringify(finalData),
           })
           .then((res: any) => {
             console.log(res);
@@ -1911,16 +1968,13 @@ const TimeEntryPopup = (item: any)=> {
 
       closeAddTaskTimepopup();
 
-
       if (CurrentUserData?.length == countss && isTrueTime == false) {
         saveJsonDataAnotherCat(CurrentUser, ParentId);
       }
     }
-
-   
   };
 
-//-------------------------------------------------Add JSON Data in Another category--------------------------------------------------------------------------
+  //-------------------------------------------------Add JSON Data in Another category--------------------------------------------------------------------------
   const saveJsonDataAnotherCat = async (CurrentUser: any, items: any) => {
     var update: any = {};
     var UpdatedData: any = [];
@@ -1949,7 +2003,7 @@ const TimeEntryPopup = (item: any)=> {
           ? items.Title
           : "",
       [smartTermId]: item.props.Id,
-      CategoryId: items.Category.Id
+      CategoryId: items.Category.Id,
     };
     //First Add item on top
     let newdata = await web.lists
@@ -1993,7 +2047,7 @@ const TimeEntryPopup = (item: any)=> {
       .items.getById(NewParentId)
       .update({
         AdditionalTimeEntry: JSON.stringify(UpdatedData),
-        TimesheetTitleId: items.Id
+        TimesheetTitleId: items.Id,
       })
       .then((res: any) => {
         console.log(res);
@@ -2004,8 +2058,7 @@ const TimeEntryPopup = (item: any)=> {
       });
   };
 
-
-//-----------------------------------------------Copy Data function-------------------------------------------------------------------------------------------
+  //-----------------------------------------------Copy Data function-------------------------------------------------------------------------------------------
   const saveJsonDataAnotherCopy = async (
     CurrentUser: any,
     items: any,
@@ -2047,7 +2100,7 @@ const TimeEntryPopup = (item: any)=> {
           ? items.Title
           : "",
       [smartTermId]: item.props.Id,
-      CategoryId: items.Category.Id
+      CategoryId: items.Category.Id,
     };
     //First Add item on top
     let newdata = await web.lists
@@ -2085,8 +2138,8 @@ const TimeEntryPopup = (item: any)=> {
         : Moment(DateFormate).format("DD/MM/YYYY");
     child.Description =
       postData != undefined &&
-        postData.Description != undefined &&
-        postData.Description != ""
+      postData.Description != undefined &&
+      postData.Description != ""
         ? postData.Description
         : child.Description;
 
@@ -2106,7 +2159,7 @@ const TimeEntryPopup = (item: any)=> {
       .items.getById(NewParentId)
       .update({
         AdditionalTimeEntry: JSON.stringify(UpdatedData),
-        TimesheetTitleId: items.TimesheetTitle.Id
+        TimesheetTitleId: items.TimesheetTitle.Id,
       })
       .then((res: any) => {
         console.log(res);
@@ -2117,8 +2170,7 @@ const TimeEntryPopup = (item: any)=> {
       });
   };
 
-
-//---------------------------------------------------Delete category------------------------------------------------------------------------------------------
+  //---------------------------------------------------Delete category------------------------------------------------------------------------------------------
   const deleteCategory = async (val: any) => {
     var deleteConfirmation = confirm("Are you sure, you want to delete this?");
     var ListId = TimeSheetlistId;
@@ -2134,9 +2186,7 @@ const TimeEntryPopup = (item: any)=> {
     }
   };
 
-
   var isTrue = false;
-
 
   const updateCategory = async () => {
     TimeSheet.map((items: any) => {
@@ -2160,7 +2210,7 @@ const TimeEntryPopup = (item: any)=> {
       .update({
         Title: newData != undefined ? newData.Title : checkCategories,
         CategoryId:
-          Category != undefined && Category != "" ? Category : CategoriesIdd
+          Category != undefined && Category != "" ? Category : CategoriesIdd,
       })
       .then((res: any) => {
         console.log(res);
@@ -2174,8 +2224,7 @@ const TimeEntryPopup = (item: any)=> {
   const onRenderCustomHeaderAddTaskTime = () => {
     return (
       <>
-        <div
-          className="subheading">
+        <div className="subheading">
           {PopupType} - {item?.props?.Title}
         </div>
         <Tooltip ComponentId="1753" />
@@ -2187,10 +2236,7 @@ const TimeEntryPopup = (item: any)=> {
   const onRenderCustomHeaderEditCategory = () => {
     return (
       <>
-        <div
-          className="subheading" >
-          Edit Category
-        </div>
+        <div className="subheading">Edit Category</div>
         <Tooltip ComponentId="1753" />
       </>
     );
@@ -2198,24 +2244,22 @@ const TimeEntryPopup = (item: any)=> {
 
   //--------------------------------------Change time by custom button-----------------------------------------------------------------------------
   const changeTimeFunction = (e: any, type: any) => {
-    if (type == "Add") {
-      changeTime = e.target.value;
+    let changeTime: any = e.target.value;
 
-      if (changeTime != undefined) {
-        var TimeInHour: any = changeTime / 60;
-
-        setTimeInHours(TimeInHour.toFixed(2));
+    if (type === "Add") {
+      if (changeTime !== undefined) {
+        const timeInHour: any = changeTime / 60;
+        setTimeInHours(timeInHour.toFixed(2));
       }
 
       setTimeInMinutes(changeTime);
     }
-    if (type == "Edit") {
-      if (e.target.value > 0) {
-        changeTime = e.target.value;
 
-        if (changeTime != undefined) {
-          var TimeInHour: any = changeTime / 60;
-          setTimeInHours(TimeInHour.toFixed(2));
+    if (type === "Edit") {
+      if (changeTime > 0) {
+        if (changeTime !== undefined) {
+          const timeInHour: any = changeTime / 60;
+          setTimeInHours(timeInHour.toFixed(2));
         }
         setTimeInMinutes(changeTime);
       } else {
@@ -2225,11 +2269,10 @@ const TimeEntryPopup = (item: any)=> {
     }
   };
 
-
   //--------------------------------------------Change Date by custom button--------------------------------------------------------------------------------
   const changeDatetodayQuickly = (date: any, type: any, Popup: any) => {
     if (Popup == "EditTime" || Popup == "CopyTime") {
-      var newDate:any = Moment(date).format("DD/MM/YYYY");
+      var newDate: any = Moment(date).format("DD/MM/YYYY");
       if (type == "firstdate") {
         var a1 = newDate.split("/");
         a1[0] = "01";
@@ -2279,7 +2322,6 @@ const TimeEntryPopup = (item: any)=> {
       }
     }
     if (Popup == "AddTime" || Popup == "AddTime Category") {
-
       if (type == "firstdate") {
         var newStartDate: any = Moment(date).format("DD/MM/YYYY");
         var a1 = newStartDate.split("/");
@@ -2343,7 +2385,6 @@ const TimeEntryPopup = (item: any)=> {
       }
     }
   };
- 
 
   const handleDatedue = (date: any) => {
     change = new window.Date(date);
@@ -2353,7 +2394,6 @@ const TimeEntryPopup = (item: any)=> {
     //setMyDatee(NewDate)
     setediteddata(NewDate);
   };
-  
 
   const flatviewOpen = (e: any) => {
     var newArray: any = [];
@@ -2384,8 +2424,7 @@ const TimeEntryPopup = (item: any)=> {
         hasExpanded: true,
         size: 20,
         margin: 0,
-        id: "Id"
-
+        id: "Id",
       },
 
       {
@@ -2402,31 +2441,41 @@ const TimeEntryPopup = (item: any)=> {
                   {row?.original?.show === true ? (
                     <span>
                       {row?.original?.AuthorImage != "" &&
-                        row?.original.AuthorImage != null ? (
-                          <span>
-                            <a href={`${CurrentSiteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.AuthorId}&Name=${row?.original?.AuthorTitle}`} target="_blank" data-interception="off" title={row?.original?.AuthorTitle}>
-                        <img
-                          className="AssignUserPhoto1 bdrbox m-0 wid29"
-                          title={row?.original.AuthorName}
-                          data-toggle="popover"
-                          data-trigger="hover"
-                          src={row?.original?.AuthorImage}
-                        ></img>
-                        </a>
+                      row?.original.AuthorImage != null ? (
+                        <span>
+                          <a
+                            href={`${CurrentSiteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.AuthorId}&Name=${row?.original?.AuthorTitle}`}
+                            target="_blank"
+                            data-interception="off"
+                            title={row?.original?.AuthorTitle}
+                          >
+                            <img
+                              className="AssignUserPhoto1 bdrbox m-0 wid29"
+                              title={row?.original.AuthorName}
+                              data-toggle="popover"
+                              data-trigger="hover"
+                              src={row?.original?.AuthorImage}
+                            ></img>
+                          </a>
                         </span>
                       ) : (
                         <>
                           {" "}
                           <span>
-                            <a href={`${CurrentSiteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original.AuthorId}&Name=${row?.original.AuthorTitle}`} target="_blank" data-interception="off" title={row?.original.AuthorTitle}>
-                          <img
-                            className="AssignUserPhoto1 bdrbox m-0 wid29"
-                            title={row?.original.AuthorName}
-                            data-toggle="popover"
-                            data-trigger="hover"
-                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
-                          ></img>
-                          </a>
+                            <a
+                              href={`${CurrentSiteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original.AuthorId}&Name=${row?.original.AuthorTitle}`}
+                              target="_blank"
+                              data-interception="off"
+                              title={row?.original.AuthorTitle}
+                            >
+                              <img
+                                className="AssignUserPhoto1 bdrbox m-0 wid29"
+                                title={row?.original.AuthorName}
+                                data-toggle="popover"
+                                data-trigger="hover"
+                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+                              ></img>
+                            </a>
                           </span>
                         </>
                       )}
@@ -2438,11 +2487,13 @@ const TimeEntryPopup = (item: any)=> {
                         {row?.original?.Category?.Title} -{" "}
                         {row?.original?.Title}
                       </span>
-                      <span title="Edit"
+                      <span
+                        title="Edit"
                         className="svg__iconbox svg__icon--edit"
                         onClick={() => Editcategorypopup(row.original)}
                       ></span>
-                      <span title="Delete"
+                      <span
+                        title="Delete"
                         className="svg__iconbox svg__icon--trash hreflink"
                         onClick={() => deleteCategory(row.original)}
                       ></span>
@@ -2452,53 +2503,61 @@ const TimeEntryPopup = (item: any)=> {
               </div>
             </span>
           </>
-        )
+        ),
       },
 
       {
         accessorFn: (row) => row?.sortTaskDate,
         cell: ({ row, column }) => (
           <div className="alignCenter">
-            {row?.original?.Created == null ? ("") : (
+            {row?.original?.Created == null ? (
+              ""
+            ) : (
               <>
-                <HighlightableCell value={row?.original?.TaskDates} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : null} />
-
+                <HighlightableCell
+                  value={row?.original?.TaskDates}
+                  searchTerm={
+                    column.getFilterValue() != undefined
+                      ? column.getFilterValue()
+                      : null
+                  }
+                />
               </>
             )}
           </div>
         ),
-        id: 'Created',
+        id: "Created",
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Created",
         filterFn: (row: any, columnName: any, filterValue: any) => {
           if (row?.original?.TaskDates?.toLowerCase()?.includes(filterValue)) {
-            return true
+            return true;
           } else {
-            return false
+            return false;
           }
         },
         header: "",
-        size: 125
+        size: 125,
       },
       {
         accessorFn: (row) => row?.TaskTime,
         cell: ({ row }) => (
-        <>
-        <div className="text-center">{row?.original?.TaskTime}</div>
-        </>
+          <>
+            <div className="text-center">{row?.original?.TaskTime}</div>
+          </>
         ),
-        id: 'TaskTime',
+        id: "TaskTime",
         resetColumnFilters: false,
         placeholder: "TaskTime",
         header: "",
-        size: 95
+        size: 95,
       },
-     
+
       {
         accessorKey: "Description",
         placeholder: "Description",
-        header: ""
+        header: "",
       },
       {
         id: "ff",
@@ -2522,34 +2581,32 @@ const TimeEntryPopup = (item: any)=> {
             ) : (
               <>
                 {" "}
-                 <span title="Copy"
-                  className="svg__iconbox svg__icon--copy"
+                <img
+                  title="Copy"
+                  className="hreflink"
+                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png"
                   onClick={() => openAddTasktimepopup(row.original, "CopyTime")}
-                ></span>
-
-
-                {" "}
-                <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={() =>
-                  openAddTasktimepopup(
-                    row?.original
-                    , "EditTime"
-                  )
-                } >
-                </span>
-                {" "}
-                <span title="Delete"
+                ></img>{" "}
+                <span
+                  title="Edit"
+                  className="svg__iconbox svg__icon--edit hreflink"
+                  onClick={() =>
+                    openAddTasktimepopup(row?.original, "EditTime")
+                  }
+                ></span>{" "}
+                <span
+                  title="Delete"
                   className="svg__icon--trash hreflink  svg__iconbox"
                   onClick={() => deleteTaskTime(row.original)}
                 ></span>
               </>
             )}
           </div>
-        )
-      }
+        ),
+      },
     ],
     [data]
   );
-
 
   return (
     <div className={PortfolioType == "Service" ? "serviepannelgreena" : ""}>
@@ -2567,20 +2624,21 @@ const TimeEntryPopup = (item: any)=> {
                   />
                   FlatView
                 </div>
-                <a className="mr-0 btn  btn-default"
-                  onClick={() => openAddTasktimepopup('MyData', 'AddTime Category')}
+                <a
+                  className="mr-0 btn  btn-default"
+                  onClick={() =>
+                    openAddTasktimepopup("MyData", "AddTime Category")
+                  }
                 >
                   + Add New Structure
                 </a>
               </div>
-
-
             </div>
           </div>
         </div>
       </div>
 
-{/* -----------------------------------------Show Table of Timesheet------------------------------------------------------------------------------- */}
+      {/* -----------------------------------------Show Table of Timesheet------------------------------------------------------------------------------- */}
       {collapseItem && (
         <div className="togglecontent clearfix mb-2">
           <div id="forShowTask" className="pt-0">
@@ -2610,14 +2668,12 @@ const TimeEntryPopup = (item: any)=> {
         </div>
       )}
 
-
-
       {/* ----------------------------------------Add Time Popup------------------------------------------------------------------------------------------------------------------------------------- */}
 
       <Panel
         onRenderHeader={onRenderCustomHeaderAddTaskTime}
         type={PanelType.custom}
-        customWidth={PopupTypeCat == true ? '700px' : '550px'}
+        customWidth={PopupTypeCat == true ? "700px" : "550px"}
         isOpen={AddTaskTimepopup}
         onDismiss={closeAddTaskTimepopup}
         isBlocking={false}
@@ -2629,15 +2685,16 @@ const TimeEntryPopup = (item: any)=> {
               : "modal-body  p-1"
           }
         >
-
           <div className="row">
-            <div className={PopupTypeCat == true ? 'col-sm-9' : 'col-sm-12'}>
+            <div className={PopupTypeCat == true ? "col-sm-9" : "col-sm-12"}>
               <div className="col-sm-12 p-0 form-group">
-                {PopupTypeCat == true ?
+                {PopupTypeCat == true ? (
                   <>
                     <div className="mb-1">
                       <div className="input-group">
-                        <label className="form-label full-width">Selected Category</label>
+                        <label className="form-label full-width">
+                          Selected Category
+                        </label>
                         <input
                           type="text"
                           autoComplete="off"
@@ -2662,27 +2719,44 @@ const TimeEntryPopup = (item: any)=> {
                         />
                       </div>
                     </div>
-                  </> : <div className="input-group mb-2">
+                  </>
+                ) : (
+                  <div className="input-group mb-2">
                     <label className="full-width">Title</label>
-                    <input className="form-control" type="title" placeholder="Add Title" disabled={true} defaultValue={CategryTitle} />
+                    <input
+                      className="form-control"
+                      type="title"
+                      placeholder="Add Title"
+                      disabled={true}
+                      defaultValue={CategryTitle}
+                    />
                   </div>
-                }
-
+                )}
 
                 <div className="row mb-2">
-
                   <div className="col-sm-12">
                     <div className="date-div">
                       <div className="row">
                         <div className="col-sm-12">
                           <div className="date-div">
-                          <label className="form-label full-width mb-2">Select date</label>
+                            <label className="form-label full-width mb-2">
+                              Select date
+                            </label>
                             <div className="Date-Div-BAR d-flex mb-2">
-                            <span
+                              <span
                                 className="href"
                                 id="selectedToday"
                                 onClick={() =>
-                                  changeDatetodayQuickly((PopupType == 'EditTime' || PopupType == 'CopyTime') ? editeddata != undefined ? editeddata : myDatee : myDatee, "1Jul", PopupType)
+                                  changeDatetodayQuickly(
+                                    PopupType == "EditTime" ||
+                                      PopupType == "CopyTime"
+                                      ? editeddata != undefined
+                                        ? editeddata
+                                        : myDatee
+                                      : myDatee,
+                                    "1Jul",
+                                    PopupType
+                                  )
                                 }
                               >
                                 1 Jul
@@ -2693,7 +2767,12 @@ const TimeEntryPopup = (item: any)=> {
                                 id="selectedYear"
                                 onClick={() =>
                                   changeDatetodayQuickly(
-                                    (PopupType == 'EditTime' || PopupType == 'CopyTime') ? editeddata != undefined ? editeddata : myDatee : myDatee,
+                                    PopupType == "EditTime" ||
+                                      PopupType == "CopyTime"
+                                      ? editeddata != undefined
+                                        ? editeddata
+                                        : myDatee
+                                      : myDatee,
                                     "firstdate",
                                     PopupType
                                   )
@@ -2706,7 +2785,16 @@ const TimeEntryPopup = (item: any)=> {
                                 className="href"
                                 id="selectedYear"
                                 onClick={() =>
-                                  changeDatetodayQuickly((PopupType == 'EditTime' || PopupType == 'CopyTime') ? editeddata != undefined ? editeddata : myDatee : myDatee, "15thdate", PopupType)
+                                  changeDatetodayQuickly(
+                                    PopupType == "EditTime" ||
+                                      PopupType == "CopyTime"
+                                      ? editeddata != undefined
+                                        ? editeddata
+                                        : myDatee
+                                      : myDatee,
+                                    "15thdate",
+                                    PopupType
+                                  )
                                 }
                               >
                                 15th
@@ -2716,7 +2804,16 @@ const TimeEntryPopup = (item: any)=> {
                                 className="href"
                                 id="selectedYear"
                                 onClick={() =>
-                                  changeDatetodayQuickly((PopupType == 'EditTime' || PopupType == 'CopyTime') ? editeddata != undefined ? editeddata : myDatee : myDatee, "1Jandate", PopupType)
+                                  changeDatetodayQuickly(
+                                    PopupType == "EditTime" ||
+                                      PopupType == "CopyTime"
+                                      ? editeddata != undefined
+                                        ? editeddata
+                                        : myDatee
+                                      : myDatee,
+                                    "1Jandate",
+                                    PopupType
+                                  )
                                 }
                               >
                                 1 Jan
@@ -2726,7 +2823,16 @@ const TimeEntryPopup = (item: any)=> {
                                 className="href"
                                 id="selectedToday"
                                 onClick={() =>
-                                  changeDatetodayQuickly((PopupType == 'EditTime' || PopupType == 'CopyTime') ? editeddata != undefined ? editeddata : myDatee : myDatee, "Today", PopupType)
+                                  changeDatetodayQuickly(
+                                    PopupType == "EditTime" ||
+                                      PopupType == "CopyTime"
+                                      ? editeddata != undefined
+                                        ? editeddata
+                                        : myDatee
+                                      : myDatee,
+                                    "Today",
+                                    PopupType
+                                  )
                                 }
                               >
                                 Today
@@ -2796,48 +2902,192 @@ const TimeEntryPopup = (item: any)=> {
                         </div> */}
                       </div>
                       <div className="input-group">
-
                         <div className="d-flex w-100 mb-1">
-                          <button className="btnCol btn-primary px-2" title='Minus one month' onClick={() => changeDateDec("month", PopupType)}><svg xmlns="http://www.w3.org/2000/svg" width="58" height="32" viewBox="0 0 65 37" fill="#fff">
-                            <line x1="35.0975" y1="19.9826" x2="52.7924" y2="2.29386" stroke="#fff" stroke-width="5" />
-                            <line x1="52.9436" y1="34.5654" x2="35.2546" y2="16.8708" stroke="#fff" stroke-width="5" />
-                            <line x1="18.7682" y1="19.9826" x2="36.4631" y2="2.29386" stroke="#fff" stroke-width="5" />
-                            <line x1="36.6143" y1="34.5654" x2="18.9252" y2="16.8708" stroke="#fff" stroke-width="5" />
-                            <line x1="2.43884" y1="19.9826" x2="20.1337" y2="2.29386" stroke="#fff" stroke-width="5" />
-                            <line x1="20.2849" y1="34.5654" x2="2.5959" y2="16.8708" stroke="#fff" stroke-width="5" />
-                          </svg></button>
-                          <button className="btnCol btn-primary mx-1" title='Minus one week' onClick={() => changeDateDec("week", PopupType)}><MdKeyboardDoubleArrowLeft></MdKeyboardDoubleArrowLeft></button>
-                          <button className="btnCol btn-primary mx-1" title='Minus one day' onClick={() => changeDateDec("Date", PopupType)}><MdKeyboardArrowLeft></MdKeyboardArrowLeft></button>
+                          <button
+                            className="btnCol btn-primary px-2"
+                            title="Minus one month"
+                            onClick={() => changeDateDec("month", PopupType)}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="58"
+                              height="32"
+                              viewBox="0 0 65 37"
+                              fill="#fff"
+                            >
+                              <line
+                                x1="35.0975"
+                                y1="19.9826"
+                                x2="52.7924"
+                                y2="2.29386"
+                                stroke="#fff"
+                                stroke-width="5"
+                              />
+                              <line
+                                x1="52.9436"
+                                y1="34.5654"
+                                x2="35.2546"
+                                y2="16.8708"
+                                stroke="#fff"
+                                stroke-width="5"
+                              />
+                              <line
+                                x1="18.7682"
+                                y1="19.9826"
+                                x2="36.4631"
+                                y2="2.29386"
+                                stroke="#fff"
+                                stroke-width="5"
+                              />
+                              <line
+                                x1="36.6143"
+                                y1="34.5654"
+                                x2="18.9252"
+                                y2="16.8708"
+                                stroke="#fff"
+                                stroke-width="5"
+                              />
+                              <line
+                                x1="2.43884"
+                                y1="19.9826"
+                                x2="20.1337"
+                                y2="2.29386"
+                                stroke="#fff"
+                                stroke-width="5"
+                              />
+                              <line
+                                x1="20.2849"
+                                y1="34.5654"
+                                x2="2.5959"
+                                y2="16.8708"
+                                stroke="#fff"
+                                stroke-width="5"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            className="btnCol btn-primary mx-1"
+                            title="Minus one week"
+                            onClick={() => changeDateDec("week", PopupType)}
+                          >
+                            <MdKeyboardDoubleArrowLeft></MdKeyboardDoubleArrowLeft>
+                          </button>
+                          <button
+                            className="btnCol btn-primary mx-1"
+                            title="Minus one day"
+                            onClick={() => changeDateDec("Date", PopupType)}
+                          >
+                            <MdKeyboardArrowLeft></MdKeyboardArrowLeft>
+                          </button>
                           <DatePicker
                             className="form-control"
-                            selected={(PopupType == 'EditTime' || PopupType == 'CopyTime') ? editeddata != undefined ? editeddata : myDatee : myDatee}
+                            selected={
+                              PopupType == "EditTime" || PopupType == "CopyTime"
+                                ? editeddata != undefined
+                                  ? editeddata
+                                  : myDatee
+                                : myDatee
+                            }
                             onChange={handleDatedue}
                             dateFormat="EEE, dd MMM yyyy"
                           />
-                          <button onClick={() => changeDate("Date", PopupType)} title='Plus one day' className="btnCol btn-primary mx-1" ><MdKeyboardArrowRight></MdKeyboardArrowRight></button>
-                          <button className="btnCol btn-primary mx-1" title='Plus one week' onClick={() => changeDate("week", PopupType)}><MdKeyboardDoubleArrowRight></MdKeyboardDoubleArrowRight></button>
-                          <button className="btnCol btn-primary px-2" title='Plus one month' onClick={() => changeDate("month", PopupType)}><svg xmlns="http://www.w3.org/2000/svg" width="58" height="32" viewBox="0 0 65 37" fill="#fff">
-                            <line x1="23.0121" y1="16.6118" x2="5.31719" y2="34.3006" stroke="#fff" stroke-width="5" />
-                            <line x1="5.16599" y1="2.02901" x2="22.855" y2="19.7236" stroke="#fff" stroke-width="5" />
-                            <line x1="39.3414" y1="16.6118" x2="21.6465" y2="34.3006" stroke="#fff" stroke-width="5" />
-                            <line x1="21.4953" y1="2.02901" x2="39.1844" y2="19.7236" stroke="#fff" stroke-width="5" />
-                            <line x1="55.6708" y1="16.6118" x2="37.9759" y2="34.3006" stroke="#fff" stroke-width="5" />
-                            <line x1="37.8247" y1="2.02901" x2="55.5137" y2="19.7236" stroke="#fff" stroke-width="5" />
-                          </svg></button></div>
+                          <button
+                            onClick={() => changeDate("Date", PopupType)}
+                            title="Plus one day"
+                            className="btnCol btn-primary mx-1"
+                          >
+                            <MdKeyboardArrowRight></MdKeyboardArrowRight>
+                          </button>
+                          <button
+                            className="btnCol btn-primary mx-1"
+                            title="Plus one week"
+                            onClick={() => changeDate("week", PopupType)}
+                          >
+                            <MdKeyboardDoubleArrowRight></MdKeyboardDoubleArrowRight>
+                          </button>
+                          <button
+                            className="btnCol btn-primary px-2"
+                            title="Plus one month"
+                            onClick={() => changeDate("month", PopupType)}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="58"
+                              height="32"
+                              viewBox="0 0 65 37"
+                              fill="#fff"
+                            >
+                              <line
+                                x1="23.0121"
+                                y1="16.6118"
+                                x2="5.31719"
+                                y2="34.3006"
+                                stroke="#fff"
+                                stroke-width="5"
+                              />
+                              <line
+                                x1="5.16599"
+                                y1="2.02901"
+                                x2="22.855"
+                                y2="19.7236"
+                                stroke="#fff"
+                                stroke-width="5"
+                              />
+                              <line
+                                x1="39.3414"
+                                y1="16.6118"
+                                x2="21.6465"
+                                y2="34.3006"
+                                stroke="#fff"
+                                stroke-width="5"
+                              />
+                              <line
+                                x1="21.4953"
+                                y1="2.02901"
+                                x2="39.1844"
+                                y2="19.7236"
+                                stroke="#fff"
+                                stroke-width="5"
+                              />
+                              <line
+                                x1="55.6708"
+                                y1="16.6118"
+                                x2="37.9759"
+                                y2="34.3006"
+                                stroke="#fff"
+                                stroke-width="5"
+                              />
+                              <line
+                                x1="37.8247"
+                                y1="2.02901"
+                                x2="55.5137"
+                                y2="19.7236"
+                                stroke="#fff"
+                                stroke-width="5"
+                              />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-
-
                 </div>
                 <div className="row mb-2">
                   <div className="col-sm-3">
-                    <label className="form-label full-width">Add task time</label>
+                    <label className="form-label full-width">
+                      Add task time
+                    </label>
                     <input
                       type="text"
                       autoComplete="off"
                       className="form-control"
-                      value={TimeInMinutes > 0 ? TimeInMinutes : saveEditTaskTimeChild?.TaskTimeInMin != undefined ? saveEditTaskTimeChild.TaskTimeInMin : 0}
+                      value={
+                        TimeInMinutes > 0
+                          ? TimeInMinutes
+                          : saveEditTaskTimeChild?.TaskTimeInMin != undefined
+                          ? saveEditTaskTimeChild.TaskTimeInMin
+                          : 0
+                      }
                       onChange={(e) => changeTimeFunction(e, PopupType)}
                     />
                   </div>
@@ -2846,7 +3096,13 @@ const TimeEntryPopup = (item: any)=> {
                     <input
                       className="form-control bg-e9"
                       type="text"
-                      value={`${TimeInHours > 0 ? TimeInHours : saveEditTaskTimeChild?.TaskTime != undefined ? saveEditTaskTimeChild?.TaskTime : 0} Hours`}
+                      value={`${
+                        TimeInHours > 0
+                          ? TimeInHours
+                          : saveEditTaskTimeChild?.TaskTime != undefined
+                          ? saveEditTaskTimeChild?.TaskTime
+                          : 0
+                      } Hours`}
                     />
                   </div>
                   <div className="col-sm-6 Time-control-buttons">
@@ -2855,8 +3111,14 @@ const TimeEntryPopup = (item: any)=> {
                       <button
                         className="btn btn-primary"
                         title="Decrease by 15 Min"
-                        disabled={PopupType == 'AddTime' && TimeInMinutes <= 0 ? true : false}
-                        onClick={() => changeTimesDec("15", saveEditTaskTimeChild, PopupType)}
+                        disabled={
+                          PopupType == "AddTime" && TimeInMinutes <= 0
+                            ? true
+                            : false
+                        }
+                        onClick={() =>
+                          changeTimesDec("15", saveEditTaskTimeChild, PopupType)
+                        }
                       >
                         <i className="fa fa-minus" aria-hidden="true"></i>
                       </button>
@@ -2864,7 +3126,9 @@ const TimeEntryPopup = (item: any)=> {
                       <button
                         className="btn btn-primary"
                         title="Increase by 15 Min"
-                        onClick={() => changeTimes("15", saveEditTaskTimeChild, PopupType)}
+                        onClick={() =>
+                          changeTimes("15", saveEditTaskTimeChild, PopupType)
+                        }
                       >
                         <i className="fa fa-plus" aria-hidden="true"></i>
                       </button>
@@ -2874,8 +3138,14 @@ const TimeEntryPopup = (item: any)=> {
                       <button
                         className="btn btn-primary"
                         title="Decrease by 60 Min"
-                        disabled={PopupType == 'AddTime' && TimeInMinutes <= 0 ? true : false}
-                        onClick={() => changeTimesDec("60", saveEditTaskTimeChild, PopupType)}
+                        disabled={
+                          PopupType == "AddTime" && TimeInMinutes <= 0
+                            ? true
+                            : false
+                        }
+                        onClick={() =>
+                          changeTimesDec("60", saveEditTaskTimeChild, PopupType)
+                        }
                       >
                         <i className="fa fa-minus" aria-hidden="true"></i>
                       </button>
@@ -2883,7 +3153,9 @@ const TimeEntryPopup = (item: any)=> {
                       <button
                         className="btn btn-primary"
                         title="Increase by 60 Min"
-                        onClick={() => changeTimes("60", saveEditTaskTimeChild, PopupType)}
+                        onClick={() =>
+                          changeTimes("60", saveEditTaskTimeChild, PopupType)
+                        }
                       >
                         <i className="fa fa-plus" aria-hidden="true"></i>
                       </button>
@@ -2892,23 +3164,34 @@ const TimeEntryPopup = (item: any)=> {
                 </div>
 
                 <div className="col-sm-12 p-0">
-                  <label className="form-label full-width">Short Description</label>
+                  <label className="form-label full-width">
+                    Short Description
+                  </label>
                   <textarea
                     className="full_width"
                     id="AdditionalshortDescription"
-                    defaultValue={saveEditTaskTimeChild?.Description != undefined ? saveEditTaskTimeChild?.Description : ''}
+                    defaultValue={
+                      saveEditTaskTimeChild?.Description != undefined
+                        ? saveEditTaskTimeChild?.Description
+                        : ""
+                    }
                     cols={17}
                     rows={6}
-                    onChange={(e) => ( PopupType == 'EditTime' || PopupType == 'CopyTime' ? saveEditTaskTimeChild.Description = e.target.value :  setPostData({ ...postData, Description: e.target.value }))}
+                    onChange={(e) =>
+                      PopupType == "EditTime" || PopupType == "CopyTime"
+                        ? (saveEditTaskTimeChild.Description = e.target.value)
+                        : setPostData({
+                            ...postData,
+                            Description: e.target.value,
+                          })
+                    }
                   ></textarea>
                 </div>
               </div>
-
             </div>
-            {PopupTypeCat == true &&
+            {PopupTypeCat == true && (
               <>
                 <div className="col-sm-3">
-
                   <div className="      col mb-2">
                     <div className="mb-1">
                       <a
@@ -2939,19 +3222,19 @@ const TimeEntryPopup = (item: any)=> {
                       );
                     })}
                   </div>
-
                 </div>
-              </>}
+              </>
+            )}
             <footer>
               <div className="row">
-
                 <div className="col-sm-6">
-                  {PopupType == 'EditTime' || PopupType == 'CopyTime' ?
+                  {PopupType == "EditTime" || PopupType == "CopyTime" ? (
                     <>
-
                       <div className="text-left">
                         Created
-                        <span>{saveEditTaskTimeChild?.TaskTimeCreatedDate}</span>
+                        <span>
+                          {saveEditTaskTimeChild?.TaskTimeCreatedDate}
+                        </span>
                         by{" "}
                         <span className="siteColor">
                           {saveEditTaskTimeChild?.EditorTitle}
@@ -2959,16 +3242,21 @@ const TimeEntryPopup = (item: any)=> {
                       </div>
                       <div className="text-left">
                         Last modified
-                        <span>{saveEditTaskTimeChild?.TaskTimeModifiedDate}</span>
+                        <span>
+                          {saveEditTaskTimeChild?.TaskTimeModifiedDate}
+                        </span>
                         by{" "}
                         <span className="siteColor">
                           {saveEditTaskTimeChild?.EditorTitle}
                         </span>
                       </div>
-                    </> : ''}
+                    </>
+                  ) : (
+                    ""
+                  )}
                 </div>
                 <div className="col-sm-6 text-end">
-                  {PopupType == 'EditTime' || PopupType == 'CopyTime' ?
+                  {PopupType == "EditTime" || PopupType == "CopyTime" ? (
                     <>
                       <a
                         target="_blank"
@@ -2976,30 +3264,47 @@ const TimeEntryPopup = (item: any)=> {
                       >
                         Open out-of-the-box form
                       </a>
-                    </> : ''}
-                  {PopupTypeCat == true ?
+                    </>
+                  ) : (
+                    ""
+                  )}
+                  {PopupTypeCat == true ? (
                     <button
-                      disabled={(PopupType == 'AddTime' ||PopupType == 'AddTime Category') && TimeInMinutes <= 0 ? true : false}
+                      disabled={
+                        (PopupType == "AddTime" ||
+                          PopupType == "AddTime Category") &&
+                        TimeInMinutes <= 0
+                          ? true
+                          : false
+                      }
                       type="button"
                       className="btn btn-primary ms-2"
                       onClick={() => saveTimeSpent()}
                     >
                       Save
-                    </button> : <button
-                      disabled={(PopupType == 'AddTime' ||PopupType == 'AddTime Category') && TimeInMinutes <= 0 ? true : false || buttonDisable == true}
+                    </button>
+                  ) : (
+                    <button
+                      disabled={
+                        (PopupType == "AddTime" ||
+                          PopupType == "AddTime Category") &&
+                        TimeInMinutes <= 0
+                          ? true
+                          : false || buttonDisable == true
+                      }
                       type="button"
                       className="btn btn-primary ms-2"
-                      onClick={() => AddTaskTime(saveEditTaskTimeChild, PopupType)}
+                      onClick={() =>
+                        AddTaskTime(saveEditTaskTimeChild, PopupType)
+                      }
                     >
                       Save
-                    </button>}
+                    </button>
+                  )}
                 </div>
               </div>
             </footer>
-
           </div>
-
-
         </div>
       </Panel>
 
@@ -3112,7 +3417,7 @@ const TimeEntryPopup = (item: any)=> {
       </Panel>
     </div>
   );
-}
+};
 
 export default TimeEntryPopup;
 

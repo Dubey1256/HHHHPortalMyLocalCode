@@ -258,7 +258,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   if (type == "Date") {
     const handleSave = async () => {
       try {
-        setFieldValue((prevValue: any) => fieldValue);
+        setFieldValue((prevValue: any) => fieldValue ? Moment(fieldValue).format("DD/MM/YYYY"): '');
 
         // if(type == "Number"){
         //   setFieldValue(fieldValue/100);
@@ -286,11 +286,11 @@ export const EditableField: React.FC<EditableFieldProps> = ({
             <input
               type={type}
               defaultValue={
-                fieldValue != undefined
-                  ? fieldValue.split("/").reverse().join("-")
+                fieldValue !== undefined
+                  ? Moment(fieldValue, "DD/MM/YYYY").format("YYYY-MM-DD")
                   : ""
               }
-              // value={fieldValue}
+              min={Moment(new Date()).format("YYYY-MM-DD")}
               style={{ fontSize: "11px" }}
               onChange={handleInputChange}
             />
