@@ -779,7 +779,9 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row }) => (
                     <>
                         {row?.original?.siteType === "Project" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="alignIcon svg__iconbox svg__icon--edit hreflink" ></span> : ''}
-
+                        {row?.original?.Item_x0020_Type === "tasks" ? <>
+                            <span title="Edit Task" onClick={(e) => EditPopup(row?.original)} className="alignIcon svg__iconbox svg__icon--edit hreflink" ></span>
+                        </> : ''}
                     </>
                 ),
                 id: 'EditPopup',

@@ -24,6 +24,7 @@ let childRefdata: any;
 let copyDtaArray: any = [];
 let renderData: any = [];
 const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, selectionType, groupedData, showProject }: any) => {
+   
     const childRef = React.useRef<any>();
     if (childRef != null) {
         childRefdata = { ...childRef };
@@ -53,10 +54,45 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     const PopupType: any = props?.PopupType;
     let selectedDataArray: any = [];
     let GlobalArray: any = [];
+    
+
+    const [initialRender, setInitialRender] = React.useState(true);
+
+    React.useEffect(() => {
+        if (initialRender) {
+            // Code to run only on the initial render
+            // For example:
+            if (dataUpper?.length > 0) {
+               setdataUpper(dataUpper);
+            }
+            setInitialRender(false); // Set initial render to false after the initial execution
+        } else {
+            // Code to run on subsequent renders (check and uncheck events)
+            // For example:
+            if (childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length > 0) {
+                let allCheckData: any = [];
+                childRef?.current?.table?.getSelectedRowModel()?.flatRows?.forEach((elem: any) => {
+                    allCheckData.push(elem?.original);
+                });
+                setdataUpper(allCheckData);
+            } else {
+                setdataUpper([]);
+            }
+        }
+    }, [initialRender, childRef?.current?.table?.getSelectedRowModel()?.flatRows]);
+    
+    // Default selectionType
+    
     React.useEffect(() => {
         GetMetaData();
-
-
+        if (selectionType === "Multi") {
+            setIsSelections(true);
+            setIsSelectionsBelow(true);
+        } else {
+            setIsSelections(false);
+            setIsSelectionsBelow(false);
+        }
+      
     },
         []);
     function Example(callBack: any, type: any, functionType: any) {
@@ -69,27 +105,27 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     }
     const setModalIsOpenToOK = () => {
         try {
-            if (props?.linkedComponent != undefined && props?.linkedComponent?.length == 0)
+            if (props?.linkedComponent !== undefined && props?.linkedComponent?.length === 0)
                 props.linkedComponent = CheckBoxData;
             else {
                 props.linkedComponent = [];
                 props.linkedComponent = CheckBoxData;
             }
         } catch (e) {
-
-        }
-        // // setModalIsOpen(false);
-        if (selectionType === "Multi") {
-            setIsSelectionsBelow(true);
-            setIsSelections(true);
-            Example(MultiSelectedData, selectionType, "Save");
-        } else {
-       
-            Example(CheckBoxData, selectionType, "Save");
+            // Handle error if needed
+            console.log("setModalIsOpenToOK function error")
         }
         
+       
+        if (selectionType === "Multi") {
+            Example(MultiSelectedData, selectionType, "Save");
+            
+        } else {
+            Example(CheckBoxData, selectionType, "Save");
+        }
         MultiSelectedData = [];
     }
+    
 
     
     const checkSelection1 = (event:any)=>{
@@ -302,13 +338,15 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             }
         }
     }, []);
+    
+    
     const CallBack = React.useCallback((item: any, type: any) => {
-        setisProjectopen(false)
-        if (type == 'Save') {
-            GetComponents()
+        setisProjectopen(false);
+        if (type === 'Save') {
+            GetComponents();
         }
-    }, [])
-
+    }, []);
+    
 
     const onRenderCustomHeader = (
     ) => {
@@ -752,11 +790,13 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             <div className={ComponentType == "Service" ? "serviepannelgreena" : ""}>
                 <div className="modal-body p-0 mt-2 mb-3 clearfix">
                     <div className="Alltable mt-10">
+                     {dataUpper?.length>0 &&    
                     <div className="col-sm-12 p-0 smart" >
                             <div className="">
                                 <GlobalCommanTable columns={columns} wrapperHeight="240px"  showHeader={true} customHeaderButtonAvailable={true} ref={childRef} customTableHeaderButtons={customTableHeaderButtons} defultSelectedPortFolio={dataUpper} data={dataUpper} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={IsSelections} />
                             </div>
                         </div>
+                        }
                         {showProject !== true &&
                             <div className="tbl-headings p-2 bg-white">
                                 <span className="leftsec">

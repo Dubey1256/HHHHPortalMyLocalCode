@@ -1822,8 +1822,8 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
                 "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "Help_x0020_Information", "PriorityRank",
                 "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id",
                 "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "Deliverables",
-                "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "FeatureType/Title", "FeatureType/Id", "Editor/Id", "Modified", "Editor/Title")
-            .expand("Parent", "PortfolioType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "FeatureType", "ResponsibleTeam", "Editor").filter(filter != null ? filter : '')
+                "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "FeatureType/Title", "FeatureType/Id","Portfolios/Id","Portfolios/Title", "Editor/Id", "Modified", "Editor/Title")
+            .expand("Parent", "PortfolioType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "FeatureType", "ResponsibleTeam", "Editor","Portfolios").filter(filter != null ? filter : '')
             .getAll();
 
         // console.log("all Service and Coponent data form global Call=======", AllMasterTaskData);
@@ -2246,6 +2246,10 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
                         task.PortfolioTitle = task?.Portfolio?.Title;
                     }
                     let checkIsSCProtected: any = false;
+                    task.DisplayDueDate = moment(task?.DueDate).format("DD/MM/YYYY");
+                    if (task.DisplayDueDate == "Invalid date" || "") {
+                        task.DisplayDueDate = task?.DisplayDueDate.replaceAll("Invalid date", "");
+                    }
                     task.DisplayCreateDate = moment(task.Created).format("DD/MM/YYYY");
                     task.descriptionsSearch = descriptionSearchData(task);
                     if (task.Project) {
