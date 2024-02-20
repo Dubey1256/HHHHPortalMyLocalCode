@@ -49,8 +49,7 @@ const TopNavigation = (dynamicData: any) => {
   // var [ParentData, setParentData] = React.useState<any>([]);
   //var [childData, setchildData] = React.useState<any>([]);
   const [sortOrder, setSortOrder] = React.useState<any>();
-  const [search, setSearch]: [string, (search: string) => void] =
-    React.useState("");
+  const [search, setSearch]: [string, (search: string) => void] =React.useState("");
   const [sortId, setSortId] = React.useState();
   const [value, setValue] = React.useState("");
   const [child, setChild] = React.useState("");
@@ -396,43 +395,42 @@ const TopNavigation = (dynamicData: any) => {
     setSorting(false);
   };
   const sortBy = (type: any) => {
-    const copy = data;
-    if (type == "Title") {
-      isSort = true;
+    const copy = [...data]; 
+    if (type === "Title") {
       copy.sort((a: any, b: any) => (a.Title > b?.Title ? 1 : -1));
-    }
-    if (type == "SortOrder") {
-      copy?.forEach((val: any) => {
-        if (val.SortOrder != undefined) {
+      copy.forEach((item, index) => {
+        item.SortOrder = index + 1;
+      });
+    } else if (type === "SortOrder") {
+      copy.forEach((val: any) => {
+        if (val.SortOrder !== undefined) {
           val.SortOrder = parseInt(val?.SortOrder);
         }
       });
       copy.sort((a: any, b: any) => (a?.SortOrder > b?.SortOrder ? 1 : -1));
     }
-    setData(copy);
-    setData((copy) => [...copy]);
+    setData([...copy]);
   };
   const sortByDng = (type: any) => {
-    const copy = data;
-    if (type == "Title") {
-      isSort = true;
-      copy.sort((a: any, b: any) => (a?.Title > b?.Title ? -1 : 1));
-
-    }
-    if (type == "SortOrder") {
-      copy?.forEach((val: any) => {
-        if (val.SortOrder != undefined) {
-          val.SortOrder = parseInt(val?.SortOrder);
-        }
-      });
-      copy.sort((a: any, b: any) => (a?.SortOrder > b?.SortOrder ? -1 : 1));
-    }
-    setData(copy);
-    setData((copy) => [...copy]);
+    const copy = [...data]; 
+  if (type === "Title") {
+    copy.sort((a: any, b: any) => (a?.Title > b?.Title ? -1 : 1));
+    copy.forEach((item, index) => {
+      item.SortOrder = index + 1;
+    });
+  } else if (type === "SortOrder") {
+    copy.forEach((val: any) => {
+      if (val.SortOrder !== undefined) {
+        val.SortOrder = parseInt(val?.SortOrder);
+      }
+    });
+    copy.sort((a: any, b: any) => (a?.SortOrder > b?.SortOrder ? -1 : 1));
+  }
+  setData([...copy]);
   };
   const updateSortOrder = async () => {
     console.log(sortId);
-    console.log(sortOrder);
+    console.log("abc",sortOrder);
     let web = new Web(dynamicData.dynamicData.siteUrl);
 
     await web.lists
@@ -485,11 +483,11 @@ const TopNavigation = (dynamicData: any) => {
 
   const inputSortOrder = async () => {
     let count: number = 0;
-    const uniqueArray = MydataSorted.filter(
+    const uniqueArray = data.filter(
       (item: any, index: any, self: any) =>
         index === self.findIndex((i: any) => i.Id === item.Id)
     );
-    //   console.log(uniqueArray);
+       console.log("Unique Array",uniqueArray);
     if (uniqueArray?.length > 0 && uniqueArray != undefined) {
       uniqueArray?.map(async (items: any) => {
         let web = new Web(dynamicData.dynamicData.siteUrl);
@@ -497,7 +495,7 @@ const TopNavigation = (dynamicData: any) => {
           .getById(ListId)
           .items.getById(items.Id)
           .update({
-            SortOrder: parseInt(items.newSortOrder),
+            SortOrder: parseInt(items.SortOrder),
           })
           .then((res: any) => {
             count = count + 1;
@@ -574,7 +572,7 @@ const TopNavigation = (dynamicData: any) => {
             (a, b) => a.SortOrder - b.SortOrder
           );
           MydataSorted=updatedItems2;
-          setData(updatedItems2);
+          setData(MydataSorted);
           setEditableOrder(null);
         }
       }, 1000);
