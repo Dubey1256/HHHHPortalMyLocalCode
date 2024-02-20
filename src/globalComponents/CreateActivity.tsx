@@ -1998,7 +1998,7 @@ const CreateActivity = (props: any) => {
                           (selectedCat: any) =>
                             selectedCat?.Title == type?.Title
                         ) && (
-                            <div className="block d-flex full-width justify-content-between mb-1 p-2">
+                            <div className="block alignCenter">
                               <a
                                 className="wid90"
                                 style={{ color: "#fff !important" }}
@@ -2007,8 +2007,7 @@ const CreateActivity = (props: any) => {
                               >
                                 {type?.Title}
                               </a>
-                              <span
-                                className="bg-light svg__iconbox svg__icon--cross"
+                              <span className="light svg__iconbox svg__icon--cross"
                                 onClick={() =>
                                   selectSubTaskCategory(
                                     type?.Title,
@@ -2026,7 +2025,7 @@ const CreateActivity = (props: any) => {
                 </div>
               ) : null}
             </div>
-            <div className='row mt-2'>
+            <div className='mt-2'>
               <div className="input-group mb-2">
                 <label className="form-label full-width">
                   Project
@@ -2054,7 +2053,7 @@ const CreateActivity = (props: any) => {
                     <ul className="autosuggest-list maXh-200 scrollbar list-group">
                       {SearchedProjectItems.map((Item: any) => {
                         return (
-                          <li className='hreflink list-group-item rounded-0 list-group-item-action' key={Item.id} onClick={() => ComponentServicePopupCallBack([Item], undefined, undefined)} >
+                          <li className='hreflink list-group-item rounded-0 p-1 list-group-item-action' key={Item.id} onClick={() => ComponentServicePopupCallBack([Item], undefined, undefined)} >
                             <a>{Item.Path}</a>
                           </li>
                         )
