@@ -15,11 +15,25 @@ const TaskUserManagementApp = (props: any) => {
         const web = new Web(baseUrl);
 
         const fetchedData = await web.lists.getById(props.props.TaskUserListId).items.select("Id,Title,TimeCategory,Team,CategoriesItemsJson,Suffix,SortOrder,IsApprovalMail,Item_x0020_Cover,ItemType,Created,Company,Role,Modified,IsActive,IsTaskNotifications,DraftCategory,UserGroup/Title,UserGroup/Id,AssingedToUser/Title,AssingedToUser/Name,AssingedToUser/Id,Author/Name,Author/Title,Editor/Name,Approver/Id,Approver/Title,Approver/Name,Editor/Title,Email")
-            .expand("Author,Editor,AssingedToUser,UserGroup,Approver").orderBy("Title", true).get();
+        .expand("Author,Editor,AssingedToUser,UserGroup,Approver").orderBy("Title", true).get();
 
-        // setTaskUsersListData(fetchedData)
-        setTaskUsersListData(fetchedData.filter((item: any) => item.ItemType === "User"))
-        setTaskGroupsListData(fetchedData.filter((item: any) => item.ItemType === "Group"))
+        const taskUsersListData = fetchedData.filter((item: any) => item.ItemType === "User");
+        const taskGroupsListData = fetchedData.filter((item: any) => item.ItemType === "Group");
+
+        const updatedTaskUsersListData = taskUsersListData.map((item: any) => {
+            const approverTitles = item.Approver ? item.Approver.map((approver: any) => approver.Title).join(', ') : '';
+            const roleTitles = item.Role ? item.Role.map((role: any) => role).join(', ') : '';
+            
+            return {
+                ...item,
+                ApproverTitle: approverTitles,
+                RoleTitle: roleTitles
+            };
+        });
+
+        setTaskUsersListData(updatedTaskUsersListData )
+        setTaskGroupsListData(taskGroupsListData)
+
 
         const fetchedSmartMetaData = await web.lists.getById(props.props.SmartMetaDataId).items.select("Id,ParentID,Parent/Id,Parent/Title,TaxType,Title,listId,siteUrl,SortOrder,Configurations").expand("Parent").getAll();
         setSmartMetaDataItems(fetchedSmartMetaData)
