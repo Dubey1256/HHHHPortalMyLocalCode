@@ -1290,7 +1290,7 @@ const compareToolCallBack = React.useCallback((compareData) => {
       <div className="Alltable mt-10">
         <div className="col-sm-12 pad0 smart tableheight">
             <div className={`${data?.length > 10 ? "wrapper" : "MinHeight tableheight"}`} style={{maxHeight:"350px", overflowY:"auto"}}>
-              <div> <BulkeditTask SelectedTask={BulkTaskUpdate} Call={Call}></BulkeditTask></div>
+              
 
               <GlobalCommanTable
               AllSitesTaskData={props?.AllSiteTasks} masterTaskData={props?.AllMasterTasks}
@@ -1315,6 +1315,8 @@ const compareToolCallBack = React.useCallback((compareData) => {
                 flatViewDataAll={flatViewDataAll}
                 flatView={true}
                 updatedSmartFilterFlatView={false}
+                bulkEditIcon={true}
+                setData={setData}
                 // portfolioTypeData={portfolioTypeDataItem}
                 //  taskTypeDataItem={taskTypeDataItem} 
                 // portfolioTypeConfrigration={portfolioTypeConfrigration } 
