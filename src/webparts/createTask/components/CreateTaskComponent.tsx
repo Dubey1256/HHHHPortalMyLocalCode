@@ -67,7 +67,6 @@ function CreateTaskComponent(props: any) {
         time: false,
         rank: false,
         dueDate: false,
-
     });
     const [PageRelevantTask, setPageRelevantTask]: any = React.useState([])
     const [TaskUrlRelevantTask, setTaskUrlRelevantTask]: any = React.useState([])
