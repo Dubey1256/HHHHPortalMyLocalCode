@@ -440,10 +440,10 @@ const SaveItem = async (SelectedItem: any) => {
     }, [])
     return (
         <>
-            <div className="col-sm-12 clearfix">
-                <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
-                    <div>Data Cleanup Tool
-                    </div>         
+            <div className="row p-0">
+                <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active heading  ">
+                    <span >Data Cleanup Tool
+                    </span>         
                 </h2>
             </div>
             {data && <div>
