@@ -1833,8 +1833,8 @@ const AncTool = (props: any) => {
                                                                 <th className='ps-2' style={{ width: "60%" }}>File Name</th>
                                                                 {/* <th className='pe-1' style={{ width: "10%" }}>Uploaded</th>
                                                                 <th className='pe-1' style={{ width: "8%" }}>Tagged</th> */}
-                                                                <th className='pe-1' style={{ width: "12%" }}>Share Link</th>
-                                                                <th className='pe-1' style={{ width: "12%" }}>Share Mail</th>
+                                                                <th className='pe-1 text-center' style={{ width: "12%" }}>Share Link</th>
+                                                                <th className='pe-1 text-center' style={{ width: "12%" }}>Share in Mail</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -1842,8 +1842,10 @@ const AncTool = (props: any) => {
                                                                 <td><div className='d-flex'><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</div></td>
                                                                 {/* <td>{UploadedDocDetails?.uploaded == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross' ></span>}</td>
                                                                 <td>{UploadedDocDetails?.tagged == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross'></span>}</td> */}
-                                                                <td>{UploadedDocDetails?.uploaded == true ? <>
-                                                                    <span className='me-3 alignIcon  svg__iconbox svg__icon--link hreflink' title='Copy Link' data-bs-toggle="popover" data-bs-content="Link Copied" onClick={() => { navigator.clipboard.writeText(UploadedDocDetails?.link); }}></span>
+                                                                <td className='text-center'>{UploadedDocDetails?.uploaded == true ? <>
+                                                                    <span className='me-3 alignIcon  svg__iconbox svg__icon--link hreflink' title='Copy Link' data-bs-toggle="popover" data-bs-content="Link Copied" onClick={() => { navigator.clipboard.writeText(UploadedDocDetails?.link); }}></span>                                                                    
+                                                                </> : <></>}</td>
+                                                                <td className='text-center'>{UploadedDocDetails?.uploaded == true ? <>                                                                   
                                                                     <span className='alignIcon  svg__iconbox svg__icon--mail hreflink' title='Share In Mail' onClick={() => { window.open(`mailto:?&subject=${props?.item?.Title}&body=${UploadedDocDetails?.link}`) }}></span>
                                                                 </> : <></>}</td>
                                                             </tr>
@@ -1855,7 +1857,7 @@ const AncTool = (props: any) => {
                                         </Col>
                                     </div>
                                     <footer className='text-end p-2'>
-                                        <button className="btn btn-primary" onClick={() => cancelConfirmationPopup()}>OK</button>
+                                        <button className="btn btn-primary me-1" onClick={() => cancelConfirmationPopup()}>OK</button>
                                     </footer>
                                 </div>
                             </div>
@@ -1923,7 +1925,6 @@ const AncTool = (props: any) => {
                                                             return (
                                                                 <tr>
                                                                     <td><span className={`alignIcon  svg__iconbox svg__icon--${file?.docType}`} title={file?.docType}></span></td>
-
                                                                     <td><a href={file?.docType == 'pdf' ? file?.ServerRelativeUrl : file?.LinkingUri} target="_blank" data-interception="off" className='hreflink'> {file?.Title} </a></td>
                                                                 </tr>
                                                             )
