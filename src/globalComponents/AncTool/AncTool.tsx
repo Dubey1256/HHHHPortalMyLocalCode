@@ -1838,7 +1838,7 @@ const AncTool = (props: any) => {
                                                         </thead>
                                                         <tbody>
                                                             <tr>
-                                                                <td><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</td>
+                                                                <td><div className='d-flex'><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</div></td>
                                                                 {/* <td>{UploadedDocDetails?.uploaded == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross' ></span>}</td>
                                                                 <td>{UploadedDocDetails?.tagged == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross'></span>}</td> */}
                                                                 <td>{UploadedDocDetails?.uploaded == true ? <>
