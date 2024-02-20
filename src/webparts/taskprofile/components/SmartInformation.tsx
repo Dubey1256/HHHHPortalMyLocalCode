@@ -468,7 +468,7 @@ const SmartInformation = (props: any, ref: any) => {
           InfoTypeId: metaDataId != undefined ? metaDataId : null,
           Description: allValue?.Description != "" ? allValue?.Description : "",
           SelectedFolder: allValue?.SelectedFolder,
-          SmartNoteAuthorId: smartnoteAuthor?.length > 0 ? smartnoteAuthor[0]?.AssingedToUser?.Id : null,
+          SmartNoteAuthorId: smartnoteAuthor?.length > 0 ? smartnoteAuthor[0]?.AssingedToUser?.Id : typeof (smartnoteAuthor) === 'object' ? smartnoteAuthor?.Name : null,
           RequirementSource: InfoSource?.text,
           SmartNoteDate: moment(new Date(InfoDate)).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
           Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
@@ -908,7 +908,7 @@ const SmartInformation = (props: any, ref: any) => {
   ]
   //================ People picker function===================
 
-  const userIdentifier = EditSmartinfoValue?.SmartNoteAuthor?.Name;
+  const userIdentifier = EditSmartinfoValue?.SmartNoteAuthor != undefined ? EditSmartinfoValue?.SmartNoteAuthor?.Name : editvalue?.SmartNoteAuthor?.Name;
   const email = userIdentifier ? userIdentifier.split('|').pop() : '';
 
   const smartNoteAuthor = (item: any) => {

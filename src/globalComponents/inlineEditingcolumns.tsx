@@ -82,14 +82,12 @@ const inlineEditingcolumns = (props: any) => {
     { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
     { value: 3, status: "03% Approved", taskStatusComment: "Approved" },
     { value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged" },
-    { value: 9, status: "09% Ready To Go", taskStatusComment: "Ready To Go" },
     {
       value: 10,
       status: "10% working on it",
       taskStatusComment: "working on it"
     },
     { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
-    { value: 75, status: "75% Deployment Pending", taskStatusComment: "Deployment Pending" },
     {
       value: 80,
       status: "80% In QA Review",
@@ -1347,7 +1345,7 @@ const inlineEditingcolumns = (props: any) => {
               gap: "1px"
             }}
           >
-            {UpdateFeatureType != true ? <span style={{overflow:'hidden',display:'inline-block', width:`${selectedFeatureTypeData?.Title != undefined ? '85px':'106px'}`,textOverflow:'ellipsis',whiteSpace:"nowrap"}} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span> : <span style={{overflow:'hidden',display:'inline-block', width:`${selectedFeatureTypeData?.Title != undefined ? '85px':'106px'}`,textOverflow:'ellipsis',whiteSpace:"nowrap"}} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span> }&nbsp;
+            {UpdateFeatureType != true ? <span style={{overflow:'hidden',display:'inline-block', width:`${selectedFeatureTypeData?.Title != undefined ? '148px':'148px'}`,textOverflow:'ellipsis',whiteSpace:"nowrap"}} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span> : <span style={{overflow:'hidden',display:'inline-block', width:`${selectedFeatureTypeData?.Title != undefined ? '85px':'106px'}`,textOverflow:'ellipsis',whiteSpace:"nowrap"}} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span> }&nbsp;
             {selectedFeatureTypeData?.Title != undefined ? <a className="pancil-icons hreflink" onClick={() => removeFeatureType()}>
               <span className="alignIcon svg__iconbox svg__icon--cross"></span>
             </a> : '' }
