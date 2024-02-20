@@ -1834,11 +1834,12 @@ const AncTool = (props: any) => {
                                                                 {/* <th className='pe-1' style={{ width: "10%" }}>Uploaded</th>
                                                                 <th className='pe-1' style={{ width: "8%" }}>Tagged</th> */}
                                                                 <th className='pe-1' style={{ width: "12%" }}>Share Link</th>
+                                                                <th className='pe-1' style={{ width: "12%" }}>Share Mail</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             <tr>
-                                                                <td><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</td>
+                                                                <td><div className='d-flex'><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</div></td>
                                                                 {/* <td>{UploadedDocDetails?.uploaded == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross' ></span>}</td>
                                                                 <td>{UploadedDocDetails?.tagged == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross'></span>}</td> */}
                                                                 <td>{UploadedDocDetails?.uploaded == true ? <>
