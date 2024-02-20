@@ -328,10 +328,10 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             size: 42,
         },
         {
-            accessorKey: "Role",
+            accessorKey: "RoleTitle",
             header: "",
-            id: "Role",
-            placeholder: "Roles",
+            id: "RoleTitle",
+            placeholder: "Roles"
         },
         {
             accessorKey: "Company",
@@ -341,10 +341,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             size: 70,
         },
         {
-            // accessorFn: (row) => row.Approver?.[0]?.Title || '',
-            accessorFn: (row) => row?.Approver?.map((item: any) => item?.Title) || '',
+            accessorFn: (row) => row?.ApproverTitle,
             header: "",
-            id: 'Approver',
+            id: 'ApproverTitle ',
             placeholder: "Approver"
         },
         {

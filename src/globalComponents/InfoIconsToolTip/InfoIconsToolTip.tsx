@@ -191,7 +191,7 @@ export default function InfoIconsToolTip(props:any) {
             )}
             {action === "hover" && visible && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container" })}>
-                    <span dangerouslySetInnerHTML={{ __html: showHoverTitle }}></span>
+                    <span className="tableTooltip" dangerouslySetInnerHTML={{ __html: showHoverTitle }}></span>
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
                 </div>
             )}
