@@ -451,7 +451,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Deliverables",
                 header: "",
                 resetColumnFilters: false,
-                size: 80,
+                size: 60,
                 isColumnVisible: true
             },
             {
@@ -466,7 +466,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Help Information",
                 header: "",
                 resetColumnFilters: false,
-                size: 80,
+                size: 60,
                 isColumnVisible: true
             },
             {
@@ -481,7 +481,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Short Description",
                 header: "",
                 resetColumnFilters: false,
-                size: 80,
+                size: 60,
                 isColumnVisible: true
             },
             {
@@ -496,7 +496,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Technical Explanations",
                 header: "",
                 resetColumnFilters: false,
-                size: 80,
+                size: 60,
                 isColumnVisible: true
             },
             {
@@ -511,7 +511,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Body",
                 header: "",
                 resetColumnFilters: false,
-                size: 80,
+                size: 60,
                 isColumnVisible: true
             },
             {
@@ -526,7 +526,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "AdminNotes",
                 header: "",
                 resetColumnFilters: false,
-                size: 80,
+                size: 60,
                 isColumnVisible: true
             },
             {
@@ -541,7 +541,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "ValueAdded",
                 header: "",
                 resetColumnFilters: false,
-                size: 80,
+                size: 60,
                 isColumnVisible: true
             },
             {
@@ -556,7 +556,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Idea",
                 header: "",
                 resetColumnFilters: false,
-                size: 80,
+                size: 60,
                 isColumnVisible: true
             },
             {
@@ -571,7 +571,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Background",
                 header: "",
                 resetColumnFilters: false,
-                size: 80,
+                size: 60,
                 isColumnVisible: true
             },
           
@@ -958,7 +958,7 @@ const GroupByDashboard = (SelectedProp: any) => {
         <>
             <div>
                 <section className="row p-0">
-                    <div className="col-sm-12 clearfix">
+                    <div className="col-sm-12 clearfix p-0">
                         <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active heading ">
                             <div>GroupByComponents - Dashboard</div>
                         </h2>
