@@ -21,13 +21,13 @@ const TaskUserManagementApp = (props: any) => {
         const taskGroupsListData = fetchedData.filter((item: any) => item.ItemType === "Group");
 
         const updatedTaskUsersListData = taskUsersListData.map((item: any) => {
-            const approverTitle = item.Approver ? item.Approver[0]?.Title : "";
-            const roleTitle = item.Role ? item.Role[0] : "";
+            const approverTitles = item.Approver ? item.Approver.map((approver: any) => approver.Title).join(', ') : '';
+            const roleTitles = item.Role ? item.Role.map((role: any) => role).join(', ') : '';
             
             return {
                 ...item,
-                ApproverTitle: approverTitle,
-                RoleTitle: roleTitle
+                ApproverTitle: approverTitles,
+                RoleTitle: roleTitles
             };
         });
 
