@@ -174,7 +174,7 @@ const EditDocumentpanel = (props: any) => {
       }).catch((err: any) => {
         console.log(err)
         if(err.message.includes('423')){
-          alert("That Document you are uploading is opened in the Broswer")
+          alert("Document you are trying to Update/Tag is open somewhere else Plese close and try again")
         }
       }) 
     }
