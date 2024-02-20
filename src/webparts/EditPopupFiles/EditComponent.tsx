@@ -210,7 +210,7 @@ let ID: any;
         }, 1000)
     };
     let statusDropDown = [
-        { rankTitle: "Select Item Rank", rank: null },
+        { rankTitle: "Select Status", rank: null },
         { rankTitle: "Not Started", rank: 0 },
         { rankTitle: "In Progress", rank: 10 },
         { rankTitle: "Completed", rank: 100 },

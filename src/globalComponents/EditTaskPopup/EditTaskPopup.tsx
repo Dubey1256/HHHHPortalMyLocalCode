@@ -2595,7 +2595,7 @@ const EditTaskPopup = (Items: any) => {
                                         });
                                     }
                                     else {
-                                        if (TeamMemberChanged) {
+                                        if (TeamMemberChanged || IsTaskStatusUpdated) {
                                             TaskAssignedTo?.map((userDtl: any) => {
                                                 taskUsers?.map((allUserItem: any) => {
                                                     if (userDtl.Id == allUserItem.AssingedToUserId && userDtl.Id !== currentUserId) {
@@ -7447,10 +7447,8 @@ const EditTaskPopup = (Items: any) => {
                         >
                             <div className="image-section row">
                                 {ShowTaskDetailsStatus ? (
-                                    <div>
-                                        <h6
-                                            className="siteColor mb-3"
-                                            style={{ cursor: "pointer" }}
+                                    <div className="p-0 text-end mt--5">
+                                        <h6 className="mb-1 mt--10 siteColor hreflink"
                                             onClick={() =>
                                                 setShowTaskDetailsStatus(
                                                     ShowTaskDetailsStatus ? false : true
@@ -8898,10 +8896,8 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                 ) : null}
                                 {ShowTaskDetailsStatus ? null : (
-                                    <div className="mb-3">
-                                        <h6
-                                            className="siteColor"
-                                            style={{ cursor: "pointer" }}
+                                    <div className="p-0 text-end mt--5">
+                                        <h6 className="mb-1 mt--10 siteColor hreflink"
                                             onClick={() =>
                                                 setShowTaskDetailsStatus(
                                                     ShowTaskDetailsStatus ? false : true
@@ -9060,9 +9056,6 @@ const EditTaskPopup = (Items: any) => {
                                 <div
                                     className="comment-section col-sm-6 p-2"
                                     style={{
-                                        overflowY: "auto",
-                                        height: "600px",
-                                        overflowX: "hidden",
                                         border: "2px solid #ccc",
                                     }}
                                 >

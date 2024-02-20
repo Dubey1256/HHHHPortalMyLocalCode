@@ -2246,6 +2246,10 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
                         task.PortfolioTitle = task?.Portfolio?.Title;
                     }
                     let checkIsSCProtected: any = false;
+                    task.DisplayDueDate = moment(task?.DueDate).format("DD/MM/YYYY");
+                    if (task.DisplayDueDate == "Invalid date" || "") {
+                        task.DisplayDueDate = task?.DisplayDueDate.replaceAll("Invalid date", "");
+                    }
                     task.DisplayCreateDate = moment(task.Created).format("DD/MM/YYYY");
                     task.descriptionsSearch = descriptionSearchData(task);
                     if (task.Project) {
