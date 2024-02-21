@@ -1987,8 +1987,8 @@ const CentralizedSiteComposition = (Props: any) => {
                                                         return (
                                                             <tr className="border-1">
                                                                 <th className="m-0 p-1 ps-3 align-middle">{CCTableCount}</th>
-                                                                <td className="m-0 p-1 align-middle">{CCDetails.Title}</td>
-                                                                <td className="m-0 p-1 align-middle">
+                                                                <td className="m-0 p-1 align-middle w-25">{CCDetails.Title}</td>
+                                                                <td className="m-0 p-1 align-middle w-75">
                                                                     <div className="input-group">
                                                                         <input type="text"
                                                                             className="border-end-0 form-control"
@@ -2006,7 +2006,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                     </div>
                                                                     {SearchedClientCategoryData?.length > 0 && CCDetails.Title == SelectedSiteName ? (
                                                                         <div className="SearchTableCategoryComponent">
-                                                                            <ul className="list-group">
+                                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                                                 {SearchedClientCategoryData.map((item: any) => {
                                                                                     return (
                                                                                         <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectCCFromAutoSuggestion(item, CCDetails.Title)} >
