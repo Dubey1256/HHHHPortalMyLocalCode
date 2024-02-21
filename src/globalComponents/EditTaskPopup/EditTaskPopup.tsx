@@ -3304,10 +3304,10 @@ const EditTaskPopup = (Items: any) => {
                 if (teamConfigData?.ResponsibleTeam?.length === EditDataBackup.ResponsibleTeam?.length) {
                     let checkSendNotification: any = areTitlesSame(teamConfigData?.ResponsibleTeam, EditDataBackup.ResponsibleTeam);
                     if (!checkSendNotification) {
-                        setTeamLeaderChanged(true);
+                        // setTeamLeaderChanged(true);
                     }
                 } else {
-                    setTeamLeaderChanged(true);
+                    // setTeamLeaderChanged(true);
                 }
                 teamConfigData.ResponsibleTeam?.map((arrayData: any) => {
                     if (arrayData.AssingedToUser != null) {
