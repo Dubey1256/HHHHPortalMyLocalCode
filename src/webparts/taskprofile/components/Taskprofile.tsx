@@ -446,9 +446,16 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Result: tempTask,
 
 
-    }, () => {
+    }, async ()=> {
       this.getSmartTime();
       if (tempTask.Portfolio != undefined) {
+        let AllItems:any=[];
+        let breadCrumData1WithSubRow: any = await globalCommon?.getBreadCrumbHierarchyAllData(this.state.Result,AllListId,AllItems)
+          console.log(breadCrumData1WithSubRow?.flatdata)
+          let breadCrumData1=breadCrumData1WithSubRow?.flatdata.reverse()
+          this.setState({
+            breadCrumData: breadCrumData1
+          })
         this.getAllTaskData();
       }
 
@@ -800,29 +807,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       item.SiteIcon = this.state.Result?.SiteIcon;
       item.isLastNode = false;
       this.allDataOfTask.push(item);
-      this.masterTaskData.push(item)
+   
     }
-    let breadCrumData1WithSubRow: any = globalCommon.findTaskHierarchy(this.state.Result, this.masterTaskData)
-    console.log(breadCrumData1WithSubRow)
-
-
-    let array: any = [];
-    const getValueSubRow = (row: any) => {
-
-      row?.map((items: any) => {
-        array?.push(row[0])
-        if (items?.subRows?.length > 0 && items?.subRows != undefined) {
-          return getValueSubRow(items?.subRows)
-        }
-      })
-      return array
-    }
-    if (breadCrumData1WithSubRow.length > 0) {
-      breadCrumData1 = getValueSubRow(breadCrumData1WithSubRow)
-    }
-    this.setState({
-      breadCrumData: breadCrumData1
-    })
+  
 
 
   }
@@ -1827,10 +1814,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       }
                       {this.state.breadCrumData?.map((breadcrumbitem: any, index: any) => {
                         return <>
-                          {breadcrumbitem?.siteType == "Master Tasks" && <li>
+                          {breadcrumbitem?.siteType == "Master Tasks"&& <li>
                             <a style={{ color: breadcrumbitem?.PortfolioType?.Color }} className="fw-bold" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
                           </li>}
-                          {breadcrumbitem?.siteType != "Master Tasks" && <li>
+                          {breadcrumbitem?.siteType !== "Master Tasks" && <li>
 
                             <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem?.Id}&Site=${breadcrumbitem?.siteType} `}>{breadcrumbitem?.Title}</a>
                           </li>}
