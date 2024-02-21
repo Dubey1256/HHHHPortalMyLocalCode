@@ -81,16 +81,13 @@ const inlineEditingcolumns = (props: any) => {
     { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
     { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
     { value: 3, status: "03% Approved", taskStatusComment: "Approved" },
-    { value: 4, status: "04% Checking", taskStatusComment: "Checking" },
     { value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged" },
-    { value: 9, status: "09% Ready To Go", taskStatusComment: "Ready To Go" },
     {
       value: 10,
       status: "10% working on it",
       taskStatusComment: "working on it"
     },
     { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
-    { value: 75, status: "75% Deployment Pending", taskStatusComment: "Deployment Pending" },
     {
       value: 80,
       status: "80% In QA Review",
@@ -1339,7 +1336,6 @@ const inlineEditingcolumns = (props: any) => {
         <>
           {" "}
           <span
-
             className={selectedFeatureTypeData?.Title != undefined ? "sdgergeg" : "hreffwefwlinkerg"}
             style={{
               display: "flex",
@@ -1354,9 +1350,8 @@ const inlineEditingcolumns = (props: any) => {
             </a> : '' }
 
             <a className="pancil-icons hreflink" onClick={() => setUpdateFeatureType(true)}>
-              <span className="alignIcon  svg__iconbox svg__icon--editBox"></span>
+               <span className="alignIcon  svg__iconbox svg__icon--editBox"></span>
             </a>
-
           </span>
         </>
       ) : (

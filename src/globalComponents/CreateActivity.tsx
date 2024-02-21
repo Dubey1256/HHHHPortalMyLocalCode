@@ -2095,14 +2095,14 @@ const CreateActivity = (props: any) => {
         })}
         <button
           type="button"
-          className="btn btn-primary mx-2"
+          className="btn btn-primary ms-2"
           onClick={() => saveNoteCall()}
         >
           Submit
         </button>
         {props?.pageName != "QuickTask" ? <button
           type="button"
-          className="btn btn-default"
+          className="btn btn-default ms-2"
           onClick={() => closeTaskStatusUpdatePoup("item")}
         >
           Cancel

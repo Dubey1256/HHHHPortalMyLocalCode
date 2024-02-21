@@ -7447,8 +7447,8 @@ const EditTaskPopup = (Items: any) => {
                         >
                             <div className="image-section row">
                                 {ShowTaskDetailsStatus ? (
-                                    <div className="p-0 text-end mt--5">
-                                        <h6 className="mb-1 mt--10 siteColor hreflink"
+                                    <div className="p-0 mt--5">
+                                        <h6 className="mb-1 mt--10 text-end siteColor hreflink"
                                             onClick={() =>
                                                 setShowTaskDetailsStatus(
                                                     ShowTaskDetailsStatus ? false : true
@@ -8896,8 +8896,8 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                 ) : null}
                                 {ShowTaskDetailsStatus ? null : (
-                                    <div className="p-0 text-end mt--5">
-                                        <h6 className="mb-1 mt--10 siteColor hreflink"
+                                    <div className="p-0 mt--5">
+                                        <h6 className="mb-1 mt--10 text-end siteColor hreflink"
                                             onClick={() =>
                                                 setShowTaskDetailsStatus(
                                                     ShowTaskDetailsStatus ? false : true

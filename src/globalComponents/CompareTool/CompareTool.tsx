@@ -2544,8 +2544,8 @@ const CompareTool = (props: any) => {
                         </Row>
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="sit-preview contentSec">
-                                <label className="fw-semibold form-label">Image</label>
-                                <span className="ms-3"><img src={data[0]?.Item_x002d_Image?.Url} /></span>
+                                <label className="fw-semibold full-width form-label">Image</label>
+                                <span className=""><img src={data[0]?.Item_x002d_Image?.Url} /></span>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
                                 <div className="text-center">
@@ -2554,8 +2554,8 @@ const CompareTool = (props: any) => {
                                 </div>
                             </Col>
                             <Col sm="5" md="5" lg="5" className="sit-preview contentSec">
-                                <label className="fw-semibold form-label">Image</label>
-                                <span className="ms-3"><img src={data[1]?.Item_x002d_Image?.Url} /></span>
+                                <label className="fw-semibold full-width form-label">Image</label>
+                                <span className=""><img src={data[1]?.Item_x002d_Image?.Url} /></span>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('Item_x002d_Image')} />

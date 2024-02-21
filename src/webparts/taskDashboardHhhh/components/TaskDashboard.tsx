@@ -1457,7 +1457,7 @@ const TaskDashboard = (props: any) => {
                 emp.leaveStart = new Date(emp?.leaveStart).setHours(0,0,0,0)
                 emp.leaveEnd = toIST(emp?.EndDate, true, emp?.HalfDay, emp?.HalfDayTwo);
                 emp.leaveEnd = new Date(emp?.leaveEnd).setHours(0,0,0,0)
-                if ((startDate >= emp?.leaveStart && startDate <= emp?.leaveEnd) && (emp?.HalfDay !== null && emp?.HalfdayTwo !== null) && (emp?.HalfDay != true && emp?.HalfdayTwo != true)) {
+                if ((startDate >= emp?.leaveStart && startDate <= emp?.leaveEnd) && (emp?.HalfDay !== null && emp?.HalfDayTwo !== null) && (emp?.HalfDay != true && emp?.HalfDayTwo != true)) {
                     AllLeaves.push(emp?.Employee?.Id);
                 }
             })
