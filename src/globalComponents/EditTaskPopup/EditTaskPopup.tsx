@@ -1129,7 +1129,9 @@ const EditTaskPopup = (Items: any) => {
                             taskUsers?.map((userData: any) => {
                                 if (userData?.AssingedToUserId == itemData.Id)
                                     try {
-                                        ApprovarDataId = userData?.Approver[0]?.Id;
+                                        if (userData?.Approver?.length > 0) {
+                                            ApprovarDataId = userData?.Approver[0]?.Id;
+                                        }
                                     }
                                     catch (error) {
                                         console.log("Error :", error.message);
@@ -1149,7 +1151,9 @@ const EditTaskPopup = (Items: any) => {
                             currentUserBackupArray?.map((current: any) => {
                                 taskUsers?.map((userData: any) => {
                                     if (userData?.AssingedToUserId == Approver?.Id) {
-                                        ApprovarDataId = userData?.Approver[0].Id;
+                                        if (userData?.Approver?.length > 0) {
+                                            ApprovarDataId = userData?.Approver[0].Id;
+                                        }
                                     }
                                 });
                                 if (
