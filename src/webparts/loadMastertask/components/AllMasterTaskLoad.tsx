@@ -9,15 +9,16 @@ import { data } from "jquery";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
 
 var ContextValue: any = {};
+let flatviewmastertask: any = [];
+let flatviewTasklist: any = [];
 
 const AllMasterTaskLoad = (props: any) => {
-  ContextValue = props?.props;
+  ContextValue = props?.props
   const [allMasterData, setAllMasterData] = useState<any>([]);
   const [allComponentData, setAllComponentData] = useState<any>([]);
   const [allSubComponentData, setAllSubComponentData] = useState<any>([]);
   const [allFeatureData, setAllFeatureData] = useState<any>([]);
   const [allData, setAllData] = useState<any>([]);
-  const [editPopUpOpen, setEditPopUpOpen] = useState(false);
   const [Portfoliotyped, setPortfoliotyped] = useState([]);
   const [listIds, setlistIds] = React.useState<any>([]);
   const [portfolioTypeDataItem, setPortFolioTypeIcon] = React.useState([]);
@@ -27,11 +28,9 @@ const AllMasterTaskLoad = (props: any) => {
 
   let allCSFdata: any = [];
   let allCSFcount: any = [];
+  const duplicateDatas: any = [];
+  const uniqueIds: any = {};
 
-  // let headerOptions: any = {
-  //   openTab: true,
-  //   teamsIcon: true
-  // }
   useEffect(() => {
     const sitesId = {
       MasterTaskListID: props?.props?.MasterTaskListID,
@@ -59,21 +58,42 @@ const AllMasterTaskLoad = (props: any) => {
       .items
       .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "ItemRank", "Portfolio_x0020_Type",
         "DueDate", "Item_x0020_Type", "ItemType", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
-        "PercentComplete", "AssignedToId", "Created", "Modified", "Parent/Id", "Parent/Title", "Parent/ItemType", "PortfoliosId", "Portfolios/Id", "Portfolios/Title", "PortfolioType/Id", "PortfolioType/Title"
+        "PercentComplete", "AssignedToId", "Created", "Modified", "Parent/Id", "Parent/Title", "Parent/ItemType",
+        "Parent/PortfolioStructureID", "PortfoliosId", "Portfolios/Id", "Portfolios/Title", "PortfolioType/Id", "PortfolioType/Title", "PortfolioType/Color"
       )
       .expand("Parent", "Portfolios", "PortfolioType")
       .getAll();
 
-    const undefinedAllData = componentDetails.filter((item: any) => item.PortfolioStructureID === null || (item.PortfolioStructureID && item.PortfolioStructureID.includes("undefined")))
-    setAllMasterData(undefinedAllData)
+    const undefinedAllData = componentDetails.filter((item: any) => ((item.PortfolioStructureID === null) || (item.PortfolioStructureID && item.PortfolioStructureID.includes("undefined")) || item.PortfolioStructureID.includes("f")))
 
-    const ComponentChildData = undefinedAllData?.filter((item: any) => item.Portfolio_x0020_Type === "Component" && (item.Item_x0020_Type && item.Item_x0020_Type.includes("Component")) || (item.Item_x0020_Type && item.Item_x0020_Type.includes("Component Category")) || (item.Item_x0020_Type && item.Item_x0020_Type.includes("SubComponent")) || (item.Item_x0020_Type && item.Item_x0020_Type.includes("Feature")))
+    const duplicateData = componentDetails.filter((ele: any, ind: any, arr: any) => arr.filter((elem: any) => (elem.PortfolioStructureID === ele.PortfolioStructureID) && (elem.PortfolioStructureID !== null && ele.PortfolioStructureID !== null)).length > 1);
+    let commonData = undefinedAllData.concat(duplicateData)
+
+    const wrongIdFormatServiceData = componentDetails?.filter((item: any) =>
+      item.Portfolio_x0020_Type !== "Service" && (item?.Parent !== null && item.Parent !== undefined) &&
+      (item?.PortfolioStructureID !== null && item?.PortfolioStructureID !== undefined) &&
+      (!item?.PortfolioStructureID.includes(item?.Parent?.PortfolioStructureID)))
+
+    const wrongIdServiceData = componentDetails.filter((itemm: any) => itemm.Portfolio_x0020_Type === "Service" && ((itemm?.Parent !== null && itemm.Parent !== undefined) && (itemm?.PortfolioStructureID !== null && itemm?.PortfolioStructureID !== undefined)
+      && (!itemm?.PortfolioStructureID.includes(itemm?.Parent?.PortfolioStructureID))
+    ))
+
+    let wrongIdForSubCompo = commonData.concat(wrongIdFormatServiceData)
+    console.log(" wrongId format shown is", wrongIdForSubCompo);
+
+    let mergeAllData = wrongIdForSubCompo.concat(wrongIdServiceData)
+    console.log(" wrong service data shown is", mergeAllData);
+
+    setAllMasterData(mergeAllData)
+    flatviewmastertask = JSON.parse(JSON.stringify(componentDetails));
+
+    const ComponentChildData = mergeAllData?.filter((item: any) => ((item.Portfolio_x0020_Type === "Component") && ((item.Item_x0020_Type && item.Item_x0020_Type.includes("Component")) || (item.Item_x0020_Type && item.Item_x0020_Type.includes("Component Category")) || (item.Item_x0020_Type && item.Item_x0020_Type.includes("SubComponent")) || (item.Item_x0020_Type && item.Item_x0020_Type.includes("Feature")))))
     setAllComponentData(ComponentChildData)
 
-    const SubcomponentChildData = undefinedAllData.filter((itemss: any) => itemss.Portfolio_x0020_Type == "SubComponent" && ((itemss.Item_x0020_Type && itemss.Item_x0020_Type.includes("SubComponent")) || (itemss.Item_x0020_Type && itemss.Item_x0020_Type.includes("Feature"))))
+    const SubcomponentChildData = mergeAllData.filter((itemss: any) => ((itemss.Portfolio_x0020_Type === "SubComponent" || itemss.Portfolio_x0020_Type === "Service") && ((itemss.Item_x0020_Type && itemss.Item_x0020_Type.includes("SubComponent")) || (itemss.Item_x0020_Type && itemss.Item_x0020_Type.includes("Feature")))))
     setAllSubComponentData(SubcomponentChildData)
 
-    const featureData = undefinedAllData.filter((itemm: any) => itemm.Portfolio_x0020_Type == "Feature" && (itemm.Item_x0020_Type && itemm.Item_x0020_Type.includes("Feature")))
+    const featureData = mergeAllData.filter((itemm: any) => ((itemm.Portfolio_x0020_Type === "Feature") && (itemm.Item_x0020_Type && itemm.Item_x0020_Type.includes("Feature"))))
     setAllFeatureData(featureData)
 
     let totalData = ComponentChildData.concat(SubcomponentChildData);
@@ -85,10 +105,12 @@ const AllMasterTaskLoad = (props: any) => {
     let totalll = totalDataas
     console.log("Total data shown is", totalll);
     setAllData(totalll)
+    flatviewTasklist = JSON.parse(JSON.stringify(totalll))
+
 
     totalll.forEach((result: any) => {
       allCSFdata?.map((type: any) => {
-        if ((result?.Item_x0020_Type === type.Title) && (result.PortfolioType == undefined)) {
+        if ((result?.Item_x0020_Type === type.Title) && ((result.PortfolioType == undefined) || (result.PortfolioType != undefined))) {
           type[type.Title + 'number'] += 1;
           type[type.Title + 'filterNumber'] += 1;
           allCSFcount.push(type)
@@ -278,33 +300,39 @@ const AllMasterTaskLoad = (props: any) => {
   };
 
   return (
-    <section className='TableSection'>
-      <div className='Alltable mt-2'>
-        <div className='smart'>
-          <div className='wrapper'>
-            <div className="col-sm-12 clearfix mb-2">
-              <h2 className="d-flex justify-content-between align-items-center siteColor serviceColor_Active">
-                <div style={{ color: 'rgb(0, 0, 102)' }}>Portfolio Tag Wrong Parent</div>
-              </h2>
+    <div>
+      <div className="col-sm-12 clearfix mb-2">
+        <h2 className="d-flex justify-content-between align-items-center siteColor serviceColor_Active">
+          <div style={{ color: 'rgb(0, 0, 102)' }}>Corrupted Portfolio Items</div>
+        </h2>
+      </div>
+
+      <section className='TableSection'>
+        <div className='Alltable mt-2'>
+          <div className='smart'>
+            <div className='wrapper'>
+              {allData ? <div><GlobalCommanTable
+                columns={column} data={allData} callBackData={callBackData} AllListId={ContextValue} exportToExcel={true} showHeader={true} showingAllPortFolioCount={true} fixedWidth={true} pageName={"ProjectOverviewGrouped"} portfolioTypeData={portfolioTypeDataItem} />
+                {IsComponent && (
+                  <EditInstituton
+                    item={SharewebComponent}
+                    Calls={EditComponentCallback}
+                    SelectD={listIds}
+                  // portfolioTypeData={Portfoliotyped}
+                  >
+                    {" "}
+                  </EditInstituton>
+                )}
+              </div> : ""}
             </div>
-            {allData ? <div><GlobalCommanTable
-              columns={column} data={allData} callBackData={callBackData} AllListId={ContextValue} exportToExcel={true} showHeader={true} showingAllPortFolioCount={true} fixedWidth={true} pageName={"ProjectOverviewGrouped"} portfolioTypeData={portfolioTypeDataItem} />
-              {IsComponent && (
-              <EditInstituton
-                item={SharewebComponent}
-                Calls={EditComponentCallback}
-                SelectD={listIds}
-                portfolioTypeData={Portfoliotyped}
-              >
-                {" "}
-              </EditInstituton>
-            )}
-            </div> : ""}
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 
 }
 export default AllMasterTaskLoad;
+
+
+
