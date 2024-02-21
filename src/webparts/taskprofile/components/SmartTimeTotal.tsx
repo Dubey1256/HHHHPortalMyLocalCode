@@ -104,6 +104,17 @@ let allTaskUsers:any;
         console.log(timeEntry);
         let newArray: any = [];
         let hoversmartArray: any = [];
+        
+       //Sorting on hover based on date 
+        AllTimeSpentDetails.forEach((data: any) => {
+            data.AdditionalTime.sort((a: any, b: any) => {
+                const dateA = new Date(a.TaskDate.split('/').reverse().join('-')).getTime();
+                const dateB = new Date(b.TaskDate.split('/').reverse().join('-')).getTime();
+                return dateA - dateB;
+            });
+        });
+        
+
         AllTimeSpentDetails.map((items: any) => {
             items.AdditionalTime.map((item: any) => {
                 item.additionaltime2 = [];
