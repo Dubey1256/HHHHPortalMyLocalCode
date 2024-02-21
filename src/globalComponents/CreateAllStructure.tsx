@@ -14,7 +14,6 @@ let CurrentUserData: any = ''
 let isDisable = false
 let isDisableSub = false
 const CreateAllStructureComponent = (props: any) => {
-    defaultPortfolioType = 'Component'
     CurrentUserId = props?.PropsValue?.Context.pageContext?._legacyPageContext.userId;
     const [OpenAddStructurePopup, setOpenAddStructurePopup] = React.useState(true)
     const [count, setCount] = React.useState(0)
@@ -263,6 +262,7 @@ const CreateAllStructureComponent = (props: any) => {
                                 DisplayCreateDate: Moment(featureItem?.Created).format("DD/MM/YYYY"),
                                 Author: { "Id": featureItem?.AuthorId, 'Title': CurrentUserData?.Title, 'autherImage': CurrentUserData?.Item_x0020_Cover?.Url },
                                 PortfolioType: PortfoliotypeData,
+                                PortfolioStructureID:featureItem?.PortfolioStructureID,
                                 Item_x0020_Type :'Feature'
                             });
                         }
@@ -283,6 +283,7 @@ const CreateAllStructureComponent = (props: any) => {
                             DisplayCreateDate: Moment(createdSubcomponent?.Created).format("DD/MM/YYYY"),
                             Author: { "Id": createdSubcomponent?.AuthorId, 'Title': CurrentUserData?.Title, 'autherImage': CurrentUserData?.Item_x0020_Cover?.Url },
                             PortfolioType: PortfoliotypeData,
+                            PortfolioStructureID:createdSubcomponent?.PortfolioStructureID,
                             Item_x0020_Type :'SubComponent'
                         });
                     }
@@ -298,6 +299,7 @@ const CreateAllStructureComponent = (props: any) => {
                     siteType: "Master Tasks",
                     SiteIconTitle: createdComponent?.Item_x0020_Type?.charAt(0),
                     TaskID: createdComponent?.PortfolioStructureID,
+                    PortfolioStructureID:createdComponent?.PortfolioStructureID,
                     Created: Moment(createdComponent?.Created).format("DD/MM/YYYY"),
                     DisplayCreateDate: Moment(createdComponent?.Created).format("DD/MM/YYYY"),
                     Author: { "Id": createdComponent?.AuthorId, 'Title': CurrentUserData?.Title, 'autherImage': CurrentUserData?.Item_x0020_Cover?.Url },
@@ -423,7 +425,7 @@ const CreateAllStructureComponent = (props: any) => {
         isBlocking={false}
         onDismiss={AddStructureCallBackCall}
       > */}
-            <div className={props?.SelectedItem?.PortfolioType == 'Events' ? 'eventpannelorange' : ((props?.SelectedItem?.PortfolioType == 'Service' || props?.SelectedItem?.PortfolioType == 'Service Portfolio') ? 'serviepannelgreena' : 'component Portfolio clearfix')}>
+            <div className={defaultPortfolioType == 'Events' ? 'eventpannelorange' : ((defaultPortfolioType == 'Service' || defaultPortfolioType == 'Service Portfolio') ? 'serviepannelgreena' : 'component Portfolio clearfix')}>
                 <div className='modal-body '>
 
                     {props?.SelectedItem == undefined && <>
