@@ -25,7 +25,7 @@ const EditTrafficLightComment = (props: any) => {
             <>
                 <div className='subheading alignCenter'>
 
-                    Comment -{props?.columnData?.Title}
+                    Comment - {props?.columnData?.Title}
 
                 </div>
                 <Tooltip ComponentId='484' />
@@ -89,12 +89,13 @@ const EditTrafficLightComment = (props: any) => {
 
 
                         </div>
-                        <div className="col">
+                        <div className="col-4">
+                        <div className="fw-semibold ps-2"> Verify</div>
                         <div className="alignCenter  float-end">
                                 {/* <span className='me-1'>No</span> */}
                                 <label className="switch me-1" htmlFor="checkbox">
                                     <input checked={copycolumnVerificationStatus === "Yes" ? true : false} onChange={() => SetCopycolumnVerificationStatus(copycolumnVerificationStatus == "No" ? "Yes" : "No")} type="checkbox" id="checkbox" />
-                                    {copycolumnVerificationStatus === "Yes" ? <div className="slider round" title='Switch to false' ></div> : <div title='Switch to true' className="slider round"></div>}
+                                    {copycolumnVerificationStatus === "Yes" ? <div className="slider round" title='Toggle To Verify the Present Content ' ></div> : <div title='The Information Present is Verified' className="slider round"></div>}
                                 </label>
                                 {/* <span>Yes</span> */}
                                 <span> <a className="border brush ms-2 p-1" onClick={()=>setCopyTrafficlight("")}><i className="fa fa-paint-brush " aria-hidden="true" title="Clear All"></i></a>                        
@@ -115,11 +116,11 @@ const EditTrafficLightComment = (props: any) => {
                         <textarea id="txtUpdateComment" rows={6} className="full-width" value={copyCommentData} onChange={(e) => handleUpdateComment(e.target.value)}  ></textarea>
                     </div>
                 </div>
-                <footer className='modal-footer mt-2'>
-                    <button className="btn btn-primary ms-1"
+                <footer className='modal-footer mt-2 p-0 pt-1 '>
+                    <button className="btn btn-primary  mx-1"
                         onClick={(e) => updateData()}
                     >Save</button>
-                    <button className='btn btn-default ms-1' onClick={() => cancelPopup()}>Cancel</button>
+                    <button className='btn btn-default m-0' onClick={() => cancelPopup()}>Cancel</button>
                 </footer>
             </Panel>
         </>

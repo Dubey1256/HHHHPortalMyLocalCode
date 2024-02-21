@@ -407,14 +407,7 @@ function PortfolioTable(SelectedProp: any) {
                 if (result?.Editor) {
                     result.Editor.autherImage = findUserByName(result?.Editor?.Id)
                 }
-                  result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
-                  result.DisplayDueDate = Moment(result.DueDate).format("DD/MM/YYYY");
-                  if (result.DisplayDueDate == "Invalid date" || "") {
-                    result.DisplayDueDate = result.DisplayDueDate.replaceAll(
-                      "Invalid date",
-                      ""
-                    );
-                  }
+                 
                   if (result.DisplayCreateDate == "Invalid date" || "") {
                     result.DisplayCreateDate = result.DisplayCreateDate.replaceAll(
                       "Invalid date",
@@ -2211,7 +2204,7 @@ const trigerAllEventButton = (eventValue: any) => {
 }
 React.useEffect(() => {
   if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length === 2) {
-      if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined &&  (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Tasks' || childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Tasks')) {
+      if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.PortfolioType != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.PortfolioType != undefined &&  (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType === undefined || childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type === undefined)) {
           setActiveCompareToolButton(true);
       } else if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType != undefined) {
           setActiveCompareToolButton(true);

@@ -943,14 +943,14 @@ const GlobalCommanTable = (items: any, ref: any) => {
             </table>
             {showPagination === true && table?.getFilteredRowModel()?.rows?.length > table.getState().pagination.pageSize ? <div className="d-flex gap-2 items-center mb-3 mx-2">
                 <button
-                    className="border rounded p-1"
+                    className="border "
                     onClick={() => table.setPageIndex(0)}
                     disabled={!table.getCanPreviousPage()}
                 >
                     <FaAngleDoubleLeft />
                 </button>
                 <button
-                    className="border rounded p-1"
+                    className="border"
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
                 >
@@ -964,14 +964,14 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </strong>
                 </span>
                 <button
-                    className="border rounded p-1"
+                    className="border"
                     onClick={() => table.nextPage()}
                     disabled={!table.getCanNextPage()}
                 >
                     <FaChevronRight />
                 </button>
                 <button
-                    className="border rounded p-1"
+                    className="border"
                     onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                     disabled={!table.getCanNextPage()}
                 >

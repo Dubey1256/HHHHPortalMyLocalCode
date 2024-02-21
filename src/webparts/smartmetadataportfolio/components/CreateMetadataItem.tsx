@@ -224,11 +224,14 @@ export default function CreateMetadataItem(props: any) {
             </>
         );
     };
+    React.useEffect(() => {
+        OpenCreateSmartMetadataPopup();
+    }, [props?.AddButton])
     return (
         <>
-            <div>
+            {/* <div>
                 <button type="button" title="Add" onClick={OpenCreateSmartMetadataPopup} className="btnCol btn btn-primary">Add +</button>
-            </div>
+            </div> */}
             {
                 IsCreatePopupOpen === true ? <section>
                     <Panel type={PanelType.custom} onRenderHeader={onRenderDeleteSmartMetadata} customWidth="500px" isOpen={IsCreatePopupOpen} onDismiss={closeCreateSmartMetadataPopup} isBlocking={false} closeButtonAriaLabel="Close">

@@ -401,7 +401,41 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 500,
+                size: 300,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.FeatureTypeTitle,
+                cell: ({ row }) => (
+                    <>
+                        <InlineEditingcolumns
+                            AllListId={ContextValue}
+                            TaskUsers={AllUsers}
+                            callBack={inlineCallBack}
+                            columnName='FeatureType'
+                            item={row?.original}
+                        />
+                    </>
+                ),
+                id: "FeatureTypeTitle",
+                placeholder: "FeatureTypeTitle",
+                header: "",
+                resetColumnFilters: false,
+                size: 200,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.HelpInformationVerified,
+                cell: ({ row }) => (
+                    <>
+                        <span> <TrafficLightComponent columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>
+                    </>
+                ),
+                id: "HelpInformationVerified",
+                placeholder: "verified",
+                header: "",
+                resetColumnFilters: false,
+                size: 140,
                 isColumnVisible: true
             },
             {
@@ -539,40 +573,8 @@ const GroupByDashboard = (SelectedProp: any) => {
                 size: 80,
                 isColumnVisible: true
             },
-            {
-                accessorFn: (row) => row?.HelpInformationVerified,
-                cell: ({ row }) => (
-                    <>
-                        <span> <TrafficLightComponent columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>
-                    </>
-                ),
-                id: "HelpInformationVerified",
-                placeholder: "verified",
-                header: "",
-                resetColumnFilters: false,
-                size: 140,
-                isColumnVisible: true
-            },
-            {
-                accessorFn: (row) => row?.FeatureTypeTitle,
-                cell: ({ row }) => (
-                    <>
-                        <InlineEditingcolumns
-                            AllListId={ContextValue}
-                            TaskUsers={AllUsers}
-                            callBack={inlineCallBack}
-                            columnName='FeatureType'
-                            item={row?.original}
-                        />
-                    </>
-                ),
-                id: "FeatureTypeTitle",
-                placeholder: "FeatureTypeTitle",
-                header: "",
-                resetColumnFilters: false,
-                size: 50,
-                isColumnVisible: true
-            },
+       
+         
             {
                 accessorFn: (row) => row?.Created,
                 cell: ({ row, column }) => (
@@ -948,10 +950,10 @@ const GroupByDashboard = (SelectedProp: any) => {
     return (
         <>
             <div>
-                <section className="ContentSection">
-                    <div className="col-sm-12 clearfix">
+                <section className="p-0 row">
+                    <div className="col-12 p-0">
                         <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
-                            <div>GroupByComponents-Dashboard</div>
+                            <div>GroupByComponents - Dashboard</div>
                         </h2>
                     </div>
                 </section>
