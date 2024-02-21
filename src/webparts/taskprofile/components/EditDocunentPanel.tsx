@@ -174,7 +174,7 @@ const EditDocumentpanel = (props: any) => {
       }).catch((err: any) => {
         console.log(err)
         if(err.message.includes('423')){
-          alert("Document you are trying to Update/Tag is open somewhere else Plese close and try again")
+          alert("Document you are trying to update/tag is open somewhere else. Please close it and try again.")
         }
       }) 
     }

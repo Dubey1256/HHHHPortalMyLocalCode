@@ -2477,7 +2477,7 @@ export const getBreadCrumbHierarchyAllData = async (item: any, AllListId: any, A
         let useId = item.Portfolio != undefined ? item?.Portfolio?.Id : item?.Parent?.Id;
         try {
             Object = await web.lists.getById(AllListId?.MasterTaskListID)
-                .items.getById(useId).select("Id, Title, Parent/Id, Parent/Title, PortfolioStructureID, PortfolioType/Id,PortfolioType/Title")
+                .items.getById(useId).select("Id, Title, Parent/Id, Parent/Title, PortfolioStructureID, PortfolioType/Id,PortfolioType/Title,PortfolioType/Color")
                 .expand("Parent", "PortfolioType")
                 .get()
         }
@@ -2496,8 +2496,10 @@ export const getBreadCrumbHierarchyAllData = async (item: any, AllListId: any, A
             Object.siteType = item?.siteType;
             return getBreadCrumbHierarchyAllData(Object, AllListId, AllItems);
         } else if (Object?.Id === item?.Parent?.Id) {
+            item.siteType ="Master Tasks"
             Object.subRows = [item]; AllItems?.push(item)
             if (Object?.Parent == undefined) {
+                Object.siteType="Master Tasks"
                 Object.subRows = [item]; AllItems?.push(Object)
             } else {
                 return getBreadCrumbHierarchyAllData(Object, AllListId, AllItems);
@@ -2511,6 +2513,7 @@ export const getBreadCrumbHierarchyAllData = async (item: any, AllListId: any, A
             Object.subRows = [item];
             AllItems?.push(item)
             if (Object?.Parent == undefined) {
+                Object.siteType="Master Tasks"
                 Object.subRows = [Object];
                 AllItems?.push(Object)
             }
@@ -2520,7 +2523,6 @@ export const getBreadCrumbHierarchyAllData = async (item: any, AllListId: any, A
     }
     return { withGrouping: item, flatdata: AllItems };
 }
-
 export const AwtGroupingAndUpdatePrarticularColumn = async (findGrouping: any, AllTask: any, UpdateColumnObject?: any) => {
     let flatdata: any = []
     if (findGrouping?.TaskType?.Title == "Activities") {
