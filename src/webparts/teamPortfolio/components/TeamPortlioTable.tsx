@@ -30,6 +30,7 @@ import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-P
 import PageLoader from "../../../globalComponents/pageLoader";
 import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
 import TrafficLightComponent from "../../../globalComponents/TrafficLightVerification/TrafficLightComponent";
+import CreateAllStructureComponent from "../../../globalComponents/CreateAllStructure";
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -2284,6 +2285,45 @@ function TeamPortlioTable(SelectedProp: any) {
     };
 
     let isOpenPopup = false;
+
+    const callbackdataAllStructure = React.useCallback((item)=>{
+        if(item[0]?.SelectedItem != undefined){
+            copyDtaArray.map((val:any)=>{
+                item[0]?.subRows.map((childs:any)=>{
+                    if(item[0].SelectedItem == val.Id){
+                        val.subRows.unshift(childs)
+                    }
+                    if(val.subRows != undefined && val.subRows.length > 0){
+                        val.subRows?.map((child:any)=>{
+                            if(item[0].SelectedItem == child.Id){
+                                child.subRows.unshift(childs)
+                            }
+                            if(child.subRows != undefined && child.subRows.length > 0){
+                                child.subRows?.map((Subchild:any)=>{
+                                    if(item[0].SelectedItem == Subchild.Id){
+                                        Subchild.subRows.unshift(childs)
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            })
+            
+        }
+        if(item != undefined && item.length>0 && item[0].SelectedItem ==  undefined){
+            item.forEach((value:any)=>{
+                copyDtaArray.unshift(value)
+            })
+        }
+        setOpenAddStructurePopup(false);
+        console.log(item)
+        renderData = [];
+        renderData = renderData.concat(copyDtaArray)
+        refreshData();
+
+    },[])
+
     const AddStructureCallBackCall = React.useCallback((item) => {
         childRef?.current?.setRowSelection({});
         if (!isOpenPopup && item.CreatedItem != undefined) {
@@ -2663,8 +2703,8 @@ function TeamPortlioTable(SelectedProp: any) {
                     </section>
                 </div>
             </section>
-            <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={AddStructureCallBackCall} >
-                <PortfolioStructureCreationCard
+             <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={callbackdataAllStructure} >
+                {/* <PortfolioStructureCreationCard
                     CreatOpen={CreateOpenCall}
                     Close={AddStructureCallBackCall}
                     PortfolioType={IsUpdated}
@@ -2674,13 +2714,18 @@ function TeamPortlioTable(SelectedProp: any) {
                             ? checkedList
                             : props
                     }
-                />
-                {/* <CreateAllStructureComponent 
+                /> */}
+                <CreateAllStructureComponent 
                  Close={callbackdataAllStructure}
                  taskUser={AllUsers}
                  portfolioTypeData={portfolioTypeData}
                  PropsValue={ContextValue}
-                 /> */}
+                 SelectedItem={
+                    checkedList != null && checkedList?.Id != undefined
+                        ? checkedList
+                        : props
+                }
+                 />
 
             </Panel>
 
