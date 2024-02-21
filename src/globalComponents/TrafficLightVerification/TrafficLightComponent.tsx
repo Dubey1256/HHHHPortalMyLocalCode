@@ -2,8 +2,10 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { myContextValue } from '../globalCommon'
+import { FaCommentDots } from "react-icons/fa";
 import EditTrafficLightComment from './EditTrafficLightComment'
 import { Web } from "sp-pnp-js";
+//import { LiaCommentDotsSolid } from "react-icons/lia";
 import { BiCommentDetail } from "react-icons/bi";
 let JsonColumn: any
 let ListId: any
@@ -35,6 +37,7 @@ const TrafficLightComponent = (props: any) => {
                 setColumnLevelVerificationJson(columnLevelJson)
                 columnLevelJson?.map((jsonvalue: any) => {
                     if (jsonvalue?.Title === props?.columnName) {
+                        // setColumnLevelVerificationJson(jsonvalue)
                         SetCommentData(jsonvalue?.Comment)
                         setTrafficValue(jsonvalue?.Value)
                     }
@@ -98,9 +101,10 @@ const TrafficLightComponent = (props: any) => {
     }
 
 
+
     return (
         <>  {props?.columnData != undefined &&
-            <myContextValue.Provider value={{ ...myContextValue.default, updateJson, trafficValue, CommentData, SetCommentData, setTrafficValue, columnVerificationStatus, setcolumnVerificationStatus }}>
+            <myContextValue.Provider value={{ ...myContextValue.default, updateJson, trafficValue: trafficValue, CommentData: CommentData, SetCommentData, setTrafficValue, columnVerificationStatus: columnVerificationStatus, setcolumnVerificationStatus }}>
                 <div className="alignCenter">
                     <span title="Incorrect" className={trafficValue == "Incorrect" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"} onClick={() => changeTrafficLight("Incorrect")}></span>
                     <span title="Maybe" className={trafficValue == "Maybe" ? "circlelight br_yellow pull-left yellow mx-1" : "circlelight br_yellow pull-left mx-1"} onClick={() => changeTrafficLight("Maybe")}></span>
@@ -117,8 +121,13 @@ const TrafficLightComponent = (props: any) => {
                                 }
                             </span>}
                         </span>
-                <a className="pancil-icons hreflink" onClick={() => setOpenCommentpopup(true)}><span className="alignIcon  svg__iconbox svg__icon--editBox "></span></a>
-                 </div>
+
+
+                        <a className="pancil-icons hreflink" onClick={() => setOpenCommentpopup(true)}><span className="alignIcon  svg__iconbox svg__icon--editBox "></span></a>
+
+
+
+                    </div>
                 </div>
                 {openCommentpopup && <EditTrafficLightComment setOpenCommentpopup={setOpenCommentpopup} columnData={props?.columnData} />}
             </myContextValue.Provider >}
