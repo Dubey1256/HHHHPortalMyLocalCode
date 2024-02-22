@@ -2,25 +2,22 @@ import * as React from "react";
 import pnp, { Web } from "sp-pnp-js";
 import * as GlobalCommon from './globalCommon';
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
-// import EmailNotificationMail from "./EditTaskPopup/EmailNotificationMail";
 import * as Moment from "moment";
 import ReactDOM from "react-dom";
-// import EmailComponent from "./EmailComponents";
 
-// import ReactDOMServer, { renderToStaticMarkup } from 'react-dom/server';
 
 // this is used for getting page context 
 
-export const pageContext = async () => {
-    let result;
-    try {
-        result = (await pnp.sp.site.getContextInfo());
-    }
-    catch (error) {
-        return Promise.reject(error);
-    }
-    return result;
-}
+// export const pageContext = async () => {
+//     let result;
+//     try {
+//         result = (await pnp.sp.site.getContextInfo());
+//     }
+//     catch (error) {
+//         return Promise.reject(error);
+//     }
+//     return result;
+// }
 
 // this is used for Getting All Task users data 
 
@@ -57,8 +54,6 @@ export const GetAllUsersData = (RequiredData: any): Promise<any[]> => {
     });
 };
 
-
-
 // this is used for getting the current Uer All Details from Task Uer List 
 
 export const GetCurrentUserData = (RequiredData: any): Promise<any> => {
@@ -94,38 +89,39 @@ export const GetCurrentUserData = (RequiredData: any): Promise<any> => {
     });
 };
 
-
-
 // this is used for Getting All Smart Meta Data
 
-export const GetSmartMetaDataListAllItems = async (RequiredData: any) => {
-    const { ListId, ListSiteURL, TaxType } = RequiredData || {};
-    let AllSmartDataListData: any = [];
-    try {
-        const web = new Web(ListSiteURL);
-        AllSmartDataListData = await web.lists
-            .getById(ListId)
-            .items.select(
-                "Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Configurations,EncodedAbsUrl,Color_x0020_Tag,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail,Parent/Id,Parent/Title"
-            )
-            .expand("Author,Editor,IsSendAttentionEmail,Parent")
-            .getAll();
-        if (AllSmartDataListData?.length > 0) {
-            if (TaxType?.length > 0) {
-                for (const item of TaxType) {
-                    let obj: any = {};
-                    obj[item] = getSmartMetadataItemsByTaxType(AllSmartDataListData, item);
-                    AllSmartDataListData.push(obj);
-                }
-            }
-        }
-    } catch (error) {
-        console.log("Error :", error.message);
-    }
-}
+export const GetSmartMetaDataListAllItems = (RequiredData: any) => {
+    return new Promise(async (resolve, reject) => {
+        const { ListId, ListSiteURL, TaxType } = RequiredData || {};
+        let AllSmartDataListData: any = [];
+        try {
+            const web = new Web(ListSiteURL);
+            AllSmartDataListData = await web.lists
+                .getById(ListId)
+                .items.select(
+                    "Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Configurations,EncodedAbsUrl,Color_x0020_Tag,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail,Parent/Id,Parent/Title"
+                )
+                .expand("Author,Editor,IsSendAttentionEmail,Parent")
+                .getAll();
 
+            if (AllSmartDataListData?.length > 0 && TaxType?.length > 0) {
+                const itemsByTaxType = TaxType.map((type: any) => ({
+                    [type]: getSmartMetadataItemsByTaxType(AllSmartDataListData, type)
+                }));
+                resolve(itemsByTaxType);
+            } else {
+                resolve(AllSmartDataListData);
+            }
+        } catch (error) {
+            console.error("Error:", error.message);
+            reject(error);
+        }
+    });
+};
 
 // Common Function for filtering the Data According to Tax Type
+
 const getSmartMetadataItemsByTaxType = function (
     metadataItems: any,
     taxType: any
@@ -1272,7 +1268,92 @@ export const SendEmailAndImmediateTaskNotificationBodyContent = (props: any) => 
 }
 
 
+// This is used for Perform all the changes when any one tag portfolio in Task 
 
+export const onPortfolioTaggingAllChanges = (RequiredData: any) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const { ItemDetails, RequiredListIds, TaskDetails } = RequiredData || {};
+            const web = new Web(ItemDetails.siteUrl);
+            let SmartMetaDataClientCategoryData: any = [];
+            let ClientCategoryDBData: any = [];
+            let SitesTaggingData: any = [];
+            let ClientCategoryData: any = [];
+            let IsCCTagged: Boolean = true;
+            GetSmartMetaDataListAllItems({
+                ListId: RequiredListIds?.SmartMetadataListID,
+                ListSiteURL: ItemDetails.siteUrl,
+                TaxType: ["Client Category"]
+            }).then(async (ResData: any) => {
+                SmartMetaDataClientCategoryData = ResData;
+                ResData?.map((CategoryType: any) => {
+                    if (CategoryType.hasOwnProperty("Client Category")) {
+                        SmartMetaDataClientCategoryData = CategoryType["Client Category"];
+                    }
+                })
+                await web.lists.getById(ItemDetails?.listId)
+                    .items.getById(ItemDetails?.Id)
+                    .select("SiteCompositionSettings,Sitestagging,ClientCategory/Id,ClientCategory/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,TeamMembers/Id,TeamMembers/Title")
+                    .expand("ClientCategory, TeamMembers,ResponsibleTeam")
+                    .get().then((responseData: any) => {
+                        if (responseData?.Sitestagging?.length > 5) {
+                            const SiteCompositionData = JSON.parse(responseData?.Sitestagging);
+                            let SCDummyJSON: any = {
+                                ClienTimeDescription: "100",
+                                Title: TaskDetails?.siteType,
+                                localSiteComposition: true,
+                                SiteImages: TaskDetails?.SiteIcon,
+                                Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
+                            }
+                            if (TaskDetails?.siteType !== "shareweb") {
+                                SitesTaggingData = [SCDummyJSON]
+                            } else {
+                                SitesTaggingData = SiteCompositionData;
+                            }
+                        }
+                        if (SmartMetaDataClientCategoryData.length > 0) {
+                            ClientCategoryDBData = SmartMetaDataClientCategoryData.filter((AllCCItem: any) =>
+                                responseData?.ClientCategory?.some((TaggedCCItem: any) => TaggedCCItem.Id == AllCCItem.Id)
+                            );
+                            if (ClientCategoryDBData.length > 0) {
+                                ClientCategoryData = (TaskDetails?.siteType !== "Shareweb") ?
+                                    ClientCategoryDBData.filter((AllCCItem: any) => AllCCItem.siteName == TaskDetails?.siteType) :
+                                    ClientCategoryDBData;
+                            }
+                        }
+                        // Prepare the response data
+                        const PreparedResponseData = {
+                            Sitestagging: (SitesTaggingData?.length > 0) ? JSON.stringify(SitesTaggingData) : null,
+                            SiteCompositionSettings: responseData?.SiteCompositionSettings,
+                            ClientCategoryId: { results: getDataByKey(ClientCategoryData, "Id") },
+                            ResponsibleTeamId: { results: getDataByKey(responseData?.ResponsibleTeam, "Id") },
+                            TeamMembersId: { results: getDataByKey(responseData?.TeamMembers, "Id") },
+                        };
+                        resolve(PreparedResponseData);
+                    }).catch((error) => {
+                        console.log("error in call", error.message);
+                        reject(error);
+                    })
+            }).catch((error) => {
+                console.log("Error in Smart Meta Data Call", error.message)
+            })
+
+        } catch (error) {
+            console.log("error in try block code", error.message);
+            reject(error);
+        }
+    });
+};
+
+// This is used for the retrieve any property data from array of objects 
+
+export const getDataByKey = (DataArray: any, keyName: any) => {
+    if (DataArray?.length === 0 || DataArray === undefined) {
+        return [];
+    } else {
+        return DataArray?.map((ItemData: any) => (keyName in ItemData ? ItemData[keyName] : undefined)).filter((value: any) => value !== undefined);
+    }
+}
 
 
 
@@ -1326,6 +1407,23 @@ export const SendEmailAndImmediateTaskNotificationBodyContent = (props: any) => 
         TaskCategories: [All Selected Categories with Id and Title], 
         Context: Context 
     }
-       
 
+7.  onPortfolioTaggingAllChanges(RequiredData);
+    RequiredData = { 
+        ItemDetails: Selected Portfolio Item all Details as object,
+        RequiredListIds: AllListIdData, 
+        TaskDetails: Selected Item all Details as object
+    }
+
+
+8.  SendApprovalEmailNotificationComponent(RequiredData);
+    RequiredData = { 
+        ItemDetails: Selected Portfolio Item all Details as object,
+        AskForApproval: true || false || undefined,
+        TaskIsApproved: true || false || undefined,
+        CurrentUser: Current user data as an array,
+        Context: Context,
+        ReceiverEmail: ReceiverEmails as an array on email string,
+        usedFor: "Approval" || "Immediate"
+    }
 **/}
