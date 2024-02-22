@@ -266,14 +266,7 @@
         }
       ]
     },
-    "employe-dash-board-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/employeDashBoard/EmployeDashBoardWebPart.js",
-          "manifest": "./src/webparts/employeDashBoard/EmployeDashBoardWebPart.manifest.json"
-        }
-      ]
-    },
+   
     "site-data-backup-tool-web-part": {
       "components": [
         {
@@ -450,7 +443,6 @@
     "SmartmetadataportfolioWebPartStrings": "lib/webparts/smartmetadataportfolio/loc/{locale}.js",
     "HhhhQuickWebPartStrings": "lib/webparts/hhhhQuick/loc/{locale}.js",
     "ParentPortfolioViewWebPartStrings": "lib/webparts/parentPortfolioView/loc/{locale}.js",
-    "EmployeDashBoardWebPartStrings": "lib/webparts/employeDashBoard/loc/{locale}.js",
     "TestProjectWebPartStrings": "lib/webparts/BackupData/loc/{locale}.js",
     "ProjectManagementWebPartStrings": "lib/webparts/projectManagement/loc/{locale}.js",
     "ProjectmanagementOverviewToolWebPartStrings": "lib/webparts/projectmanagementOverviewTool/loc/{locale}.js",
