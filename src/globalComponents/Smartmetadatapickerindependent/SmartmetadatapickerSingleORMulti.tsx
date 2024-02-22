@@ -8,7 +8,7 @@ const Smartmetadatapickerin = (props: any) => {
   let usedfor = props?.usedFor;
   const [opensmartmetapopup, setopensmartmetapopup] = useState(true);
   const [allsmartmetdata, setAllSmartMetadata] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([props?.selectedFeaturedata != undefined ? props.selectedFeaturedata : undefined]);
+  const [selectedItems, setSelectedItems] = useState(props?.selectedFeaturedata != undefined && props?.selectedFeaturedata?.length > 0 ? props.selectedFeaturedata : []);
   useEffect(() => {
     getSmartmetadata();
   }, []);
@@ -74,7 +74,7 @@ const Smartmetadatapickerin = (props: any) => {
       type={PanelType.custom}
       customWidth="375px"
       onDismiss={closePopupSmartPopup}
-      isBlocking={opensmartmetapopup}
+      isBlocking={false}
     >
       <div className='modal-body'>
         {selectedItems?.length > 0 ? (
