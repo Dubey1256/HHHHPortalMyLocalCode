@@ -6,6 +6,8 @@ import Header from './HeaderSection';
 import TaskStatusTbl from './TaskStausTable';
 import * as Moment from "moment";
 import PageLoader from '../../../globalComponents/pageLoader';
+import { map } from "jquery";
+
 var taskUsers: any;
 let GroupByUsers: any = [];
 let AllMasterTasks: any[] = [];
@@ -15,6 +17,8 @@ let DashboardConfigBackUp: any = [];
 let allData: any = [];
 let LoginUserTeamMembers: any = [];
 let ActiveTile = ''
+let DashboardTitle: any = '';
+let timeSheetConfig: any = {};
 const EmployeProfile = (props: any) => {
   const params = new URLSearchParams(window.location.search);
   let DashboardId: any = params.get('DashBoardId');
@@ -25,6 +29,7 @@ const EmployeProfile = (props: any) => {
   const [annouceMents, setAnnouceMents]: any = useState([]);
   const [approverEmail, setApproverEmail]: any = useState([]);
   const [timesheetListConfig, setTimesheetListConfig] = React.useState<any>()
+  const [smartmetaDataDetails, setSmartmetaDataDetails] = React.useState([])
   try {
     $("#spPageCanvasContent").removeClass();
     $("#spPageCanvasContent").addClass("hundred");
@@ -34,12 +39,67 @@ const EmployeProfile = (props: any) => {
     console.log(e);
   }
   useEffect(() => {
-    LoadAdminConfiguration(false)
+    GetSmartmetadata();
+    LoadAdminConfiguration(false, undefined)
     loadMasterTask();
     loadTaskUsers();
     annouceMent();
     getAllData(true)
   }, []);
+  const timeEntryIndex: any = {};
+  const smartTimeTotal = async () => {
+    let AllTimeEntries = [];
+    if (timeSheetConfig?.Id !== undefined) {
+      AllTimeEntries = await globalCommon.loadAllTimeEntry(timeSheetConfig);
+    }
+    let allSites = smartmetaDataDetails.filter((e) => e.TaxType === "Sites")
+    AllTimeEntries?.forEach((entry: any) => {
+      allSites.forEach((site) => {
+        const taskTitle = `Task${site.Title}`;
+        const key = taskTitle + entry[taskTitle]?.Id
+        if (entry.hasOwnProperty(taskTitle) && entry.AdditionalTimeEntry !== null && entry.AdditionalTimeEntry !== undefined) {
+          if (entry[taskTitle].Id === 168) {
+            console.log(entry[taskTitle].Id);
+          }
+          const additionalTimeEntry = JSON.parse(entry.AdditionalTimeEntry);
+          let totalTaskTime = additionalTimeEntry?.reduce((total: any, time: any) => total + parseFloat(time.TaskTime), 0);
+          let timeSheetsDescriptionSearch = additionalTimeEntry?.reduce((accumulator: any, entry: any) => `${accumulator} ${entry?.Description?.replace(/(<([^>]+)>|\n)/gi, "").trim()}`, "").trim();
+          if (timeEntryIndex.hasOwnProperty(key)) {
+            timeEntryIndex[key].TotalTaskTime += totalTaskTime;
+            timeEntryIndex[key].timeSheetsDescriptionSearch = (timeEntryIndex[key]?.timeSheetsDescriptionSearch || '') + ' ' + timeSheetsDescriptionSearch;
+          } else {
+            timeEntryIndex[`${taskTitle}${entry[taskTitle]?.Id}`] = {
+              ...entry[taskTitle],
+              TotalTaskTime: totalTaskTime,
+              siteType: site.Title,
+              timeSheetsDescriptionSearch: timeSheetsDescriptionSearch
+            };
+          }
+        }
+      });
+    });
+    if (timeEntryIndex) {
+      const dataString = JSON.stringify(timeEntryIndex);
+      localStorage.setItem('timeEntryIndex', dataString);
+    }
+    console.log("timeEntryIndex", timeEntryIndex)
+    getAllData(true);
+  };
+  const GetSmartmetadata = async () => {
+    const web = new Web(props.props?.siteUrl);
+    let smartmetaDetails: any = [];
+    smartmetaDetails = await web.lists.getById(props.props?.SmartMetadataListID).items.select("Id", "Title", "IsVisible", "ParentID", "SmartSuggestions", "TaxType", "Configurations", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", 'Color_x0020_Tag', "Parent/Id", "Parent/Title")
+      .top(4999).expand("Parent").get();
+    smartmetaDetails?.map((newtest: any) => {
+      // if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
+      if (newtest.Title == "SDC Sites" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
+        newtest.DataLoadNew = false;
+      if (newtest?.TaxType == 'timesheetListConfigrations') {
+        timeSheetConfig = newtest;
+      }
+    })
+    setSmartmetaDataDetails(smartmetaDetails);
+  };
   const addHighestColumnToObject = (obj: any, array: any) => {
     const { Row } = obj.WebpartPosition;
     let highestColumn = -1;
@@ -50,12 +110,13 @@ const EmployeProfile = (props: any) => {
     });
     return highestColumn;
   }
-  const LoadAdminConfiguration = async (IsLoadTask: any) => {
+  const LoadAdminConfiguration = async (IsLoadTask: any, Type: any) => {
     if (DashboardId == undefined || DashboardId == '')
       DashboardId = 1;
     const web = new Web(props.props?.siteUrl);
     await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").getAll().then(async (data: any) => {
       data = data?.filter((config: any) => config?.Value == DashboardId)[0];
+      DashboardTitle = data?.Title
       DashboardConfig = globalCommon.parseJSON(data?.Configurations)
       DashboardConfig = DashboardConfig.sort((a: any, b: any) => {
         if (a.WebpartPosition.Row === b.WebpartPosition.Row)
@@ -95,7 +156,10 @@ const EmployeProfile = (props: any) => {
         })
         if (IsLoadTask != false) {
           setprogressBar(true);
-          getAllData(IsLoadTask)
+          if (Type != false)
+            smartTimeTotal();
+          else
+            getAllData(Type)
         }
       }
     }).catch((err: any) => {
@@ -337,6 +401,22 @@ const EmployeProfile = (props: any) => {
     });
     setprogressBar(false);
   }
+  const smartTimeUseLocalStorage = () => {
+    let timeEntryDataLocalStorage: any = localStorage.getItem('timeEntryIndex')
+    if (timeEntryDataLocalStorage?.length > 0) {
+      const timeEntryIndexLocalStorage = JSON.parse(timeEntryDataLocalStorage)
+      allData?.map((task: any) => {
+        task.TotalTaskTime = 0;
+        task.timeSheetsDescriptionSearch = "";
+        const key = `Task${task?.siteType + task.Id}`;
+        if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
+          task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+          task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
+        }
+      })
+      console.log("timeEntryIndexLocalStorage", timeEntryIndexLocalStorage)
+    }
+  };
   const getAllData = async (IsLoad: any) => {
     if (IsLoad != undefined && IsLoad === true) {
       await globalCommon?.loadAllSiteTasks(props?.props, undefined).then((data: any) => {
@@ -352,6 +432,62 @@ const EmployeProfile = (props: any) => {
             }).join('');
             items.descriptionsSearch = DiscriptionSearchData
           }
+          items.TaskTypeValue = '';
+          if (items?.TaskCategories?.length > 0) {
+            items.TaskTypeValue = items?.TaskCategories?.map((val: any) => val.Title).join(",")
+          }
+          items.ClientCategorySearch = ''
+          if (items?.ClientCategory?.length > 0) {
+            items.ClientCategorySearch = items?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
+          }
+          items.AllTeamName = "";
+          if (items.AssignedTo != undefined && items.AssignedTo.length > 0) {
+            map(items.AssignedTo, (Assig: any) => {
+              if (Assig.Id != undefined) {
+                map(taskUsers, (users: any) => {
+                  if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                    users.ItemCover = users.Item_x0020_Cover;
+                    items.AllTeamName += users.Title + ";";
+                  }
+                });
+              }
+            });
+          }
+          if (items.ResponsibleTeam != undefined && items.ResponsibleTeam.length > 0) {
+            map(items.ResponsibleTeam, (Assig: any) => {
+              if (Assig.Id != undefined) {
+                map(taskUsers, (users: any) => {
+                  if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                    users.ItemCover = users.Item_x0020_Cover;
+                    items.AllTeamName += users.Title + ";";
+                  }
+                });
+              }
+            });
+          }
+          if (items.TeamMembers != undefined && items.TeamMembers.length > 0) {
+            map(items.TeamMembers, (Assig: any) => {
+              if (Assig.Id != undefined) {
+                map(taskUsers, (users: any) => {
+                  if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                    users.ItemCover = users.Item_x0020_Cover;
+                    items.AllTeamName += users.Title + ";";
+                  }
+                });
+              }
+            });
+          }
+          if (items.Project) {
+            items.ProjectTitle = items?.Project?.Title;
+            items.ProjectId = items?.Project?.Id;
+            items.projectStructerId = items?.Project?.PortfolioStructureID
+            const title = items?.Project?.Title || '';
+            const formattedDueDate = Moment(items?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+            items.joinedData = [];
+            if (items?.projectStructerId && title || formattedDueDate) {
+              items.joinedData.push(`Project ${items?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+            }
+          }
           if (items?.Created != null && items?.Created != undefined)
             items.serverCreatedDate = new Date(items?.Created).setHours(0, 0, 0, 0)
           items.DisplayCreateDate = Moment(items.Created).format("DD/MM/YYYY");
@@ -366,6 +502,10 @@ const EmployeProfile = (props: any) => {
             items.DisplayDueDate = items?.DisplayDueDate.replaceAll("Invalid date", "");
           if (items?.Modified != null && items?.Modified != undefined)
             items.serverModifiedDate = new Date(items?.Modified).setHours(0, 0, 0, 0)
+          items.DisplayModifiedDate = Moment(items?.Modified).format("DD/MM/YYYY");
+          if (items.Editor) {
+            items.Editor.autherImage = findUserByName(items.Editor?.Id)
+          }
           items.percentage = items.PercentComplete + "%";
           if (items.PercentComplete != undefined && items.PercentComplete != '' && items.PercentComplete != null)
             items.percentCompleteValue = parseInt(items?.PercentComplete);
@@ -387,6 +527,7 @@ const EmployeProfile = (props: any) => {
           }
           allData.push(items);
         })
+        smartTimeUseLocalStorage()
         MakeFinalData()
       }).catch((err: any) => {
         console.log("then catch error", err);
@@ -397,9 +538,9 @@ const EmployeProfile = (props: any) => {
     }
 
   };
-  const callbackFunction = () => {
+  const callbackFunction = (Type: any) => {
     // getAllData(true)
-    LoadAdminConfiguration(true)
+    LoadAdminConfiguration(true, Type)
   }
   /*smartFavId filter functionaloity*/
   const updatedCheckClintCategoryMatch = (data: any, clientCategory: any) => {
@@ -696,7 +837,7 @@ const EmployeProfile = (props: any) => {
   return (
     <>
       {progressBar && <PageLoader />}
-      <myContextValue.Provider value={{ ...myContextValue, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
+      <myContextValue.Provider value={{ ...myContextValue, AllMetadata: smartmetaDataDetails, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
         <div> <Header /></div>
         <TaskStatusTbl />
       </myContextValue.Provider>
