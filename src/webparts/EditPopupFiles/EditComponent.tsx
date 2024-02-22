@@ -210,7 +210,7 @@ let ID: any;
         }, 1000)
     };
     let statusDropDown = [
-        { rankTitle: "Select Status", rank: null },
+        { rankTitle: "Select Item Rank", rank: null },
         { rankTitle: "Not Started", rank: 0 },
         { rankTitle: "In Progress", rank: 10 },
         { rankTitle: "Completed", rank: 100 },
@@ -367,28 +367,9 @@ let ID: any;
     },[])
 
 
-    // const getSmartmetadata = async () => {
-    //     try {
-    //       const web = new Web(Urls);
-    //       const smartmetaDetails = await web.lists
-    //         .getById(props?.AllListId?.SmartMetadataListID)
-    //         .items.select(
-    //           'ID,Title,IsVisible,ParentID,Parent/Id,Parent/Title,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable'
-    //         )
-    //         .expand('Parent')
-    //         .top(4999)
-    //         .get();
-    
-    //       console.log(smartmetaDetails);
-    
-    //       const filteredSmartMetadata = smartmetaDetails.filter(
-    //         (item: any) => item.TaxType === props.TaxType
-    //       );
-    //       setAllSmartMetadata(filteredSmartMetadata);
-    //     } catch (error) {
-    //       console.error('Error fetching smart metadata:', error);
-    //     }
-    //   };
+   
+
+
 
     const Call = React.useCallback((item1: any, type: any, functionType: any) => {
         if (type == "SmartComponent") {
@@ -1015,6 +996,26 @@ let ID: any;
             }
         }
 
+
+        const imagesForSecondArray = Tasks[0].TeamMembers?.map(({ Id, Name,Title }:any) => ({
+            Id,
+            Name,
+            Title,
+            Item_x0020_Cover: AllUsers.find((item:any) => item.AssingedToUserId === Id)?.Item_x0020_Cover || null,
+          }));
+          
+          console.log(imagesForSecondArray);
+        //     const user = AllUsers.filter(
+        //         (user: any) => user?.AssingedToUser?.Id === name
+        //     );
+        //     let Image: any;
+        //     if (user[0]?.Item_x0020_Cover != undefined) {
+        //         Image = user[0].Item_x0020_Cover.Url;
+        //     } else { 
+        //         Image = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"; 
+        //     }
+    
+        Tasks[0].TeamMembers = imagesForSecondArray;
         Tasks[0].siteCompositionData = SiteCompositionTemp;
         Tasks[0].listId = RequireData.MasterTaskListID;
         Tasks[0].siteUrl = RequireData.siteUrl;
@@ -1703,26 +1704,26 @@ let ID: any;
                             : EditData?.HelpInformation,
                     Body:
                         PostBody != undefined && PostBody != "" ? PostBody : EditData?.Body,
-                    AssignedToId: {
-                        results:
-                        TeamMemberIds != undefined && TeamMemberIds?.length > 0
-                            ? TeamMemberIds
-                            : []
-                       
-                    },
-                    ResponsibleTeamId: {
-                        results:
-                            ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0
-                                ? ResponsibleTeamIds
-                                : []
-                    },
-                    TeamMembersId: {
-                        results:
-                        AssignedToIds != undefined && AssignedToIds?.length > 0
-                            ? AssignedToIds
-                            : []
+                        AssignedToId: {
+                            results:
+                                AssignedToIds != undefined && AssignedToIds?.length > 0
+                                    ? AssignedToIds
+                                    : []
                            
-                    }
+                        },
+                        ResponsibleTeamId: {
+                            results:
+                                AssignedToIds != undefined && AssignedToIds?.length > 0
+                                    ? AssignedToIds
+                                    : []
+                        },
+                        TeamMembersId: {
+                           
+                                    results:
+                                    TeamMemberIds != undefined && TeamMemberIds?.length > 0
+                                        ? TeamMemberIds
+                                        : []
+                        }
                 })
                 .then((res: any) => {
 
@@ -3544,7 +3545,7 @@ let ID: any;
                                                             <label className="form-label full-width  mx-2">
                                                                 Working Member
                                                             </label>
-                                                            {EditData?.AssignedUsers?.map(
+                                                            {EditData?.TeamMembers?.map(
                                                                 (userDtl: any, index: any) => {
                                                                     return (
                                                                         <a
@@ -4894,6 +4895,7 @@ let ID: any;
                             <div className="text-left">
                                 <span className="hreflink">
                                     {" "}
+                
                                     {EditData?.ID ? (
                                         <VersionHistoryPopup
                                             taskId={EditData?.ID}

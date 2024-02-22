@@ -1129,7 +1129,9 @@ const EditTaskPopup = (Items: any) => {
                             taskUsers?.map((userData: any) => {
                                 if (userData?.AssingedToUserId == itemData.Id)
                                     try {
-                                        ApprovarDataId = userData?.Approver[0]?.Id;
+                                        if (userData?.Approver?.length > 0) {
+                                            ApprovarDataId = userData?.Approver[0]?.Id;
+                                        }
                                     }
                                     catch (error) {
                                         console.log("Error :", error.message);
@@ -1149,7 +1151,9 @@ const EditTaskPopup = (Items: any) => {
                             currentUserBackupArray?.map((current: any) => {
                                 taskUsers?.map((userData: any) => {
                                     if (userData?.AssingedToUserId == Approver?.Id) {
-                                        ApprovarDataId = userData?.Approver[0].Id;
+                                        if (userData?.Approver?.length > 0) {
+                                            ApprovarDataId = userData?.Approver[0].Id;
+                                        }
                                     }
                                 });
                                 if (
@@ -3304,10 +3308,10 @@ const EditTaskPopup = (Items: any) => {
                 if (teamConfigData?.ResponsibleTeam?.length === EditDataBackup.ResponsibleTeam?.length) {
                     let checkSendNotification: any = areTitlesSame(teamConfigData?.ResponsibleTeam, EditDataBackup.ResponsibleTeam);
                     if (!checkSendNotification) {
-                        setTeamLeaderChanged(true);
+                        // setTeamLeaderChanged(true);
                     }
                 } else {
-                    setTeamLeaderChanged(true);
+                    // setTeamLeaderChanged(true);
                 }
                 teamConfigData.ResponsibleTeam?.map((arrayData: any) => {
                     if (arrayData.AssingedToUser != null) {
@@ -7447,8 +7451,8 @@ const EditTaskPopup = (Items: any) => {
                         >
                             <div className="image-section row">
                                 {ShowTaskDetailsStatus ? (
-                                    <div className="p-0 text-end mt--5">
-                                        <h6 className="mb-1 mt--10 siteColor hreflink"
+                                    <div className="p-0 mt--5">
+                                        <h6 className="mb-1 mt--10 text-end siteColor hreflink"
                                             onClick={() =>
                                                 setShowTaskDetailsStatus(
                                                     ShowTaskDetailsStatus ? false : true
@@ -8896,8 +8900,8 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                 ) : null}
                                 {ShowTaskDetailsStatus ? null : (
-                                    <div className="p-0 text-end mt--5">
-                                        <h6 className="mb-1 mt--10 siteColor hreflink"
+                                    <div className="p-0 mt--5">
+                                        <h6 className="mb-1 mt--10 text-end siteColor hreflink"
                                             onClick={() =>
                                                 setShowTaskDetailsStatus(
                                                     ShowTaskDetailsStatus ? false : true

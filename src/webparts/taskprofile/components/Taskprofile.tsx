@@ -446,9 +446,16 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       Result: tempTask,
 
 
-    }, () => {
+    }, async ()=> {
       this.getSmartTime();
       if (tempTask.Portfolio != undefined) {
+        let AllItems:any=[];
+        let breadCrumData1WithSubRow: any = await globalCommon?.getBreadCrumbHierarchyAllData(this.state.Result,AllListId,AllItems)
+          console.log(breadCrumData1WithSubRow?.flatdata)
+          let breadCrumData1=breadCrumData1WithSubRow?.flatdata.reverse()
+          this.setState({
+            breadCrumData: breadCrumData1
+          })
         this.getAllTaskData();
       }
 
@@ -800,29 +807,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       item.SiteIcon = this.state.Result?.SiteIcon;
       item.isLastNode = false;
       this.allDataOfTask.push(item);
-      this.masterTaskData.push(item)
+   
     }
-    let breadCrumData1WithSubRow: any = globalCommon.findTaskHierarchy(this.state.Result, this.masterTaskData)
-    console.log(breadCrumData1WithSubRow)
-
-
-    let array: any = [];
-    const getValueSubRow = (row: any) => {
-
-      row?.map((items: any) => {
-        array?.push(row[0])
-        if (items?.subRows?.length > 0 && items?.subRows != undefined) {
-          return getValueSubRow(items?.subRows)
-        }
-      })
-      return array
-    }
-    if (breadCrumData1WithSubRow.length > 0) {
-      breadCrumData1 = getValueSubRow(breadCrumData1WithSubRow)
-    }
-    this.setState({
-      breadCrumData: breadCrumData1
-    })
+  
 
 
   }
@@ -1654,20 +1641,23 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     let selectedCC: any = [];
     let Sitestagging: any
     let cctag: any = []
+   let  TeamMembersId:any=[]
+   let AssignedToId:any=[];
+   let ResponsibleTeamId:any=[];
     if (functionType == "Save") {
       if (this?.state?.isopencomonentservicepopup) {
-        DataItem[0]?.ClientCategory?.map((cc: any) => {
-          if (cc.Id != undefined) {
-            let foundCC = AllClientCategories?.find((allCC: any) => allCC?.Id == cc.Id)
-            if (this?.state?.Result?.siteType?.toLowerCase() == 'shareweb') {
-              selectedCC.push(cc.Id)
-              cctag.push(foundCC)
-            } else if (this?.state?.Result?.siteType?.toLowerCase() == foundCC?.siteName?.toLowerCase()) {
-              selectedCC.push(cc.Id)
-              cctag.push(foundCC)
-            }
-          }
-        })
+        // DataItem[0]?.ClientCategory?.map((cc: any) => {
+        //   if (cc.Id != undefined) {
+        //     let foundCC = AllClientCategories?.find((allCC: any) => allCC?.Id == cc.Id)
+        //     if (this?.state?.Result?.siteType?.toLowerCase() == 'shareweb') {
+        //       selectedCC.push(cc.Id)
+        //       cctag.push(foundCC)
+        //     } else if (this?.state?.Result?.siteType?.toLowerCase() == foundCC?.siteName?.toLowerCase()) {
+        //       selectedCC.push(cc.Id)
+        //       cctag.push(foundCC)
+        //     }
+        //   }
+        // })
         if (DataItem[0]?.Sitestagging != undefined) {
           if (this?.state?.Result?.siteType?.toLowerCase() == "shareweb") {
             var sitetag = JSON.parse(DataItem[0]?.Sitestagging)
@@ -1703,11 +1693,44 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
 
         }
+        DataItem?.map((portfolio:any)=>{
+          portfolio?.ClientCategory?.map((cc: any) => {
+            if (cc.Id != undefined) {
+              let foundCC = AllClientCategories?.find((allCC: any) => allCC?.Id == cc.Id)
+              if (this?.state?.Result?.siteType?.toLowerCase() == 'shareweb') {
+                selectedCC.push(cc.Id)
+                cctag.push(foundCC)
+              } else if (this?.state?.Result?.siteType?.toLowerCase() == foundCC?.siteName?.toLowerCase()) {
+                selectedCC.push(cc.Id)
+                cctag.push(foundCC)
+              }
+            }
+          })
+          if(portfolio?.AssignedTo?.length>0 ){
+            portfolio?.AssignedTo?.map((assignData:any)=>{
+              AssignedToId.push(assignData.Id) 
+            })
+            if(portfolio?.ResponsibleTeam?.length>0){
+              portfolio?.ResponsibleTeam?.map((resp:any)=>{
+                ResponsibleTeamId.push(resp.Id) 
+              })
+            }
+            if(portfolio?.TeamMembers?.length>0){
+              portfolio?.TeamMembers?.map((teamMemb:any)=>{
+                TeamMembersId.push(teamMemb.Id) 
+              })
+            }
+          }
+        })
+
+    
         this.setState((prevState) => ({
           Result: {
             ...prevState.Result,
             Portfolio: DataItem[0],
-
+            ResponsibleTeam:DataItem[0]?.ResponsibleTeam,
+            TeamMembers:DataItem[0]?.TeamMembers,
+            AssignedTo:DataItem[0]?.AssignedTo,
 
           }
         }))
@@ -1715,6 +1738,20 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
           PortfolioId: DataItem[0]?.Id,
           ClientCategoryId: { results: selectedCC },
           Sitestagging: Sitestagging,
+         
+          TeamMembersId: {
+            results:TeamMembersId
+
+          },
+          AssignedToId: {
+            results:AssignedToId
+
+          },
+          ResponsibleTeamId: {
+            results:ResponsibleTeamId
+
+          },
+      
         }
         this?.updateProjectComponentServices(dataUpdate)
       } else {
@@ -1827,10 +1864,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       }
                       {this.state.breadCrumData?.map((breadcrumbitem: any, index: any) => {
                         return <>
-                          {breadcrumbitem?.siteType == "Master Tasks" && <li>
+                          {breadcrumbitem?.siteType == "Master Tasks"&& <li>
                             <a style={{ color: breadcrumbitem?.PortfolioType?.Color }} className="fw-bold" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
                           </li>}
-                          {breadcrumbitem?.siteType != "Master Tasks" && <li>
+                          {breadcrumbitem?.siteType !== "Master Tasks" && <li>
 
                             <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem?.Id}&Site=${breadcrumbitem?.siteType} `}>{breadcrumbitem?.Title}</a>
                           </li>}

@@ -37,7 +37,7 @@ const FeedbackGlobalInfoIcon = (props: any) => {
                     if (fbData != null && fbData != undefined && fbData?.Title != "") {
 
                         try {
-                            if (fbData?.Title != undefined) {
+                            if (fbData?.Title != undefined && props?.SingleColumnData==undefined) {
                                 fbData.Title = cleanHTML(fbData?.Title)
 
                             }
@@ -207,7 +207,7 @@ const FeedbackGlobalInfoIcon = (props: any) => {
                                             {fbData?.heading}
                                         </div>
                                         <div className='border p-1'>
-                                            <span dangerouslySetInnerHTML={{ __html: cleanHTML(fbData?.Title) }}></span>
+                                            <span dangerouslySetInnerHTML={{ __html:  props?.SingleColumnData==undefined? cleanHTML(fbData?.Title):fbData?.Title }}></span>
                                         </div>
 
                                     </div>

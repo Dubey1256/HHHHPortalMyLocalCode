@@ -316,7 +316,7 @@ const RootLevelDashboard = (props: any) => {
             <span className="d-flex">
               <div className='tooltipSec popover__wrapper me-1' data-bs-toggle='tooltip' data-bs-placement='auto'>
                 {row.original.Portfolio?.Title !=undefined ? (
-                  <span className='text-success'>{row?.original?.TaskID}</span>
+                  <span>{row?.original?.TaskID}</span>
                 ) : (
                   <span>{row?.original?.TaskID}</span>
                 )}
@@ -364,7 +364,7 @@ const RootLevelDashboard = (props: any) => {
           <span>
             {row.original?.Portfolio?.Title  &&
               <a
-                className="hreflink text-success"
+                className="hreflink"
                 data-interception="off"
                 target="blank"
                 href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
@@ -449,7 +449,7 @@ const RootLevelDashboard = (props: any) => {
         cell: ({ row }) => (
           <span>
             {row.original.Portfolio?.Title ? (
-              <span className='ms-1 text-success'>{row?.original?.DisplayCreateDate} </span>
+              <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
             ) : (
               <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
             )}
