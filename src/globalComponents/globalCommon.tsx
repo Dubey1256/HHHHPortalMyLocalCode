@@ -2898,3 +2898,355 @@ function getEndingDate(startDateOf: any): Date {
 }
 
 //----------------------------End Time Report function------------------------------------------------------------------------------------
+
+
+export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, Context: any, DateType: any, selectedUser: any) => {
+    let DevloperTime: any = 0.00;
+    let QATime: any = 0.00;
+    let QAMembers: any = 0;
+    let DesignMembers: any = 0;
+    let DesignTime: any = 0;
+    let TotleTaskTime: any = 0;
+    let DevelopmentMembers: any = 0;
+    let TotalQAMember: any = 0;
+    let TotalDesignMember: any = 0;
+    let TotalDevelopmentMember: any = 0;
+    let QAleaveHours: any = 0;
+    let DevelopmentleaveHours: any = 0;
+    let DesignMemberleaveHours: any = 0;
+    let startDate: any = ''
+    let DevCount: any = 0;
+    let DesignCount: any = 0;
+    let QACount: any = 0;
+    const LeaveUserData = await GetleaveUser(TaskUser, Context)
+    console.log(LeaveUserData)
+    //-------------------------leave User Data---------------------------------------------------------------------------------------
+    //-----------------------End--------------------------------------------------------------------------------------------------------------
+    if (DateType == 'Yesterday' || DateType == 'Today') {
+        startDate = getStartingDate(DateType);
+    }
+    startDate = getStartingDate(DateType);
+    startDate = moment(startDate).format('DD/MM/YYYY')
+    let endDate: any = getEndingDate(DateType);
+    endDate = moment(endDate).format('DD/MM/YYYY')
+    var selectedDate = startDate.split("/")
+    var select = selectedDate[2] + selectedDate[1] + selectedDate[0]
+
+    const currentLoginUserId = Context.pageContext?._legacyPageContext.userId;
+    selectedUser?.forEach((items: any) => {
+        if (items?.UserGroup?.Title == 'Senior Developer Team' || items?.UserGroup?.Title == 'Smalsus Lead Team' || items?.UserGroup?.Title == 'Junior Developer Team') {
+            DevCount++
+        }
+        if ((items?.TimeCategory == 'Design' && items.Company == 'Smalsus') || items?.UserGroup?.Title == 'Design Team') {
+            DesignCount++
+        }
+        if ((items?.TimeCategory == 'QA' && items.Company == 'Smalsus') && items?.UserGroup?.Title != 'Ex-Staff') {
+            QACount++
+        }
+    })
+    TaskUser?.forEach((val: any) => {
+        AllTimeEntry?.map((item: any) => {
+
+            if (item?.AuthorId == val?.AssingedToUserId) {
+
+                if (val?.UserGroup?.Title == 'Senior Developer Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'External Staff')
+                    item.Department = 'Developer';
+                item.userName = val?.Title
+                if (val?.UserGroup?.Title == 'Junior Developer Team')
+                    item.Department = 'Junior Developer';
+                item.userName = val?.Title
+
+                if (val?.UserGroup?.Title == 'Design Team')
+                    item.Department = 'Design';
+                item.userName = val?.Title
+
+                if (val?.UserGroup?.Title == 'QA Team')
+                    item.Department = 'QA';
+                item.userName = val?.Title
+
+            }
+        })
+
+    })
+    if (AllTimeEntry != undefined) {
+        AllTimeEntry?.forEach((time: any) => {
+            if (time?.Department == 'Developer' || time?.Department == 'Junior Developer') {
+                DevloperTime = DevloperTime + parseFloat(time.Effort)
+            }
+
+            if (time?.Department == 'Design') {
+                DesignTime = DesignTime + parseFloat(time.Effort)
+            }
+            if (time?.Department == 'QA') {
+                QATime = QATime + parseFloat(time.Effort)
+            }
+
+        })
+        TotleTaskTime = QATime + DevloperTime + DesignTime
+    }
+    LeaveUserData?.forEach((items: any) => {
+        if (select >= items.Start && select <= items.EndDate) {
+            items.TaskDate = startDate
+            if (items?.Department == 'Development' && items.TaskTitle == 'Leave') {
+                DevelopmentMembers++
+                DevelopmentleaveHours += items.totaltime
+            }
+    
+            if (items?.Department == 'Design' && items.TaskTitle == 'Leave') {
+                DesignMembers++
+                DesignMemberleaveHours += items.totaltime
+            }
+    
+            if (items?.Department == 'QA' && items.TaskTitle == 'Leave') {
+                QAMembers++
+                QAleaveHours += items.totaltime
+            }
+            AllTimeEntry.push(items)
+        }
+    })
+    var body1: any = []
+    var body2: any = []
+    var To: any = []
+    var MyDate: any = ''
+    var ApprovalId: any = []
+    var TotlaTime = QATime + DevloperTime + DesignTime
+    var TotalleaveHours = DesignMemberleaveHours + DevelopmentleaveHours + QAleaveHours;
+    TaskUser?.forEach((items: any) => {
+        if (currentLoginUserId == items.AssingedToUserId) {
+            items.Approver?.forEach((val: any) => {
+                ApprovalId.push(val)
+            })
+
+        }
+
+    })
+    ApprovalId?.forEach((va: any) => {
+        TaskUser?.forEach((ba: any) => {
+            if (ba.AssingedToUserId == va.Id) {
+                To.push(ba?.Email)
+            }
+        })
+
+    })
+   
+    AllTimeEntry?.forEach((item: any) => {
+        
+
+        if (item.PriorityRank == undefined || item.PriorityRank == '') {
+            item.PriorityRank = '';
+        }
+        if (item.ComponentName == undefined || item.ComponentName == '') {
+            item.ComponentName = '';
+        }
+        if (item.ClientCategoryy == undefined || item.ClientCategoryy == '') {
+            item.ClientCategoryy = '';
+        }
+        if (item.PercentComplete == undefined || item.PercentComplete == '') {
+            item.PercentComplete = '';
+        }
+        if (item.Status == undefined || item.Status == null) {
+            item.Status = '';
+        }
+        if (item.Status == undefined || item.Status == null) {
+            item.Status = '';
+        }
+
+        if (item.Department == undefined || item.Department == '') {
+            item.Department = ''
+        }
+        var text = '<tr>' +
+            '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item?.TaskDate + '</td>'
+            + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.siteType + '</td>'
+            + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item?.ComponentName + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + `<a href='https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}'>` + '<span style="font-size:11px; font-weight:600">' + item.TaskTitle + '</span>' + '</a >' + '</td>'
+            + '<td align="left" style="border: 1px solid #aeabab;padding: 4px">' + item?.Description + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.PriorityRank + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Effort + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.PercentComplete + '%' + '</td>'
+            + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Status + '</td>'
+            + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item?.userName + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Department + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.ClientCategorySearch + '</td>'
+            + '</tr>'
+        body1.push(text);
+    })
+    var text2 =
+        '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Team' + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Total Employees' + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Employees on leave' + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Hours' + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Leave Hours' + '</strong>' + '</td>'
+        + '</tr>'
+        + '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Design' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignCount + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignMembers + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignTime.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignMemberleaveHours + '</td>'
+        + '</tr>'
+        + '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Development' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevCount + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevelopmentMembers + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevloperTime.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevelopmentleaveHours + '</td>'
+        + '</tr>'
+        + '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'QA' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QACount + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QAMembers + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QATime.toFixed(2) + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QAleaveHours + '</td>'
+        + '</tr>'
+        + '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Total' + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + (DesignCount + DevCount + QACount).toFixed(2) + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + (DesignMembers + DevelopmentMembers + QAMembers).toFixed(2) + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotlaTime.toFixed(2) + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotalleaveHours + '</strong>' + '</td>'
+        + '</tr>';
+    body2.push(text2);
+
+
+
+    var bodyA =
+        '<table cellspacing="0" cellpadding="1" width="30%" style="margin: 0 auto;border-collapse: collapse;">'
+        + '<tbody align="center">' +
+        body2 +
+        '</tbody>' +
+        '</table>'
+    var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/UserTimeEntry.aspx";
+
+    if (DateType == 'Yesterday' || DateType == 'Today') {
+        var ReportDatetime = startDate;
+    }
+    else {
+        var ReportDatetime: any = `${startDate} - ${endDate}`
+    }
+
+    var body: any =
+        '<p style="text-align: center;margin-bottom: 1px;">' + 'TimeSheet of  date' + '&nbsp;' + '<strong>' + ReportDatetime + '</strong>' + '</p>' +
+        '<p style="text-align: center;margin: 0 auto;">' + '<a  href=' + pageurl + ' >' + 'Online version of timesheet' + '</a >' + '</p>' +
+        '<br>'
+
+        + '</br>' +
+        bodyA +
+        '<br>' + '</br>'
+        + '<table cellspacing="0" cellpadding="1" width="100%" style="border-collapse: collapse;">' +
+        '<thead>' +
+        '<tr style="font-size: 11px;">' +
+        '<th  style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Date' + '</th>'
+        + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Sites' + '</th>'
+        + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "8%" bgcolor="#f5f5f5">' + 'Component' + '</th>'
+        + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Task' + '</th>'
+        + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'FullDescription' + '</th>'
+        + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Priority' + '</th>'
+        + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Effort' + '</th>'
+        + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Complete' + '</th>'
+        + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Status' + '</th>'
+        + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "8%" bgcolor="#f5f5f5">' + 'TimeEntryUser' + '</th>'
+        + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Designation' + '</th>'
+        + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'ClientCategory' + '</th>'
+        + '</thead>' +
+        '<tbody align="center">' +
+        '<tr>' +
+        body1 +
+        '</tr>' +
+        '</tbody>' +
+        '</table>' +
+        '<p>' + '<strong>' + 'Thank You' + '</strong>' + '</p>'
+    var cc: any = []
+    var ReplyTo: any = ""
+    var from: any = undefined
+    var subject = 'TimeSheet :' + ' ' + ReportDatetime;
+    body = body.replaceAll(',', '');
+    sendEmailToUser(from, To, body, subject, ReplyTo, cc, Context);
+    alert('Email sent sucessfully');
+
+}
+
+const sendEmailToUser = (from: any, to: any, body: any, subject: any, ReplyTo: any, cc: any, Context: any) => {
+    let sp = spfi().using(spSPFx(Context));
+    sp.utility.sendEmail({
+        Body: body,
+        Subject: subject,
+        To: to,
+        CC: cc,
+        AdditionalHeaders: {
+            "content-type": "text/html"
+        },
+    }).then(() => {
+        console.log("Email Sent!");
+
+    }).catch((err) => {
+        console.log(err.message);
+    });
+}
+const GetleaveUser = async (TaskUser: any, Context: any) => {
+    var myData: any = []
+    let finalData: any = []
+    var leaveData: any = []
+    var leaveUser: any = []
+    let todayLeaveUsers: any = []
+    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+
+    myData = await web.lists
+        .getById('72ABA576-5272-4E30-B332-25D7E594AAA4')
+        .items
+        .select("RecurrenceData,Duration,Author/Title,Editor/Title,Category,HalfDay,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,Employee/Id")
+        .top(499)
+        .expand("Author,Editor,Employee")
+        .getAll()
+    console.log(myData);
+
+    myData?.forEach((val: any) => {
+        val.EndDate = new Date(val?.EndDate);
+        val?.EndDate.setHours(val?.EndDate.getHours() - 9);
+        var itemDate = moment(val.EventDate)
+        val.endDate = moment(val?.EndDate).format("DD/MM/YYYY")
+        var eventDate = moment(val.EventDate).format("DD/MM/YYYY")
+        const date = val.EndDate
+        var NewEndDate = val.endDate.split("/")
+        var NewEventDate = eventDate.split("/")
+        val.End = NewEndDate[2] + NewEndDate[1] + NewEndDate[0]
+        val.start = NewEventDate[2] + NewEventDate[1] + NewEventDate[0]
+        leaveData.push(val)
+
+    })
+    console.log(leaveData)
+    leaveData?.forEach((val: any) => {
+        if (val?.fAllDayEvent == true) {
+            val.totaltime = 8
+        }
+        else {
+            val.totaltime = 8
+        }
+        if (val?.HalfDay == true) {
+            val.totaltime = 4
+        }
+        var users: any = {}
+        TaskUser?.forEach((item: any) => {
+            if (item?.AssingedToUserId != null && val?.Employee?.Id == item?.AssingedToUserId && item.UserGroup?.Title != 'Ex Staff') {
+                users['userName'] = item.Title
+                users['ComponentName'] = ''
+                users['Department'] = item.TimeCategory
+                users['Effort'] = val.totaltime !== undefined && val.totaltime <= 4 ? val.totaltime : 8
+                users['TaskTitle'] = 'Leave'
+                users['Description'] = 'Leave'
+                users['ClientCategoryy'] = 'Leave'
+                users['siteType'] = ''
+                users['Status'] = ''
+                users['EndDate'] = val.End
+                users['Start'] = val.start
+                users['totaltime'] = val.totaltime
+                todayLeaveUsers.push(users)
+            }
+        })
+    })
+    finalData = todayLeaveUsers.filter((val: any, TaskId: any, array: any) => {
+        return array.indexOf(val) == TaskId;
+    })
+    console.log(finalData)
+    return finalData
+}
