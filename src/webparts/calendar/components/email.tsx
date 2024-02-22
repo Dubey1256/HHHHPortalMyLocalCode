@@ -345,7 +345,7 @@ const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId != 10
             <div style="padding-top: 56px;" width="100%">
               <table style="height: 50px;border-collapse: collapse;" border="0" align="left">
                 <tr>
-                  <td width="48px" height="48px"><img width="100%" height="100%" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png" style="width: 48px;height: 48px;border-radius: 50%;" alt="Site Icon"></td>
+                  <td width="35px" height="35px"><img width="100%" height="100%" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png" style="width: 35px;height: 35px;border-radius: 50%;" alt="Site Icon"></td>
                   <td style="margin-left:4px;"><div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;">Attendance Report</div></td>
                 </tr>
               </table>
@@ -451,8 +451,8 @@ const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId != 10
             <td width="40px" height="48px" style="color: #333;height:48px;width:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border: 1px solid #EEE; background: #FAFAFA;text-align: center;">No.</td>
             <td width="136px" height="48px" style="color: #333;height:48px;width:136px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Name</td>
             <td width="112px" height="48px" style="color: #333;height:48px;width:112px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Attendance</td>
-            <td width="184px" height="48px" style="color: #333;height:48px;width:104px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Reason</td>
-            <td width="104px" height="48px" style="color: #333;height:48px;width:144px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Expected leave end</td>
+            <td width="184px" height="48px" style="color: #333;height:48px;width:184px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Reason</td>
+            <td width="104px" height="48px" style="color: #333;height:48px;width:104px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Expected leave end</td>
             <td width="140px" height="48px" style="color: #333;height:48px;width:140px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Team</td>
             <td width="104px" height="48px" style="color: #333;height:48px;width:160px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 600;padding: 0px 8px;border-top: 1px solid #EEE;text-align: center; border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;background: #FAFAFA;">Total leave this year</td>
         </tr>
@@ -464,8 +464,8 @@ const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId != 10
              <td width="40px" height="40px" style="color: #333;height:40px;width:40px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;border-left: 1px solid #EEE;padding: 0px 8px;">${index + 1}</td>
              <td width="136px" height="40px" style="color: #333;height:40px;width:136px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;text-decoration-line: underline;color: #2F5596;"><a style="color: #2F5596;" href='${props.Listdata.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${item?.NameId}&Name=${item?.Name}'> ${item?.Name}</a></td>
              <td width="112px" height="40px" style="color: #333;height:40px;width:112px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;${item.eventType === "Un-Planned" ? "background: #FFEAEA;color: #A10101;" : "background: #FFF6E8;color: #AA6700;"}"> ${item.eventType}</td>
-             <td width="104px" height="40px" style="color: #333;height:40px;width:104px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;">${item?.reason}</td>
-             <td width="144px" height="40px" style="color: #333;height:40px;width:144px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;text-decoration-line: underline;color: #2F5596;"><a style="color: #2F5596;" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">
+             <td width="184px" height="40px" style="color: #333;height:40px;width:184px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;">${item?.reason}</td>
+             <td width="104px" height="40px" style="color: #333;height:40px;width:104px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;text-decoration-line: underline;color: #2F5596;"><a style="color: #2F5596;" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">
                  <span style="color: #2F5596;">${item?.enddate}</span></td>
              <td width="140px" height="40px" style="color: #333;height:40px;width:140px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;" >${item.Designation}</td>
              <td width="160px" height="40px" style="color: #333;height:40px;width:160px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;">${item?.TotalLeave}</td>
@@ -494,7 +494,7 @@ const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId != 10
      
     </div>
 <div style="display: flex;align-items: center;padding-bottom: 56px;">
-    <img width="48px" height="48px" src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 48px;" alt="Site Icon">
+    <img width="35px" height="35px" src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 35px;" alt="Site Icon">
     <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;">Hochhuth Consulting GmbH</div>
 </div>`
 
@@ -534,7 +534,7 @@ const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId != 10
             <div width="100%">
                 <table style="height: 50px;border-collapse: collapse;" border="0" align="left">
                   <tr>
-                    <td width="48px" height="48px"><img src="https://www.hochhuth-consulting.de/images/logo.png" width="100%" height="100%" style="width: 48px;height: 48px;" alt="Site Icon"></td>
+                    <td width="35px" height="35px"><img src="https://www.hochhuth-consulting.de/images/logo.png" width="100%" height="100%" style="width: 35px;height: 35px;" alt="Site Icon"></td>
                     <td style="margin-left:4px;"><div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div></td>
                   </tr>
                 </table>
