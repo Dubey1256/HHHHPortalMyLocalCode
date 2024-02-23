@@ -328,7 +328,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             // MultiSelectedData = elem;
         } else {
             if (elem != undefined) {
-                setCheckBoxData(elem)
+                setCheckBoxData([elem])
                 console.log("elem", elem);
             } else {
                 console.log("elem", elem);
