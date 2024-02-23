@@ -80,13 +80,14 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             setIsTaskNotifications(memberToUpdate.IsTaskNotifications);
             setUserCategory(memberToUpdate.TimeCategory)
             // setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
-
-            // Parse JSON and set selected categories
-            const categoriesJson = JSON.parse(memberToUpdate?.CategoriesItemsJson);
-            setSelectedCategories(categoriesJson);
-            // Extract IDs and set them as checked
-            const categoryIds = categoriesJson?.map((category: any) => category.Id.toString());
-            setChecked(categoryIds);
+            if (memberToUpdate.CategoriesItemsJson) {
+                const categoriesJson = memberToUpdate.CategoriesItemsJson != 'null' ? JSON.parse(memberToUpdate.CategoriesItemsJson): [];
+                setSelectedCategories(categoriesJson);
+                if (categoriesJson) {
+                    const categoryIds = categoriesJson.map((category: any) => category.Id.toString());
+                    setChecked(categoryIds);
+                }
+            }
             setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
             // setApprover([memberToUpdate.Approver?.[0]?.Id])
             const Approvers: any = memberToUpdate?.Approver?.map((item: any) => item.Id)
@@ -235,8 +236,10 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 });
 
                 setData(updatedMemberData);
+                setSortOrder("")
+                setMemberToUpdate({})
                 // Update memberToUpdate state if necessary
-                setMemberToUpdate((prevState: any) => ({ ...prevState, ...updatedData }));
+                // setMemberToUpdate((prevState: any) => ({ ...prevState, ...updatedData }));
 
                 setOpenUpdateMemberPopup(false);
                 fetchAPIData()

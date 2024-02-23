@@ -1,27 +1,22 @@
 import * as React from "react";
 import { useState, useEffect, useCallback } from 'react';
-import pnp from 'sp-pnp-js';
 import * as Moment from 'moment';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import ApprovalHistoryPopup from "./ApprovalHistoryPopup";
 import Tooltip from '../Tooltip';
-import { ImReply } from 'react-icons/im';
 import {
     mergeStyleSets,
     FocusTrapCallout,
     FocusZone,
     FocusZoneTabbableElements,
-    FontWeights,
     Stack,
     Text,
 } from '@fluentui/react';
 import { useBoolean, useId } from '@fluentui/react-hooks';
-import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';
 import * as globalCommon from "../globalCommon";
 const AddCommentComponent = (FbData: any) => {
-    const FeedBackData = FbData.Data;
+    const FeedBackData = FbData.Data?.length > 0 ? FbData.Data : [];
     const Context = FbData.Context;
-    const isCurrentUserApprover: any = FbData.isCurrentUserApprover;
     const [FeedBackArray, setFeedBackArray] = useState([]);
     const [postTextInput, setPostTextInput] = useState('');
     const [currentUserData, setCurrentUserData] = useState<any>([]);
@@ -63,7 +58,7 @@ const AddCommentComponent = (FbData: any) => {
             setFeedBackArray(tempArray);
         }
         getCurrentUserDetails();
-    }, [FbData.FeedbackCount])
+    }, [FbData.Data?.length])
 
     const openEditModal = (comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any, usedFor: any) => {
         const commentDetails: any = {
@@ -92,8 +87,6 @@ const AddCommentComponent = (FbData: any) => {
 
     const getCurrentUserDetails = async () => {
         let currentUserId = Context.pageContext._legacyPageContext.userId;
-        // let currentUserId: number;
-        // await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
         if (currentUserId != undefined) {
             if (FbData.allUsers != null && FbData.allUsers?.length > 0) {
                 FbData.allUsers?.map((userData: any) => {
@@ -143,7 +136,6 @@ const AddCommentComponent = (FbData: any) => {
             FeedBackArray[CommentData.SubTextIndex].ReplyMessages[CommentData.Index].Title = e.target.value;
             FbData.callBack(true, FeedBackArray, 0);
         }
-
     }
     const cancelCommentBtn = () => {
         FbData.CancelCallback(true);
@@ -202,7 +194,7 @@ const AddCommentComponent = (FbData: any) => {
         return (
             <div className="d-flex full-width pb-1" >
                 <div className="subheading siteColor">
-                        {`Update Comment`}
+                    {`Update Comment`}
                 </div>
                 <Tooltip ComponentId='1683' />
             </div>
@@ -256,7 +248,7 @@ const AddCommentComponent = (FbData: any) => {
         },
         title: {
             fontWeight: 500,
-            fontSize:21,
+            fontSize: 21,
         },
         buttons: {
             display: 'flex',
@@ -271,7 +263,7 @@ const AddCommentComponent = (FbData: any) => {
                 <section className="previous-FeedBack-section clearfix">
                     {FeedBackArray != null && FeedBackArray?.length > 0 ?
                         <div>
-                            {FeedBackArray?.map((commentDtl: any, index: number) => {
+                            {[...FeedBackArray]?.map((commentDtl: any, index: number) => {
                                 return (
                                     <div className="FeedBack-comment">
                                         <div className={`col-12 d-flex float-end add_cmnt my-1 ${commentDtl.isShowLight}`} title={commentDtl.isShowLight}>
@@ -287,12 +279,12 @@ const AddCommentComponent = (FbData: any) => {
                                                     <span className="alignCenter">
                                                         <span title="Comment Reply" data-toggle="tooltip" id={buttonId + "-" + index}
                                                             onClick={() => OpenCallOutFunction(index)} data-placement="bottom" className="hreflink ps-1 svg__iconbox svg__icon--reply"></span>
-                                                        <span title="Edit Comment" onClick={() => openEditModal(commentDtl.Title, index, FbData?.index, false, "ParentComment")} style={{marginTop:"2px"}} className="hreflink ps-1 svg__iconbox svg__icon--edit siteColor"></span>
+                                                        <span title="Edit Comment" onClick={() => openEditModal(commentDtl.Title, index, FbData?.index, false, "ParentComment")} style={{ marginTop: "2px" }} className="hreflink ps-1 svg__iconbox svg__icon--edit siteColor"></span>
                                                         <span title="Delete Comment" onClick={() => clearComment(true, index, FbData?.index)} className="ps-1 hreflink svg__iconbox svg__icon--trash"></span>
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <span dangerouslySetInnerHTML={{ __html:globalCommon?.replaceURLsWithAnchorTags(commentDtl.Title)  }}></span>
+                                                    <span dangerouslySetInnerHTML={{ __html: globalCommon?.replaceURLsWithAnchorTags(commentDtl.Title) }}></span>
                                                 </div>
                                                 {commentDtl.ReplyMessages != undefined && commentDtl.ReplyMessages?.length > 0 ?
                                                     <div>
@@ -310,8 +302,8 @@ const AddCommentComponent = (FbData: any) => {
                                                                                 {ReplyDtl.AuthorName} - {ReplyDtl.Created}
                                                                             </span>
                                                                             <span className="alignCenter">
-                                                                               <span title="Edit Comment" onClick={() => openEditModal(ReplyDtl.Title, ReplyIndex, index, false, "ReplyComment")} className="ps-1 hreflink svg__iconbox svg__icon--edit siteColor"></span>
-                                                                               <span title="Delete Comment" onClick={() => DeleteReplyMessageFunction(ReplyIndex, index)} className="ps-1 hreflink svg__iconbox svg__icon--trash"></span>
+                                                                                <span title="Edit Comment" onClick={() => openEditModal(ReplyDtl.Title, ReplyIndex, index, false, "ReplyComment")} className="ps-1 hreflink svg__iconbox svg__icon--edit siteColor"></span>
+                                                                                <span title="Delete Comment" onClick={() => DeleteReplyMessageFunction(ReplyIndex, index)} className="ps-1 hreflink svg__iconbox svg__icon--trash"></span>
                                                                             </span>
                                                                         </div>
                                                                         <div>
@@ -343,13 +335,13 @@ const AddCommentComponent = (FbData: any) => {
                                 </div> : null}
                                 <div className="col-11 d-flex float-end my-1">
                                     <div className="d-flex justify-content-between align-items-center col">
-                                    <div className="pe-1" style={{width:"85%"}}>
-                                    <textarea id="txtComment SubTestBorder" style={{ height: "33px" }} onChange={(e) => handleChangeInput(e)} className="full-width" ></textarea>
-                                    </div>
-                                    <div style={{width:"145px"}}>
-                                    <button type="button" className="post btn btn-primary mx-1" onClick={() => PostButtonClick(FbData.postStatus, FbData.index)}>Post</button>
-                                    <button type="button" className="post btn btn-default" onClick={cancelCommentBtn}>Cancel</button>
-                                    </div>
+                                        <div className="pe-1" style={{ width: "85%" }}>
+                                            <textarea id="txtComment SubTestBorder" style={{ height: "33px" }} onChange={(e) => handleChangeInput(e)} className="full-width" ></textarea>
+                                        </div>
+                                        <div style={{ width: "145px" }}>
+                                            <button type="button" className="post btn btn-primary mx-1" onClick={() => PostButtonClick(FbData.postStatus, FbData.index)}>Post</button>
+                                            <button type="button" className="post btn btn-default" onClick={cancelCommentBtn}>Cancel</button>
+                                        </div>
                                     </div>
                                 </div>
                             </section>
@@ -365,20 +357,20 @@ const AddCommentComponent = (FbData: any) => {
                         type={PanelType.custom}
                         customWidth="500px"
                     >
+                        <div>
+                            <textarea className="full-width" id="txtUpdateComment" rows={6} onChange={(e) => updateCommentFunction(e, updateComment, EditModelUsedFor)} defaultValue={updateComment ? updateComment.Title : ''}>
+                            </textarea>
+                        </div>
+                        <footer className="d-flex justify-content-between mt-1 float-end">
                             <div>
-                                <textarea className="full-width" id="txtUpdateComment" rows={6} onChange={(e) => updateCommentFunction(e, updateComment, EditModelUsedFor)} defaultValue={updateComment ? updateComment.Title : ''}>
-                                </textarea>
+                                <button className="btn btnPrimary mx-1" onClick={editPostCloseFunction}>
+                                    Save
+                                </button>
+                                <button className='btn btn-default' onClick={editPostCloseFunction}>
+                                    Cancel
+                                </button>
                             </div>
-                            <footer className="d-flex justify-content-between mt-1 float-end">
-                                <div>
-                                    <button className="btn btnPrimary mx-1" onClick={editPostCloseFunction}>
-                                        Save
-                                    </button>
-                                    <button className='btn btn-default' onClick={editPostCloseFunction}>
-                                        Cancel
-                                    </button>
-                                </div>
-                            </footer>
+                        </footer>
                     </Panel>
                 </section>
             </div>

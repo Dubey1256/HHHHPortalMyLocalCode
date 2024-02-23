@@ -362,7 +362,7 @@ const SmartTimeData = async <T extends { siteType: string; Id: number }>(items: 
               }
               result.SmartPriority = globalCommon.calculateSmartPriority(result);
             
-              result.PercentComplete = (result?.PercentComplete * 100).toFixed(0);
+              result.PercentComplete = Number((result?.PercentComplete * 100).toFixed(0));
               result.chekbox = false;
               if (result?.FeedBack != undefined) {
                 let DiscriptionSearchData: any = '';
