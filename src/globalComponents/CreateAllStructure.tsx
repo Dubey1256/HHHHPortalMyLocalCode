@@ -111,7 +111,7 @@ const CreateAllStructureComponent = (props: any) => {
         }
         if (type === 'feature') {
             const newFeatures = [...components];
-            newFeatures[index].SubComponent[subIndex].splice(FeaIndex, 1);
+            newFeatures[index].SubComponent[subIndex].Feature.splice(FeaIndex, 1);
             setFeature(newFeatures);
         }
     };
@@ -673,10 +673,10 @@ const CreateAllStructureComponent = (props: any) => {
                                                                     value={Features.value}
                                                                     onChange={(event) => handleInputChange(index, indexSub, indexFea, event, 'feature')}
                                                                 />
-                                                                {indexFea === Feature.length - 1 && (
+                                                                {indexFea === Subcomponent.Feature.length - 1 && (
                                                                     <div className="input-group-append alignCenter">
                                                                         <span onClick={() => handleAddSubComponent(index, indexSub, indexFea, 'Feature')} title="Add" className="svg__iconbox mx-1 svg__icon--Plus hreflink"></span>
-                                                                        {Feature.length > 1 && (
+                                                                        {Subcomponent.Feature.length > 1 && (
                                                                             <span onClick={() => handleDelete(index, indexSub, indexFea, 'feature')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>
                                                                         )}
                                                                     </div>
