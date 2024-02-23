@@ -419,15 +419,19 @@ let ID: any;
         } else {
             if (type == "Multi") {
                 if (item1 != undefined && item1.length > 0) {
-                    setLinkedComponentData(item1);
+                    setfilterData(item1);
                     console.log("Popup component linkedComponent", item1.linkedComponent);
                 }
             }
             if (type == "Single") {
-                if (item1 != undefined && item1.length > 0) {
-                    setLinkedComponentData(item1);
-                    console.log("Popup component linkedComponent", item1.linkedComponent);
-                }
+                    if(item1 != undefined && item1.length > 0 && item1.length > 1){
+                    var newArray = item1.map((obj: { original: any; }) => obj.original);
+                    setLinkedComponentData(newArray);
+                   }else{
+                    if(item1 != undefined){
+                        setLinkedComponentData([item1]);
+                    }
+                    }
             }
         }
         if (CategoriesData != undefined) {
@@ -894,10 +898,8 @@ let ID: any;
             if (item.Component?.length > 0) {
                 setSmartComponentData(item.Component);
             }
-            var Rr: any = [];
-            if (item.ServicePortfolio != undefined) {
-                Rr.push(item.ServicePortfolio);
-                setLinkedComponentData(Rr);
+            if (item.Portfolios != undefined) {
+                setLinkedComponentData(item.Portfolios);
             }
 
             if (item.ComponentLink != null) {
@@ -3128,16 +3130,80 @@ let ID: any;
                                                             <label className="form-label full-width">
                                                                 Portfolio Item
                                                             </label>
-                                                            <input type="text" className="form-control" />
-                                                            <span className="input-group-text">
+
+
+                                                            {
+                                (linkedComponentData?.length == 0 || linkedComponentData.length !== 1) && 
+                                <>
+                                <input type="text" className="form-control" />
+                                <span className="input-group-text" placeholder="Project">
+                                <span onClick={(e) =>EditComponent(EditData)} className="svg__iconbox svg__icon--editBox"> </span>
+                            </span></>
+                            }</div>
+                           
+                               {linkedComponentData && linkedComponentData.length == 1 ? 
+                            //    "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=4310"
+                            (
+                              <div >
+                                {linkedComponentData?.map((items:any, Index: any)=>
+                                 <div className="full-width replaceInput alignCenter" key={Index}>
+                              
+                                  <a
+                                    href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items.Id}`}
+                                    className="textDotted hreflink"         
+                                    data-interception="off"
+                                    target="_blank"
+                                  >
+                                    {items?.Title}
+                                  </a>
+                                  <span className="" placeholder="Project">
+                                  <span onClick={(e) =>EditComponent(EditData)} className="svg__iconbox svg__icon--editBox"> </span>
+                            </span>
+                                </div>)}
+                                </div>) : ""
+                  
+                            }
+                                             
+
+                                      {linkedComponentData && linkedComponentData.length > 1 ? 
+                            (
+                              <div  className="w=100" >
+                                {linkedComponentData?.map((items:any, Index: any)=>
+                                 <div className="block d-flex justify-content-between mb-1" key={Index}>
+                              
+                                  <a
+                                     href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items.Id}`}
+                                    className="wid-90 light"
+                                    data-interception="off"
+                                    target="_blank"
+                                  >
+                                    {items?.Title}
+                                  </a>
+                                  <a className="text-end">
+                                            {" "}
+                                            <span
+                                                                                            className="bg-light svg__icon--cross svg__iconbox"
+                                                                                            onClick={() =>
+                                                                                                setLinkedComponentData([])
+                                                                                            }
+                                                                                        ></span>
+                                          </a>
+                                </div>)}
+                                </div>) : ""}
+
+
+
+
+                                                            {/* <input type="text" className="form-control" /> */}
+                                                            {/* <span className="input-group-text">
                                                                 <span onClick={(e) =>
                                                                     EditComponent(EditData)
                                                                 } className="svg__iconbox svg__icon--editBox">
 
                                                                 </span>
-                                                            </span>
-                                                        </div>
-                                                        <div className="col-sm-12  inner-tabb">
+                                                            </span> */}
+                                                       
+                                                        {/* <div className="col-sm-12  inner-tabb">
                                                             {linkedComponentData?.length > 0 ? (
                                                                 <div >
                                                                     {linkedComponentData?.map((com: any) => {
@@ -3168,7 +3234,7 @@ let ID: any;
                                                                 </div>
                                                             ) : null}
 
-                                                        </div>
+                                                        </div> */}
                                                     {/* {EditData?.Portfolio_x0020_Type == "Service" && (
                                                         <div className="col-sm-12 inner-tabb">
                                                             {linkedComponentData?.length > 0 ? (
