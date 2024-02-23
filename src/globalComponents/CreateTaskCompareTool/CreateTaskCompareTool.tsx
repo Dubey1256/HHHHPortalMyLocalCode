@@ -19,7 +19,6 @@ import PageLoader from '../pageLoader';
 let AllTypeCategory: any = [];
 let GlobalAllCSFData: any = [];
 let GlobalAllProjectData: any = [];
-let GlobalFeedbackJSON: any = [];
 let GlobalCurrentUserData: any;
 const CreateTaskCompareTool = (RequiredData: any) => {
     const { ItemDetails, RequiredListIds, CallbackFunction, CreateTaskForThisPoint, Context } = RequiredData || {};
@@ -75,7 +74,6 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 Completed: ''
             };
             setCreateTaskInfo({ ...CreateTaskInfo, FeedBackJSON: [FeedBackItem] })
-            // GlobalFeedbackJSON = [FeedBackItem];
         }).catch((error) => {
             console.log("Error in UseEffect Section Function", error.message)
         });
