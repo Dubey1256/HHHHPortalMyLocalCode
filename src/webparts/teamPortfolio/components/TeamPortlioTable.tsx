@@ -2280,7 +2280,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         {checkedList != null && checkedList != undefined && checkedList?.SiteIconTitle != undefined && checkedList?.SiteIconTitle != null ? <span className="Dyicons me-2" >{checkedList?.SiteIconTitle}</span> : ''} {`${checkedList != null && checkedList != undefined && checkedList?.Title != undefined && checkedList?.Title != null ? checkedList?.Title
                             + '- Create Child Component' : 'Create Component'}`}</>
                 </div>
-                <Tooltip ComponentId={checkedList?.Id != undefined?checkedList?.Id:'444'} />
+                <Tooltip ComponentId={'444'} />
             </>
         );
     };
