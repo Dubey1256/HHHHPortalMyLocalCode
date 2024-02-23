@@ -69,6 +69,12 @@ export default function InfoIconsToolTip(props:any) {
                         //    hovertitle="Short Description is not available in this. Please click to see other details" 
                         // }
                         setshowHoverTitle(hovertitle)
+                        const obj = {
+                            Title: hovertitle,
+                            heading :props?.SingleColumnData,
+                        };
+                        feedback.push(obj);
+                        setfeedbackArray(feedback);
                     }
                 }
             }
@@ -175,7 +181,7 @@ export default function InfoIconsToolTip(props:any) {
               onMouseLeave={() => handleMouseLeave()} className=" svg__iconbox svg__icon--info dark"></span>:
             <span className="text-end w-25" ref={setTriggerRef} onClick={() => handlAction("click")} title="Description"><a href="#" className="ps-1">Show More</a></span>}
 
-            {action === "click" && visible && props?.SingleColumnData==undefined && (
+            {action === "click" && visible && (
                 <div ref={setTooltipRef} {...getTooltipProps({ className: "tooltip-container p-0 m-0" })}>
 
                     <div>
@@ -183,7 +189,7 @@ export default function InfoIconsToolTip(props:any) {
                         <button className="toolTipCross" onClick={handleCloseClick}><div className="popHoverCross">×</div></button>
                     </div>
                     <div className="toolsbox">
-                        <FeedbackGlobalInfoIcon FeedBack={feedbackArray} taskInfo={taskInfo} />
+                        <FeedbackGlobalInfoIcon FeedBack={feedbackArray} taskInfo={taskInfo} SingleColumnData={ props?.SingleColumnData }/>
                     </div>
                     <div {...getArrowProps({ className: "tooltip-arrow" })} />
 

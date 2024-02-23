@@ -1510,7 +1510,8 @@ const TeamSmartFilter = (item: any) => {
             task.timeSheetsDescriptionSearch = "";
             const key = `Task${task?.siteType + task.Id}`;
             if (timeEntryIndex.hasOwnProperty(key) && timeEntryIndex[key]?.Id === task.Id && timeEntryIndex[key]?.siteType === task.siteType) {
-                task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime;
+                // task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime;
+                task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndex[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndex[key]?.TotalTaskTime;
                 task.timeSheetsDescriptionSearch = timeEntryIndex[key]?.timeSheetsDescriptionSearch;
             }
         })
@@ -1531,7 +1532,8 @@ const TeamSmartFilter = (item: any) => {
                 task.timeSheetsDescriptionSearch = "";
                 const key = `Task${task?.siteType + task.Id}`;
                 if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
-                    task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                    // task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                    task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndexLocalStorage[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndexLocalStorage[key]?.TotalTaskTime;
                     task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
                 }
             })
