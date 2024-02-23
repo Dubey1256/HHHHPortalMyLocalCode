@@ -186,7 +186,7 @@ export default function InterviewFeedbackForm(props: any) {
             cell: ({row}) => (
                 <div className='alignCenter'>
                 {row?.original?.Status0}
-                <span className="svg__iconbox svg__icon--editBox" title='Edit Status' onClick={() => inlineEditStatus(row?.original)}></span>   
+                <span className="ml-12 svg__iconbox svg__icon--editBox" title='Edit Status' onClick={() => inlineEditStatus(row?.original)}></span>   
                 </div>
             )
         }, {
