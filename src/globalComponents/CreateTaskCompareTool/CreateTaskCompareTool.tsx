@@ -19,6 +19,7 @@ import PageLoader from '../pageLoader';
 let AllTypeCategory: any = [];
 let GlobalAllCSFData: any = [];
 let GlobalAllProjectData: any = [];
+let GlobalFeedbackJSON: any = [];
 let GlobalCurrentUserData: any;
 const CreateTaskCompareTool = (RequiredData: any) => {
     const { ItemDetails, RequiredListIds, CallbackFunction, CreateTaskForThisPoint, Context } = RequiredData || {};
@@ -74,6 +75,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 Completed: ''
             };
             setCreateTaskInfo({ ...CreateTaskInfo, FeedBackJSON: [FeedBackItem] })
+            // GlobalFeedbackJSON = [FeedBackItem];
         }).catch((error) => {
             console.log("Error in UseEffect Section Function", error.message)
         });
@@ -220,6 +222,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
 
     const SwipePortfolioAndProject = (usedFor: string, TagItem: any) => {
         TagItem.listId = RequiredListIds?.MasterTaskListID;
+        TagItem.siteUrl = ItemDetails?.siteUrl;
         TagProjectAndPortfolio(usedFor, TagItem)
     }
 
@@ -657,7 +660,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                         <div className='row'>
                             <div className=' d-flex py-2 border-start border-end '>
                                 <div className='current-Task-section' style={{ width: "47%" }}>Project: <span className='siteColor ms-2'>{ItemDetails?.Project?.Title}</span></div>
-                                <div className='Move-data-current-to-new text-center' style={{ width: "6%" }} title='Swipe data left to right'><BsArrowRightSquare onClick={() => SwipePortfolioAndProject("Portfolio", ItemDetails?.Portfolio)} /></div>
+                                <div className='Move-data-current-to-new text-center' style={{ width: "6%" }} title='Swipe data left to right'><BsArrowRightSquare onClick={() => SwipePortfolioAndProject("Project", ItemDetails?.Portfolio)} /></div>
                                 <div className='new-task-section input-group' style={{ width: "47%" }}>
                                     <label className='form-label full-width'> Project:</label>
                                     {CreateTaskInfo.Project?.Title ?
