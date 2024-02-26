@@ -6438,7 +6438,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         target="_blank"
                         className="serviceColor_Active "
                         href={ props?.contextValue?.siteUrl +
-                                "/SitePages/Project-Management.aspx?ProjectId=" +
+                                "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                                 obj?.Id}
                       >
                               {obj?.newSubChild != undefined &&
@@ -6475,7 +6475,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             data-interception="off"
                             target="_blank"
                             href={ props?.contextValue?.siteUrl +
-                              "/SitePages/Project-Management.aspx?ProjectId=" +
+                              "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                               obj?.newSubChild?.Id}
                           >
                              {obj?.newSubChild?.Title}
@@ -6507,7 +6507,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.Title}
@@ -6539,7 +6539,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.newActChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.newActChild?.Title}
@@ -6571,7 +6571,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title}
@@ -6620,7 +6620,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         target="_blank"
                         className="hreflink serviceColor_Active "
                         href={props?.contextValue?.siteUrl +
-                                "/SitePages/Project-Management.aspx?ProjectId" +
+                                "/SitePages/Project-Management-Profile.aspx?ProjectId" +
                                 obj?.Id
                         }
                       >
@@ -6645,7 +6645,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             data-interception="off"
                             target="_blank"
                             href={props?.contextValue?.siteUrl +
-                                    "/SitePages/Project-Management.aspx?ProjectId" +
+                                    "/SitePages/Project-Management-Profile.aspx?ProjectId" +
                                     obj?.newSubChild?.Id
                             }
                           >
@@ -6676,7 +6676,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.Title}
@@ -6708,7 +6708,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.newActChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.newActChild?.Title}
@@ -6740,7 +6740,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                                 data-interception="off"
                                 target="_blank"
                                 href={ props?.contextValue?.siteUrl +
-                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                                   obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Id}
                               >
                                  {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title}
@@ -6770,7 +6770,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                           target="_blank"
                           className="hreflink serviceColor_Active fw-semibold reStuTile"
                           href={ props?.contextValue?.siteUrl +
-                                "/SitePages/Project-Management.aspx?ProjectId" +
+                                "/SitePages/Project-Management-Profile.aspx?ProjectId" +
                                 obj?.Id
                           }
                         >
@@ -6950,7 +6950,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         target="_blank"
                         className="serviceColor_Active alignCenter"
                         href={obj.Item_x0020_Type == "Project" || obj.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                                "/SitePages/Project-Management.aspx?ProjectId=" +
+                                "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                                 obj?.Id :props?.contextValue?.siteUrl +
                                 "/SitePages/Task-Profile.aspx?taskId=" +
                                 obj?.Id + "&Site=" + obj?.siteType }
@@ -6987,7 +6987,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             data-interception="off"
                             target="_blank"
                             href={ obj?.newSubChild?.Item_x0020_Type == "Project" || obj?.newSubChild?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                            "/SitePages/Project-Management.aspx?ProjectId=" +
+                            "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                             obj?.newSubChild?.Id :props?.contextValue?.siteUrl +
                             "/SitePages/Task-Profile.aspx?taskId=" +
                             obj?.newSubChild?.Id + "&Site=" + obj?.newSubChild?.siteType}
@@ -7028,7 +7028,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             target="_blank"
                             href={
                               obj?.newSubChild?.feature?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SitePages/Project-Management.aspx?ProjectId=" +
+                              "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                               obj?.newSubChild?.feature?.Id :props?.contextValue?.siteUrl +
                               "/SitePages/Task-Profile.aspx?taskId=" +
                               obj?.newSubChild?.feature?.Id + "&Site=" + obj?.newSubChild?.feature?.siteType
@@ -7070,7 +7070,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             target="_blank"
                             href={
                               obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SitePages/Project-Management.aspx?ProjectId=" +
+                              "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                               obj?.newSubChild?.feature?.activity?.Id :props?.contextValue?.siteUrl +
                               "/SitePages/Task-Profile.aspx?taskId=" +
                               obj?.newSubChild?.feature?.activity?.Id + "&Site=" + obj?.newSubChild?.feature?.activity?.siteType
@@ -7115,7 +7115,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                         target="_blank"
                         className="hreflink serviceColor_Active "
                         href={props?.contextValue?.siteUrl +
-                                "/SitePages/Project-Management.aspx?ProjectId" +
+                                "/SitePages/Project-Management-Profile.aspx?ProjectId" +
                                 obj?.Id
                         }
                       >
@@ -7142,7 +7142,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             data-interception="off"
                             target="_blank"
                             href={props?.contextValue?.siteUrl +
-                                    "/SitePages/Project-Management.aspx?ProjectId" +
+                                    "/SitePages/Project-Management-Profile.aspx?ProjectId" +
                                     obj?.newSubChild?.Id
                             }
                           >
@@ -7173,7 +7173,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             target="_blank"
                             href={
                               obj?.newSubChild?.feature?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SitePages/Project-Management.aspx?ProjectId=" +
+                              "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                               obj?.newSubChild?.feature?.Id :props?.contextValue?.siteUrl +
                               "/SitePages/Task-Profile.aspx?taskId=" +
                               obj?.newSubChild?.feature?.Id + "&Site=" + obj?.newSubChild?.feature?.siteType
@@ -7214,7 +7214,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                             target="_blank"
                             href={
                               obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Project" || obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ?  props?.contextValue?.siteUrl +
-                              "/SitePages/Project-Management.aspx?ProjectId=" +
+                              "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                               obj?.newSubChild?.feature?.activity?.Id :props?.contextValue?.siteUrl +
                               "/SitePages/Task-Profile.aspx?taskId=" +
                               obj?.newSubChild?.feature?.activity?.Id + "&Site=" + obj?.newSubChild?.feature?.activity?.siteType

@@ -1163,7 +1163,7 @@ const ProjectManagementMain = (props: any) => {
               <span>
                 <a
                   className="hreflink"
-                  href={`${props?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`}
+                  href={`${props?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.Id}`}
                   data-interception="off"
                   target="_blank"
                 >
@@ -1565,7 +1565,7 @@ const ProjectManagementMain = (props: any) => {
                   {Masterdata?.Item_x0020_Type != "Project" && Masterdata?.Parent?.Title ?
                     <li>
                       {" "}
-                      <a data-interception="off" href={`${props?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${Masterdata?.Parent?.Id}`}>{Masterdata?.Parent?.Title}</a>{" "}
+                      <a data-interception="off" href={`${props?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${Masterdata?.Parent?.Id}`}>{Masterdata?.Parent?.Title}</a>{" "}
                     </li> : ''}
                   <li>
                     {" "}
