@@ -1770,9 +1770,6 @@ let ID: any;
       };
     
 
-
-
-
       const AddHelpFunc = async () => {
         try {
             let componentId = CompoenetItem[0].Id;
