@@ -362,11 +362,11 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                                         {itemData?.Title}
                                     </a>
                                 </>
-                                    : itemData?.Item_x0020_Type == "Sprint" || itemData.Item_x0020_Type == "Project" ?
-                                        <a className="fw-normal hreflink" title={`${itemData?.Title}`} data-interception="off" target="blank"
-                                            href={`${itemData?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${itemData?.Id}`}>
-                                            {itemData?.Title}
-                                        </a> : ""}</>}
+                                 :itemData?.Item_x0020_Type == "Sprint" || itemData.Item_x0020_Type == "Project" ?
+                                 <a className="fw-normal hreflink" title={`${itemData?.Title}`} data-interception="off" target="blank"
+                                     href={`${itemData?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${itemData?.Id}`}>
+                                         {itemData?.Title}
+                                 </a>   : ""}</>}
                         </div>
                     </div>
                     <div className={lastChild == true ? "roundRight lastlevel" : ''} style={{ flex: "0 0 25px" }}>

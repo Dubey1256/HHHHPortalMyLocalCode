@@ -3798,7 +3798,7 @@ let ID: any;
                                  <div className="full-width replaceInput alignCenter" key={Index}>
                               
                                   <a
-                                    href={`${SelectD.siteUrl}/SitePages/Project-Management.aspx?ProjectId?=${items.Id}`}
+                                    href={`${SelectD.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId?=${items.Id}`}
                                     className="textDotted hreflink"         
                                     data-interception="off"
                                     target="_blank"
@@ -3834,7 +3834,7 @@ let ID: any;
                                  <div className="block d-flex justify-content-between mb-1" key={Index}>
                               
                                   <a
-                                    href={`${SelectD.siteUrl}/SitePages/Project-Management.aspx?ProjectId?=${items.Id}`}
+                                    href={`${SelectD.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId?=${items.Id}`}
                                     className="wid-90 light"
                                     data-interception="off"
                                     target="_blank"

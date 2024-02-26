@@ -670,7 +670,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                                 target="_blank"
                                                 data-interception="off"
                                                 className="textDotted"
-                                                href={`${ItemDetails.siteUrl}/SitePages/Project-Management.aspx?ProjectId==${CreateTaskInfo.Project?.Id}`}
+                                                href={`${ItemDetails.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId==${CreateTaskInfo.Project?.Id}`}
                                             >
                                                 {CreateTaskInfo.Project?.Title}
                                             </a>
