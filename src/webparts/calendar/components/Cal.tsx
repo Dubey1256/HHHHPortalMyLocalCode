@@ -468,23 +468,23 @@ const App = (props: any) => {
             item.clickable = false;
           if (item.fAllDayEvent === false) {
             startdate = new Date(item.EventDate);
-            startdate.setHours(0,0,0,0);
-            // startdate.setMinutes(startdate.getMinutes() );
+            startdate.setHours(startdate.getHours() - 10);
+            startdate.setMinutes(startdate.getMinutes() );
             createdAt = new Date(item.Created);
             modifyAt = new Date(item.Modified);
             enddate = new Date(item.EndDate);
-            enddate.setHours(0,0,0,0);
-            // enddate.setMinutes(enddate.getMinutes() - 30);
+            enddate.setHours(enddate.getHours() - 13);
+            enddate.setMinutes(enddate.getMinutes() - 30);
             //console.log("start", startdate, item.ID);
             //console.log("end", enddate, item.iD);
           } else if (item.fAllDayEvent == true) {
             startdate = new Date(item.EventDate);
-            startdate.setHours(0,0,0,0);
-            // startdate.setMinutes(startdate.getMinutes() - 30);
+            startdate.setHours(startdate.getHours() - 5);
+            startdate.setMinutes(startdate.getMinutes() - 30);
 
             enddate = new Date(item.EndDate);
-            enddate.setHours(0,0,0,0);
-            // enddate.setMinutes(enddate.getMinutes() - 30);
+            enddate.setHours(enddate.getHours() - 5);
+            enddate.setMinutes(enddate.getMinutes() - 30);
           }
           let a = item.Title;
           const dataEvent = {
