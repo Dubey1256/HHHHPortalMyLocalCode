@@ -1232,7 +1232,7 @@ const switchGroupbyData = () => {
                   data-interception="off"
                   target="_blank"
                   className="hreflink serviceColor_Active"
-                  href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`}
+                  href={`${ContextValue.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`}
                 >
                   <ReactPopperTooltip
                     ShareWebId={row?.original?.projectStructerId}
