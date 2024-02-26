@@ -305,7 +305,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                                 </>
                                  :itemData?.Item_x0020_Type == "Sprint" || itemData.Item_x0020_Type == "Project" ?
                                  <a className="fw-normal hreflink" title={`${itemData?.Title}`} data-interception="off" target="blank"
-                                     href={`${itemData?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${itemData?.Id}`}>
+                                     href={`${itemData?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${itemData?.Id}`}>
                                          {itemData?.Title}
                                  </a>   : ""}</>}
                         </div>

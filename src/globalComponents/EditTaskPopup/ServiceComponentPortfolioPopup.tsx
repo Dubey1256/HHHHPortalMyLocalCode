@@ -424,7 +424,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                             <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
                         </a>
                             : row?.original?.ItemCat == "Project" ? <a className="hreflink serviceColor_Active" data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
-                                href={Dynamic.siteUrl + "/SitePages/Project-Management.aspx?ProjectId=" + row?.original?.Id}
+                                href={Dynamic.siteUrl + "/SitePages/Project-Management-Profile.aspx?ProjectId=" + row?.original?.Id}
                             >
                                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
                             </a> : ''}

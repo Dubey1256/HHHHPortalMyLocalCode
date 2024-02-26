@@ -2034,7 +2034,7 @@ const CreateActivity = (props: any) => {
                   <span className="full-width">
                     <div className="full-width replaceInput pe-0 alignCenter" style={{ width: '90%' }}>
                       <a title={selectedProjectData?.Title} target="_blank" data-interception="off" className="textDotted"
-                        href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${selectedProjectData?.ID}`} >
+                        href={`${AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${selectedProjectData?.ID}`} >
                         {selectedProjectData?.Title}
                       </a>
                       <span title="Remove Project" onClick={() => { setSelectedProjectData({}) }}
