@@ -20,6 +20,7 @@ import ShowTeamMembers from '../../../globalComponents/ShowTeamMember';
 import { FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import DisplayTimeEntry from '../../../globalComponents/TimeEntry/TimeEntryComponent';
+import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 //import inlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 
 var AllListId: any = {};
@@ -169,7 +170,7 @@ const RootLevelDashboard = (props: any) => {
           smartmeta = await web.lists
             .getById(config?.listId)
             .items
-            .select("Id,Title,PriorityRank,Project/PriorityRank,ParentTask/TaskID,ParentTask/Title,ParentTask/Id,TaskID,Project/Id,Project/Title,Portfolio/Id,Portfolio/Title,PortfolioId,Portfolio/PortfolioStructureID,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,SiteCompositionSettings,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
+            .select("Id,Title,PriorityRank,Project/PriorityRank,ParentTask/TaskID,ParentTask/Title,ParentTask/Id,TaskID,FeedBack,Project/Id,Project/Title,Portfolio/Id,Portfolio/Title,PortfolioId,Portfolio/PortfolioStructureID,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,SiteCompositionSettings,IsTodaysTask,Body,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title")
             .expand('AssignedTo,Portfolio,Project,Author,Editor,ParentTask,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory')
             .top(4999)
             .get();
@@ -215,6 +216,11 @@ const RootLevelDashboard = (props: any) => {
             }
             
             items.TaskID = globalCommon.GetTaskId(items);
+            if (items?.FeedBack != undefined) {
+              items.descriptionsSearch = globalCommon.descriptionSearchData(items)
+          } else {
+              items.descriptionsSearch = '';
+          }
             allSitesTasks.push(items);
           });
           let setCount = siteConfig?.length
@@ -316,7 +322,7 @@ const RootLevelDashboard = (props: any) => {
             <span className="d-flex">
               <div className='tooltipSec popover__wrapper me-1' data-bs-toggle='tooltip' data-bs-placement='auto'>
                 {row.original.Portfolio?.Title !=undefined ? (
-                  <span className='text-success'>{row?.original?.TaskID}</span>
+                  <span>{row?.original?.TaskID}</span>
                 ) : (
                   <span>{row?.original?.TaskID}</span>
                 )}
@@ -337,18 +343,7 @@ const RootLevelDashboard = (props: any) => {
                 >
                   {row?.original?.Title}
                 </a>
-              {row?.original?.Body !== null && (
-                <span className='me-1'>
-                  <div className='popover__wrapper me-1' data-bs-toggle='tooltip' data-bs-placement='auto'>
-                    <span className='svg__iconbox svg__icon--info'></span>
-                    <div className='popover__content'>
-                      <span>
-                        <p dangerouslySetInnerHTML={{ __html: row?.original?.bodys }}></p>
-                      </span>
-                    </div>
-                  </div>
-                </span>
-              )}
+                {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>}
             </span>
           </>
         ),
@@ -364,7 +359,7 @@ const RootLevelDashboard = (props: any) => {
           <span>
             {row.original?.Portfolio?.Title  &&
               <a
-                className="hreflink text-success"
+                className="hreflink"
                 data-interception="off"
                 target="blank"
                 href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
@@ -449,7 +444,7 @@ const RootLevelDashboard = (props: any) => {
         cell: ({ row }) => (
           <span>
             {row.original.Portfolio?.Title ? (
-              <span className='ms-1 text-success'>{row?.original?.DisplayCreateDate} </span>
+              <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
             ) : (
               <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
             )}

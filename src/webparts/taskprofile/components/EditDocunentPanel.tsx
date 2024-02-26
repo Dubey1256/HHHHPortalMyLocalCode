@@ -7,11 +7,12 @@ import { Web } from 'sp-pnp-js';
 import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 import ImageInformation from '../../EditPopupFiles/ImageInformation';
- let mastertaskdetails:any=[]
- let   copyEditData:any={}
+let mastertaskdetails: any = []
+let recipientdata: any = []
+let copyEditData: any = {}
 const EditDocumentpanel = (props: any) => {
- const [EditdocumentsData, setEditdocumentsData] :any= React.useState();
-   const [isOpenImageTab, setisOpenImageTab] = React.useState(false);
+  const [EditdocumentsData, setEditdocumentsData]: any = React.useState();
+  const [isOpenImageTab, setisOpenImageTab] = React.useState(false);
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = React.useState(false);
   let ItemRank = [
     { rankTitle: 'Select Item Rank', rank: null },
@@ -27,27 +28,27 @@ const EditDocumentpanel = (props: any) => {
   React.useEffect(() => {
     if (props?.editData != undefined) {
       LoadMasterTaskList().then((smartData: any) => {
-        loadSelectedDocuments() 
-      }).catch((error:any)=>{
+        loadSelectedDocuments()
+      }).catch((error: any) => {
         console.log(error)
-      })  
+      })
     }
-  }, [props?.editData!=undefined])
+  }, [props?.editData != undefined])
 
   const loadSelectedDocuments = async () => {
     const web = new Web(props?.AllListId?.siteUrl);
     try {
       await web.lists.getById(props?.AllListId?.DocumentsListID)
         .items.getById(props?.editData?.Id)
-        .select( 'Id','Title','PriorityRank','Year','Body','Item_x0020_Cover','Portfolios/Id','Portfolios/Title','File_x0020_Type','FileLeafRef','FileDirRef','ItemRank','ItemType','Url','Created','Modified','Author/Id','Author/Title','Editor/Id','Editor/Title','EncodedAbsUrl')
+        .select('Id', 'Title', 'PriorityRank', 'Year', 'Body', 'recipients', 'senderEmail', 'creationTime', 'Item_x0020_Cover', 'Portfolios/Id', 'Portfolios/Title', 'File_x0020_Type', 'FileLeafRef', 'FileDirRef', 'ItemRank', 'ItemType', 'Url', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'EncodedAbsUrl')
         .expand('Author,Editor,Portfolios')
         .get()
         .then((Data) => {
-          Data.Title = getUploadedFileName( Data?.Title);
+          Data.Title = getUploadedFileName(Data?.Title);
           Data.siteType = 'sp';
-          Data.docTitle = getUploadedFileName( Data?.FileLeafRef);
-          Data.Item_x002d_Image=Data?.Item_x0020_Cover
-           let portfolioData:any=[]
+          Data.docTitle = getUploadedFileName(Data?.FileLeafRef);
+          Data.Item_x002d_Image = Data?.Item_x0020_Cover
+          let portfolioData: any = []
           if (Data.Portfolios != undefined && Data?.Portfolios?.length > 0) {
             Data?.Portfolios?.map((portfolio: any) => {
               mastertaskdetails.map((mastertask: any) => {
@@ -56,7 +57,7 @@ const EditDocumentpanel = (props: any) => {
                 }
               });
             });
-            Data.Portfolios=portfolioData
+            Data.Portfolios = portfolioData
           }
           setTimeout(() => {
             const panelMain: any = document.querySelector('.ms-Panel-main');
@@ -67,15 +68,15 @@ const EditDocumentpanel = (props: any) => {
           console.log("document data", Data);
           setEditdocumentsData(Data);
         });
-  
+
     } catch (e: any) {
       console.log(e);
     }
   };
-  
+
   const LoadMasterTaskList = () => {
     return new Promise(function (resolve, reject) {
-    let web = new Web(props.AllListId?.siteUrl);
+      let web = new Web(props.AllListId?.siteUrl);
       web.lists
         .getById(props?.AllListId.MasterTaskListID).items
         .select(
@@ -99,21 +100,21 @@ const EditDocumentpanel = (props: any) => {
         })
     })
   }
-   const handleClosedoc = () => {
-    mastertaskdetails=[]
-     props.callbackeditpopup();
-   }
+  const handleClosedoc = () => {
+    mastertaskdetails = []
+    props.callbackeditpopup();
+  }
 
   const deleteDocumentsData = async (DeletItemId: any) => {
     console.log(DeletItemId);
     const web = new Web(props?.AllListId?.siteUrl);
-   var text: any = "Are you sure want to Delete ?";
+    var text: any = "Are you sure want to Delete ?";
     if (confirm(text) == true) {
       await web.lists.getById(props?.AllListId?.DocumentsListID)
         .items.getById(DeletItemId).recycle()
         .then((res: any) => {
           console.log(res);
-          
+
           if (props.Keydoc) {
             props.callbackeditpopup("delete");
           } else {
@@ -124,26 +125,26 @@ const EditDocumentpanel = (props: any) => {
         .catch((err) => {
           console.log(err.message);
         });
-    }   
+    }
 
   };
   const updateDocumentsData = async () => {
-    let  componetServicetagData: any=[];
-    if (EditdocumentsData?.Portfolios?.length>0) {
-      EditdocumentsData?.Portfolios?.map((portfolioId:any)=>{
+    let componetServicetagData: any = [];
+    if (EditdocumentsData?.Portfolios?.length > 0) {
+      EditdocumentsData?.Portfolios?.map((portfolioId: any) => {
         componetServicetagData.push(portfolioId?.Id)
       })
-   
+
     }
-  const web = new Web(props?.AllListId?.siteUrl);
+    const web = new Web(props?.AllListId?.siteUrl);
     await web.lists.getById(props?.AllListId?.DocumentsListID)
       .items.getById(EditdocumentsData.Id).update({
         Title: EditdocumentsData?.Title,
-        FileLeafRef:EditdocumentsData?.docTitle,
+        FileLeafRef: EditdocumentsData?.docTitle,
         ItemRank: EditdocumentsData?.ItemRank == 'Select Item Rank' ? null : EditdocumentsData?.ItemRank,
         Year: EditdocumentsData.Year,
         ItemType: EditdocumentsData.ItemType,
-         PortfoliosId: { "results": componetServicetagData.length>0 ?componetServicetagData : [] },
+        PortfoliosId: { "results": componetServicetagData.length > 0 ? componetServicetagData : [] },
         Body: EditdocumentsData?.Body,
         Item_x0020_Cover: {
           "__metadata": { type: 'SP.FieldUrlValue' },
@@ -163,28 +164,28 @@ const EditDocumentpanel = (props: any) => {
         } else {
           alert("Document(s) update successfully");
         }
-      
+
         if (props?.Keydoc) {
           props.callbackeditpopup(EditdocumentsData);
         } else {
           props.callbackeditpopup();
         }
-        mastertaskdetails=[]
-      
+        mastertaskdetails = []
+
       }).catch((err: any) => {
         console.log(err)
-        if(err.message.includes('423')){
-          alert("Document you are trying to Update/Tag is open somewhere else Plese close and try again")
+        if (err.message.includes('423')) {
+          alert("Document you are trying to update/tag is open somewhere else. Please close it and try again.")
         }
-      }) 
-    }
+      })
+  }
   const imageTabCallBack = React.useCallback((data: any) => {
     console.log(EditdocumentsData);
     console.log(data)
-    if(data!=undefined){
+    if (data != undefined) {
       setEditdocumentsData(data);
     }
-    
+
   }, [])
 
 
@@ -193,7 +194,7 @@ const EditDocumentpanel = (props: any) => {
     return (
       <>
         <div className='ps-4 siteColor subheading'>
-          {true ? `Edit Document Metadata - ${EditdocumentsData?.Title!=undefined?EditdocumentsData.Title:EditdocumentsData?.docTitle}` : null}
+          {true ? `Edit Document Metadata - ${EditdocumentsData?.Title != undefined ? EditdocumentsData.Title : EditdocumentsData?.docTitle}` : null}
         </div>
         <Tooltip ComponentId={'942'} />
       </>
@@ -205,12 +206,12 @@ const EditDocumentpanel = (props: any) => {
     }
   }
   const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
-  
+
     if (functionType == "Save") {
-      let copyPortfoliosData= copyEditData?.Portfolios?.length>0?copyEditData?.Portfolios:[]
+      let copyPortfoliosData = copyEditData?.Portfolios?.length > 0 ? copyEditData?.Portfolios : []
       copyPortfoliosData.push(DataItem[0])
-      setEditdocumentsData({...copyEditData,Portfolios:copyPortfoliosData});
-       setisopencomonentservicepopup(false);
+      setEditdocumentsData({ ...copyEditData, Portfolios: copyPortfoliosData });
+      setisopencomonentservicepopup(false);
     }
     else {
       setisopencomonentservicepopup(false);
@@ -220,28 +221,28 @@ const EditDocumentpanel = (props: any) => {
   const getUploadedFileName = (fileName: any) => {
     const indexOfLastDot = fileName?.lastIndexOf('.');
     if (indexOfLastDot !== -1) {
-        const extractedPart = fileName?.substring(0, indexOfLastDot);
-        return extractedPart;
-    }else{
-        return fileName
+      const extractedPart = fileName?.substring(0, indexOfLastDot);
+      return extractedPart;
+    } else {
+      return fileName
     }
-}
+  }
 
   const opencomonentservicepopup = () => {
-    copyEditData=[]
-    copyEditData= EditdocumentsData
+    copyEditData = []
+    copyEditData = EditdocumentsData
     setisopencomonentservicepopup(true)
-     }
+  }
 
-      const DeleteTagPortfolios=(deletePortfolioId:any)=>{
-      let   copyEditData= EditdocumentsData
-          setEditdocumentsData((prev:any)=>{
-            return{
-              ...prev,Portfolios:prev.Portfolios?.filter((portfolio:any)=>portfolio?.Id!=deletePortfolioId)
-            }
-          })
-
+  const DeleteTagPortfolios = (deletePortfolioId: any) => {
+    let copyEditData = EditdocumentsData
+    setEditdocumentsData((prev: any) => {
+      return {
+        ...prev, Portfolios: prev.Portfolios?.filter((portfolio: any) => portfolio?.Id != deletePortfolioId)
       }
+    })
+
+  }
   /////////folara editor function start//////////
   const HtmlEditorCallBack = (items: any) => {
     console.log(items);
@@ -251,8 +252,8 @@ const EditDocumentpanel = (props: any) => {
     } else {
       description = items
     }
-    let copyData= {...EditdocumentsData}
-    copyData.Body=description
+    let copyData = { ...EditdocumentsData }
+    copyData.Body = description
     setEditdocumentsData(copyData)
   }
   //////// folora editor function end///////////
@@ -264,7 +265,7 @@ const EditDocumentpanel = (props: any) => {
         customWidth="1091px"
         onDismiss={handleClosedoc}
         isBlocking={false}
-     
+
       >
 
 
@@ -279,9 +280,9 @@ const EditDocumentpanel = (props: any) => {
           <Tab eventKey="BASICINFORMATION" title="BASIC INFORMATION" className='p-0'>
 
             <div className='border border-top-0 p-2'>
-              {EditdocumentsData?.Url?.Url  && <div className='d-flex'>
+              {EditdocumentsData?.Url?.Url && <div className='d-flex'>
                 <div className='input-group'><label className='form-label full-width'>URL</label>
-                  <input type='text' className="from-control w-75"  value={EditdocumentsData?.Url?.Url} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Url: { ...EditdocumentsData.Url, Url: e.target.value } }))}></input>
+                  <input type='text' className="from-control w-75" value={EditdocumentsData?.Url?.Url} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Url: { ...EditdocumentsData.Url, Url: e.target.value } }))}></input>
                 </div>
               </div>}
 
@@ -292,7 +293,7 @@ const EditDocumentpanel = (props: any) => {
 
                 <div className="input-group mx-4"><label className="full-width ">Year </label>
                   <input type="text" className="form-control" value={EditdocumentsData?.Year} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Year: e.target.value })} />
-               
+
                 </div>
 
                 <div className="input-group">
@@ -311,7 +312,7 @@ const EditDocumentpanel = (props: any) => {
               <div className='d-flex mt-3'>
                 <div className="input-group"><label className="full-width ">Title </label>
                   <input type="text" className="form-control" value={EditdocumentsData?.Title}
-                    onChange={(e) =>setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value })}
+                    onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value })}
                   />
                 </div>
                 <div className="input-group mx-4">
@@ -320,33 +321,67 @@ const EditDocumentpanel = (props: any) => {
                   </label>
 
                   {EditdocumentsData?.Portfolios != undefined &&
-                  EditdocumentsData?.Portfolios?.map((portfolio:any)=>{
-                    return(
+                    EditdocumentsData?.Portfolios?.map((portfolio: any) => {
+                      return (
                         <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
-                      <a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${portfolio?.Id}`}>{portfolio?.Title}</a>
-                      <a>
-                        <span className="bg-light svg__icon--cross svg__iconbox" onClick={()=>DeleteTagPortfolios(portfolio?.Id)}></span>
-                      </a></div>
-                    )
-                  })
-                }
+                          <a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${portfolio?.Id}`}>{portfolio?.Title}</a>
+                          <a>
+                            <span className="bg-light svg__icon--cross svg__iconbox" onClick={() => DeleteTagPortfolios(portfolio?.Id)}></span>
+                          </a></div>
+                      )
+                    })
+                  }
 
-                  {EditdocumentsData?.Portfolios?.length==0  &&
-                  
-                  <input type="text" className="form-control" readOnly />}
+                  {EditdocumentsData?.Portfolios?.length == 0 &&
+
+                    <input type="text" className="form-control" readOnly />}
                   <span className="input-group-text" title="Linked Component Task Popup">
                     <span className="svg__iconbox svg__icon--editBox" onClick={(e) => opencomonentservicepopup()}></span>
                   </span>
                 </div>
 
               </div>
-             {EditdocumentsData!=undefined && <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Body != undefined ? EditdocumentsData?.Body : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>} 
+              {EditdocumentsData?.File_x0020_Type === "msg" ?
+                <>
+                  <div className='mt-3'>
+                    <div className="input-group"><label className="form-label full-width ">Recipients </label>
+                      <div className='w-50'>
+                        {(EditdocumentsData?.recipients) ?
+                          (JSON.parse(EditdocumentsData?.recipients)?.map((item: any) => {
+                            return (
+                              <input type="text" className="form-control" value={`${item?.email} (${item?.recipType})`} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, recipients: e.target.value })} />
+                            )
+                          })) :
+                          <input type="text" className="form-control" onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, recipients: e.target.value })} />
+                        }
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className='d-flex gap-4 mt-2'>
+                    <div className="input-group">
+                      <label className="full-width">SenderEmail</label>
+                      <input type="text" className="form-control" value={EditdocumentsData?.senderEmail} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, senderEmail: e.target.value })} />
+
+                    </div>
+                    <div className="input-group"><label className=" full-width ">CreationTime </label>
+                      {EditdocumentsData?.creationTime ?
+                        <input type="datetime" className="form-control" value={moment(EditdocumentsData?.creationTime).format("DD/MM/YYYY HH:mm")} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, creationTime: e.target.value })} />
+                        :
+                        (<input type="datetime" className="form-control" value={EditdocumentsData?.creationTime} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, creationTime: e.target.value })} />)
+
+                      }
+                    </div>
+                  </div>
+                </>
+                : ""}
+              {EditdocumentsData != undefined && <div className='mt-3'> <HtmlEditorCard editorValue={EditdocumentsData?.Body != undefined ? EditdocumentsData?.Body : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>}
             </div>
           </Tab>
           <Tab eventKey="IMAGEINFORMATION" title="IMAGE INFORMATION" className='p-0'  >
             <div className='border border-top-0 p-2'>
-           
-            {isOpenImageTab && <ImageInformation EditdocumentsData={EditdocumentsData} setData={setEditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />}
+
+              {isOpenImageTab && <ImageInformation EditdocumentsData={EditdocumentsData} setData={setEditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />}
               {/* {isOpenImageTab && <ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />} */}
             </div>
           </Tab>

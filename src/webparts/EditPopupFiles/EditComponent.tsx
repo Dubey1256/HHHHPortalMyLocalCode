@@ -203,14 +203,14 @@ let ID: any;
         setModalIsOpen(true);
         let targetDiv: any = document?.querySelector('.ms-Panel-main');
         setTimeout(() => {
-            if (targetDiv) {
+            if (targetDiv && PortfolioTypeColor?.length > 0) {
                 // Change the --SiteBlue variable for elements under the targetDiv
                 targetDiv?.style?.setProperty('--SiteBlue', PortfolioTypeColor); // Change the color to your desired value
             }
         }, 1000)
     };
     let statusDropDown = [
-        { rankTitle: "Select Status", rank: null },
+        { rankTitle: "Select Item Rank", rank: null },
         { rankTitle: "Not Started", rank: 0 },
         { rankTitle: "In Progress", rank: 10 },
         { rankTitle: "Completed", rank: 100 },
@@ -367,28 +367,9 @@ let ID: any;
     },[])
 
 
-    // const getSmartmetadata = async () => {
-    //     try {
-    //       const web = new Web(Urls);
-    //       const smartmetaDetails = await web.lists
-    //         .getById(props?.AllListId?.SmartMetadataListID)
-    //         .items.select(
-    //           'ID,Title,IsVisible,ParentID,Parent/Id,Parent/Title,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable'
-    //         )
-    //         .expand('Parent')
-    //         .top(4999)
-    //         .get();
-    
-    //       console.log(smartmetaDetails);
-    
-    //       const filteredSmartMetadata = smartmetaDetails.filter(
-    //         (item: any) => item.TaxType === props.TaxType
-    //       );
-    //       setAllSmartMetadata(filteredSmartMetadata);
-    //     } catch (error) {
-    //       console.error('Error fetching smart metadata:', error);
-    //     }
-    //   };
+   
+
+
 
     const Call = React.useCallback((item1: any, type: any, functionType: any) => {
         if (type == "SmartComponent") {
@@ -438,15 +419,19 @@ let ID: any;
         } else {
             if (type == "Multi") {
                 if (item1 != undefined && item1.length > 0) {
-                    setLinkedComponentData(item1);
+                    setfilterData(item1);
                     console.log("Popup component linkedComponent", item1.linkedComponent);
                 }
             }
             if (type == "Single") {
-                if (item1 != undefined && item1.length > 0) {
-                    setLinkedComponentData(item1);
-                    console.log("Popup component linkedComponent", item1.linkedComponent);
-                }
+                    if(item1 != undefined && item1.length > 0 && item1.length > 1){
+                    var newArray = item1.map((obj: { original: any; }) => obj.original);
+                    setLinkedComponentData(newArray);
+                   }else{
+                    if(item1 != undefined){
+                        setLinkedComponentData([item1]);
+                    }
+                    }
             }
         }
         if (CategoriesData != undefined) {
@@ -913,10 +898,8 @@ let ID: any;
             if (item.Component?.length > 0) {
                 setSmartComponentData(item.Component);
             }
-            var Rr: any = [];
-            if (item.ServicePortfolio != undefined) {
-                Rr.push(item.ServicePortfolio);
-                setLinkedComponentData(Rr);
+            if (item.Portfolios != undefined) {
+                setLinkedComponentData(item.Portfolios);
             }
 
             if (item.ComponentLink != null) {
@@ -1015,6 +998,26 @@ let ID: any;
             }
         }
 
+
+        const imagesForSecondArray = Tasks[0].TeamMembers?.map(({ Id, Name,Title }:any) => ({
+            Id,
+            Name,
+            Title,
+            Item_x0020_Cover: AllUsers.find((item:any) => item.AssingedToUserId === Id)?.Item_x0020_Cover || null,
+          }));
+          
+          console.log(imagesForSecondArray);
+        //     const user = AllUsers.filter(
+        //         (user: any) => user?.AssingedToUser?.Id === name
+        //     );
+        //     let Image: any;
+        //     if (user[0]?.Item_x0020_Cover != undefined) {
+        //         Image = user[0].Item_x0020_Cover.Url;
+        //     } else { 
+        //         Image = "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"; 
+        //     }
+    
+        Tasks[0].TeamMembers = imagesForSecondArray;
         Tasks[0].siteCompositionData = SiteCompositionTemp;
         Tasks[0].listId = RequireData.MasterTaskListID;
         Tasks[0].siteUrl = RequireData.siteUrl;
@@ -1703,26 +1706,26 @@ let ID: any;
                             : EditData?.HelpInformation,
                     Body:
                         PostBody != undefined && PostBody != "" ? PostBody : EditData?.Body,
-                    AssignedToId: {
-                        results:
-                        TeamMemberIds != undefined && TeamMemberIds?.length > 0
-                            ? TeamMemberIds
-                            : []
-                       
-                    },
-                    ResponsibleTeamId: {
-                        results:
-                            ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0
-                                ? ResponsibleTeamIds
-                                : []
-                    },
-                    TeamMembersId: {
-                        results:
-                        AssignedToIds != undefined && AssignedToIds?.length > 0
-                            ? AssignedToIds
-                            : []
+                        AssignedToId: {
+                            results:
+                                AssignedToIds != undefined && AssignedToIds?.length > 0
+                                    ? AssignedToIds
+                                    : []
                            
-                    }
+                        },
+                        ResponsibleTeamId: {
+                            results:
+                                AssignedToIds != undefined && AssignedToIds?.length > 0
+                                    ? AssignedToIds
+                                    : []
+                        },
+                        TeamMembersId: {
+                           
+                                    results:
+                                    TeamMemberIds != undefined && TeamMemberIds?.length > 0
+                                        ? TeamMemberIds
+                                        : []
+                        }
                 })
                 .then((res: any) => {
 
@@ -1761,9 +1764,12 @@ let ID: any;
     }
 
     
-      const handleInputChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setEditData({...EditData,PercentComplete:event.target.value})
+    const handleInputChange = (event:any) => {
+        const selectedValue = event.target.value;
+        setEditData({ ...EditData, PercentComplete: selectedValue });
       };
+    
+
 
 
 
@@ -2801,7 +2807,7 @@ let ID: any;
     React.useEffect(() => {
         setTimeout(() => {
             const panelMain: any = document.querySelector('.ms-Panel-main');
-            if (panelMain && PortfolioTypeColor) {
+            if (panelMain && PortfolioTypeColor?.length > 0) {
                 panelMain.style.setProperty('--SiteBlue', PortfolioTypeColor); // Set the desired color value here
             }
         }, 2000)
@@ -3127,16 +3133,80 @@ let ID: any;
                                                             <label className="form-label full-width">
                                                                 Portfolio Item
                                                             </label>
-                                                            <input type="text" className="form-control" />
-                                                            <span className="input-group-text">
+
+
+                                                            {
+                                (linkedComponentData?.length == 0 || linkedComponentData.length !== 1) && 
+                                <>
+                                <input type="text" className="form-control" />
+                                <span className="input-group-text" placeholder="Project">
+                                <span onClick={(e) =>EditComponent(EditData)} className="svg__iconbox svg__icon--editBox"> </span>
+                            </span></>
+                            }</div>
+                           
+                               {linkedComponentData && linkedComponentData.length == 1 ? 
+                            //    "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=4310"
+                            (
+                              <div >
+                                {linkedComponentData?.map((items:any, Index: any)=>
+                                 <div className="full-width replaceInput alignCenter" key={Index}>
+                              
+                                  <a
+                                    href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items.Id}`}
+                                    className="textDotted hreflink"         
+                                    data-interception="off"
+                                    target="_blank"
+                                  >
+                                    {items?.Title}
+                                  </a>
+                                  <span className="" placeholder="Project">
+                                  <span onClick={(e) =>EditComponent(EditData)} className="svg__iconbox svg__icon--editBox"> </span>
+                            </span>
+                                </div>)}
+                                </div>) : ""
+                  
+                            }
+                                             
+
+                                      {linkedComponentData && linkedComponentData.length > 1 ? 
+                            (
+                              <div  className="w=100" >
+                                {linkedComponentData?.map((items:any, Index: any)=>
+                                 <div className="block d-flex justify-content-between mb-1" key={Index}>
+                              
+                                  <a
+                                     href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items.Id}`}
+                                    className="wid-90 light"
+                                    data-interception="off"
+                                    target="_blank"
+                                  >
+                                    {items?.Title}
+                                  </a>
+                                  <a className="text-end">
+                                            {" "}
+                                            <span
+                                                                                            className="bg-light svg__icon--cross svg__iconbox"
+                                                                                            onClick={() =>
+                                                                                                setLinkedComponentData([])
+                                                                                            }
+                                                                                        ></span>
+                                          </a>
+                                </div>)}
+                                </div>) : ""}
+
+
+
+
+                                                            {/* <input type="text" className="form-control" /> */}
+                                                            {/* <span className="input-group-text">
                                                                 <span onClick={(e) =>
                                                                     EditComponent(EditData)
                                                                 } className="svg__iconbox svg__icon--editBox">
 
                                                                 </span>
-                                                            </span>
-                                                        </div>
-                                                        <div className="col-sm-12  inner-tabb">
+                                                            </span> */}
+                                                       
+                                                        {/* <div className="col-sm-12  inner-tabb">
                                                             {linkedComponentData?.length > 0 ? (
                                                                 <div >
                                                                     {linkedComponentData?.map((com: any) => {
@@ -3167,7 +3237,7 @@ let ID: any;
                                                                 </div>
                                                             ) : null}
 
-                                                        </div>
+                                                        </div> */}
                                                     {/* {EditData?.Portfolio_x0020_Type == "Service" && (
                                                         <div className="col-sm-12 inner-tabb">
                                                             {linkedComponentData?.length > 0 ? (
@@ -3398,14 +3468,21 @@ let ID: any;
                                                         <label className="form-label  full-width">
                                                             Status
                                                         </label><div className="editcolumn full-width">
-                                                          <select value={EditData?.PercentComplete} onChange={handleInputChange}>
-                                                            {statusDropDown.map((item: any, index: any) => (
-                                                              <option key={index} value={item.rank}>
-                                                              {item.rankTitle}
-                                                                     </option>
-                                                                      ))}
-                                                                   </select>
-                                                       </div>
+                                                        {statusDropDown.map((item: any, index: any) => (
+                                                            
+                                                            <div className="SpfxCheckRadio">
+                                                            <label key={index}>
+                                                            <input
+                                                                type="radio"
+                                                                name="percentComplete"
+                                                                value={item.rank}
+                                                                defaultChecked={EditData?.PercentComplete === item.rank}
+                                                                onChange={handleInputChange}
+                                                            />
+                                                            {item.rankTitle}
+                                                            </label>
+                                                            </div>
+                                                        ))}</div>
                                                        
                                                     
                                                          
@@ -3544,7 +3621,7 @@ let ID: any;
                                                             <label className="form-label full-width  mx-2">
                                                                 Working Member
                                                             </label>
-                                                            {EditData?.AssignedUsers?.map(
+                                                            {EditData?.TeamMembers?.map(
                                                                 (userDtl: any, index: any) => {
                                                                     return (
                                                                         <a
@@ -3724,7 +3801,7 @@ let ID: any;
                                  <div className="full-width replaceInput alignCenter" key={Index}>
                               
                                   <a
-                                    href={`${SelectD.siteUrl}/SitePages/Project-Management.aspx?ProjectId?=${items.Id}`}
+                                    href={`${SelectD.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId?=${items.Id}`}
                                     className="textDotted hreflink"         
                                     data-interception="off"
                                     target="_blank"
@@ -3760,7 +3837,7 @@ let ID: any;
                                  <div className="block d-flex justify-content-between mb-1" key={Index}>
                               
                                   <a
-                                    href={`${SelectD.siteUrl}/SitePages/Project-Management.aspx?ProjectId?=${items.Id}`}
+                                    href={`${SelectD.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId?=${items.Id}`}
                                     className="wid-90 light"
                                     data-interception="off"
                                     target="_blank"
@@ -4484,7 +4561,8 @@ let ID: any;
                                             {" "}
                                             {EditData?.ID ? (
                                                 <VersionHistoryPopup
-                                                    taskId={EditData?.ID}
+                                                     RequiredListIds={RequireData}
+                                                     taskId={EditData?.ID}
                                                     listId={RequireData.MasterTaskListID}
                                                     siteUrls={RequireData?.siteUrl}
                                                 />
@@ -4894,6 +4972,7 @@ let ID: any;
                             <div className="text-left">
                                 <span className="hreflink">
                                     {" "}
+                
                                     {EditData?.ID ? (
                                         <VersionHistoryPopup
                                             taskId={EditData?.ID}

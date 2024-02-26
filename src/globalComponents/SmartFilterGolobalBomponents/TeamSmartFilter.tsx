@@ -1510,7 +1510,8 @@ const TeamSmartFilter = (item: any) => {
             task.timeSheetsDescriptionSearch = "";
             const key = `Task${task?.siteType + task.Id}`;
             if (timeEntryIndex.hasOwnProperty(key) && timeEntryIndex[key]?.Id === task.Id && timeEntryIndex[key]?.siteType === task.siteType) {
-                task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime;
+                // task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime;
+                task.TotalTaskTime = timeEntryIndex[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndex[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndex[key]?.TotalTaskTime;
                 task.timeSheetsDescriptionSearch = timeEntryIndex[key]?.timeSheetsDescriptionSearch;
             }
         })
@@ -1531,7 +1532,8 @@ const TeamSmartFilter = (item: any) => {
                 task.timeSheetsDescriptionSearch = "";
                 const key = `Task${task?.siteType + task.Id}`;
                 if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
-                    task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                    // task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                    task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndexLocalStorage[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndexLocalStorage[key]?.TotalTaskTime;
                     task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
                 }
             })
@@ -1792,7 +1794,7 @@ const TeamSmartFilter = (item: any) => {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row }) => (
                     <span>
-                        <a style={{ textDecoration: "none", color: "#000066" }} href={`${ContextValue?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
+                        <a style={{ textDecoration: "none", color: "#000066" }} href={`${ContextValue?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
                     </span>
                 ),
                 placeholder: "Title",
@@ -2303,7 +2305,7 @@ const TeamSmartFilter = (item: any) => {
                                                     {selectedProject.map((ProjectData: any, index: any) => {
                                                         return (
                                                             <div className="block w-100">
-                                                                <a className="hreflink wid90" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
+                                                                <a className="hreflink wid90" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}>
                                                                     {ProjectData.Title}
                                                                 </a>
                                                                 <span onClick={() => RemoveSelectedProject(index)} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>

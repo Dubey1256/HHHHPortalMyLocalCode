@@ -185,7 +185,7 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Last Month') {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-            var change = (Moment(startingDateOfLastMonth).add(18, 'days').format())
+            var change = (Moment(startingDateOfLastMonth).add(27, 'days').format())
             var b = new Date(change)
             formattedDate = b;
         } else if (startDateOf == 'Last Week') {
@@ -1457,7 +1457,7 @@ const TaskDashboard = (props: any) => {
                 emp.leaveStart = new Date(emp?.leaveStart).setHours(0,0,0,0)
                 emp.leaveEnd = toIST(emp?.EndDate, true, emp?.HalfDay, emp?.HalfDayTwo);
                 emp.leaveEnd = new Date(emp?.leaveEnd).setHours(0,0,0,0)
-                if ((startDate >= emp?.leaveStart && startDate <= emp?.leaveEnd) && (emp?.HalfDay !== null && emp?.HalfdayTwo !== null) && (emp?.HalfDay != true && emp?.HalfdayTwo != true)) {
+                if ((startDate >= emp?.leaveStart && startDate <= emp?.leaveEnd) && (emp?.HalfDay !== null && emp?.HalfDayTwo !== null) && (emp?.HalfDay != true && emp?.HalfDayTwo != true)) {
                     AllLeaves.push(emp?.Employee?.Id);
                 }
             })
@@ -1729,7 +1729,7 @@ const TaskDashboard = (props: any) => {
                 text =
                 '<tr>' +
                 '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.siteType + '</td>'
-                + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">'+ '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Project-Management.aspx?ProjectId=' + item.Project?.Id +'><span style="font-size:13px">'+  (item?.Project == undefined?'':item?.Project.Title) + '</span></a>' + '</p>' +  '</td>'
+                + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">'+ '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Project-Management-Profile.aspx?ProjectId=' + item.Project?.Id +'><span style="font-size:13px">'+  (item?.Project == undefined?'':item?.Project.Title) + '</span></a>' + '</p>' +  '</td>'
                 +'<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:135px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Portfolio-Profile.aspx?taskId=' + item?.Portfolio?.Id +'><span style="font-size:13px">'+ (item.Portfolio == undefined?'':item.Portfolio.Title) +'</span></a>' + '</p>' + '</td>'
 
                 + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px">' + item.Title + '</span></a>' + '</p>' + '</td>'

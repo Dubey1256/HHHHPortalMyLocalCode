@@ -2034,7 +2034,7 @@ const CreateActivity = (props: any) => {
                   <span className="full-width">
                     <div className="full-width replaceInput pe-0 alignCenter" style={{ width: '90%' }}>
                       <a title={selectedProjectData?.Title} target="_blank" data-interception="off" className="textDotted"
-                        href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${selectedProjectData?.ID}`} >
+                        href={`${AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${selectedProjectData?.ID}`} >
                         {selectedProjectData?.Title}
                       </a>
                       <span title="Remove Project" onClick={() => { setSelectedProjectData({}) }}
@@ -2095,14 +2095,14 @@ const CreateActivity = (props: any) => {
         })}
         <button
           type="button"
-          className="btn btn-primary mx-2"
+          className="btn btn-primary ms-2"
           onClick={() => saveNoteCall()}
         >
           Submit
         </button>
         {props?.pageName != "QuickTask" ? <button
           type="button"
-          className="btn btn-default"
+          className="btn btn-default ms-2"
           onClick={() => closeTaskStatusUpdatePoup("item")}
         >
           Cancel
