@@ -1641,20 +1641,23 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     let selectedCC: any = [];
     let Sitestagging: any
     let cctag: any = []
+   let  TeamMembersId:any=[]
+   let AssignedToId:any=[];
+   let ResponsibleTeamId:any=[];
     if (functionType == "Save") {
       if (this?.state?.isopencomonentservicepopup) {
-        DataItem[0]?.ClientCategory?.map((cc: any) => {
-          if (cc.Id != undefined) {
-            let foundCC = AllClientCategories?.find((allCC: any) => allCC?.Id == cc.Id)
-            if (this?.state?.Result?.siteType?.toLowerCase() == 'shareweb') {
-              selectedCC.push(cc.Id)
-              cctag.push(foundCC)
-            } else if (this?.state?.Result?.siteType?.toLowerCase() == foundCC?.siteName?.toLowerCase()) {
-              selectedCC.push(cc.Id)
-              cctag.push(foundCC)
-            }
-          }
-        })
+        // DataItem[0]?.ClientCategory?.map((cc: any) => {
+        //   if (cc.Id != undefined) {
+        //     let foundCC = AllClientCategories?.find((allCC: any) => allCC?.Id == cc.Id)
+        //     if (this?.state?.Result?.siteType?.toLowerCase() == 'shareweb') {
+        //       selectedCC.push(cc.Id)
+        //       cctag.push(foundCC)
+        //     } else if (this?.state?.Result?.siteType?.toLowerCase() == foundCC?.siteName?.toLowerCase()) {
+        //       selectedCC.push(cc.Id)
+        //       cctag.push(foundCC)
+        //     }
+        //   }
+        // })
         if (DataItem[0]?.Sitestagging != undefined) {
           if (this?.state?.Result?.siteType?.toLowerCase() == "shareweb") {
             var sitetag = JSON.parse(DataItem[0]?.Sitestagging)
@@ -1690,11 +1693,44 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
 
         }
+        DataItem?.map((portfolio:any)=>{
+          portfolio?.ClientCategory?.map((cc: any) => {
+            if (cc.Id != undefined) {
+              let foundCC = AllClientCategories?.find((allCC: any) => allCC?.Id == cc.Id)
+              if (this?.state?.Result?.siteType?.toLowerCase() == 'shareweb') {
+                selectedCC.push(cc.Id)
+                cctag.push(foundCC)
+              } else if (this?.state?.Result?.siteType?.toLowerCase() == foundCC?.siteName?.toLowerCase()) {
+                selectedCC.push(cc.Id)
+                cctag.push(foundCC)
+              }
+            }
+          })
+          if(portfolio?.AssignedTo?.length>0 ){
+            portfolio?.AssignedTo?.map((assignData:any)=>{
+              AssignedToId.push(assignData.Id) 
+            })
+            if(portfolio?.ResponsibleTeam?.length>0){
+              portfolio?.ResponsibleTeam?.map((resp:any)=>{
+                ResponsibleTeamId.push(resp.Id) 
+              })
+            }
+            if(portfolio?.TeamMembers?.length>0){
+              portfolio?.TeamMembers?.map((teamMemb:any)=>{
+                TeamMembersId.push(teamMemb.Id) 
+              })
+            }
+          }
+        })
+
+    
         this.setState((prevState) => ({
           Result: {
             ...prevState.Result,
             Portfolio: DataItem[0],
-
+            ResponsibleTeam:DataItem[0]?.ResponsibleTeam,
+            TeamMembers:DataItem[0]?.TeamMembers,
+            AssignedTo:DataItem[0]?.AssignedTo,
 
           }
         }))
@@ -1702,6 +1738,20 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
           PortfolioId: DataItem[0]?.Id,
           ClientCategoryId: { results: selectedCC },
           Sitestagging: Sitestagging,
+         
+          TeamMembersId: {
+            results:TeamMembersId
+
+          },
+          AssignedToId: {
+            results:AssignedToId
+
+          },
+          ResponsibleTeamId: {
+            results:ResponsibleTeamId
+
+          },
+      
         }
         this?.updateProjectComponentServices(dataUpdate)
       } else {
@@ -2101,7 +2151,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dt className='bg-Fa'>Project</dt>
                         <dd className='bg-Ff full-width'>
                           <div>
-                            {ProjectData?.Title != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
+                            {ProjectData?.Title != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
                               <ReactPopperTooltipSingleLevel ShareWebId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
                             <span className="pull-right svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
                           </div>

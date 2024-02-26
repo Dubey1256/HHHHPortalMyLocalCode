@@ -630,8 +630,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           let TeamMsg = ''
           let MsgURL = `${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID}&Site=${this.state.listName}`
           let MsgTitle = `${this.state?.Result?.TaskId}-${this.state?.Result?.Title}`
-          if (window.location.href.toLowerCase().indexOf('project-management.aspx?projectid=') > -1) {
-            MsgURL = `${this.props.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${this.state.itemID}`
+          if (window.location.href.toLowerCase().indexOf('project-management-profile.aspx?projectid=') > -1) {
+            MsgURL = `${this.props.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${this.state.itemID}`
             MsgTitle = `${this.state?.Result?.Title}`
           }
           if (window.location.href.toLowerCase().indexOf('portfolio-profile.aspx?taskid=') > -1) {
