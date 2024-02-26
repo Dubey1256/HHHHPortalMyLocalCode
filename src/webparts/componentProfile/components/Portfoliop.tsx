@@ -262,7 +262,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   if (type == "Date") {
     const handleSave = async () => {
       try {
-        setFieldValue((prevValue: any) => fieldValue ? Moment(fieldValue).format("DD/MM/YYYY"): '');
+        let updatedDate = (fieldValue != "" && fieldValue != "Invalid Date") ? fieldValue : null
 
         // if(type == "Number"){
         //   setFieldValue(fieldValue/100);
@@ -272,7 +272,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
           .getByTitle(listName)
           .items.getById(itemId)
           .update({
-            [fieldName]: fieldValue,
+            [fieldName]: updatedDate,
           });
 
         setEditing(false);
