@@ -3234,7 +3234,6 @@ const GetleaveUser = async (TaskUser: any, Context: any) => {
                 users['ComponentName'] = ''
                 users['Department'] = item.TimeCategory
                 users['Effort'] = val.totaltime !== undefined && val.totaltime <= 4 ? val.totaltime : 8
-                users['TaskTitle'] = 'Leave'
                 users['Description'] = 'Leave'
                 users['ClientCategoryy'] = 'Leave'
                 users['siteType'] = ''
