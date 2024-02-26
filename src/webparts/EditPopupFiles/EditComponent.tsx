@@ -1764,9 +1764,12 @@ let ID: any;
     }
 
     
-      const handleInputChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setEditData({...EditData,PercentComplete:event.target.value})
+    const handleInputChange = (event:any) => {
+        const selectedValue = event.target.value;
+        setEditData({ ...EditData, PercentComplete: selectedValue });
       };
+    
+
 
 
 
@@ -3465,14 +3468,21 @@ let ID: any;
                                                         <label className="form-label  full-width">
                                                             Status
                                                         </label><div className="editcolumn full-width">
-                                                          <select value={EditData?.PercentComplete} onChange={handleInputChange}>
-                                                            {statusDropDown.map((item: any, index: any) => (
-                                                              <option key={index} value={item.rank}>
-                                                              {item.rankTitle}
-                                                                     </option>
-                                                                      ))}
-                                                                   </select>
-                                                       </div>
+                                                        {statusDropDown.map((item: any, index: any) => (
+                                                            
+                                                            <div className="SpfxCheckRadio">
+                                                            <label key={index}>
+                                                            <input
+                                                                type="radio"
+                                                                name="percentComplete"
+                                                                value={item.rank}
+                                                                defaultChecked={EditData?.PercentComplete === item.rank}
+                                                                onChange={handleInputChange}
+                                                            />
+                                                            {item.rankTitle}
+                                                            </label>
+                                                            </div>
+                                                        ))}</div>
                                                        
                                                     
                                                          
