@@ -272,7 +272,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
           .getByTitle(listName)
           .items.getById(itemId)
           .update({
-            [fieldName]: fieldValue,
+            [fieldName]: fieldValue != '' ? fieldValue : null,
           });
 
         setEditing(false);
