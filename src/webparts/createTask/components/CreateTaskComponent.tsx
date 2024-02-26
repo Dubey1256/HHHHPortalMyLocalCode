@@ -24,7 +24,7 @@ let TeamMessagearray: any = [];
 let AllComponents: any = []
 let taskUsers: any = [];
 let ClientActivityJson: any = null;
-// let taskCreated = false;
+ let taskCreated = false;
 let createdTask: any = {}
 let IsapprovalTask = false
 let QueryPortfolioId: any = null;
@@ -45,7 +45,8 @@ function CreateTaskComponent(props: any) {
         passdata: null
     })
     const [siteType, setSiteType] = React.useState([])
-    const [sendApproverMail, setSendApproverMail] = React.useState(false)
+    const [sendApproverMail, setSendApproverMail] = React.useState(false);
+    const [isTaskCreated, setIsTaskCreated] = React.useState(false)
     const [ProjectManagementPopup, setProjectManagementPopup] = React.useState(false)
     const [TaskTypes, setTaskTypes] = React.useState([])
     const [subCategory, setsubCategory] = React.useState([])
@@ -786,6 +787,7 @@ function CreateTaskComponent(props: any) {
             alert("Please Select the Site ")
         }
         else {
+            setIsTaskCreated(true)
             let CategoryTitle: any;
             let TeamMembersIds: any[] = [];
             subCategories?.map((item: any) => {
@@ -1056,7 +1058,8 @@ function CreateTaskComponent(props: any) {
                         data.data.siteUrl = selectedSite?.siteUrl?.Url;
 
                         data.data.listId = selectedSite?.listId;
-                        // taskCreated = true;
+                        setIsTaskCreated(true)
+                        taskCreated = true;
                         createdTask.Id = data?.data?.Id
                         createdTask.siteType = save.siteType
                         data.data.SiteIcon = selectedSite?.Item_x005F_x0020_Cover?.Url;
@@ -1107,6 +1110,7 @@ function CreateTaskComponent(props: any) {
                 }
             } catch (error) {
                 console.log("Error:", error.message);
+                setIsTaskCreated(false)
             }
         }
     }
@@ -1668,13 +1672,16 @@ function CreateTaskComponent(props: any) {
             if (burgerMenuTaskDetails?.TaskType == 'Bug' || burgerMenuTaskDetails?.TaskType == 'Design' && createdTask?.Id != undefined) {
                 window.open(base_Url + "/SitePages/CreateTask.aspx", "_self")
                 createdTask = {};
+                setIsTaskCreated(false)
             }
         } else if (items == "Save" && createdTask?.Id != undefined) {
             setTimeout(() => {
                 window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
                 createdTask = {};
+                setIsTaskCreated(false)
             }, 1200)
         }
+
     }, [])
     const EditPopup = React.useCallback((item: any) => {
         setEditTaskPopupData({
@@ -1991,7 +1998,7 @@ function CreateTaskComponent(props: any) {
                             }
                         })
                     }
-                    <button type="button" className='btn btn-primary bg-siteColor ' onClick={() => createTask()}>Submit</button>
+                    <button type="button" disabled={isTaskCreated} className='btn btn-primary bg-siteColor ' onClick={() => createTask()}>Submit</button>
                 </footer>
 
 
