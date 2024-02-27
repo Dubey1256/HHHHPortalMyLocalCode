@@ -142,7 +142,7 @@ const CompareTool = (props: any) => {
             }
             // get tagged component of selected Component
             else {
-                select = "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo, TechnicalExplanations, SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,Priority_x0020_Rank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title, Portfolios/Id,Portfolios/ItemType, ClientTime,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Parent,Portfolios,TaskCategories,ClientCategory,Author,Editor,SharewebCategories"
+                select = "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo, TechnicalExplanations, SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,PriorityRank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title, Portfolios/Id,Portfolios/ItemType, ClientTime,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Parent,Portfolios,TaskCategories,ClientCategory,Author,Editor,SharewebCategories"
                 await globalCommon.getData(props?.contextValue?.siteUrl, items?.listId === undefined ? props?.contextValue?.MasterTaskListID : items?.listId, select + "&$filter=" + `(Parent/Id eq ${items?.Id})`)
                     .then(async (datas: any) => {
                         count++;
@@ -172,6 +172,7 @@ const CompareTool = (props: any) => {
             props?.contextValue
         );
         if (CallBackData.AllData != undefined && CallBackData.AllData.length > 0) {
+            CallBackData.AllData = [...CallBackData.AllData, ...CallBackData.ProjectData];
             setAllMasterTasksItems(CallBackData);
         }
 
@@ -579,7 +580,7 @@ const CompareTool = (props: any) => {
         let select: any = '';
         selectedData?.map(async (items: any) => {
             if (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature" || items?.Item_x0020_Type === "Project" || items?.Item_x0020_Type === "Sprint") {
-                select = "ID,Id,Title,Mileage,PortfolioLevel,Synonyms,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo,TechnicalExplanations,SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,Priority_x0020_Rank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title,Portfolios/Id,ClientTime,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title,FeatureType/Id,FeatureType/Title,AssignedTo/Title,AssignedTo/Id,TeamMembers/Title,TeamMembers/Id,ResponsibleTeam/Title,ResponsibleTeam/Id,PortfolioType/Title,PortfolioType/Id&$expand=Parent,PortfolioType,Portfolios,TaskCategories,AssignedTo,ClientCategory,TeamMembers,ResponsibleTeam,FeatureType,Author,Editor"
+                select = "ID,Id,Title,Mileage,PortfolioLevel,Synonyms,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo,TechnicalExplanations,SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,PriorityRank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title,Portfolios/Id,ClientTime,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title,FeatureType/Id,FeatureType/Title,AssignedTo/Title,AssignedTo/Id,TeamMembers/Title,TeamMembers/Id,ResponsibleTeam/Title,ResponsibleTeam/Id,PortfolioType/Title,PortfolioType/Id&$expand=Parent,PortfolioType,Portfolios,TaskCategories,AssignedTo,ClientCategory,TeamMembers,ResponsibleTeam,FeatureType,Author,Editor"
             } else
                 select = "ID,Id,ParentTask/Title,ParentTask/Id,ItemRank,TaskLevel,OffshoreComments,TeamMembers/Id,ClientCategory/Id,ClientCategory/Title,TaskID,ResponsibleTeam/Id,ResponsibleTeam/Title,ParentTask/TaskID,TaskType/Level,PriorityRank,TeamMembers/Title,FeedBack,Title,Id,ID,DueDate,Comments,Categories,Status,Body,PercentComplete,ClientCategory,Priority,TaskType/Id,TaskType/Title,Portfolio/Id,Portfolio/ItemType,Portfolio/PortfolioStructureID,Portfolio/Title,TaskCategories/Id,TaskCategories/Title,TeamMembers/Name,Project/Id,Project/PortfolioStructureID,Project/Title,Project/PriorityRank,AssignedTo/Id,AssignedTo/Title,AssignedToId,Author/Id,Author/Title,Editor/Id,Editor/Title,Created,Modified,IsTodaysTask,workingThisWeek&$expand=ParentTask, Portfolio,TaskType,ClientCategory,TeamMembers,ResponsibleTeam,AssignedTo,Editor,Author,TaskCategories,Project";
 
@@ -730,10 +731,10 @@ const CompareTool = (props: any) => {
         return (
             <>
                 <div className="subheading">
-                    Compare {data?.length >0 && data[0]?.TaskType?.Id !=undefined ?'Task Tool' : 'Components' }
+                    Compare {data?.length > 0 && data[0]?.TaskType?.Id != undefined ? 'Task Tool' : 'Components'}
 
                 </div>
-                {data?.length >0 && data[0]?.TaskType?.Id !=undefined ? <Tooltip ComponentId={1723} /> :  <Tooltip ComponentId={611} />} 
+                {data?.length > 0 && data[0]?.TaskType?.Id != undefined ? <Tooltip ComponentId={1723} /> : <Tooltip ComponentId={611} />}
             </>
         );
     };
@@ -811,7 +812,14 @@ const CompareTool = (props: any) => {
         const updatedItems = _.cloneDeep(data);
         if (property === 'ItemRank' && value != null)
             value = parseInt(value);
-        updatedItems[index][property] = value;
+        if (property != 'ComponentLink')
+            updatedItems[index][property] = value;
+        if (property === 'ComponentLink' && value != null) {
+            let ComponentLink:any = {};
+            ComponentLink["Url"] = value
+            updatedItems[index].ComponentLink=ComponentLink;
+        }
+
         setData(updatedItems);
     };
     const switchItems = () => {
@@ -994,7 +1002,10 @@ const CompareTool = (props: any) => {
         setautoSearch('');
         setHistory((prevHistory) => [...prevHistory, _.cloneDeep(data)]);
         const updatedItems = _.cloneDeep(data);
-        if (updatedItems[autoSearch?.itemIndex][autoSearch?.property] != undefined) {
+        if (autoSearch?.property === "FeatureType" || autoSearch?.property === "ProjectItem") {
+            updatedItems[autoSearch?.itemIndex][autoSearch?.property] = selectCategoryData;
+        }
+        else if (updatedItems[autoSearch?.itemIndex][autoSearch?.property] != undefined && (autoSearch?.property != "FeatureType" || autoSearch?.property != "ProjectItem")) {
             if (!IsExistsData(updatedItems[autoSearch?.itemIndex][autoSearch?.property], selectCategoryData) && autoSearch?.property === "PortfolioItem")
                 updatedItems[autoSearch?.itemIndex][autoSearch?.property] = selectCategoryData;
             else if (!IsExistsData(updatedItems[autoSearch?.itemIndex][autoSearch?.property], selectCategoryData[0]))
@@ -1573,23 +1584,24 @@ const CompareTool = (props: any) => {
             let postData: any = {
                 'Title': Item.Title,
                 'Help_x0020_Information': Item.Help_x0020_Information,
+                'HelpInformation': Item.Help_x0020_Information,
                 'TechnicalExplanations': Item.TechnicalExplanations,
                 'Short_x0020_Description_x0020_On': Item.Short_x0020_Description_x0020_On,
-                'Admin_x0020_Notes': Item.AdminNotes,
+                'AdminNotes': Item.AdminNotes,
                 'Background': Item.Background,
                 'Body': Item.Body,
                 'Idea': Item.Idea,
                 'ValueAdded': Item.ValueAdded,
                 'PercentComplete': PercentComplete,
                 'Priority': Item.Priority,
-                'Deliverable_x002d_Synonyms': Item.Deliverable_x002d_Synonyms,
+                'DeliverableSynonyms': Item.DeliverableSynonyms,
                 // 'Synonyms': Item.Synonyms,
                 'StartDate': Item.StartDate ? moment(Item.StartDate).format("MM-DD-YYYY") : null,
                 'DueDate': Item.DueDate ? moment(Item.DueDate).format("MM-DD-YYYY") : null,
                 'CompletedDate': Item.CompletedDate ? moment(Item.CompletedDate).format("MM-DD-YYYY") : null,
                 'ItemRank': Item.ItemRank,
                 'Mileage': Item.Mileage,
-                'Priority_x0020_Rank': Item.PriorityRank,
+                'PriorityRank': Item.PriorityRank,
                 // 'ComponentId': { "results": $scope.smartComponentsIds },
                 'PortfoliosId': { "results": portfolioIds },
                 'TaskCategoriesId': { "results": taskCategoryIds },
@@ -1604,10 +1616,10 @@ const CompareTool = (props: any) => {
                     'Description': Item.Item_x002d_Image != undefined ? Item.Item_x002d_Image.Url : null,
                     'Url': Item.Item_x002d_Image != undefined ? Item.Item_x002d_Image.Url : null,
                 },
-                'component_x0020_link': {
+                'ComponentLink': {
                     '__metadata': { 'type': 'SP.FieldUrlValue' },
-                    'Description': Item.component_x0020_link != undefined ? Item.component_x0020_link.Url : null,
-                    'Url': Item.component_x0020_link != undefined ? Item.component_x0020_link.Url : null,
+                    'Description': Item.ComponentLink != undefined ? Item.ComponentLink.Url : null,
+                    'Url': Item.ComponentLink != undefined ? Item.ComponentLink.Url : null,
                 },
                 AssignedToId: { "results": AssignedToIds },
                 TeamMembersId: { "results": TeamMembersIds },
@@ -1714,14 +1726,14 @@ const CompareTool = (props: any) => {
                 'Body': Item.Body,
                 'PercentComplete': PercentComplete,
                 'Priority': Item.Priority,
-                'Deliverable_x002d_Synonyms': Item.Deliverable_x002d_Synonyms,
+                'DeliverableSynonyms': Item.DeliverableSynonyms,
                 // 'Synonyms': Item.Synonyms,
                 'StartDate': Item.StartDate ? moment(Item.StartDate).format("MM-DD-YYYY") : null,
                 'DueDate': Item.DueDate ? moment(Item.DueDate).format("MM-DD-YYYY") : null,
                 'CompletedDate': Item.CompletedDate ? moment(Item.CompletedDate).format("MM-DD-YYYY") : null,
                 'ItemRank': Item.ItemRank,
                 'Mileage': Item.Mileage,
-                'Priority_x0020_Rank': Item.PriorityRank,
+                'PriorityRank': Item.PriorityRank,
                 'PortfoliosId': { "results": portfolioIds },
                 'TaskCategoriesId': { "results": taskCategoryIds },
                 'Package': Item.Package,
@@ -1794,7 +1806,7 @@ const CompareTool = (props: any) => {
         if (type == 'Keep2')
             var flag = confirm("This operation will save all changes in " + data[1].Title + " 2 and delete " + data[0].Title + " 1. Do you want to continue?");
         if (type == 'KeepBoth')
-            var flag = confirm("This operation will save all changes in both the Compare " +  data[0].TaskType?.Id !=undefined ? "Task" : "Components" + " .  Do you want to continue?");
+            var flag = confirm("This operation will save all changes in both the Compare " + data[0].TaskType?.Id != undefined ? "Task" : "Components" + " .  Do you want to continue?");
 
         if (flag) {
             if (type == 'Keep1') {
@@ -2036,7 +2048,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold form-label me-2 mt-1">Component Title</label>
-                                    <input type="text"  defaultValue={data[0]?.Title} onChange={(e) => changeData(0, 'Title', e.target.value)} className="form-control" />
+                                    <input type="text" defaultValue={data[0]?.Title} onChange={(e) => changeData(0, 'Title', e.target.value)} className="form-control" />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
@@ -2048,7 +2060,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold form-label me-2 mt-1">Component Title</label>
-                                    <input type="text" defaultValue={data[1]?.Title} onChange={(e) => changeData(1, 'Title', e.target.value)}  className="form-control" />
+                                    <input type="text" defaultValue={data[1]?.Title} onChange={(e) => changeData(1, 'Title', e.target.value)} className="form-control" />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -2260,13 +2272,13 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold form-label">Tagged Tasks</label>
                                     <div className="my-1 SearchTableCategoryComponent">
                                         <span className="ms-3"> {
-                                            data[0]?.taggedTasks?.length > 0 && data[0]?.taggedTasks?.map((items: any ,inexd:number) => {
+                                            data[0]?.taggedTasks?.length > 0 && data[0]?.taggedTasks?.map((items: any, inexd: number) => {
                                                 return <div className="SpfxCheckRadio alignCenter" key={items.Id}>
                                                     {items?.subRows && items?.subRows?.length > 0 ? (
                                                         <div className="alignCenter">
                                                             <span style={{ flex: "0 0 60px" }} onClick={() => toggleExpand(items, data[0], 'taggedTasks')}>  {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
                                                             <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span>  <div style={{ flex: "0 0 60px" }}>{items.TaskID}</div>
-                                                            {inexd ==0 && <input type="checkbox" checked={items.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />}
+                                                            {inexd == 0 && <input type="checkbox" checked={items.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />}
                                                             <span> <a target="_blank" className="mx-2" data-interception="off"
                                                                 href={`${items?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
                                                                 {items?.Title}
@@ -2301,13 +2313,13 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold form-label">Tagged Tasks</label>
                                     <div className="my-1 SearchTableCategoryComponent"> {
                                         <span className="ms-3"> {
-                                            data[1]?.taggedTasks?.length > 0 && data[1]?.taggedTasks?.map((items: any ,inexdnew:number) => {
+                                            data[1]?.taggedTasks?.length > 0 && data[1]?.taggedTasks?.map((items: any, inexdnew: number) => {
                                                 return <div className="SpfxCheckRadio alignCenter" key={items.Id}>
                                                     {items?.subRows && items?.subRows?.length > 0 ? (
                                                         <div className="alignCenter">
                                                             <span style={{ flex: "0 0 60px" }} onClick={() => toggleExpand(items, data[1], 'taggedTasks')}>   {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
                                                             <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span>  <div style={{ flex: "0 0 60px" }}>{items.TaskID}</div>
-                                                            {inexdnew ==0 &&  <input type="checkbox" checked={items?.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />}
+                                                            {inexdnew == 0 && <input type="checkbox" checked={items?.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />}
                                                             <span> <a target="_blank" className="mx-2" data-interception="off"
                                                                 href={`${items?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
                                                                 {items?.Title}
@@ -2371,7 +2383,7 @@ const CompareTool = (props: any) => {
                         </Row>
                         {<Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
-                                {data[0]?.TaskType?.Id !=undefined ?
+                                {data[0]?.TaskType?.Id != undefined ?
                                     <label className="fw-semibold form-label">TeamMembers</label>
                                     : <label className="fw-semibold form-label">Responsible Team</label>}
                                 {
@@ -2407,7 +2419,7 @@ const CompareTool = (props: any) => {
                             </Col>
                         </Row>}
 
-                        {data[0]?.TaskType?.Id !=undefined && <Row className="Metadatapannel">
+                        {data[0]?.TaskType?.Id != undefined && <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <label className="fw-semibold form-label">Working Members</label>
                                 {
@@ -3057,7 +3069,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Time</label>
-                                    <input type="text" className="form-control" defaultValue={data[0]?.Mileage}  onChange={(e) => changeData(0, 'Mileage', e.target.value)}/>
+                                    <input type="text" className="form-control" defaultValue={data[0]?.Mileage} onChange={(e) => changeData(0, 'Mileage', e.target.value)} />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
@@ -3080,7 +3092,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Priority Rank</label>
-                                    <input type="text" className="form-control" defaultValue={data[0]?.PriorityRank}  onChange={(e) => changeData(0, 'PriorityRank', e.target.value)} />
+                                    <input type="text" className="form-control" defaultValue={data[0]?.PriorityRank} onChange={(e) => changeData(0, 'PriorityRank', e.target.value)} />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
@@ -3092,7 +3104,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Priority Rank</label>
-                                    <input type="text" className="form-control" defaultValue={data[1]?.PriorityRank}  onChange={(e) => changeData(1, 'PriorityRank', e.target.value)}/>
+                                    <input type="text" className="form-control" defaultValue={data[1]?.PriorityRank} onChange={(e) => changeData(1, 'PriorityRank', e.target.value)} />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -3103,7 +3115,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Client Activity</label>
-                                    <input type="text" className="form-control" defaultValue={data[0]?.ClientActivity}  onChange={(e) => changeData(0, 'ClientActivity', e.target.value)}/>
+                                    <input type="text" className="form-control" defaultValue={data[0]?.ClientActivity} onChange={(e) => changeData(0, 'ClientActivity', e.target.value)} />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
@@ -3115,7 +3127,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Client Activity</label>
-                                    <input type="text" className="form-control" defaultValue={data[1]?.ClientActivity}   onChange={(e) => changeData(1, 'ClientActivity', e.target.value)}/>
+                                    <input type="text" className="form-control" defaultValue={data[1]?.ClientActivity} onChange={(e) => changeData(1, 'ClientActivity', e.target.value)} />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -3126,7 +3138,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Status</label>
-                                    <input type="text" className="form-control" defaultValue={data[0]?.Status}  onChange={(e) => changeData(0, 'Status', e.target.value)}/>
+                                    <input type="text" className="form-control" defaultValue={data[0]?.Status} onChange={(e) => changeData(0, 'Status', e.target.value)} />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
@@ -3138,7 +3150,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Status</label>
-                                    <input type="text" className="form-control" defaultValue={data[1]?.Status}  onChange={(e) => changeData(1, 'Status', e.target.value)}/>
+                                    <input type="text" className="form-control" defaultValue={data[1]?.Status} onChange={(e) => changeData(1, 'Status', e.target.value)} />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -3149,7 +3161,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Url</label>
-                                    <input type="text" className="form-control" defaultValue={data[0]?.ComponentLink?.Url} />
+                                    <input type="text" className="form-control" defaultValue={data[0]?.ComponentLink?.Url} onChange={(e) => changeData(0, 'ComponentLink', e.target.value)} />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
@@ -3161,7 +3173,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Url</label>
-                                    <input type="text" className="form-control" defaultValue={data[1]?.ComponentLink?.Url} />
+                                    <input type="text" className="form-control" defaultValue={data[1]?.ComponentLink?.Url} onChange={(e) => changeData(1, 'ComponentLink', e.target.value)} />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -3172,7 +3184,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Deliverable-Synonyms</label>
-                                    <input type="text" className="form-control" value={data[0]?.DeliverableSynonyms}  onChange={(e) => changeData(0, 'DeliverableSynonyms', e.target.value)} />
+                                    <input type="text" className="form-control" value={data[0]?.DeliverableSynonyms} onChange={(e) => changeData(0, 'DeliverableSynonyms', e.target.value)} />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
@@ -3184,7 +3196,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Deliverable-Synonyms</label>
-                                    <input type="text" className="form-control" value={data[1]?.DeliverableSynonyms}  onChange={(e) => changeData(1, 'DeliverableSynonyms', e.target.value)}/>
+                                    <input type="text" className="form-control" value={data[1]?.DeliverableSynonyms} onChange={(e) => changeData(1, 'DeliverableSynonyms', e.target.value)} />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -3195,7 +3207,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Package</label>
-                                    <input type="text" className="form-control" defaultValue={data[0]?.Package}  onChange={(e) => changeData(0, 'Package', e.target.value)}/>
+                                    <input type="text" className="form-control" defaultValue={data[0]?.Package} onChange={(e) => changeData(0, 'Package', e.target.value)} />
                                 </div>
                                 {/* <TextField label="Package" value={data[0]?.Package} /> */}
                             </Col>
@@ -3208,7 +3220,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Package</label>
-                                    <input type="text" className="form-control" defaultValue={data[1]?.Package}  onChange={(e) => changeData(1, 'Package', e.target.value)}/>
+                                    <input type="text" className="form-control" defaultValue={data[1]?.Package} onChange={(e) => changeData(1, 'Package', e.target.value)} />
                                 </div>
                                 {/* <TextField label="Package" value={data[1]?.Package} /> */}
                             </Col>
@@ -3220,7 +3232,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Admin Status</label>
-                                    <input type="text" className="form-control" defaultValue={data[0]?.AdminStatus}  onChange={(e) => changeData(0, 'AdminStatus', e.target.value)}/>
+                                    <input type="text" className="form-control" defaultValue={data[0]?.AdminStatus} onChange={(e) => changeData(0, 'AdminStatus', e.target.value)} />
                                 </div>
                                 {/* <TextField label="Admin Status" value={data[0]?.AdminStatus} /> */}
                             </Col>
@@ -3234,7 +3246,7 @@ const CompareTool = (props: any) => {
                                 {/* <TextField label="Admin Status" value={data[1]?.AdminStatus} /> */}
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Admin Status</label>
-                                    <input type="text" className="form-control" defaultValue={data[1]?.AdminStatus}  onChange={(e) => changeData(1, 'AdminStatus', e.target.value)}/>
+                                    <input type="text" className="form-control" defaultValue={data[1]?.AdminStatus} onChange={(e) => changeData(1, 'AdminStatus', e.target.value)} />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -3329,37 +3341,37 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('Comments')} />
                             </Col>
                         </Row>
-                     
-                            <Row className="Metadatapannel">
-                                <Col sm="5" md="5" lg="5" className="contentSec">
-                                    <div className="input-group">
-                                        <label className="fw-semibold full-width form-label">Description
-                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Body", true) }}></span>
-                                        </label>
-                                        <textarea rows={3} className="form-control" value={data[0]?.Body != undefined && data[0]?.Body != null ? data[0]?.Body?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}>
 
-                                        </textarea>
-                                    </div>
-                                </Col>
-                                <Col sm="1" md="1" lg="1" className="iconSec">
-                                    <div className="text-center">
-                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'Body', data[1]?.Body)} /></div>
-                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'Body', data[0]?.Body)} /></div>
-                                    </div>
-                                </Col>
-                                <Col sm="5" md="5" lg="5" className="contentSec">
-                                    <div className="input-group">
-                                        <label className="fw-semibold full-width form-label">Description
-                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Body", true) }}></span>
-                                        </label>
-                                        <textarea className="form-control" rows={3} value={data[1]?.Body != undefined && data[1]?.Body != null ? data[1]?.Body?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
-                                    </div>
-                                </Col>
-                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('Body')} />
-                                </Col>
-                            </Row>
-                       
+                        <Row className="Metadatapannel">
+                            <Col sm="5" md="5" lg="5" className="contentSec">
+                                <div className="input-group">
+                                    <label className="fw-semibold full-width form-label">Description
+                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Body", true) }}></span>
+                                    </label>
+                                    <textarea rows={3} className="form-control" value={data[0]?.Body != undefined && data[0]?.Body != null ? data[0]?.Body?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}>
+
+                                    </textarea>
+                                </div>
+                            </Col>
+                            <Col sm="1" md="1" lg="1" className="iconSec">
+                                <div className="text-center">
+                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'Body', data[1]?.Body)} /></div>
+                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'Body', data[0]?.Body)} /></div>
+                                </div>
+                            </Col>
+                            <Col sm="5" md="5" lg="5" className="contentSec">
+                                <div className="input-group">
+                                    <label className="fw-semibold full-width form-label">Description
+                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Body", true) }}></span>
+                                    </label>
+                                    <textarea className="form-control" rows={3} value={data[1]?.Body != undefined && data[1]?.Body != null ? data[1]?.Body?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                </div>
+                            </Col>
+                            <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                <LuUndo2 size="25" onClick={() => undoChangescolumns('Body')} />
+                            </Col>
+                        </Row>
+
                         {data[0]?.TaskType === undefined && <span>
                             <Row className="Metadatapannel">
                                 <Col sm="5" md="5" lg="5" className="contentSec">
@@ -3591,7 +3603,7 @@ const CompareTool = (props: any) => {
                                 <Col sm="5" md="5" lg="5" className="contentSec">
                                     <div className="input-group">
                                         <label className="fw-semibold full-width form-label">Help Descriptions</label>
-                                        <textarea className="full-width" rows={3} value={(data[0]?.HelpDescription == null || data[0]?.HelpDescription === "") ? "" : data[0]?.HelpDescription}  onChange={(e) => bindMultilineValue(e, 0, 'HelpDescription')}> </textarea>
+                                        <textarea className="full-width" rows={3} value={(data[0]?.HelpDescription == null || data[0]?.HelpDescription === "") ? "" : data[0]?.HelpDescription} onChange={(e) => bindMultilineValue(e, 0, 'HelpDescription')}> </textarea>
                                     </div>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="iconSec">
@@ -3603,7 +3615,7 @@ const CompareTool = (props: any) => {
                                 <Col sm="5" md="5" lg="5" className="contentSec">
                                     <div className="input-group">
                                         <label className="fw-semibold full-width form-label">Help Descriptions</label>
-                                        <textarea className="full-width" rows={3} value={(data[1]?.HelpDescription == null || data[1]?.HelpDescription === "") ? "" : data[1]?.HelpDescription}  onChange={(e) => bindMultilineValue(e, 1, 'HelpDescription')} ></textarea>
+                                        <textarea className="full-width" rows={3} value={(data[1]?.HelpDescription == null || data[1]?.HelpDescription === "") ? "" : data[1]?.HelpDescription} onChange={(e) => bindMultilineValue(e, 1, 'HelpDescription')} ></textarea>
                                     </div>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -3694,7 +3706,7 @@ const CompareTool = (props: any) => {
                 </footer>
                 {showLoader ? <PageLoader /> : ''}
             </Panel>
-          
+
             {
                 categories?.condition && <Picker
                     props={categories?.data}
