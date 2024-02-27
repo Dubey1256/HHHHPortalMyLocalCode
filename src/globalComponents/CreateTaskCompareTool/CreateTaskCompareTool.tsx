@@ -547,7 +547,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                     {/*---- Task Type Categories ----------------------------------------*/}
                     <div className="card">
                         <div className='alignCenter card-header siteColor'>
-                            <b className='siteColor'> Select Category </b>
+                            <b className='siteColor'> Select Category* </b>
                             <span className="hover-text alignIcon">
                                 <span className="svg__iconbox svg__icon--info dark"></span>
                                 <span className="tooltip-text pop-right">
