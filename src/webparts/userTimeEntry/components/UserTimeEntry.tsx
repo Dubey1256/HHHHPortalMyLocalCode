@@ -955,7 +955,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     } else if (startDateOf == 'Last Month') {
         const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
         const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-        var change = (Moment(startingDateOfLastMonth).add(18, 'days').format())
+        var change = (Moment(startingDateOfLastMonth).add(30, 'days').format())
         var b = new Date(change)
         formattedDate = b;
     } else if (startDateOf == 'Last Week') {
@@ -2202,19 +2202,29 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     })
   }
   private SelectedAllTeam = (e: any) => {
+    let currentuserId = this.props.Context.pageContext?._legacyPageContext.userId
     if (e.target.checked == true) {
-      AllTaskUser?.forEach((item: any) => {
+      AllTaskUser?.forEach((val: any) => {
         let user: any = []
-        if (item?.Company != 'HHHH' && item?.UserGroup?.Title != 'Ex Staff' && item?.UserGroup?.Title != 'External Staff' && item.ItemType == 'User') {
-          this.state.ImageSelectedUsers.push(item)
+        if ((val?.UserGroup?.Title == 'Senior Developer Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'Junior Developer Team' || val?.UserGroup?.Title == 'Design Team' || val?.UserGroup?.Title == 'QA Team' || val?.UserGroup?.Title == 'Trainees') && (val?.AssingedToUserId != currentuserId)) {
+          this.state.ImageSelectedUsers.push(val)
         }
       })
     }
     else {
-      this.setState({
-        ImageSelectedUsers: []
-      })
+      
+      
+      const filteredArray:any = []
+      this.state.ImageSelectedUsers.forEach((user:any) => {
+        if(user?.AssingedToUserId == currentuserId){
+          filteredArray.push(user)
+        }
+      });
+      // Update state with the filtered array
+      this.setState({ ImageSelectedUsers: filteredArray });
+      
     }
+   
 
     this.setState({ showShareTimesheet: true })
   }

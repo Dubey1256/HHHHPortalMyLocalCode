@@ -13,7 +13,8 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import ServiceComponentPortfolioPopup from '../EditTaskPopup/ServiceComponentPortfolioPopup';
 import * as GlobalCommon from '../globalCommon';
 import FlorarImageUploadComponent from "../FlorarComponents/FlorarImageUploadComponent";
-import { Web } from 'sp-pnp-js';
+import { Web, sp } from 'sp-pnp-js';
+import PageLoader from '../pageLoader';
 
 let AllTypeCategory: any = [];
 let GlobalAllCSFData: any = [];
@@ -28,10 +29,10 @@ const CreateTaskCompareTool = (RequiredData: any) => {
     const [SearchedProjectData, setSearchedProjectData] = useState([]);
     const [SearchedPortfolioData, setSearchedPortfolioData] = useState([]);
     const [UploadBtnStatus, setUploadBtnStatus] = useState(false);
+    const [LoaderStatus, setLoaderStatus] = useState(false);
     const [TypeCategoryData, setTypeCategoryData] = useState([]);
     const [CreateTaskInfo, setCreateTaskInfo] = useState<any>({
         Title: "",
-        Portfolio: {},
         Project: {},
         Priority: "",
         DueDate: '',
@@ -160,8 +161,9 @@ const CreateTaskCompareTool = (RequiredData: any) => {
         }
     }
 
-    const swipeImageFunction = (ImageData: any) => {
+    const swipeImageFunction = (ImageData: any, Index: any) => {
         let ImageJSON: any = { ...CreateTaskInfo }
+        ImageData.ImageIndex = Index;
         ImageJSON?.UploadedImage?.push(ImageData);
         let uniqueImageNames: any = {};
         const result: any = ImageJSON?.UploadedImage.filter((item: any) => {
@@ -218,6 +220,12 @@ const CreateTaskCompareTool = (RequiredData: any) => {
 
     }
 
+    const SwipePortfolioAndProject = (usedFor: string, TagItem: any) => {
+        TagItem.listId = RequiredListIds?.MasterTaskListID;
+        TagItem.siteUrl = ItemDetails?.siteUrl;
+        TagProjectAndPortfolio(usedFor, TagItem)
+    }
+
     const TagProjectAndPortfolio = async (usedFor: string, TagItem: any) => {
         if (usedFor == "Portfolio") {
             let ResponseData: any = await GlobalFunctionForUpdateItem.onPortfolioTaggingAllChanges({ ItemDetails: TagItem, RequiredListIds: RequiredListIds, TaskDetails: ItemDetails });
@@ -233,27 +241,14 @@ const CreateTaskCompareTool = (RequiredData: any) => {
 
 
 
-    //***************** This is for Image Upload Section  Functions *****************
-
-    const FlorarImageUploadComponentCallBack = (dt: any) => {
-        setUploadBtnStatus(false);
-        let ImageTempObject: any = {
-            ImageName: ItemDetails.Title + (CreateTaskInfo.UploadedImage?.length + 1),
-            ImageUrl: dt,
-            UserImage: GlobalCurrentUserData?.ImageUrl != undefined ? GlobalCurrentUserData?.ImageUrl : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-            UserName: GlobalCurrentUserData?.Title != undefined ? GlobalCurrentUserData?.Title : Context.pageContext._user.displayName,
-            UploadeDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
-        }
-        swipeImageFunction(ImageTempObject);
-    };
-
-
-    const ComponentServicePopupCallBack = useCallback((SelectedItem: any, Type: any, functionType: any) => {
+    const ComponentServicePopupCallBack = async (SelectedItem: any, Type: any, functionType: any) => {
         if (functionType !== "Close") {
             if (SelectedItem?.length > 0) {
                 let SelectedItemObject: any = SelectedItem[0];
                 if (SelectedItemObject.Item_x0020_Type !== "Project") {
-                    setCreateTaskInfo({ ...CreateTaskInfo, Portfolio: SelectedItemObject })
+                    let ResponseData: any = await GlobalFunctionForUpdateItem.onPortfolioTaggingAllChanges({ ItemDetails: SelectedItemObject, RequiredListIds: RequiredListIds, TaskDetails: ItemDetails });
+                    ResponseData.Portfolio = SelectedItemObject;
+                    setCreateTaskInfo({ ...CreateTaskInfo, ...ResponseData })
                 } else {
                     setCreateTaskInfo({ ...CreateTaskInfo, Project: SelectedItemObject })
                 }
@@ -264,7 +259,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
             setIsProjectManagementPopup(false);
             setIsTeamPortfolioPopup(false);
         }
-    }, [])
+    }
 
 
     const CreateTaskFunction = async () => {
@@ -291,11 +286,11 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 }
             });
 
-            if (SelectedCategories.length > 0) {
+            if (SelectedCategories.length > 0 || CreateTaskInfo.Title?.length > 0) {
                 let UpdateJSONData: any = {
                     Title: CreateTaskInfo.Title,
                     DueDate: CreateTaskInfo.DueDate ? Moment(CreateTaskInfo.DueDate).format("MM-DD-YYYY") : null,
-                    TeamMembersId: CreateTaskInfo?.TeamMembersId,
+                    // TeamMembersId: CreateTaskInfo?.TeamMembersId,
                     ResponsibleTeamId: CreateTaskInfo?.ResponsibleTeamId,
                     FeedBack: JSON.stringify(CreateTaskInfo?.FeedBackJSON),
                     ComponentLink: {
@@ -311,23 +306,150 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                     SiteCompositionSettings: CreateTaskInfo?.SiteCompositionSettings,
                     ClientCategoryId: CreateTaskInfo?.ClientCategoryId,
                     PriorityRank: CreateTaskInfo?.PriorityRank,
-                    BasicImageInfo: CreateTaskInfo?.UploadedImage?.length > 0 ? JSON.stringify(CreateTaskInfo.UploadedImage) : null,
                     Priority: Priority,
                 };
                 let web = new Web(ItemDetails?.siteUrl);
-                await web.lists.getById(ItemDetails?.listId).items.add(UpdateJSONData).then((resData: any) => {
+                await web.lists.getById(ItemDetails?.listId).items.add(UpdateJSONData).then(async (resData: any) => {
                     console.log("Task Created Successfully");
-                    CloseTypeCategoryPopup("Save", resData?.data);
+                    let BasicImageInfoArray: any = [];
+                    let UpdatedData: any = resData?.data;
+                    let ImageUploadCount: any = 0;
+                    if (CreateTaskInfo?.UploadedImage?.length > 0) {
+                        setLoaderStatus(true);
+                        for (let ImageIndex = 0; ImageIndex < CreateTaskInfo?.UploadedImage?.length;) {
+                            const ImageItem = CreateTaskInfo?.UploadedImage[ImageIndex];
+                            let date = new Date();
+                            let timeStamp = date.getTime();
+                            let fileName: string = "T" + UpdatedData.Id + "-Image" + ImageIndex + "-" + UpdatedData.Title?.replace(/["/':?%]/g, "")?.slice(0, 40) + " " + timeStamp + ".jpg";
+                            let PrepareImageObject = {
+                                ImageName: fileName,
+                                UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
+                                ImageUrl: ItemDetails?.siteUrl + "/Lists/" + ItemDetails?.siteType + "/Attachments/" + UpdatedData?.Id + "/" + fileName,
+                                UserImage: GlobalCurrentUserData.ItemCover ? GlobalCurrentUserData.ItemCover : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                                UserName: GlobalCurrentUserData?.Title ? GlobalCurrentUserData?.Title : "",
+                                Description: ImageItem.Description != undefined ? ImageItem.Description : "",
+                            };
+
+                            if (ImageItem?.data_url != undefined) {
+                                await UploadImageFunction(UpdatedData, ImageItem, fileName);
+                                BasicImageInfoArray.push(PrepareImageObject);
+                                ImageUploadCount++;
+                                ImageIndex++;
+                            } else {
+                                await CopyAttachedImageFunction(UpdatedData, ImageItem?.ImageIndex, fileName);
+                                BasicImageInfoArray.push(PrepareImageObject);
+                                ImageUploadCount++;
+                                ImageIndex++;
+                            }
+                        }
+
+                        if (ImageUploadCount == CreateTaskInfo?.UploadedImage?.length) {
+                            let web = new Web(ItemDetails?.siteUrl);
+                            await web.lists
+                                .getById(ItemDetails?.listId)
+                                .items.getById(UpdatedData?.Id)
+                                .update({ BasicImageInfo: BasicImageInfoArray?.length > 0 ? JSON.stringify(BasicImageInfoArray) : null }).then(() => {
+                                    setLoaderStatus(false);
+                                    console.log("Image JSON Updated !!");
+                                    CloseTypeCategoryPopup("Save", resData?.data);
+                                });
+                        }
+                    } else {
+                        CloseTypeCategoryPopup("Save", resData?.data);
+                    }
                 });
             } else {
-                alert("You haven't selected any Task Category. Please choose a Task Category first");
+                if (SelectedCategories.length === 0 && !CreateTaskInfo.Title?.length) {
+                    alert("Please enter a task title and select a task category before proceeding.");
+                } else if (SelectedCategories.length === 0) {
+                    alert("Please select a task category before proceeding.");
+                } else if (!CreateTaskInfo.Title?.length) {
+                    alert("Please enter a task title before proceeding.");
+                }
             }
         } catch (error) {
             console.error("Error in CreateTaskFunction:", error.message);
             throw error;
         }
-
     };
+
+
+    //***************** This is for Image Upload Section  Functions *****************
+
+    const FlorarImageUploadComponentCallBack = (dt: any) => {
+        setUploadBtnStatus(false);
+        let ImageTempObject: any = {
+            ImageName: ItemDetails.Title + (CreateTaskInfo.UploadedImage?.length + 1),
+            ImageUrl: dt,
+            data_url: dt,
+            UserImage: GlobalCurrentUserData?.ImageUrl != undefined ? GlobalCurrentUserData?.ImageUrl : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+            UserName: GlobalCurrentUserData?.Title != undefined ? GlobalCurrentUserData?.Title : Context.pageContext._user.displayName,
+            UploadeDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+        }
+        swipeImageFunction(ImageTempObject, 0);
+    };
+
+    // this is used for upload Image As Attachments on backend side 
+
+    const UploadImageFunction = (NewlyCreatedTask: any, Data: any, imageName: any): Promise<any> => {
+        return new Promise<void>(async (resolve, reject) => {
+            let src = Data.data_url?.split(",")[1];
+            let byteArray = new Uint8Array(
+                atob(src)
+                    ?.split("")
+                    ?.map(function (c) {
+                        return c.charCodeAt(0);
+                    })
+            );
+            if (byteArray) {
+                try {
+                    let web = new Web(ItemDetails.siteUrl);
+                    let item = web.lists.getById(ItemDetails.listId).items.getById(NewlyCreatedTask?.Id);
+                    await item.attachmentFiles.add(imageName, byteArray);
+                    console.log("New Attachment added");
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
+            }
+        });
+    };
+
+    // This is used for Copy image form old task to new task 
+
+    const CopyAttachedImageFunction = async (NewlyCreatedTask: any, ImageIndex: any, fileName: any) => {
+        let web = new Web(ItemDetails?.siteUrl);
+        let Response: any = await web.lists
+            .getById(ItemDetails?.listId)
+            .items.getById(ItemDetails?.Id)
+            .select("Id,Title,Attachments,AttachmentFiles")
+            .expand("AttachmentFiles")
+            .get();
+        for (let index = 0; index < Response?.AttachmentFiles?.length; index++) {
+            try {
+                if (ImageIndex == index) {
+                    const value: any = Response?.AttachmentFiles[index];
+                    const sourceEndpoint = `${ItemDetails?.siteUrl}/_api/web/lists/getbytitle('${ItemDetails?.siteType}')/items(${ItemDetails?.Id})/AttachmentFiles/getByFileName('${value.FileName}')/$value`;
+                    const ResponseData = await fetch(sourceEndpoint, {
+                        method: "GET",
+                        headers: {
+                            Accept: "application/json;odata=nometadata",
+                        },
+                    });
+                    if (ResponseData.ok) {
+                        const binaryData = await ResponseData.arrayBuffer();
+                        console.log("Binary Data:", binaryData);
+                        var uint8Array = new Uint8Array(binaryData);
+                        const item = await sp.web.lists.getById(ItemDetails?.listId).items.getById(NewlyCreatedTask?.Id).get();
+                        const currentETag = item ? item['@odata.etag'] : null;
+                        await sp.web.lists.getById(ItemDetails?.listId).items.getById(NewlyCreatedTask?.Id).attachmentFiles.add(fileName, uint8Array), currentETag, { headers: { "If-Match": currentETag } }
+                    }
+                }
+            } catch (error) {
+                console.log("error in copy image attachment function", error.message)
+            }
+        }
+    }
 
 
     const CloseTypeCategoryPopup = (usedFor: string, Data: any) => {
@@ -424,7 +546,15 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 <div className="modal-body">
                     {/*---- Task Type Categories ----------------------------------------*/}
                     <div className="card">
-                        <div className='card-header p-2 siteColor'><b className='siteColor'>Select Category*</b></div>
+                        <div className='alignCenter card-header siteColor'>
+                            <b className='siteColor'> Select Category* </b>
+                            <span className="hover-text alignIcon">
+                                <span className="svg__iconbox svg__icon--info dark"></span>
+                                <span className="tooltip-text pop-right">
+                                    To create a task, it is necessary to tag the task category. A task cannot be created without tagging it with a task category.
+                                </span>
+                            </span>
+                        </div>
                         <div className="row card-body row-cols-1 row-cols-sm-2 row-cols-md-6 justify-content-center">
                             {TypeCategoryData?.map((item: any, Index: any) => {
                                 return (
@@ -454,7 +584,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                 <div className='current-Task-section' style={{ width: "47%" }}>Title: <span className='siteColor ms-2'>{ItemDetails?.Title}</span></div>
                                 <div className='Move-data-current-to-new text-center' style={{ width: "6%" }} title='Swipe data left to right'><BsArrowRightSquare onClick={() => SwipeDataFunction("Title")} /></div>
                                 <div className='new-task-section' style={{ width: "47%" }}>
-                                    Title:
+                                    Title*:
                                     {CreateTaskInfo.Title ?
                                         <input
                                             type='text'
@@ -475,7 +605,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                         <div className='row'>
                             <div className=' d-flex py-2 border-start border-end '>
                                 <div className='current-Task-section' style={{ width: "47%" }}>Portfolio: <span className='siteColor ms-2'>{ItemDetails?.Portfolio?.Title}</span></div>
-                                <div className='Move-data-current-to-new text-center' style={{ width: "6%" }} title='Swipe data left to right' ><BsArrowRightSquare onClick={() => SwipeDataFunction("Portfolio")} /></div>
+                                <div className='Move-data-current-to-new text-center' style={{ width: "6%" }} title='Swipe data left to right' ><BsArrowRightSquare onClick={() => SwipePortfolioAndProject("Portfolio", ItemDetails?.Portfolio)} /></div>
                                 <div className='new-task-section input-group' style={{ width: "47%" }}>
                                     <label className='form-label full-width'> Portfolio:</label>
                                     {CreateTaskInfo.Portfolio?.Title ?
@@ -489,7 +619,6 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                             >
                                                 {CreateTaskInfo.Portfolio?.Title}
                                             </a>
-
                                         </div>
                                         :
                                         <input
@@ -531,7 +660,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                         <div className='row'>
                             <div className=' d-flex py-2 border-start border-end '>
                                 <div className='current-Task-section' style={{ width: "47%" }}>Project: <span className='siteColor ms-2'>{ItemDetails?.Project?.Title}</span></div>
-                                <div className='Move-data-current-to-new text-center' style={{ width: "6%" }} title='Swipe data left to right'><BsArrowRightSquare onClick={() => SwipeDataFunction("Project")} /></div>
+                                <div className='Move-data-current-to-new text-center' style={{ width: "6%" }} title='Swipe data left to right'><BsArrowRightSquare onClick={() => SwipePortfolioAndProject("Project", ItemDetails?.Portfolio)} /></div>
                                 <div className='new-task-section input-group' style={{ width: "47%" }}>
                                     <label className='form-label full-width'> Project:</label>
                                     {CreateTaskInfo.Project?.Title ?
@@ -541,7 +670,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                                 target="_blank"
                                                 data-interception="off"
                                                 className="textDotted"
-                                                href={`${ItemDetails.siteUrl}/SitePages/Project-Management.aspx?ProjectId==${CreateTaskInfo.Project?.Id}`}
+                                                href={`${ItemDetails.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId==${CreateTaskInfo.Project?.Id}`}
                                             >
                                                 {CreateTaskInfo.Project?.Title}
                                             </a>
@@ -699,7 +828,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className='Move-data-current-to-new text-center' style={{ width: "7%" }} title='Swipe data left to right' ><BsArrowRightSquare onClick={() => swipeImageFunction(ImageItem)} /></div>
+                                                <div className='Move-data-current-to-new text-center' style={{ width: "7%" }} title='Swipe data left to right' ><BsArrowRightSquare onClick={() => swipeImageFunction(ImageItem, Index)} /></div>
                                             </div>
                                         )
                                     })}
@@ -754,15 +883,14 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                                     </div>
                                                 )
                                             })}
-                                            {/* {UploadBtnStatus ? null :
-                                                <span className='float-end me-3 mt-2 siteColor' onClick={() => setUploadBtnStatus(!UploadBtnStatus)}>Add New Image</span>} */}
-                                        </> : null
-                                        // <div className='ms-3 mx-2 p-2'>
-                                        //     <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
-                                        // </div>
-
+                                            {UploadBtnStatus ? null :
+                                                <span className='float-end me-3 mt-2 siteColor' onClick={() => setUploadBtnStatus(!UploadBtnStatus)}>Add New Image</span>}
+                                        </> :
+                                        <div className='ms-3 mx-2 p-2'>
+                                            <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
+                                        </div>
                                     }
-                                    {/* {UploadBtnStatus ? <div className='ms-3 mx-2 p-2'><FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} /> </div> : null} */}
+                                    {UploadBtnStatus ? <div className='ms-3 mx-2 p-2'><FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} /> </div> : null}
                                 </div>
                             </div>
                         </div>
@@ -778,6 +906,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                         showProject={isProjectManagementPopup}
                     />
                 )}
+                {LoaderStatus ? <PageLoader /> : null}
             </Panel>
         </div>
     )

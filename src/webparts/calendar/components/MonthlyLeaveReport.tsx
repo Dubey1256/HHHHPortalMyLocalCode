@@ -4,14 +4,20 @@ import { Web } from 'sp-pnp-js';
 import * as html2pdf from 'html2pdf.js';
 import * as XLSX from 'xlsx';
 import { Modal, Button, Form } from 'react-bootstrap';
+import { setMonth } from 'office-ui-fabric-react';
 
 let allReportData: any = [];
+let index: any = [];
 export const MonthlyLeaveReport = (props: any) => {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectendDate, setselectendDate] = useState('');
   const [AllTaskuser, setAllTaskuser] = useState([]);
   const [leaveData, setLeaveData] = useState([]);
   const [opendate, setopendate] = useState(true);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
+
   const getTaskUser = async () => {
     let web = new Web(props.props.siteUrl);
     try {
@@ -78,7 +84,6 @@ export const MonthlyLeaveReport = (props: any) => {
       const timezoneOffsetInHours = timezoneOffset / 60;
       const adjustedEndDate = new Date(endDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
       const adjustedEventDate: any = new Date(eventDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
-
       if (
         adjustedEventDate.getFullYear() === today.getFullYear() &&
         (leaveType === "HalfDay" || leaveType === "HalfDayTwo")
@@ -88,35 +93,25 @@ export const MonthlyLeaveReport = (props: any) => {
         let workingDays = 0;
         let currentDate = new Date(adjustedEventDate);
         currentDate.setHours(0);
-
         while (currentDate <= adjustedEndDateToToday) {
           const dayOfWeek = currentDate.getDay();
-
           if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(currentDate, adjustedEndDateToToday)) {
             if (item?.Event_x002d_Type !== "Work From Home") {
-              console.log(`Checking for ${leaveType} on ${currentDate}: HalfDay - ${item?.HalfDay}, HalfDayTwo - ${item?.HalfDayTwo}`);
 
               if ((leaveType === "HalfDay" || leaveType === "HalfDayTwo") && (item?.HalfDay === true || item?.HalfDayTwo === true)) {
                 workingDays += 0.5;
               }
             }
           }
-
           currentDate.setDate(currentDate.getDate() + 1);
         }
-
         return total + workingDays;
       }
-
       return total;
     }, 0);
   };
-
-
-
   const calculateTotalWorkingDays = (matchedData: any) => {
     const today = new Date();
-
     return matchedData.reduce((total: any, item: any) => {
       const endDate = new Date(item.EndDate);
       const eventDate = new Date(item.EventDate);
@@ -124,17 +119,14 @@ export const MonthlyLeaveReport = (props: any) => {
       const timezoneOffsetInHours = timezoneOffset / 60;
       const adjustedEndDate = new Date(endDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
       const adjustedEventDate: any = new Date(eventDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
-
       if (adjustedEventDate.getFullYear() === today.getFullYear()) {
         const adjustedEndDateToToday = today < adjustedEndDate ? today : adjustedEndDate;
         adjustedEndDateToToday.setHours(0);
         let workingDays = 0;
         let currentDate = new Date(adjustedEventDate);
         currentDate.setHours(0);
-
         while (currentDate <= adjustedEndDateToToday) {
           const dayOfWeek = currentDate.getDay();
-
           if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(currentDate, adjustedEndDateToToday)) {
             if (item?.Event_x002d_Type !== "Work From Home") {
               if (item?.HalfDay === true || item?.HalfDayTwo === true) {
@@ -144,19 +136,15 @@ export const MonthlyLeaveReport = (props: any) => {
               }
             }
           }
-
           currentDate.setDate(currentDate.getDate() + 1);
         }
-
         return total + workingDays;
       }
-
       return total;
     }, 0);
   };
   const calculatePlannedLeave = (matchedData: any, LeaveType: any) => {
     const today = new Date();
-
     return matchedData.reduce((total: any, item: any) => {
       const endDate = new Date(item.EndDate);
       const eventDate = new Date(item.EventDate);
@@ -164,17 +152,14 @@ export const MonthlyLeaveReport = (props: any) => {
       const timezoneOffsetInHours = timezoneOffset / 60;
       const adjustedEndDate = new Date(endDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
       const adjustedEventDate: any = new Date(eventDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
-
       if (adjustedEventDate.getFullYear() === today.getFullYear()) {
         const adjustedEndDateToToday = today < adjustedEndDate ? today : adjustedEndDate;
         adjustedEndDateToToday.setHours(0);
         let workingDays = 0;
         let currentDate = new Date(adjustedEventDate);
         currentDate.setHours(0);
-
         while (currentDate <= adjustedEndDateToToday) {
           const dayOfWeek = currentDate.getDay();
-
           if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(currentDate, adjustedEndDateToToday)) {
             if (item?.Event_x002d_Type == LeaveType) {
               if (item?.HalfDay === true || item?.HalfDayTwo === true) {
@@ -184,24 +169,26 @@ export const MonthlyLeaveReport = (props: any) => {
               }
             }
           }
-
           currentDate.setDate(currentDate.getDate() + 1);
         }
-
         return total + workingDays;
       }
-
       return total;
     }, 0);
   };
-
-  const isWeekend = (startDate: any, endDate: any) => {
+  const isWeekend = (startDate: Date, endDate: Date) => {
     const startDay = startDate.getDay();
     const endDay = endDate.getDay();
-
-    return (startDay === 0 || startDay === 6) && (endDay === 0 || endDay === 6);
+    const startMonth = startDate.getMonth();
+    const startYear = startDate.getFullYear();
+    const isWeekend = (startDay === 0 || startDay === 6) || (endDay === 0 || endDay === 6);
+    const targetMonth = startDate.getMonth();
+    const targetYear = startDate.getFullYear();
+    const isMatchingMonth = startMonth === targetMonth;
+    const isMatchingYear = startYear === targetYear;
+    return isWeekend && isMatchingMonth && isMatchingYear;
   };
-  let year = new Date().getFullYear();
+  let Year = new Date().getFullYear();
   let month = new Date(selectedDate).getMonth() + 1; // Actual month
   let formattedMonth = month < 10 ? `0${month}` : `${month}`;
   let CurrentMonthData = leaveData.filter((item: any) => {
@@ -211,14 +198,23 @@ export const MonthlyLeaveReport = (props: any) => {
     startDate.setHours(0, 0, 0, 0);
     let endDate = new Date(selectendDate);
     endDate.setHours(0, 0, 0, 0);
-
     return (
       itemDate >= startDate &&
       itemDate <= endDate
     );
   });
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  const currentYear = new Date().getFullYear();
+  const years: number[] = [];
 
-
+  for (let year = 2020; year <= currentYear; year++) {
+    years.push(year);
+  }
+  console.log(years);
+  const filteredData = CurrentMonthData.filter((member) => member.Employee?.Id === selectedUserId);
   AllTaskuser.forEach((users: any, Index: any) => {
     let user: any = {};
     const matchedData: any = CurrentMonthData.filter((member) => member.Employee?.Id === users.AssingedToUserId);
@@ -235,22 +231,28 @@ export const MonthlyLeaveReport = (props: any) => {
     user.unplannedleave = calculatePlannedLeave(matchedData, "Un-Planned");
     user.Halfdayleave = calculateTotalHalfday(matchedData, "HalfDay" || "HalfDayTwo");
     user.TotalLeave = calculateTotalWorkingDays(matchedData);
-
     allReportData.push(user)
   });
-
   const handleDateChange = (event: any) => {
     setSelectedDate(event.target.value);
   };
   const handleEndDateChange = (event: any) => {
     setselectendDate(event.target.value);
   };
+  const handleUserChange = (event: any) => {
+    setSelectedUserId(event.target.value);
+  };
+  const handleMonthChange = (event: any) => {
+    setSelectedMonth(event.target.value);
+  };
+
+  const handleYearChange = (event: any) => {
+    setSelectedYear(event.target.value);
+  };
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    // Handle the date submission or any other logic here
     console.log('Selected Date:', selectedDate, 'Selected End Date:', selectendDate);
-    // Close the modal
     allReportData = []
     setopendate(false);
   };
@@ -260,14 +262,13 @@ export const MonthlyLeaveReport = (props: any) => {
 
     props.settrue(false)
   }
+
   useEffect(() => {
     if (props.trueval) {
       setopendate(true)
     }
   }, [])
-
   return (
-
     <div>
       <Modal className='rounded-0' show={opendate} onHide={() => handleclose()}>
         <Modal.Header closeButton>
@@ -276,6 +277,50 @@ export const MonthlyLeaveReport = (props: any) => {
         <Modal.Body className="p-2">
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formDate">
+              {/* <Form.Control type="Year" value={selectyear} onChange={handleyearChange} /> */}
+              {/* <Form.Label>Select an option:</Form.Label> */}
+              <Form.Group controlId="formMonth">
+                <Form.Label>Select a month:</Form.Label>
+                <Form.Control as="select" onChange={handleMonthChange} value={selectedMonth}>
+                  {months.map((month, index) => (
+                    <option key={index} value={index + 1}>{month}</option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+
+              <Form.Group controlId="formYear">
+                <Form.Label>Select a year:</Form.Label>
+                <Form.Control as="select" onChange={handleYearChange} value={selectedYear}>
+                  {years.map((year: any) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+
+              <Form.Group controlId="formEmployee">
+                <Form.Label>Select an employee:</Form.Label>
+                <Form.Control as="select" onChange={handleUserChange} value={selectedUserId}>
+                  <option value={null}>Select an employee</option>
+                  {AllTaskuser.map((user, index) => (
+                    <option key={index} value={user.AssingedToUserId}>
+                      {user.Title}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+
+              {selectedUserId && (
+                <div>
+                  <ul>
+                    {filteredData.map((item: any, index: any) => (
+                      <li key={index}>{item.Title}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <Form.Label> Or </Form.Label>
               <Form.Label> Start Date:</Form.Label>
               <Form.Control
                 type="date"
@@ -297,7 +342,6 @@ export const MonthlyLeaveReport = (props: any) => {
             </div>
           </Form>
         </Modal.Body>
-
       </Modal>
       {allReportData?.length > 0 &&
         <div id="contentToConvert">
@@ -309,7 +353,7 @@ export const MonthlyLeaveReport = (props: any) => {
                 <th className='py-2 border-bottom'>Name</th>
                 <th className='py-2 border-bottom'>Planned</th>
                 <th className='py-2 border-bottom'>Unplanned</th>
-                <th className='py-2 border-bottom'>Half-Day</th>
+                <th className='py-2 border-bottom'>Hlaf-Day</th>
                 <th className='py-2 border-bottom'>TotalLeave</th>
               </tr>
             </thead>
@@ -332,9 +376,6 @@ export const MonthlyLeaveReport = (props: any) => {
         <button className='btnCol btn btn-primary mx-1' onClick={downloadExcel}>Download Excel</button>
         <button className='btnCol btn btn-primary' onClick={downloadExcelCompleteMonth}>Download Month Excel</button>
       </div>
-
-
     </div>
-
   );
 };

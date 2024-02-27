@@ -185,7 +185,7 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Last Month') {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-            var change = (Moment(startingDateOfLastMonth).add(18, 'days').format())
+            var change = (Moment(startingDateOfLastMonth).add(30, 'days').format())
             var b = new Date(change)
             formattedDate = b;
         } else if (startDateOf == 'Last Week') {
@@ -787,7 +787,13 @@ const TaskDashboard = (props: any) => {
                     </div>
                 ),
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PriorityRank == filterValue
+                    if(( row?.original?.PriorityRank?.toString().charAt(0) == filterValue.toString().charAt(0) )
+                    &&(row?.original?.PriorityRank.toString())?.includes(filterValue)){
+                        return true
+                    }else{
+                        return false
+                    }
+                   
                 },
             },
             {
@@ -796,7 +802,13 @@ const TaskDashboard = (props: any) => {
                     <SmartPriorityToolTip smartPriority={row?.original?.SmartPriority} hoverFormula={row?.original?.showFormulaOnHover} />
                 ),
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.SmartPriority == filterValue
+
+                    if (( row?.original?.SmartPriority?.toString().charAt(0) == filterValue.toString().charAt(0) ) 
+                    &&(row?.original?.SmartPriority.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
                 },
                 id: "SmartPriority",
                 placeholder: "Smart Priority",
@@ -841,7 +853,13 @@ const TaskDashboard = (props: any) => {
                     </div>
                 ),
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.EstimatedTime == filterValue
+                            
+                    if ( ( row?.original?.EstimatedTime?.toString().charAt(0) == filterValue.toString().charAt(0) )&&
+                    (row?.original?.EstimatedTime.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
                 },
 
             },
@@ -855,7 +873,12 @@ const TaskDashboard = (props: any) => {
 
                 ),
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PercentComplete == filterValue
+                    if (( row?.original?.PercentComplete?.toString().charAt(0) == filterValue.toString().charAt(0) ) 
+                    &&(row?.original?.PercentComplete.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
                 },
                 id: "PercentComplete",
                 placeholder: "% Complete",
@@ -1066,7 +1089,13 @@ const TaskDashboard = (props: any) => {
 
                 ),
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PercentComplete == filterValue
+                    if (( row?.original?.PercentComplete?.toString().charAt(0) == filterValue.toString().charAt(0) ) 
+                    &&(row?.original?.PercentComplete.toString())?.includes(filterValue)) {
+                        return true
+                    } else {    
+                        return false
+                    }
+
                 },
                 id: "PercentComplete",
                 placeholder: "% Complete",
