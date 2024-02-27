@@ -1929,9 +1929,6 @@ const TaskDashboard = (props: any) => {
 
 
                             }
-
-
-
                             teamsTaskBody.push(body);
                         }
                     })
@@ -1942,7 +1939,7 @@ const TaskDashboard = (props: any) => {
                 finalBody.push(TeamTitle)
                 }
             })
-            let sendAllTasks =
+            let sendAllTasks:any =
                 '<span style="font-size: 18px;margin-bottom: 10px;">'
                 + 'Hi there, <br><br>'
                 + "Below is the today's working task of all the team members :"
@@ -1955,13 +1952,14 @@ const TaskDashboard = (props: any) => {
                 + '<h3>'
                 + currentUserData?.Title
                 + '</h3>'
-            SendEmailFinal(to, subject, sendAllTasks);
+              
+             SendEmailFinal(to, subject, sendAllTasks.replaceAll(",","  "));
 
         }
 
 
     }
-
+    
     //end
 
     //Toggle Team 
