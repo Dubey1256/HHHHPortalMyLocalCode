@@ -3,12 +3,20 @@ import { Dropdown, Panel, PanelType } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
 import { Col, Row } from "react-bootstrap";
 import Tooltip from "./Tooltip";
+import { myContextValue } from "./globalCommon";
 let portfolioColor: any = '#057BD0';
+let DashTemp: any = []
 const AddConfiguration = (props: any) => {
+    const params = new URLSearchParams(window.location.search);
+    let DashboardId: any = params.get('DashBoardId');
+    if (DashboardId == undefined || DashboardId == '')
+        DashboardId = 1;
+    const ContextData: any = React.useContext(myContextValue);
     let defaultConfig = { "WebpartTitle": '', "TileName": '', "ShowWebpart": '', "WebpartPosition": { "Row": 0, "Column": 0 }, "GroupByView": '', "Id": 1, "AdditonalHeader": false, "smartFevId": '', "DataSource": "Tasks", "selectFilterType": "smartFav", "selectUserFilterType": "AssignedTo" }
     const [NewItem, setNewItem]: any = React.useState<any>([defaultConfig]);
     const [SmartFav, setSmartFav] = React.useState<any>([]);
     const [AllTaskUsers, setAllTaskUsers] = React.useState<any>([]);
+    const [DashboardTemplate, setDashboardTemplate] = React.useState<any>([]);
     const [DataSource, setDataSource] = React.useState<any>([{ "key": "Tasks", "text": "Tasks" }, { "key": "TaskUsers", "text": "TaskUsers" },]);
     const [DashboardTitle, setDashboardTitle] = React.useState<any>('');
     const [IsCheck, setIsCheck] = React.useState<any>(false);
@@ -16,7 +24,7 @@ const AddConfiguration = (props: any) => {
     { value: 4, status: "4% Checking", }, { value: 5, status: "5% Acknowledged", }, { value: 9, status: "9% Ready To Go", }, { value: 10, status: "10% working on it", },
     { value: 70, status: "70% Re-Open", }, { value: 75, status: "75% Deployment Pending", }, { value: 80, status: "80% In QA Review", }, { value: 90, status: "90% Task completed", },
     { value: 100, status: "100% Closed", },]);
-    let [CutomUserFilter, setCutomUserFilter] = React.useState([{ value: 'Approver', status: "Me As Approver", }, { value: 'TeamLeader', status: "Me As Team Lead", }]);
+    let [CustomUserFilter, setCutomUserFilter] = React.useState([{ value: 'Approver', status: "Me As Approver", }, { value: 'TeamLeader', status: "Me As Team Lead", }]);
     const LoadSmartFav = () => {
         let SmartFavData: any = []
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
@@ -33,8 +41,12 @@ const AddConfiguration = (props: any) => {
                 })
             })
             if (props?.EditItem != undefined && props?.EditItem != '') {
+                let newArray: any = []
                 setDashboardTitle(props?.EditItem?.Title)
-                let newArray = JSON.parse(JSON.stringify(props?.EditItem?.Configurations));
+                if (props?.SingleWebpart == true)
+                    newArray.push(props?.EditItem)
+                else
+                    newArray = JSON.parse(JSON.stringify(props?.EditItem?.Configurations));
                 newArray?.forEach((item: any, Itemindex: any) => {
                     item.IsDefaultTile = false;
                     item.IsShowTile = false;
@@ -48,6 +60,14 @@ const AddConfiguration = (props: any) => {
                         item.IsShowTile = true
                     if (item?.smartFevId != undefined && item?.smartFevId != '')
                         item.smartFevId = parseInt(item?.smartFevId)
+                    if (DashTemp != undefined && DashTemp?.length) {
+                        DashTemp?.forEach((Template: any) => {
+                            if (Template?.WebpartTitle == item?.WebpartTitle && item?.IsEditable == false) {
+                                Template.IsSelectedTemp = item?.IsSelectedTemp
+                            }
+                        })
+                        setDashboardTemplate(DashTemp);
+                    }
                 })
                 setNewItem(newArray);
             }
@@ -55,6 +75,21 @@ const AddConfiguration = (props: any) => {
                 setNewItem([defaultConfig])
             }
             setSmartFav(SmartFavData)
+        }).catch((err: any) => {
+            console.log(err);
+        })
+    }
+    const LoadDashboardTemplate = () => {
+        DashTemp = []
+        const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
+        web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashboardTemplate'").getAll().then((data: any) => {
+            data.forEach((config: any) => {
+                DashTemp.push(JSON.parse(config?.Configurations)[0]);
+            })
+            DashTemp.forEach((temp: any) => {
+                temp.IsSelectedTemp = false;
+            })
+            setDashboardTemplate(DashTemp);
         }).catch((err: any) => {
             console.log(err);
         })
@@ -103,39 +138,71 @@ const AddConfiguration = (props: any) => {
         setNewItem([]);
         props?.CloseConfigPopup(false)
     }
+
     const SaveConfigPopup = async () => {
         try {
             let web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
             await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").getAll().then(async (data: any) => {
-                let result = data?.length + 1
-                let newArray = [...NewItem];
-                newArray?.forEach((item: any, Itemindex: any) => {
-                    delete item.IsDefaultTile;
-                    if (item?.IsShowTile === true)
-                        item.TileName = item.WebpartTitle.replaceAll(" ", "")
-                    else if (item?.IsShowTile != true)
-                        item.TileName = '';
-                    delete item.IsShowTile;
-                })
-                setNewItem(newArray);
-                if (props?.EditItem != undefined && props?.EditItem != '') {
-                    await web.lists.getById(props?.props.AdminConfigurationListId).items.getById(props?.EditItem?.Id).update({ Title: DashboardTitle, Configurations: JSON.stringify(NewItem) })
+                let result = data?.length + 1;
+                if (props?.SingleWebpart == true) {
+                    let FilteredData = data?.filter((config: any) => config?.Value == DashboardId)[0];
+                    if (props?.DashboardConfigBackUp && NewItem[0]?.Id !== undefined) {
+                        props.DashboardConfigBackUp.forEach((item: any) => {
+                            if (item?.Id !== undefined && item.Id === NewItem[0].Id) {
+                                Object.keys(NewItem[0]).forEach((key) => {
+                                    if (key in item) {
+                                        item[key] = NewItem[0][key];
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    await web.lists.getById(props?.props.AdminConfigurationListId).items.getById(FilteredData.Id).update({ Title: FilteredData?.Title, Configurations: JSON.stringify(props?.DashboardConfigBackUp) })
                         .then(async (res: any) => {
                             setNewItem([]);
                             props?.CloseConfigPopup(true)
+                            if (ContextData != undefined && ContextData?.callbackFunction != undefined)
+                                ContextData?.callbackFunction(false);
                         }).catch((err: any) => {
                             console.log(err);
                         })
                 }
                 else {
-                    await web.lists.getById(props?.props?.AdminConfigurationListId).items.add({ Title: DashboardTitle, Key: "DashBoardConfigurationId", Value: result != undefined ? result.toString() : undefined, Configurations: JSON.stringify(NewItem) })
-                        .then(async (res: any) => {
-                            setNewItem([]);
-                            props?.CloseConfigPopup(true)
-                        }).catch((err: any) => {
-                            console.log(err);
-                        })
+                    let newArray = [...NewItem];
+                    newArray?.forEach((item: any, Itemindex: any) => {
+                        delete item.IsDefaultTile;
+                        if (item?.IsShowTile === true)
+                            item.TileName = item.WebpartTitle.replaceAll(" ", "")
+                        else if (item?.IsShowTile != true)
+                            item.TileName = '';
+                        delete item.IsShowTile;
+                    })
+                    setNewItem(newArray);
+                    if (props?.EditItem != undefined && props?.EditItem != '') {
+                        await web.lists.getById(props?.props.AdminConfigurationListId).items.getById(props?.EditItem?.Id).update({ Title: DashboardTitle, Configurations: JSON.stringify(NewItem) })
+                            .then(async (res: any) => {
+                                setNewItem([]);
+                                props?.CloseConfigPopup(true)
+                                if (props?.SingleWebpart == true) {
+                                    if (ContextData != undefined && ContextData?.callbackFunction != undefined)
+                                        ContextData?.callbackFunction(false);
+                                }
+
+                            }).catch((err: any) => {
+                                console.log(err);
+                            })
+                    }
+                    else {
+                        await web.lists.getById(props?.props?.AdminConfigurationListId).items.add({ Title: DashboardTitle, Key: "DashBoardConfigurationId", Value: result != undefined ? result.toString() : undefined, Configurations: JSON.stringify(NewItem) })
+                            .then(async (res: any) => {
+                                setNewItem([]);
+                                props?.CloseConfigPopup(true)
+                            }).catch((err: any) => {
+                                console.log(err);
+                            })
+                    }
                 }
+
             }).catch((err: any) => {
                 console.log(err);
             })
@@ -206,6 +273,31 @@ const AddConfiguration = (props: any) => {
         })
         setNewItem(newArray);
     }
+    const SelectedTemplate = (check: any, items: any, index: any) => {
+        setIsCheck(check)
+        let newArray = [...NewItem];
+        let Template = [...DashboardTemplate];
+        Template?.forEach((item: any, Itemindex: any) => {
+            if (Itemindex == index && check == true) {
+                item.IsSelectedTemp = true;
+                if (newArray?.length == 1 && (newArray[0]?.WebpartTitle == undefined || newArray[0]?.WebpartTitle == '')) {
+                    newArray = [];
+                    newArray.push(item)
+                }
+                else {
+                    newArray.push(item)
+                }
+            }
+            else {
+                item.IsSelectedTemp = false;
+                newArray = newArray.filter((item: any) => item?.TileName != items?.TileName && item?.IsTemplate != true)
+                if (newArray?.length == 0)
+                    newArray.push(defaultConfig)
+            }
+        })
+        setDashboardTemplate(Template);
+        setNewItem(newArray);
+    }
     const handleFilterChange = (event: any, index: any, items: any) => {
         const updatedItems = [...NewItem];
         updatedItems[index] = { ...items, selectFilterType: event.target.value, };
@@ -218,8 +310,9 @@ const AddConfiguration = (props: any) => {
     };
 
     useEffect(() => {
-        LoadSmartFav()
-        loadTaskUsers()
+        LoadSmartFav();
+        LoadDashboardTemplate();
+        loadTaskUsers();
     }, []);
     return (
         <>
@@ -229,21 +322,34 @@ const AddConfiguration = (props: any) => {
                 isBlocking={false}
                 type={PanelType.medium}>
                 <div className='border container modal-body p-1 mb-1'>
-                    <Row className="Metadatapannel p-2 mb-2">
+                    {props?.SingleWebpart != true && <Row className="Metadatapannel p-2 mb-2">
                         <Col sm="6" md="6" lg="6">
                             <div className="input-group">
                                 <label className='form-label full-width'>Dashboard Title</label>
                                 <input className='form-control' type='text' placeholder="Dashboard Title" value={DashboardTitle} onChange={(e) => setDashboardTitle(e.target.value)} />
                             </div>
                         </Col>
-                    </Row>
+                        <Col sm="6" md="6" lg="6">
+                            <div className="input-group">
+                                <label className='form-label full-width'>Templates</label>
+                                {DashboardTemplate != undefined && DashboardTemplate?.length > 0 && DashboardTemplate.map((items: any, index: any) => {
+                                    return (
+                                        <>
+                                            <input type="checkbox" checked={items?.IsSelectedTemp} className="form-check-input me-1" onClick={(e: any) => SelectedTemplate(e.target.checked, items, index)} />
+                                            <label className="form-check-label">{items?.WebpartTitle}</label>
+                                        </>
+                                    )
+                                })}
+                            </div>
+                        </Col>
+                    </Row>}
                     <Row className="Metadatapannel p-2 mb-2">
                         <Col sm="12" md="12" lg="12">
                             <label className='form-label full-width'>Webpart Configuartion</label>
                             {NewItem != undefined && NewItem?.length > 0 && NewItem.map((items: any, index: any) => {
                                 return (
                                     <>
-                                        <div key={index} className='border p-2 mb-2'>
+                                        <div key={index} className={`${items?.IsEditable != false ? 'border p-2 mb-2' : 'border p-2 mb-2 is-disabled'}`}>
                                             <Row className="Metadatapannel mb-2">
                                                 <Col sm="4" md="4" lg="4">
                                                     <div className="input-group">
@@ -257,7 +363,6 @@ const AddConfiguration = (props: any) => {
                                                 </Col>
                                                 <Col sm="3" md="3" lg="3">
                                                     <div> Show WebPart</div>
-
                                                     <label className="switch me-2" htmlFor={`ShowWebpartCheckbox${index}`}>
                                                         <input checked={items?.ShowWebpart} onChange={(e: any) => {
                                                             const isChecked = e.target.checked;
@@ -371,7 +476,7 @@ const AddConfiguration = (props: any) => {
                                                         onChange={(e, option) => handleSelectFilterChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }} /></>
                                                     }
-                                                    {items.DataSource == "TaskUsers" && items?.selectFilterType == 'custom' && <><label className='form-label full-width'>Select Filter</label><Dropdown id="FiltesCustomTaskUser" options={[{ key: '', text: '' }, ...(CutomUserFilter?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.Status}
+                                                    {items.DataSource == "TaskUsers" && items?.selectFilterType == 'custom' && <><label className='form-label full-width'>Select Filter</label><Dropdown id="FiltesCustomTaskUser" options={[{ key: '', text: '' }, ...(CustomUserFilter?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.Status}
                                                         onChange={(e, option) => handleCustomUserFilterChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }} /></>
                                                     }
@@ -384,7 +489,7 @@ const AddConfiguration = (props: any) => {
                         </Col>
                     </Row>
                 </div>
-                <div className='mb-5'><a className="pull-right empCol hreflink" onClick={(e) => AddMorewebpart()}> +Add More </a></div>
+                {props?.SingleWebpart != true && <div className='mb-5'><a className="pull-right empCol hreflink" onClick={(e) => AddMorewebpart()}> +Add More </a></div>}
                 <div className='modal-footer mt-2'>
                     <button className="btn btn-primary ms-1" onClick={SaveConfigPopup} disabled={DashboardTitle == '' || IsCheck == false}>Save</button>
                     <button className='btn btn-default ms-1' onClick={CloseConfiguationPopup}>Cancel</button>
