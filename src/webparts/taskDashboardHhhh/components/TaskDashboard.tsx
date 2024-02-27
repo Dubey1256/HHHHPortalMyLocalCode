@@ -787,7 +787,13 @@ const TaskDashboard = (props: any) => {
                     </div>
                 ),
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PriorityRank == filterValue
+                    if(( row?.original?.PriorityRank?.toString().charAt(0) == filterValue.toString().charAt(0) )
+                    &&(row?.original?.PriorityRank.toString())?.includes(filterValue)){
+                        return true
+                    }else{
+                        return false
+                    }
+                   
                 },
             },
             {
@@ -796,7 +802,13 @@ const TaskDashboard = (props: any) => {
                     <SmartPriorityToolTip smartPriority={row?.original?.SmartPriority} hoverFormula={row?.original?.showFormulaOnHover} />
                 ),
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.SmartPriority == filterValue
+
+                    if (( row?.original?.SmartPriority?.toString().charAt(0) == filterValue.toString().charAt(0) ) 
+                    &&(row?.original?.SmartPriority.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
                 },
                 id: "SmartPriority",
                 placeholder: "Smart Priority",
@@ -841,7 +853,13 @@ const TaskDashboard = (props: any) => {
                     </div>
                 ),
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.EstimatedTime == filterValue
+                            
+                    if ( ( row?.original?.EstimatedTime?.toString().charAt(0) == filterValue.toString().charAt(0) )&&
+                    (row?.original?.EstimatedTime.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
                 },
 
             },
@@ -855,7 +873,12 @@ const TaskDashboard = (props: any) => {
 
                 ),
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PercentComplete == filterValue
+                    if (( row?.original?.PercentComplete?.toString().charAt(0) == filterValue.toString().charAt(0) ) 
+                    &&(row?.original?.PercentComplete.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
                 },
                 id: "PercentComplete",
                 placeholder: "% Complete",
@@ -1066,7 +1089,13 @@ const TaskDashboard = (props: any) => {
 
                 ),
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PercentComplete == filterValue
+                    if (( row?.original?.PercentComplete?.toString().charAt(0) == filterValue.toString().charAt(0) ) 
+                    &&(row?.original?.PercentComplete.toString())?.includes(filterValue)) {
+                        return true
+                    } else {    
+                        return false
+                    }
+
                 },
                 id: "PercentComplete",
                 placeholder: "% Complete",
@@ -1729,7 +1758,7 @@ const TaskDashboard = (props: any) => {
                 text =
                 '<tr>' +
                 '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.siteType + '</td>'
-                + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">'+ '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Project-Management-Profile.aspx?ProjectId=' + item.Project?.Id +'><span style="font-size:13px">'+  (item?.Project == undefined?'':item?.Project.Title) + '</span></a>' + '</p>' +  '</td>'
+                + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">'+ '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Project-Management.aspx?ProjectId=' + item.Project?.Id +'><span style="font-size:13px">'+  (item?.Project == undefined?'':item?.Project.Title) + '</span></a>' + '</p>' +  '</td>'
                 +'<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:135px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Portfolio-Profile.aspx?taskId=' + item?.Portfolio?.Id +'><span style="font-size:13px">'+ (item.Portfolio == undefined?'':item.Portfolio.Title) +'</span></a>' + '</p>' + '</td>'
 
                 + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px">' + item.Title + '</span></a>' + '</p>' + '</td>'

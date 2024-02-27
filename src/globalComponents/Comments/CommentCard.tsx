@@ -768,6 +768,17 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     this.PostComment('txtComment')
     this.setState({
       isCalloutVisible: false
+    })   
+  }
+  private CancelReplyPopup = () => {
+    if (this.state?.Result != undefined && this.state?.Result?.Comments != undefined && this.state?.Result?.Comments?.length > 0) {
+      this.state?.Result?.Comments?.forEach((element: any) => {
+        element.isReplyMsg = false;
+      });
+    }
+    this.setState({
+      replyTextComment: '',
+      isCalloutVisible: false
     })
   }
   private handleKeyDown = (e: any) => {
@@ -871,7 +882,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               {cmtData.Created}</span>
                             <div className="d-flex ml-auto media-icons px-1 " >
                               <a ><div data-toggle="tooltip" id={"Reply-" + i}
-                                onClick={() => this.openReplycommentPopup(cmtData, i)}  data-placement="bottom"  >
+                                onClick={() => this.openReplycommentPopup(cmtData, i)} data-placement="bottom"  >
                                 <span className="svg__iconbox svg__icon--reply"></span>
                               </div></a>
                               {/* <a onClick={() => this.replyMailFunction(cmtData, i)}><span><ImReply /></span></a> */}
@@ -1014,36 +1025,121 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                     </div>
                     <div className='text-end mt-1'> <span className='btn btn-primary hreflink' onClick={() => this.PostComment('txtCommentModal')} >Post</span></div>
                   </div>
-                  {this.state.Result["Comments"] != null && this.state.Result["Comments"]?.length > 0 && this.state.Result["Comments"]?.map((cmtData: any, i: any) => {
-                    return <div className="p-1 mb-2">
-                      <div>
-                        <div className='d-flex justify-content-between align-items-center'>
-                          <span className='comment-date'>
-                            <span className='round  pe-1'> <img className='align-self-start me-1' title={cmtData?.AuthorName}
-                              src={cmtData?.AuthorImage != undefined && cmtData?.AuthorImage != '' ?
-                                cmtData.AuthorImage :
-                                "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
-                            />
-                              {cmtData?.Created}
+                  <ul className="list-unstyled">
+                    {this.state.Result["Comments"] != null && this.state.Result["Comments"]?.length > 0 && this.state.Result["Comments"]?.map((cmtData: any, i: any) => {
+                      return cmtData?.Description && <li className="media  p-1 my-1">
+                        <div className="media-bodyy">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <span className="comment-date ng-binding">
+                              <span className="round  pe-1">
+                                <img className="align-self-start " title={cmtData?.AuthorName} onClick={() => globalCommon?.openUsersDashboard(this.props?.AllListId?.siteUrl, undefined, cmtData?.AuthorName, this?.taskUsers)}
+                                  src={cmtData?.AuthorImage != undefined && cmtData?.AuthorImage != '' ?
+                                    cmtData?.AuthorImage :
+                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                />
+                              </span>
+                              {cmtData.Created}</span>
+                            <div className="d-flex ml-auto media-icons px-1 " >
+                              <a ><div data-toggle="tooltip" id={"Reply-" + i}
+                                onClick={() => this.openReplycommentPopup(cmtData, i)} data-placement="bottom"  >
+                                <span className="svg__iconbox svg__icon--reply"></span>
+                              </div></a>
+                              {/* <a onClick={() => this.replyMailFunction(cmtData, i)}><span><ImReply /></span></a> */}
+                              <a onClick={() => this.openEditModal(cmtData, i, false)}>
+                                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
+                                <span className='svg__iconbox svg__icon--edit'></span>
+                              </a>
+                              <a title="Delete" onClick={() => this.clearComment(i, undefined, undefined)}>
+                                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" /> */}
+                                <span className='svg__iconbox svg__icon--trash'></span>
+                              </a>
+                            </div>
+                          </div>
+                          <div className="media-text">
+                            {cmtData.Header != '' && <h6 className="userid m-0"><a className="align-top">{cmtData?.Header}</a></h6>}
+                            {/* <p className='m-0'>
+                        <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}>
+                        </span></p> */}
+                            <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(cmtData?.Description) }}></span>
+                            {/* {this.detectAndRenderLinks(cmtData?.Description)} */}
+                          </div>
+
+                        </div>
+                        {/* {cmtData?.replyData!=undefined&& cmtData?.replyData.length>0 && cmtData?.replyData?.map((replyerData:any)=>{
+                      return(
+                        <li className="media  p-1 my-1">
+                        <div className="media-bodyy">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <span className="comment-date ng-binding">
+                            <span className="round  pe-1">
+                              <img className="align-self-start " title={replyerData?.AuthorName}
+                                src={replyerData?.AuthorImage != undefined && replyerData?.AuthorImage != '' ?
+                                replyerData?.AuthorImage :
+                                  "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                              />
                             </span>
-                          </span>
-                          <div className='d-flex media-icons ml-auto '>
-                            <a className="hreflink" title='Edit' onClick={() => this.openEditModal(cmtData, i, false)}>
-                              <span className='svg__iconbox svg__icon--edit'></span>
+                            {replyerData.Created}</span>
+                          <div className="d-flex ml-auto media-icons ">
+                            <a onClick={()=>this.replyMailFunction(replyerData,i)}><span className="svg__icon--mailreply svg__iconbox"></span></a>
+                            <a  onClick={() => this.openEditModal(replyerData, i)}>                      
+                              <span className='svg__iconbox svg__icon--edit'></span>                           
                             </a>
-                            <a className="hreflink" title="Delete" onClick={() => this.clearComment(i, undefined, undefined)}>
+                            <a title="Delete" onClick={() => this.clearComment(i)}>                             
                               <span className='svg__iconbox svg__icon--trash'></span>
                             </a>
                           </div>
                         </div>
                         <div className="media-text">
-                          <h6 className='userid m-0 fs-6'>   {cmtData?.Header != '' && <b>{cmtData?.Header}</b>}</h6>
-                          <p className='m-0' id="pageContent">  <span dangerouslySetInnerHTML={{ __html: cmtData?.Description }}></span></p>
+                          {replyerData.Header != '' && <h6 className="userid m-0"><a className="ng-binding">{replyerData?.Header}</a></h6>}
+                          <p className='m-0'><span dangerouslySetInnerHTML={{ __html: replyerData?.Description }}></span></p>
                         </div>
                       </div>
-                    </div>
-                  })}
-              </div>
+                      </li>
+                      )
+                    })} */}
+                        <div className="commentMedia">
+                          {cmtData?.ReplyMessages != null && cmtData?.ReplyMessages != undefined && cmtData?.ReplyMessages?.length > 0 &&
+                            <div>
+                              <ul className="list-unstyled subcomment">
+                                {cmtData?.ReplyMessages != null && cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((ReplyMsg: any, j: any) => {
+                                  return <li className="media  p-1 my-1">
+                                    <div className="media-bodyy">
+                                      <div className="d-flex justify-content-between align-items-center">
+                                        <span className="comment-date ng-binding">
+                                          <span className="round  pe-1">
+                                            <img className="align-self-start hreflink " title={ReplyMsg?.AuthorName} onClick={() => globalCommon?.openUsersDashboard(this.props?.AllListId?.siteUrl, undefined, ReplyMsg?.AuthorName, this?.taskUsers)}
+                                              src={ReplyMsg?.AuthorImage != undefined && ReplyMsg?.AuthorImage != '' ?
+                                                ReplyMsg?.AuthorImage :
+                                                "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                            />
+                                          </span>
+                                          {/* {ReplyMsg?.AuthorName} - */}{ReplyMsg?.Created}</span>
+                                        <div className="d-flex ml-auto media-icons ">
+                                          {/* <a onClick={() => this.replyMailFunction(ReplyMsg, j)}><span><ImReply /></span></a> */}
+                                          <a onClick={() => this.openEditModal(ReplyMsg, j, true)}>
+                                            <span className='svg__iconbox svg__icon--edit'></span>
+                                          </a>
+                                          <a title="Delete" onClick={() => this.clearComment(j, 'childLevel', i)}>
+                                            <span className='svg__iconbox svg__icon--trash'></span>
+                                          </a>
+                                        </div>
+                                      </div>
+                                      <div className="media-text">
+                                        {/* {ReplyMsg.Header != '' && <h6 className="userid m-0"><a className="ng-binding">{ReplyMsg?.Header}</a></h6>} */}
+                                        {/* <p className='m-0'><span dangerouslySetInnerHTML={{ __html: ReplyMsg?.Description }}></span></p> */}
+                                        <span dangerouslySetInnerHTML={{ __html: this.detectAndRenderLinks(ReplyMsg?.Description) }}></span>
+                                        {/* {this.detectAndRenderLinks(ReplyMsg?.Description)} */}
+                                      </div>
+                                    </div>
+                                  </li>
+                                })}
+                              </ul>
+                            </div>
+                          }
+                        </div></li>
+                    })}
+                  </ul>
+                </div>
               </div>
             </div>
             <footer className='text-end'>
@@ -1079,9 +1175,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                     onClick={this.SaveReplyMessageFunction}
                   >Save</button>
                   <button className='btn btn-default'
-                    onClick={() => this.setState({
-                      isCalloutVisible: false
-                    })}
+                    onClick={this.CancelReplyPopup}
                   >Cancel</button>
                 </Stack>
               </FocusZone>
@@ -1284,7 +1378,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             </table>
           </div>
         }
-      </div>
+      </div >
     );
   }
 }

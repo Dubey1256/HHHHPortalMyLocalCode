@@ -1383,8 +1383,10 @@ export default function ProjectOverview(props: any) {
                 }
             } else {
                 setCheckBoxData([])
-                setTableProperty([])
-                setTrueRestructuring(false)
+                if (childRef.current.table.getSelectedRowModel().flatRows.length == 0) {
+                  setTrueRestructuring(false)
+              }
+                
             }
             if (ShowingData != undefined) {
                 setShowingData([ShowingData])
@@ -1475,9 +1477,9 @@ export default function ProjectOverview(props: any) {
         renderData = [];
         renderData = renderData.concat(getData)
         refreshData()
-        if (callback == true) {
-            GetMasterData();
-        }
+        // if (callback == true) {
+        //     GetMasterData();
+        // }
 
     }, []);
 
@@ -1754,7 +1756,7 @@ export default function ProjectOverview(props: any) {
 
             {
                 trueRestructuring == true ?
-                    <RestructuringCom AllSitesTaskData={AllSitesAllTasks} AllMasterTasksData={MyAllData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllTaskUser} contextValue={AllListId} allData={workingTodayFiltered ? data : flatData} restructureCallBack={restructureCallback} restructureItem={TableProperty} />
+                    <RestructuringCom AllSitesTaskData={AllSitesAllTasks} AllMasterTasksData={MyAllData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllTaskUser} contextValue={AllListId} allData={workingTodayFiltered ? data : flatData} restructureCallBack={restructureCallback} findPage = {"ProjectOverView"} restructureItem={childRef.current.table.getSelectedRowModel().flatRows} />
                     : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
             }
             <label className="switch me-2" htmlFor="checkbox">
