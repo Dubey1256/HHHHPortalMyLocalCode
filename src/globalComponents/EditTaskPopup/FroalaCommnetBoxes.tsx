@@ -231,11 +231,14 @@ export default function FroalaCommnetBoxes(textItems: any) {
             ApprovalDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
             isShowLight: value
         }
-        UpdatedFeedBackParentArray[index].isShowLight = value;
-        UpdatedFeedBackParentArray[index].ApproverData.push(temObject);
-        let tempApproverData: any = UpdatedFeedBackParentArray[index].ApproverData
-
-        UpdatedFeedBackParentArray?.forEach((ele: any) => {
+        const copy = [...State];
+        let tempApproverData: any = copy[index].ApproverData;
+        const obj = { ...State[index], isShowLight: value, ApproverData: tempApproverData };
+        copy[index] = obj;
+        setState(copy);
+        copy[index].isShowLight = value;
+        copy[index].ApproverData.push(temObject);
+        copy?.forEach((ele: any) => {
             if (ele.ApproverData != undefined && ele.ApproverData.length > 0) {
                 ele.ApproverData?.forEach((ba: any) => {
                     if (ba.isShowLight == 'Reject') {
@@ -250,12 +253,8 @@ export default function FroalaCommnetBoxes(textItems: any) {
                 })
             }
         })
-        callBack(UpdatedFeedBackParentArray);
-        const copy = [...State];
-        const obj = { ...State[index], isShowLight: value, ApproverData: tempApproverData };
-        copy[index] = obj;
-        setState(copy);
-
+        callBack(copy);
+        UpdatedFeedBackParentArray = copy;
     }
     const postBtnHandleCallBackCancel = useCallback((status: any) => {
         if (status) {
