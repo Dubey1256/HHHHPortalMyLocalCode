@@ -2288,6 +2288,7 @@ const EditTaskPopup = (Items: any) => {
             if (StatusData.value == 5) {
                 EditData.CompletedDate = undefined;
                 EditData.IsTodaysTask = false;
+                setTeamLeaderChanged(true);
             }
             if (StatusData.value == 10) {
                 EditData.CompletedDate = undefined;
@@ -2570,7 +2571,7 @@ const EditTaskPopup = (Items: any) => {
                                 let sendUserEmails: any = [];
                                 let AssignedUserName: string = '';
                                 if (TeamLeaderChanged && TeamMemberChanged) {
-                                    let ResultantArray: any = TaskResponsibleTeam.concat(TaskAssignedTo);
+                                    let ResultantArray: any = TaskAssignedTo?.concat(UpdatedDataObject?.ResponsibleTeam);
                                     ResultantArray?.map((userDtl: any) => {
                                         taskUsers?.map((allUserItem: any) => {
                                             if (userDtl.Id == allUserItem.AssingedToUserId && userDtl.Id !== currentUserId) {
@@ -2585,7 +2586,7 @@ const EditTaskPopup = (Items: any) => {
                                     });
                                 } else {
                                     if (TeamLeaderChanged) {
-                                        TaskResponsibleTeam?.map((userDtl: any) => {
+                                        UpdatedDataObject?.ResponsibleTeam?.map((userDtl: any) => {
                                             taskUsers?.map((allUserItem: any) => {
                                                 if (userDtl.Id == allUserItem.AssingedToUserId && userDtl.Id !== currentUserId) {
                                                     sendUserEmails.push(allUserItem.Email);
