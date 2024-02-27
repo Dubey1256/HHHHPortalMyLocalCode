@@ -9,11 +9,12 @@ import { Button, ModalBody } from "react-bootstrap";
 import * as GlobalFunction from '../globalCommon';
 import SmartInformation from '../../webparts/taskprofile/components/SmartInformation';
 import ExcelJS from 'exceljs';
-import { Dropdown, Panel, PanelType } from 'office-ui-fabric-react';
+import { Dropdown, IconButton, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import MsgReader from "@kenjiuno/msgreader"
 import PageLoader from '../pageLoader';
 import EditDocument from '../../webparts/taskprofile/components/EditDocunentPanel'
 import { myContextValue } from "../../globalComponents/globalCommon";
+import { RiH5 } from 'react-icons/ri';
 let backupExistingFiles: any = [];
 let backupCurrentFolder: any = [];
 let AllFilesAndFolderBackup: any = [];
@@ -1334,7 +1335,7 @@ const AncTool = (props: any) => {
         }
         let updatedArray = [...AllReadytagged]
         updatedArray.map((item: any, index) => {
-            if (item.Id == taggedDocument.Id) {
+            if (taggedDocument != undefined && taggedDocument != '' && item.Id == taggedDocument.Id) {
                 updatedArray[index] = taggedDocument;
             }
         })
@@ -1342,8 +1343,10 @@ const AncTool = (props: any) => {
             updatedArray = AllReadytagged.filter((item: any) => item.Id != EditdocData?.Id)
             setShowConfirmation(false);
         }
-        setAllReadytagged(updatedArray);
-        setUploadedDocDetails(taggedDocument);
+        if (taggedDocument != undefined && taggedDocument != '') {
+            setAllReadytagged(updatedArray);
+            setUploadedDocDetails(taggedDocument);
+        }
         setEditdocpanel(false);
     }
     return (
@@ -1863,65 +1866,7 @@ const AncTool = (props: any) => {
                 //         </div>
                 //     </div> : ''
             }
-            {
-                ShowConfirmation ?
-                    <>
 
-                        <div className="modal Anc-Confirmation-modal" >
-                            <div className="modal-dialog modal-mg rounded-0 " style={{ maxWidth: "700px" }}>
-                                {pageLoaderActive ? <PageLoader /> : ''}
-                                <div className="modal-content rounded-0">
-                                    <div className="modal-header">
-                                        <h5 className="modal-title">{UploadedDocDetails?.fileName} - Upload Confirmation</h5>
-                                        <span onClick={() => cancelConfirmationPopup()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
-                                    </div>
-                                    <div className="modal-body p-2">
-                                        <Col className='py-1'>
-                                            <Col><span><strong>Folder :</strong> </span><a href={`${rootSiteName}${selectedPath?.displayPath}`} target="_blank" data-interception="off" className='hreflink'> {selectedPath?.displayPath} <span className="svg__iconbox svg__icon--folder ms-1 alignIcon "></span></a></Col>
-                                            <Col className='mb-2'><strong>Metadata-Tag :</strong> <span>{props?.item?.Title}</span></Col>
-
-                                            <Col className='Alltable mt-2'>
-                                                <div>
-                                                    <Table className='table table-hover mb-0'>
-                                                        <thead className='fixed-Header top-0'>
-                                                            <tr>
-                                                                <th className='ps-2' style={{ width: "60%" }}>File Name</th>
-                                                                {/* <th className='pe-1' style={{ width: "10%" }}>Uploaded</th>
-                                                                <th className='pe-1' style={{ width: "8%" }}>Tagged</th> */}
-                                                                <th className='pe-1 text-center' style={{ width: "12%" }}>Share Link</th>
-                                                                <th className='pe-1 text-center' style={{ width: "12%" }}>Share in Mail</th>
-                                                                <th className='pe-1 text-center' style={{ width: "4%" }}></th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td><div className='d-flex'><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</div></td>
-                                                                {/* <td>{UploadedDocDetails?.uploaded == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross' ></span>}</td>
-                                                                <td>{UploadedDocDetails?.tagged == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross'></span>}</td> */}
-                                                                <td className='text-center'>{UploadedDocDetails?.uploaded == true ? <>
-                                                                    <span className='me-3 alignIcon  svg__iconbox svg__icon--link hreflink' title='Copy Link' data-bs-toggle="popover" data-bs-content="Link Copied" onClick={() => { navigator.clipboard.writeText(UploadedDocDetails?.link); }}></span>
-                                                                </> : <></>}</td>
-                                                                <td className='text-center'>{UploadedDocDetails?.uploaded == true ? <>
-                                                                    <span className='alignIcon  svg__iconbox svg__icon--mail hreflink' title='Share In Mail' onClick={() => { window.open(`mailto:?&subject=${props?.item?.Title}&body=${UploadedDocDetails?.link}`) }}></span>
-                                                                </> : <></>}</td>
-                                                                <td> <span title="Edit" className="svg__iconbox svg__icon--edit hreflink alignIcon" onClick={() => editDocumentsLink(UploadedDocDetails)}></span></td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </Table>
-                                                </div>
-
-                                            </Col>
-                                        </Col>
-                                    </div>
-                                    <footer className='text-end p-2'>
-                                        <button className="btn btn-primary me-1" onClick={() => cancelConfirmationPopup()}>OK</button>
-                                    </footer>
-                                </div>
-                            </div>
-                        </div>
-                    </>
-                    : ''
-            }
             {
                 remark && <SmartInformation Id={props?.item?.Id}
                     AllListId={props.AllListId}
@@ -1934,6 +1879,58 @@ const AncTool = (props: any) => {
                     callback={smartnotecall}
                 />
             }
+            <Modal titleAriaId={`UploadConfirmation`} isOpen={ShowConfirmation} onDismiss={cancelConfirmationPopup} dragOptions={undefined}>
+                <div className='d-flex pt-2'>
+                    <h5 className='ms-2 subheading'>
+                        {`${UploadedDocDetails?.fileName} - Upload Confirmation`}
+                    </h5>
+                    <span className='me-2' onClick={() => cancelConfirmationPopup()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
+                </div>
+                {pageLoaderActive ? <PageLoader /> : ''}
+                <div className="modal-content rounded-0" style={{ width: '681px' }}>
+                    <div className="modal-body p-2">
+                        <Col className='py-1'>
+                            <Col><span><strong>Folder :</strong> </span><a href={`${rootSiteName}${selectedPath?.displayPath}`} target="_blank" data-interception="off" className='hreflink'> {selectedPath?.displayPath} <span className="svg__iconbox svg__icon--folder ms-1 alignIcon "></span></a></Col>
+                            <Col className='mb-2'><strong>Metadata-Tag :</strong> <span>{props?.item?.Title}</span></Col>
+
+                            <Col className='Alltable mt-2'>
+                                <div>
+                                    <Table className='table table-hover mb-0'>
+                                        <thead className='fixed-Header top-0'>
+                                            <tr>
+                                                <th className='ps-2' style={{ width: "60%" }}>File Name</th>
+                                                {/* <th className='pe-1' style={{ width: "10%" }}>Uploaded</th>
+                                                                <th className='pe-1' style={{ width: "8%" }}>Tagged</th> */}
+                                                <th className='pe-1 text-center' style={{ width: "12%" }}>Share Link</th>
+                                                <th className='pe-1 text-center' style={{ width: "12%" }}>Share in Mail</th>
+                                                <th className='pe-1 text-center' style={{ width: "4%" }}></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><div className='d-flex'><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</div></td>
+                                                {/* <td>{UploadedDocDetails?.uploaded == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross' ></span>}</td>
+                                                                <td>{UploadedDocDetails?.tagged == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross'></span>}</td> */}
+                                                <td className='text-center'>{UploadedDocDetails?.uploaded == true ? <>
+                                                    <span className='me-3 alignIcon  svg__iconbox svg__icon--link hreflink' title='Copy Link' data-bs-toggle="popover" data-bs-content="Link Copied" onClick={() => { navigator.clipboard.writeText(UploadedDocDetails?.link); }}></span>
+                                                </> : <></>}</td>
+                                                <td className='text-center'>{UploadedDocDetails?.uploaded == true ? <>
+                                                    <span className='alignIcon  svg__iconbox svg__icon--mail hreflink' title='Share In Mail' onClick={() => { window.open(`mailto:?&subject=${props?.item?.Title}&body=${UploadedDocDetails?.link}`) }}></span>
+                                                </> : <></>}</td>
+                                                <td> <span title="Edit" className="svg__iconbox svg__icon--edit hreflink alignIcon" onClick={() => editDocumentsLink(UploadedDocDetails)}></span></td>
+                                            </tr>
+                                        </tbody>
+                                    </Table>
+                                </div>
+
+                            </Col>
+                        </Col>
+                    </div>
+                    <footer className='text-end p-2'>
+                        <button className="btn btn-primary me-1" onClick={() => cancelConfirmationPopup()}>OK</button>
+                    </footer>
+                </div>
+            </Modal>
             <Panel type={PanelType.medium}
                 isOpen={TaskTypesPopup}
                 onDismiss={cancelPathFolder}
