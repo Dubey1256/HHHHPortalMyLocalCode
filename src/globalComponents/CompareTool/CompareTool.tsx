@@ -733,22 +733,11 @@ const CompareTool = (props: any) => {
                     Compare {data?.length >0 && data[0]?.TaskType?.Id !=undefined ?'Task Tool' : 'Components' }
 
                 </div>
-                <Tooltip ComponentId={611} />
+                {data?.length >0 && data[0]?.TaskType?.Id !=undefined ? <Tooltip ComponentId={1723} /> :  <Tooltip ComponentId={611} />} 
             </>
         );
     };
 
-    const onRenderCustomHeaderMain1 = () => {
-        return (
-            <>
-                <div className="subheading">
-                    All Comments:
-
-                </div>
-                <Tooltip ComponentId={586} />
-            </>
-        );
-    };
 
     const onRenderCustomHeaderMain2 = () => {
         return (
@@ -1458,7 +1447,7 @@ const CompareTool = (props: any) => {
             if (taggedtasks?.length > 0) {
                 taggedtasks.forEach((element: any) => {
                     let postData = {
-                        PortfoliosId: Firstitem.Id,
+                        PortfolioId: Firstitem.Id,
                     }
                     globalCommon.updateItemById(element.siteUrl, element.listId, postData, element.Id)
                         .then((returnresult) => {
@@ -1586,7 +1575,7 @@ const CompareTool = (props: any) => {
                 'Help_x0020_Information': Item.Help_x0020_Information,
                 'TechnicalExplanations': Item.TechnicalExplanations,
                 'Short_x0020_Description_x0020_On': Item.Short_x0020_Description_x0020_On,
-                'Admin_x0020_Notes': Item.Admin_x0020_Notes,
+                'Admin_x0020_Notes': Item.AdminNotes,
                 'Background': Item.Background,
                 'Body': Item.Body,
                 'Idea': Item.Idea,
@@ -2043,33 +2032,11 @@ const CompareTool = (props: any) => {
                                     </div>
                                 </Col>
                             </Row>}
-                        {/* <Row className="Metadatapannel ">
-                            <Col sm="5" md="5" lg="5" className="alignCenter siteColor">
-                                <span className="Dyicons me-1">{data[0]?.Item_x0020_Type.charAt(0)}</span> <Label><a target="_blank" data-interception="off"
-                                    href={`${data[0]?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${data[0]?.Id}`}>
-                                    {data[0]?.Title}
-                                </a></Label>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="text-center">
-                                <span><img className="imgWid29" src={`${props?.contextValue?.siteUrl}/SiteCollectionImages/ICONS/Shareweb/SwitchItem_icon.png`} title="Switch Items" onClick={() => switchItems()} /></span>
-                            </Col>
-                            <Col sm="5" md="5" lg="5" className="alignCenter siteColor">
-                                <span className="Dyicons me-1">{data[1]?.Item_x0020_Type.charAt(0)}</span> <Label>
-                                    <a target="_blank" data-interception="off"
-                                        href={`${data[1]?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${data[1]?.Id}`}>
-                                        {data[1]?.Title}
-                                    </a>
-                                </Label>
-                            </Col>
-                            <Col sm="1" md="1" lg="1">
-                                <LuUndo2 size="25" />
-                            </Col>
-                        </Row> */}
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold form-label me-2 mt-1">Component Title</label>
-                                    <input type="text" defaultValue={data[0]?.Title} className="form-control" />
+                                    <input type="text"  defaultValue={data[0]?.Title} onChange={(e) => changeData(0, 'Title', e.target.value)} className="form-control" />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
@@ -2081,7 +2048,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold form-label me-2 mt-1">Component Title</label>
-                                    <input type="text" defaultValue={data[1]?.Title} className="form-control" />
+                                    <input type="text" defaultValue={data[1]?.Title} onChange={(e) => changeData(1, 'Title', e.target.value)}  className="form-control" />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -2293,13 +2260,13 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold form-label">Tagged Tasks</label>
                                     <div className="my-1 SearchTableCategoryComponent">
                                         <span className="ms-3"> {
-                                            data[0]?.taggedTasks?.length > 0 && data[0]?.taggedTasks?.map((items: any) => {
+                                            data[0]?.taggedTasks?.length > 0 && data[0]?.taggedTasks?.map((items: any ,inexd:number) => {
                                                 return <div className="SpfxCheckRadio alignCenter" key={items.Id}>
                                                     {items?.subRows && items?.subRows?.length > 0 ? (
                                                         <div className="alignCenter">
                                                             <span style={{ flex: "0 0 60px" }} onClick={() => toggleExpand(items, data[0], 'taggedTasks')}>  {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
                                                             <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span>  <div style={{ flex: "0 0 60px" }}>{items.TaskID}</div>
-                                                            <input type="checkbox" checked={items.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />
+                                                            {inexd ==0 && <input type="checkbox" checked={items.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />}
                                                             <span> <a target="_blank" className="mx-2" data-interception="off"
                                                                 href={`${items?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
                                                                 {items?.Title}
@@ -2334,13 +2301,13 @@ const CompareTool = (props: any) => {
                                     <label className="fw-semibold form-label">Tagged Tasks</label>
                                     <div className="my-1 SearchTableCategoryComponent"> {
                                         <span className="ms-3"> {
-                                            data[1]?.taggedTasks?.length > 0 && data[1]?.taggedTasks?.map((items: any) => {
+                                            data[1]?.taggedTasks?.length > 0 && data[1]?.taggedTasks?.map((items: any ,inexdnew:number) => {
                                                 return <div className="SpfxCheckRadio alignCenter" key={items.Id}>
                                                     {items?.subRows && items?.subRows?.length > 0 ? (
                                                         <div className="alignCenter">
                                                             <span style={{ flex: "0 0 60px" }} onClick={() => toggleExpand(items, data[1], 'taggedTasks')}>   {items.isExpanded ? <SlArrowDown style={{ color: "#000" }} /> : <SlArrowRight style={{ color: "#000" }}></SlArrowRight>}</span>
                                                             <span className="me-1"><img className="workmember" src={items.SiteIcon}></img></span>  <div style={{ flex: "0 0 60px" }}>{items.TaskID}</div>
-                                                            <input type="checkbox" checked={items?.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />
+                                                            {inexdnew ==0 &&  <input type="checkbox" checked={items?.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, items, undefined)} />}
                                                             <span> <a target="_blank" className="mx-2" data-interception="off"
                                                                 href={`${items?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${items?.Id}&Site=${items?.siteType}`}>
                                                                 {items?.Title}
@@ -2544,8 +2511,8 @@ const CompareTool = (props: any) => {
                         </Row>
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="sit-preview contentSec">
-                                <label className="fw-semibold full-width form-label">Image</label>
-                                <span className=""><img src={data[0]?.Item_x002d_Image?.Url} /></span>
+                                <label className="fw-semibold form-label">Image</label>
+                                <span className="ms-3"><img src={data[0]?.Item_x002d_Image?.Url} /></span>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
                                 <div className="text-center">
@@ -2554,8 +2521,8 @@ const CompareTool = (props: any) => {
                                 </div>
                             </Col>
                             <Col sm="5" md="5" lg="5" className="sit-preview contentSec">
-                                <label className="fw-semibold full-width form-label">Image</label>
-                                <span className=""><img src={data[1]?.Item_x002d_Image?.Url} /></span>
+                                <label className="fw-semibold form-label">Image</label>
+                                <span className="ms-3"><img src={data[1]?.Item_x002d_Image?.Url} /></span>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('Item_x002d_Image')} />
@@ -3090,7 +3057,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Time</label>
-                                    <input type="text" className="form-control" defaultValue={data[0]?.Mileage} />
+                                    <input type="text" className="form-control" defaultValue={data[0]?.Mileage}  onChange={(e) => changeData(0, 'Mileage', e.target.value)}/>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
@@ -3102,7 +3069,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Time</label>
-                                    <input type="text" className="form-control" defaultValue={data[1]?.Mileage} />
+                                    <input type="text" className="form-control" defaultValue={data[1]?.Mileage} onChange={(e) => changeData(1, 'Mileage', e.target.value)} />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -3113,7 +3080,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Priority Rank</label>
-                                    <input type="text" className="form-control" defaultValue={data[0]?.PriorityRank} />
+                                    <input type="text" className="form-control" defaultValue={data[0]?.PriorityRank}  onChange={(e) => changeData(0, 'PriorityRank', e.target.value)} />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
@@ -3125,7 +3092,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Priority Rank</label>
-                                    <input type="text" className="form-control" defaultValue={data[1]?.PriorityRank} />
+                                    <input type="text" className="form-control" defaultValue={data[1]?.PriorityRank}  onChange={(e) => changeData(1, 'PriorityRank', e.target.value)}/>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -3136,7 +3103,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Client Activity</label>
-                                    <input type="text" className="form-control" defaultValue={data[0]?.ClientActivity} />
+                                    <input type="text" className="form-control" defaultValue={data[0]?.ClientActivity}  onChange={(e) => changeData(0, 'ClientActivity', e.target.value)}/>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
@@ -3148,7 +3115,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Client Activity</label>
-                                    <input type="text" className="form-control" defaultValue={data[1]?.ClientActivity} />
+                                    <input type="text" className="form-control" defaultValue={data[1]?.ClientActivity}   onChange={(e) => changeData(1, 'ClientActivity', e.target.value)}/>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -3159,7 +3126,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Status</label>
-                                    <input type="text" className="form-control" defaultValue={data[0]?.Status} />
+                                    <input type="text" className="form-control" defaultValue={data[0]?.Status}  onChange={(e) => changeData(0, 'Status', e.target.value)}/>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
@@ -3171,7 +3138,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Status</label>
-                                    <input type="text" className="form-control" defaultValue={data[1]?.Status} />
+                                    <input type="text" className="form-control" defaultValue={data[1]?.Status}  onChange={(e) => changeData(1, 'Status', e.target.value)}/>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -3205,7 +3172,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Deliverable-Synonyms</label>
-                                    <input type="text" className="form-control" value={data[0]?.DeliverableSynonyms} />
+                                    <input type="text" className="form-control" value={data[0]?.DeliverableSynonyms}  onChange={(e) => changeData(0, 'DeliverableSynonyms', e.target.value)} />
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
@@ -3217,7 +3184,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Deliverable-Synonyms</label>
-                                    <input type="text" className="form-control" value={data[1]?.DeliverableSynonyms} />
+                                    <input type="text" className="form-control" value={data[1]?.DeliverableSynonyms}  onChange={(e) => changeData(1, 'DeliverableSynonyms', e.target.value)}/>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -3228,7 +3195,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Package</label>
-                                    <input type="text" className="form-control" defaultValue={data[0]?.Package} />
+                                    <input type="text" className="form-control" defaultValue={data[0]?.Package}  onChange={(e) => changeData(0, 'Package', e.target.value)}/>
                                 </div>
                                 {/* <TextField label="Package" value={data[0]?.Package} /> */}
                             </Col>
@@ -3241,7 +3208,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Package</label>
-                                    <input type="text" className="form-control" defaultValue={data[1]?.Package} />
+                                    <input type="text" className="form-control" defaultValue={data[1]?.Package}  onChange={(e) => changeData(1, 'Package', e.target.value)}/>
                                 </div>
                                 {/* <TextField label="Package" value={data[1]?.Package} /> */}
                             </Col>
@@ -3253,7 +3220,7 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Admin Status</label>
-                                    <input type="text" className="form-control" defaultValue={data[0]?.AdminStatus} />
+                                    <input type="text" className="form-control" defaultValue={data[0]?.AdminStatus}  onChange={(e) => changeData(0, 'AdminStatus', e.target.value)}/>
                                 </div>
                                 {/* <TextField label="Admin Status" value={data[0]?.AdminStatus} /> */}
                             </Col>
@@ -3267,7 +3234,7 @@ const CompareTool = (props: any) => {
                                 {/* <TextField label="Admin Status" value={data[1]?.AdminStatus} /> */}
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Admin Status</label>
-                                    <input type="text" className="form-control" defaultValue={data[1]?.AdminStatus} />
+                                    <input type="text" className="form-control" defaultValue={data[1]?.AdminStatus}  onChange={(e) => changeData(1, 'AdminStatus', e.target.value)}/>
                                 </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
@@ -3362,7 +3329,7 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('Comments')} />
                             </Col>
                         </Row>
-                        {data[0]?.TaskType?.Title != undefined &&
+                     
                             <Row className="Metadatapannel">
                                 <Col sm="5" md="5" lg="5" className="contentSec">
                                     <div className="input-group">
@@ -3392,7 +3359,7 @@ const CompareTool = (props: any) => {
                                     <LuUndo2 size="25" onClick={() => undoChangescolumns('Body')} />
                                 </Col>
                             </Row>
-                        }
+                       
                         {data[0]?.TaskType === undefined && <span>
                             <Row className="Metadatapannel">
                                 <Col sm="5" md="5" lg="5" className="contentSec">
@@ -3624,7 +3591,7 @@ const CompareTool = (props: any) => {
                                 <Col sm="5" md="5" lg="5" className="contentSec">
                                     <div className="input-group">
                                         <label className="fw-semibold full-width form-label">Help Descriptions</label>
-                                        <textarea className="full-width" rows={3}>{data[0]?.HelpDescription}</textarea>
+                                        <textarea className="full-width" rows={3} value={(data[0]?.HelpDescription == null || data[0]?.HelpDescription === "") ? "" : data[0]?.HelpDescription}  onChange={(e) => bindMultilineValue(e, 0, 'HelpDescription')}> </textarea>
                                     </div>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="iconSec">
@@ -3636,7 +3603,7 @@ const CompareTool = (props: any) => {
                                 <Col sm="5" md="5" lg="5" className="contentSec">
                                     <div className="input-group">
                                         <label className="fw-semibold full-width form-label">Help Descriptions</label>
-                                        <textarea className="full-width" rows={3}>{data[0]?.HelpDescription}</textarea>
+                                        <textarea className="full-width" rows={3} value={(data[1]?.HelpDescription == null || data[1]?.HelpDescription === "") ? "" : data[1]?.HelpDescription}  onChange={(e) => bindMultilineValue(e, 1, 'HelpDescription')} ></textarea>
                                     </div>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="text-center iconSec">
