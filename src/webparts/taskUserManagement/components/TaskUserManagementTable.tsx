@@ -20,7 +20,7 @@ import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import { FaChevronDown, FaChevronRight, FaMinusSquare, FaPlusSquare, FaSquare, FaCheckSquare } from 'react-icons/fa';
 import { Col, Container, Row } from "react-bootstrap";
 
-const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUrl, TaskUserListId, context, fetchAPIData, smartMetaDataItems }: any) => {
+const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUrl, AllListid, TaskUserListId, context, fetchAPIData, smartMetaDataItems }: any) => {
     const [data, setData] = React.useState<any>([]);
     const [groupData, setGroupData] = useState([]);
     const [title, setTitle] = useState("");
@@ -1109,6 +1109,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                             taskId={memberToUpdate?.ID}
                                             listId={TaskUserListId}
                                             siteUrls={baseUrl}
+                                            RequiredListIds={AllListid}
                                         />
                                     ) : (
                                         ""
