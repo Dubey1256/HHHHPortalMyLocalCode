@@ -2,54 +2,51 @@ import { Panel, PanelType } from "office-ui-fabric-react";
 import React, { useEffect, useState } from "react";
 import Tooltip from "../../../globalComponents/Tooltip";
 import { event } from "jquery";
-import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
+import {
+  PeoplePicker,
+  PrincipalType,
+} from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import { Web, sp } from "sp-pnp-js";
 import EditPage from "../../../globalComponents/EditPanelPage/EditPage";
 // import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 
-
-
-
-
 var id: any = [];
-const Permission_management = (props:any) => {
+const Permission_management = (props: any) => {
   console.log(props);
   let arr: any = [];
   const [groups, setGroups]: any = useState([]);
   const [truePanel, setTruePanel]: any = useState(false);
-  const [optionsData, setOptionsData]: any = useState('');
+  const [optionsData, setOptionsData]: any = useState("");
   const [data, setData]: any = useState([]);
   const [addUser, setAddUser]: any = useState(false);
   const [taskUser, setTaskUser]: any = useState([]);
-  const [inputValue, setInputValue]: any = useState({ Title: '', Id: '' });
+  const [inputValue, setInputValue]: any = useState({ Title: "", Id: "" });
   const [suggestions, setSuggestions] = useState([]);
   const [checkPermission, setCheckPermission] = useState(false);
   const [permissionUserGroup, setPermissionUserGroup]: any = useState([]);
-  const [headerChange, setHeaderChange]: any = useState('');
+  const [headerChange, setHeaderChange]: any = useState("");
   const [selectedPeople, setSelectedPeople] = useState([]);
   const [checkUserPermission, setCheckUserPermission]: any = useState([]);
-
-
-
 
   useEffect(() => {
     taskUserData();
     getData();
   }, []);
 
-
   const taskUserData = async () => {
     let web = new Web(props?.context?.siteUrl);
     let AllTasksMatches: any = [];
     AllTasksMatches = await web.lists
       .getById(props?.context?.TaskUsertListID)
-      .items.getAll(4000).then((data: any) => {
+      .items.getAll(4000)
+      .then((data: any) => {
         setTaskUser(data);
-      }).catch((err: any) => {
-        console.log(err);
       })
-  }
+      .catch((err: any) => {
+        console.log(err);
+      });
+  };
 
   const getData = async () => {
     await $.ajax({
@@ -65,31 +62,32 @@ const Permission_management = (props:any) => {
         arr = res.d.results;
 
         arr.map((items: any) => {
-          if (items?.OwnerTitle !== 'System Account' && !(items?.OwnerTitle.indexOf("KSL") > -1) && !(items?.LoginName.indexOf("KSL") > -1) && !(items?.LoginName.indexOf("Test") > -1) && !(items?.LoginName.indexOf("test")! > -1)) {
+          if (
+            items?.OwnerTitle !== "System Account" &&
+            !(items?.OwnerTitle.indexOf("KSL") > -1) &&
+            !(items?.LoginName.indexOf("KSL") > -1) &&
+            !(items?.LoginName.indexOf("Test") > -1) &&
+            !(items?.LoginName.indexOf("test")! > -1)
+          ) {
             newArray.push(items);
           }
-        })
+        });
 
         setGroups(newArray);
-
-
       },
     });
 
     // console.log(Group);
   };
 
-
-
   const GetUserByGroupId = (groupId: any) => {
-
     id = groupId;
     setOptionsData(groupId);
     if (typeof groupId == "string") {
-      id = groupId
+      id = groupId;
       const findByTitle = (array: any, title: any) => {
         return array.find((item: any) => item.Title === title);
-      }
+      };
 
       // Use the function to find the object with the specified title
       var foundObject = findByTitle(groups, groupId);
@@ -102,8 +100,6 @@ const Permission_management = (props:any) => {
       }
     }
 
-
-
     var query = "/_api/web/SiteGroups/GetById(" + id + ")/Users";
     var SiteUrl = props?.context?.siteUrl;
     $.ajax({
@@ -111,19 +107,16 @@ const Permission_management = (props:any) => {
       method: "GET",
       async: false,
       headers: {
-        "accept": "application/json;odata=verbose",
-        "content-Type": "application/json;odata=verbose"
+        accept: "application/json;odata=verbose",
+        "content-Type": "application/json;odata=verbose",
       },
       success: function (data) {
         setTruePanel(true);
         setData(data?.d?.results);
-
       },
       error: function (data) {
         alert("You do not have rights to access this section");
-
       },
-
     });
   };
 
@@ -144,7 +137,6 @@ const Permission_management = (props:any) => {
   //     console.error('An error occurred while fetching request digest:', error);
   //   }
   // };
-
 
   // const postUser = async (data, url) => {
   //   try {
@@ -174,8 +166,6 @@ const Permission_management = (props:any) => {
   //     console.error('An error occurred:', error);
   //   }
   // };
-
-
 
   // const postUser = async () => {
   //   var url = "https://hhhhteams.sharepoint.com/sites/HHHH/sp" + "/_api/web/sitegroups(" + id + ")/users";
@@ -217,16 +207,16 @@ const Permission_management = (props:any) => {
       // const userData:any = {
       //   LoginName: `i:0#.f|membership|${inputValue.Email}`
       // };
-      var data :any = {
-        "LoginName": `i:0#.f|membership|${inputValue.Email}`,
-    };
+      var data: any = {
+        LoginName: `i:0#.f|membership|${inputValue.Email}`,
+      };
       // let loginName : any = ;
 
       // Make the HTTP POST request to add the user to the group
       await web.siteGroups.getById(id).users.add(data);
 
       console.log("User added successfully");
-      setInputValue({...inputValue, Title:""})
+      setInputValue({ ...inputValue, Title: "" });
     } catch (error) {
       console.error(error);
 
@@ -240,42 +230,53 @@ const Permission_management = (props:any) => {
   };
 
   const checkUser = async () => {
-    const filteredSuggestions = taskUser.filter((suggestion : any) =>selectedPeople.some((limitedItem : any) => limitedItem.secondaryText == suggestion.Email));
-   
-    let commanArray : any = [];
-    filteredSuggestions?.map(async (items:any)=>{
+    const filteredSuggestions : any= taskUser.filter((suggestion: any) =>
+      selectedPeople.some(
+        (limitedItem: any) => limitedItem.secondaryText == suggestion.Email
+      )
+    );
+
+    let commanArray: any = [];
+    filteredSuggestions?.map(async (items: any) => {
       let newArray: any = [];
       var targetId = items?.AuthorId;
       var query = "/_api/web/GetUserById(" + targetId + ")/Groups";
       var SiteUrl = props?.context?.siteUrl;
-  
+
       await $.ajax({
         url: SiteUrl + query,
         method: "GET",
         async: false,
         headers: {
-          "accept": "application/json;odata=verbose",
-          "content-Type": "application/json;odata=verbose"
+          accept: "application/json;odata=verbose",
+          "content-Type": "application/json;odata=verbose",
         },
         success: function (data) {
           data?.d?.results?.map((items: any) => {
-            if (items?.OwnerTitle !== 'System Account' && !(items?.OwnerTitle.indexOf("KSL") > -1) && !(items?.LoginName.indexOf("KSL") > -1) && !(items?.LoginName.indexOf("Test") > -1) && !(items?.LoginName.indexOf("test")! > -1)) {
+            if (
+              items?.OwnerTitle !== "System Account" &&
+              !(items?.OwnerTitle.indexOf("KSL") > -1) &&
+              !(items?.LoginName.indexOf("KSL") > -1) &&
+              !(items?.LoginName.indexOf("Test") > -1) &&
+              !(items?.LoginName.indexOf("test")! > -1)
+            ) {
               newArray.push(items);
             }
-          })
+          });
 
-          commanArray.push(...newArray)
-  
+          commanArray.push(...newArray);
         },
         error: function (data) {
           console.log("You do not have rights to access this section");
-  
         },
       });
-    })
-    setPermissionUserGroup(commanArray);
+    });
+    const newArrayWithoutDuplicates = commanArray.filter((obj : any, index : any, self: any) =>
+  index === self.findIndex((o: any) => o.Id === obj.Id)
+);
+    // const newArrayWithoutDuplicates : any= Array.from(new Set(commanArray.map((obj:any) => obj.Id))).map((Id:any) => commanArray.find((obj:any) => obj.Id === Id));
+    setPermissionUserGroup(newArrayWithoutDuplicates);
   };
-
 
   const deleteRequestWithOutData = (Idd: any) => {
     let confirmation = confirm("Are you sure you want to delete this User ?");
@@ -298,53 +299,49 @@ const Permission_management = (props:any) => {
     }
   };
 
-
-
-
   const onRenderCustomCalculateSC = () => {
     return (
       <>
-        <div className='subheading siteColor'>Manage Permissions</div>
-        <div><Tooltip ComponentId="1229" /></div>
+        <div className="subheading siteColor">Manage Permissions</div>
+        <div>
+          <Tooltip ComponentId="1229" />
+        </div>
       </>
-    )
-  }
-
+    );
+  };
 
   const onRenderCustomCalculateSC1 = () => {
     return (
       <>
-        <div className='subheading siteColor'>Add User in {optionsData}</div>
-        <div><Tooltip ComponentId="1126" /></div>
+        <div className="subheading siteColor">Add User in {optionsData}</div>
+        <div>
+          <Tooltip ComponentId="1126" />
+        </div>
       </>
-    )
-  }
+    );
+  };
 
   const onRenderCustomCalculateSC3 = () => {
     return (
       <>
-        <div className='subheading siteColor'>Check User Permissions</div>
-        <div><Tooltip ComponentId="1126" /></div>
+        <div className="subheading siteColor">Check User Permissions</div>
+        <div>
+          <Tooltip ComponentId="1126" />
+        </div>
       </>
-    )
-  }
+    );
+  };
 
   const setSelectOptions = (event: any) => {
     id = event.target.value;
     GetUserByGroupId(event.target.value);
-  }
-
+  };
 
   const columns = React.useMemo(
     () => [
       {
         accessorFn: (row: any) => row?.Title,
-        cell: ({ row, getValue }: any) => (
-
-          <>{row?.original?.Title}</>
-
-
-        ),
+        cell: ({ row, getValue }: any) => <>{row?.original?.Title}</>,
         id: "Title",
         placeholder: "Title",
         header: "",
@@ -353,11 +350,7 @@ const Permission_management = (props:any) => {
       },
       {
         accessorFn: (row: any) => row?.Email,
-        cell: ({ row, getValue }: any) => (
-
-          <>{row?.original?.Email}</>
-
-        ),
+        cell: ({ row, getValue }: any) => <>{row?.original?.Email}</>,
         id: "Email",
         placeholder: "Email",
         header: "",
@@ -366,8 +359,13 @@ const Permission_management = (props:any) => {
       },
       {
         cell: ({ row, getValue }: any) => (
-          <div className='alignCenter'>
-            <span onClick={() => { deleteRequestWithOutData(row?.original?.Id) }} className="bg-dark hreflink ml-auto svg__icon--cross svg__iconbox"></span>
+          <div className="alignCenter">
+            <span
+              onClick={() => {
+                deleteRequestWithOutData(row?.original?.Id);
+              }}
+              className="bg-dark hreflink ml-auto svg__icon--cross svg__iconbox"
+            ></span>
           </div>
         ),
         id: "ID",
@@ -380,23 +378,17 @@ const Permission_management = (props:any) => {
     [data]
   );
 
-  const callBackData = () => {
+  const callBackData = () => {};
 
-  }
-
-
-
-
-
-  const handleInputChange = (e:any) => {
+  const handleInputChange = (e: any) => {
     const value = e.target.value;
     setInputValue(value);
 
-    const filteredSuggestions = taskUser.filter(
-      (item: any) => item?.Title.toLowerCase().includes(value.toLowerCase())
+    const filteredSuggestions = taskUser.filter((item: any) =>
+      item?.Title.toLowerCase().includes(value.toLowerCase())
     );
 
-    if (value != undefined && value != null && value != '') {
+    if (value != undefined && value != null && value != "") {
       setSuggestions(filteredSuggestions);
     } else {
       setSuggestions([]);
@@ -404,61 +396,88 @@ const Permission_management = (props:any) => {
   };
 
   const handleSuggestionClick = (suggestion: any) => {
-    suggestions?.map((items:any)=>{
-      if(items?.AssingedToUserId === suggestion?.AssingedToUserId){
+    suggestions?.map((items: any) => {
+      if (items?.AssingedToUserId === suggestion?.AssingedToUserId) {
         setInputValue(items);
       }
-    })
-    
+    });
+
     setSuggestions([]);
     setPermissionUserGroup([]);
   };
 
   const AssignedToUser = (item: any) => {
     if (item.length > 0) {
-        const email = item.length > 0 ? item[0].loginName.split('|').pop() : null;
-        const member = data.filter((elem: any) => elem.Email === email)
-        // setAssignedToUser(member)
-        // setIsUserNameValid(true);
+      const email = item.length > 0 ? item[0].loginName.split("|").pop() : null;
+      const member = data.filter((elem: any) => elem.Email === email);
+      // setAssignedToUser(member)
+      // setIsUserNameValid(true);
+    } else {
+      // setAssignedToUser([])
+      // setIsUserNameValid(false);
     }
-    else {
-        // setAssignedToUser([])
-        // setIsUserNameValid(false);
-    }
-}
+  };
 
-const changeHeader=(items:any)=>{
-  setHeaderChange(items)
-}
+  const changeHeader = (items: any) => {
+    setHeaderChange(items);
+  };
 
-const handlePeoplePickerChange = (items : any) => {
-  setSelectedPeople(items);
-};
+  const handlePeoplePickerChange = (items: any) => {
+    setSelectedPeople(items);
+  };
 
   return (
     <>
       <div className="alignCenter">
         <div className="alignCenter">
-          <h2 className="heading">{headerChange != undefined && headerChange != null && headerChange != '' ? headerChange : 'Permission-Management'} </h2>
-          <EditPage context={props?.context} changeHeader={changeHeader} tooltipId={'956'} />
+          <h2 className="heading">
+            {headerChange != undefined &&
+            headerChange != null &&
+            headerChange != ""
+              ? headerChange
+              : "Permission-Management"}{" "}
+          </h2>
+          <EditPage
+            context={props?.context}
+            changeHeader={changeHeader}
+            tooltipId={"956"}
+          />
         </div>
         <div className="ml-auto">
-              
-          <a target="_blank" data-interception="off"  className="fw-bold" href={`${props?.context?.siteUrl}/SitePages/Manage-Permission-Tool.aspx`}>
+          <a
+            target="_blank"
+            data-interception="off"
+            className="fw-bold"
+            href={`${props?.context?.siteUrl}/SitePages/Manage-Permission-Tool.aspx`}
+          >
             Old Permission-Management
           </a>
         </div>
       </div>
-      <div className="d-flex justify-content-end" onClick={() => { setCheckPermission(true) }} role="button">
+      <div
+        className="d-flex justify-content-end"
+        onClick={() => {
+          setCheckPermission(true);
+        }}
+        role="button"
+      >
         Check User Permissions
       </div>
       <div className="mb-3 card commentsection">
         <div className="card-header">
-          <div className="align-items-center card-title d-flex h5 justify-content-between my-2">Manage Permissions - Users</div>
+          <div className="align-items-center card-title d-flex h5 justify-content-between my-2">
+            Manage Permissions - Users
+          </div>
         </div>
         <div className="card-body d-flex justify-content-around  my-3">
-          <div className="card" style={{ width: "14rem" }} onClick={() => { GetUserByGroupId("Designers") }} >
-            <div className="card-body" style={{ backgroundColor: "#000066" }} >
+          <div
+            className="card"
+            style={{ width: "14rem" }}
+            onClick={() => {
+              GetUserByGroupId("Designers");
+            }}
+          >
+            <div className="card-body" style={{ backgroundColor: "#000066" }}>
               <a className="d-flex flex-column align-items-center mt-2">
                 <h6 className="text-white">Designers</h6>
                 <img
@@ -469,8 +488,14 @@ const handlePeoplePickerChange = (items : any) => {
               </a>
             </div>
           </div>
-          <div className="card" style={{ width: "14rem" }} onClick={() => { GetUserByGroupId("HHHH Visitors") }} >
-            <div className="card-body" style={{ backgroundColor: "#000066" }} >
+          <div
+            className="card"
+            style={{ width: "14rem" }}
+            onClick={() => {
+              GetUserByGroupId("HHHH Visitors");
+            }}
+          >
+            <div className="card-body" style={{ backgroundColor: "#000066" }}>
               <a className="d-flex flex-column align-items-center mt-2">
                 <h6 className="text-white">HHHH Visitors</h6>
                 <img
@@ -486,9 +511,16 @@ const handlePeoplePickerChange = (items : any) => {
 
       <div className="mb-3 card commentsection">
         <div className="card-header">
-          <div className="align-items-center card-title d-flex h5 justify-content-between my-2">Manage Permissions - Teams</div>
+          <div className="align-items-center card-title d-flex h5 justify-content-between my-2">
+            Manage Permissions - Teams
+          </div>
         </div>
-        <div className="card-body d-flex justify-content-center  my-3" onClick={() => { GetUserByGroupId("HHHH Members") }}>
+        <div
+          className="card-body d-flex justify-content-center  my-3"
+          onClick={() => {
+            GetUserByGroupId("HHHH Members");
+          }}
+        >
           <div className="card" style={{ width: "14rem" }}>
             <div className="card-body" style={{ backgroundColor: "#000066" }}>
               <a className="d-flex flex-column align-items-center mt-2">
@@ -506,10 +538,18 @@ const handlePeoplePickerChange = (items : any) => {
 
       <div className="mb-3 card commentsection">
         <div className="card-header">
-          <div className="align-items-center card-title d-flex h5 justify-content-between my-2">Manage Permissions - Admins</div>
+          <div className="align-items-center card-title d-flex h5 justify-content-between my-2">
+            Manage Permissions - Admins
+          </div>
         </div>
-        <div className="card-body d-flex justify-content-around  my-3" >
-          <div className="card" style={{ width: "14rem" }} onClick={() => { GetUserByGroupId("HHHH Administrator") }}>
+        <div className="card-body d-flex justify-content-around  my-3">
+          <div
+            className="card"
+            style={{ width: "14rem" }}
+            onClick={() => {
+              GetUserByGroupId("HHHH Administrator");
+            }}
+          >
             <div className="card-body" style={{ backgroundColor: "#000066" }}>
               <a className="d-flex flex-column align-items-center mt-2">
                 <h6 className="text-white">HHHH Administrator</h6>
@@ -522,7 +562,13 @@ const handlePeoplePickerChange = (items : any) => {
             </div>
           </div>
 
-          <div className="card" style={{ width: "14rem" }} onClick={() => { GetUserByGroupId("HHHH Owners") }} >
+          <div
+            className="card"
+            style={{ width: "14rem" }}
+            onClick={() => {
+              GetUserByGroupId("HHHH Owners");
+            }}
+          >
             <div className="card-body" style={{ backgroundColor: "#000066" }}>
               <a className="d-flex flex-column align-items-center mt-2">
                 <h6 className="text-white">HHHH Owners</h6>
@@ -535,7 +581,13 @@ const handlePeoplePickerChange = (items : any) => {
             </div>
           </div>
 
-          <div className="card" style={{ width: "14rem" }} onClick={() => { GetUserByGroupId("Offshore Timesheet Admins") }} >
+          <div
+            className="card"
+            style={{ width: "14rem" }}
+            onClick={() => {
+              GetUserByGroupId("Offshore Timesheet Admins");
+            }}
+          >
             <div className="card-body" style={{ backgroundColor: "#000066" }}>
               <a className="d-flex flex-column align-items-center mt-2">
                 <h6 className="text-white">Offshore Timesheet Admins</h6>
@@ -548,7 +600,13 @@ const handlePeoplePickerChange = (items : any) => {
             </div>
           </div>
 
-          <div className="card" style={{ width: "14rem" }} onClick={() => { GetUserByGroupId("Time sheet admin group") }}>
+          <div
+            className="card"
+            style={{ width: "14rem" }}
+            onClick={() => {
+              GetUserByGroupId("Time sheet admin group");
+            }}
+          >
             <div className="card-body" style={{ backgroundColor: "#000066" }}>
               <a className="d-flex flex-column align-items-center mt-2">
                 <h6 className="text-white">Time sheet admin group</h6>
@@ -562,30 +620,49 @@ const handlePeoplePickerChange = (items : any) => {
           </div>
         </div>
       </div>
-      <a href={`${props?.context?.siteUrl}/_layouts/15/user.aspx`} className="d-flex justify-content-end">
+      <a
+        href={`${props?.context?.siteUrl}/_layouts/15/user.aspx`}
+        className="d-flex justify-content-end"
+      >
         OOTB Permissions Management
       </a>
-
 
       <Panel
         onRenderHeader={onRenderCustomCalculateSC}
         type={PanelType.large}
         isOpen={truePanel}
         isBlocking={false}
-        onDismiss={() => { setTruePanel(false) }}
+        onDismiss={() => {
+          setTruePanel(false);
+        }}
       >
         <div className="modal-body">
-          <div className="text-end hreflink" onClick={() =>setAddUser(true) } ><span className="svg__iconbox svg__icon--Plus mini" title="Add Document"></span> Add User</div>
+          <div className="text-end hreflink" onClick={() => setAddUser(true)}>
+            <span
+              className="svg__iconbox svg__icon--Plus mini"
+              title="Add Document"
+            ></span>{" "}
+            Add User
+          </div>
           <div className="">
             <select value={optionsData} onChange={setSelectOptions}>
-              {
-                groups?.map((items: any) =>
-                  <option value={items.Title} key={items.Title} >{items.Title}</option>
-                )}
+              {groups?.map((items: any) => (
+                <option value={items.Title} key={items.Title}>
+                  {items.Title}
+                </option>
+              ))}
             </select>
           </div>
           <div className="Alltable my-3">
-            <GlobalCommanTable showHeader={true} showPagination={true} callBackData={callBackData} columns={columns} data={data} hideOpenNewTableIcon={true} hideTeamIcon={true} />
+            <GlobalCommanTable
+              showHeader={true}
+              showPagination={true}
+              callBackData={callBackData}
+              columns={columns}
+              data={data}
+              hideOpenNewTableIcon={true}
+              hideTeamIcon={true}
+            />
           </div>
         </div>
         <footer className="text-end">
@@ -598,22 +675,37 @@ const handlePeoplePickerChange = (items : any) => {
         type={PanelType.medium}
         isOpen={addUser}
         isBlocking={false}
-        onDismiss={() => { setAddUser(false), setSuggestions([]), setInputValue({...inputValue, Title:""}) }}
+        onDismiss={() => {
+          setAddUser(false),
+            setSuggestions([]),
+            setInputValue({ ...inputValue, Title: "" });
+        }}
       >
         <div className="modal-body">
           <div className="input-group">
             <label className="form-label full-width">User*</label>
-            <input type="text" className="form-control"
+            <input
+              type="text"
+              className="form-control"
               value={inputValue?.Title}
-              onChange={handleInputChange} placeholder="Enter names or email addresses..." />
-             {
-              inputValue?.Title != "" && <span className="svg__icon--cross svg__iconbox dark" onClick={()=>setInputValue({...inputValue,Title:""})}></span>
-             } 
+              onChange={handleInputChange}
+              placeholder="Enter names or email addresses..."
+            />
+            {inputValue?.Title != "" && (
+              <span
+                className="svg__icon--cross svg__iconbox dark"
+                onClick={() => setInputValue({ ...inputValue, Title: "" })}
+              ></span>
+            )}
           </div>
           <div className="SmartTableOnTaskPopup w-50">
             <ul className="list-group">
               {suggestions.map((suggestion: any, index: any) => (
-                <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={index} onClick={() => handleSuggestionClick(suggestion)}>
+                <li
+                  className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                  key={index}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                >
                   {suggestion?.Title}
                 </li>
               ))}
@@ -621,18 +713,33 @@ const handlePeoplePickerChange = (items : any) => {
           </div>
         </div>
         <footer className="mt-4 text-end">
-          <button className="me-2 btn btn-primary" onClick={postUser} >Save</button>
-          <button className="btn btn-default" onClick={() => { setAddUser(false), setSuggestions([]),setInputValue({...inputValue, Title:""}) }} >Cancel</button>
+          <button className="me-2 btn btn-primary" onClick={postUser}>
+            Save
+          </button>
+          <button
+            className="btn btn-default"
+            onClick={() => {
+              setAddUser(false),
+                setSuggestions([]),
+                setInputValue({ ...inputValue, Title: "" });
+            }}
+          >
+            Cancel
+          </button>
         </footer>
       </Panel>
-
 
       <Panel
         onRenderHeader={onRenderCustomCalculateSC3}
         type={PanelType.medium}
         isOpen={checkPermission}
         isBlocking={false}
-        onDismiss={() => { setCheckPermission(false), setSuggestions([]),setPermissionUserGroup([]),setInputValue({...inputValue,Title:''})}}
+        onDismiss={() => {
+          setCheckPermission(false),
+            setSuggestions([]),
+            setPermissionUserGroup([]),
+            setInputValue({ ...inputValue, Title: "" });
+        }}
       >
         <div className="modal-body">
           <div className="row">
@@ -646,20 +753,19 @@ const handlePeoplePickerChange = (items : any) => {
                   inputValue?.Title != "" && <span className="svg__icon--cross svg__iconbox dark" onClick={()=>setInputValue({...inputValue,Title:""})}></span>
                 }   
               </div> */}
-               <div className='input-group class-input'>
-                                     
-                                        <div className="w-100 peoplePickerData">
-                                        <PeoplePicker 
-                                           titleText="Select People"
-                                           personSelectionLimit={3}
-                                           principalTypes={[PrincipalType.User]}
-                                           resolveDelay={1000}
-                                           onChange={handlePeoplePickerChange}
-                                           defaultSelectedUsers={selectedPeople}
-                                           context={props?.context?.context}
-                                            />
-                                        </div>
-                                    </div>
+              <div className="input-group class-input">
+                <div className="w-100 peoplePickerData">
+                  <PeoplePicker
+                    titleText="Select People"
+                    personSelectionLimit={3}
+                    principalTypes={[PrincipalType.User]}
+                    resolveDelay={1000}
+                    onChange={handlePeoplePickerChange}
+                    defaultSelectedUsers={selectedPeople}
+                    context={props?.context?.context}
+                  />
+                </div>
+              </div>
               {/* <div className="SmartTableOnTaskPopup w-50">
                 <ul className="list-group">
                   {suggestions.map((suggestion: any, index: any) => (
@@ -669,16 +775,20 @@ const handlePeoplePickerChange = (items : any) => {
                   ))}
                 </ul></div> */}
             </div>
-            <div className="col-sm-3">
-              <div className="mt-3">
-              <label className="full-width form-label"></label>
-                <button className="btnCol mt-1 btn btn-primary" onClick={()=>checkUser()} >Check Permission</button>
+            <div className="col-sm-3 mt-1">
+              <div className="mt-1">
+                <label className="full-width form-label"></label>
+                <button
+                  className="btnCol mt-1 btn btn-primary"
+                  onClick={() => checkUser()}
+                >
+                  Check Permission
+                </button>
               </div>
             </div>
           </div>
           <div className="mt-16">
             <ul className="p-0">
-           
               {permissionUserGroup.map((checkItem: any, index: any) => (
                 <li className="alignCenter p-1 bg-ee mb-1 full-width">
                   {checkItem?.Title}
@@ -690,7 +800,17 @@ const handlePeoplePickerChange = (items : any) => {
         </div>
 
         <footer className="mt-4 text-end">
-          <button className="btn btn-primary" onClick={() => { setCheckPermission(false), setSuggestions([]), setPermissionUserGroup([]),setInputValue({...inputValue,Title:''})}} >OK</button>
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              setCheckPermission(false),
+                setSuggestions([]),
+                setPermissionUserGroup([]),
+                setInputValue({ ...inputValue, Title: "" });
+            }}
+          >
+            OK
+          </button>
         </footer>
       </Panel>
     </>

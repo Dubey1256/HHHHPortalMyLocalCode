@@ -649,9 +649,15 @@ const CompareTool = (props: any) => {
                         else if (dataitem[0]?.Item_x0020_Type != undefined && dataitem[0]?.Item_x0020_Type != 'Project') datas[0].PortfolioItem.push(obj);
                     })
                     if (datas[0]?.TaskType?.Id != undefined) {
-                        let dataitem: any = AllMasterTasksItems?.ProjectData?.filter((master: any) => master.Id === datas[0]?.Project?.Id)
+                        let dataitemProject: any = AllMasterTasksItems?.ProjectData?.filter((master: any) => master.Id === datas[0]?.Project?.Id)
+                        if (dataitemProject?.length > 0)
+                            datas[0].ProjectItem.push(dataitemProject[0]);
+
+                        let dataitem: any = AllMasterTasksItems?.AllData?.filter((master: any) => master.Id === datas[0]?.Portfolio?.Id);
                         if (dataitem?.length > 0)
-                            datas[0].ProjectItem.push(dataitem[0])
+                            datas[0].PortfolioItem.push(dataitem[0]);
+
+
                     }
 
                     datas[0].FeatureType = datas[0]?.FeatureType === undefined ? [] : [{ Id: datas[0]?.FeatureType?.Id, Title: datas[0]?.FeatureType?.Title }];
@@ -712,13 +718,20 @@ const CompareTool = (props: any) => {
 
     const getDocuments = async (data: any) => {
         try {
+            let filter = ''
+            if (data[0]?.TaskType?.Id != undefined)
+                filter = data[0]?.siteType + `/Id eq ${data[0]?.Id}`
+            else filter = `Portfolios/Id eq ${data[0]?.Id}`
             let web = new Web(props?.contextValue?.siteUrl);
             let items = await web.lists
                 .getById("D0F88B8F-D96D-4E12-B612-2706BA40FB08").items
-                .select('Id', 'Title', 'Portfolios/Id', 'Portfolios/Title', 'EncodedAbsUrl', 'File_x0020_Type')
-                .expand('Portfolios')
-                .filter(`Portfolios/Id eq ${data[0]?.Id}`)
-                .get();
+                .select('Id', 'Title', 'Portfolios/Id', 'Portfolios/Title', 'EPS/Id', 'EPS/Title', 'EI/Id', 'EI/Title',
+                    'HHHH/Id', 'HHHH/Title', 'Education/Id', 'Education/Title', 'Gruene/Id', 'Gruene/Title',
+                    'QA/Id', 'QA/Title', 'Shareweb/Id', 'Shareweb/Title',
+                    'DE/Id', 'DE/Title', 'Gender/Id', 'Gender/Title', 'EncodedAbsUrl', 'File_x0020_Type')
+                .expand('Portfolios,EPS,EI,HHHH,Education,Gruene,QA,Shareweb,DE,Gender')
+                .filter(filter)
+                .getAll();
 
             if (items?.length > 0) {
                 items.forEach((obj: any) => {
@@ -843,7 +856,7 @@ const CompareTool = (props: any) => {
         let isExists = false;
         for (let index = 0; index < array.length; index++) {
             let item = array[index];
-            if (item.Id == taggedItem?.Id) {
+            if (item.Id == taggedItem?.Id && taggedItem.checked === true) {
                 isExists = true;
                 //return false;
             }
@@ -1431,35 +1444,78 @@ const CompareTool = (props: any) => {
     //Save func
     const TaggeddocumentConfiguration = (Firstitem: any, secondItem: any) => {
         let PortfoliosIds: any = [];
-        Firstitem?.tagDoc?.forEach((element: any) => {
-            let temp1 = element?.Portfolios?.filter((obj: any) => obj.Id == secondItem.Id)
-            try {
-                if (temp1?.length > 0) {
-                    let PortfolioIds: any = [];
-                    element?.Portfolios.forEach((elo: any) => {
-                        if (elo?.Id != secondItem.Id)
-                            PortfolioIds.push(elo.Id);
-                    })
-                    PortfolioIds.push(Firstitem.Id)
-                    let postData = {
-                        PortfoliosId: { "results": PortfolioIds },
-                    }
-                    globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.DocumentListID === undefined ? 'D0F88B8F-D96D-4E12-B612-2706BA40FB08' : props?.contextValue?.DocumentListID, postData, element.Id)
-                        .then((returnresult) => {
-                            console.log(returnresult);
-                            // result.smartTime = String(returnresult)
-                            // console.log("Final Total Time:", returnresult);
-                        })
-                        .catch((error) => {
-                            console.error("Error:", error);
-                        });
+        if (Firstitem?.TaskType?.Id !== undefined) {
+            // Safely iterate over tagDoc array if it exists
+            Firstitem?.tagDoc?.forEach((element: any) => {
+                // Filter the specific siteType array for a matching Id
+                const temp1 = element?.[Firstitem?.siteType]?.filter((obj: any) => obj.Id === secondItem.Id);
 
+                try {
+                    // If matches are found
+                    if (temp1?.length > 0) {
+                        const PortfolioIds = [];
+
+                        // Collect Ids different from secondItem.Id and push the Firstitem.Id at the end
+                        element?.[Firstitem?.siteType]?.forEach((elo: any) => {
+                            if (elo?.Id !== secondItem.Id) PortfolioIds.push(elo.Id);
+                        });
+                        PortfolioIds.push(Firstitem.Id);
+
+                        // Prepare postData with dynamic property name
+                        const postData: any = {};
+                        const propertyName = `${Firstitem.siteType}Id`;
+                        postData[propertyName] = { "results": PortfolioIds };
+
+                        // Update item by Id
+                        globalCommon.updateItemById(
+                            props?.contextValue?.siteUrl,
+                            props?.contextValue?.DocumentListID ?? 'D0F88B8F-D96D-4E12-B612-2706BA40FB08',
+                            postData,
+                            element.Id
+                        )
+                            .then((returnresult) => {
+                                console.log(returnresult);
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                            });
+                    }
+                } catch (error) {
+                    console.error('Error in the processing block:', error);
                 }
-            } catch (error) {
-                // Handle the error, you can log it or perform any other actions
-                console.error('Error in the first block:', error);
-            }
-        });
+            });
+        }
+        else {
+            Firstitem?.tagDoc?.forEach((element: any) => {
+                let temp1 = element?.Portfolios?.filter((obj: any) => obj.Id == secondItem.Id)
+                try {
+                    if (temp1?.length > 0) {
+                        let PortfolioIds: any = [];
+                        element?.Portfolios.forEach((elo: any) => {
+                            if (elo?.Id != secondItem.Id)
+                                PortfolioIds.push(elo.Id);
+                        })
+                        PortfolioIds.push(Firstitem.Id)
+                        let postData = {
+                            PortfoliosId: { "results": PortfolioIds },
+                        }
+                        globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.DocumentListID === undefined ? 'D0F88B8F-D96D-4E12-B612-2706BA40FB08' : props?.contextValue?.DocumentListID, postData, element.Id)
+                            .then((returnresult) => {
+                                console.log(returnresult);
+                                // result.smartTime = String(returnresult)
+                                // console.log("Final Total Time:", returnresult);
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                            });
+
+                    }
+                } catch (error) {
+                    // Handle the error, you can log it or perform any other actions
+                    console.error('Error in the first block:', error);
+                }
+            });
+        }
     }
     const TaggedTaskSavingConfiguration = (Firstitem: any, secondItem: any) => {
         let PortfoliosIds: any = [];
@@ -1489,27 +1545,54 @@ const CompareTool = (props: any) => {
         }
     }
     const SaveComponentsItems = async (FirstItem: any, SecondItem: any) => {
-        if (FirstItem?.subRows?.length > 0) {
-            let allCompo = FirstItem?.subRows?.filter((obj: any) => obj?.Parent?.Id === SecondItem.Id)
+        if (FirstItem?.TaskType?.Id != undefined) {
+            let taggedtasks = FirstItem?.subRows?.filter((obj: any) => obj?.ParentTask?.Id === SecondItem.Id)
             try {
-                allCompo.forEach((item: any) => {
-                    const postData: any = {
-                        ParentId: FirstItem.Id,
-                    }
-                    globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.MasterTaskListID, postData, item.Id)
-                        .then((returnresult) => {
-                            console.log(returnresult);
-                            // result.smartTime = String(returnresult)
-                            // console.log("Final Total Time:", returnresult);
-                        })
-                        .catch((error) => {
-                            console.error("Error:", error);
-                        });
+                if (taggedtasks?.length > 0) {
+                    taggedtasks.forEach((element: any) => {
+                        let postData = {
+                            ParentTaskId: FirstItem.Id,
+                        }
+                        globalCommon.updateItemById(element.siteUrl, element.listId, postData, element.Id)
+                            .then((returnresult) => {
+                                console.log(returnresult);
+                                // result.smartTime = String(returnresult)
+                                // console.log("Final Total Time:", returnresult);
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                            });
 
-                })
+                    });
+
+                }
             } catch (error) {
                 // Handle the error, you can log it or perform any other actions
                 console.error('Error in the first block:', error);
+            }
+        } else {
+            if (FirstItem?.subRows?.length > 0) {
+                let allCompo = FirstItem?.subRows?.filter((obj: any) => obj?.Parent?.Id === SecondItem.Id)
+                try {
+                    allCompo.forEach((item: any) => {
+                        const postData: any = {
+                            ParentId: FirstItem.Id,
+                        }
+                        globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.MasterTaskListID, postData, item.Id)
+                            .then((returnresult) => {
+                                console.log(returnresult);
+                                // result.smartTime = String(returnresult)
+                                // console.log("Final Total Time:", returnresult);
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                            });
+
+                    })
+                } catch (error) {
+                    // Handle the error, you can log it or perform any other actions
+                    console.error('Error in the first block:', error);
+                }
             }
         }
     }
@@ -1916,7 +1999,7 @@ const CompareTool = (props: any) => {
                                         <img className="workmember" src={child.SiteIcon} alt="Site Icon" />
                                     </span>
                                     <span>{child.TaskID}</span>
-                                    <input type="radio" checked={taggedItems?.Id === child?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(child, 'taggedComponents')} className="radio" />
+                                    {/* <input type="radio" checked={taggedItems?.Id === child?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(child, 'taggedComponents')} className="radio" /> */}
                                     <span>
                                         <a target="_blank" className="mx-2" data-interception="off" href={`${child.siteUrl}/SitePages/Task-Profile.aspx?taskId=${child?.Id}&Site=${child?.siteType}`} >
                                             {child?.Title}
@@ -1932,7 +2015,7 @@ const CompareTool = (props: any) => {
                                     <img className="workmember" src={child.SiteIcon} alt="Site Icon" />
                                 </span>
                                 <span>{child.TaskID}</span>
-                                <input type="radio" checked={taggedItems?.Id === child?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(child, 'taggedComponents')} className="radio" />
+                                {/* <input type="radio" checked={taggedItems?.Id === child?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(child, 'taggedComponents')} className="radio" /> */}
                                 <span>
                                     <a target="_blank" className="mx-2" data-interception="off" href={`${child.siteUrl}/SitePages/Task-Profile.aspx?taskId=${child?.Id}&Site=${child?.siteType}`} >
                                         {child?.Title}
@@ -1968,7 +2051,7 @@ const CompareTool = (props: any) => {
                                 <img className="workmember" src={child.SiteIcon} alt="Site Icon" />
                             </span>
                                 <span>{child.TaskID}</span>
-                                <input type="checkbox" checked={items.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, child, undefined)} />
+                                {/* <input type="checkbox" checked={items.checked} className="form-check-input me-1 mt-0" name="radiotask1" onClick={() => handleCheckboxChange(0, child, undefined)} /> */}
                                 <span>
                                     <a target="_blank" className="mx-2" data-interception="off" href={`${child.siteUrl}/SitePages/Task-Profile.aspx?taskId=${child?.Id}&Site=${child?.siteType}`} >
                                         {child?.Title}
