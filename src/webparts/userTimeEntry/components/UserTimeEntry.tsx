@@ -2206,10 +2206,17 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     if (e.target.checked == true) {
       AllTaskUser?.forEach((val: any) => {
         let user: any = []
-        if ((val?.UserGroup?.Title == 'Senior Developer Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'Junior Developer Team' || val?.UserGroup?.Title == 'Design Team' || val?.UserGroup?.Title == 'QA Team' || val?.UserGroup?.Title == 'Trainees') && (val?.AssingedToUserId != currentuserId)) {
-          this.state.ImageSelectedUsers.push(val)
+        if ((val?.UserGroup?.Title == 'Senior Developer Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'Junior Task Management'|| val?.UserGroup?.Title == 'Junior Developer Team' || val?.UserGroup?.Title == 'Design Team' || val?.UserGroup?.Title == 'QA Team' || val?.UserGroup?.Title == 'Trainees') && (val?.AssingedToUserId != currentuserId)) {
+          // Check if the item already exists in ImageSelectedUsers
+          const existingUser = this.state.ImageSelectedUsers.find((user: any) => user.AssingedToUserId === val.AssingedToUserId);
+          if (!existingUser) {
+            // If not exists, then push
+            this.setState(prevState => ({
+              ImageSelectedUsers: [...prevState.ImageSelectedUsers, val]
+            }));
+          }
         }
-      })
+      });
     }
     else {
       
