@@ -2,6 +2,7 @@ import { Panel, PanelType } from "office-ui-fabric-react";
 import React, { useEffect, useState } from "react";
 import Tooltip from "../../../globalComponents/Tooltip";
 import { event } from "jquery";
+import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import { Web, sp } from "sp-pnp-js";
 import EditPage from "../../../globalComponents/EditPanelPage/EditPage";
@@ -26,6 +27,8 @@ const Permission_management = (props:any) => {
   const [checkPermission, setCheckPermission] = useState(false);
   const [permissionUserGroup, setPermissionUserGroup]: any = useState([]);
   const [headerChange, setHeaderChange]: any = useState('');
+  const [selectedPeople, setSelectedPeople] = useState([]);
+  const [checkUserPermission, setCheckUserPermission]: any = useState([]);
 
 
 
@@ -237,33 +240,40 @@ const Permission_management = (props:any) => {
   };
 
   const checkUser = async () => {
-    let newArray: any = [];
-    var targetId = inputValue?.AuthorId;
-    var query = "/_api/web/GetUserById(" + targetId + ")/Groups";
-    var SiteUrl = props?.context?.siteUrl;
+    const filteredSuggestions = taskUser.filter((suggestion : any) =>selectedPeople.some((limitedItem : any) => limitedItem.secondaryText == suggestion.Email));
+   
+    let commanArray : any = [];
+    filteredSuggestions?.map(async (items:any)=>{
+      let newArray: any = [];
+      var targetId = items?.AuthorId;
+      var query = "/_api/web/GetUserById(" + targetId + ")/Groups";
+      var SiteUrl = props?.context?.siteUrl;
+  
+      await $.ajax({
+        url: SiteUrl + query,
+        method: "GET",
+        async: false,
+        headers: {
+          "accept": "application/json;odata=verbose",
+          "content-Type": "application/json;odata=verbose"
+        },
+        success: function (data) {
+          data?.d?.results?.map((items: any) => {
+            if (items?.OwnerTitle !== 'System Account' && !(items?.OwnerTitle.indexOf("KSL") > -1) && !(items?.LoginName.indexOf("KSL") > -1) && !(items?.LoginName.indexOf("Test") > -1) && !(items?.LoginName.indexOf("test")! > -1)) {
+              newArray.push(items);
+            }
+          })
 
-    await $.ajax({
-      url: SiteUrl + query,
-      method: "GET",
-      async: false,
-      headers: {
-        "accept": "application/json;odata=verbose",
-        "content-Type": "application/json;odata=verbose"
-      },
-      success: function (data) {
-        data?.d?.results?.map((items: any) => {
-          if (items?.OwnerTitle !== 'System Account' && !(items?.OwnerTitle.indexOf("KSL") > -1) && !(items?.LoginName.indexOf("KSL") > -1) && !(items?.LoginName.indexOf("Test") > -1) && !(items?.LoginName.indexOf("test")! > -1)) {
-            newArray.push(items);
-          }
-        })
-        setPermissionUserGroup(newArray);
-
-      },
-      error: function (data) {
-        console.log("You do not have rights to access this section");
-
-      },
-    });
+          commanArray.push(...newArray)
+  
+        },
+        error: function (data) {
+          console.log("You do not have rights to access this section");
+  
+        },
+      });
+    })
+    setPermissionUserGroup(commanArray);
   };
 
 
@@ -378,7 +388,7 @@ const Permission_management = (props:any) => {
 
 
 
-  const handleInputChange = (e: any) => {
+  const handleInputChange = (e:any) => {
     const value = e.target.value;
     setInputValue(value);
 
@@ -391,7 +401,6 @@ const Permission_management = (props:any) => {
     } else {
       setSuggestions([]);
     }
-
   };
 
   const handleSuggestionClick = (suggestion: any) => {
@@ -405,12 +414,26 @@ const Permission_management = (props:any) => {
     setPermissionUserGroup([]);
   };
 
-
+  const AssignedToUser = (item: any) => {
+    if (item.length > 0) {
+        const email = item.length > 0 ? item[0].loginName.split('|').pop() : null;
+        const member = data.filter((elem: any) => elem.Email === email)
+        // setAssignedToUser(member)
+        // setIsUserNameValid(true);
+    }
+    else {
+        // setAssignedToUser([])
+        // setIsUserNameValid(false);
+    }
+}
 
 const changeHeader=(items:any)=>{
   setHeaderChange(items)
 }
 
+const handlePeoplePickerChange = (items : any) => {
+  setSelectedPeople(items);
+};
 
   return (
     <>
@@ -614,7 +637,7 @@ const changeHeader=(items:any)=>{
         <div className="modal-body">
           <div className="row">
             <div className="col-sm-9">
-              <div className="input-group">
+              {/* <div className="input-group">
                 <label className="form-label full-width">User*</label>
                 <input type="text" className="form-control"
                   value={inputValue?.Title}
@@ -622,24 +645,40 @@ const changeHeader=(items:any)=>{
                 {
                   inputValue?.Title != "" && <span className="svg__icon--cross svg__iconbox dark" onClick={()=>setInputValue({...inputValue,Title:""})}></span>
                 }   
-              </div>
-              <div className="SmartTableOnTaskPopup w-50">
+              </div> */}
+               <div className='input-group class-input'>
+                                     
+                                        <div className="w-100 peoplePickerData">
+                                        <PeoplePicker 
+                                           titleText="Select People"
+                                           personSelectionLimit={3}
+                                           principalTypes={[PrincipalType.User]}
+                                           resolveDelay={1000}
+                                           onChange={handlePeoplePickerChange}
+                                           defaultSelectedUsers={selectedPeople}
+                                           context={props?.context?.context}
+                                            />
+                                        </div>
+                                    </div>
+              {/* <div className="SmartTableOnTaskPopup w-50">
                 <ul className="list-group">
                   {suggestions.map((suggestion: any, index: any) => (
                     <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={index} onClick={() => handleSuggestionClick(suggestion)}>
                       {suggestion?.Title}
                     </li>
                   ))}
-                </ul></div>
+                </ul></div> */}
             </div>
             <div className="col-sm-3">
               <div className="mt-3">
-                <button className="btnCol mt-1 btn btn-primary" onClick={checkUser} >Check Permission</button>
+              <label className="full-width form-label"></label>
+                <button className="btnCol mt-1 btn btn-primary" onClick={()=>checkUser()} >Check Permission</button>
               </div>
             </div>
           </div>
           <div className="mt-16">
             <ul className="p-0">
+           
               {permissionUserGroup.map((checkItem: any, index: any) => (
                 <li className="alignCenter p-1 bg-ee mb-1 full-width">
                   {checkItem?.Title}
