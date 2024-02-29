@@ -9,12 +9,14 @@ import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers'
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import EditComponent from '../../EditPopupFiles/EditComponent'
- import EditDocumentpanel from '../../taskprofile/components/EditDocunentPanel';
+import EditDocumentpanel from '../../taskprofile/components/EditDocunentPanel';
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import EditInstitutionPopup from '../../contactSearch/components/contact-search/popup-components/EditInstitutionPopup';
 import { myContextValue } from '../../../globalComponents/globalCommon'
-import EditPage  from '../../../globalComponents/EditPanelPage/EditPage'
+import EditPage from '../../../globalComponents/EditPanelPage/EditPage'
+import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
+
 let allSite: any = {
   GMBHSite: false,
   HrSite: false,
@@ -22,11 +24,11 @@ let allSite: any = {
 }
 let masterTaskData: any;
 let ActualSites: any = []
-export const Modified = (props: any) => { 
+export const Modified = (props: any) => {
   let columns: any = [];
   let portfolioColor: any = '#000066';
   var baseUrl: any = props?.props.context?._pageContext?.web?.absoluteUrl;
-  const [gmbhSite,setGmbhSite]=useState(false);
+  const [gmbhSite, setGmbhSite] = useState(false);
   const [sites, setSites] = useState<any>([])
   const [allSiteData, setallSiteData] = useState<any>([])
   const [allUsers, setAllUsers] = useState<any>([]);
@@ -46,8 +48,8 @@ export const Modified = (props: any) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [currentTimeEntry, setCurrentTimeEntry] = useState<any>([]);
   const [istimeEntryOpen, setIsTimeEntryOpen] = useState(false);
-  const[editInstitutionPopUp,setEditInstitutionPopUp]=useState(false);
-  const[editWebPagePopUp,setEditWebPagePopUp]=useState(false)
+  const [editInstitutionPopUp, setEditInstitutionPopUp] = useState(false);
+  const [editWebPagePopUp, setEditWebPagePopUp] = useState(false)
   const childRef = React.useRef<any>();
   let context = props?.props?.context
   let allDataFinal: any = [];
@@ -63,17 +65,17 @@ export const Modified = (props: any) => {
 
 
   const getAllUsers = async () => {
-      
+
 
     Users = await globalCommon.loadTaskUsers();
-    setAllUsers(Users) 
+    setAllUsers(Users)
     if (baseUrl.toLowerCase().includes("gmbh")) {
       setGmbhSite(true)
       allSite = {
-          GMBHSite: true,
-          MainSite: false,
+        GMBHSite: true,
+        MainSite: false,
       }
-  }
+    }
     const editListsAll = {
       TaskUsertListID: props?.props?.TaskUsertListID,
       SmartMetadataListID: props?.props?.SmartMetadataListID,
@@ -84,28 +86,28 @@ export const Modified = (props: any) => {
       TaskTypeID: props?.props?.TaskTypeID,
       TimeEntry: props?.props?.TimeEntry,
       SiteCompostion: props?.props?.SiteCompostion,
-      SitePagesList:props?.props?.SitePagesList,
+      SitePagesList: props?.props?.SitePagesList,
       siteUrl: baseUrl,
       Context: props?.props?.context,
       SmartHelptListID: props?.props?.SmartHelptListID,
       PortFolioTypeID: props?.props?.PortFolioTypeID,
       context: props?.props?.context,
       TaskUserListId: props?.props?.TaskUsertListID,
-     
-    
+
+
     }
     setEditLists(editListsAll)
 
-    const contactList={
+    const contactList = {
       Context: props?.props.context,
       HHHHContactListId: props?.props?.HHHHContactListId,
       HHHHInstitutionListId: props?.props?.HHHHInstitutionListId,
       MAIN_SMARTMETADATA_LISTID: props?.props?.MAIN_SMARTMETADATA_LISTID,
       MAIN_HR_LISTID: props?.props?.MAIN_HR_LISTID,
-      ContractListID:props?.props?.ContractListID,
+      ContractListID: props?.props?.ContractListID,
       GMBH_CONTACT_SEARCH_LISTID: props?.props?.GMBH_CONTACT_SEARCH_LISTID,
       HR_EMPLOYEE_DETAILS_LIST_ID: props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID,
-      siteUrl:baseUrl,
+      siteUrl: baseUrl,
       jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
     }
     setEditContactLists(contactList)
@@ -140,19 +142,19 @@ export const Modified = (props: any) => {
       console.error(error)
     }
   }
-  const getPortfolioData=async()=>{
+  const getPortfolioData = async () => {
     let web = new Web(baseUrl);
     let PortFolioType = [];
     PortFolioType = await web.lists
-        .getById(props?.props?.PortFolioTypeID)
-        .items.select(
-            "Id",
-            "Title",
-            "Color",
-            "IdRange"
-        )
-        .get();
-        setPortfoliotyped(PortFolioType)
+      .getById(props?.props?.PortFolioTypeID)
+      .items.select(
+        "Id",
+        "Title",
+        "Color",
+        "IdRange"
+      )
+      .get();
+    setPortfoliotyped(PortFolioType)
   }
   const getCurrentData = async (allSite: any) => {
     childRef?.current?.setRowSelection({});
@@ -193,7 +195,7 @@ export const Modified = (props: any) => {
           setTimeout(() => {
             sites.map((item: any) => {
               if (allSite.TabName == item?.TabName) {
-                
+
                 document.getElementById(`nav-${item?.TabName}`)?.classList.add('show');
                 document.getElementById(`nav-${item?.TabName}`)?.classList.add('active');
                 document.getElementById(`nav-${item.TabName}-tab`)?.classList.add('active');
@@ -215,13 +217,17 @@ export const Modified = (props: any) => {
       catch (error) {
         console.error(error)
       }
-      if (allSite.TabName == 'DOCUMENTS' || allSite.TabName == 'FOLDERS' || allSite.TabName == 'COMPONENTS' || allSite.TabName == 'SERVICES'||allSite.TabName=='TEAM-PORTFOLIO'||allSite.TabName=="WEB PAGES") {
+      if (allSite.TabName == 'DOCUMENTS' || allSite.TabName == 'FOLDERS' || allSite.TabName == 'COMPONENTS' || allSite.TabName == 'SERVICES' || allSite.TabName == 'TEAM-PORTFOLIO' || allSite.TabName == "WEB PAGES") {
         data?.map((item: any) => {
-          item.siteType ="Master Tasks"
+          item.siteType = allSite.TabName
+          if (allSite.TabName == 'COMPONENTS' || allSite.TabName == 'SERVICES' || allSite.TabName == 'TEAM-PORTFOLIO') {
+            item.siteType = "Master Tasks";
+            item.MasterType=allSite.TabName
+          }
           item.listId = allSite.ListId;
           item.siteUrl = baseUrl;
-          item.coloumns=allSite.Columns
-          item.GmBHSiteCheck=item.siteUrl.includes("/GmBH");          
+          item.coloumns = allSite.Columns
+          item.GmBHSiteCheck = item.siteUrl.includes("/GmBH");
           if (allSite.TabName == 'SERVICES') {
             item.fontColorTask = '#228b22'
           } else {
@@ -291,11 +297,10 @@ export const Modified = (props: any) => {
             })
           }
         })
-        if(allSite.TabName=='DOCUMENTS'){
-          data=data.filter((item: any) => { return (item.Title != null)})
+        if (allSite.TabName == 'DOCUMENTS') {
+          data = data.filter((item: any) => { return (item.Title != null) })
         }
       }
-    
       else {
         data?.map((item: any) => {
           item.fontColorTask = '#000066';
@@ -309,13 +314,19 @@ export const Modified = (props: any) => {
           item.siteType = allSite?.TabName
           item.listId = allSite.ListId;
           item.siteUrl = baseUrl;
-          item.GmBHSiteCheck=item.siteUrl.includes("/GmBH");
+          item.GmBHSiteCheck = item.siteUrl.includes("/GmBH");
           item.siteUrlOld = item.siteUrl.replace('/SP', '')
           item.siteImage = allSite?.SiteIcon;
           item.SiteIcon = item.siteUrlOld + item.siteImage
           item.AllusersName = [];
-          if(item.GmBHSiteCheck==true){
-            item.SiteIcon=item.siteUrl+"/SiteCollectionImages/ICONS/Foundation/Icon_GmBH.png";
+          if (item?.FeedBack != undefined) {
+            item.descriptionsSearch = globalCommon.descriptionSearchData(item)
+        } else {
+          item.descriptionsSearch = '';
+        }
+
+          if (item.GmBHSiteCheck == true) {
+            item.SiteIcon = item.siteUrl + "/SiteCollectionImages/ICONS/Foundation/Icon_GmBH.png";
           }
           item.TaskID = globalCommon.GetTaskId(item);
           if (item.Modified != undefined) {
@@ -327,8 +338,8 @@ export const Modified = (props: any) => {
           if (item.DueDate != undefined) {
             item.dueDateNew = moment(item?.DueDate).format('DD/MM/YYYY')
           }
-          if(item.EventDate!=undefined){
-            item.eventDate=moment(item?.EventDate).format('DD/MM/YYYY')
+          if (item.EventDate != undefined) {
+            item.eventDate = moment(item?.EventDate).format('DD/MM/YYYY')
           }
           if (item.PercentComplete != undefined) {
             item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
@@ -403,11 +414,11 @@ export const Modified = (props: any) => {
             })
           }
         })
-        if(allSite.TabName=="EVENTS"){
-          data=data.filter((item: any) => { return (item.Title != null)})
+        if (allSite.TabName == "EVENTS") {
+          data = data.filter((item: any) => { return (item.Title != null) })
         }
-        if(allSite.TabName=='SMART PAGES'){
-          data=data.filter((item: any) => { return (item.TaxType =="Smart Pages")})
+        if (allSite.TabName == 'SMART PAGES') {
+          data = data.filter((item: any) => { return (item.TaxType == "Smart Pages") })
         }
       }
       if (allSite.AllTask == true) {
@@ -502,7 +513,7 @@ export const Modified = (props: any) => {
         var currentvalue: any = [];
         duplicate.map((dupData: any) => {
           dupData.map((items: any) => {
-            if (items.siteType == allSite.TabName) {
+            if (items.siteType == allSite.TabName ||items.MasterType==allSite.TabName) {
               duplicateValue.push(items)
               currentvalue.push(items)
             }
@@ -740,7 +751,7 @@ export const Modified = (props: any) => {
     setEditTaskPopUpOpen(true)
     setEditValue(edit);
   }
-  const editComponentPopUp =async(editComponentValue: any) => {
+  const editComponentPopUp = async (editComponentValue: any) => {
     setEditValue(editComponentValue);
     setEditComponentPopUps(true)
   }
@@ -748,12 +759,12 @@ export const Modified = (props: any) => {
     setEditValue(editDoc);
     seteditDocPopUpOpen(true);
   }
-  const editWebOpen=(editOpen:any)=>{
+  const editWebOpen = (editOpen: any) => {
     setEditValue(editOpen);
     setEditWebPagePopUp(true);
-    
+
   }
-  const editContactOpen=(editConatact:any)=>{
+  const editContactOpen = (editConatact: any) => {
     setEditValue(editConatact);
     setEditInstitutionPopUp(true)
   }
@@ -777,22 +788,22 @@ export const Modified = (props: any) => {
       getCurrentData(dummyValueSite);
     }
   }
-  const CloseConatactPopup=()=>{
+  const CloseConatactPopup = () => {
     setEditInstitutionPopUp(false)
   }
   const closeEditComponent = (item: any) => {
     setEditComponentPopUps(false)
     // Portfolio_x0020_Type
-    if(item?.PortfolioType?.Title=="Component"){
+    if (item?.PortfolioType?.Title == "Component") {
       sites.map((siteValue: any) => {
         if (siteValue.TabName == 'COMPONENTS') {
           siteValue.noRepeat = false;
           siteValue.editFunction = true;
           getCurrentData(siteValue)
         }
-      })    
+      })
     }
-    else if(item?.PortfolioType?.Title=="Service"){
+    else if (item?.PortfolioType?.Title == "Service") {
       sites.map((siteValue: any) => {
         if (siteValue.TabName == 'SERVICES') {
           siteValue.noRepeat = false;
@@ -803,39 +814,39 @@ export const Modified = (props: any) => {
     }
 
   };
-  const callbackeditpopup = (item:any) => {
-    if(item!=undefined){
-    seteditDocPopUpOpen(false);
-    sites.map((siteValue: any) => {
-      if (siteValue.TabName == 'DOCUMENTS') {
-        siteValue.noRepeat = false;
-        siteValue.editFunction = true;
-        getCurrentData(siteValue)
-      }
-    })
-  }else{
-    seteditDocPopUpOpen(false);
-  }
+  const callbackeditpopup = (item: any) => {
+    if (item != undefined) {
+      seteditDocPopUpOpen(false);
+      sites.map((siteValue: any) => {
+        if (siteValue.TabName == 'DOCUMENTS') {
+          siteValue.noRepeat = false;
+          siteValue.editFunction = true;
+          getCurrentData(siteValue)
+        }
+      })
+    } else {
+      seteditDocPopUpOpen(false);
+    }
   }
   const EditDataTimeEntryData = (item: any) => {
     setIsTimeEntryOpen(true);
     setCurrentTimeEntry(item);
   }
   const TimeEntryCallBack = () => {
-     setIsTimeEntryOpen(false);
+    setIsTimeEntryOpen(false);
   }
- const changes=()=>{
-  
- }
- const updatedWebpages=()=>{
-  sites.map((siteValue: any) => {
-    if (siteValue.TabName == 'WEB PAGES') {
-      siteValue.noRepeat = false;
-      siteValue.editFunction = true;
-      getCurrentData(siteValue)
-    }
-  })
- }
+  const changes = () => {
+
+  }
+  const updatedWebpages = () => {
+    sites.map((siteValue: any) => {
+      if (siteValue.TabName == 'WEB PAGES') {
+        siteValue.noRepeat = false;
+        siteValue.editFunction = true;
+        getCurrentData(siteValue)
+      }
+    })
+  }
 
   const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
 
@@ -845,7 +856,7 @@ export const Modified = (props: any) => {
       setMultipleDelete([]);
     }
   }, []);
-  if (type == 'FOLDERS'||type=='WEB PAGES') {
+  if (type == 'FOLDERS' || type == 'WEB PAGES') {
     columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
       [
         {
@@ -859,7 +870,7 @@ export const Modified = (props: any) => {
           accessorKey: "FileLeafRef", placeholder: "Title", header: "",
           cell: ({ row }) =>
             <>
-              {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ?<a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</>: undefined}
+              {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ? <a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</> : undefined}
               <a data-interception="off" target='_blank' href={row.original.EncodedAbsUrl}>{row.original.FileLeafRef}</a>
             </>
         },
@@ -916,21 +927,21 @@ export const Modified = (props: any) => {
           size: 125,
         },
         {
-          id: 'editWebPage',size:25,
+          id: 'editWebPage', size: 25,
           cell: ({ row }) =>
             <>
-              {type =='WEB PAGES' ?
+              {type == 'WEB PAGES' ?
                 <>
-                <EditPage context={editLists} Title={row.original.FileLeafRef} changeHeader={changes} updatedWebpages={updatedWebpages} /> </>
+                  <EditPage context={editLists} Title={row.original.FileLeafRef} changeHeader={changes} updatedWebpages={updatedWebpages} /> </>
                 : undefined}
             </>
 
         }
         , {
-          id: 'deleteWebpage',size:25,
+          id: 'deleteWebpage', size: 25,
           cell: ({ row }) =>
             <>
-              {type =='WEB PAGES' ?
+              {type == 'WEB PAGES' ?
                 <>
                   <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
                 </>
@@ -942,213 +953,104 @@ export const Modified = (props: any) => {
 
   }
 
-else if(type == 'DOCUMENTS' ){
-  columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
-  [
-    {
-      accessorKey: "",
-      placeholder: "",
-      hasCheckbox: true,
-      size: 55,
-      id: 'Id',
-    },
-    {
-      accessorKey: "FileLeafRef", placeholder: "Title", header: "",id:"FileLeafRef",
-      cell: ({ row }) =>
-        <>
-          {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ?<a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</>: undefined}
-          <a data-interception="off" target='_blank' href={row.original.EncodedAbsUrl}>{row.original.FileLeafRef}</a>
-        </>
-    },
-    {
-      accessorKey: 'Modified', cell: ({ row }) =>
-        <>
-          {row.original.modifiedNew}
-          <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
-            {row.original.editorImage != undefined ?
-              <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-              : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
-                : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
-          </a>
-        </>,
-      filterFn: (row: any, columnName: any, filterValue: any) => {
-        if (row?.original?.editorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.modifiedNew?.includes(filterValue)) {
-          return true
-        } else {
-          return false
-        }
-      },
-      id: 'modifiedNew',
-      resetColumnFilters: false,
-      isColumnDefultSortingDesc: true,
-      resetSorting: false,
-      placeholder: "Modified",
-      header: "",
-      size: 145,
-    }
-    , {
-      accessorKey: "Created",
-      cell: ({ row }) =>
-        <>
-          {row.original.createdNew}
-          <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
-            {row.original.authorImage != undefined ?
-              <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-              : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
-          </a>
-        </>,
-      filterFn: (row: any, columnName: any, filterValue: any) => {
-        if (row?.original?.authorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.createdNew?.includes(filterValue)) {
-          return true
-        } else {
-          return false
-        }
-      },
-      id: 'createdNew',
-      resetColumnFilters: false,
-      resetSorting: false,
-      placeholder: "Created",
-      header: "",
-      size: 125,
-    },
-    {
-      id: 'updateDoc',size:25,
-      cell: ({ row }) =>
-        <>
-          {type == 'DOCUMENTS'||type =='WEB PAGES' ?
-            <>
-              <a onClick={() => editDocOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
-            </>
-            : undefined}
-        </>
-
-    }
-    , {
-      id: 'deleteDoc',size:25,
-      cell: ({ row }) =>
-        <>
-          {type == 'DOCUMENTS'||type =='WEB PAGES' ?
-            <>
-              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
-            </>
-            : undefined}
-        </>
-
-    }
-  ], [allSiteData])
-}
-
-  else if( type=='SMART PAGES'){
+  else if (type == 'DOCUMENTS') {
     columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
-    [
-      {
-        accessorKey: "",
-        placeholder: "",
-        hasCheckbox: true,
-        size: 5,
-        id: 'Id',
-      }, 
-      {
-        accessorKey: "ProfileType", placeholder: "Profile Type", header: "",id:"ProfileType",
-        cell: ({ row }) =>
-          <span>{row.original.ProfileType}</span>   
-      },
-      {
-        accessorKey: "Title", placeholder: "Title", header: "",id:"Title",
-        cell: ({ row }) =>
-          <a  data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
-            {row.original.Title}
-          </a>
-      },
-      {
-        accessorFn: (row: any) => row?.Modified,
-        cell: ({ row }) =>
-          <>
-            {row.original.modifiedNew}
-            <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
-              {row.original.editorImage != undefined ?
-                <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
-                  : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
-            </a>
-          </>,
-        filterFn: (row: any, columnName: any, filterValue: any) => {
-          if (row?.original?.editorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.modifiedNew?.includes(filterValue)) {
-            return true
-          } else {
-            return false
-          }
+      [
+        {
+          accessorKey: "",
+          placeholder: "",
+          hasCheckbox: true,
+          size: 55,
+          id: 'Id',
         },
-        id: 'modifiedNew',
-        resetColumnFilters: false,
-        isColumnDefultSortingDesc: true,
-        resetSorting: false,
-        placeholder: "Modified",
-        header: "",
-        size: 145,
-      }
-
-      , {
-        accessorKey: "Created",
-        cell: ({ row }) =>
-          <>
-            {row.original.createdNew}
-            <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
-              {row.original.authorImage != undefined ?
-                <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                  : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
-            </a>
-          </>,
-        filterFn: (row: any, columnName: any, filterValue: any) => {
-          if (row?.original?.authorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.createdNew?.includes(filterValue)) {
-            return true
-          } else {
-            return false
-          }
+        {
+          accessorKey: "FileLeafRef", placeholder: "Title", header: "", id: "FileLeafRef",
+          cell: ({ row }) =>
+            <>
+              {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ? <a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</> : undefined}
+              <a data-interception="off" target='_blank' href={row.original.EncodedAbsUrl}>{row.original.FileLeafRef}</a>
+            </>
         },
-        id: 'createdNew',
-        resetColumnFilters: false,
-        resetSorting: false,
-        placeholder: "Created",
-        header: "",
-        size: 125,
-      }, {
-        cell: (info: any) => (
-          <>
-            <a className="alignCenter" onClick={() => EditDataTimeEntryData(info?.row?.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
-              <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
-            </a></>
-        ),
-        id: 'AllEntry',
-        accessorKey: "",
-        canSort: false,
-        resetSorting: false,
-        resetColumnFilters: false,
-        placeholder: "",
-        size: 25
-      }, {
-        id: 'updateSmartPages',
-        cell: ({ row }) =>
+        {
+          accessorKey: 'Modified', cell: ({ row }) =>
+            <>
+              {row.original.modifiedNew}
+              <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
+                {row.original.editorImage != undefined ?
+                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
+              </a>
+            </>,
+          filterFn: (row: any, columnName: any, filterValue: any) => {
+            if (row?.original?.editorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.modifiedNew?.includes(filterValue)) {
+              return true
+            } else {
+              return false
+            }
+          },
+          id: 'modifiedNew',
+          resetColumnFilters: false,
+          isColumnDefultSortingDesc: true,
+          resetSorting: false,
+          placeholder: "Modified",
+          header: "",
+          size: 145,
+        }
+        , {
+          accessorKey: "Created",
+          cell: ({ row }) =>
+            <>
+              {row.original.createdNew}
+              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
+                {row.original.authorImage != undefined ?
+                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+              </a>
+            </>,
+          filterFn: (row: any, columnName: any, filterValue: any) => {
+            if (row?.original?.authorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.createdNew?.includes(filterValue)) {
+              return true
+            } else {
+              return false
+            }
+          },
+          id: 'createdNew',
+          resetColumnFilters: false,
+          resetSorting: false,
+          placeholder: "Created",
+          header: "",
+          size: 125,
+        },
+        {
+          id: 'updateDoc', size: 25,
+          cell: ({ row }) =>
+            <>
+              {type == 'DOCUMENTS' || type == 'WEB PAGES' ?
+                <>
+                  <a onClick={() => editDocOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+                </>
+                : undefined}
+            </>
 
-          <>
-            <a onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
-          </>,
+        }
+        , {
+          id: 'deleteDoc', size: 25,
+          cell: ({ row }) =>
+            <>
+              {type == 'DOCUMENTS' || type == 'WEB PAGES' ?
+                <>
+                  <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+                </>
+                : undefined}
+            </>
 
-      }
-      , {
-        id: 'delteSmartPages',
-        cell: ({ row }) =>
-          <>
-            <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
-          </>
-
-      }
-
-    ], [allSiteData])
+        }
+      ], [allSiteData])
   }
-  else if(type=='SMART METADATA'){
+
+  else if (type == 'SMART PAGES') {
     columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
       [
         {
@@ -1157,12 +1059,121 @@ else if(type == 'DOCUMENTS' ){
           hasCheckbox: true,
           size: 5,
           id: 'Id',
-        }, 
-        
+        },
         {
-          accessorKey: "Title", placeholder: "Title", header: "",id:"Title",
+          accessorKey: "ProfileType", placeholder: "Profile Type", header: "", id: "ProfileType",
           cell: ({ row }) =>
-            <span>{row.original.Title}</span>             
+            <span>{row.original.ProfileType}</span>
+        },
+        {
+          accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
+          cell: ({ row }) =>
+            <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
+              {row.original.Title}
+            </a>
+        },
+        {
+          accessorFn: (row: any) => row?.Modified,
+          cell: ({ row }) =>
+            <>
+              {row.original.modifiedNew}
+              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
+                {row.original.editorImage != undefined ?
+                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
+              </a>
+            </>,
+          filterFn: (row: any, columnName: any, filterValue: any) => {
+            if (row?.original?.editorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.modifiedNew?.includes(filterValue)) {
+              return true
+            } else {
+              return false
+            }
+          },
+          id: 'modifiedNew',
+          resetColumnFilters: false,
+          isColumnDefultSortingDesc: true,
+          resetSorting: false,
+          placeholder: "Modified",
+          header: "",
+          size: 145,
+        }
+
+        , {
+          accessorKey: "Created",
+          cell: ({ row }) =>
+            <>
+              {row.original.createdNew}
+              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
+                {row.original.authorImage != undefined ?
+                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+              </a>
+            </>,
+          filterFn: (row: any, columnName: any, filterValue: any) => {
+            if (row?.original?.authorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.createdNew?.includes(filterValue)) {
+              return true
+            } else {
+              return false
+            }
+          },
+          id: 'createdNew',
+          resetColumnFilters: false,
+          resetSorting: false,
+          placeholder: "Created",
+          header: "",
+          size: 125,
+        }, {
+          cell: (info: any) => (
+            <>
+              <a className="alignCenter" onClick={() => EditDataTimeEntryData(info?.row?.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
+                <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
+              </a></>
+          ),
+          id: 'AllEntry',
+          accessorKey: "",
+          canSort: false,
+          resetSorting: false,
+          resetColumnFilters: false,
+          placeholder: "",
+          size: 25
+        }, {
+          id: 'updateSmartPages',
+          cell: ({ row }) =>
+
+            <>
+              <a onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+            </>,
+
+        }
+        , {
+          id: 'delteSmartPages',
+          cell: ({ row }) =>
+            <>
+              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+            </>
+
+        }
+
+      ], [allSiteData])
+  }
+  else if (type == 'SMART METADATA') {
+    columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
+      [
+        {
+          accessorKey: "",
+          placeholder: "",
+          hasCheckbox: true,
+          size: 5,
+          id: 'Id',
+        },
+
+        {
+          accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
+          cell: ({ row }) =>
+            <span>{row.original.Title}</span>
         },
         {
           accessorFn: (row: any) => row?.Modified,
@@ -1232,7 +1243,7 @@ else if(type == 'DOCUMENTS' ){
           placeholder: "",
           size: 25
         }, {
-          id: 'updateSmartMetaData',size:25,
+          id: 'updateSmartMetaData', size: 25,
           cell: ({ row }) =>
 
             <>
@@ -1241,7 +1252,7 @@ else if(type == 'DOCUMENTS' ){
 
         }
         , {
-          id: 'delteSmartMetaData',size:25,
+          id: 'delteSmartMetaData', size: 25,
           cell: ({ row }) =>
             <>
               <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
@@ -1251,318 +1262,318 @@ else if(type == 'DOCUMENTS' ){
 
       ], [allSiteData])
   }
-  else if(type=='CONTACTS'){
+  else if (type == 'CONTACTS') {
     columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
-    [
-      {
-        accessorKey: "",
-        placeholder: "",
-        hasCheckbox: true,
-        size: 55,
-        id: 'Id',
-      },
-      {
-        accessorKey: "FirstName", placeholder: "FirstName", header: "",id:"FirstName",
-        cell: ({ row }) =>
-          <>
-            <span>{row.original.FirstName}</span>
-          </>
-      },
-      {
-        accessorKey: "Title", placeholder: "LastName", header: "",id:"Title",
-        cell: ({ row }) =>
-          <>
-            <span>{row.original.Title}</span>
-          </>
-      },
-      {
-        accessorKey: "FullName", placeholder: "FullName", header: "",id:"FullName",
-        cell: ({ row }) =>
-          <>
-             <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Contact-Profile.aspx?contactId=${row.original.Id}`}>
-              {row.original.FullName}
+      [
+        {
+          accessorKey: "",
+          placeholder: "",
+          hasCheckbox: true,
+          size: 55,
+          id: 'Id',
+        },
+        {
+          accessorKey: "FirstName", placeholder: "FirstName", header: "", id: "FirstName",
+          cell: ({ row }) =>
+            <>
+              <span>{row.original.FirstName}</span>
+            </>
+        },
+        {
+          accessorKey: "Title", placeholder: "LastName", header: "", id: "Title",
+          cell: ({ row }) =>
+            <>
+              <span>{row.original.Title}</span>
+            </>
+        },
+        {
+          accessorKey: "FullName", placeholder: "FullName", header: "", id: "FullName",
+          cell: ({ row }) =>
+            <>
+              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Contact-Profile.aspx?contactId=${row.original.Id}`}>
+                {row.original.FullName}
               </a>
-          </>
-      },
-      {
-        accessorKey: 'Modified', cell: ({ row }) =>
-          <>
-            {row.original.modifiedNew}
-            <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
-              {row.original.editorImage != undefined ?
-                <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
-                  : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
-            </a>
-          </>,
-        filterFn: (row: any, columnName: any, filterValue: any) => {
-          if (row?.original?.editorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.modifiedNew?.includes(filterValue)) {
-            return true
-          } else {
-            return false
-          }
+            </>
         },
-        id: 'modifiedNew',
-        resetColumnFilters: false,
-        isColumnDefultSortingDesc: true,
-        resetSorting: false,
-        placeholder: "Modified",
-        header: "",
-        size: 145,
-      }
-      , {
-        accessorKey: "Created",
-        cell: ({ row }) =>
-          <>
-            {row.original.createdNew}
-            <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
-              {row.original.authorImage != undefined ?
-                <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                  : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
-            </a>
-          </>,
-        filterFn: (row: any, columnName: any, filterValue: any) => {
-          if (row?.original?.authorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.createdNew?.includes(filterValue)) {
-            return true
-          } else {
-            return false
-          }
-        },
-        id: 'createdNew',
-        resetColumnFilters: false,
-        resetSorting: false,
-        placeholder: "Created",
-        header: "",
-        size: 125,
-      },
-      {
-
-        id: 'updateContact',
-        cell: ({ row }) =>
-          <>
-            <a onClick={() => editContactOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
-          </>
-
-      },
-      {
-        id: 'deleteContact',
-        cell: ({ row }) =>
-          <>
-            <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
-          </>
-
-      }
-    ], [allSiteData])
-  }
-  else if(type=="EVENTS"){
-    columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
-    [
-      {
-        accessorKey: "",
-        placeholder: "",
-        hasCheckbox: true,
-        size: 55,
-        id: 'Id',
-      },
-      {
-        accessorKey: "Title", placeholder: "Title", header: "",id:"Title",
-        cell: ({ row }) =>
-          <>
-            <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Event-detail.aspx?ItemID=${row.original.Id}&Site=GmbH`}>
-              {row.original.Title}
-            </a>
-          </>
-      },
-      {
-        accessorKey: "ItemRank", placeholder: "ItemRank", header: "",id:"ItemRank",
-        cell: ({ row }) =>
-          <>
-           <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Event-detail.aspx?ItemID=${row.original.Id}&Site=GmbH`}>
-              {row.original.ItemRank}
-            </a>
-          </>
-      },
-      {
-        accessorKey: "eventDate", placeholder: "Event Date", header: "",id:"eventDate",
-        cell: ({ row }) =>
-          <>
-             <a target='_blank' href={`${baseUrl}/SitePages/Contact-Profile.aspx?contactId=${row.original.SmartContactId}`}>
-              {row.original.eventDate}
+        {
+          accessorKey: 'Modified', cell: ({ row }) =>
+            <>
+              {row.original.modifiedNew}
+              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
+                {row.original.editorImage != undefined ?
+                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
-          </>
-      },
-      {
-        accessorKey: 'Modified', cell: ({ row }) =>
-          <>
-            {row.original.modifiedNew}
-            <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
-              {row.original.editorImage != undefined ?
-                <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
-                  : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
-            </a>
-          </>,
-        filterFn: (row: any, columnName: any, filterValue: any) => {
-          if (row?.original?.editorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.modifiedNew?.includes(filterValue)) {
-            return true
-          } else {
-            return false
-          }
+            </>,
+          filterFn: (row: any, columnName: any, filterValue: any) => {
+            if (row?.original?.editorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.modifiedNew?.includes(filterValue)) {
+              return true
+            } else {
+              return false
+            }
+          },
+          id: 'modifiedNew',
+          resetColumnFilters: false,
+          isColumnDefultSortingDesc: true,
+          resetSorting: false,
+          placeholder: "Modified",
+          header: "",
+          size: 145,
+        }
+        , {
+          accessorKey: "Created",
+          cell: ({ row }) =>
+            <>
+              {row.original.createdNew}
+              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
+                {row.original.authorImage != undefined ?
+                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+              </a>
+            </>,
+          filterFn: (row: any, columnName: any, filterValue: any) => {
+            if (row?.original?.authorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.createdNew?.includes(filterValue)) {
+              return true
+            } else {
+              return false
+            }
+          },
+          id: 'createdNew',
+          resetColumnFilters: false,
+          resetSorting: false,
+          placeholder: "Created",
+          header: "",
+          size: 125,
         },
-        id: 'modifiedNew',
-        resetColumnFilters: false,
-        isColumnDefultSortingDesc: true,
-        resetSorting: false,
-        placeholder: "Modified",
-        header: "",
-        size: 145,
-      }
-      , {
-        accessorKey: "Created",
-        cell: ({ row }) =>
-          <>
-            {row.original.createdNew}
-            <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
-              {row.original.authorImage != undefined ?
-                <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                  : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
-            </a>
-          </>,
-        filterFn: (row: any, columnName: any, filterValue: any) => {
-          if (row?.original?.authorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.createdNew?.includes(filterValue)) {
-            return true
-          } else {
-            return false
-          }
+        {
+
+          id: 'updateContact',
+          cell: ({ row }) =>
+            <>
+              <a onClick={() => editContactOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+            </>
+
         },
-        id: 'createdNew',
-        resetColumnFilters: false,
-        resetSorting: false,
-        placeholder: "Created",
-        header: "",
-        size: 125,
-      },
-      {
+        {
+          id: 'deleteContact',
+          cell: ({ row }) =>
+            <>
+              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+            </>
 
-        id: 'updateEvents',
-        cell: ({ row }) =>
-          <>
-             <a onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
-          </>
-
-      },
-      {
-        id: 'deleteEvents',
-        cell: ({ row }) =>
-          <>
-            <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
-          </>
-
-      }
-    ], [allSiteData])
+        }
+      ], [allSiteData])
   }
-  else if(type=="NEWS"){
+  else if (type == "EVENTS") {
     columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
-    [
-      {
-        accessorKey: "",
-        placeholder: "",
-        hasCheckbox: true,
-        size: 55,
-        id: 'Id',
-      },
-      {
-        accessorKey: "Title", placeholder: "Title", header: "",id:"Title",
-        cell: ({ row }) =>
-          <>
-            <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Event-detail.aspx?ItemID=${row.original.Id}&Site=GmbH`}>
-              {row.original.Title}
-            </a>
-          </>
-      },
-      {
-        accessorKey: "ItemRank", placeholder: "ItemRank", header: "",id:"ItemRank",
-        cell: ({ row }) =>
-          <>
-           <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Event-detail.aspx?ItemID=${row.original.Id}&Site=GmbH`}>
-              {row.original.ItemRank}
-            </a>
-          </>
-      },
-      {
-        accessorKey: 'Modified', cell: ({ row }) =>
-          <>
-            {row.original.modifiedNew}
-            <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
-              {row.original.editorImage != undefined ?
-                <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
-                  : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
-            </a>
-          </>,
-        filterFn: (row: any, columnName: any, filterValue: any) => {
-          if (row?.original?.editorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.modifiedNew?.includes(filterValue)) {
-            return true
-          } else {
-            return false
-          }
+      [
+        {
+          accessorKey: "",
+          placeholder: "",
+          hasCheckbox: true,
+          size: 55,
+          id: 'Id',
         },
-        id: 'modifiedNew',
-        resetColumnFilters: false,
-        isColumnDefultSortingDesc: true,
-        resetSorting: false,
-        placeholder: "Modified",
-        header: "",
-        size: 145,
-      }
-      , {
-        accessorKey: "Created",
-        cell: ({ row }) =>
-          <>
-            {row.original.createdNew}
-            <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
-              {row.original.authorImage != undefined ?
-                <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                  : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
-            </a>
-          </>,
-        filterFn: (row: any, columnName: any, filterValue: any) => {
-          if (row?.original?.authorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.createdNew?.includes(filterValue)) {
-            return true
-          } else {
-            return false
-          }
+        {
+          accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
+          cell: ({ row }) =>
+            <>
+              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Event-detail.aspx?ItemID=${row.original.Id}&Site=GmbH`}>
+                {row.original.Title}
+              </a>
+            </>
         },
-        id: 'createdNew',
-        resetColumnFilters: false,
-        resetSorting: false,
-        placeholder: "Created",
-        header: "",
-        size: 125,
-      },
-      {
+        {
+          accessorKey: "ItemRank", placeholder: "ItemRank", header: "", id: "ItemRank",
+          cell: ({ row }) =>
+            <>
+              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Event-detail.aspx?ItemID=${row.original.Id}&Site=GmbH`}>
+                {row.original.ItemRank}
+              </a>
+            </>
+        },
+        {
+          accessorKey: "eventDate", placeholder: "Event Date", header: "", id: "eventDate",
+          cell: ({ row }) =>
+            <>
+              <a target='_blank' href={`${baseUrl}/SitePages/Contact-Profile.aspx?contactId=${row.original.SmartContactId}`}>
+                {row.original.eventDate}
+              </a>
+            </>
+        },
+        {
+          accessorKey: 'Modified', cell: ({ row }) =>
+            <>
+              {row.original.modifiedNew}
+              <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
+                {row.original.editorImage != undefined ?
+                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
+              </a>
+            </>,
+          filterFn: (row: any, columnName: any, filterValue: any) => {
+            if (row?.original?.editorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.modifiedNew?.includes(filterValue)) {
+              return true
+            } else {
+              return false
+            }
+          },
+          id: 'modifiedNew',
+          resetColumnFilters: false,
+          isColumnDefultSortingDesc: true,
+          resetSorting: false,
+          placeholder: "Modified",
+          header: "",
+          size: 145,
+        }
+        , {
+          accessorKey: "Created",
+          cell: ({ row }) =>
+            <>
+              {row.original.createdNew}
+              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
+                {row.original.authorImage != undefined ?
+                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+              </a>
+            </>,
+          filterFn: (row: any, columnName: any, filterValue: any) => {
+            if (row?.original?.authorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.createdNew?.includes(filterValue)) {
+              return true
+            } else {
+              return false
+            }
+          },
+          id: 'createdNew',
+          resetColumnFilters: false,
+          resetSorting: false,
+          placeholder: "Created",
+          header: "",
+          size: 125,
+        },
+        {
 
-        id: 'updateNews',
-        cell: ({ row }) =>
-          <>
-            <a onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
-          </>
+          id: 'updateEvents',
+          cell: ({ row }) =>
+            <>
+              <a onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+            </>
 
-      },
-      {
-        id: 'deleteNews',
-        cell: ({ row }) =>
-          <>
-            <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
-          </>
+        },
+        {
+          id: 'deleteEvents',
+          cell: ({ row }) =>
+            <>
+              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+            </>
 
-      }
-    ], [allSiteData])
+        }
+      ], [allSiteData])
   }
-  else if (type == 'COMPONENTS' || type == 'SERVICES'|| type=='TEAM-PORTFOLIO') {
+  else if (type == "NEWS") {
+    columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
+      [
+        {
+          accessorKey: "",
+          placeholder: "",
+          hasCheckbox: true,
+          size: 55,
+          id: 'Id',
+        },
+        {
+          accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
+          cell: ({ row }) =>
+            <>
+              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Event-detail.aspx?ItemID=${row.original.Id}&Site=GmbH`}>
+                {row.original.Title}
+              </a>
+            </>
+        },
+        {
+          accessorKey: "ItemRank", placeholder: "ItemRank", header: "", id: "ItemRank",
+          cell: ({ row }) =>
+            <>
+              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Event-detail.aspx?ItemID=${row.original.Id}&Site=GmbH`}>
+                {row.original.ItemRank}
+              </a>
+            </>
+        },
+        {
+          accessorKey: 'Modified', cell: ({ row }) =>
+            <>
+              {row.original.modifiedNew}
+              <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
+                {row.original.editorImage != undefined ?
+                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
+              </a>
+            </>,
+          filterFn: (row: any, columnName: any, filterValue: any) => {
+            if (row?.original?.editorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.modifiedNew?.includes(filterValue)) {
+              return true
+            } else {
+              return false
+            }
+          },
+          id: 'modifiedNew',
+          resetColumnFilters: false,
+          isColumnDefultSortingDesc: true,
+          resetSorting: false,
+          placeholder: "Modified",
+          header: "",
+          size: 145,
+        }
+        , {
+          accessorKey: "Created",
+          cell: ({ row }) =>
+            <>
+              {row.original.createdNew}
+              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
+                {row.original.authorImage != undefined ?
+                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+              </a>
+            </>,
+          filterFn: (row: any, columnName: any, filterValue: any) => {
+            if (row?.original?.authorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.createdNew?.includes(filterValue)) {
+              return true
+            } else {
+              return false
+            }
+          },
+          id: 'createdNew',
+          resetColumnFilters: false,
+          resetSorting: false,
+          placeholder: "Created",
+          header: "",
+          size: 125,
+        },
+        {
+
+          id: 'updateNews',
+          cell: ({ row }) =>
+            <>
+              <a onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+            </>
+
+        },
+        {
+          id: 'deleteNews',
+          cell: ({ row }) =>
+            <>
+              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+            </>
+
+        }
+      ], [allSiteData])
+  }
+  else if (type == 'COMPONENTS' || type == 'SERVICES' || type == 'TEAM-PORTFOLIO') {
     columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
 
       [
@@ -1573,7 +1584,7 @@ else if(type == 'DOCUMENTS' ){
           size: 5,
           id: 'Id',
         }, {
-          accessorKey: 'PortfolioStructureID', placeholder: 'ID', header: "",id:'PortfolioStructureID',
+          accessorKey: 'PortfolioStructureID', placeholder: 'ID', header: "", id: 'PortfolioStructureID',
           cell: ({ row }) =>
             <>
               <img className='workmember ms-1' src={`${baseUrl}${row.original.photoComponent}`} alt="" />
@@ -1581,7 +1592,7 @@ else if(type == 'DOCUMENTS' ){
             </>
         },
         {
-          accessorKey: "Title", placeholder: "Component Name", header: "",id:"Title",
+          accessorKey: "Title", placeholder: "Component Name", header: "", id: "Title",
           cell: ({ row }) =>
             <span>  <a data-interception="off" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.Id}`}>
               {row.original.Title}
@@ -1611,11 +1622,11 @@ else if(type == 'DOCUMENTS' ){
           size: 90,
         },
         {
-          accessorKey: 'PercentCompleteShow', placeholder: '%', header: '',id:'PercentCompleteShow',
+          accessorKey: 'PercentCompleteShow', placeholder: '%', header: '', id: 'PercentCompleteShow',
 
         },
         {
-          accessorKey: 'PriorityRank', placeholder: 'Priority', header: '',id:'PriorityRank',
+          accessorKey: 'PriorityRank', placeholder: 'Priority', header: '', id: 'PriorityRank',
         },
         {
           accessorKey: 'Modified'
@@ -1706,7 +1717,7 @@ else if(type == 'DOCUMENTS' ){
           accessorFn: (row) => row?.TaskID,
           cell: ({ row, getValue }) => (
             <>
-             {row.original.GmBHSiteCheck==false?<img className='workmember me-1' src={`${row.original.SiteIcon}`}></img>:undefined}
+              {row.original.GmBHSiteCheck == false ? <img className='workmember me-1' src={`${row.original.SiteIcon}`}></img> : undefined}
               <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={editLists} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allSiteData} />
             </>
           ),
@@ -1718,16 +1729,18 @@ else if(type == 'DOCUMENTS' ){
         },
         {
           accessorKey: "Title",
-          cell: ({ row }) =>(
+          cell: ({ row }) => (<>
             <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
               {row.original.Title}
             </a>
-            ),
-            id:"Title",
-            placeholder: "Title", header: "",
+            {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>}
+            </>
+          ),
+          id: "Title",
+          placeholder: "Title", header: "",
         },
         {
-          accessorKey: 'PortfolioTitle', placeholder: 'Component', header: '',id:'PortfolioTitle',
+          accessorKey: 'PortfolioTitle', placeholder: 'Component', header: '', id: 'PortfolioTitle',
           cell: ({ row }) =>
             <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.PortfolioID}`}>
               {row.original.PortfolioTitle}
@@ -1755,14 +1768,14 @@ else if(type == 'DOCUMENTS' ){
           size: 90,
         },
         {
-          accessorKey: 'PercentCompleteShow', placeholder: '%', header: '',id:'PercentCompleteShow'
+          accessorKey: 'PercentCompleteShow', placeholder: '%', header: '', id: 'PercentCompleteShow'
 
         },
         {
-          accessorKey: 'PriorityRank', placeholder: 'Priority', header: '',id:'PriorityRank'
+          accessorKey: 'PriorityRank', placeholder: 'Priority', header: '', id: 'PriorityRank'
         },
         {
-          accessorKey: "teamUserName", placeholder: "Team Member", header: "", size: 100,id:"teamUserName",
+          accessorKey: "teamUserName", placeholder: "Team Member", header: "", size: 100, id: "teamUserName",
           cell: ({ row }) =>
             <>
               <ShowTaskTeamMembers props={row.original} TaskUsers={allUsers} />
@@ -1891,7 +1904,7 @@ else if(type == 'DOCUMENTS' ){
           {
             sites && sites.map((siteValue: any) =>
               <>
-                
+
                 <button disabled={!isButtonDisabled} onClick={() => { getCurrentData(siteValue); }} className={`nav-link ${siteValue.TabName == sites[0].TabName ? 'active' : ''}`} id={`nav-${siteValue.TabName}-tab`} data-bs-toggle="tab" data-bs-target={`#nav-${siteValue.TabName}`} type="button" role="tab" aria-controls="nav-home" aria-selected="true">{siteValue.DisplaySiteName}</button>
               </>
             )
@@ -1909,7 +1922,7 @@ else if(type == 'DOCUMENTS' ){
                 <div className="Alltable mt-2">
                   <div className="col-md-12 p-0 smart">
                     <div className="wrapper">
-                      <GlobalCommanTable columns={columns} ref={childRef} data={allSiteData} showHeader={true} callBackData={callBackData}   multiSelect={true} hideTeamIcon={gmbhSite}  TaskUsers={allUsers} portfolioColor={portfolioColor}  AllListId={editLists} />
+                      <GlobalCommanTable columns={columns} ref={childRef} data={allSiteData} showHeader={true} callBackData={callBackData} multiSelect={true} hideTeamIcon={gmbhSite} TaskUsers={allUsers} portfolioColor={portfolioColor} AllListId={editLists} />
                     </div>
                   </div>
                 </div>
@@ -1918,14 +1931,14 @@ else if(type == 'DOCUMENTS' ){
             </div>
           }
         </div>
-      </div> 
-      {!loader&& <PageLoader/> }
+      </div>
+      {!loader && <PageLoader />}
       {editTaskPopUpOpen ? <EditTaskPopup Items={editValue} context={context} AllListId={editLists} pageName={"TaskFooterTable"} Call={(Type: any) => { editTaskCallBack(Type) }} /> : ''}
       {editComponentPopUps ? <EditComponent item={editValue} SelectD={editLists} Calls={closeEditComponent} portfolioTypeData={Portfoliotyped} /> : ''}
       {editDocPopUpOpen ? <EditDocumentpanel callbackeditpopup={callbackeditpopup} AllListId={editLists} Item={editValue} editData={editValue} Keydoc={true} Context={context} /> : ''}
-     {/* {editWebPagePopUp?<EditPage context={editLists} Item={editValue} changes={changes}  updatedWebpages={updatedWebpages} />: ''} */}
-      <myContextValue.Provider value={{ ...myContextValue, allSite:allSite,allListId:editContactLists ,loggedInUserName:props.props?.userDisplayName}}>
-      {editInstitutionPopUp?<EditInstitutionPopup props={editValue} callBack={CloseConatactPopup}/>:null}
+      {/* {editWebPagePopUp?<EditPage context={editLists} Item={editValue} changes={changes}  updatedWebpages={updatedWebpages} />: ''} */}
+      <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: editContactLists, loggedInUserName: props.props?.userDisplayName }}>
+        {editInstitutionPopUp ? <EditInstitutionPopup props={editValue} callBack={CloseConatactPopup} /> : null}
       </myContextValue.Provider>
       {istimeEntryOpen && (<TimeEntryPopup props={currentTimeEntry} CallBackTimeEntry={TimeEntryCallBack} Context={editLists.Context}></TimeEntryPopup>)}
     </>
