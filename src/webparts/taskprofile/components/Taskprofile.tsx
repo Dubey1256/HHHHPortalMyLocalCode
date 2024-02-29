@@ -117,6 +117,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   private taskUsers: any = [];
   private smartMetaDataIcon: any;
   private masterTaskData: any = [];
+  private masterForHierarchy:any=[];
   private currentUser: any;
   private oldTaskLink: any;
   private site: any;
@@ -207,6 +208,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     let CallBackData = await globalCommon.GetServiceAndComponentAllData(PropsObject)
     if (CallBackData?.AllData != undefined && CallBackData?.AllData?.length > 0) {
       this.masterTaskData = this.masterTaskData?.concat([...CallBackData?.FlatProjectData, ...CallBackData?.AllData])
+      this.masterForHierarchy=this.masterForHierarchy?.concat([...CallBackData?.FlatProjectData, ...CallBackData?.AllData])
       this.GetResult();
     }
   }
@@ -1923,7 +1925,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       <dl>
                         <dt className='bg-Fa'>Task Id</dt>
                         <dd className='bg-Ff position-relative'>
-                          <ReactPopperTooltipSingleLevel ShareWebId={this.state.Result['TaskId']} row={this.state.Result} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} />
+                          <ReactPopperTooltipSingleLevel ShareWebId={this.state.Result['TaskId']} row={this.state.Result} singleLevel={true} masterTaskData={this.masterForHierarchy} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} />
 
                         </dd>
                       </dl>
