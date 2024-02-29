@@ -582,7 +582,7 @@ const CompareTool = (props: any) => {
             if (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature" || items?.Item_x0020_Type === "Project" || items?.Item_x0020_Type === "Sprint") {
                 select = "ID,Id,Title,Mileage,PortfolioLevel,Synonyms,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo,TechnicalExplanations,SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,PriorityRank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title,Portfolios/Id,ClientTime,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title,FeatureType/Id,FeatureType/Title,AssignedTo/Title,AssignedTo/Id,TeamMembers/Title,TeamMembers/Id,ResponsibleTeam/Title,ResponsibleTeam/Id,PortfolioType/Title,PortfolioType/Id&$expand=Parent,PortfolioType,Portfolios,TaskCategories,AssignedTo,ClientCategory,TeamMembers,ResponsibleTeam,FeatureType,Author,Editor"
             } else
-                select = "ID,Id,Mileage,ParentTask/Title,ClientActivity,ParentTask/Id,ItemRank,TaskLevel,OffshoreComments,CompletedDate,ComponentLink,AdminStatus,TeamMembers/Id,ClientCategory/Id,ClientCategory/Title,TaskID,ResponsibleTeam/Id,ResponsibleTeam/Title,ParentTask/TaskID,TaskType/Level,PriorityRank,TeamMembers/Title,FeedBack,Title,Id,ID,DueDate,Comments,Categories,Status,Sitestagging,Body,PercentComplete,StartDate,ClientCategory,Priority,TaskType/Id,TaskType/Title,Portfolio/Id,Portfolio/ItemType,Portfolio/PortfolioStructureID,Portfolio/Title,TaskCategories/Id,TaskCategories/Title,TeamMembers/Name,Project/Id,Project/PortfolioStructureID,Project/Title,Project/PriorityRank,AssignedTo/Id,AssignedTo/Title,AssignedToId,Author/Id,Author/Title,Editor/Id,Editor/Title,Created,Modified,IsTodaysTask,workingThisWeek&$expand=ParentTask, Portfolio,TaskType,ClientCategory,TeamMembers,ResponsibleTeam,AssignedTo,Editor,Author,TaskCategories,Project";
+                select = "ID,Id,Mileage,BasicImageInfo,ParentTask/Title,ClientActivity,ParentTask/Id,ItemRank,TaskLevel,OffshoreComments,CompletedDate,ComponentLink,AdminStatus,TeamMembers/Id,ClientCategory/Id,ClientCategory/Title,TaskID,ResponsibleTeam/Id,ResponsibleTeam/Title,ParentTask/TaskID,TaskType/Level,PriorityRank,TeamMembers/Title,FeedBack,Title,Id,ID,DueDate,Comments,Categories,Status,Sitestagging,Body,PercentComplete,StartDate,ClientCategory,Priority,TaskType/Id,TaskType/Title,Portfolio/Id,Portfolio/ItemType,Portfolio/PortfolioStructureID,Portfolio/Title,TaskCategories/Id,TaskCategories/Title,TeamMembers/Name,Project/Id,Project/PortfolioStructureID,Project/Title,Project/PriorityRank,AssignedTo/Id,AssignedTo/Title,AssignedToId,Author/Id,Author/Title,Editor/Id,Editor/Title,Created,Modified,IsTodaysTask,workingThisWeek&$expand=ParentTask, Portfolio,TaskType,ClientCategory,TeamMembers,ResponsibleTeam,AssignedTo,Editor,Author,TaskCategories,Project";
 
             await globalCommon.getData(
                 props?.contextValue?.siteUrl,
@@ -864,65 +864,69 @@ const CompareTool = (props: any) => {
         return isExists;
     }
     const taggedChildItems = (index: any, property: any, value: any) => {
-        setHistory((prevHistory) => [...prevHistory, _.cloneDeep(data)]);
-        const updatedItems = _.cloneDeep(data);
-        const indexValue = index == 1 ? 0 : 1
-        if (taggedItems != undefined && (property === 'tagDoc' || property === 'subRows')) {
-            const findUnSelected = updatedItems[indexValue][property].filter((obj: any) => taggedItems?.Id != obj.Id);
+        const selectedItem = value.filter((obj:any) => obj.checked === true);
+        if (selectedItem?.length > 0) {
+            setHistory((prevHistory) => [...prevHistory, _.cloneDeep(data)]);
+            const updatedItems = _.cloneDeep(data);
+            const indexValue = index == 1 ? 0 : 1
+            if (taggedItems != undefined && (property === 'tagDoc' || property === 'subRows')) {
+                const findUnSelected = updatedItems[indexValue][property].filter((obj: any) => taggedItems?.Id != obj.Id);
 
-            updatedItems[indexValue][property] = findUnSelected
-            if (!IsExistsData(updatedItems[index][property], taggedItems))
-                updatedItems[index][property].unshift(taggedItems);
-            updatedItems[index][property].map((elem: any) => {
-                elem.checked = false
-            })
-        }
-        else if ((property === "AssignToUsers" || property === "TeamMembersUsers" || property === "ResponsibileUsers")) {
-            const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
-
-            if (updatedItems[index][property]?.length > 0 && selectedItems?.length > 0) {
-                if (!IsExistsData(updatedItems[index][property], selectedItems[0])) {
-                    updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
-                    updatedItems[index][property].map((elem: any) => {
-                        elem.checked = false
-                    })
-                }
-            } else if (selectedItems?.length > 0) {
-                updatedItems[index][property] = selectedItems;
-                updatedItems[index][property]?.map((elem: any) => {
+                updatedItems[indexValue][property] = findUnSelected
+                if (!IsExistsData(updatedItems[index][property], taggedItems))
+                    updatedItems[index][property].unshift(taggedItems);
+                updatedItems[index][property].map((elem: any) => {
                     elem.checked = false
                 })
             }
-        }
+            else if ((property === "AssignToUsers" || property === "TeamMembersUsers" || property === "ResponsibileUsers")) {
+                const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
 
-        else if (property === 'taggedTasks') {
-            const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
-            const UnselectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked != true);
-            updatedItems[indexValue][property] = UnselectedItems;
-            if (updatedItems[index][property]?.length > 0 && selectedItems?.length > 0) {
-                if (!IsExistsData(updatedItems[index][property], selectedItems[0])) {
-                    updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
-                    updatedItems[index][property].map((elem: any) => {
+                if (updatedItems[index][property]?.length > 0 && selectedItems?.length > 0) {
+                    if (!IsExistsData(updatedItems[index][property], selectedItems[0])) {
+                        updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
+                        updatedItems[index][property].map((elem: any) => {
+                            elem.checked = false
+                        })
+                    }
+                } else if (selectedItems?.length > 0) {
+                    updatedItems[index][property] = selectedItems;
+                    updatedItems[index][property]?.map((elem: any) => {
                         elem.checked = false
                     })
                 }
-            } else if (selectedItems?.length > 0) {
-                updatedItems[index][property] = selectedItems;
-                updatedItems[index][property]?.map((elem: any) => {
-                    elem.checked = false
-                })
             }
 
-        }
+            else if (property === 'taggedTasks') {
+                const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
+                const UnselectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked != true);
+                updatedItems[indexValue][property] = UnselectedItems;
+                if (updatedItems[index][property]?.length > 0 && selectedItems?.length > 0) {
+                    if (!IsExistsData(updatedItems[index][property], selectedItems[0])) {
+                        updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
+                        updatedItems[index][property].map((elem: any) => {
+                            elem.checked = false
+                        })
+                    }
+                } else if (selectedItems?.length > 0) {
+                    updatedItems[index][property] = selectedItems;
+                    updatedItems[index][property]?.map((elem: any) => {
+                        elem.checked = false
+                    })
+                }
 
-        else {
-            const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
-            if (selectedItems?.length === 0)
-                alert("please select items " + property)
-        }
+            }
 
-        setData(updatedItems);
-        rerender()
+            else {
+                const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
+                if (selectedItems?.length === 0)
+                    alert("please select items " + property)
+            }
+
+            setData(updatedItems);
+            setTaggedItems({});
+            rerender()
+        }
     };
 
     const undoChanges = () => {
@@ -1765,8 +1769,8 @@ const CompareTool = (props: any) => {
                         TeamMembersIds.push(user?.Id);
                 });
             }
-            if (Item.ResponsibleTeam != undefined && Item.ResponsibleTeam.length > 0) {
-                Item.ResponsibleTeam.forEach((user: any) => {
+            if (Item.ResponsibileUsers != undefined && Item.ResponsibileUsers.length > 0) {
+                Item.ResponsibileUsers.forEach((user: any) => {
                     if (user?.Id != undefined)
                         ResponsibleTeamIds.push(user.Id);
                 });
