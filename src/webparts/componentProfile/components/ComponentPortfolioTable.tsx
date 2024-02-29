@@ -2338,8 +2338,8 @@ const customTableHeaderButtons = (
                   <div className="">
                     <div className="">
                   
-                      <GlobalCommanTable  customHeaderButtonAvailable={true}
-                                            customTableHeaderButtons={customTableHeaderButtons}  showRestructureButton={true} columnSettingIcon={true} bulkEditIcon={true} 
+                      <GlobalCommanTable   customHeaderButtonAvailable={true}
+                                            customTableHeaderButtons={customTableHeaderButtons}  showRestructureButton={true} columnSettingIcon={true} tableId="PortfolioProfile" bulkEditIcon={true} 
                       AllSitesTaskData={flatviewTasklist} masterTaskData={flatviewmastertask}
                         smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                         portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData}
