@@ -1664,6 +1664,7 @@ function CreateTaskComponent(props: any) {
     );
 
     const CallBack = React.useCallback((items) => {
+        setIsTaskCreated(false)
         setEditTaskPopupData({
             isOpenEditPopup: false,
             passdata: null
