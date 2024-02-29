@@ -29,15 +29,15 @@ var AllPortfolios: any[] = [];
 var AllSitesAllTasks: any[] = [];
 var AllTimeSheetResult: any[] = [];
 var AllTaskUser: any[] = [];
-let totalTimedata:any=[]
+let totalTimedata: any = []
 let QueryStringId: any = '';
-let DateType:any=''
+let DateType: any = 'This Week'
 export interface IUserTimeEntryState {
   Result: any; taskUsers: any; checked: any; expanded: any; DateType: any, IsShareTimeEntry: boolean, checkedSites: any; expandedSites: any; filterItems: any; filterSites: any; ImageSelectedUsers: any; startdate: Date;
   enddate: Date; SitesConfig: any; AllTimeEntry: any; SelectGroupName: string; checkedAll: boolean; checkedAllSites: boolean; checkedParentNode: any; resultSummary: any;
   ShowingAllData: any; loaded: any; expandIcons: boolean; columns: ColumnDef<any, unknown>[]; IsMasterTask: any; IsTask: any; IsPresetPopup: any; PresetEndDate: any;
   PresetStartDate: any; PreSetItem: any; isStartDatePickerOne: boolean; isEndDatePickerOne: boolean; IsCheckedComponent: boolean; IsCheckedService: boolean; selectedRadio: any;
-  IsTimeEntry: boolean; showShareTimesheet: boolean; SharewebTimeComponent: any; AllMetadata: any; isDirectPopup: boolean; TimeSheetLists: any
+  IsTimeEntry: boolean; showShareTimesheet: boolean; disableProperty: boolean, SharewebTimeComponent: any; AllMetadata: any; isDirectPopup: boolean; TimeSheetLists: any
 }
 var user: any = ''
 let portfolioColor: any = '#000066';
@@ -46,10 +46,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
   closePanel: any;
   sheetsItems: any[];
   showShareTimesheet: any;
+  disableProperty:any;
   public constructor(props: IUserTimeEntryProps, state: IUserTimeEntryState) {
     super(props);
     this.state = {
-      Result: {}, taskUsers: [], DateType:'',IsShareTimeEntry:false,showShareTimesheet:false, checked: [], expanded: [], checkedSites: [], expandedSites: [], filterItems: [], filterSites: [], ImageSelectedUsers: [], startdate: new Date(),
+      Result: {}, taskUsers: [], DateType: '', IsShareTimeEntry: false, showShareTimesheet: false,disableProperty:true, checked: [], expanded: [], checkedSites: [], expandedSites: [], filterItems: [], filterSites: [], ImageSelectedUsers: [], startdate: new Date(),
       enddate: new Date(), SitesConfig: [], AllTimeEntry: [], SelectGroupName: '', checkedAll: false, expandIcons: false, checkedAllSites: false, checkedParentNode: [],
       resultSummary: { totalTime: 0, totalDays: 0 }, ShowingAllData: [], loaded: true, columns: [], IsTask: '', IsMasterTask: '', IsPresetPopup: false, PresetEndDate: new Date(),
       PresetStartDate: new Date(), PreSetItem: {}, isStartDatePickerOne: true, isEndDatePickerOne: false, IsCheckedComponent: true, IsCheckedService: true, selectedRadio: 'ThisWeek',
@@ -168,9 +169,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         siteConfig.map(async (config: any) => {
           if (config.Title != "SDC Sites") {
             let smartmeta = [];
-            await web.lists.getById(config.listId).items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id","Project/Title","Project/PriorityRank",'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "ParentTask/Id", "ParentTask/Title", "ParentTask/TaskID", "TaskID", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
-            .expand("TeamMembers", "ParentTask", "ClientCategory", "AssignedTo", "Project","TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Portfolio")
-            .getAll().then((data: any) => {
+            await web.lists.getById(config.listId).items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id", "Project/Title", "Project/PriorityRank", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "ParentTask/Id", "ParentTask/Title", "ParentTask/TaskID", "TaskID", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Body", "PriorityRank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Modified")
+              .expand("TeamMembers", "ParentTask", "ClientCategory", "AssignedTo", "Project", "TaskCategories", "Author", "ResponsibleTeam", "TaskType", "Portfolio")
+              .getAll().then((data: any) => {
                 smartmeta = data;
                 smartmeta.map((task: any) => {
                   task.AllTeamMember = [];
@@ -183,13 +184,14 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   task.SmartPriority = globalCommon.calculateSmartPriority(task);
                   if (task?.ClientCategory?.length > 0) {
                     task.ClientCategorySearch = task?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
-                } else {
+                  } else {
                     task.ClientCategorySearch = ''
-                }
+                  }
                   task.DisplayDueDate = task.DueDate != null ? Moment(task.DueDate).format("DD/MM/YYYY") : "";
                   task.portfolio = {};
                   if (task?.Portfolio?.Id != undefined) {
                     task.portfolio = task?.Portfolio;
+                    task.Status = task?.Status;
                     task.PortfolioTitle = task?.Portfolio?.Title;
                   }
                   task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
@@ -202,9 +204,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             let currentCount = siteConfig?.length;
             if (arraycount === currentCount) {
               AllSitesAllTasks = AllSiteTasks;
-              totalTimedata?.map((data:any)=>{
+              totalTimedata?.map((data: any) => {
                 data.taskDetails = this.checkTimeEntrySite(data);
               })
+              this.setState({ disableProperty: false })
+            
             }
           } else {
             arraycount++;
@@ -215,21 +219,21 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       console.log(e)
     }
   };
-  private checkTimeEntrySite = (timeEntry: any) => { 
-    let result:any = ''
+  private checkTimeEntrySite = (timeEntry: any) => {
+    let result: any = ''
     result = AllSitesAllTasks?.filter((task: any) => {
-        let site = '';
-        if (task?.siteType == 'Offshore Tasks') {
-            site = 'OffshoreTasks'
-        } else {
-            site = task?.siteType;
-        }
-        if (timeEntry[`Task${site}`] != undefined && task?.Id == timeEntry[`Task${site}`]?.Id) {
-            return task;
-        }
+      let site = '';
+      if (task?.siteType == 'Offshore Tasks') {
+        site = 'OffshoreTasks'
+      } else {
+        site = task?.siteType;
+      }
+      if (timeEntry[`Task${site}`] != undefined && task?.Id == timeEntry[`Task${site}`]?.Id) {
+        return task;
+      }
     });
     return result;
-}
+  }
   private checkBoxColor = (className: any) => {
     try {
       if (className != undefined) {
@@ -349,7 +353,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
     let taskUsers = [];
     let results = [];
-    results = await web.lists.getById(this.props.TaskUsertListID).items.select('Id', 'IsShowReportPage', 'UserGroupId', "UserGroup/Id", 'Suffix', 'SmartTime', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType','Approver/Id','Approver/Title','Approver/Name')
+    results = await web.lists.getById(this.props.TaskUsertListID).items.select('Id', 'IsShowReportPage', 'UserGroupId', "UserGroup/Id", "UserGroup/Title", 'Suffix', 'SmartTime', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted','TimeCategory', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType', 'Approver/Id', 'Approver/Title', 'Approver/Name')
       .expand('AssingedToUser,UserGroup,Approver').orderBy('SortOrder', true).orderBy("Title", true).get();
     AllTaskUser = results;
     for (let index = 0; index < results.length; index++) {
@@ -834,23 +838,26 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let diff: number, lastday: number;
     switch (type) {
       case 'Custom':
-        this.setState({showShareTimesheet:false})
+        DateType = 'Custom';
+        this.setState({ showShareTimesheet: true })
+        this.setState({ showShareTimesheet: false })
         break;
 
       case 'today':
         DateType = 'Today';
-        this.setState({showShareTimesheet:true})
+        this.setState({ showShareTimesheet: true })
         break;
 
       case 'yesterday':
         DateType = 'Yesterday';
-        this.setState({showShareTimesheet:true})
+        this.setState({ showShareTimesheet: true })
         startdt.setDate(startdt.getDate() - 1);
         enddt.setDate(enddt.getDate() - 1);
         break;
 
       case 'ThisWeek':
-        this.setState({showShareTimesheet:false})
+        DateType = 'This Week';
+        this.setState({ showShareTimesheet: true })
         diff = startdt.getDate() - startdt.getDay() + (startdt.getDay() === 0 ? -6 : 1);
         startdt = new Date(startdt.setDate(diff));
         lastday = enddt.getDate() - (enddt.getDay() - 1) + 6;
@@ -858,7 +865,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         break;
 
       case 'LastWeek':
-        this.setState({showShareTimesheet:false})
+        DateType = 'Last Week';
+        this.setState({ showShareTimesheet: true })
         tempdt = new Date();
         tempdt = new Date(tempdt.getFullYear(), tempdt.getMonth(), tempdt.getDate() - 7);
 
@@ -875,7 +883,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         break;
 
       case 'LastMonth':
-        this.setState({showShareTimesheet:false})
+        DateType = 'LastMonth';
+        this.setState({ showShareTimesheet: true })
         startdt = new Date(startdt.getFullYear(), startdt.getMonth() - 1);
         enddt = new Date(enddt.getFullYear(), enddt.getMonth(), 0);
         break;
@@ -931,6 +940,34 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       this.generateTimeEntry();
     }
   }
+  private getStartingDate(startDateOf: any) {
+    const startingDate = new Date();
+    let formattedDate = startingDate;
+    if (startDateOf == 'This Week') {
+        startingDate.setDate(startingDate.getDate() - startingDate.getDay());
+        formattedDate = startingDate;
+    } else if (startDateOf == 'Today') {
+        formattedDate = startingDate;
+    } else if (startDateOf == 'Yesterday') {
+        startingDate.setDate(startingDate.getDate() - 1);
+        formattedDate = startingDate;
+    } else if (startDateOf == 'This Month') {
+        startingDate.setDate(1);
+        formattedDate = startingDate;
+    } else if (startDateOf == 'Last Month') {
+        const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
+        const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
+        var change = (Moment(startingDateOfLastMonth).add(30, 'days').format())
+        var b = new Date(change)
+        formattedDate = b;
+    } else if (startDateOf == 'Last Week') {
+        const lastWeek = new Date(startingDate.getFullYear(), startingDate.getMonth(), startingDate.getDate() - 7);
+        const startingDateOfLastWeek = new Date(lastWeek.getFullYear(), lastWeek.getMonth(), lastWeek.getDate() - lastWeek.getDay() + 1);
+        formattedDate = startingDateOfLastWeek;
+    }
+
+    return formattedDate;
+}
   private async LoadAllTimeSheetaData() {
     let AllTimeEntry: any = [];
     let arraycount = 0;
@@ -938,27 +975,58 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       loaded: true,
     })
     if (AllTimeSheetResult == undefined || AllTimeSheetResult?.length == 0) {
+      let startDate = this.getStartingDate('Last Month').toISOString();
+      
       try {
-        if (this?.state?.TimeSheetLists != undefined && this?.state?.TimeSheetLists.length > 0) {
-          this?.state?.TimeSheetLists.map(async (site: any) => {
-            let web = new Web(site?.siteUrl);
-            let TimeEntry = []
-            await web.lists.getById(site?.listId).items.select(site?.query).getAll().then((data: any) => {
-              TimeEntry = data
-              console.log(data);
-              TimeEntry.map((entry: any) => {
-                AllTimeEntry.push(entry)
-              });
-              arraycount++;
+        if(DateType == 'Today' || DateType == 'Yesterday' || DateType == 'This Week' || DateType == 'Last Week' || DateType == 'This Month'){
+          if (this?.state?.TimeSheetLists != undefined && this?.state?.TimeSheetLists.length > 0) {
+            this?.state?.TimeSheetLists.map(async (site: any) => {
+              let web = new Web(site?.siteUrl);
+              let TimeEntry = []
+              await web.lists.getById(site?.listId).items.select(site?.query).filter(`(Modified ge '${startDate}') and (TimesheetTitle/Id ne null)`).getAll()
+              .then((data: any) => {
+                TimeEntry = data
+                console.log(data);
+                TimeEntry.map((entry: any) => {
+                  AllTimeEntry.push(entry)
+                });
+                arraycount++;
+              })
+              let currentCount = this?.state?.TimeSheetLists?.length;
+              if (arraycount === currentCount) {
+                AllTimeSheetResult = AllTimeEntry;
+                this.LoadAllSiteAllTasks()
+                this.updatefilter(true);
+  
+              }
             })
-            let currentCount = this?.state?.TimeSheetLists?.length;
-            if (arraycount === currentCount) {
-              AllTimeSheetResult = AllTimeEntry;
-              this.LoadAllSiteAllTasks()
-              this.updatefilter(true);
-            }
-          })
+          }
         }
+        else{
+          if (this?.state?.TimeSheetLists != undefined && this?.state?.TimeSheetLists.length > 0) {
+            this?.state?.TimeSheetLists.map(async (site: any) => {
+              let web = new Web(site?.siteUrl);
+              let TimeEntry = []
+              await web.lists.getById(site?.listId).items.select(site?.query).getAll()
+              .then((data: any) => {
+                TimeEntry = data
+                console.log(data);
+                TimeEntry.map((entry: any) => {
+                  AllTimeEntry.push(entry)
+                });
+                arraycount++;
+              })
+              let currentCount = this?.state?.TimeSheetLists?.length;
+              if (arraycount === currentCount) {
+                AllTimeSheetResult = AllTimeEntry;
+                this.LoadAllSiteAllTasks()
+                this.updatefilter(true);
+  
+              }
+            })
+          }
+        }
+       
       } catch (e) {
         console.log(e)
       }
@@ -972,7 +1040,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let ImageSelectedUsers = this.state.ImageSelectedUsers;
     if (AllTimeSheetResult != undefined && AllTimeSheetResult?.length > 0)
       FilterTimeEntry = AllTimeSheetResult.filter((item) => ImageSelectedUsers.find((items: any) => item.AuthorId == items.AssingedToUserId))
-      totalTimedata = FilterTimeEntry;
+    totalTimedata = FilterTimeEntry;
     this.LoadTimeSheetData(FilterTimeEntry);
   }
   private findUserByName = (name: any) => {
@@ -1080,6 +1148,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                   addtime.TaskTitle = time.TaskTitle;
                   addtime.ID = time.ID;
                   addtime.Title = time.Title;
+                  addtime.Status = time.Status;
                   addtime.selectedSiteType = time.selectedSiteType;
                   addtime.siteType = time.siteType;
                   addtime.Site = time?.siteType;
@@ -1140,6 +1209,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     this.GetAllSiteTaskData(filterItemTimeTab, getAllTimeEntry);
   }
+
   private SpiltQueryString(selectedquery: any) {
     let queryfrist = '';
     let Querystringsplit = selectedquery.split('or');
@@ -1190,42 +1260,78 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         if (itemtype.ListName == 'OffshoreTasks') {
           itemtype.ListName = 'Offshore Tasks'
         }
-        for (let j = 0; j < itemtype.Query.length; j++) {
-          let queryType = itemtype.Query[j];
-          let results = await web.lists.getByTitle(itemtype.ListName).items.select('ParentTask/Title', 'ParentTask/Id', 'ClientTime', 'ItemRank', 'Portfolio/Id', 'Portfolio/Title', 'SiteCompositionSettings', 'TaskLevel', 'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'ClientCategory/ParentID', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'PriorityRank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'TeamMembers/Id', 'Item_x002d_Image', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
-            .filter(queryType.replace('filter=', '').trim()).expand('ParentTask', 'TaskType', 'AssignedTo', 'Component', 'AttachmentFiles', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'ClientCategory', 'TaskCategories', 'Portfolio')
-            .orderBy('Id', false).getAll(4999);
-          callcount++;
-          let self = this;
-          results.forEach(function (Item) {
-            Item.siteName = itemtype.ListName;
-            Item.DisplayTaskId = globalCommon.GetTaskId(Item)
-            Item.listId = itemtype.ListId;
-            Item.ClientTime = JSON.parse(Item.ClientTime);
-            Item.PercentComplete = Item.PercentComplete <= 1 ? Item.PercentComplete * 100 : Item.PercentComplete;
-            if (Item.PercentComplete != undefined) {
-              Item.PercentComplete = parseInt((Item.PercentComplete).toFixed(0));
-            }
-            Item.NewCompletedDate = Item.CompletedDate;
-            Item.NewCreated = Item.Created;
-            if (Item.Created != undefined)
-              Item.FiltercreatedDate = self.ConvertLocalTOServerDate(Item.Created, "DD/MM/YYYY");
-            if (Item.CompletedDate != undefined)
-              Item.FilterCompletedDate = self.ConvertLocalTOServerDate(Item.CompletedDate, "DD/MM/YYYY");
-            Item.descriptionsSearch = '';
-            if (Item?.FeedBack != undefined) {
-              let DiscriptionSearchData: any = '';
-              let feedbackdata: any = JSON.parse(Item?.FeedBack)
-              DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-                const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
-                const subtextText = (child?.Subtext || [])?.map((elem: any) => elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')).join('');
-                return childText + subtextText;
-              }).join('');
-              Item.descriptionsSearch = DiscriptionSearchData
-            }
-            AllSharewebSiteTasks.push(Item);
-          })
-        }
+        // if (this.state.ImageSelectedUsers.length > 2) {
+        //   let self = this;
+        //   AllSitesAllTasks?.forEach(function (Item) {
+        //     Item.siteName = itemtype.ListName;
+        //     Item.DisplayTaskId = globalCommon.GetTaskId(Item)
+        //     Item.listId = itemtype.ListId;
+        //     //Item.ClientTime = JSON.parse(Item?.ClientTime);
+        //     // Item.PercentComplete = Item.PercentComplete <= 1 ? Item.PercentComplete * 100 : Item.PercentComplete;
+        //     // if (Item.PercentComplete != undefined) {
+        //     //   Item.PercentComplete = parseInt((Item.PercentComplete).toFixed(0));
+        //     // }
+        //     Item.NewCompletedDate = Item?.CompletedDate;
+        //     Item.NewCreated = Item?.Created;
+        //     if (Item.Created != undefined)
+        //       Item.FiltercreatedDate = self.ConvertLocalTOServerDate(Item.Created, "DD/MM/YYYY");
+        //     if (Item.CompletedDate != undefined)
+        //       Item.FilterCompletedDate = self.ConvertLocalTOServerDate(Item.CompletedDate, "DD/MM/YYYY");
+        //     Item.descriptionsSearch = '';
+        //     if (Item?.FeedBack != undefined) {
+        //       let DiscriptionSearchData: any = '';
+        //       let feedbackdata: any = JSON.parse(Item?.FeedBack)
+        //       DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+        //         const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+        //         const subtextText = (child?.Subtext || [])?.map((elem: any) => elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')).join('');
+        //         return childText + subtextText;
+        //       }).join('');
+        //       Item.descriptionsSearch = DiscriptionSearchData
+        //     }
+        //     AllSharewebSiteTasks.push(Item);
+        //   })
+        // }
+        
+          for (let j = 0; j < itemtype.Query.length; j++) {
+            let queryType = itemtype.Query[j];
+            let results = await web.lists.getByTitle(itemtype.ListName).items.select('ParentTask/Title', 'ParentTask/Id', 'ClientTime', 'ItemRank', 'Portfolio/Id', 'Portfolio/Title', 'SiteCompositionSettings', 'TaskLevel', 'TaskLevel', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'TaskID', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'ClientCategory/ParentID', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'PriorityRank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'Component/Id', 'Component/Title', 'Component/ItemType', 'TeamMembers/Id', 'Item_x002d_Image', 'ComponentLink', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+              .filter(queryType.replace('filter=', '').trim()).expand('ParentTask', 'TaskType', 'AssignedTo', 'Component', 'AttachmentFiles', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'ClientCategory', 'TaskCategories', 'Portfolio')
+              .orderBy('Id', false).getAll(4999);
+            callcount++;
+            let self = this;
+            results.forEach(function (Item) {
+              Item.siteName = itemtype.ListName;
+              Item.DisplayTaskId = globalCommon.GetTaskId(Item)
+              Item.listId = itemtype.ListId;
+              // Item.ClientTime = JSON.parse(Item.ClientTime);
+              Item.PercentComplete = Item.PercentComplete <= 1 ? Item.PercentComplete * 100 : Item.PercentComplete;
+              if (Item.PercentComplete != undefined) {
+                Item.PercentComplete = parseInt((Item.PercentComplete).toFixed(0));
+              }
+              Item.NewCompletedDate = Item.CompletedDate;
+              Item.NewCreated = Item.Created;
+              if (Item.Created != undefined)
+                Item.FiltercreatedDate = self.ConvertLocalTOServerDate(Item.Created, "DD/MM/YYYY");
+              if (Item.CompletedDate != undefined)
+                Item.FilterCompletedDate = self.ConvertLocalTOServerDate(Item.CompletedDate, "DD/MM/YYYY");
+              Item.descriptionsSearch = '';
+              if (Item?.FeedBack != undefined) {
+                let DiscriptionSearchData: any = '';
+                let feedbackdata: any = JSON.parse(Item?.FeedBack)
+                DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
+                  const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
+                  const subtextText = (child?.Subtext || [])?.map((elem: any) => elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')).join('');
+                  return childText + subtextText;
+                }).join('');
+                Item.descriptionsSearch = DiscriptionSearchData
+              }
+              AllSharewebSiteTasks.push(Item);
+            })
+
+          }
+        
+
+
       }
       let filterItems = this.state.filterItems;
       getAllTimeEntry.forEach(function (filterItem: any) {
@@ -1260,15 +1366,15 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             filterItem.clientCategory = cate;
             filterItem.clientCategoryIds = cateId;
             let clientTimeArr: any = [];
-            if (getItem.ClientTime != undefined && getItem.ClientTime != '' && getItem.ClientTime?.length > 0) {
-              getItem.ClientTime.forEach(function (val: { [x: string]: number; ClienTimeDescription: number; }) {
-                val['releventTime'] = (filterItem.Effort / 100) * val.ClienTimeDescription;;
-                if (val.ClienTimeDescription != undefined && val.ClienTimeDescription != 100) {
-                  clientTimeArr.push(val);
-                }
-              })
-            }
-            filterItem.clientTimeInfo = clientTimeArr;
+            // if (getItem.ClientTime != undefined && getItem.ClientTime != '' && getItem.ClientTime?.length > 0) {
+            //   getItem.ClientTime.forEach(function (val: { [x: string]: number; ClienTimeDescription: number; }) {
+            //     val['releventTime'] = (filterItem.Effort / 100) * val.ClienTimeDescription;;
+            //     if (val.ClienTimeDescription != undefined && val.ClienTimeDescription != 100) {
+            //       clientTimeArr.push(val);
+            //     }
+            //   })
+            // }
+            //filterItem.clientTimeInfo = clientTimeArr;
             filterItem.flag = true;
             filterItem.DisplayTaskId = getItem?.DisplayTaskId;
             filterItem.Body = getItem?.Body;
@@ -1282,6 +1388,8 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             filterItem.TaskID = filterItem.DisplayTaskId
             filterItem.Portfolio = getItem?.Portfolio;
             filterItem.Title = getItem?.Title;
+            filterItem.Status = getItem?.Status;
+
             filterItem.ID = getItem?.Id;
             filterItem.Id = getItem?.Id;
             filterItem.Created = getItem.Created;
@@ -2095,17 +2203,52 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       ShowingAllData: ShowingData
     })
   }
+  private SelectedAllTeam = (e: any) => {
+    let currentuserId = this.props.Context.pageContext?._legacyPageContext.userId
+    if (e.target.checked == true) {
+      AllTaskUser?.forEach((val: any) => {
+        let user: any = []
+        if ((val?.UserGroup?.Title == 'Senior Developer Team' || val?.UserGroup?.Title == 'Smalsus Lead Team' || val?.UserGroup?.Title == 'Junior Task Management'|| val?.UserGroup?.Title == 'Junior Developer Team' || val?.UserGroup?.Title == 'Design Team' || val?.UserGroup?.Title == 'QA Team' || val?.UserGroup?.Title == 'Trainees') && (val?.AssingedToUserId != currentuserId)) {
+          // Check if the item already exists in ImageSelectedUsers
+          const existingUser = this.state.ImageSelectedUsers.find((user: any) => user.AssingedToUserId === val.AssingedToUserId);
+          if (!existingUser) {
+            // If not exists, then push
+            this.setState(prevState => ({
+              ImageSelectedUsers: [...prevState.ImageSelectedUsers, val]
+            }));
+          }
+        }
+      });
+    }
+    else {
+      const filteredArray: any = []
+      this.state.ImageSelectedUsers.forEach((user: any) => {
+        if (user?.AssingedToUserId == currentuserId) {
+          filteredArray.push(user)
+        }
+      });
+      // Update state with the filtered array
+      this.setState({ ImageSelectedUsers: filteredArray });
+    }
+  
+    this.setState({ showShareTimesheet: true })
+  }
+  private shareTaskInEmail = () => {
 
-  private shareTaskInEmail=()=>{
-    
-    if(totalTimedata.length == 0){
+    if (totalTimedata.length == 0) {
       alert('Data is not available in table')
     }
-    else{
-      this.setState({IsShareTimeEntry:true})
-      globalCommon.ShareTimeSheet(totalTimedata,AllTaskUser,this?.props?.Context,DateType)
+    else {
+      this.setState({ IsShareTimeEntry: true })
+      if (this.state.ImageSelectedUsers.length == 1) {
+        globalCommon.ShareTimeSheet(totalTimedata, AllTaskUser, this?.props?.Context, DateType)
+      }
+      else {
+        globalCommon.ShareTimeSheetMultiUser(this.state.AllTimeEntry, AllTaskUser, this?.props?.Context, DateType, this.state.ImageSelectedUsers)
+      }
+
     }
-    
+
   }
   public render(): React.ReactElement<IUserTimeEntryProps> {
     const {
@@ -2120,10 +2263,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               <summary className='hyperlink'><a className="fw-semibold hreflink mr-5 pe-2 pull-left ">All Filters - <span className='me-1 fw-normal'>Task User :</span> </a>
                 {this.state.ImageSelectedUsers != null && this.state.ImageSelectedUsers.length > 0 && this.state.ImageSelectedUsers.map((user: any, i: number) => {
                   return user?.Item_x0020_Cover != undefined && user.Item_x0020_Cover?.Url != undefined ?
-                    <span>  <img className="AssignUserPhoto mr-5" title={user.AssingedToUser.Title} src={user?.Item_x0020_Cover?.Url} /> </span>
+                    <span>  <img className="AssignUserPhoto mr-5" title={user?.AssingedToUser?.Title} src={user?.Item_x0020_Cover?.Url} /> </span>
                     : <span className="suffix_Usericon showSuffixIcon m-1" title={user?.Title} >{user?.Suffix}</span>
                 })
                 }
+                <label> <input type="checkbox" className="form-check-input" onClick={(e) => this.SelectedAllTeam(e)} /> Select All</label>
               </summary>
               <Col className='allfilter'>
                 <Col className='subfilters'>
@@ -2341,7 +2485,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 </Col>
               </Col>
             </details>
-            {this.state.showShareTimesheet && <span className="align-autoplay d-flex float-end my-1" onClick={() => this.shareTaskInEmail()}><span className="svg__iconbox svg__icon--mail ms-1" ></span>Share {DateType}'s Time Entry</span>}
+            {this.state.showShareTimesheet && <span className={this.state.disableProperty?'Disabled-Link align-autoplay d-flex float-end my-1 text-black-50':'align-autoplay d-flex float-end my-1'} onClick={() => this.shareTaskInEmail()}><span className="svg__iconbox svg__icon--mail ms-1" ></span>Share {DateType}'s Time Entry</span>}
           </Col>
           <div className='col'>
             <section className='TableContentSection'>

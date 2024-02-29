@@ -30,6 +30,7 @@ import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-P
 import PageLoader from "../../../globalComponents/pageLoader";
 import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
 import TrafficLightComponent from "../../../globalComponents/TrafficLightVerification/TrafficLightComponent";
+import CreateAllStructureComponent from "../../../globalComponents/CreateAllStructure";
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -556,6 +557,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 task.timeSheetsDescriptionSearch = "";
                 const key = `Task${task?.siteType + task.Id}`;
                 if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
+                    // task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                    task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndexLocalStorage[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndexLocalStorage[key]?.TotalTaskTime;
                     // task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
                     task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndexLocalStorage[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndexLocalStorage[key]?.TotalTaskTime;
                     task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
@@ -1614,14 +1617,6 @@ function TeamPortlioTable(SelectedProp: any) {
         setclickFlatView(false);
         setData(groupByButtonClickData);
     }
-
-    // function formatFloat(number) {
-    //     if (Number.isFinite(number) && number % 1 !== 0) {
-    //       return number.toFixed(2);
-    //     } else {
-    //       return String(Math.floor(number));
-    //     }
-    //   }
 
     React.useEffect(() => {
         let dynamicColumns: any = [
@@ -3101,12 +3096,51 @@ function TeamPortlioTable(SelectedProp: any) {
                         {checkedList != null && checkedList != undefined && checkedList?.SiteIconTitle != undefined && checkedList?.SiteIconTitle != null ? <span className="Dyicons me-2" >{checkedList?.SiteIconTitle}</span> : ''} {`${checkedList != null && checkedList != undefined && checkedList?.Title != undefined && checkedList?.Title != null ? checkedList?.Title
                             + '- Create Child Component' : 'Create Component'}`}</>
                 </div>
-                <Tooltip ComponentId={checkedList?.Id} />
+                <Tooltip ComponentId={'444'} />
             </>
         );
     };
 
     let isOpenPopup = false;
+
+    const callbackdataAllStructure = React.useCallback((item) => {
+        if (item[0]?.SelectedItem != undefined) {
+            copyDtaArray.map((val: any) => {
+                item[0]?.subRows.map((childs: any) => {
+                    if (item[0].SelectedItem == val.Id) {
+                        val.subRows.unshift(childs)
+                    }
+                    if (val.subRows != undefined && val.subRows.length > 0) {
+                        val.subRows?.map((child: any) => {
+                            if (item[0].SelectedItem == child.Id) {
+                                child.subRows.unshift(childs)
+                            }
+                            if (child.subRows != undefined && child.subRows.length > 0) {
+                                child.subRows?.map((Subchild: any) => {
+                                    if (item[0].SelectedItem == Subchild.Id) {
+                                        Subchild.subRows.unshift(childs)
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            })
+
+        }
+        if (item != undefined && item.length > 0 && item[0].SelectedItem == undefined) {
+            item.forEach((value: any) => {
+                copyDtaArray.unshift(value)
+            })
+        }
+        setOpenAddStructurePopup(false);
+        console.log(item)
+        renderData = [];
+        renderData = renderData.concat(copyDtaArray)
+        refreshData();
+
+    }, [])
+
     const AddStructureCallBackCall = React.useCallback((item) => {
         childRef?.current?.setRowSelection({});
         if (!isOpenPopup && item.CreatedItem != undefined) {
@@ -3476,8 +3510,8 @@ function TeamPortlioTable(SelectedProp: any) {
                     </section>
                 </div>
             </section>
-            <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={AddStructureCallBackCall} >
-                <PortfolioStructureCreationCard
+            <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={callbackdataAllStructure} >
+                {/* <PortfolioStructureCreationCard
                     CreatOpen={CreateOpenCall}
                     Close={AddStructureCallBackCall}
                     PortfolioType={IsUpdated}
@@ -3487,7 +3521,14 @@ function TeamPortlioTable(SelectedProp: any) {
                             ? checkedList
                             : props
                     }
+                /> */}
+                <CreateAllStructureComponent
+                    Close={callbackdataAllStructure}
+                    taskUser={AllUsers}
+                    portfolioTypeData={portfolioTypeData}
+                    PropsValue={ContextValue}
                 />
+
             </Panel>
 
             {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.SelectedProp} />}

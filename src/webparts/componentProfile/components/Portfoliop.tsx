@@ -186,7 +186,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
 
   if (fieldName == "PercentComplete") {
     const [myfieldValue, setmyFieldValue] = React.useState(value);
-    const handleInputChange = (event: any) => {
+    const handleInputChanges = (event: any) => {
       setmyFieldValue(event.target.value);
     };
 
@@ -212,24 +212,28 @@ export const EditableField: React.FC<EditableFieldProps> = ({
         console.log(error);
       }
     };
-
+    let statusDropDown = [
+      { rankTitle: "Select Status", rank: null },
+      { rankTitle: "Not Started", rank: 0 },
+      { rankTitle: "In Progress", rank: 10 },
+      { rankTitle: "Completed", rank: 100 },
+    ];
     if (editing) {
       return (
-        <div className="editcolumn ">
-            <span>
-            <input
-              type="number"
-              value={myfieldValue}
-              onChange={handleInputChange}
-            />
-          </span>
-         
+        <div className="editcolumn">
+           <select value={myfieldValue} onChange={handleInputChanges}>
+          {statusDropDown.map((item: any, index: any) => (
+          <option key={index} value={item.rank}>
+             {item.rankTitle}
+             </option>
+              ))}
+           </select>
           <span>
             <a onClick={handleSave}>
-              <span className="svg__iconbox svg__icon--Save "></span>
+              <span className="svg__iconbox svg__icon--Save"></span>
             </a>
             <a onClick={handleCancel}>
-              <span className="svg__iconbox svg__icon--cross "></span>
+              <span className="svg__iconbox svg__icon--cross"></span>
             </a>
           </span>
         </div>
@@ -258,7 +262,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   if (type == "Date") {
     const handleSave = async () => {
       try {
-        setFieldValue((prevValue: any) => fieldValue);
+        setFieldValue((prevValue: any) => fieldValue ? Moment(fieldValue).format("DD/MM/YYYY"): '');
 
         // if(type == "Number"){
         //   setFieldValue(fieldValue/100);
@@ -268,7 +272,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
           .getByTitle(listName)
           .items.getById(itemId)
           .update({
-            [fieldName]: fieldValue,
+            [fieldName]: fieldValue != '' ? fieldValue : null,
           });
 
         setEditing(false);
@@ -286,11 +290,11 @@ export const EditableField: React.FC<EditableFieldProps> = ({
             <input
               type={type}
               defaultValue={
-                fieldValue != undefined
-                  ? fieldValue.split("/").reverse().join("-")
+                fieldValue !== undefined
+                  ? Moment(fieldValue, "DD/MM/YYYY").format("YYYY-MM-DD")
                   : ""
               }
-              // value={fieldValue}
+              min={Moment(new Date()).format("YYYY-MM-DD")}
               style={{ fontSize: "11px" }}
               onChange={handleInputChange}
             />
@@ -1579,7 +1583,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                   <a
                                     href={
                                       SelectedProp.siteUrl +
-                                      "/SitePages/Project-Management.aspx?ProjectId=" +
+                                      "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                                       item?.Id
                                     }
                                     data-interception="off"
@@ -1778,7 +1782,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                   <a
                                     href={
                                       SelectedProp.siteUrl +
-                                      "/SitePages/Project-Management.aspx?ProjectId=" +
+                                      "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                                       item?.Id
                                     }
                                     data-interception="off"

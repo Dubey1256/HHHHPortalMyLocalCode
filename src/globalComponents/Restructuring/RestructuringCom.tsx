@@ -21,6 +21,7 @@ const RestructuringCom = (props: any, ref: any) => {
     []
   );
   const [trueTopCompo, setTrueTopCompo]: any = React.useState(false);
+  const [restructureTitle, setRestructureTitle]: any = React.useState([]);
   const [projectmngmnt, setProjectmngmnt]: any = React.useState(false);
   const [checkItemLength, setCheckItemLength]: any = React.useState(false);
   const [query4TopIcon, setQuery4TopIcon]: any = React.useState("");
@@ -1166,6 +1167,173 @@ const RestructuringCom = (props: any, ref: any) => {
             }
           });
         }
+      }else if (restructureItem[0]?.TaskType?.Id === 1 && props?.findPage == "ProjectOverView") {
+        let newarrays: any = [];
+        let newObj: any;
+        let newChildarray: any = [];
+        array?.map((obj: any) => {
+          obj.isRestructureActive = true;
+          obj?.subRows != undefined &&
+            obj?.subRows != null &&
+            obj?.subRows?.length > 0 &&
+            obj?.subRows?.map((sub: any) => {
+              if(sub?.Item_x0020_Type === "Sprint"){
+                sub.isRestructureActive = true;
+              }
+              if (sub?.Title == restructureItem[0]?.Title && sub?.Id == restructureItem[0]?.Id) {
+                newObj = {...obj, newSubChild:{...sub}}
+                newarrays?.push(obj);
+                topCompo = false;
+                setRestructuredItemarray(newarrays);
+                newChildarray?.push(newObj.newSubChild);
+                setRestructureChecked(newChildarray);
+                ArrayTest?.push(newObj);
+              }
+              sub?.subRows != undefined &&
+              sub?.subRows != null &&
+              sub?.subRows?.length > 0 &&
+              sub?.subRows?.map((feature: any) => {
+                if (feature?.Title == restructureItem[0]?.Title && feature?.Id == restructureItem[0]?.Id) {
+                  newObj = {...obj, newSubChild:{...sub ,newFeatChild:{...feature}}}
+                  newarrays?.push(obj);
+                  topCompo = false;
+                  setRestructuredItemarray(newarrays);
+                  newChildarray?.push(newObj.newSubChild.newFeatChild);
+                  setRestructureChecked(newChildarray);
+                  ArrayTest?.push(newObj);
+                }
+              })
+
+             
+            });
+        });
+      }else if (restructureItem[0]?.TaskType?.Id === 3 && props?.findPage == "ProjectOverView") {
+        let newarrays: any = [];
+        let newObj: any;
+        let newChildarray: any = [];
+        array?.map((obj: any) => {
+          obj.isRestructureActive = true;
+          obj?.subRows != undefined &&
+            obj?.subRows != null &&
+            obj?.subRows?.length > 0 &&
+            obj?.subRows?.map((sub: any) => {
+              if(sub?.Item_x0020_Type === "Sprint" || sub?.TaskType?.Id === 1){
+                sub.isRestructureActive = true;
+              }
+              if (sub?.Title == restructureItem[0]?.Title && sub?.Id == restructureItem[0]?.Id) {
+                newObj = {...obj, newSubChild:{...sub}}
+                newarrays?.push(obj);
+                topCompo = false;
+                setRestructuredItemarray(newarrays);
+                newChildarray?.push(newObj.newSubChild);
+                setRestructureChecked(newChildarray);
+                ArrayTest?.push(newObj);
+              }
+              sub?.subRows != undefined &&
+              sub?.subRows != null &&
+              sub?.subRows?.length > 0 &&
+              sub?.subRows?.map((feature: any) => {
+                if(feature?.TaskType?.Id === 1){
+                  feature.isRestructureActive = true;
+                }
+                if (feature?.Title == restructureItem[0]?.Title && feature?.Id == restructureItem[0]?.Id) {
+                  newObj = {...obj, newSubChild:{...sub ,newFeatChild:{...feature}}}
+                  newarrays?.push(obj);
+                  topCompo = false;
+                  setRestructuredItemarray(newarrays);
+                  newChildarray?.push(newObj?.newSubChild?.newFeatChild);
+                  setRestructureChecked(newChildarray);
+                  ArrayTest?.push(newObj);
+                }
+                feature?.subRows != undefined &&
+                feature?.subRows != null &&
+                feature?.subRows?.length > 0 &&
+                feature?.subRows?.map((wrkstrm: any) => {
+                  if (wrkstrm?.Title == restructureItem[0]?.Title && wrkstrm?.Id == restructureItem[0]?.Id) {
+                    newObj = {...obj, newSubChild:{...sub ,newFeatChild:{...feature, newActChild : {...wrkstrm}}}}
+                    newarrays?.push(obj);
+                    topCompo = false;
+                    setRestructuredItemarray(newarrays);
+                    newChildarray?.push(newObj?.newSubChild?.newFeatChild.newActChild);
+                    setRestructureChecked(newChildarray);
+                    ArrayTest?.push(newObj);
+                  }
+                })
+              })
+            });
+        });
+      }else if (restructureItem[0]?.TaskType?.Id === 2 &&  props?.findPage == "ProjectOverView") {
+        let newarrays: any = [];
+        let newObj: any;
+        let newChildarray: any = [];
+        array?.map((obj: any) => {
+          obj.isRestructureActive = true;
+          obj?.subRows != undefined &&
+            obj?.subRows != null &&
+            obj?.subRows?.length > 0 &&
+            obj?.subRows?.map((sub: any) => {
+              if(sub?.Item_x0020_Type === "Sprint" || sub?.TaskType?.Id === 1 || sub?.TaskType?.Id === 3){
+                sub.isRestructureActive = true;
+              }
+              if (sub?.Title == restructureItem[0]?.Title && sub?.Id == restructureItem[0]?.Id) {
+                newObj = {...obj, newSubChild:{...sub}}
+                newarrays?.push(obj);
+                topCompo = false;
+                setRestructuredItemarray(newarrays);
+                newChildarray?.push(newObj.newSubChild);
+                setRestructureChecked(newChildarray);
+                ArrayTest?.push(newObj);
+              }
+              sub?.subRows != undefined &&
+              sub?.subRows != null &&
+              sub?.subRows?.length > 0 &&
+              sub?.subRows?.map((feature: any) => {
+                if(feature?.TaskType?.Id === 1 || feature?.TaskType?.Id === 3){
+                  feature.isRestructureActive = true;
+                }
+                if (feature?.Title == restructureItem[0]?.Title && feature?.Id == restructureItem[0]?.Id) {
+                  newObj = {...obj, newSubChild:{...sub ,newFeatChild:{...feature}}}
+                  newarrays?.push(obj);
+                  topCompo = false;
+                  setRestructuredItemarray(newarrays);
+                  newChildarray?.push(newObj?.newSubChild?.newFeatChild);
+                  setRestructureChecked(newChildarray);
+                  ArrayTest?.push(newObj);
+                }
+                feature?.subRows != undefined &&
+                feature?.subRows != null &&
+                feature?.subRows?.length > 0 &&
+                feature?.subRows?.map((wrkstrm: any) => {
+                  if(wrkstrm?.TaskType?.Id === 3){
+                    wrkstrm.isRestructureActive = true;
+                  }
+                  if (wrkstrm?.Title == restructureItem[0]?.Title && wrkstrm?.Id == restructureItem[0]?.Id) {
+                    newObj = {...obj, newSubChild:{...sub ,newFeatChild:{...feature, newActChild : {...wrkstrm}}}}
+                    newarrays?.push(obj);
+                    topCompo = false;
+                    setRestructuredItemarray(newarrays);
+                    newChildarray?.push(newObj?.newSubChild?.newFeatChild.newActChild);
+                    setRestructureChecked(newChildarray);
+                    ArrayTest?.push(newObj);
+                  }
+                  wrkstrm?.subRows != undefined &&
+                wrkstrm?.subRows != null &&
+                wrkstrm?.subRows?.length > 0 &&
+                wrkstrm?.subRows?.map((task: any) => {
+                  if (task?.Title == restructureItem[0]?.Title && task?.Id == restructureItem[0]?.Id) {
+                    newObj = {...obj, newSubChild:{...sub ,newFeatChild:{...feature, newActChild : {...wrkstrm,newWrkChild:{...task} }}}}
+                    newarrays?.push(obj);
+                    topCompo = false;
+                    setRestructuredItemarray(newarrays);
+                    newChildarray?.push(newObj?.newSubChild?.newFeatChild.newActChild.newWrkChild);
+                    setRestructureChecked(newChildarray);
+                    ArrayTest?.push(newObj);
+                  }
+                })
+                })
+              })
+            });
+        });
       }
       setCheckItemLength(true);
       setOldArrayBackup(ArrayTest);
@@ -2093,7 +2261,7 @@ const RestructuringCom = (props: any, ref: any) => {
               }
             }
           });
-        } else if (items.TaskType?.Id === 1) {
+        } else if (items.TaskType?.Id === 1 && props?.findPage !== "ProjectOverView") {
           let newChildarray: any = [];
           let newarrays: any = [];
           let checkPortfoliosAlrt: boolean = true;
@@ -2438,7 +2606,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 });
               }
             } });
-    } else if (items.TaskType?.Id === 3) {
+    } else if (items.TaskType?.Id === 3 && props?.findPage !== "ProjectOverView") {
           if (
             props?.queryItems?.Item_x0020_Type !== "Task" &&
             props?.queryItems != undefined &&
@@ -2447,7 +2615,7 @@ const RestructuringCom = (props: any, ref: any) => {
             topCompo = true;
             setQuery4TopIcon("Activity");
           }
-          let newChildarray: any = [];
+          let newChildarray: any = []; 
           let newarrays: any = [];
           let checkPorfiloAlrt: boolean = true;
           topCompo = true;
@@ -2768,7 +2936,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 });
               }
             } });
-        } else if (items.TaskType?.Id === 2) {
+        } else if (items.TaskType?.Id === 2 && props?.findPage !== "ProjectOverView") {
           if (
             props?.queryItems?.Item_x0020_Type !== "Task" &&
             props?.queryItems != undefined &&
@@ -3050,7 +3218,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 });
               }
             }});
-        } else if (items?.Item_x0020_Type === "Sprint" && props?.projectmngmnt !== "projectmngmnt") {
+        } else if (items?.Item_x0020_Type === "Sprint" && props?.projectmngmnt !== "projectmngmnt" && props?.findPage !== "ProjectOverView") {
           let newarrays: any = [];
           let newObj: any;
           let newChildarray: any = [];
@@ -3074,7 +3242,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 }
               });
           });
-        } else if (items?.Item_x0020_Type === "Project" && props?.projectmngmnt !== "projectmngmnt") {
+        } else if (items?.Item_x0020_Type === "Project" && props?.projectmngmnt !== "projectmngmnt" && props?.findPage !== "ProjectOverView") {
           let newarrays: any = [];
           let newObj: any;
           let newChildarray: any = [];
@@ -3084,19 +3252,240 @@ const RestructuringCom = (props: any, ref: any) => {
             array?.map((obj: any) => {
               if (obj?.Title == items?.Title && obj?.Id == items?.Id) {
                 newObj = {...obj}
-                
                 newarrays?.push(obj);
                 topCompo = false;
                 obj.isRestructureActive = false;
                 setRestructuredItemarray(newarrays);
-                // setCheckSubChilds(task);
                 newChildarray?.push(newObj);
                 setRestructureChecked(newChildarray);
                 ArrayTest?.push(newObj);
-                // task.isRestructureActive = false;
               } else {
                 obj.isRestructureActive = true;
               }
+            });
+          }
+        }else if(props?.findPage == "ProjectOverView"){
+          if (items?.Item_x0020_Type === "Project") {
+            let newarrays: any = [];
+            let newObj: any;
+            let newChildarray: any = [];
+            if (items?.subRows != undefined && items?.subRows != null && items?.subRows?.length > 0) {
+              alert("You are not allowed to restructure this item.");
+            } else {
+              array?.map((obj: any) => {
+                if (obj?.Title == items?.Title && obj?.Id == items?.Id) {
+                  newObj = {...obj}
+                  
+                  newarrays?.push(obj);
+                  topCompo = false;
+                  obj.isRestructureActive = false;
+                  setRestructuredItemarray(newarrays);
+                  newChildarray?.push(newObj);
+                  setRestructureChecked(newChildarray);
+                  ArrayTest?.push(newObj);
+                } else {
+                  obj.isRestructureActive = true;
+                }
+              });
+            }
+          }else if (items?.Item_x0020_Type === "Sprint") {
+            let newarrays: any = [];
+            let newObj: any;
+            let newChildarray: any = [];
+            array?.map((obj: any) => {
+              obj.isRestructureActive = true;
+              obj?.subRows != undefined &&
+                obj?.subRows != null &&
+                obj?.subRows?.length > 0 &&
+                obj?.subRows?.map((sub: any) => {
+                  if (sub?.Title == items?.Title && sub?.Id == items?.Id) {
+                    newObj = {...obj,
+                    newSubChild:{...sub }}
+                    obj.isRestructureActive = false;
+                    newarrays?.push(obj);
+                    topCompo = true;
+                    setRestructuredItemarray(newarrays);
+                    newChildarray?.push(newObj.newSubChild);
+                    setRestructureChecked(newChildarray);
+                    ArrayTest?.push(newObj);
+                  }
+                });
+            });
+          }else if (items?.TaskType?.Id === 1) {
+            let newarrays: any = [];
+            let newObj: any;
+            let newChildarray: any = [];
+            array?.map((obj: any) => {
+              obj.isRestructureActive = true;
+              obj?.subRows != undefined &&
+                obj?.subRows != null &&
+                obj?.subRows?.length > 0 &&
+                obj?.subRows?.map((sub: any) => {
+                  if(sub?.Item_x0020_Type === "Sprint"){
+                    sub.isRestructureActive = true;
+                  }
+                  if (sub?.Title == items?.Title && sub?.Id == items?.Id) {
+                    newObj = {...obj, newSubChild:{...sub}}
+                    obj.isRestructureActive = false;
+                    newarrays?.push(obj);
+                    topCompo = false;
+                    setRestructuredItemarray(newarrays);
+                    newChildarray?.push(newObj.newSubChild);
+                    setRestructureChecked(newChildarray);
+                    ArrayTest?.push(newObj);
+                  }
+                  sub?.subRows != undefined &&
+                  sub?.subRows != null &&
+                  sub?.subRows?.length > 0 &&
+                  sub?.subRows?.map((feature: any) => {
+                    if (feature?.Title == items?.Title && feature?.Id == items?.Id) {
+                      sub.isRestructureActive = false;
+                      newObj = {...obj, newSubChild:{...sub ,newFeatChild:{...feature}}}
+                      newarrays?.push(obj);
+                      topCompo = false;
+                      setRestructuredItemarray(newarrays);
+                      newChildarray?.push(newObj.newSubChild.newFeatChild);
+                      setRestructureChecked(newChildarray);
+                      ArrayTest?.push(newObj);
+                    }
+                  })
+
+                 
+                });
+            });
+          }else if (items?.TaskType?.Id === 3) {
+            let newarrays: any = [];
+            let newObj: any;
+            let newChildarray: any = [];
+            array?.map((obj: any) => {
+              obj.isRestructureActive = true;
+              obj?.subRows != undefined &&
+                obj?.subRows != null &&
+                obj?.subRows?.length > 0 &&
+                obj?.subRows?.map((sub: any) => {
+                  if(sub?.Item_x0020_Type === "Sprint" || sub?.TaskType?.Id === 1){
+                    sub.isRestructureActive = true;
+                  }
+                  if (sub?.Title == items?.Title && sub?.Id == items?.Id) {
+                    obj.isRestructureActive = false;
+                    newObj = {...obj, newSubChild:{...sub}}
+                    newarrays?.push(obj);
+                    topCompo = false;
+                    setRestructuredItemarray(newarrays);
+                    newChildarray?.push(newObj.newSubChild);
+                    setRestructureChecked(newChildarray);
+                    ArrayTest?.push(newObj);
+                  }
+                  sub?.subRows != undefined &&
+                  sub?.subRows != null &&
+                  sub?.subRows?.length > 0 &&
+                  sub?.subRows?.map((feature: any) => {
+                    if(feature?.TaskType?.Id === 1){
+                      feature.isRestructureActive = true;
+                    }
+                    if (feature?.Title == items?.Title && feature?.Id == items?.Id) {
+                      newObj = {...obj, newSubChild:{...sub ,newFeatChild:{...feature}}}
+                      newarrays?.push(obj);
+                      sub.isRestructureActive = false;
+                      topCompo = false;
+                      setRestructuredItemarray(newarrays);
+                      newChildarray?.push(newObj?.newSubChild?.newFeatChild);
+                      setRestructureChecked(newChildarray);
+                      ArrayTest?.push(newObj);
+                    }
+                    feature?.subRows != undefined &&
+                    feature?.subRows != null &&
+                    feature?.subRows?.length > 0 &&
+                    feature?.subRows?.map((wrkstrm: any) => {
+                      if (wrkstrm?.Title == items?.Title && wrkstrm?.Id == items?.Id) {
+                        newObj = {...obj, newSubChild:{...sub ,newFeatChild:{...feature, newActChild : {...wrkstrm}}}}
+                        newarrays?.push(obj);
+                        feature.isRestructureActive = false;
+                        topCompo = false;
+                        setRestructuredItemarray(newarrays);
+                        newChildarray?.push(newObj?.newSubChild?.newFeatChild.newActChild);
+                        setRestructureChecked(newChildarray);
+                        ArrayTest?.push(newObj);
+                      }
+                    })
+                  })
+                });
+            });
+          }else if (items?.TaskType?.Id === 2) {
+            let newarrays: any = [];
+            let newObj: any;
+            let newChildarray: any = [];
+            array?.map((obj: any) => {
+              obj.isRestructureActive = true;
+              obj?.subRows != undefined &&
+                obj?.subRows != null &&
+                obj?.subRows?.length > 0 &&
+                obj?.subRows?.map((sub: any) => {
+                  if(sub?.Item_x0020_Type === "Sprint" || sub?.TaskType?.Id === 1 || sub?.TaskType?.Id === 3){
+                    sub.isRestructureActive = true;
+                  }
+                  if (sub?.Title == items?.Title && sub?.Id == items?.Id) {
+                    newObj = {...obj, newSubChild:{...sub}}
+                    obj.isRestructureActive = false;
+                    newarrays?.push(obj);
+                    topCompo = false;
+                    setRestructuredItemarray(newarrays);
+                    newChildarray?.push(newObj.newSubChild);
+                    setRestructureChecked(newChildarray);
+                    ArrayTest?.push(newObj);
+                  }
+                  sub?.subRows != undefined &&
+                  sub?.subRows != null &&
+                  sub?.subRows?.length > 0 &&
+                  sub?.subRows?.map((feature: any) => {
+                    if(feature?.TaskType?.Id === 1 || feature?.TaskType?.Id === 3){
+                      feature.isRestructureActive = true;
+                    }
+                    if (feature?.Title == items?.Title && feature?.Id == items?.Id) {
+                      newObj = {...obj, newSubChild:{...sub ,newFeatChild:{...feature}}}
+                      newarrays?.push(obj);
+                      sub.isRestructureActive = false;
+                      topCompo = false;
+                      setRestructuredItemarray(newarrays);
+                      newChildarray?.push(newObj?.newSubChild?.newFeatChild);
+                      setRestructureChecked(newChildarray);
+                      ArrayTest?.push(newObj);
+                    }
+                    feature?.subRows != undefined &&
+                    feature?.subRows != null &&
+                    feature?.subRows?.length > 0 &&
+                    feature?.subRows?.map((wrkstrm: any) => {
+                      if(wrkstrm?.TaskType?.Id === 3){
+                        wrkstrm.isRestructureActive = true;
+                      }
+                      if (wrkstrm?.Title == items?.Title && wrkstrm?.Id == items?.Id) {
+                        newObj = {...obj, newSubChild:{...sub ,newFeatChild:{...feature, newActChild : {...wrkstrm}}}}
+                        newarrays?.push(obj);
+                        feature.isRestructureActive = false;
+                        topCompo = false;
+                        setRestructuredItemarray(newarrays);
+                        newChildarray?.push(newObj?.newSubChild?.newFeatChild.newActChild);
+                        setRestructureChecked(newChildarray);
+                        ArrayTest?.push(newObj);
+                      }
+                      wrkstrm?.subRows != undefined &&
+                    wrkstrm?.subRows != null &&
+                    wrkstrm?.subRows?.length > 0 &&
+                    wrkstrm?.subRows?.map((task: any) => {
+                      if (task?.Title == items?.Title && task?.Id == items?.Id) {
+                        newObj = {...obj, newSubChild:{...sub ,newFeatChild:{...feature, newActChild : {...wrkstrm,newWrkChild:{...task} }}}}
+                        newarrays?.push(obj);
+                        topCompo = false;
+                        wrkstrm.isRestructureActive = false;
+                        setRestructuredItemarray(newarrays);
+                        newChildarray?.push(newObj?.newSubChild?.newFeatChild.newActChild.newWrkChild);
+                        setRestructureChecked(newChildarray);
+                        ArrayTest?.push(newObj);
+                      }
+                    })
+                    })
+                  })
+                });
             });
           }
         }
@@ -3492,6 +3881,37 @@ const RestructuringCom = (props: any, ref: any) => {
           });
         }
       });
+
+      setRestructureTitle([...RestructureChecked])
+      let data: any = {};
+      let array2: any = [];
+      if(TestArray[0]?.Item_x0020_Type == "Component" && (RestructureChecked[0]?.Item_x0020_Type == "Component" || RestructureChecked[0]?.Item_x0020_Type == "Feature")){
+        data ={Item_x0020_Type: "SubComponent",siteIcon: "S"}
+      }
+      
+     
+      // item?.map((items: any) => {
+      //   if (items != undefined && title === "SubComponent") {
+      //     data ={Item_x0020_Type: "SubComponent",siteIcon: "S",};
+      //   }
+      //   if (items != undefined && title === "Feature") {
+      //     data ={Item_x0020_Type: "Feature",siteIcon: "F",};
+      //   }
+      //   if (items != undefined && title === 3) {
+      //     data ={Item_x0020_Type: "Task",TaskType: { Id: 3 ,Title:'Workstream'},};
+      //   }
+      //   if (items != undefined && title === 2) {
+      //     data ={Item_x0020_Type: "Task",TaskType: { Id: 2, Title:'Task'},};
+      //   }
+      //   if (items != undefined && title === 1) {
+      //     data ={Item_x0020_Type: "Task",TaskType: { Id: 1,Title:'Activities' },};
+      //   }
+      // });
+      let b = RestructureChecked[0];
+      array2?.push({...b,...data});
+      setRestructureChecked(array2);
+
+
       setNewArrayBackup(TestArray);
       setResturuningOpen(true);
       setTrueTopCompo(false);
@@ -3529,6 +3949,7 @@ const RestructuringCom = (props: any, ref: any) => {
           });
         }
       });
+      setRestructureTitle([...RestructureChecked])
       setNewArrayBackup(TestArray);
       
       setTrueTopCompo(false);
@@ -3560,163 +3981,10 @@ const RestructuringCom = (props: any, ref: any) => {
   }));
 
   const projectRestruture = async () => {
-    if(props?.projectmngmnt == "projectmngmnt"){
+    if((props?.projectmngmnt == "projectmngmnt" || props?.findPage == 'ProjectOverView') && (RestructureChecked[0]?.Item_x0020_Type != "Sprint" && RestructureChecked[0]?.Item_x0020_Type != "Project")){
            projectMngmntFuc();
     }
     else{
-
-      // restructureItem?.map(async (items: any, index: any) => {
-      //   let TaskId =
-      //     newItemBackUp?.TaskID == undefined ? null : newItemBackUp?.TaskID;
-      //   TaskLevel = TaskLevel + 1;
-
-      //   if (RestructureChecked[0]?.TaskType?.Id === 1) {
-      //     // ParentTask_Id = null;
-      //     let web = new Web(items?.siteUrl);
-      //     await web.lists
-      //       .getById(items?.listId)
-      //       .items.select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel")
-      //       .expand("TaskType")
-      //       .orderBy("TaskLevel", false).filter("TaskType/Id eq 1").top(1).get()
-      //       .then((componentDetails: any) => {
-      //         if (componentDetails?.length == 0) {
-      //           var LatestId: any = 1;
-      //           TaskLevel = LatestId;
-      //           LatestId = LatestId + activityCount;
-      //           TaskId = "A" + LatestId;
-      //           activityCount = activityCount + 1;
-      //         } else {
-      //           var LatestId = componentDetails[0].TaskLevel + 1;
-      //           TaskLevel = LatestId;
-      //           LatestId = LatestId + activityCount;
-      //           TaskId = "A" + LatestId;
-      //           activityCount = activityCount + 1;
-      //         }
-      //         items.TaskID = TaskId;
-      //       })
-      //       .catch((err: any) => {
-      //         console.log(err);
-      //       });
-      //   }
-
-      //   let web = new Web(items.siteUrl);
-      //   TaskId =
-      //     RestructureChecked[0]?.TaskType?.Id == 2
-      //       ? "T" + items?.Id
-      //       : RestructureChecked[0]?.TaskType?.Id == 1
-      //       ? items?.TaskID
-      //       : TaskId + "-" + "W" + TaskLevel;
-
-      //   if (newItemBackUp?.Item_x0020_Type != "Task") {
-      //     ParentTask_ID = null;
-      //     ParentTask_Portfolio = {
-      //       Id: newItemBackUp?.Id,
-      //       ItemType: newItemBackUp?.Item_x0020_Type,
-      //       PortfolioStructureID: newItemBackUp?.PortfolioStructureID,
-      //       Title: newItemBackUp?.Title,
-      //     };
-      //   } else {
-      //     (ParentTask_Portfolio = {
-      //       Id: newItemBackUp?.Portfolio?.Id,
-      //       ItemType: newItemBackUp?.Portfolio?.ItemType,
-      //       PortfolioStructureID:
-      //         newItemBackUp?.Portfolio?.PortfolioStructureID,
-      //       Title: newItemBackUp?.Portfolio?.Title,
-      //     }),
-      //       (ParentTask_ID = {
-      //         Id: newItemBackUp?.Id,
-      //         Title: newItemBackUp?.Title,
-      //         TaskID: newItemBackUp?.TaskID,
-      //       });
-      //   }
-
-      //   var postData: any = {
-      //     ParentTaskId: ParentTask_ID == null ? null : ParentTask_ID.Id,
-      //     PortfolioId: ParentTask_Portfolio.Id,
-      //     TaskLevel: TaskLevel,
-      //     TaskTypeId: RestructureChecked[0]?.TaskType.Id,
-      //     TaskID: TaskId,
-      //   };
-
-      //   await web.lists
-      //     .getById(items.listId)
-      //     .items.getById(items.Id)
-      //     .update(postData)
-      //     .then(async (res: any) => {
-      //       let TaskId =
-      //         newItemBackUp?.TaskID == undefined ? null : newItemBackUp?.TaskID;
-
-      //       count = count + 1;
-      //       let backupCheckedList: any = [];
-      //       let latestCheckedList: any = [];
-
-      //       latestCheckedList?.push({ ...items });
-      //       backupCheckedList?.push({ ...items });
-
-      //       latestCheckedList?.map((itemss: any) => {
-      //         Level = Level + 1;
-      //         (itemss.ParentTask = { Id: ParentTask_ID }),
-      //           (itemss.TaskLevel = Level),
-      //           (itemss.TaskTypeId = RestructureChecked[0]?.TaskType.Id),
-      //           (itemss.TaskID =
-      //             RestructureChecked[0]?.TaskType?.Id == 2
-      //               ? "T" + itemss?.Id
-      //               : RestructureChecked[0]?.TaskType?.Id == 1
-      //               ? itemss?.TaskID
-      //               : TaskId + "-" + "W" + Level);
-      //         itemss.Portfolio = ParentTask_Portfolio;
-      //       });
-
-      //       function processArray(arr: any, pushData: any, spliceData: any) {
-      //         arr?.map((obj: any, index: any) => {
-      //           if (!spliceData || !pushData) {
-      //             obj.isRestructureActive = false;
-
-      //             if (
-      //               !spliceData &&
-      //               obj.Id === backupCheckedList[0]?.Id &&
-      //               obj.Item_x0020_Type ===
-      //                 backupCheckedList[0]?.Item_x0020_Type &&
-      //               obj.TaskType?.Title ===
-      //                 backupCheckedList[0]?.TaskType?.Title &&
-      //               obj.Portfolio?.Id == backupCheckedList[0]?.Portfolio?.Id &&
-      //               obj.ParentTask?.Id == backupCheckedList[0]?.ParentTask?.Id
-      //             ) {
-      //               arr.splice(index, 1);
-      //               spliceData = true;
-      //             }
-
-      //             if (
-      //               !pushData &&
-      //               obj.Id === newItemBackUp?.Id &&
-      //               obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type &&
-      //               obj.TaskType?.Title === newItemBackUp?.TaskType?.Title &&
-      //               obj.Portfolio?.Id == newItemBackUp?.Portfolio?.Id
-      //             ) {
-      //               obj.subRows?.push(...latestCheckedList);
-      //               pushData = true;
-      //             }
-
-      //             if (obj.subRows != undefined && obj.subRows?.length > 0) {
-      //               processArray(obj.subRows, pushData, spliceData);
-      //             }
-      //           }
-      //         });
-      //       }
-
-      //       processArray(array, false, false);
-      //       if (count === restructureItem?.length) {
-      //         setResturuningOpen(false);
-      //         restructureCallBack(array, false);
-      //       }
-      //     });
-      // });
-
-
-
-
-
-
     let count : number = 0;
     let Item_x0020_Type: any;
     let Parent: any;
@@ -3751,6 +4019,14 @@ const RestructuringCom = (props: any, ref: any) => {
           PortfolioStructureID = "P" + PortfolioLevel;
         }
   
+      //   function generateNextId(currentId) {
+      //     return 'P' + ('000' + (parseInt(currentId.substring(1)) + 1)).slice(-3);
+      // }
+      
+      // var nextId = generateNextId(currentId);
+      // console.log(nextId);
+      
+       
         let web = new Web(props?.contextValue?.siteUrl);
         var postData: any = {
           ParentId: Parent,
@@ -3820,7 +4096,7 @@ const RestructuringCom = (props: any, ref: any) => {
             setNewItemBackUp([]);
             setNewItemBackUp(null);
             setOldArrayBackup([])
-            restructureCallBack(array, false,true);
+            restructureCallBack(array, false);
             }
           });
       }
@@ -3829,6 +4105,7 @@ const RestructuringCom = (props: any, ref: any) => {
   }
   };
 
+  
   const UpdateTaskRestructure = async function () {
     if (restructureItem[0]?.Item_x0020_Type == "Task") {
       let ParentTask_Id: any;
@@ -4738,18 +5015,158 @@ const RestructuringCom = (props: any, ref: any) => {
     setRestructureChecked(array);
   };
 
-  const onRenderCustomCalculateSC = () => {
+  const onRenderCustomCalculateS1C = () => {
     return (
       <>
-        <div className="subheading siteColor">Restucturing Tool</div>
-        <div>
-          <Tooltip ComponentId="454" />
-        </div>
+        <div className="subheading siteColor">Restucturing Tool -
+        
+          <>
+           {restructureTitle?.map((items: any) => (
+                        <a
+                          data-interception="off"
+                          target="_blank"
+                          className="hreflink mx-2 f-16"
+                          // href={
+                          //   restructureItem[0]?.Item_x0020_Type != "Task"
+                          //     ? props?.contextValue?.siteUrl +
+                          //       "/SitePages/Portfolio-Profile.aspx?taskId=" +
+                          //       restructureItem[0]?.Id
+                          //     : props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + items?.Id + "&Site=" + restructureItem[0]?.siteType
+                          // }
+                        >
+                        
+                        {
+                          newItemBackUp?.Item_x0020_Type === "Component" && items?.Item_x0020_Type === "Component" ? <span className="Dyicons mt--5 me-2"> S </span> : (
+                            newItemBackUp?.Item_x0020_Type == "SubComponent" && (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent") ? 
+                            <span className="Dyicons mt--5 me-2">F</span> : (
+                              items?.Item_x0020_Type === "Task" ? <img className="workmember mt--5 me-2" src={items?.siteIcon} />  : <span className="Dyicons mt--5 me-2">{items?.siteIcon}</span>
+                            )
+
+                          )
+                        }
+                          - <span className="mx-2">
+                          <ReactPopperTooltipSingleLevel ShareWebId={RestructureChecked[0]?.TaskID} row={RestructureChecked[0]} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                            {/* {
+                            newItemBackUp?.Item_x0020_Type != "Task" ?
+                            (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ? items?.TaskID : (newItemBackUp?.TaskType?.Id == 2 ? items?.Id : ``) ) : (newItemBackUp?.TaskType?.Id == 1 ? (items?.TaskType?.Id == 2 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) :
+                             (`${items?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-W`) : ('') }`)) : (newItemBackUp?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) : ''))
+                          } */}
+                          </span>-  {items?.Title}
+                        </a>
+                    ))}
+          </></div>
+        <Tooltip ComponentId="454" />
       </>
     );
   };
 
+  // <div className="my-1">
+  //             Selected Item will restructure into the
+  //               {
+  //                newItemBackUp?.Item_x0020_Type == "Project" && newItemBackUp?.Item_x0020_Type !== undefined && newItemBackUp?.Item_x0020_Type !== null ?
+  //                (RestructureChecked?.Item_x0020_Type == "Sprint" ? " Sprint " : RestructureChecked?.TaskType?.Title)  : " Project "
+  //               }
+  //             inside
+  //             {newItemBackUp?.Item_x0020_Type == "Project" ?
+  //               <span className="Dyicons me-1 ms-1">
+  //                 P
+  //               </span> : 
+  //                 <img
+  //                 className="workmember"
+  //                 src={
+  //                   newItemBackUp.SiteIcon
+  //                 }
+  //               />
+  //             }
+  //             {" " + newItemBackUp?.Title }
+  //           </div>
   const onRenderCustomCalculateSCProject = () => {
+    return (
+      <>
+        <div className="subheading siteColor">Restucturing Tool -
+        
+          <>
+           {restructureTitle?.map((items: any) => (
+                        <a
+                          data-interception="off"
+                          target="_blank"
+                          className="hreflink mx-2 f-16"
+                          // href={
+                          //   restructureItem[0]?.Item_x0020_Type != "Task"
+                          //     ? props?.contextValue?.siteUrl +
+                          //       "/SitePages/Portfolio-Profile.aspx?taskId=" +
+                          //       restructureItem[0]?.Id
+                          //     : props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + items?.Id + "&Site=" + restructureItem[0]?.siteType
+                          // }
+                        >
+                        
+                        {
+                 newItemBackUp?.Item_x0020_Type == "Project" && newItemBackUp?.Item_x0020_Type !== undefined && newItemBackUp?.Item_x0020_Type !== null ?
+                 (RestructureChecked[0]?.Item_x0020_Type == "Sprint" ? <span className="Dyicons mt--5 me-2">X</span> : (RestructureChecked[0]?.Item_x0020_Type == "Project" ? <span className="Dyicons mt--5 me-2">P</span> : <img className="workmember mt--5 me-2" src={items?.SiteIcon} /> ) ) : <span className="Dyicons mt--5 me-2">P</span>
+                }
+                          - <span className="mx-2">
+                          <ReactPopperTooltipSingleLevel ShareWebId={RestructureChecked[0]?.TaskID} row={RestructureChecked[0]} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                            {/* {
+                            newItemBackUp?.Item_x0020_Type != "Task" ?
+                            (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ? items?.TaskID : (newItemBackUp?.TaskType?.Id == 2 ? items?.Id : ``) ) : (newItemBackUp?.TaskType?.Id == 1 ? (items?.TaskType?.Id == 2 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) :
+                             (`${items?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-W`) : ('') }`)) : (newItemBackUp?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) : ''))
+                          } */}
+                          </span>-  {items?.Title}
+                        </a>
+                    ))}
+          </></div>
+        <Tooltip ComponentId="454" />
+      </>
+    );
+  };
+
+  const onRenderCustomCalculateS4CProject = () => {
+    return (
+      <>
+        <div className="subheading siteColor">Restucturing Tool -
+        
+          <>
+           {restructureTitle?.map((items: any) => (
+                        <a
+                          data-interception="off"
+                          target="_blank"
+                          className="hreflink mx-2 f-16"
+                          // href={
+                          //   restructureItem[0]?.Item_x0020_Type != "Task"
+                          //     ? props?.contextValue?.siteUrl +
+                          //       "/SitePages/Portfolio-Profile.aspx?taskId=" +
+                          //       restructureItem[0]?.Id
+                          //     : props?.contextValue?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + items?.Id + "&Site=" + restructureItem[0]?.siteType
+                          // }
+                        >
+                        
+                        {newItemBackUp?.Item_x0020_Type == "Sprint" ?
+                <span className="Dyicons mt--5 me-2">
+                  X
+                </span> : (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ?  <img
+                            className="workmember mt--5 me-2"
+                              src={newItemBackUp?.SiteIcon}
+                            /> : <span className="Dyicons mt--5 me-2">
+                            P
+                          </span>)
+              }
+                          - <span className="mx-2">
+                          <ReactPopperTooltipSingleLevel ShareWebId={RestructureChecked[0]?.TaskID} row={RestructureChecked[0]} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                            {/* {
+                            newItemBackUp?.Item_x0020_Type != "Task" ?
+                            (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ? items?.TaskID : (newItemBackUp?.TaskType?.Id == 2 ? items?.Id : ``) ) : (newItemBackUp?.TaskType?.Id == 1 ? (items?.TaskType?.Id == 2 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) :
+                             (`${items?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-W`) : ('') }`)) : (newItemBackUp?.TaskType?.Id == 3 ? (`${newItemBackUp?.TaskID}-T${items?.Id}`) : ''))
+                          } */}
+                          </span>-  {items?.Title}
+                        </a>
+                    ))}
+          </></div>
+        <Tooltip ComponentId="454" />
+      </>
+    );
+  };
+
+  const onRenderCustomCalculateSCmulti = () => {
     return (
       <>
         <div className="subheading siteColor">Restucturing Tool</div>
@@ -4767,7 +5184,7 @@ let latestCheckedList:any = [];
 let backupCheckedList:any = [];
 let array = [...allData];
 
-if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
+if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type == 'Project' || newItemBackUp == null) {
   const updateItem = async (item: any) => {
     await web.lists.getById(item?.listId).items.getById(item?.Id).update({
       ProjectId: newItemBackUp ? newItemBackUp?.Id : props?.MasterdataItem?.Id
@@ -4804,33 +5221,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
       items.Project = newItemBackUp != null && newItemBackUp != undefined ? { Id: newItemBackUp?.Id, Title: newItemBackUp?.Title } : { Id: props?.MasterdataItem?.Id, Title: props?.MasterdataItem?.Title };
     });
 
-    // const updateProjects = (arr: any) => {
-    //   arr.forEach((obj: any, index: number) => {
-    //     obj.isRestructureActive = false;
-    
-    //     if (!spliceData && obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type) {
-    //       spliceData = true;
-    //       arr.splice(index, 1);
-    //     }
-    
-    //     if (!pushData && onceRender && newItemBackUp === null) {
-    //       onceRender = false;
-    //       pushData = true;
-    //       arr.push(...latestCheckedList);
-    //     }
-    
-    //     if (!pushData && obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type) {
-    //       pushData = true;
-    //       obj.subRows = obj.subRows ? [...obj.subRows, ...latestCheckedList] : [...latestCheckedList];
-    //     }
-    
-    //     if (obj.subRows?.length > 0) {
-    //       updateProjects(obj.subRows);
-    //     }
-    //   });
-    // };
-    
-    // updateProjects(array);
     const updateProjects = (arr: any[]) => {
       const updatedArray: any[] = [];
     
@@ -4884,7 +5274,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
   setNewItemBackUp([]);
   setNewItemBackUp(null);
   setOldArrayBackup([]);
-  restructureCallBack(array, false,true);
+  restructureCallBack(array, false);
   setProjectmngmnt(false);
   setTopProject(false);
 }else{
@@ -5077,31 +5467,14 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
 
       {ResturuningOpen === true && selectedItems?.length == 1? (
         <Panel
-          onRenderHeader={onRenderCustomCalculateSC}
+          onRenderHeader={onRenderCustomCalculateS1C}
           type={PanelType.large}
           isOpen={ResturuningOpen}
           isBlocking={false}
           onDismiss={closePanel}
         >
           <div>
-            <div className="my-1">
-              Selected Item will restructure into the
-              {RestructureChecked[0]?.Item_x0020_Type != "Task" ? (newItemBackUp?.Item_x0020_Type == "Component" && RestructureChecked[0]?.Item_x0020_Type == "Component" ? " SubComponent " : (newItemBackUp?.Item_x0020_Type == "SubComponent" && (RestructureChecked[0]?.Item_x0020_Type == "SubComponent" || RestructureChecked[0]?.Item_x0020_Type == "Component") ? " Feature " : ` ${RestructureChecked[0]?.Item_x0020_Type} ` ))
-              : (newItemBackUp?.Item_x0020_Type != "Task" && RestructureChecked[0]?.TaskType?.Id == 3 ? ' Activity '  : (newItemBackUp?.TaskType?.Id == 1 && RestructureChecked[0]?.TaskType?.Id == 1 ? ' Workstream ' : (newItemBackUp?.TaskType?.Id == 1 && newItemBackUp?.subRows?.some((item: any) => item?.Id === RestructureChecked[0]?.Id && item?.Title === RestructureChecked[0]?.Title) && RestructureChecked[0]?.TaskType?.Id == 3 ?
-              ' Task ' : (newItemBackUp?.TaskType?.Id == 1 && newItemBackUp?.subRows?.some((item: any) => item?.Id === RestructureChecked[0]?.Id && item?.Title === RestructureChecked[0]?.Title) && RestructureChecked[0]?.TaskType?.Id == 2 ? ' Workstream ' : RestructureChecked[0]?.TaskType?.Id == 2 ? ' Task ' : (RestructureChecked[0]?.TaskType?.Id == 3 ? ' Workstream ' : (RestructureChecked[0]?.TaskType?.Id == 1 ? " Activity " : '')))))      
-                // RestructureChecked[0]?.TaskType?.Id == 2 || RestructureChecked[0]?.TaskType?.Id == 1 || newItemBackUp?.TaskType?.Id == 3 ? " Task " : (RestructureChecked[0]?.TaskType?.Id == 1 ? " Activity " : (newItemBackUp?.Item_x0020_Type != "Task" ? " Activity " : " Workstream "))
-              )}
-              inside
-              {newItemBackUp?.SiteIconTitle != undefined &&
-              newItemBackUp?.SiteIconTitle != null ? (
-                <span className="Dyicons me-1 ms-1">
-                  {newItemBackUp?.SiteIconTitle}
-                </span>
-              ) : 
-                <img className="workmember me-1 ms-1" src={newItemBackUp?.SiteIcon} />
-              }
-              {newItemBackUp?.Title}
-            </div>
+         
             <label className="fw-bold form-label full-width"> Old: </label>
             <div
               className="alignCenter border p-1"
@@ -5115,7 +5488,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <div className="reStuMainTiles">
 
                       <div className="reStuTile">
-                      <div className="alignCenter">
+                      <div className={`${obj?.newSubChild != undefined && obj?.newSubChild != null ? 'alignCenter' : 'alignCenter fw-semibold'}`}>
                       {
                           obj?.siteIcon?.length === 1 ? (
                             <div className="Dyicons">
@@ -5169,7 +5542,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="alignCenter">
+                        <div className={`${obj?.newSubChild?.newFeatChild != undefined && obj?.newSubChild?.newFeatChild != null ? 'alignCenter' : 'alignCenter fw-semibold'}`}>
                         {obj?.newSubChild?.siteIcon === "S" ||
                             obj?.newSubChild?.siteIcon === "F" ? (
                               <span className="Dyicons me-1">
@@ -5222,7 +5595,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="alignCenter">
+                        <div className={`${obj?.newSubChild?.newFeatChild?.newActChild != undefined && obj?.newSubChild?.newFeatChild?.newActChild != null ? 'alignCenter' : 'alignCenter fw-semibold'}`}>
                         {obj?.newSubChild?.newFeatChild?.siteIcon ===
                             "F" ? (
                               <span className="Dyicons me-1">
@@ -5258,9 +5631,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                                 : ""
                             }
                           >
-                             {/* <div className="alignCenter">{obj?.newSubChild?.newFeatChild?.TaskID}</div> */}
-                          
-                             {obj?.newSubChild?.newFeatChild?.newActChild !=
+                            {obj?.newSubChild?.newFeatChild?.newActChild !=
                           undefined &&
                         obj?.newSubChild?.newFeatChild?.newActChild != null ? (
                      ""
@@ -5278,7 +5649,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="alignCenter">
+                        <div className={`${obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild != undefined && obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild != null ? 'alignCenter' : 'alignCenter fw-semibold'}`}>
                         <img
                               className="workmember"
                               src={
@@ -5334,7 +5705,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="alignCenter">
+                        <div className={`${obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild != undefined && obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.newTskChild != null ? 'alignCenter' : 'alignCenter fw-semibold'}`}>
                         <img
                               className="workmember"
                               src={
@@ -5392,7 +5763,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="alignCenter">
+                        <div className="alignCenter fw-semibold">
                         <img
                               className="workmember"
                               src={
@@ -5755,7 +6126,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         <a
                           data-interception="off"
                           target="_blank"
-                          className="hreflink serviceColor_Active reStuTile"
+                          className="hreflink serviceColor_Active fw-semibold reStuTile"
                           href={
                             restructureItem[0]?.Item_x0020_Type != "Task"
                               ? props?.contextValue?.siteUrl +
@@ -5778,12 +6149,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
 
                           )
                         }
-                          {/* {newItemBackUp?.Item_x0020_Type === "Component" && (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature") ?  <span className="Dyicons"> S </span> : 
-                          (newItemBackUp?.Item_x0020_Type == "SubComponent" && (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature") ? <span className="Dyicons">F</span> : 
-                          items?.Item_x0020_Type === "Task" ? <img className="workmember" src={items?.siteIcon} /> 
-                           : 
-                            "")
-                          } */}
                           <span className="mx-2">
                             {
                             newItemBackUp?.Item_x0020_Type != "Task" ?
@@ -6000,7 +6365,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
       {ResturuningOpen === true  && selectedItems?.length > 1 ? (
         <Panel
           isOpen={ResturuningOpen}
-          onRenderHeader={onRenderCustomCalculateSC}
+          onRenderHeader={onRenderCustomCalculateSCmulti}
           isBlocking={false}
           type={PanelType.medium}
           onDismiss={closePanel}
@@ -6191,17 +6556,46 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
 
 
 
-{projects === true && restructureItem?.length > 1 ? (
+                  {projects === true && restructureItem?.length > 1 ? (
         <Panel
           isOpen={projects}
-          onRenderHeader={onRenderCustomCalculateSC}
+          onRenderHeader={onRenderCustomCalculateSCmulti}
           isBlocking={false}
           onDismiss={()=>setProjects(false)}
         >
           <>
           Selected Item will restructure into {
-            newItemBackUp != undefined && newItemBackUp != null ? ' Sprint ' : ' Project ' 
+            newItemBackUp != undefined && newItemBackUp != null ? (
+              newItemBackUp?.Item_x0020_Type == 'Sprint' ? ' Sprint ' : (newItemBackUp?.Item_x0020_Type == 'Project' ? ' Project ' : <span>{newItemBackUp?.TaskType?.Title}</span> )
+            ) : ' Project ' 
           }
+
+<div>
+            <table className="my-2 border" style={{width:"100%"}}>
+                <tr className="bg-ee border">
+                  <th className="p-1" style={{width:"25px"}}></th>
+                  <th className="p-1" style={{width:"40px"}}>Icon</th>
+                  <th className="p-1" style={{width:"120px"}}>Id</th>
+                  <th className="p-1">Title</th>  
+                </tr>
+                {selectedItems.map((val:any) => {
+                    return (
+                        <tr className="border-bottom" key={val.Id}>
+                          <td className="p-1"> 
+                            <input type="checkbox" className="form-check-input rounded-0"
+                              checked={restructureItem.includes(val)} onChange={() => handleCheckboxChange(val)}
+                              /></td>
+                            <td className="p-1"><img className="workmember" src={val.SiteIcon}/></td>
+                            <td  className="p-1">
+                            <ReactPopperTooltipSingleLevel ShareWebId={val?.TaskID} row={val} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                         
+                              </td>
+                            <td className="p-1">{val.Title}</td>
+                        </tr>
+                    )
+                })}
+            </table>
+            </div>
           </>
           <footer className="mt-2 text-end">
             <button
@@ -6225,26 +6619,13 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
       <Panel
       onRenderHeader={onRenderCustomCalculateSCProject}
         isOpen={projects}
-        type={PanelType.medium}
+        type={PanelType.large}
         isBlocking={false}
         onDismiss={() => setProjects(false)}
       >
 
             <div>
-            <div className="my-1">
-              Selected Item will restructure into the
-                {
-                 newItemBackUp?.Item_x0020_Type == "Project" && newItemBackUp?.Item_x0020_Type !== undefined && newItemBackUp?.Item_x0020_Type !== null ?
-                  " Sprint " : " Project "
-                }
-              inside
-              {newItemBackUp?.Item_x0020_Type == "Project" &&
-                <span className="Dyicons me-1 ms-1">
-                  P
-                </span>
-              }
-              {" " + newItemBackUp?.Title }
-            </div>
+            
             <label className="fw-bold form-label full-width"> Old: </label>
             <div
               className="alignCenter border p-1"
@@ -6255,10 +6636,10 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
-                    <div className="alignCenter">
+                    <div className={`${obj?.newSubChild != undefined && obj?.newSubChild != null ? 'alignCenter' : 'alignCenter fw-semibold'}`}>
                     {
                           <div className="Dyicons">
-                              {obj.Item_x0020_Type == 'Project' ? "P" : "S"}
+                              {obj.Item_x0020_Type == 'Project' ? "P" : "X"}
                             </div>
                             }
                             <span className="mx-2">
@@ -6274,8 +6655,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                                 "/SitePages/Project-Management.aspx?ProjectId=" +
                                 obj?.Id}
                       >
-                        {/* <div className="alignCenter">{obj?.TaskID}</div> */}
-                        
                               {obj?.newSubChild != undefined &&
                     obj?.newSubChild != null ? (
                       ""
@@ -6291,11 +6670,15 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="alignCenter">
-                        {
-                              <span className="Dyicons me-1">
-                                {obj?.newSubChild?.Item_x0020_Type == 'Project' ? "P" : "S"}
-                              </span>}
+                        <div className="alignCenter fw-semibold">
+                        
+                              
+                                {obj?.newSubChild?.Item_x0020_Type == 'Project' ? <span className="Dyicons me-1">P</span> :   
+                                (obj?.newSubChild?.Item_x0020_Type == "Sprint" ? <span className="Dyicons me-1">X</span> : 
+                                <img className="workmember" src={obj?.newSubChild?.SiteIcon} />
+                                )
+                                }
+                              
                               <span className="mx-2">
                               <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                          
@@ -6313,6 +6696,114 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           </a></div>
                           </div>
                         </div>
+                        {/* newObj?.newSubChild?.newFeatChild.newActChild.newWrkChild */}
+                        {
+                          obj?.newSubChild?.newFeatChild ? (
+                            <>
+                            <div className="reStuMainTiles">
+                            <div className="reStuTile">
+                            <div className="alignCenter fw-semibold">
+                            
+                                  
+                                    {obj?.newSubChild?.newFeatChild?.Item_x0020_Type == 'Project' ? <span className="Dyicons me-1">p</span> :   
+                                    (obj?.newSubChild?.newFeatChild?.Item_x0020_Type == "Sprint" ? <span className="Dyicons me-1">x</span> : 
+                                    <img className="workmember" src={obj?.newSubChild?.newFeatChild?.SiteIcon} />
+                                    )
+                                    }
+                                  
+                                  <span className="mx-2">
+                                  <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.TaskID} row={obj?.newSubChild?.newFeatChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                             
+                                  </span>
+                           
+                              <a
+                                className=""
+                                data-interception="off"
+                                target="_blank"
+                                href={ props?.contextValue?.siteUrl +
+                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  obj?.newSubChild?.newFeatChild?.Id}
+                              >
+                                 {obj?.newSubChild?.newFeatChild?.Title}
+                              </a></div>
+                              </div>
+                            </div>
+
+                            {
+                              obj?.newSubChild?.newFeatChild?.newActChild ? (
+                                   <>
+                                     <div className="reStuMainTiles">
+                            <div className="reStuTile">
+                            <div className="alignCenter fw-semibold">
+                            
+                                  
+                                    {obj?.newSubChild?.newFeatChild?.newActChild?.Item_x0020_Type == 'Project' ? <span className="Dyicons me-1"> "P"</span> :   
+                                    (obj?.newSubChild?.newFeatChild?.newActChild?.Item_x0020_Type == "Sprint" ? <span className="Dyicons me-1">"X"</span> : 
+                                    <img className="workmember" src={obj?.newSubChild?.newFeatChild?.newActChild?.SiteIcon} />
+                                    )
+                                    }
+                                  
+                                  <span className="mx-2">
+                                  <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                             
+                                  </span>
+                           
+                              <a
+                                className=""
+                                data-interception="off"
+                                target="_blank"
+                                href={ props?.contextValue?.siteUrl +
+                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  obj?.newSubChild?.newFeatChild?.newActChild?.Id}
+                              >
+                                 {obj?.newSubChild?.newFeatChild?.newActChild?.Title}
+                              </a></div>
+                              </div>
+                            </div>
+
+                            {
+                              obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild ?
+                              (<>
+                                   <div className="reStuMainTiles">
+                            <div className="reStuTile">
+                            <div className="alignCenter fw-semibold">
+                            
+                                  
+                                    {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Item_x0020_Type == 'Project' ? <span className="Dyicons me-1"> "P"</span> :   
+                                    (obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Item_x0020_Type == "Sprint" ? <span className="Dyicons me-1">"X"</span> : 
+                                    <img className="workmember" src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.SiteIcon} />
+                                    )
+                                    }
+                                  
+                                  <span className="mx-2">
+                                  <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                             
+                                  </span>
+                           
+                              <a
+                                className=""
+                                data-interception="off"
+                                target="_blank"
+                                href={ props?.contextValue?.siteUrl +
+                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Id}
+                              >
+                                 {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title}
+                              </a></div>
+                              </div>
+                            </div>
+
+                              </>):
+                              ('')
+                            }
+                                   </>
+                              ) : 
+                              ('')
+                            }
+                              </>
+                            
+                          ) : ("")
+                        }
                       </>
                     ) : (
                       ""
@@ -6332,7 +6823,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
                     <div className="alignCenter">
-                    <span className="Dyicons">{obj?.Item_x0020_Type == 'Project' ? "P" : "S"}</span>
+                    <span className="Dyicons">{obj?.Item_x0020_Type == 'Project' ? "P" : "X"}</span>
                     <span className="mx-2">
                     <ReactPopperTooltipSingleLevel ShareWebId={obj?.TaskID} row={obj} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
                       
@@ -6352,17 +6843,17 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                     </div>
                     {obj?.newSubChild ? (
                       <>
-                        
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
                         <div className="alignCenterr">
-                        <span className="Dyicons">
-                                {obj?.newSubChild?.Item_x0020_Type == 'Project' ? "P" : "S"}
-                              </span>
+                        {obj?.newSubChild?.Item_x0020_Type == 'Project' ? <span className="Dyicons me-1">P</span> :   
+                                    (obj?.newSubChild?.Item_x0020_Type == "Sprint" ? <span className="Dyicons me-1">X</span> : 
+                                    <img className="workmember" src={obj?.newSubChild?.SiteIcon} />
+                                    )
+                                    }
                               <span className="mx-2">
                               <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.TaskID} row={obj?.newSubChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
-                         
-                              </span>
+                             </span>
                         
                           <a
                             data-interception="off"
@@ -6375,6 +6866,113 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           </a></div>
                           </div>
                         </div>
+                        {
+                          obj?.newSubChild?.newFeatChild ? (
+                            <>
+                            <div className="reStuMainTiles">
+                            <div className="reStuTile">
+                            <div className="alignCenter fw-semibold">
+                            
+                                  
+                                    {obj?.newSubChild?.newFeatChild?.Item_x0020_Type == 'Project' ? <span className="Dyicons me-1">P</span> :   
+                                    (obj?.newSubChild?.newFeatChild?.Item_x0020_Type == "Sprint" ? <span className="Dyicons me-1">X</span> : 
+                                    <img className="workmember" src={obj?.newSubChild?.newFeatChild?.SiteIcon} />
+                                    )
+                                    }
+                                  
+                                  <span className="mx-2">
+                                  <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.TaskID} row={obj?.newSubChild?.newFeatChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                             
+                                  </span>
+                           
+                              <a
+                                className=""
+                                data-interception="off"
+                                target="_blank"
+                                href={ props?.contextValue?.siteUrl +
+                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  obj?.newSubChild?.newFeatChild?.Id}
+                              >
+                                 {obj?.newSubChild?.newFeatChild?.Title}
+                              </a></div>
+                              </div>
+                            </div>
+
+                            {
+                              obj?.newSubChild?.newFeatChild?.newActChild ? (
+                                   <>
+                                     <div className="reStuMainTiles">
+                            <div className="reStuTile">
+                            <div className="alignCenter fw-semibold">
+                            
+                                  
+                                    {obj?.newSubChild?.newFeatChild?.newActChild?.Item_x0020_Type == 'Project' ? <span className="Dyicons me-1"> "P"</span> :   
+                                    (obj?.newSubChild?.newFeatChild?.newActChild?.Item_x0020_Type == "Sprint" ? <span className="Dyicons me-1">"X"</span> : 
+                                    <img className="workmember" src={obj?.newSubChild?.newFeatChild?.newActChild?.SiteIcon} />
+                                    )
+                                    }
+                                  
+                                  <span className="mx-2">
+                                  <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                             
+                                  </span>
+                           
+                              <a
+                                className=""
+                                data-interception="off"
+                                target="_blank"
+                                href={ props?.contextValue?.siteUrl +
+                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  obj?.newSubChild?.newFeatChild?.newActChild?.Id}
+                              >
+                                 {obj?.newSubChild?.newFeatChild?.newActChild?.Title}
+                              </a></div>
+                              </div>
+                            </div>
+
+                            {
+                              obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild ?
+                              (<>
+                                   <div className="reStuMainTiles">
+                            <div className="reStuTile">
+                            <div className="alignCenter fw-semibold">
+                            
+                                  
+                                    {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Item_x0020_Type == 'Project' ? <span className="Dyicons me-1"> "P"</span> :   
+                                    (obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Item_x0020_Type == "Sprint" ? <span className="Dyicons me-1">"X"</span> : 
+                                    <img className="workmember" src={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.SiteIcon} />
+                                    )
+                                    }
+                                  
+                                  <span className="mx-2">
+                                  <ReactPopperTooltipSingleLevel ShareWebId={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.TaskID} row={obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild} AllListId={props?.contextValue} singleLevel={true} masterTaskData={props?.AllMasterTasksData} AllSitesTaskData={props?.AllSitesTaskData} />
+                             
+                                  </span>
+                           
+                              <a
+                                className=""
+                                data-interception="off"
+                                target="_blank"
+                                href={ props?.contextValue?.siteUrl +
+                                  "/SitePages/Project-Management.aspx?ProjectId=" +
+                                  obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Id}
+                              >
+                                 {obj?.newSubChild?.newFeatChild?.newActChild?.newWrkChild?.Title}
+                              </a></div>
+                              </div>
+                            </div>
+
+                              </>):
+                              ('')
+                            }
+                                   </>
+                              ) : 
+                              ('')
+                            }
+                              </>
+                            
+                          ) : ("")
+                        }
                       </>
                     ) : (
                       ""
@@ -6384,15 +6982,29 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         <a
                           data-interception="off"
                           target="_blank"
-                          className="hreflink serviceColor_Active reStuTile"
+                          className="hreflink serviceColor_Active fw-semibold reStuTile"
                           href={ props?.contextValue?.siteUrl +
                                 "/SitePages/Project-Management.aspx?ProjectId" +
                                 obj?.Id
                           }
                         >
                           
-                          <span className="Dyicons">{newItemBackUp != undefined && newItemBackUp != null ? "X" : "P"}</span>
-                          <div className="alignCenter ms-1 me-2">{`${newItemBackUp?.TaskID}-X${newItemBackUp?.subRows?.length+1}`}</div>
+                          {
+                           newItemBackUp != undefined && newItemBackUp != null ?
+                           (
+                            RestructureChecked[0]?.Item_x0020_Type == 'Sprint' || RestructureChecked[0]?.Item_x0020_Type == 'Project'  ?
+                             <span className="Dyicons">X</span> :  <img className="workmember" src={RestructureChecked[0]?.SiteIcon} />
+                             
+                            
+                           ) : 'P'
+                          }
+                          {/* <span className="Dyicons">{newItemBackUp != undefined && newItemBackUp != null ? "X" : "P"}</span> */}
+                          {
+                            RestructureChecked[0]?.Item_x0020_Type == 'Sprint' ? 
+                            <div className="alignCenter ms-1 me-2">{`${newItemBackUp?.TaskID}-X${newItemBackUp?.subRows?.length+1}`}</div> :
+                            <div className="alignCenter ms-1 me-2">{RestructureChecked[0]?.TaskID}</div>
+                          }
+                          
                           
                          
                           {items?.Title}
@@ -6425,7 +7037,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
 {
   topProject && 
   <Panel
-  onRenderHeader={onRenderCustomCalculateSC}
+  onRenderHeader={onRenderCustomCalculateSCmulti}
   isOpen={topProject}
   isBlocking={false}
   onDismiss={() => setTopProject(false)}
@@ -6458,7 +7070,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
 {
   projectmngmnt === true && restructureItem?.length > 1 &&
   <Panel
-  onRenderHeader={onRenderCustomCalculateSC}
+  onRenderHeader={onRenderCustomCalculateSCmulti}
   isOpen={projectmngmnt}
   isBlocking={false}
   onDismiss={() => setProjectmngmnt(false)}
@@ -6503,7 +7115,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
       {
         projectmngmnt === true && restructureItem?.length == 1 &&
         <Panel
-      onRenderHeader={onRenderCustomCalculateSCProject}
+      onRenderHeader={onRenderCustomCalculateS4CProject}
         isOpen={projectmngmnt}
         type={PanelType.medium}
         isBlocking={false}
@@ -6511,7 +7123,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
       >
 
             <div className="modal-body">
-            <div className="my-1">
+            {/* <div className="my-1">
               Selected Item will restructure 
               inside
               {newItemBackUp?.Item_x0020_Type == "Sprint" ?
@@ -6525,7 +7137,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                           </span>)
               }
               {newItemBackUp?.Title }
-            </div>
+            </div> */}
             <label className="fw-bold form-label full-width"> Old: </label>
             <div
               className="alignCenter border p-1"
@@ -6536,7 +7148,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                   <div className="mainParentSec">
                     <div className="reStuMainTiles">
                     <div className="reStuTile">
-                    <div className="alignCenter">
+                    <div className={`${obj?.newSubChild != undefined && obj?.newSubChild != null ? 'alignCenter' : 'alignCenter fw-semibold'}`}>
                     {  obj?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.Item_x0020_Type == "Sprint" ? 
                             <div className="Dyicons">X</div> :
                             <img
@@ -6574,7 +7186,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="alignCenter">
+                        <div className={`${obj?.newSubChild?.feature != undefined && obj?.newSubChild?.feature != null ? 'alignCenter' : 'alignCenter fw-semibold'}`}>
                         {  obj?.newSubChild?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.newSubChild?.Item_x0020_Type == "Sprint" ? 
                             <div className="Dyicons">X</div> :
                             <img className="workmember"
@@ -6615,7 +7227,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="alignCenter">
+                        <div className={`${obj?.newSubChild?.feature?.activity != undefined && obj?.newSubChild?.feature?.activity != null ? 'alignCenter' : 'alignCenter fw-semibold'}`}>
                         {  obj?.newSubChild?.feature?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.newSubChild?.feature?.Item_x0020_Type == "Sprint" ? 
                             <div className="Dyicons">X</div> : 
                             <img className="workmember"
@@ -6657,7 +7269,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                       <>
                         <div className="reStuMainTiles">
                         <div className="reStuTile">
-                        <div className="alignCenter">
+                        <div className="alignCenter fw-semibold">
                         {  obj?.newSubChild?.feature?.activity?.Item_x0020_Type == 'Project' ? <div className="Dyicons">P</div> : (obj?.newSubChild?.feature?.activity?.Item_x0020_Type == "Sprint" ? 
                             <div className="Dyicons">X</div> :
                             <img className="workmember"
@@ -6836,7 +7448,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
                         <a
                           data-interception="off"
                           target="_blank"
-                          className="hreflink serviceColor_Active reStuTile"
+                          className="hreflink serviceColor_Active fw-semibold reStuTile"
                           href={ props?.contextValue?.siteUrl +
                             "/SitePages/Task-Profile.aspx?taskId=" +
                             items?.Id + "&Site=" + items?.siteType
@@ -6921,7 +7533,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp == null) {
        {trueTopCompo == true ? (
         <span>
           <Panel
-            onRenderHeader={onRenderCustomCalculateSC}
+            onRenderHeader={onRenderCustomCalculateSCmulti}
             isOpen={trueTopCompo}
             isBlocking={false}
             onDismiss={closePanel}

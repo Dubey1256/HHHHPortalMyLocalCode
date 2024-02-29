@@ -204,6 +204,7 @@ const EditTaskPopup = (Items: any) => {
     const [SendCategoryName, setSendCategoryName] = useState("");
     const [TeamMemberChanged, setTeamMemberChanged] = useState(false);
     const [TeamLeaderChanged, setTeamLeaderChanged] = useState(false);
+    const [SendMsgToAuthor, setSendMsgToAuthor] = useState(false);
     const [CurrentImageIndex, setCurrentImageIndex] = useState("");
     const [loaded, setLoaded] = React.useState(true);
     const [IsImageUploaded, setIsImageUploaded] = React.useState(true);
@@ -1129,7 +1130,9 @@ const EditTaskPopup = (Items: any) => {
                             taskUsers?.map((userData: any) => {
                                 if (userData?.AssingedToUserId == itemData.Id)
                                     try {
-                                        ApprovarDataId = userData?.Approver[0]?.Id;
+                                        if (userData?.Approver?.length > 0) {
+                                            ApprovarDataId = userData?.Approver[0]?.Id;
+                                        }
                                     }
                                     catch (error) {
                                         console.log("Error :", error.message);
@@ -1149,7 +1152,9 @@ const EditTaskPopup = (Items: any) => {
                             currentUserBackupArray?.map((current: any) => {
                                 taskUsers?.map((userData: any) => {
                                     if (userData?.AssingedToUserId == Approver?.Id) {
-                                        ApprovarDataId = userData?.Approver[0].Id;
+                                        if (userData?.Approver?.length > 0) {
+                                            ApprovarDataId = userData?.Approver[0].Id;
+                                        }
                                     }
                                 });
                                 if (
@@ -2284,6 +2289,15 @@ const EditTaskPopup = (Items: any) => {
             if (StatusData.value == 5) {
                 EditData.CompletedDate = undefined;
                 EditData.IsTodaysTask = false;
+                setTeamLeaderChanged(true);
+            }
+            if (StatusData.value == 8) {
+                let CheckForTaskCategories: any = EditDataBackup.TaskCategories?.some((category: any) => category.Title === "Development" || category.Title === "Improvement")
+                if (CheckForTaskCategories) {
+                    let AuthorId: any = EditDataBackup?.Author?.Id;
+                    setWorkingMember(AuthorId);
+                    setSendMsgToAuthor(true);
+                }
             }
             if (StatusData.value == 10) {
                 EditData.CompletedDate = undefined;
@@ -2527,24 +2541,24 @@ const EditTaskPopup = (Items: any) => {
                             TaskDetailsFromCall = await web.lists
                                 .getById(Items.Items.listId)
                                 .items.select(
-                                    "Id,Title,PriorityRank,workingThisWeek,Approvee/Id,Approvee/Title,waitForResponse,Project/Id, Project/Title,Project/PriorityRank,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
+                                    "Id,Title,PriorityRank,Comments,workingThisWeek,Approvee/Id,Approvee/Title,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,Sitestagging,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,Portfolio/PortfolioStructureID,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title, ParentTask/TaskID,ParentTask/Id,TaskID"
                                 )
                                 .top(5000)
                                 .filter(`Id eq ${Items.Items.Id}`)
                                 .expand(
-                                    "AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee,Project"
+                                    "AssignedTo,Author,ParentTask,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee"
                                 )
                                 .get();
                         } else {
                             TaskDetailsFromCall = await web.lists
                                 .getById(Items.Items.listName)
                                 .items.select(
-                                    "Id,Title,PriorityRank,workingThisWeek,Approvee/Id,Approvee/Title,waitForResponse,Project/Id, Project/Title,Project/PriorityRank,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
+                                    "Id,Title,PriorityRank,Comments,workingThisWeek,Approvee/Id,Approvee/Title,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,Sitestagging,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,Portfolio/PortfolioStructureID,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title, ParentTask/TaskID,ParentTask/Id,TaskID"
                                 )
                                 .top(5000)
                                 .filter(`Id eq ${Items.Items.Id}`)
                                 .expand(
-                                    "AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee,Project"
+                                    "AssignedTo,Author,ParentTask,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee"
                                 )
                                 .get();
                         }
@@ -2556,94 +2570,69 @@ const EditTaskPopup = (Items: any) => {
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
                         UpdatedDataObject.SmartPriority = NewSmartPriority;
                         UpdatedDataObject.siteType = EditData.siteType;
-
-                        // When task assigned to user, send a notification on MS Teams 
-                        // && allUserItem.UserGroupId !== 7
-
                         if (!IsUserFromHHHHTeam && SendCategoryName !== "Bottleneck") {
                             try {
-                                let currentUserId = Context.pageContext._legacyPageContext.userId;
-                                let sendUserEmails: any = [];
-                                let AssignedUserName: string = '';
-                                if (TeamLeaderChanged && TeamMemberChanged) {
-                                    let ResultantArray: any = TaskResponsibleTeam.concat(TaskAssignedTo);
-                                    ResultantArray?.map((userDtl: any) => {
-                                        taskUsers?.map((allUserItem: any) => {
-                                            if (userDtl.Id == allUserItem.AssingedToUserId && userDtl.Id !== currentUserId) {
-                                                sendUserEmails.push(allUserItem.Email);
-                                                if (AssignedUserName?.length > 0) {
-                                                    AssignedUserName = "Team";
-                                                } else {
-                                                    AssignedUserName = allUserItem.Title;
-                                                }
+                                const currentUserId = Context.pageContext._legacyPageContext.userId;
+                                const sendUserEmails: string[] = [];
+                                let AssignedUserName = '';
+
+                                const addEmailAndUserName = (userItem: any) => {
+                                    if (userItem.AssingedToUserId !== currentUserId) {
+                                        sendUserEmails.push(userItem.Email);
+                                        AssignedUserName = AssignedUserName ? "Team" : userItem.Title;
+                                    }
+                                };
+
+                                if (SendMsgToAuthor) {
+                                    taskUsers?.forEach((allUserItem: any) => {
+                                        if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                            addEmailAndUserName(allUserItem);
+                                        }
+                                    });
+                                } else {
+                                    const usersToCheck = TeamLeaderChanged && TeamMemberChanged ? TaskResponsibleTeam.concat(TaskAssignedTo) :
+                                        TeamLeaderChanged ? UpdatedDataObject?.ResponsibleTeam :
+                                            TeamMemberChanged || IsTaskStatusUpdated ? TaskAssignedTo : [];
+
+                                    usersToCheck.forEach((userDtl: any) => {
+                                        taskUsers?.forEach((allUserItem: any) => {
+                                            if (userDtl.Id === allUserItem.AssingedToUserId) {
+                                                addEmailAndUserName(allUserItem);
                                             }
                                         });
                                     });
-                                } else {
-                                    if (TeamLeaderChanged) {
-                                        TaskResponsibleTeam?.map((userDtl: any) => {
-                                            taskUsers?.map((allUserItem: any) => {
-                                                if (userDtl.Id == allUserItem.AssingedToUserId && userDtl.Id !== currentUserId) {
-                                                    sendUserEmails.push(allUserItem.Email);
-                                                    if (AssignedUserName?.length > 0) {
-                                                        AssignedUserName = "Team";
-                                                    } else {
-                                                        AssignedUserName = allUserItem.Title;
-                                                    }
-                                                }
-                                            });
-                                        });
-                                    }
-                                    else {
-                                        if (TeamMemberChanged) {
-                                            TaskAssignedTo?.map((userDtl: any) => {
-                                                taskUsers?.map((allUserItem: any) => {
-                                                    if (userDtl.Id == allUserItem.AssingedToUserId && userDtl.Id !== currentUserId) {
-                                                        sendUserEmails.push(allUserItem.Email);
-                                                        if (AssignedUserName?.length > 0) {
-                                                            AssignedUserName = "Team";
-                                                        } else {
-                                                            AssignedUserName = allUserItem.Title;
-                                                        }
-                                                    }
-                                                });
-                                            });
-                                        }
-                                    }
                                 }
-                                let uniqueIds: any = {};
-                                const result: any = tempShareWebTypeData.filter((item: any) => {
+
+                                const uniqueIds: any = {};
+                                const result = tempShareWebTypeData.filter((item: any) => {
                                     if (!uniqueIds[item.Id]) {
                                         uniqueIds[item.Id] = true;
                                         return true;
                                     }
                                     return false;
                                 });
-                                let TaskCategories = result?.map((item: any) => item.Title).join(', ');
-                                let SendMessage: string = '';
-                                let CommonMsg: string = '';
-                                let checkStatusUpdate: any = Number(taskPercentageValue) * 100;
-
-                                if (TeamMemberChanged && TeamLeaderChanged) {
-                                    CommonMsg = `You have been marked as TL/working member in the below task. Please take necessary action.`
-                                } else {
-                                    if (TeamMemberChanged) {
-                                        CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`
-                                    }
-                                    if (TeamLeaderChanged) {
-                                        CommonMsg = `You have been marked as a Lead on the below task. Please take necessary action.`
-                                    }
-                                }
-                                if (IsTaskStatusUpdated) {
-                                    if (checkStatusUpdate == 80) {
-                                        CommonMsg = `Below task has been set to 80%, please review it.`
-                                    }
-                                    if (checkStatusUpdate == 70) {
-                                        CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`
+                                const TaskCategories = result.map((item: any) => item.Title).join(', ');
+                                let CommonMsg = '';
+                                let checkStatusUpdate = Number(taskPercentageValue) * 100;
+                                if (SendMsgToAuthor) {
+                                    CommonMsg = ` Task created from your end has been set to 8%. Please take necessary action.`;
+                                } else if (TeamMemberChanged && TeamLeaderChanged) {
+                                    CommonMsg = `You have been marked as TL/working member in the below task. Please take necessary action.`;
+                                } else if (TeamMemberChanged) {
+                                    CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`;
+                                } else if (TeamLeaderChanged) {
+                                    CommonMsg = `You have been marked as a Lead on the below task. Please take necessary action.`;
+                                } else if (IsTaskStatusUpdated) {
+                                    switch (checkStatusUpdate) {
+                                        case 80:
+                                            CommonMsg = `Below task has been set to 80%, please review it.`;
+                                            break;
+                                        case 70:
+                                            CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`;
+                                            break;
                                     }
                                 }
-
-                                SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> </br> 
+                                const SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> </br> 
                                     <p>
                                     Task Link:  <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
                                      ${UpdatedDataObject.TaskId}-${UpdatedDataObject.Title}
@@ -2657,33 +2646,20 @@ const EditTaskPopup = (Items: any) => {
                                     Thanks, </br>
                                     Task Management Team
                                     </b>
-                                    `
-                                let sendMSGCheck: any = IsTaskStatusUpdated
-                                if ((checkStatusUpdate == 80 || checkStatusUpdate == 70) && IsTaskStatusUpdated) {
-                                    sendMSGCheck = true;
-                                } else {
-                                    sendMSGCheck = false;
-                                }
-                                let SendUserEmailFinal: any = sendUserEmails.filter((item: any, index: any) => sendUserEmails.indexOf(item) === index);
-                                try {
-                                    if ((sendMSGCheck || TeamMemberChanged || TeamLeaderChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
-                                        if (sendUserEmails?.length > 0) {
-                                            await globalCommon.SendTeamMessage(
-                                                SendUserEmailFinal,
-                                                SendMessage,
-                                                Items.context
-                                            );
-                                        }
-                                    }
+                                    `;
 
-                                } catch (error) {
-                                    console.log("Error", error.message);
+                                const sendMSGCheck = (checkStatusUpdate === 80 || checkStatusUpdate === 70) && IsTaskStatusUpdated;
+                                const SendUserEmailFinal: any = sendUserEmails.filter((item: any, index: any) => sendUserEmails.indexOf(item) === index);
+                                if ((sendMSGCheck || SendMsgToAuthor || TeamMemberChanged || TeamLeaderChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
+                                    if (sendUserEmails.length > 0) {
+                                        await globalCommon.SendTeamMessage(SendUserEmailFinal, SendMessage, Items.context);
+                                    }
                                 }
                             } catch (error) {
-                                console.log("Error", error.message)
+                                console.log("Error", error.message);
                             }
-
                         }
+
 
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             taskUsers.forEach((val: any) => {
@@ -3304,10 +3280,10 @@ const EditTaskPopup = (Items: any) => {
                 if (teamConfigData?.ResponsibleTeam?.length === EditDataBackup.ResponsibleTeam?.length) {
                     let checkSendNotification: any = areTitlesSame(teamConfigData?.ResponsibleTeam, EditDataBackup.ResponsibleTeam);
                     if (!checkSendNotification) {
-                        setTeamLeaderChanged(true);
+                        // setTeamLeaderChanged(true);
                     }
                 } else {
-                    setTeamLeaderChanged(true);
+                    // setTeamLeaderChanged(true);
                 }
                 teamConfigData.ResponsibleTeam?.map((arrayData: any) => {
                     if (arrayData.AssingedToUser != null) {
@@ -6257,7 +6233,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                         title={ProjectData.Title}
                                                                                         data-interception="off"
                                                                                         className="textDotted hreflink"
-                                                                                        href={`${siteUrls}/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                        href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
                                                                                     >
                                                                                         {ProjectData.Title}
                                                                                     </a>
@@ -7447,10 +7423,8 @@ const EditTaskPopup = (Items: any) => {
                         >
                             <div className="image-section row">
                                 {ShowTaskDetailsStatus ? (
-                                    <div>
-                                        <h6
-                                            className="siteColor mb-3"
-                                            style={{ cursor: "pointer" }}
+                                    <div className="p-0 mt--5">
+                                        <h6 className="mb-1 mt--10 text-end siteColor hreflink"
                                             onClick={() =>
                                                 setShowTaskDetailsStatus(
                                                     ShowTaskDetailsStatus ? false : true
@@ -8356,7 +8330,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                     target="_blank"
                                                                                                     title={ProjectData.Title}
                                                                                                     data-interception="off"
-                                                                                                    href={`${siteUrls}/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                                    href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
                                                                                                 >
                                                                                                     {ProjectData.Title}
                                                                                                 </a>
@@ -8898,10 +8872,8 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                 ) : null}
                                 {ShowTaskDetailsStatus ? null : (
-                                    <div className="mb-3">
-                                        <h6
-                                            className="siteColor"
-                                            style={{ cursor: "pointer" }}
+                                    <div className="p-0 mt--5">
+                                        <h6 className="mb-1 mt--10 text-end siteColor hreflink"
                                             onClick={() =>
                                                 setShowTaskDetailsStatus(
                                                     ShowTaskDetailsStatus ? false : true
@@ -9060,9 +9032,6 @@ const EditTaskPopup = (Items: any) => {
                                 <div
                                     className="comment-section col-sm-6 p-2"
                                     style={{
-                                        overflowY: "auto",
-                                        height: "600px",
-                                        overflowX: "hidden",
                                         border: "2px solid #ccc",
                                     }}
                                 >

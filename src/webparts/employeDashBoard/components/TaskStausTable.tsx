@@ -12,7 +12,11 @@ import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-P
 import EmailComponenet from "../../taskprofile/components/emailComponent";
 import ManageConfigPopup from "../../../globalComponents/ManageConfigPopup";
 import { Web } from "sp-pnp-js";
+import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
+import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
+import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import { Col, Row } from "react-bootstrap";
+import AddConfiguration from "../../../globalComponents/AddConfiguration";
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -22,6 +26,10 @@ let approveItem: any;
 let emailStatus: any = "";
 let IsShowConfigBtn = false;
 let dragItem: any;
+let StatusOptions = [{ value: 0, taskStatusComment: "Not Started" }, { value: 1, taskStatusComment: "For Approval" }, { value: 2, taskStatusComment: "Follow Up" }, { value: 3, taskStatusComment: "Approved" },
+{ value: 4, taskStatusComment: "Checking" }, { value: 5, taskStatusComment: "Acknowledged" }, { value: 8, taskStatusComment: "Priority Check" }, { value: 9, taskStatusComment: "Ready To Go" },
+{ value: 10, taskStatusComment: "working on it" }, { value: 70, taskStatusComment: "Re-Open" }, { value: 75, taskStatusComment: "Deployment Pending" }, { value: 80, taskStatusComment: "In QA Review" },
+{ value: 90, taskStatusComment: "Task completed" }, { value: 100, taskStatusComment: "Closed" },]
 const TaskStatusTbl = (Tile: any) => {
   const ContextData: any = React.useContext(myContextValue);
   const [state, rerender] = React.useReducer(() => ({}), {});
@@ -30,6 +38,7 @@ const TaskStatusTbl = (Tile: any) => {
   const [editPopup, setEditPopup]: any = React.useState(false);
   const [result, setResult]: any = React.useState(false);
   const [ActiveTile, setActiveTile] = React.useState(Tile?.activeTile);
+
   if (ContextData != undefined && ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
     AllapprovalTask = ContextData.DashboardConfig.filter((item: any) => item.Id == 6)[0];
     if (AllapprovalTask != undefined && AllapprovalTask.length > 0)
@@ -66,7 +75,7 @@ const TaskStatusTbl = (Tile: any) => {
       DashboardConfig = ContextData?.DashboardConfig;
       DashboardConfigCopy = [...DashboardConfig]
     }
-  }, []);
+  }, [ContextData?.DashboardConfig]);
   const ShowWorkingTask = (config: any, User: any) => {
     DashboardConfig.forEach((configuration: any) => {
       if (configuration?.WebpartTitle == config?.WebpartTitle && configuration?.Tasks != undefined && configuration?.Tasks?.length > 0) {
@@ -115,6 +124,12 @@ const TaskStatusTbl = (Tile: any) => {
       AssignedToIds = AssignedToIds.filter((Id: any) => Id != sourceUser?.AssingedToUserId);
       Item.AssignedTo = Item?.AssignedTo.filter((user: any) => user?.Id != sourceUser?.AssingedToUserId);
     }
+    Item.percentage = 10 + '%';
+    StatusOptions?.map((item: any) => {
+      if (10 == item.value) {
+        Item.Status = item?.taskStatusComment
+      }
+    });
     if (Item != undefined && Item != '') {
       let web = new Web(ContextData?.propsValue?.siteUrl);
       web.lists.getById(Item.listId).items.getById(Item?.Id).update({
@@ -122,6 +137,7 @@ const TaskStatusTbl = (Tile: any) => {
         TeamMembersId: { results: TeamMemberIds != undefined && TeamMemberIds.length > 0 ? TeamMemberIds : [], },
         IsTodaysTask: true,
         PercentComplete: 10 / 100,
+        Status: Item?.Status,
       }).then((res: any) => {
         console.log('Drop successfuly');
         DashboardConfig?.forEach((item: any) => {
@@ -155,24 +171,52 @@ const TaskStatusTbl = (Tile: any) => {
       })
     }
   }
-  const onDropTable = (e: any, Type: any, User: any) => {
+  const onDropTable = (e: any, Type: any, config: any) => {
+    let sourceUser = globalCommon.parseJSON(e.dataTransfer.getData("sourceUser"))
     let Status = 0;
-    if (Type == '9%Task') {
-      Status = 9;
+    if (Type != undefined) {
+      Status = Type
     }
     let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
+    Item.AssignedTo = [];
+    Item.percentage = Status + '%';
+    StatusOptions?.map((item: any) => {
+      if (Status == item.value) {
+        Item.Status = item?.taskStatusComment
+      }
+    });
     if (Item != undefined && Item != '') {
       let web = new Web(ContextData?.propsValue?.siteUrl);
       web.lists.getById(Item.listId).items.getById(Item?.Id).update({
+        AssignedToId: { results: [], },
         PercentComplete: Status / 100,
+        IsTodaysTask: false,
+        Status: Item?.Status,
       }).then((res: any) => {
         console.log('Drop successfuly');
+        DashboardConfig?.forEach((item: any) => {
+          if (item?.WebpartTitle != undefined && dragItem?.WebpartTitle != undefined && item?.WebpartTitle == dragItem?.WebpartTitle) {
+            if (item?.Tasks != undefined) {
+              item?.Tasks.map((user: any) => {
+                if (user?.AssingedToUserId == sourceUser?.AssingedToUserId)
+                  user.Tasks = user?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
+              });
+            }
+          }
+          if (item?.WebpartTitle != undefined && config?.WebpartTitle != undefined && item?.WebpartTitle == config?.WebpartTitle) {
+            item?.Tasks.push(Item)
+          }
+        });
+        DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
         setActiveTile(Tile?.activeTile)
         rerender();
       }).catch((err: any) => {
         console.log(err);
       })
     }
+  }
+  const LoadTimeSheet = () => {
+    ContextData?.callbackFunction()
   }
   const generateDynamicColumns = (item: any) => {
     return [{
@@ -251,12 +295,102 @@ const TaskStatusTbl = (Tile: any) => {
       isColumnVisible: true
     },
     {
+      accessorFn: (row: any) => row?.PriorityRank,
+      cell: ({ row }: any) => (
+        <div className="text-center">{row?.original?.PriorityRank}</div>
+      ),
+      filterFn: (row: any, columnName: any, filterValue: any) => {
+        if (row?.original?.PriorityRank == filterValue) {
+          return true
+        } else {
+          return false
+        }
+      },
+      id: "PriorityRank",
+      placeholder: "Priority Rank",
+      resetColumnFilters: false,
+      header: "",
+      size: 42,
+      isColumnVisible: false
+    },
+    {
+      accessorFn: (row: any) => row?.projectStructerId + "." + row?.ProjectTitle,
+      cell: ({ row, column, getValue }: any) => (
+        <>
+          {row?.original?.ProjectTitle != (null || undefined) &&
+            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextData?.propsValue?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
+              <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextData?.propsValue} /></a></span>
+          }
+        </>
+      ),
+      id: 'ProjectTitle',
+      placeholder: "Project",
+      resetColumnFilters: false,
+      header: "",
+      size: 70,
+      isColumnVisible: true
+    },
+    {
       accessorKey: "percentage",
       placeholder: "% Complete",
       header: "",
       resetColumnFilters: false,
       size: 140,
       id: "percentage",
+      isColumnVisible: true
+    },
+    {
+      accessorFn: (row: any) => row?.TaskTypeValue,
+      cell: ({ row, column, getValue }: any) => (
+        <>
+          <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"></span></span>
+        </>
+      ),
+      placeholder: "Task Type",
+      header: "",
+      resetColumnFilters: false,
+      size: 130,
+      id: "TaskTypeValue",
+      isColumnVisible: true
+    },
+    {
+      accessorFn: (row: any) => row?.ClientCategorySearch,
+      cell: ({ row }: any) => (
+        <>
+          <ShowClintCatogory clintData={row?.original} AllMetadata={ContextData?.AllMetadata} />
+        </>
+      ),
+      id: "ClientCategorySearch",
+      placeholder: "Client Category",
+      header: "",
+      resetColumnFilters: false,
+      size: 95,
+      isColumnVisible: true
+    },
+    {
+      accessorFn: (row: any) => row?.AllTeamName,
+      cell: ({ row }: any) => (
+        <div className="alignCenter">
+          <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={ContextData?.AllTaskUser} Context={ContextData?.propsValue} />
+        </div>
+      ),
+      id: "AllTeamName",
+      placeholder: "Team",
+      resetColumnFilters: false,
+      header: "",
+      size: 100,
+      isColumnVisible: true
+    },
+    {
+      accessorFn: (row: any) => row?.ItemRank,
+      cell: ({ row }: any) => (
+        <div className="text-center">{row?.original?.ItemRank}</div>
+      ),
+      id: "ItemRank",
+      placeholder: "Item Rank",
+      resetColumnFilters: false,
+      header: "",
+      size: 42,
       isColumnVisible: true
     },
     {
@@ -290,6 +424,69 @@ const TaskStatusTbl = (Tile: any) => {
       },
       header: "",
       size: 100,
+      isColumnVisible: true
+    },
+    {
+      accessorFn: (row: any) => row?.DueDate,
+      cell: ({ row, column, getValue }: any) => (
+        <div className='ms-1'>{row?.original?.DisplayDueDate}</div>
+      ),
+      filterFn: (row: any, columnName: any, filterValue: any) => {
+        if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+          return true
+        } else {
+          return false
+        }
+      },
+      id: 'DueDate',
+      resetColumnFilters: false,
+      resetSorting: false,
+      placeholder: "DueDate",
+      header: "",
+      size: 91,
+      isColumnVisible: true
+    },
+    {
+      accessorFn: (row: any) => row?.Modified,
+      cell: ({ row, column }: any) => (
+        <div className="alignCenter">
+          {row?.original?.Modified == null ? ("") : (
+            <>
+              <div style={{ width: "75px" }} className="me-1">{row?.original?.DisplayModifiedDate}</div>
+              {row?.original?.Editor != undefined &&
+                <>
+                  <a href={`${ContextData?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
+                    target="_blank" data-interception="off">
+                    <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={row?.original?.Editor?.autherImage} />
+                  </a>
+                </>
+              }
+            </>
+          )}
+        </div>
+      ),
+      id: 'Modified',
+      resetColumnFilters: false,
+      resetSorting: false,
+      placeholder: "Modified",
+      isColumnVisible: false,
+      filterFn: (row: any, columnName: any, filterValue: any) => {
+        if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
+          return true
+        } else {
+          return false
+        }
+      },
+      header: "",
+      size: 115
+    },
+    {
+      accessorKey: "TotalTaskTime",
+      id: "TotalTaskTime",
+      placeholder: "Smart Time",
+      header: "",
+      resetColumnFilters: false,
+      size: 49,
       isColumnVisible: true
     },
     {
@@ -421,7 +618,7 @@ const TaskStatusTbl = (Tile: any) => {
     setIsManageConfigPopup(true);
     setSelectedItem(Config)
   }
-  const CloseOpenConfigPopup = () => {
+  const CloseConfigPopup = () => {
     setIsManageConfigPopup(false);
     setSelectedItem('')
   }
@@ -454,9 +651,9 @@ const TaskStatusTbl = (Tile: any) => {
                       {<span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
                     </span>
                   </div>
-                  <div className="Alltable maXh-300" style={{ height: "300px" }}>
+                  <div className="Alltable maXh-300" style={{ height: "300px" }} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
-                      <GlobalCommanTable wrapperHeight="87%" columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                      <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id+"Dashboard"} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
                     )}
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
                       {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={ContextData.Context} emailStatus={"Approved"} items={approveItem} />}
@@ -518,7 +715,7 @@ const TaskStatusTbl = (Tile: any) => {
                                 <>
                                   <h3 className="f-15">{user?.Title} Today's Task</h3>
                                   <div key={index} className="Alltable maXh-300 mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config)} style={{ height: "300px" }}>
-                                    <GlobalCommanTable wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={user.Tasks}
+                                    <GlobalCommanTable columnSettingIcon={true}  tableId={config?.Id+"Dashboard"} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={user.Tasks}
                                       callBackData={callBackData} />
                                   </div>
                                 </>
@@ -565,7 +762,8 @@ const TaskStatusTbl = (Tile: any) => {
         {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
       </span>
       <span>
-        {IsManageConfigPopup && <ManageConfigPopup DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} props={ContextData?.propsValue} SelectedItem={SelectedItem} IsManageConfigPopup={IsManageConfigPopup} CloseOpenConfigPopup={CloseOpenConfigPopup} />}
+        {/* {IsManageConfigPopup && <ManageConfigPopup DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} props={ContextData?.propsValue} SelectedItem={SelectedItem} IsManageConfigPopup={IsManageConfigPopup} CloseConfigPopup={CloseConfigPopup} />} */}
+        {IsManageConfigPopup && <AddConfiguration DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} SingleWebpart={true} props={ContextData?.propsValue} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />}
       </span>
     </div>
   );

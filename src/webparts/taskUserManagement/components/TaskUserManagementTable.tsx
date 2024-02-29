@@ -20,7 +20,7 @@ import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import { FaChevronDown, FaChevronRight, FaMinusSquare, FaPlusSquare, FaSquare, FaCheckSquare } from 'react-icons/fa';
 import { Col, Container, Row } from "react-bootstrap";
 
-const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUrl, TaskUserListId, context, fetchAPIData, smartMetaDataItems }: any) => {
+const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUrl, AllListid, TaskUserListId, context, fetchAPIData, smartMetaDataItems }: any) => {
     const [data, setData] = React.useState<any>([]);
     const [groupData, setGroupData] = useState([]);
     const [title, setTitle] = useState("");
@@ -72,26 +72,27 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     // When the member to update is set, initialize the Member states
     useEffect(() => {
         if (memberToUpdate) {
-            setSelectedApprovalType(memberToUpdate.IsApprovalMail);
-            setSelectedCompany(memberToUpdate.Company);
+            setSelectedApprovalType(memberToUpdate?.IsApprovalMail);
+            setSelectedCompany(memberToUpdate?.Company);
             // setSelectedRoles(memberToUpdate.Role || []);
             setSelectedRoles(Array.isArray(memberToUpdate.Role) ? memberToUpdate.Role : []);
-            setIsActive(memberToUpdate.IsActive);
-            setIsTaskNotifications(memberToUpdate.IsTaskNotifications);
-            setUserCategory(memberToUpdate.TimeCategory)
+            setIsActive(memberToUpdate?.IsActive);
+            setIsTaskNotifications(memberToUpdate?.IsTaskNotifications);
+            setUserCategory(memberToUpdate?.TimeCategory)
             // setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
-
-            // Parse JSON and set selected categories
-            const categoriesJson = JSON.parse(memberToUpdate?.CategoriesItemsJson);
-            setSelectedCategories(categoriesJson);
-            // Extract IDs and set them as checked
-            const categoryIds = categoriesJson?.map((category: any) => category.Id.toString());
-            setChecked(categoryIds);
-            setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
+            if (memberToUpdate.CategoriesItemsJson) {
+                const categoriesJson = memberToUpdate.CategoriesItemsJson != 'null' ? JSON.parse(memberToUpdate.CategoriesItemsJson): [];
+                setSelectedCategories(categoriesJson);
+                if (categoriesJson) {
+                    const categoryIds = categoriesJson.map((category: any) => category.Id.toString());
+                    setChecked(categoryIds);
+                }
+            }
+            setAssignedToUser(memberToUpdate?.AssingedToUser?.Id)
             // setApprover([memberToUpdate.Approver?.[0]?.Id])
             const Approvers: any = memberToUpdate?.Approver?.map((item: any) => item.Id)
             setApprover(Approvers)
-            setUserTeam(memberToUpdate.Team)
+            setUserTeam(memberToUpdate?.Team)
         }
     }, [memberToUpdate]);
 
@@ -235,9 +236,22 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 });
 
                 setData(updatedMemberData);
-                // Update memberToUpdate state if necessary
-                setMemberToUpdate((prevState: any) => ({ ...prevState, ...updatedData }));
-
+                setSortOrder("")
+                setMemberToUpdate({})
+                setUserCategory("")
+                setUserTeam("")
+                setSelectedApprovalType('')
+                setIsTaskNotifications(false)
+                setSelectedCategories([])
+                setImageUrl({})
+                setTitle("")
+                setSelectedRoles([])
+                setApprover([])
+                setUserGroup("")
+                setSelectedCompany('')
+                setIsActive(false)
+                setAssignedToUser([])
+                setSuffix("")
                 setOpenUpdateMemberPopup(false);
                 fetchAPIData()
             }).catch(error => {
@@ -328,10 +342,10 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             size: 42,
         },
         {
-            accessorKey: "Role",
+            accessorKey: "RoleTitle",
             header: "",
-            id: "Role",
-            placeholder: "Roles",
+            id: "RoleTitle",
+            placeholder: "Roles"
         },
         {
             accessorKey: "Company",
@@ -341,10 +355,9 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             size: 70,
         },
         {
-            // accessorFn: (row) => row.Approver?.[0]?.Title || '',
-            accessorFn: (row) => row?.Approver?.map((item: any) => item?.Title) || '',
+            accessorFn: (row) => row?.ApproverTitle,
             header: "",
-            id: 'Approver',
+            id: 'ApproverTitle ',
             placeholder: "Approver"
         },
         {
@@ -512,7 +525,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const onRenderCustomHeaderUpdateUser = () => {
         return (
             <>
-                <div className='siteColor subheading'> Task-User Management - {memberToUpdate.Title} </div>
+                <div className='siteColor subheading'> Task-User Management - {memberToUpdate?.Title} </div>
                 <Tooltip ComponentId='1767' />
             </>
         );
@@ -1096,6 +1109,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                             taskId={memberToUpdate?.ID}
                                             listId={TaskUserListId}
                                             siteUrls={baseUrl}
+                                            RequiredListIds={AllListid}
                                         />
                                     ) : (
                                         ""

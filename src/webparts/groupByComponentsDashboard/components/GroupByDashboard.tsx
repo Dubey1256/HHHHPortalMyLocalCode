@@ -401,156 +401,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 500,
-                isColumnVisible: true
-            },
-            {
-                accessorFn: (row) => row?.descriptionsDeliverablesSearch,
-                cell: ({ row }) => (
-                    <div className="alignCenter">
-                        <span>{row?.original?.descriptionsDeliverablesSearch ? row?.original?.descriptionsDeliverablesSearch?.length : ""}</span>
-                        {row?.original?.descriptionsDeliverablesSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"descriptionsDeliverablesSearch"} />}
-                    </div>
-                ),
-                id: "descriptionsDeliverablesSearch",
-                placeholder: "Deliverables",
-                header: "",
-                resetColumnFilters: false,
-                size: 80,
-                isColumnVisible: true
-            },
-            {
-                accessorFn: (row) => row?.descriptionsHelpInformationSarch,
-                cell: ({ row }) => (
-                    <div className="alignCenter">
-                        <span>{row?.original?.descriptionsHelpInformationSarch ? row?.original?.descriptionsHelpInformationSarch?.length : ""}</span>
-                        {row?.original?.descriptionsHelpInformationSarch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Help_x0020_Information"} />}
-                    </div>
-                ),
-                id: "descriptionsHelpInformationSarch",
-                placeholder: "Help Information",
-                header: "",
-                resetColumnFilters: false,
-                size: 80,
-                isColumnVisible: true
-            },
-            {
-                accessorFn: (row) => row?.descriptionsShortDescriptionSearch,
-                cell: ({ row }) => (
-                     <div className="alignCenter">
-                        <span>{row?.original?.descriptionsShortDescriptionSearch ? row?.original?.descriptionsShortDescriptionSearch?.trim()?.length : ""}</span>
-                        {row?.original?.descriptionsShortDescriptionSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Short_x0020_Description_x0020_On"} />}
-                    </div>
-                ),
-                id: "descriptionsShortDescriptionSearch",
-                placeholder: "Short Description",
-                header: "",
-                resetColumnFilters: false,
-                size: 80,
-                isColumnVisible: true
-            },
-            {
-                accessorFn: (row) => row?.descriptionsTechnicalExplanationsSearch,
-                cell: ({ row }) => (
-                     <div className="alignCenter">
-                        <span>{row?.original?.descriptionsTechnicalExplanationsSearch ? row?.original?.descriptionsTechnicalExplanationsSearch?.length : ""}</span>
-                        {row?.original?.descriptionsTechnicalExplanationsSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"TechnicalExplanations"} />}
-                    </div>
-                ),
-                id: "descriptionsTechnicalExplanationsSearch",
-                placeholder: "Technical Explanations",
-                header: "",
-                resetColumnFilters: false,
-                size: 80,
-                isColumnVisible: true
-            },
-            {
-                accessorFn: (row) => row?.descriptionsBodySearch,
-                cell: ({ row }) => (
-                    <div className="alignCenter">
-                        <span>{row?.original?.descriptionsBodySearch ? row?.original?.descriptionsBodySearch?.length : ""}</span>
-                        {row?.original?.descriptionsBodySearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Body"} />}
-                   </div>
-                ),
-                id: "descriptionsBodySearch",
-                placeholder: "Body",
-                header: "",
-                resetColumnFilters: false,
-                size: 80,
-                isColumnVisible: true
-            },
-            {
-                accessorFn: (row) => row?.descriptionsAdminNotesSearch,
-                cell: ({ row }) => (
-                     <div className="alignCenter">
-                        <span>{row?.original?.descriptionsAdminNotesSearch ? row?.original?.descriptionsAdminNotesSearch?.length : ""}</span>
-                        {row?.original?.descriptionsAdminNotesSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"AdminNotes"} />}
-                    </div>
-                ),
-                id: "descriptionsAdminNotesSearch",
-                placeholder: "AdminNotes",
-                header: "",
-                resetColumnFilters: false,
-                size: 80,
-                isColumnVisible: true
-            },
-            {
-                accessorFn: (row) => row?.descriptionsValueAddedSearch,
-                cell: ({ row }) => (
-                    <div className="alignCenter">
-                        <span>{row?.original?.descriptionsValueAddedSearch ? row?.original?.descriptionsValueAddedSearch?.length : ""}</span>
-                        {row?.original?.descriptionsValueAddedSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"ValueAdded"} />}
-                    </div>
-                ),
-                id: "descriptionsValueAddedSearch",
-                placeholder: "ValueAdded",
-                header: "",
-                resetColumnFilters: false,
-                size: 80,
-                isColumnVisible: true
-            },
-            {
-                accessorFn: (row) => row?.descriptionsIdeaSearch,
-                cell: ({ row }) => (
-                    <div className="alignCenter">
-                        <span>{row?.original?.descriptionsIdeaSearch ? row?.original?.descriptionsIdeaSearch?.length : ""}</span>
-                        {row?.original?.descriptionsIdeaSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Idea"} />}
-                    </div>
-                ),
-                id: "descriptionsIdeaSearch",
-                placeholder: "Idea",
-                header: "",
-                resetColumnFilters: false,
-                size: 80,
-                isColumnVisible: true
-            },
-            {
-                accessorFn: (row) => row?.descriptionsBackgroundSearch,
-                cell: ({ row }) => (
-                     <div className="alignCenter">
-                        <span>{row?.original?.descriptionsBackgroundSearch ? row?.original?.descriptionsBackgroundSearch?.length : ""}</span>
-                        {row?.original?.descriptionsBackgroundSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Background"} />}
-                   </div>
-                ),
-                id: "descriptionsBackgroundSearch",
-                placeholder: "Background",
-                header: "",
-                resetColumnFilters: false,
-                size: 80,
-                isColumnVisible: true
-            },
-            {
-                accessorFn: (row) => row?.HelpInformationVerified,
-                cell: ({ row }) => (
-                    <div className="alignCenter">
-                        <span> <TrafficLightComponent columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>
-                   </div>
-                ),
-                id: "HelpInformationVerified",
-                placeholder: "Verified",
-                header: "",
-                resetColumnFilters: false,
-                size: 140,
+                size: 300,
                 isColumnVisible: true
             },
             {
@@ -570,9 +421,160 @@ const GroupByDashboard = (SelectedProp: any) => {
                 placeholder: "FeatureTypeTitle",
                 header: "",
                 resetColumnFilters: false,
-                size: 50,
+                size: 200,
                 isColumnVisible: true
             },
+            {
+                accessorFn: (row) => row?.HelpInformationVerified,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span> <TrafficLightComponent columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>
+                   </div>
+                ),
+                id: "HelpInformationVerified",
+                placeholder: "Verified",
+                header: "",
+                resetColumnFilters: false,
+                size: 140,
+                isColumnVisible: true
+            },
+   
+            {
+                accessorFn: (row) => row?.descriptionsDeliverablesSearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsDeliverablesSearch ? row?.original?.descriptionsDeliverablesSearch?.length : ""}</span>
+                        {row?.original?.descriptionsDeliverablesSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"descriptionsDeliverablesSearch"} />}
+                    </div>
+                ),
+                id: "descriptionsDeliverablesSearch",
+                placeholder: "Deliverables",
+                header: "",
+                resetColumnFilters: false,
+                size: 60,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.descriptionsHelpInformationSarch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsHelpInformationSarch ? row?.original?.descriptionsHelpInformationSarch?.length : ""}</span>
+                        {row?.original?.descriptionsHelpInformationSarch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Help_x0020_Information"} />}
+                    </div>
+                ),
+                id: "descriptionsHelpInformationSarch",
+                placeholder: "Help Information",
+                header: "",
+                resetColumnFilters: false,
+                size: 60,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.descriptionsShortDescriptionSearch,
+                cell: ({ row }) => (
+                     <div className="alignCenter">
+                        <span>{row?.original?.descriptionsShortDescriptionSearch ? row?.original?.descriptionsShortDescriptionSearch?.trim()?.length : ""}</span>
+                        {row?.original?.descriptionsShortDescriptionSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Short_x0020_Description_x0020_On"} />}
+                    </div>
+                ),
+                id: "descriptionsShortDescriptionSearch",
+                placeholder: "Short Description",
+                header: "",
+                resetColumnFilters: false,
+                size: 60,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.descriptionsTechnicalExplanationsSearch,
+                cell: ({ row }) => (
+                     <div className="alignCenter">
+                        <span>{row?.original?.descriptionsTechnicalExplanationsSearch ? row?.original?.descriptionsTechnicalExplanationsSearch?.length : ""}</span>
+                        {row?.original?.descriptionsTechnicalExplanationsSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"TechnicalExplanations"} />}
+                    </div>
+                ),
+                id: "descriptionsTechnicalExplanationsSearch",
+                placeholder: "Technical Explanations",
+                header: "",
+                resetColumnFilters: false,
+                size: 60,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.descriptionsBodySearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsBodySearch ? row?.original?.descriptionsBodySearch?.length : ""}</span>
+                        {row?.original?.descriptionsBodySearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Body"} />}
+                   </div>
+                ),
+                id: "descriptionsBodySearch",
+                placeholder: "Body",
+                header: "",
+                resetColumnFilters: false,
+                size: 60,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.descriptionsAdminNotesSearch,
+                cell: ({ row }) => (
+                     <div className="alignCenter">
+                        <span>{row?.original?.descriptionsAdminNotesSearch ? row?.original?.descriptionsAdminNotesSearch?.length : ""}</span>
+                        {row?.original?.descriptionsAdminNotesSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"AdminNotes"} />}
+                    </div>
+                ),
+                id: "descriptionsAdminNotesSearch",
+                placeholder: "AdminNotes",
+                header: "",
+                resetColumnFilters: false,
+                size: 60,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.descriptionsValueAddedSearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsValueAddedSearch ? row?.original?.descriptionsValueAddedSearch?.length : ""}</span>
+                        {row?.original?.descriptionsValueAddedSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"ValueAdded"} />}
+                    </div>
+                ),
+                id: "descriptionsValueAddedSearch",
+                placeholder: "ValueAdded",
+                header: "",
+                resetColumnFilters: false,
+                size: 60,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.descriptionsIdeaSearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsIdeaSearch ? row?.original?.descriptionsIdeaSearch?.length : ""}</span>
+                        {row?.original?.descriptionsIdeaSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Idea"} />}
+                    </div>
+                ),
+                id: "descriptionsIdeaSearch",
+                placeholder: "Idea",
+                header: "",
+                resetColumnFilters: false,
+                size: 60,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.descriptionsBackgroundSearch,
+                cell: ({ row }) => (
+                     <div className="alignCenter">
+                        <span>{row?.original?.descriptionsBackgroundSearch ? row?.original?.descriptionsBackgroundSearch?.length : ""}</span>
+                        {row?.original?.descriptionsBackgroundSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Background"} />}
+                   </div>
+                ),
+                id: "descriptionsBackgroundSearch",
+                placeholder: "Background",
+                header: "",
+                resetColumnFilters: false,
+                size: 60,
+                isColumnVisible: true
+            },
+          
             {
                 accessorFn: (row) => row?.Created,
                 cell: ({ row, column }) => (
@@ -955,10 +957,10 @@ const GroupByDashboard = (SelectedProp: any) => {
     return (
         <>
             <div>
-                <section className="ContentSection">
-                    <div className="col-sm-12 clearfix">
-                        <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
-                            <div>GroupByComponents-Dashboard</div>
+                <section className="row p-0">
+                    <div className="col-sm-12 clearfix p-0">
+                        <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active heading ">
+                            <div>GroupByComponents - Dashboard</div>
                         </h2>
                     </div>
                 </section>
@@ -976,7 +978,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                                                     data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem}
                                                     taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true}
                                                     showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal}
-                                                    bulkEditIcon={true} setData={setData} setLoaded={setLoaded} AllListId={ContextValue} columnSettingIcon={true}
+                                                    bulkEditIcon={true} setData={setData} setLoaded={setLoaded} AllListId={ContextValue} columnSettingIcon={true} tableId="groupByDashBoard"
                                                 />
                                             </div>
                                         </div>

@@ -14,6 +14,7 @@ const Header = () => {
   let DashboardId: any = params.get('DashBoardId');
   const ContextData: any = React.useContext(myContextValue)
   let userName: any = ContextData?.currentUserData;
+  let DashboardTitle = ContextData?.DashboardTitle
   const currentTime: any = ContextData?.currentTime;
   let annouceMents: any = ContextData?.annouceMents;
   const [activeTile, setActiveTile] = useState(ContextData?.ActiveTile);
@@ -49,7 +50,7 @@ const Header = () => {
     dots: false,
     infinite: true,
     speed: 1000,
-    slidesToShow: 5,
+    slidesToShow: 8,
     slidesToScroll: 1,
     //autoplay: true, // Enable autoplay
     // autoplaySpeed: 500
@@ -128,35 +129,30 @@ const Header = () => {
   return (
     <div>
       <section className="NameTopSec">
-        <div className='row'><div><h6 className="pull-right"><b><a data-interception="off" target="_blank" href={`${ContextData?.propsValue?.Context?.pageContext?._web.absoluteUrl}/SitePages/Dashboard-Old.aspx`}>Old Dashboard</a></b></h6></div></div>
-        <div className="d-flex shadow-sm p-3 mb-3 bg-white">
+        <div className='row'><div><h6 className="pull-right">
+          <span className="mt--5" title='Manage Config'>
+            {IsShowConfigBtn == false && <a className="empCol hreflink" onClick={(e) => { setIsShowConfigBtn(true); ContextData.ShowHideSettingIcon(true); }} >Manage Configuration</a>}
+            {IsShowConfigBtn == true && <a className="empCol hreflink" onClick={(e) => { setIsShowConfigBtn(false); ContextData.ShowHideSettingIcon(false); }}>Cancel</a>}
+            <span> | </span>
+            {DashboardId != undefined && DashboardId != '' ? <a data-interception="off" target="_blank" className="empCol hreflink" href={ContextData?.propsValue?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/DashboardLandingPage.aspx?DashBoardId=" + DashboardId} >Manage Dashboard</a>
+              : <a data-interception="off" target="_blank" className="empCol hreflink" href={ContextData?.propsValue?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/DashboardLandingPage.aspx"} >Manage Dashboard</a>}
+
+          </span> <span> | </span>
+          <b><a data-interception="off" target="_blank" href={`${ContextData?.propsValue?.Context?.pageContext?._web.absoluteUrl}/SitePages/Dashboard-Old.aspx`}>Old Dashboard</a></b></h6></div></div>
+        {/* <div className="d-flex shadow-sm p-3 mb-3 bg-white">
           <div className="col fw-bold f-18 alignCenter">
-            Welcome,
+             Welcome, 
             <span className="ms-1 empCol">
-              {userName?.Title}
+               {userName?.Title} 
+              {DashboardTitle}
             </span>
           </div>
-          <div className="col alignCenter justify-content-end">
-            <span className="me-2 mt--5" title='Manage Config'>
-              {/* {IsShowConfigBtn == false && <a className="mx-2 empCol hreflink" onClick={(e) => { setIsShowConfigBtn(true); ContextData.ShowHideSettingIcon(true); }} >Manage Configuration</a>} */}
-              {DashboardId != undefined && DashboardId != '' ? <a data-interception="off" target="_blank" className="mx-2 empCol hreflink" href={ContextData?.propsValue?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/DashboardLandingPage.aspx?DashBoardId=" + DashboardId} >Manage Dashboard</a>
-                : <a data-interception="off" target="_blank" className="mx-2 empCol hreflink" href={ContextData?.propsValue?.Context?._pageContext?._web?.absoluteUrl + "/SitePages/DashboardLandingPage.aspx"} >Manage Dashboard</a>}
-              {IsShowConfigBtn == true && <a className="mx-2 empCol hreflink" onClick={(e) => { setIsShowConfigBtn(false); ContextData.ShowHideSettingIcon(false); }}>Cancel</a>}
-            </span>
-            <span className="me-2 mt--5" title='Notification'>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#333333" className="bi bi-bell" viewBox="0 0 16 16">
-                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z" />
-              </svg>
-            </span>
-            <WorldClock />
-            <img className="rounded-circle" title={userName?.Title} width={"30px"} height={"30px"} src={userName?.Item_x0020_Cover?.Url} />
-          </div>
-        </div >
+        </div> */}
       </section >
-      {UserGroup != undefined && (UserGroup[0]?.UserGroup?.Title === 'Senior Developer Team' || UserGroup[0]?.UserGroup?.Title === 'Smalsus Lead Team') ?
+      {/* {UserGroup != undefined && (UserGroup[0]?.UserGroup?.Title === 'Senior Developer Team' || UserGroup[0]?.UserGroup?.Title === 'Smalsus Lead Team') ?
         <div className='mb-5'><a className="pull-right empCol hreflink" onClick={(e) => openAnnouncementPopup(e)}> Add Announcement </a>
         </div>
-        : ''}
+        : ''} */}
       {
         annouceMents.length > 0 && (<section className='annocumentSec'>
           <div id="carouselExampleIndicators" className="carousel slide" data-bs-ride="carousel">
@@ -189,13 +185,15 @@ const Header = () => {
                 <>
                   <div className={`${activeTile === items?.TileName ? 'col alignCenter me-3 mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white mb-3 hreflink shadow-sm'}`}
                     onClick={() => handleTileClick(items?.TileName)}>
-                    <span className="iconSec" title={items?.TileName}>
-                      {items?.AdditonalHeader == true ? <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
+                    {/* {items?.AdditonalHeader == true ? <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
                         <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
                         <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
-                      </svg> : <span title={items?.TileName} className="svg__iconbox svg__icon--calendar"></span>}
-                    </span>
-                    {items?.AdditonalHeader && <span className="ms-2 tabText">
+                      </svg> : <span title={items?.TileName} className="svg__iconbox svg__icon--calendar"></span>} */}
+                    {items?.SiteIcon != undefined && items?.SiteIcon != '' ? <span><img width={"35px"} height={"35px"} title="HHHH" src={items?.SiteIcon} /></span> : <span className="iconSec" title={items?.TileName}><svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
+                      <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
+                      <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
+                    </svg></span>}
+                    {items?.AdditonalHeader && <span className="ms-2">
                       <div>{items?.WebpartTitle}</div>
                       <span className='fw-semibold ms-1'>{items?.Tasks?.length}</span>
                       {items?.AdditonalHeader != true && <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>}
@@ -216,13 +214,16 @@ const Header = () => {
                   <>
                     <div className={`${activeTile === items?.TileName ? 'col alignCenter me-3 mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white mb-3 hreflink shadow-sm'}`}
                       onClick={() => handleTileClick(items?.TileName)}>
-                      <span className="iconSec" title={items?.TileName}>
-                        {items?.AdditonalHeader == true ? <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
-                          <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
-                          <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
-                        </svg> : <span title={items?.TileName} className="svg__iconbox svg__icon--calendar"></span>}
-                      </span>
-                      {items?.AdditonalHeader && <span className="ms-2 tabText">
+                      {/* {items?.AdditonalHeader == true ? <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
+                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
+                        <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
+                      </svg> : <span title={items?.TileName} className="svg__iconbox svg__icon--calendar"></span>} */}
+                      {items?.SiteIcon != undefined && items?.SiteIcon != '' ? <span><img className="imgWid29 pe-1 " title="HHHH" src={items?.SiteIcon} /></span> : <span className="iconSec" title={items?.TileName}><svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
+                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
+                        <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
+                      </svg></span>}
+
+                      {items?.AdditonalHeader && <span className="ms-2">
                         <div>{items?.WebpartTitle}</div>
                         <span className='fw-semibold ms-1'>{items?.Tasks?.length}</span>
                         {items?.AdditonalHeader != true && <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>}
@@ -231,7 +232,7 @@ const Header = () => {
                         <div>{items?.WebpartTitle}</div>
                         <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>
                       </span>}
-                    </div>
+                    </div >
                   </>
                 )
               ))}
@@ -245,13 +246,23 @@ const Header = () => {
             <span className='ms-2'>
               <div>TimeSheet</div>
             </span>
+
+          </div>
+          <div className="col-1 alignCenter p-3 hreflink  bg-white mb-3 shadow-sm ms-1">
+            <span className="me-2 mt--5" title='Notification'>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#333333" className="bi bi-bell" viewBox="0 0 16 16">
+                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z" />
+              </svg>
+            </span>
+            <WorldClock />
+            <img className="rounded-circle" title={userName?.Title} width={"30px"} height={"30px"} src={userName?.Item_x0020_Cover?.Url} />
           </div>
         </div>
         {
           DashboardConfig?.length > 0 && <div><TaskStatusTbl activeTile={activeTile} /></div>
         }
 
-      </section>
+      </section >
       <span>
         {IsOpenTimeSheetPopup == true && <EmployeePieChart IsOpenTimeSheetPopup={IsOpenTimeSheetPopup} Call={() => { CallBack() }} />}
       </span>

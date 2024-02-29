@@ -1328,7 +1328,7 @@ function EditProjectPopup(item: any) {
               {EditData?.Item_x0020_Type != "Project" && EditData?.Parent?.Title ?
                 <li>
                   {" "}
-                  <a data-interception="off" href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${EditData?.Parent?.Id}`}>{EditData?.Parent?.Title}</a>{" "}
+                  <a data-interception="off" href={`${AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${EditData?.Parent?.Id}`}>{EditData?.Parent?.Title}</a>{" "}
                 </li> : ''}
               <li>
                 <a>{EditData.Title}</a>
@@ -2343,7 +2343,7 @@ function EditProjectPopup(item: any) {
                       <a className="mx-2 siteColor"
                         target="_blank"
                         data-interception="off"
-                        href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${EditData.Id}`}                     >
+                        href={`${AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${EditData.Id}`}                     >
                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />{" "}
                         Go to Profile page
                       </a>
