@@ -1293,6 +1293,7 @@ const compareToolCallBack = React.useCallback((compareData) => {
               
 
               <GlobalCommanTable
+              tableId="TaskProfile"
               AllSitesTaskData={props?.AllSiteTasks} masterTaskData={props?.AllMasterTasks}
                 queryItems={props?.props}
                 columnSettingIcon={true}
