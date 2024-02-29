@@ -29,7 +29,7 @@ const SmartInformation = (props: any, ref: any) => {
   })
   const sourceinfo: any[] = [
     { text: 'Select Source', key: 0 },
-    { text: 'Team', key: 1 },
+    { text: 'MS Teams', key: 1 },
     { text: 'Call', key: 2 },
     { text: 'Email', key: 3 }
   ]
@@ -38,9 +38,11 @@ const SmartInformation = (props: any, ref: any) => {
   const [isUserNameValid, setIsUserNameValid] = useState(false);
   const [filterSmartinfo, setFiltersmartinfo] = useState([]);
   const [InfoDate, setInfoDate] = React.useState('');
+  const [infodescription, setinfodescription] = React.useState('');
   const [InfoSource, setInfoSource] = React.useState<any>({ text: 'Select Source', key: 0 });
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
   const [uplodDoc, setUploaddoc] = useState(null);
+  const [Htmleditorcall, setHtmleditorcall] = useState(false);
   const [EditTaskdata, setEditTaskdata] = useState();
   const [PostSmartInfo, setPostSmartInfo] = useState(null);
   const [taskInfo, settaskinfo] = useState(null);
@@ -236,7 +238,7 @@ const SmartInformation = (props: any, ref: any) => {
     setAllSmartInfo(Data)
     if (Data.length > 0) {
       SmartInformation?.map((items: any) => {
-
+        items.SmartNoteDate = moment(new Date(new Date(items.SmartNoteDate).setHours(new Date(items.SmartNoteDate).getHours() + 5))).tz("Europe/Berlin").format('DD MMM YYYY HH:mm')
         hhhsmartinfoId.push(items?.Id);
         if (SmartInformation?.length > 0) {
           Data?.map(async (tagsmartinfo: any) => {
@@ -468,9 +470,9 @@ const SmartInformation = (props: any, ref: any) => {
           InfoTypeId: metaDataId != undefined ? metaDataId : null,
           Description: allValue?.Description != "" ? allValue?.Description : "",
           SelectedFolder: allValue?.SelectedFolder,
-          SmartNoteAuthorId: smartnoteAuthor?.length > 0 ? smartnoteAuthor[0]?.AssingedToUser?.Id : typeof (smartnoteAuthor) === 'object' ? smartnoteAuthor?.Name : null,
+          SmartNoteAuthorId: smartnoteAuthor?.length > 0 ? smartnoteAuthor[0]?.AssingedToUser?.Id : typeof (smartnoteAuthor) === 'object' && smartnoteAuthor?.Id != undefined ? smartnoteAuthor?.Id : null,
           RequirementSource: InfoSource?.text,
-          SmartNoteDate: moment(new Date(InfoDate)).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+          SmartNoteDate: InfoDate != '' ? moment(new Date(InfoDate)).tz("Europe/Berlin").format('DD MMM YYYY HH:mm') : null,
           Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
           URL: {
             "__metadata": { type: 'SP.FieldUrlValue' },
@@ -960,8 +962,18 @@ const SmartInformation = (props: any, ref: any) => {
   const checkboxFunction = (e: any) => {
     console.log(e);
     if (e.currentTarget.checked) {
-      setallSetValue({ ...allValue, Title: `Quick-${taskInfo?.Title}-${Today}` })
+      if (allValue?.InfoType === 'Information Source') {
+        if (InfoSource?.key != 0 && (smartnoteAuthor != undefined || smartnoteAuthor?.length != 0) && (InfoDate != undefined || InfoDate != '')) {
+          var desc = `Requirement has been received from ${smartnoteAuthor?.length > 0 ? smartnoteAuthor[0]?.Title : smartnoteAuthor?.Title} through ${InfoSource?.text} on ${moment(InfoDate).format('DD/MM/YYYY')}`
+          setinfodescription(desc);
+          setallSetValue({ ...allValue, Title: `Information Source - ${InfoSource.text}`, Description: desc })
+          setHtmleditorcall(true)
+        }
+
+      }
+      else { setallSetValue({ ...allValue, Title: `Quick-${taskInfo?.Title}-${Today}` }) }
     } else {
+      setinfodescription('');
       setallSetValue({ ...allValue, Title: "" })
     }
 
@@ -1099,7 +1111,7 @@ const SmartInformation = (props: any, ref: any) => {
               <label htmlFor="Title" className='full-width'>Title
                 <span className='ml-1 mr-1 text-danger'>*</span>
                 {popupEdit != true && <span className='mx-2'><input type="checkbox" className="form-check-input" onClick={(e) => checkboxFunction(e)} /></span>}</label>
-              <input type="text" className="full-width" value={allValue?.Title} id="Title" onChange={(e) => changeInputField(e.target.value, "Title")} />
+              <input type="text" className="full-width" value={allValue?.Title} id="Title" onChange={(e) => changeInputField(e.target.value, "Title")} autoComplete='off' />
               {/* {allValue.AstricMesaage &&<span className='ml-1 mr-1 text-danger'>Please enter your Title !</span>} */}
               {filterSmartinfo != undefined && filterSmartinfo.length > 0 && <div className='bg-Fa border overflow-auto'><ul className='list-group mx-2 tex'> {filterSmartinfo.map((smartinfofilter: any) => {
                 return (
@@ -1123,10 +1135,10 @@ const SmartInformation = (props: any, ref: any) => {
               </select>
             </div>
 
-            <div className='col-md-6'>
+            {allValue?.InfoType !== 'Information Source' && <div className='col-md-6'>
               <label htmlFor="URL" className='full-width'>URL</label>
               <input type="text" className='full-width' id="URL" value={allValue?.URL} onChange={(e) => changeInputField(e.target.value, "url")} />
-            </div>
+            </div>}
             {allValue.InfoType != null && allValue.InfoType == "Glossary" && <div className='col-md-6'>
               <label htmlFor="Acronym" className='full-width'>Acronym</label>
               <input type="text" className='full-width' id="Acronym" value={allValue?.Acronym} onChange={(e) => changeInputField(e.target.value, "Acronym")} />
@@ -1162,7 +1174,7 @@ const SmartInformation = (props: any, ref: any) => {
             </div>}
           </div>
         </div>
-        <div className='mt-3'> <HtmlEditorCard editorValue={allValue?.Description != null ? allValue?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
+        <div className='mt-3'>{Htmleditorcall || infodescription.length ? <HtmlEditorCard editorValue={infodescription} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard> : <HtmlEditorCard editorValue={allValue?.Description != null ? allValue?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard>}</div>
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
             <div className={popupEdit ? "col-sm-4 text-lg-start ps-1" : "col-sm-6 text-lg-start ps-1"}>
@@ -1182,13 +1194,12 @@ const SmartInformation = (props: any, ref: any) => {
               <span className='mx-2'>|</span>
 
               <span><a title='Add Link/ Document' className='ForAll hreflink' style={{ cursor: "pointer" }} onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link/ Document</a></span>
-              <Button className='btn btn-primary ms-1 me-1' onClick={saveSharewebItem}>
+              <Button className='btn btn-primary ms-1 me-1' onClick={saveSharewebItem} disabled={allValue?.Title == '' || (smartnoteAuthor == undefined && smartnoteAuthor.length == 0) || (InfoDate == undefined && InfoDate == '') || InfoSource.key == 0}>
                 Save
               </Button>
               <Button className='btn btn-default mx-1' onClick={() => handleClose()}>
                 Cancel
               </Button>
-
 
             </footer>
           </div>
