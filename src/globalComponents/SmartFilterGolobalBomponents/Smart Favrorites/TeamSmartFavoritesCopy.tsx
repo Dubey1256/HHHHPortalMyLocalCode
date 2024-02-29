@@ -778,7 +778,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 isOpen={item?.isOpen}
                 onDismiss={() => setModalIsOpenToFalse("", "")}
                 onRenderHeader={onRenderCustomHeader}
-                isBlocking={item?.isOpen}
+                isBlocking={false}
             >
                 <div className="modal-body p-0 mt-2 mb-3">
                     <section className='smartFilter bg-light border mb-2 col'>

@@ -15,6 +15,7 @@ import * as globalCommon from "../globalCommon";
 import PageLoader from "../pageLoader";
 import InlineBulkEditingTask from "./InlineBulkEditingTask";
 import * as GlobalFunctionForUpdateItem from '../GlobalFunctionForUpdateItems';
+import Tooltip from "../Tooltip";
 let childRefdata: any;
 const SelectedTaskUpdateOnPopup = (item: any) => {
     const childRef: any = React.useRef<any>();
@@ -259,14 +260,20 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
             delete dataToPush?.postFeatureType,
             delete dataToPush?.updatedFeatureTypeTitle
         for (let val of itemData) {
-            if (dataToPush?.Portfolio?.Id === val.Id && (val?.ParentTask?.Id === 0 || val?.ParentTask?.Id === undefined)) {
+            if (dataToPush?.Portfolio?.Id === val.Id && (val?.ParentTask?.Id === 0 || val?.ParentTask?.Id === undefined) && (val.Title != 'Others')) {
                 const existingIndex = val.subRows?.findIndex((subRow: any) => subRow?.Id === dataToPush?.Id && (dataToPush?.siteType === subRow?.siteType));
                 if (existingIndex !== -1 && existingIndex != undefined) {
                     val.subRows[existingIndex] = dataToPush;
                     return true;
                 }
-            } else if (dataToPush?.ParentTask?.Id === val.Id && dataToPush?.siteType === val?.siteType) {
+            } else if (dataToPush?.ParentTask?.Id === val.Id && dataToPush?.siteType === val?.siteType && (val.Title != 'Others')) {
                 const existingIndex = val.subRows?.findIndex((subRow: any) => subRow?.Id === dataToPush?.Id && dataToPush?.siteType === subRow?.siteType);
+                if (existingIndex !== -1 && existingIndex != undefined) {
+                    val.subRows[existingIndex] = dataToPush;
+                    return true;
+                }
+            } else if (val?.Title === 'Others') {
+                const existingIndex = val.subRows?.findIndex((subRow: any) => subRow?.Id === dataToPush?.Id && (dataToPush?.siteType === subRow?.siteType));
                 if (existingIndex !== -1 && existingIndex != undefined) {
                     val.subRows[existingIndex] = dataToPush;
                     return true;
@@ -303,7 +310,10 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
     const onRenderCustomHeader = () => {
         return (
             <>
-                <div className="alignCenter subheading"><span className="siteColor">Bulk Editing for Multiple Items</span></div>
+                <div className="alignCenter subheading">
+                    <span className="siteColor">Bulk Editing for Multiple Items</span>
+                </div>
+                <Tooltip ComponentId={6797} />
             </>
         );
     };
