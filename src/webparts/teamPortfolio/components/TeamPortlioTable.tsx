@@ -1711,7 +1711,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 500,
+                size: 450,
                 isColumnVisible: true
             },
             {
@@ -1719,7 +1719,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) &&
-                            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
                                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
                         }
                     </>
@@ -1782,7 +1782,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Status",
                 resetColumnFilters: false,
                 header: "",
-                size: 42,
+                size: 55,
                 isColumnVisible: true
             },
             {
@@ -1794,7 +1794,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Item Rank",
                 resetColumnFilters: false,
                 header: "",
-                size: 42,
+                size: 55,
                 isColumnVisible: true
             },
             {
@@ -1813,7 +1813,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "SmartPriority",
                 resetColumnFilters: false,
                 header: "",
-                size: 42,
+                size: 55,
                 isColumnVisible: true
             },
             {
@@ -1832,7 +1832,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Priority Rank",
                 resetColumnFilters: false,
                 header: "",
-                size: 42,
+                size: 55,
                 isColumnVisible: false
             },
             {

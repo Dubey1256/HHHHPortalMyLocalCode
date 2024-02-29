@@ -2727,7 +2727,7 @@ export const  ShareTimeSheet=async (AllTaskTimeEntries:any,taskUser:any,Context:
                text =
                '<tr>' +
                '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.siteType + '</td>'
-               + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">'+ '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Project-Management.aspx?ProjectId=' + item.Project?.Id +'><span style="font-size:13px">'+  (item?.Project == undefined?'':item?.Project.Title) + '</span></a>' + '</p>' +  '</td>'
+               + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">'+ '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Project-Management-Profile.aspx?ProjectId=' + item.Project?.Id +'><span style="font-size:13px">'+  (item?.Project == undefined?'':item?.Project.Title) + '</span></a>' + '</p>' +  '</td>'
                + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:135px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Portfolio-Profile.aspx?taskId=' + item?.Portfolio?.Id +'><span style="font-size:13px">'+ (item.Portfolio == undefined?'':item.Portfolio.Title) +'</span></a>' + '</p>' + '</td>'
                + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px">' + item.Title + '</span></a>' + '</p>' + '</td>'
                + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.TaskTime + '</td>'
@@ -2918,8 +2918,10 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
     let DesignMemberleaveHours: any = 0;
     let startDate: any = ''
     let DevCount: any = 0;
+    let Trainee:any=0;
     let DesignCount: any = 0;
     let QACount: any = 0;
+    let TranineesNum: any = 0;
     const LeaveUserData = await GetleaveUser(TaskUser, Context)
     console.log(LeaveUserData)
     //-------------------------leave User Data---------------------------------------------------------------------------------------
@@ -2936,7 +2938,7 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
 
     const currentLoginUserId = Context.pageContext?._legacyPageContext.userId;
     selectedUser?.forEach((items: any) => {
-        if (items?.UserGroup?.Title == 'Senior Developer Team' || items?.UserGroup?.Title == 'Smalsus Lead Team' || items?.UserGroup?.Title == 'Junior Developer Team') {
+        if (items?.UserGroup?.Title == 'Senior Developer Team' || items?.UserGroup?.Title == 'Smalsus Lead Team' || items?.UserGroup?.Title == 'Junior Developer Team' || items?.UserGroup?.Title  == 'Trainees') {
             DevCount++
         }
         if ((items?.TimeCategory == 'Design' && items.Company == 'Smalsus') || items?.UserGroup?.Title == 'Design Team') {
@@ -2945,6 +2947,7 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
         if ((items?.TimeCategory == 'QA' && items.Company == 'Smalsus') && items?.UserGroup?.Title != 'Ex-Staff') {
             QACount++
         }
+     
     })
     TaskUser?.forEach((val: any) => {
         AllTimeEntry?.map((item: any) => {
@@ -2989,20 +2992,22 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
     LeaveUserData?.forEach((items: any) => {
         if (select >= items.Start && select <= items.EndDate) {
             items.TaskDate = startDate
-            if (items?.Department == 'Development' && items.TaskTitle == 'Leave') {
+            if (items?.Department == 'Development') {
                 DevelopmentMembers++
                 DevelopmentleaveHours += items.totaltime
             }
     
-            if (items?.Department == 'Design' && items.TaskTitle == 'Leave') {
+            if (items?.Department == 'Design') {
                 DesignMembers++
                 DesignMemberleaveHours += items.totaltime
             }
     
-            if (items?.Department == 'QA' && items.TaskTitle == 'Leave') {
+            if (items?.Department == 'QA') {
                 QAMembers++
                 QAleaveHours += items.totaltime
             }
+           
+            
             AllTimeEntry.push(items)
         }
     })
@@ -3037,11 +3042,14 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
         if (item.PriorityRank == undefined || item.PriorityRank == '') {
             item.PriorityRank = '';
         }
+        if (item.TaskTitle == undefined || item.TaskTitle == '') {
+            item.TaskTitle = '';
+        }
         if (item.ComponentName == undefined || item.ComponentName == '') {
             item.ComponentName = '';
         }
-        if (item.ClientCategoryy == undefined || item.ClientCategoryy == '') {
-            item.ClientCategoryy = '';
+        if (item.ClientCategorySearch == undefined || item.ClientCategorySearch == '') {
+            item.ClientCategorySearch = '';
         }
         if (item.PercentComplete == undefined || item.PercentComplete == '') {
             item.PercentComplete = '';
@@ -3234,7 +3242,6 @@ const GetleaveUser = async (TaskUser: any, Context: any) => {
                 users['ComponentName'] = ''
                 users['Department'] = item.TimeCategory
                 users['Effort'] = val.totaltime !== undefined && val.totaltime <= 4 ? val.totaltime : 8
-                users['TaskTitle'] = 'Leave'
                 users['Description'] = 'Leave'
                 users['ClientCategoryy'] = 'Leave'
                 users['siteType'] = ''

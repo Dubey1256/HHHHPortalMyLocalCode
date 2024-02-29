@@ -356,13 +356,13 @@ const onRenderCustomHeaderMain = (type: any) => {
                 header: "",
             },
             {
-                accessorFn: (row) => row?.Site,
+                accessorFn: (row) => row?.siteType,
                 cell: ({ row }) => (
                     <span>
                         <img className='circularImage rounded-circle' src={row?.original?.SiteIcon} />
                     </span>
                 ),
-                id: "Site",
+                id: "siteType",
                 placeholder: "Site",
                 header: "",
                 resetSorting: false,
@@ -370,7 +370,7 @@ const onRenderCustomHeaderMain = (type: any) => {
                 size: 50
             },
             {
-                accessorFn: (row) => row?.Portfolio,
+                accessorFn: (row) => row?.PortfolioTitle,
                 cell: ({ row }) => (
                     <span>
                         <a className="hreflink"
@@ -382,7 +382,7 @@ const onRenderCustomHeaderMain = (type: any) => {
                         </a>
                     </span>
                 ),
-                id: "Portfolio",
+                id: "PortfolioTitle",
                 placeholder: "Portfolio",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -404,8 +404,17 @@ const onRenderCustomHeaderMain = (type: any) => {
                     </span>
                 ),
                 placeholder: "Priority",
-                id: 'Priority',
+                id: 'PriorityRank',
                 header: "",
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    if(( row?.original?.PriorityRank?.toString().charAt(0) == filterValue.toString().charAt(0) )
+                    &&(row?.original?.PriorityRank.toString())?.includes(filterValue)){
+                        return true
+                    }else{
+                        return false
+                    }
+                   
+                },
                 resetColumnFilters: false,
                 resetSorting: false,
                 size: 75
@@ -434,7 +443,7 @@ const onRenderCustomHeaderMain = (type: any) => {
             },
 
             {
-                accessorFn: (row) => row?.DueDate,
+                accessorFn: (row) => row?.DisplayDueDate,
                 cell: ({ row }) => (
                     <InlineEditingcolumns
                         AllListId={AllListId}
@@ -445,9 +454,16 @@ const onRenderCustomHeaderMain = (type: any) => {
                         pageName={'ProjectManagment'}
                     />
                 ),
-                id: 'DueDate',
+                id: 'DisplayDueDate',
                 resetColumnFilters: false,
                 resetSorting: false,
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+                      return true
+                    } else {
+                      return false
+                    }
+                },
                 placeholder: "Due Date",
                 header: "",
                 size: 80
@@ -486,6 +502,9 @@ const onRenderCustomHeaderMain = (type: any) => {
                 placeholder: "% Complete",
                 resetColumnFilters: false,
                 resetSorting: false,
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    return row?.original?.PercentComplete == filterValue
+                },
                 header: "",
                 size: 55
             },
@@ -536,6 +555,13 @@ const onRenderCustomHeaderMain = (type: any) => {
                 resetSorting: false,
                 isColumnDefultSortingDesc: true,
                 placeholder: "Created",
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                      return true
+                    } else {
+                      return false
+                    }
+                },  
                 header: "",
                 size: 125
             }

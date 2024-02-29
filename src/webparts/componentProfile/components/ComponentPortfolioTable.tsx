@@ -1232,7 +1232,7 @@ const switchGroupbyData = () => {
                   data-interception="off"
                   target="_blank"
                   className="hreflink serviceColor_Active"
-                  href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`}
+                  href={`${ContextValue.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`}
                 >
                   <ReactPopperTooltip
                     ShareWebId={row?.original?.projectStructerId}
@@ -2338,8 +2338,8 @@ const customTableHeaderButtons = (
                   <div className="">
                     <div className="">
                   
-                      <GlobalCommanTable  customHeaderButtonAvailable={true}
-                                            customTableHeaderButtons={customTableHeaderButtons}  showRestructureButton={true} columnSettingIcon={true} bulkEditIcon={true} 
+                      <GlobalCommanTable   customHeaderButtonAvailable={true}
+                                            customTableHeaderButtons={customTableHeaderButtons}  showRestructureButton={true} columnSettingIcon={true} tableId="PortfolioProfile" bulkEditIcon={true} 
                       AllSitesTaskData={flatviewTasklist} masterTaskData={flatviewmastertask}
                         smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true}
                         portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup} flatViewDataAll={flatViewDataAll} setData={setData}

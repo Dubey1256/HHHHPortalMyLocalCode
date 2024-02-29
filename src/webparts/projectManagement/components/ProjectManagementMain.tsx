@@ -284,6 +284,21 @@ const ProjectManagementMain = (props: any) => {
                   }
                 })
                 item.createdImg = itemAuthor?.Item_x0020_Cover?.Url
+
+                let itemEditor = AllUser?.find((user: any) => {
+                  if (user?.AssingedToUser?.Id == item?.Editor?.Id) {
+                    return true
+                  }
+                })
+                item.modifiedImg = itemEditor?.Item_x0020_Cover?.Url
+
+                if (item?.Modified != undefined) {
+                  item.DisplayModifiedDate = item.Modified != null
+                    ? Moment(item.Modified).format("DD/MM/YYYY")
+                    : "";
+                } else {
+                  item.DisplayModifiedDate = '';
+                }
               })
             }
             if (fetchedProject?.ParentId != undefined && fetchedProject?.Item_x0020_Type == "Sprint") {
@@ -639,6 +654,10 @@ const ProjectManagementMain = (props: any) => {
           items.Created != null
             ? Moment(items.Created).format("DD/MM/YYYY")
             : "";
+        items.DisplayModifiedDate =
+          items.Modified != null
+            ? Moment(items.Modified).format("DD/MM/YYYY")
+            : "";
         items.portfolio = {};
         if (items?.Portfolio?.Id != undefined) {
           items.Portfolio = MasterListData?.find((masterItem: any) => masterItem?.Id == items?.Portfolio?.Id)
@@ -700,6 +719,11 @@ const ProjectManagementMain = (props: any) => {
             });
           }
         });
+        AllUser?.map((item: any) => {
+          if (item?.AssingedToUserId == items.Editor.Id) {
+            items.modifiedImg = item?.Item_x0020_Cover?.Url;
+          }
+        })
         items.subRows = [];
         AllTask.push(items);
       });
@@ -715,6 +739,7 @@ const ProjectManagementMain = (props: any) => {
       if (projectData?.subRows?.length > 0 && projectData?.Item_x0020_Type == "Project") {
         allSprints = projectData?.subRows
         allSprints?.map((Sprint: any) => {
+          
           let allSprintActivities: any = []
           allSprintActivities = AllTask.filter((task: any) => {
             if (task?.TaskType?.Id == 1 && task?.Project?.Id == Sprint?.Id) {
@@ -912,6 +937,13 @@ const ProjectManagementMain = (props: any) => {
           : "";
       } else {
         propsItems.DisplayCreateDate = '';
+      }
+      if (propsItems?.Modified != undefined) {
+        propsItems.DisplayModifiedDate = propsItems.Modified != null
+          ? Moment(propsItems.Modified).format("DD/MM/YYYY")
+          : "";
+      } else {
+        propsItems.DisplayModifiedDate = '';
       }
       if (propsItems?.taggedPortfolios != undefined) {
         let filteredSmartPortfolios = propsItems?.taggedPortfolios.filter((tagPort: any) => tagPort?.Id !== undefined).map((tagPort: any) => smartPortfoliosData.find((port: any) => port?.Id === tagPort?.Id));
@@ -1163,7 +1195,7 @@ const ProjectManagementMain = (props: any) => {
               <span>
                 <a
                   className="hreflink"
-                  href={`${props?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`}
+                  href={`${props?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.Id}`}
                   data-interception="off"
                   target="_blank"
                 >
@@ -1425,6 +1457,42 @@ const ProjectManagementMain = (props: any) => {
         size: 105
       },
       {
+        accessorFn: (row) => row?.Modified,
+        cell: ({ row }) => (
+          <span className="d-flex">
+            <span>{row?.original?.DisplayModifiedDate} </span>
+
+            {row?.original?.modifiedImg != undefined ? (
+              <>
+                <a
+                  href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
+                  target="_blank"
+                  data-interception="off"
+                >
+                  <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={row?.original?.modifiedImg} />
+                </a>
+              </>
+            ) : (
+              <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Editor?.Title}></span>
+            )}
+          </span>
+        ),
+        id: 'Modified',
+        canSort: false,
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Modified",
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        header: "",
+        size: 105
+      },
+      {
         accessorFn: (row) => row?.TotalTaskTime,
         cell: ({ row }) => (
           <span> {row?.original?.TotalTaskTime}</span>
@@ -1565,7 +1633,7 @@ const ProjectManagementMain = (props: any) => {
                   {Masterdata?.Item_x0020_Type != "Project" && Masterdata?.Parent?.Title ?
                     <li>
                       {" "}
-                      <a data-interception="off" href={`${props?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${Masterdata?.Parent?.Id}`}>{Masterdata?.Parent?.Title}</a>{" "}
+                      <a data-interception="off" href={`${props?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${Masterdata?.Parent?.Id}`}>{Masterdata?.Parent?.Title}</a>{" "}
                     </li> : ''}
                   <li>
                     {" "}
@@ -1959,7 +2027,7 @@ const ProjectManagementMain = (props: any) => {
                                   clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
                                   flatView={true}
                                   customHeaderButtonAvailable={true}
-                                  bulkEditIcon={true} setData={setProjectTableData} setLoaded={setPageLoader} columnSettingIcon={true}
+                                  bulkEditIcon={true} setData={setProjectTableData} setLoaded={setPageLoader}
                                   customTableHeaderButtons={customTableHeaderButtons}
                                   showRestructureButton={true}
                                   switchGroupbyData={switchGroupbyData}
