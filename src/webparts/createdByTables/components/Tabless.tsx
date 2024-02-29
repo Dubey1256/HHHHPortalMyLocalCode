@@ -46,6 +46,7 @@ const Tabless = (props: any) => {
     //SiteTaskListID:this.props?.props?.SiteTaskListID,
     TaskTimeSheetListID: props?.Items?.TaskTimeSheetListID,
     DocumentsListID: props?.Items?.DocumentsListID,
+    TaskListId: props?.Items?.TaskListId,
     SmartInformationListID: props?.Items?.SmartInformationListID,
     siteUrl: props?.Items?.siteUrl,
     AdminConfigrationListID: props?.Items?.AdminConfigrationListID,
@@ -177,6 +178,7 @@ const Tabless = (props: any) => {
             if (item.Title != "DRR" && item.Title != "Master Tasks" && item.Title != "SDC Sites" && item.Configurations != null) {
               let a: any = JSON.parse(item.Configurations);
               a?.map((newitem: any) => {
+                newitem.currentSiteUrl = props?.Items?.siteUrl
                 dataLength.push(newitem);
                 getAllData(newitem);
                 // b.push(newitem);
@@ -271,11 +273,11 @@ const Tabless = (props: any) => {
     } else if (CategoriesQueryId != null) {
       filter = `substringof('${CategoriesQueryId}', Categories) and PercentComplete le 0.91`
     } else if (AssignedToQueryId != null) {
-      filter = `substringof('${AssignedToQueryId}', AssignedTo/Id) or substringof('${AssignedToQueryId}', Responsible_x0020_Team/Title) or substringof('${AssignedToQueryId}', Team_x0020_Members/Title) and PercentComplete le 0.91`
+      filter = `substringof('${AssignedToQueryId}', AssignedTo/Id) or substringof('${AssignedToQueryId}', ResponsibleTeam/Title) or substringof('${AssignedToQueryId}', TeamMembers/Title) and PercentComplete le 0.91`
     } else {
       filter = `PercentComplete le 0.91`
     }
-    const web = new Web(items.siteUrl);
+    const web = new Web(items.currentSiteUrl);
     await web.lists
       .getById(items.listId)
       .items.select("Title", "PercentComplete", "TaskLevel", "TeamMembers/Id", "TaskID", "ParentTask/Title", "ParentTask/Id", "TeamMembers/Title", "ResponsibleTeam/Id", "ResponsibleTeam/Title", 'EstimatedTimeDescription', "EstimatedTime", "FeedBack", "SharewebTaskType/Title", "TaskType/Id", "TaskType/Title", "TaskType/Level", "Portfolio/Id", "Portfolio/ItemType", "Portfolio/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "Categories", "Priority_x0020_Rank", "DueDate", "Created", "Modified", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title", "Editor/Title", "Editor/Id", "Author/Title", "Author/Id", "AssignedTo/Id", "AssignedTo/Title")
@@ -286,6 +288,8 @@ const Tabless = (props: any) => {
         const filteredItems = data.filter((item: any) => !item?.Categories?.includes('Draft'));
 
         filteredItems?.map((dataItem: any) => {
+          dataItem.AllTeamName = '';
+          dataItem.allTeamMember = [];
           const jsonObject = JSON.parse(dataItem?.EstimatedTimeDescription);
           userlists?.map((userItem: any) => {
             dataItem.percentage = dataItem.PercentComplete * 100 + "%";
@@ -328,34 +332,26 @@ const Tabless = (props: any) => {
           });
 
 
-          // Ensure dataItem.AllTeamName is initialized as an empty string
-          dataItem.AllTeamName = dataItem.AllTeamName || '';
+          // Ensure dataItem.allTeamMember is initialized as an empty string
+       
+          if (dataItem?.ResponsibleTeam?.length > 0) {
+            dataItem.allTeamMember = dataItem?.allTeamMember?.concat(dataItem.ResponsibleTeam)
+          }
+          if (dataItem?.TeamMembers?.length > 0) {
+            dataItem.allTeamMember = dataItem?.allTeamMember.concat(dataItem.TeamMembers)
+          }
+          if (dataItem?.AssignedTo?.length > 0) {
+            dataItem.allTeamMember = dataItem?.allTeamMember.concat(dataItem.AssignedTo)
+          }
 
-          const processTeamMembers = (teamMembers: any) => {
-            if (teamMembers != undefined && teamMembers != null && teamMembers?.length > 0) {
-              teamMembers.forEach((items: any) => {
-                dataItem.AllTeamName += items.Title + ";";
-              });
-            }
-          };
-
-          processTeamMembers(dataItem.Responsible_x0020_Team);
-          processTeamMembers(dataItem.Team_x0020_Members);
-          processTeamMembers(dataItem.AssignedTo);
-
-          // Use join to concatenate array elements with a separator
-          dataItem.AllTeamName = dataItem.AllTeamName.split(';').filter(Boolean).join(';');
-
-
-
+          if(dataItem?.allTeamMember?.length>0){
+            dataItem.AllTeamName = dataItem?.allTeamMember?.map((val:any)=> val.Title).join(" ");
+          }
+          
           const matchingTask = masterTasks?.find((task: any) => dataItem?.Portfolio?.Id === task?.Id);
           if (matchingTask) {
             dataItem.PortfolioType = matchingTask.PortfolioType;
           }
-
-
-          let cleanedString = dataItem?.AllTeamName?.replace(/\bundefined\b/g, '');
-
 
           allData.push({
             ...dataItem,
@@ -379,7 +375,7 @@ const Tabless = (props: any) => {
             Editorss: dataItem.Editor.Title,
             Team_x0020_Members: dataItem.Team_x0020_Members,
             Responsible_x0020_Team: dataItem.Responsible_x0020_Team,
-            AllTeamName: cleanedString,
+            AllTeamName: dataItem.AllTeamName,
             ResponsibleTeam: dataItem.ResponsibleTeam,
             TeamMembers: dataItem.TeamMembers,
             AssignedTo: dataItem.AssignedTo,
@@ -518,8 +514,6 @@ const Tabless = (props: any) => {
         size: 80,
       },
       {
-
-
         accessorFn: (row: any) => row?.percentage,
         cell: ({ row, getValue }: any) => (
           <>{row?.original?.percentage}</>
@@ -541,6 +535,9 @@ const Tabless = (props: any) => {
         placeholder: "Priority",
         header: "",
         resetColumnFilters: false,
+        filterFn: (row: any, columnId: any, filterValue: any) => {
+          return row?.original?.priority == filterValue
+        },
         size: 50,
       },
       {
@@ -616,10 +613,10 @@ const Tabless = (props: any) => {
         accessorFn: (row: any) => row?.AllTeamName,
         cell: ({ row, getValue }: any) => (
           <span>
-            <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={taskUser} />
+            <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={taskUser} Context={props?.Items} />
           </span>
         ),
-        id: "TeamMembersSearch",
+        id: "AllTeamName",
         placeholder: "Team Members",
         header: "",
         resetColumnFilters: false,
