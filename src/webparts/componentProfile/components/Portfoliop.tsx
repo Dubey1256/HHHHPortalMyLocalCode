@@ -213,7 +213,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
       }
     };
     let statusDropDown = [
-      { rankTitle: "Select Status", rank: null },
+      { rankTitle: "Select Status", rank: 0 },
       { rankTitle: "Not Started", rank: 0 },
       { rankTitle: "In Progress", rank: 10 },
       { rankTitle: "Completed", rank: 100 },

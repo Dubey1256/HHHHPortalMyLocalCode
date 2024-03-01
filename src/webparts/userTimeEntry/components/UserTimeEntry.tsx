@@ -37,7 +37,7 @@ export interface IUserTimeEntryState {
   enddate: Date; SitesConfig: any; AllTimeEntry: any; SelectGroupName: string; checkedAll: boolean; checkedAllSites: boolean; checkedParentNode: any; resultSummary: any;
   ShowingAllData: any; loaded: any; expandIcons: boolean; columns: ColumnDef<any, unknown>[]; IsMasterTask: any; IsTask: any; IsPresetPopup: any; PresetEndDate: any;
   PresetStartDate: any; PreSetItem: any; isStartDatePickerOne: boolean; isEndDatePickerOne: boolean; IsCheckedComponent: boolean; IsCheckedService: boolean; selectedRadio: any;
-  IsTimeEntry: boolean; showShareTimesheet: boolean; SharewebTimeComponent: any; AllMetadata: any; isDirectPopup: boolean; TimeSheetLists: any
+  IsTimeEntry: boolean; showShareTimesheet: boolean; disableProperty: boolean, SharewebTimeComponent: any; AllMetadata: any; isDirectPopup: boolean; TimeSheetLists: any
 }
 var user: any = ''
 let portfolioColor: any = '#000066';
@@ -46,10 +46,11 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
   closePanel: any;
   sheetsItems: any[];
   showShareTimesheet: any;
+  disableProperty:any;
   public constructor(props: IUserTimeEntryProps, state: IUserTimeEntryState) {
     super(props);
     this.state = {
-      Result: {}, taskUsers: [], DateType: '', IsShareTimeEntry: false, showShareTimesheet: true, checked: [], expanded: [], checkedSites: [], expandedSites: [], filterItems: [], filterSites: [], ImageSelectedUsers: [], startdate: new Date(),
+      Result: {}, taskUsers: [], DateType: '', IsShareTimeEntry: false, showShareTimesheet: false,disableProperty:true, checked: [], expanded: [], checkedSites: [], expandedSites: [], filterItems: [], filterSites: [], ImageSelectedUsers: [], startdate: new Date(),
       enddate: new Date(), SitesConfig: [], AllTimeEntry: [], SelectGroupName: '', checkedAll: false, expandIcons: false, checkedAllSites: false, checkedParentNode: [],
       resultSummary: { totalTime: 0, totalDays: 0 }, ShowingAllData: [], loaded: true, columns: [], IsTask: '', IsMasterTask: '', IsPresetPopup: false, PresetEndDate: new Date(),
       PresetStartDate: new Date(), PreSetItem: {}, isStartDatePickerOne: true, isEndDatePickerOne: false, IsCheckedComponent: true, IsCheckedService: true, selectedRadio: 'ThisWeek',
@@ -206,6 +207,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               totalTimedata?.map((data: any) => {
                 data.taskDetails = this.checkTimeEntrySite(data);
               })
+              this.setState({ disableProperty: false })
             
             }
           } else {
@@ -955,7 +957,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     } else if (startDateOf == 'Last Month') {
         const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
         const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-        var change = (Moment(startingDateOfLastMonth).add(31, 'days').format())
+        var change = (Moment(startingDateOfLastMonth).add(17, 'days').format())
         var b = new Date(change)
         formattedDate = b;
     } else if (startDateOf == 'Last Week') {
@@ -2219,20 +2221,16 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
       });
     }
     else {
-      
-      
-      const filteredArray:any = []
-      this.state.ImageSelectedUsers.forEach((user:any) => {
-        if(user?.AssingedToUserId == currentuserId){
+      const filteredArray: any = []
+      this.state.ImageSelectedUsers.forEach((user: any) => {
+        if (user?.AssingedToUserId == currentuserId) {
           filteredArray.push(user)
         }
       });
       // Update state with the filtered array
       this.setState({ ImageSelectedUsers: filteredArray });
-      
     }
-   
-
+  
     this.setState({ showShareTimesheet: true })
   }
   private shareTaskInEmail = () => {
@@ -2487,7 +2485,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
                 </Col>
               </Col>
             </details>
-            {this.state.showShareTimesheet && <span className="align-autoplay d-flex float-end my-1" onClick={() => this.shareTaskInEmail()}><span className="svg__iconbox svg__icon--mail ms-1" ></span>Share {DateType}'s Time Entry</span>}
+            {this.state.showShareTimesheet && <span className={this.state.disableProperty?'Disabled-Link align-autoplay d-flex float-end my-1 text-black-50':'align-autoplay d-flex float-end my-1'} onClick={() => this.shareTaskInEmail()}><span className="svg__iconbox svg__icon--mail ms-1" ></span>Share {DateType}'s Time Entry</span>}
           </Col>
           <div className='col'>
             <section className='TableContentSection'>
