@@ -585,7 +585,7 @@ export default function ProjectOverview(props: any) {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
                     <div className='alignCenter'>
-                        <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
+                        <a className='hreflink' href={row?.original?.siteType == "Master Tasks" ? `${AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.Id}`: `${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?TaskId=${row?.original?.Id}&Site=${row?.original?.siteType}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
                         {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5'><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
                     </div>
 
