@@ -127,6 +127,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const [openCompareToolPopup, setOpenCompareToolPopup] = React.useState(false);
     const [dynamicColumnsValue, setDynamicColumnsValue] = React.useState([])
     const rerender = React.useReducer(() => ({}), {})[1];
+const [ActiveCompareToolButton, setActiveCompareToolButton] = React.useState(false);
     // const [tableHeight, setTableHeight] = React.useState(window.innerHeight);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
     let ComponetsData: any = {};
@@ -336,6 +337,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                         item.fontColorTask = "#000"
                     });
+}
                     AllTasksSiteTasks = AllTasksSiteTasks.concat(AllTasksMatches);
                     if (Counter == siteConfig.length) {
                         map(AllTasksSiteTasks, (result: any) => {
@@ -542,7 +544,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         allTaskDataFlatLoadeViewBackup = allTaskDataFlatLoadeViewBackup.concat(allTaskDataFlatLoadeViewBackupAllData);
                         firstTimeFullDataGrouping();
                     }
-                }
+                
             });
             await Promise.all(fetchPromises)
             return tasksDataLoadUpdate
@@ -606,6 +608,7 @@ function TeamPortlioTable(SelectedProp: any) {
                         // if (item?.TaskCategories?.some((category: any) => category.Title.toLowerCase() === "draft")) { item.isDrafted = true; }
                     });
                 }
+
                 AllTasks = AllTasks.concat(AllTasksMatches);
                 if (Counter == siteConfig.length) {
                     // AllTasks = AllTasks?.filter((type: any) => type.isDrafted === false);
@@ -803,7 +806,6 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                     // allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
                 }
-
             });
             // GetComponents();
         }
@@ -3127,21 +3129,21 @@ function TeamPortlioTable(SelectedProp: any) {
 
     let isOpenPopup = false;
 
-    const callbackdataAllStructure = React.useCallback((item) => {
-        if (item[0]?.SelectedItem != undefined) {
-            copyDtaArray.map((val: any) => {
-                item[0]?.subRows.map((childs: any) => {
-                    if (item[0].SelectedItem == val.Id) {
+    const callbackdataAllStructure = React.useCallback((item)=>{
+        if(item[0]?.SelectedItem != undefined){
+            copyDtaArray.map((val:any)=>{
+                item[0]?.subRows.map((childs:any)=>{
+                    if(item[0].SelectedItem == val.Id){
                         val.subRows.unshift(childs)
                     }
-                    if (val.subRows != undefined && val.subRows.length > 0) {
-                        val.subRows?.map((child: any) => {
-                            if (item[0].SelectedItem == child.Id) {
+                    if(val.subRows != undefined && val.subRows.length > 0){
+                        val.subRows?.map((child:any)=>{
+                            if(item[0].SelectedItem == child.Id){
                                 child.subRows.unshift(childs)
                             }
-                            if (child.subRows != undefined && child.subRows.length > 0) {
-                                child.subRows?.map((Subchild: any) => {
-                                    if (item[0].SelectedItem == Subchild.Id) {
+                            if(child.subRows != undefined && child.subRows.length > 0){
+                                child.subRows?.map((Subchild:any)=>{
+                                    if(item[0].SelectedItem == Subchild.Id){
                                         Subchild.subRows.unshift(childs)
                                     }
                                 })
@@ -3152,8 +3154,8 @@ function TeamPortlioTable(SelectedProp: any) {
             })
 
         }
-        if (item != undefined && item.length > 0 && item[0].SelectedItem == undefined) {
-            item.forEach((value: any) => {
+        if(item != undefined && item.length>0 && item[0].SelectedItem ==  undefined){
+            item.forEach((value:any)=>{
                 copyDtaArray.unshift(value)
             })
         }
@@ -3163,7 +3165,7 @@ function TeamPortlioTable(SelectedProp: any) {
         renderData = renderData.concat(copyDtaArray)
         refreshData();
 
-    }, [])
+    },[])
 
     const AddStructureCallBackCall = React.useCallback((item) => {
         childRef?.current?.setRowSelection({});
@@ -3436,15 +3438,8 @@ function TeamPortlioTable(SelectedProp: any) {
     const onRenderCustomHeaderMain = () => {
         return (
             <div className="d-flex full-width pb-1">
-                <div
-                    style={{
-                        marginRight: "auto",
-                        fontSize: "20px",
-                        fontWeight: "600",
-                        marginLeft: "20px",
-                    }}
-                >
-                    <span>{`Create Item`}</span>
+                <div className="subheading">
+                    <span className="siteColor">{`Create Item`}</span>
                 </div>
                 <Tooltip ComponentId={1746} />
             </div>
@@ -3459,9 +3454,28 @@ function TeamPortlioTable(SelectedProp: any) {
             setOpenCompareToolPopup(false);
         }
     }, []);
-    const openCompareTool = () => {
+    
+    const trigerAllEventButton = (eventValue: any) => {
+if (eventValue === "Compare") {
         setOpenCompareToolPopup(true);
     }
+}
+    React.useEffect(() => {
+        if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length === 2) {
+            if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined && (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Tasks' || childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Tasks')) {
+                setActiveCompareToolButton(true);
+            } else if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType != undefined) {
+                setActiveCompareToolButton(true);
+            }
+        } else {
+            setActiveCompareToolButton(false);
+        }
+    }, [childRef?.current?.table?.getSelectedRowModel()?.flatRows])
+    const customTableHeaderButtons = (
+        (ActiveCompareToolButton) ?
+            < button type="button" className="btn btn-primary" title='Compare' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
+            <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Compare</button>
+    )
     /////end////////////
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
 
@@ -3516,16 +3530,14 @@ function TeamPortlioTable(SelectedProp: any) {
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
                                         <div>
-                                            <GlobalCommanTable tableId="teamPortfolio" showRestructureButton={true} showCompareButton={true} openCompareTool={openCompareTool} columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup}
+                                            <GlobalCommanTable showRestructureButton={true} columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup}
                                                 masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup}
                                                 flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
                                                 flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef}
                                                 callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers}
-                                                portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration}
+                                                showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration}
                                                 showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity}
-                                                // showPopupHeader={true}
-                                                showHeader={true}
-                                            />
+                                                customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} />
                                         </div>
                                     </div>
                                 </div>
@@ -3551,6 +3563,11 @@ function TeamPortlioTable(SelectedProp: any) {
                     taskUser={AllUsers}
                     portfolioTypeData={portfolioTypeData}
                     PropsValue={ContextValue}
+SelectedItem={
+                    checkedList != null && checkedList?.Id != undefined
+                        ? checkedList
+                        : props
+                }
                 />
 
             </Panel>
