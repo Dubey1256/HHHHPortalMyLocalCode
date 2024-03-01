@@ -2336,6 +2336,30 @@ function TeamPortlioTable(SelectedProp: any) {
             },
             ...dynamicColumnsValue,
             {
+                accessorKey: "descriptionsSearch",
+                placeholder: "descriptionsSearch",
+                header: "",
+                resetColumnFilters: false,
+                id: "descriptionsSearch",
+                isColumnVisible: false
+            },
+            {
+                accessorKey: "commentsSearch",
+                placeholder: "commentsSearch",
+                header: "",
+                resetColumnFilters: false,
+                id: "commentsSearch",
+                isColumnVisible: false
+            },
+            {
+                accessorKey: "timeSheetsDescriptionSearch",
+                placeholder: "timeSheetsDescriptionSearch",
+                header: "",
+                resetColumnFilters: false,
+                id: "timeSheetsDescriptionSearch",
+                isColumnVisible: false
+            },
+            {
                 cell: ({ row }) => (
                     <>
                         {row?.original?.siteType != "Master Tasks" && row?.original?.Title != "Others" && (

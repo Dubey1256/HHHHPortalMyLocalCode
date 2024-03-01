@@ -466,11 +466,11 @@ const GlobalCommanTable = (items: any, ref: any) => {
             if (preSetColumnOrdring?.columnOrderValue?.length > 0 && preSetColumnOrdring?.tableId === items?.tableId) {
                 const colValue = preSetColumnOrdring?.columnOrderValue?.map((elem: any) => elem.id);
                 setColumnOrder(colValue);
-            } else {
+            } else if (items?.columnSettingIcon === true && tableId) {
                 const colValue = columns?.map((elem: any) => elem.id);
                 setColumnOrder(colValue);
             }
-            if (preSetColumnOrdring?.tableHeightValue?.length > 0) {
+            if (preSetColumnOrdring?.tableHeightValue?.length > 0 && preSetColumnOrdring?.tableHeightValue != "") {
                 setWrapperHeight(preSetColumnOrdring?.tableHeightValue);
             }
             try {
@@ -1083,7 +1083,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 const colValue = eventSetting?.columnOrderValue?.map((elem: any) => elem.id);
                 setColumnOrder(colValue);
             }
-            if (eventSetting?.tableHeightValue?.length > 0 && eventSetting?.tableHeightValue === "") {
+            if (eventSetting?.tableHeightValue?.length > 0 && eventSetting?.tableHeightValue != "") {
                 setWrapperHeight(eventSetting?.tableHeightValue);
             } else {
                 setWrapperHeight("");

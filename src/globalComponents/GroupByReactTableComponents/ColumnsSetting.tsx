@@ -17,7 +17,7 @@ const ColumnsSetting = (props: any) => {
     const [columnOrderValue, setColumnOrderValue] = React.useState<string[]>([]);
     const [draggedIndex, setDraggedIndex] = React.useState(null);
     const [editMode, setEditMode] = React.useState(false);
-    const [tableHeightValue, setTableHeightValue] = React.useState("");
+    const [tableHeightValue, setTableHeightValue] = React.useState(props?.tableHeight);
     const [tablePageSize, setTablePageSize] = React.useState(props?.tableSettingPageSize);
     let columnIndexPostion = 0;
     let tableId = props?.tableId
@@ -371,7 +371,7 @@ const ColumnsSetting = (props: any) => {
                                         <tbody className="border-0">
                                             {columnOrderValue?.map((column1: any, index: any) => (
                                                 <>
-                                                    {column1?.placeholder != undefined && column1?.placeholder !== '' && (
+                                                    {column1?.placeholder != undefined && column1?.placeholder !== '' && column1.id != "descriptionsSearch" && column1.id != "commentsSearch" && column1.id != "timeSheetsDescriptionSearch" && (
                                                         <tr
                                                             key={index}
                                                             className={`px-1 ${index === draggedIndex ? "dragged" : ""}`}
@@ -415,7 +415,7 @@ const ColumnsSetting = (props: any) => {
                         <div style={{ fontWeight: 300, fontSize: "21px", display: 'contents' }} className="siteColor">Table Height</div>
                         {editMode ? (
                             <div className="alignCenter">
-                                <div title="Table Height" className="columnSettingWidth" style={{ width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" }}>{props?.tableHeight}</div>
+                                <div title="Table Height" className="columnSettingWidth" style={{ width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" }}>{tableHeightValue}</div>
                                 <div className="alignCenter">
                                     <input style={{ width: "20%", height: "27px" }} type="text" className="ms-1" onChange={(e) => setTableHeightValue(e.target.value)} />
                                     <span className="svg__iconbox svg__icon--Save" onClick={handleSaveClick}></span>
@@ -424,7 +424,7 @@ const ColumnsSetting = (props: any) => {
                             </div>
                         ) : (
                             <div className=" d-flex">
-                                <div title="Table Height" className="columnSettingWidth" style={{ width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" }}>{props?.tableHeight}</div>
+                                <div title="Table Height" className="columnSettingWidth" style={{ width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" }}>{tableHeightValue}</div>
                                 <div className="pancil-icons">
                                     <span className="svg__iconbox svg__icon--editBox" onClick={handleEditClick}></span>
                                 </div>
