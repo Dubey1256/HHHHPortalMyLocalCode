@@ -13,8 +13,7 @@ import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 import { Web } from "sp-pnp-js";
 import EditInstitution from "../../webparts/EditPopupFiles/EditComponent";
 import InfoIconsToolTip from "../InfoIconsToolTip/InfoIconsToolTip";
-// import PortfolioStructureCreationCard from "../tableControls/PortfolioStructureCreation";
-import CreateAllStructureComponent from "../CreateAllStructure";
+import PortfolioStructureCreationCard from "../tableControls/PortfolioStructureCreation";
 import CompareTool from "../CompareTool/CompareTool";
 import AddProject from "../../webparts/projectmanagementOverviewTool/components/AddProject";
 import EditProjectPopup from "../EditProjectPopup";
@@ -329,7 +328,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             // MultiSelectedData = elem;
         } else {
             if (elem != undefined) {
-                setCheckBoxData(elem)
+                setCheckBoxData([elem])
                 console.log("elem", elem);
             } else {
                 console.log("elem", elem);
@@ -754,43 +753,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         }
 
     }
-    const callbackdataAllStructure = React.useCallback((item)=>{
-        if(item[0]?.SelectedItem != undefined){
-            copyDtaArray.map((val:any)=>{
-                item[0]?.subRows.map((childs:any)=>{
-                    if(item[0].SelectedItem == val.Id){
-                        val.subRows.unshift(childs)
-                    }
-                    if(val.subRows != undefined && val.subRows.length > 0){
-                        val.subRows?.map((child:any)=>{
-                            if(item[0].SelectedItem == child.Id){
-                                child.subRows.unshift(childs)
-                            }
-                            if(child.subRows != undefined && child.subRows.length > 0){
-                                child.subRows?.map((Subchild:any)=>{
-                                    if(item[0].SelectedItem == Subchild.Id){
-                                        Subchild.subRows.unshift(childs)
-                                    }
-                                })
-                            }
-                        })
-                    }
-                })
-            })
-            
-        }
-        if(item != undefined && item.length>0 && item[0].SelectedItem ==  undefined){
-            item.forEach((value:any)=>{
-                copyDtaArray.unshift(value)
-            })
-        }
-        setOpenAddStructurePopup(false);
-        console.log(item)
-        renderData = [];
-        renderData = renderData.concat(copyDtaArray)
-        refreshData();
 
-    },[])
     const customTableHeaderButtons = (
         <>
             <button type="button" className="btn btn-primary" onClick={() => OpenAddStructureModal()}>{showProject == true?"Add Project":"Add Structure" } </button>
@@ -877,16 +840,17 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 isBlocking={false}
                 onDismiss={AddStructureCallBackCall}
             >
-               
-                 <CreateAllStructureComponent  Close={callbackdataAllStructure}
-                 taskUser={AllUsers}
-                 portfolioTypeData={PortfolitypeData}
-                 PropsValue={Dynamic}
-                 SelectedItem={
-                    checkedList != null && checkedList?.Id != undefined
-                        ? checkedList
-                        : undefined
-                }/>
+                <PortfolioStructureCreationCard
+                    CreatOpen={CreateOpenCall}
+                    Close={AddStructureCallBackCall}
+                    PortfolioType={IsUpdated}
+                    PropsValue={Dynamic}
+                    SelectedItem={
+                        checkedList != null && checkedList?.Id != undefined
+                            ? checkedList
+                            : props
+                    }
+                />
             </Panel>
             {isProjectopen && <AddProject CallBack={CallBack} items={CheckBoxData} PageName={"ProjectOverview"} AllListId={Dynamic} data={data} />}
             {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={Dynamic} />}
