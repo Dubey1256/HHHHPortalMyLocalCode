@@ -9,9 +9,11 @@ const GraphData = ( data: any ) => {
         const totalTimeByDay: { [key: string]: number } = {};
         const getDayName = (dateString: string): string => {
             const date = new Date(dateString);
-            return date.getDate().toString(); 
+            const day = ('0' + date.getDate()).slice(-2); 
+            const month = ('0' + (date.getMonth() + 1)).slice(-2); 
+            return `${day}/${month}`; 
           };
-      
+
         data.forEach((entry:any) => {
           // Extract the TaskDate and parse TaskTime as a number
           const { NewTimeEntryDate, TaskTime } = entry;
@@ -27,31 +29,49 @@ const GraphData = ( data: any ) => {
           }
         });
       
-        return totalTimeByDay;
-      };
+        const sortedDates = Object.keys(totalTimeByDay).sort((a, b) => {
+    const dateA = new Date(a.split('/').reverse().join('-'));
+    const dateB = new Date(b.split('/').reverse().join('-'));
+    return dateA.getTime() - dateB.getTime();
+  });
+
+  // Create chart data from sorted dates
+  const chartData = sortedDates.map(date => ({
+    Day: date,
+    Time: totalTimeByDay[date]
+  }));
+
+  return chartData;
+    };
       
 
     const totalTimeByDay = calculateTotalTimeByDay(data.data);
     console.log(totalTimeByDay)
-   
-    const transformedArray = Object.keys(totalTimeByDay).map(day => ({
-        TaskDate: day,
-        Time: totalTimeByDay[day]
-      }));
 
-      console.log(transformedArray)
+      console.log(totalTimeByDay)
     const chartData = {
         options: {
           chart: {
             id: 'basic-bar'
           },
           xaxis: {
-            categories: transformedArray.map((entry:any) => entry.TaskDate)
+            categories: totalTimeByDay.map((entry:any) => entry.Day)
+          },
+          tooltip: {
+            enabled: true, // Enable tooltip
+          },
+          dataPointMouseEnter: function (event: any, chartContext: any, config: any) {
+            const siteName = data.data[config.seriesIndex].Site; // Get the site name from the series name
+            const time = config.w.config.series[config.seriesIndex].data[config.dataPointIndex]; // Get the time for the data point
+            const siteData = data.data[config.seriesIndex]; // Get the site data from the original data array
+            const siteProperty = siteData.Site; // Access the Site property from the site data
+            chartContext.w.globals.tooltipTitle = `${siteProperty}: ${time} hours`; // Set tooltip content
           }
         },
+        
         series: [{
           name: 'Time',
-          data: transformedArray.map((entry:any) => entry.Time)
+          data: totalTimeByDay.map((entry:any) => entry.Time)
         }]
       };
     
@@ -81,7 +101,7 @@ const GraphData = ( data: any ) => {
   const onRenderCustomHeaderMain = () => {
     return (
       <div className="subheading">
-        This Week's TimeSheet
+       {data.DateType}
       </div>
     );
   };
@@ -90,8 +110,7 @@ const GraphData = ( data: any ) => {
     <div>
       <Panel
         isOpen={data?.IsOpenTimeSheetPopup}
-        type={PanelType.custom}
-        customWidth="800px"
+        type={PanelType.large}
         onDismiss={setModalIsOpenToFalse}
         onRenderHeader={onRenderCustomHeaderMain}
         isBlocking={false}

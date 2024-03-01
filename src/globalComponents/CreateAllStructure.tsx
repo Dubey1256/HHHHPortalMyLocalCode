@@ -457,7 +457,7 @@ const CreateAllStructureComponent = (props: any) => {
                 <div className='modal-body '>
 
                     {props?.SelectedItem == undefined && <>
-                        <label><b>Select Portfolio type</b></label>
+                        <label><b>Select Portfolio Type</b></label>
                         <div className="my-2 alignCenter SpfxCheckRadio">
                             {props?.portfolioTypeData.map((item: any) => {
                                 return (

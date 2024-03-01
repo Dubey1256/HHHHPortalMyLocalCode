@@ -2685,10 +2685,9 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
         }
     });
 
-    let confirmation = confirm('Your' + ' ' + input + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + userApprover + ')' + '.' + '\n' + 'Do you want to continue?')
-    if (confirmation) {
+   
         body = body.replaceAll('>,<', '><').replaceAll(',', '')
-    }
+    
 
     // var subject = currentLoginUser + `- ${selectedTimeReport} Time Entries`;
     let timeSheetData: any = await currentUserTimeEntryCalculation(AllTaskTimeEntries, currentLoginUserId);
@@ -2771,32 +2770,35 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
 
     body = body.replaceAll('>,<', '><').replaceAll(',', '')
 
-
-    if (body1.length > 0 && body1 != undefined) {
-        //SendEmailFinal(to, subject, body,Context);
-        let sp = spfi().using(spSPFx(Context));
-        sp.utility.sendEmail({
-            //Body of Email  
-            Body: body,
-            //Subject of Email  
-            Subject: subject,
-            //Array of string for To of Email  
-            To: to,
-            AdditionalHeaders: {
-                "content-type": "text/html",
-                'Reply-To': 'santosh.kumar@smalsus.com'
-            },
-        }).then(() => {
-            console.log("Email Sent!");
-            alert('Email sent sucessfully');
-
-
-        }).catch((err) => {
-            console.log(err.message);
-        });
-    } else {
-        alert("No entries available");
+    let confirmation = confirm('Your' + ' ' + input + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + userApprover + ')' + '.' + '\n' + 'Do you want to continue?')
+    if (confirmation) {
+        if (body1.length > 0 && body1 != undefined) {
+            //SendEmailFinal(to, subject, body,Context);
+            let sp = spfi().using(spSPFx(Context));
+            sp.utility.sendEmail({
+                //Body of Email  
+                Body: body,
+                //Subject of Email  
+                Subject: subject,
+                //Array of string for To of Email  
+                To: to,
+                AdditionalHeaders: {
+                    "content-type": "text/html",
+                    'Reply-To': 'santosh.kumar@smalsus.com'
+                },
+            }).then(() => {
+                console.log("Email Sent!");
+                alert('Email sent sucessfully');
+    
+    
+            }).catch((err) => {
+                console.log(err.message);
+            });
+        } else {
+            alert("No entries available");
+        }
     }
+    
 }
 
 const currentUserTimeEntryCalculation = async (AllTaskTimeEntries: any, currentLoginUserId: any) => {
