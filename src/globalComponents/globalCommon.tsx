@@ -8,7 +8,9 @@ import { GlobalConstants } from '../globalComponents/LocalCommon';
 import { PageContext } from "@microsoft/sp-page-context";
 import { spfi } from "@pnp/sp/presets/all";
 import { MSGraphClientV3 } from '@microsoft/sp-http';
+
 export const myContextValue: any = React.createContext<any>({})
+
 export const pageContext = async () => {
     let result;
     try {
@@ -2684,10 +2686,9 @@ export const  ShareTimeSheet=async (AllTaskTimeEntries:any,taskUser:any,Context:
            }
        });
        
-       let confirmation = confirm('Your' + ' ' + input + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + userApprover + ')' + '.' + '\n' + 'Do you want to continue?')
-       if (confirmation) {
+      
            body = body.replaceAll('>,<', '><').replaceAll(',', '')
-       }
+       
        
            // var subject = currentLoginUser + `- ${selectedTimeReport} Time Entries`;
             let timeSheetData:any =  await currentUserTimeEntryCalculation(AllTaskTimeEntries,currentLoginUserId);
@@ -2770,32 +2771,35 @@ export const  ShareTimeSheet=async (AllTaskTimeEntries:any,taskUser:any,Context:
                 
             body = body.replaceAll('>,<', '><').replaceAll(',', '')
         
-
-       if (body1.length > 0 && body1 != undefined) {
-           //SendEmailFinal(to, subject, body,Context);
-           let sp = spfi().using(spSPFx(Context));
-    sp.utility.sendEmail({
-        //Body of Email  
-        Body: body,
-        //Subject of Email  
-        Subject: subject,
-        //Array of string for To of Email  
-        To: to,
-        AdditionalHeaders: {
-            "content-type": "text/html",
-            'Reply-To': 'santosh.kumar@smalsus.com'
-        },
-    }).then(() => {
-        console.log("Email Sent!");
-        alert('Email sent sucessfully');
+            let confirmation = confirm('Your' + ' ' + input + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + userApprover + ')' + '.' + '\n' + 'Do you want to continue?')
+            if (confirmation) {
+                if (body1.length > 0 && body1 != undefined) {
+                    //SendEmailFinal(to, subject, body,Context);
+                    let sp = spfi().using(spSPFx(Context));
+             sp.utility.sendEmail({
+                 //Body of Email  
+                 Body: body,
+                 //Subject of Email  
+                 Subject: subject,
+                 //Array of string for To of Email  
+                 To: to,
+                 AdditionalHeaders: {
+                     "content-type": "text/html",
+                     'Reply-To': 'santosh.kumar@smalsus.com'
+                 },
+             }).then(() => {
+                 console.log("Email Sent!");
+                 alert('Email sent sucessfully');
+               
+         
+             }).catch((err) => {
+                 console.log(err.message);
+             });
+                } else {
+                    alert("No entries available");
+                }
+            }
       
-
-    }).catch((err) => {
-        console.log(err.message);
-    });
-       } else {
-           alert("No entries available");
-       }
    }
     
 const currentUserTimeEntryCalculation = async(AllTaskTimeEntries:any,currentLoginUserId:any) => {
