@@ -9,6 +9,7 @@ import * as globalCommon from '../globalCommon';
 import { Web } from "sp-pnp-js";
 import moment from "moment";
 import _ from "lodash";
+import CheckboxTree from 'react-checkbox-tree';
 import HtmlEditorCard from "../HtmlEditor/HtmlEditor";
 import Picker from "../EditTaskPopup/SmartMetaDataPicker";
 import { FaLeftLong, FaRightLong } from "react-icons/fa6";
@@ -228,8 +229,11 @@ const CompareTool = (props: any) => {
     }
     const checkCategory = function (item: any, category: any, Item: any) {
         Item?.TaskTimeSheetCategoriesGrouping?.forEach((categoryTitle: any) => {
-            if (categoryTitle?.Id == category)
+            if (categoryTitle?.Id == category) {
                 categoryTitle.subRows.push(item);
+                categoryTitle.values.push(item);
+
+            }
         })
     }
 
@@ -278,6 +282,7 @@ const CompareTool = (props: any) => {
                     child.CategoryTitleShow = true;
                     if (child.AdditionalTime != undefined && child?.AdditionalTime?.length > 0 && (child.subRows == undefined || child.subRows.length == 0)) {
                         child.subRows = child.AdditionalTime;
+                        child.values = child.AdditionalTime;
                         child.TaskDate = undefined;
                     }
                     if (!IsExistsData(finalData, child))
@@ -859,7 +864,18 @@ const CompareTool = (props: any) => {
         let isExists = false;
         for (let index = 0; index < array.length; index++) {
             let item = array[index];
-            if (item.Id == taggedItem?.Id || taggedItem.checked === true) {
+            if (item.Id == taggedItem?.Id && taggedItem.checked === true) {
+                isExists = true;
+                //return false;
+            }
+        }
+        return isExists;
+    }
+    const IsExistsDataNew = (array: any, taggedItem: any) => {
+        let isExists = false;
+        for (let index = 0; index < array.length; index++) {
+            let item = array[index];
+            if (taggedItem.checked === true) {
                 isExists = true;
                 //return false;
             }
@@ -868,7 +884,7 @@ const CompareTool = (props: any) => {
     }
     const taggedChildItems = (index: any, property: any, value: any) => {
         const selectedItem = value.filter((obj: any) => obj.checked === true);
-        if (selectedItem?.length > 0) {
+        if (selectedItem?.length > 0 && property != 'finalData') {
             setHistory((prevHistory) => [...prevHistory, _.cloneDeep(data)]);
             const updatedItems = _.cloneDeep(data);
             const indexValue = index == 1 ? 0 : 1
@@ -883,11 +899,30 @@ const CompareTool = (props: any) => {
                         elem.checked = false
                 })
             }
-            else if ((property === "AssignToUsers" || property === "TeamMembersUsers" || property === "ResponsibileUsers" || property === "attachment")) {
+            else if ((property === "AssignToUsers" || property === "TeamMembersUsers" || property === "ResponsibileUsers")) {
                 const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
 
                 if (updatedItems[index][property]?.length > 0 && selectedItems?.length > 0) {
                     if (!IsExistsData(updatedItems[index][property], selectedItems[0])) {
+                        updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
+                        updatedItems[index][property].map((elem: any) => {
+                            if (elem.checked)
+                                elem.checked = false
+                        })
+                    }
+                } else if (selectedItems?.length > 0) {
+                    updatedItems[index][property] = selectedItems;
+                    updatedItems[index][property]?.map((elem: any) => {
+                        if (elem.checked)
+                            elem.checked = false
+                    })
+                }
+            }
+            else if ((property === "attachment")) {
+                const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
+
+                if (updatedItems[index][property]?.length > 0 && selectedItems?.length > 0) {
+                    if (!IsExistsDataNew(updatedItems[index][property], selectedItems[0])) {
                         updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
                         updatedItems[index][property].map((elem: any) => {
                             if (elem.checked)
@@ -925,16 +960,44 @@ const CompareTool = (props: any) => {
 
             }
 
-            else {
-                const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
-                if (selectedItems?.length === 0)
-                    alert("please select items " + property)
-            }
 
             setData(updatedItems);
             setTaggedItems({});
             rerender()
         }
+        if (property === 'finalData') {
+            const updatedItems = _.cloneDeep(data);
+            const indexValue = index == 1 ? 0 : 1
+            const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
+            const UnselectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked != true);
+            updatedItems[indexValue][property] = UnselectedItems;
+            if (updatedItems[index][property]?.length > 0 && selectedItems?.length > 0) {
+                if (!IsExistsData(updatedItems[index][property], selectedItems[0])) {
+                    updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
+                    updatedItems[index][property].map((elem: any) => {
+                        if (elem.checked)
+                            elem.checked = false
+                    })
+                }
+            } else if (selectedItems?.length > 0) {
+                updatedItems[index][property] = selectedItems;
+                updatedItems[index][property]?.map((elem: any) => {
+                    if (elem.checked)
+                        elem.checked = false
+                })
+            }
+
+            setData(updatedItems);
+            setTaggedItems({});
+            rerender()
+
+        }
+
+        // else {
+        //     const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
+        //     if (selectedItems?.length === 0)
+        //         alert("please select items " + property)
+        // }
     };
 
     const undoChanges = () => {
@@ -1240,6 +1303,7 @@ const CompareTool = (props: any) => {
                 if (AllTimesheetCategoriesData?.length > 0) {
                     AllTimesheetCategoriesData = AllTimesheetCategoriesData.map((TimeSheetCategory: any) => {
                         TimeSheetCategory.subRows = [];
+                        TimeSheetCategory.values = [];
                         TimeSheetCategory.IsSelectTimeEntry = false;
                         if (TimeSheetCategory.ParentId == 303) {
                             TempTimeSheetCategoryArray.push(TimeSheetCategory);
@@ -2179,8 +2243,52 @@ const CompareTool = (props: any) => {
                 ))}
         </>
     );
+    const loadMorefilter = (filteritem: any, property: any, index: any) => {
+        const updatedItems = _.cloneDeep(data);
+        if (filteritem.values.length > 0) {
+            filteritem.values.forEach((childitem: any) => {
+                if (filteritem?.Id === childitem?.MainParentId) {
+                    if (filteritem.expand === true) {
+                        filteritem.expand = false;
+                    }
+                    else {
+                        filteritem.expand = true;
+                    }
+                }
+            })
+        }
+        updatedItems[index][property].forEach((obj: any) => {
+            if (filteritem.Id == obj.Id)
+                obj.expand = filteritem.expand;
+        })
+        setData(updatedItems);
+    }
+    const handleGroupCheckboxChanged = (event: any, groupitem: any, property: any, index: any) => {
+        const updatedItems = _.cloneDeep(data);
+        const ischecked = event.target.checked;
+        if (ischecked) {
+            groupitem.selected = true;
+            groupitem?.values?.map((child: any) => {
+                child.selected = true;
+            })
+        }
+        else {
+            groupitem.selected = false;
+            groupitem?.values?.map((fitm: any) => {
+                fitm.selected = false;
+            })
 
-    // export default TreeNode;
+        }
+        updatedItems[index][property]?.forEach((obj: any) => {
+            if (groupitem.Id == obj.Id)
+                obj.selected = groupitem.selected;
+            obj?.values?.forEach((child: any) => {
+                if (child.Id === child?.MainParentId)
+                    child.selected = groupitem.selected;
+            })
+        })
+        setData(updatedItems);
+    }
 
     return (
         <>
@@ -3883,38 +3991,142 @@ const CompareTool = (props: any) => {
 
                                     <div className="input-group" >
                                         <label className="fw-semibold full-width form-label">Time Entries</label>
-                                        {data[0]?.finalData?.length > 0 ? (
+                                        {/* {data[0]?.finalData?.length > 0 ? (
                                             <GlobalCommanTable
                                                 columns={TimeEntryColumnsFirst}
                                                 data={data[0]?.finalData}
                                                 callBackData={callBackDataFirst}
                                                 expendedTrue={true}
                                             />
-                                        ) : <div className="d-flex justify-content-center">No Timesheet Available</div>}
+                                        ) : <div className="d-flex justify-content-center">No Timesheet Available</div>} */}
+
+                                        <table width="100%" className="indicator_search">
+                                            <tbody>
+                                                <tr>
+                                                    {data[0]?.finalData?.length > 0 && data[0]?.finalData?.map((filteritem: any, index: any) => {
+                                                        return (
+                                                            <div>
+                                                                <span id="filterexpand">
+                                                                    {filteritem.expand && filteritem?.values?.length > 0 && <SlArrowDown onClick={() => loadMorefilter(filteritem, 'finalData', 0)}></SlArrowDown>}
+                                                                    {!filteritem.expand && filteritem?.values?.length > 0 && <SlArrowRight onClick={() => loadMorefilter(filteritem, 'finalData', 0)}></SlArrowRight>}
+                                                                </span>
+                                                                <span>
+                                                                    <input className='form-check-input' type="checkbox" id={filteritem.Title} value={filteritem.Title} checked={filteritem.selected} onChange={(event) => handleGroupCheckboxChanged(event, filteritem, 'finalData', 0)} /> {filteritem.Title}
+                                                                </span>
+                                                                <ul>
+                                                                    {filteritem.expand === true && filteritem?.values?.length > 0 && filteritem.values?.map((child: any) => {
+                                                                        return (<>
+                                                                            <li style={{ listStyle: 'none' }} className="alignCenter">
+                                                                                <div style={{ width: "10%" }}>
+                                                                                    <input className='form-check-input' type="checkbox" id={child.Title} value={child.Title} checked={child.selected} onChange={(event) => handleGroupCheckboxChanged(event, child, 'finalData', 0)} /> {child.Title}
+                                                                                </div>
+                                                                                <div style={{ width: "25%" }}>
+                                                                                    {child.TaskDate}
+                                                                                </div>
+                                                                                <div style={{ width: "10%" }}>{child.TaskTime}</div>
+                                                                                <div style={{ width: "50%" }}>{child.Description}</div>
+                                                                            </li></>)
+                                                                    })}
+                                                                </ul>
+                                                            </div>)
+                                                    })}
+
+
+
+                                                    {/* {data[0]?.finalData?.length > 0 ? (
+                                                        data[0]?.finalData.map((Group: any, index: any) => {
+                                                            return (
+                                                          <>  <td>
+                                                                <fieldset>
+                                                                    <legend ng-if="item!='teamSites'" className="ng-scope">
+                                                                    <input type='checkbox' checked={Group.checked} value={Group.Title}  onChange={(e) => onCheck((e), index ,data[0]?.finalData)} ></input>   <span className="ng-binding">{Group.Title}</span>
+                                                                    </legend>
+                                                                </fieldset>
+                                                                <CheckboxTree
+                                                                    nodes={Group.values}
+                                                                    checked={Group.checked}
+                                                                    expanded={Group.expanded}
+                                                                    onCheck={checked => onCheck(checked, index ,data[0]?.finalData)}
+                                                                    onExpand={expanded => onExpanded(expanded, index ,data[0]?.finalData)}
+                                                                    nativeCheckboxes={true}
+                                                                    showNodeIcon={false}
+                                                                    checkModel={'all'}
+                                                                />
+                                                            </td>
+                                                            <td>{Group.TaskDate}</td><td>{Group.TaskTime}</td><td>{Group.TaskTime}</td>
+                                                            
+                                                            </>
+                                                            )
+
+                                                        }
+                                                        )): <div className="d-flex justify-content-center">No Timesheet Available</div>
+
+                                                    } */}
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+
+
+
                                     </div>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="iconSec">
                                     <div className="text-center">
-                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'HelpDescription', data[1]?.HelpDescription)} /></div>
-                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'HelpDescription', data[0]?.HelpDescription)} /></div>
+                                        <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'finalData', data[1]?.finalData)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'finalData', data[0]?.finalData)} /></div>
                                     </div>
                                 </Col>
                                 <Col sm="5" md="5" lg="5" className="contentSec">
 
                                     <div className="input-group">
                                         <label className="fw-semibold full-width form-label">Time Entries</label>
-                                        {data[1]?.finalData?.length > 0 ? (
+                                        {/* {data[1]?.finalData?.length > 0 ? (
                                             <GlobalCommanTable
                                                 columns={TimeEntryColumnsSecond}
                                                 data={data[1]?.finalData}
                                                 callBackData={callBackDataSecond}
                                                 expendedTrue={true}
+
                                             />
-                                        ) : <div className="d-flex justify-content-center">No Timesheet Available</div>}
+                                        ) : <div className="d-flex justify-content-center">No Timesheet Available</div>} */}
+                                        <table width="100%" className="indicator_search">
+                                            <tbody>
+                                                <tr>
+                                                    {data[1]?.finalData?.length > 0 && data[1]?.finalData?.map((filteritem: any, index: any) => {
+                                                        return (
+                                                            <div>
+                                                                <span id="filterexpand">
+                                                                    {filteritem.expand && filteritem?.values?.length > 0 && <SlArrowDown onClick={() => loadMorefilter(filteritem, 'finalData', 1)}></SlArrowDown>}
+                                                                    {!filteritem.expand && filteritem?.values?.length > 0 && <SlArrowRight onClick={() => loadMorefilter(filteritem, 'finalData', 1)}></SlArrowRight>}
+                                                                </span>
+                                                                <span>
+                                                                    <input className='form-check-input' type="checkbox" id={filteritem.Title} value={filteritem.Title} checked={filteritem.selected} onChange={(event) => handleGroupCheckboxChanged(event, filteritem, 'finalData', 1)} /> {filteritem.Title}
+                                                                </span>
+                                                                <ul>
+                                                                    {filteritem.expand === true && filteritem?.values?.length > 0 && filteritem.values?.map((child: any) => {
+                                                                        return (<>
+                                                                            <li style={{ listStyle: 'none' }}>
+                                                                                <div style={{ width: "10%" }}>
+                                                                                    <input className='form-check-input' type="checkbox" id={child.Title} value={child.Title} checked={child.selected} onChange={(event) => handleGroupCheckboxChanged(event, child, 'finalData', 1)} /> {child.Title}
+                                                                                </div>
+                                                                                <div style={{ width: "25%" }}>
+                                                                                    {child.TaskDate}
+                                                                                </div>
+                                                                                <div style={{ width: "10%" }}>{child.TaskTime}</div>
+                                                                                <div style={{ width: "50%" }}>{child.Description}</div>
+                                                                            </li></>)
+                                                                    })}
+                                                                </ul>
+                                                            </div>)
+                                                    })}
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                    <LuUndo2 size="25" />
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('finalData')} />
                                 </Col>
                             </Row>
                         }
