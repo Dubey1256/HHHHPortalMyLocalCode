@@ -31,7 +31,8 @@ const SmartInformation = (props: any, ref: any) => {
     { text: 'Select Source', key: 0 },
     { text: 'MS Teams', key: 1 },
     { text: 'Call', key: 2 },
-    { text: 'Email', key: 3 }
+    { text: 'Email', key: 3 },
+    { text: 'Task', key: 4 }
   ]
   const [data, setData] = React.useState<any>([]);
   const [smartnoteAuthor, setsmartnoteAuthor] = useState<any>([]);
@@ -1108,41 +1109,45 @@ const SmartInformation = (props: any, ref: any) => {
           </div>
           <div className='row'>
             <div className='col-md-6'>
-              <label htmlFor="Title" className='full-width'>Title
-                <span className='ml-1 mr-1 text-danger'>*</span>
-                {popupEdit != true && <span className='mx-2'><input type="checkbox" className="form-check-input" onClick={(e) => checkboxFunction(e)} /></span>}</label>
-              <input type="text" className="full-width" value={allValue?.Title} id="Title" onChange={(e) => changeInputField(e.target.value, "Title")} autoComplete='off' />
-              {/* {allValue.AstricMesaage &&<span className='ml-1 mr-1 text-danger'>Please enter your Title !</span>} */}
-              {filterSmartinfo != undefined && filterSmartinfo.length > 0 && <div className='bg-Fa border overflow-auto'><ul className='list-group mx-2 tex'> {filterSmartinfo.map((smartinfofilter: any) => {
-                return (
-                  < >
-                    <li onClick={() => onclickfilteritems(smartinfofilter.Title)}> {smartinfofilter.Title}</li>
-                  </>
-                )
-              })}
-              </ul>
-              </div>}
-            </div>
-            <div className='col-sm-6'>
-              <label className='full-width' htmlFor="InfoType">InfoType</label>
-              <select className='full-width' name="cars" id="InfoType" value={allValue?.InfoType} onChange={(e) => InfoType(e.target.value)}>
-                {SmartMetaData != undefined && SmartMetaData?.map((items: any) => {
+              <div className='input-group'>
+                <label htmlFor="Title" className='form-label full-width'>Title
+                  <span className='ml-1 mr-1 text-danger'>*</span>
+                  {popupEdit != true && <span className='mx-2'><input type="checkbox" className="form-check-input" onClick={(e) => checkboxFunction(e)} /></span>}</label>
+                <input type="text" className="form-control" value={allValue?.Title} id="Title" onChange={(e) => changeInputField(e.target.value, "Title")} autoComplete='off' />
+                {/* {allValue.AstricMesaage &&<span className='ml-1 mr-1 text-danger'>Please enter your Title !</span>} */}
+                {filterSmartinfo != undefined && filterSmartinfo.length > 0 && <div className='bg-Fa border overflow-auto'><ul className='list-group mx-2 tex'> {filterSmartinfo.map((smartinfofilter: any) => {
                   return (
-                    <> <option value={items?.Title}>{items?.Title}</option></>
+                    < >
+                      <li onClick={() => onclickfilteritems(smartinfofilter.Title)}> {smartinfofilter.Title}</li>
+                    </>
                   )
                 })}
+                </ul>
+                </div>}
+              </div></div>
+            <div className='col-sm-6'>
+              <div className='input-group'>
+                <label className='full-width' htmlFor="InfoType">InfoType</label>
+                <select className='form-control' name="cars" id="InfoType" value={allValue?.InfoType} onChange={(e) => InfoType(e.target.value)}>
+                  {SmartMetaData != undefined && SmartMetaData?.map((items: any) => {
+                    return (
+                      <> <option value={items?.Title}>{items?.Title}</option></>
+                    )
+                  })}
 
-              </select>
+                </select>
+              </div>
             </div>
 
             {allValue?.InfoType !== 'Information Source' && <div className='col-md-6'>
-              <label htmlFor="URL" className='full-width'>URL</label>
-              <input type="text" className='full-width' id="URL" value={allValue?.URL} onChange={(e) => changeInputField(e.target.value, "url")} />
-            </div>}
-            {allValue.InfoType != null && allValue.InfoType == "Glossary" && <div className='col-md-6'>
+              <div className='input-group'>
+                <label htmlFor="URL" className='full-width'>URL</label>
+                <input type="text" className='form-control' id="URL" value={allValue?.URL} onChange={(e) => changeInputField(e.target.value, "url")} />
+              </div></div>}
+            {allValue.InfoType != null && allValue.InfoType == "Glossary" && <div className='col-md-6'> <div className='input-group'>
               <label htmlFor="Acronym" className='full-width'>Acronym</label>
-              <input type="text" className='full-width' id="Acronym" value={allValue?.Acronym} onChange={(e) => changeInputField(e.target.value, "Acronym")} />
-            </div>}
+              <input type="text" className='form-control' id="Acronym" value={allValue?.Acronym} onChange={(e) => changeInputField(e.target.value, "Acronym")} />
+            </div></div>}
             {allValue.InfoType != null && allValue.InfoType == "Information Source" && <div className='col-md-6 d-flex gap-3'>
               <span className='input-group class-input'>
                 <label className='form-label full-width fw-semibold'> Author: </label>
@@ -1152,11 +1157,11 @@ const SmartInformation = (props: any, ref: any) => {
                     defaultSelectedUsers={email ? [email] : []} />
                 </div>
               </span>
-              <span>
+              <span className='input-group'>
                 <label htmlFor="InfoDate" className='full-width'> Date: </label>
                 <input type="date" className='full-width' id="dateforIonfosource" value={InfoDate != undefined && InfoDate != '' ? moment(InfoDate).format("YYYY-MM-DD") : ''} onChange={(e) => setInfoDate(e.target.value)} />
               </span>
-              <span>
+              <span className='input-group'>
                 <label htmlFor="InfoDate" className='full-width'> Source: </label>
                 {/* <input type="text" className='full-width' value={InfoSource} onChange={(e) => setInfoSource(e.target.value)} /> */}
                 {/* <select className='full-width' name="cars" id="InfoType" value={InfoSource} onChange={(e) => setInfoSource(e.target.value)}>
@@ -1194,7 +1199,7 @@ const SmartInformation = (props: any, ref: any) => {
               <span className='mx-2'>|</span>
 
               <span><a title='Add Link/ Document' className='ForAll hreflink' style={{ cursor: "pointer" }} onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link/ Document</a></span>
-              <Button className='btn btn-primary ms-1 me-1' onClick={saveSharewebItem} disabled={allValue?.Title == '' || (smartnoteAuthor == undefined && smartnoteAuthor.length == 0) || (InfoDate == undefined && InfoDate == '') || InfoSource.key == 0}>
+              <Button className='btn btn-primary ms-1 me-1' onClick={saveSharewebItem} disabled={allValue.InfoType === 'Information Source' ? (allValue?.Title == '' || smartnoteAuthor?.length == 0 || InfoDate == '' || InfoSource.key == 0) : allValue?.Title == ''}>
                 Save
               </Button>
               <Button className='btn btn-default mx-1' onClick={() => handleClose()}>
@@ -1339,5 +1344,4 @@ const SmartInformation = (props: any, ref: any) => {
   )
 }
 export default forwardRef(SmartInformation);
-
 
