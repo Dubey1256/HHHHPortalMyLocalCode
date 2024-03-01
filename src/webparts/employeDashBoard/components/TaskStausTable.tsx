@@ -653,7 +653,7 @@ const TaskStatusTbl = (Tile: any) => {
                   </div>
                   <div className="Alltable maXh-300" style={{ height: "300px" }} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
-                      <GlobalCommanTable wrapperHeight="87%" columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                      <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id+"Dashboard"} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
                     )}
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
                       {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={ContextData.Context} emailStatus={"Approved"} items={approveItem} />}
@@ -715,7 +715,7 @@ const TaskStatusTbl = (Tile: any) => {
                                 <>
                                   <h3 className="f-15">{user?.Title} Today's Task</h3>
                                   <div key={index} className="Alltable maXh-300 mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config)} style={{ height: "300px" }}>
-                                    <GlobalCommanTable columnSettingIcon={true} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={user.Tasks}
+                                    <GlobalCommanTable columnSettingIcon={true}  tableId={config?.Id+"Dashboard"} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={user.Tasks}
                                       callBackData={callBackData} />
                                   </div>
                                 </>

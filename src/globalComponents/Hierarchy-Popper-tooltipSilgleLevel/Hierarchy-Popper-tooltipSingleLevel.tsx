@@ -247,9 +247,8 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
         data.childsValues=masterTaskData.filter((AllData:any)=> {
             AllData.siteUrl=data.siteUrl;  
          return((data?.SiteIcon==undefined && AllData?.Parent?.Id==data?.Id)||
-         ((data?.SiteIcon==undefined && AllData?.Portfolio?.Id==data?.Id) 
-         && (AllData?.ParentTask?.Id==undefined || AllData?.ParentTask?.Id==null))
-         ||(data?.SiteIcon!=undefined && AllData?.ParentTask?.Id ==data.Id) 
+         (( (data?.ParentTask?.Id==undefined || data?.ParentTask?.Id==null) &&(data?.Item_x0020_Type!=undefined && AllData?.Portfolio?.Id==data?.Id)))
+         ||(data?.SiteIcon!=undefined && AllData?.siteType==data?.siteType && AllData?.ParentTask?.Id ==data.Id) 
          )
         })
         if(haveSubrows==true){
@@ -272,12 +271,16 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
             data?.childsValues.map((item:any)=>{
                 item.openAllChilds = false;
                 item.childsValues=[];
+                item.subRows=[];
                item.childsValues=masterTaskData.filter((AllData:any)=>(item?.SiteIcon==undefined && AllData?.Parent?.Id==item?.Id)||
-               ((AllData?.ParentTask?.Id==undefined || AllData?.ParentTask?.Id==null) 
-               && (item?.SiteIcon==undefined && AllData?.Portfolio?.Id==item?.Id)) ||
-               (item?.SiteIcon!=undefined  && item?.TaskType?.Title!="Task"
-                && AllData?.ParentTask?.Id ==item.Id))    
+               ((AllData?.ParentTask?.Id==undefined || AllData?.ParentTask?.Id==null) && (item?.Item_x0020_Type!=undefined && AllData?.Portfolio?.Id==item?.Id)) ||
+               (item?.SiteIcon!=undefined && AllData?.siteType==item?.siteType
+                && AllData?.ParentTask?.Id ==item.Id))
+                
+                
             })
+            
+          
         }
     }
     

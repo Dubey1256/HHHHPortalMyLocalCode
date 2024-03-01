@@ -205,6 +205,7 @@ const EditTaskPopup = (Items: any) => {
     const [TeamMemberChanged, setTeamMemberChanged] = useState(false);
     const [TeamLeaderChanged, setTeamLeaderChanged] = useState(false);
     const [SendMsgToAuthor, setSendMsgToAuthor] = useState(false);
+    const [SendDesignEmailStatus, setSendDesignEmailStatus] = useState(false);
     const [CurrentImageIndex, setCurrentImageIndex] = useState("");
     const [loaded, setLoaded] = React.useState(true);
     const [IsImageUploaded, setIsImageUploaded] = React.useState(true);
@@ -1562,7 +1563,8 @@ const EditTaskPopup = (Items: any) => {
     const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         setIsComponentPicker(false);
         let uniqueIds: any = {};
-        let checkForOnHold: any = tempShareWebTypeData?.some((category: any) => category.Title === "On-Hold")
+        let checkForOnHold: any = tempShareWebTypeData?.some((category: any) => category.Title === "On-Hold");
+        let checkForDesign: any = tempShareWebTypeData?.some((category: any) => category.Title === "Design");
         if (usedFor == "For-Panel") {
             let TempArrya: any = [];
             selectCategoryData?.map((selectedData: any) => {
@@ -1571,6 +1573,11 @@ const EditTaskPopup = (Items: any) => {
                     setOnHoldPanel(true);
                 } else {
                     TempArrya.push(selectedData);
+                }
+                if (!checkForDesign && selectedData.Title == "Design") {
+                    setSendDesignEmailStatus(true);
+                } else {
+                    setSendDesignEmailStatus(false);
                 }
                 if (selectedData?.IsSendAttentionEmail?.Id != undefined) {
                     setIsSendAttentionMsgStatus(true);
@@ -2541,24 +2548,24 @@ const EditTaskPopup = (Items: any) => {
                             TaskDetailsFromCall = await web.lists
                                 .getById(Items.Items.listId)
                                 .items.select(
-                                    "Id,Title,PriorityRank,workingThisWeek,Approvee/Id,Approvee/Title,waitForResponse,Project/Id, Project/Title,Project/PriorityRank,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
+                                    "Id,Title,PriorityRank,Comments,workingThisWeek,Project/Id,Project/Title,Project/PriorityRank,Approvee/Id,Approvee/Title,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,Sitestagging,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,Portfolio/Title,Portfolio/Id,Portfolio/PortfolioStructureID,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title, ParentTask/TaskID,ParentTask/Id,TaskID"
                                 )
                                 .top(5000)
                                 .filter(`Id eq ${Items.Items.Id}`)
                                 .expand(
-                                    "AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee,Project"
+                                    "AssignedTo,Author,ParentTask,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,Project,Approvee"
                                 )
                                 .get();
                         } else {
                             TaskDetailsFromCall = await web.lists
                                 .getById(Items.Items.listName)
                                 .items.select(
-                                    "Id,Title,PriorityRank,workingThisWeek,Approvee/Id,Approvee/Title,waitForResponse,Project/Id, Project/Title,Project/PriorityRank,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title"
+                                    "Id,Title,PriorityRank,Comments,Project/Id,Project/Title,Project/PriorityRank,workingThisWeek,Approvee/Id,Approvee/Title,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,Sitestagging,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,Portfolio/Title,Portfolio/Id,Portfolio/PortfolioStructureID,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title, ParentTask/TaskID,ParentTask/Id,TaskID"
                                 )
                                 .top(5000)
                                 .filter(`Id eq ${Items.Items.Id}`)
                                 .expand(
-                                    "AssignedTo,Author,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,RelevantPortfolio,Approvee,Project"
+                                    "AssignedTo,Author,ParentTask,Editor,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory,Project,Approvee"
                                 )
                                 .get();
                         }
@@ -2570,9 +2577,11 @@ const EditTaskPopup = (Items: any) => {
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
                         UpdatedDataObject.SmartPriority = NewSmartPriority;
                         UpdatedDataObject.siteType = EditData.siteType;
+
+                        // This is used for send MS Teams Notification 
+
                         if (!IsUserFromHHHHTeam && SendCategoryName !== "Bottleneck") {
                             try {
-                                const currentUserId = Context.pageContext._legacyPageContext.userId;
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
 
@@ -2660,6 +2669,22 @@ const EditTaskPopup = (Items: any) => {
                             }
                         }
 
+                        // This is used for send Email Notification for design Category Task 
+
+                        if (SendDesignEmailStatus && (taskPercentageValue < 20 || taskPercentageValue == 0 || taskPercentageValue == undefined)) {
+                            let EmailRecievers: any = [];
+                            taskUsers?.map((userItemData: any) => {
+                                if (userItemData.AssingedToUserId !== currentUserId && (userItemData.Title == "Robert Ungethuem" || userItemData.Title == "Alina Chyhasova")) {
+                                    EmailRecievers.push(userItemData);
+                                }
+                            })
+                            if (EmailRecievers?.length > 0) {
+                                globalCommon.sendImmediateEmailNotifications(UpdatedDataObject.Id, siteUrl, EditData?.listId, UpdatedDataObject, EmailRecievers, 'DesignMail', taskUsers, Context).then((response: any) => {
+                                    console.log(response);
+                                    console.log("Design Email Notification Sent !!");
+                                });
+                            }
+                        }
 
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             taskUsers.forEach((val: any) => {
