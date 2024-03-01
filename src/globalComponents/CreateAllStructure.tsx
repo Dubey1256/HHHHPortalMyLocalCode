@@ -458,12 +458,11 @@ const CreateAllStructureComponent = (props: any) => {
 
                     {props?.SelectedItem == undefined && <>
                         <label><b>Select Portfolio Type</b></label>
-                        <div className="d-flex">
+                        <div className="my-2 alignCenter SpfxCheckRadio">
                             {props?.portfolioTypeData.map((item: any) => {
                                 return (
-                                    <div className="mx-2 mb-2 mt-2">
-                                        <label className='label--radio'><input className='radio' defaultChecked={defaultPortfolioType.toLowerCase() === item.Title.toLowerCase()} name='PortfolioType' type='radio' onClick={() => CheckPortfolioType(item)} ></input>{item.Title}</label>
-                                    </div>)
+                                        <label className='label--radio alignCenter'><input className='radio' defaultChecked={defaultPortfolioType.toLowerCase() === item.Title.toLowerCase()} name='PortfolioType' type='radio' onClick={() => CheckPortfolioType(item)} ></input>{item.Title}</label>
+                                    )
                             })}
                         </div> </>}
 
