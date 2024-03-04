@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback, useContext } from 'react';
 import { Web } from 'sp-pnp-js';
 import { ColumnDef } from '@tanstack/react-table';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
@@ -8,6 +8,7 @@ import DeleteSmartMetadata from "./DeleteSmartMetadata";
 import CreateMetadataItem from './CreateMetadataItem';
 import CompareSmartMetaData from './CompareSmartmetadata';
 import RestructureSmartMetaData from './RestructureSmartMetaData';
+import { myContextValue } from '../../../globalComponents/globalCommon';
 let SmartmetadataItems: any = [];
 let TabSelected: string;
 let compareSeletected: any = [];
@@ -17,6 +18,7 @@ let TabsData: any = [];
 let SelectedMetadataItem: any = [];
 let CopySmartmetadata: any = []
 export default function ManageSmartMetadata(selectedProps: any) {
+    const MyContextValue: any = useContext(myContextValue)
     const [SmartmetadataAdd, setSmartmetadataAdd] = useState(false);
     const [SmartmetadataCompare, setSmartmetadataCompare] = useState(false);
     const [SmartmetadataRestructure, setSmartmetadataRestructure] = useState(false);
@@ -299,7 +301,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 <>
                     {
                         RestructureIcon ?
-                            <span style={{ backgroundColor: `${'portfolioColor'}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
+                            <span style={{ backgroundColor: `${'portfolioColor'}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => OpenTopRestructureIcon()}>
                                 <span className="svg__iconbox svg__icon--re-structure"></span>
                             </span>
                             : ''
@@ -335,25 +337,22 @@ export default function ManageSmartMetadata(selectedProps: any) {
     //-------------------------------------------------- RESTRUCTURING FUNCTION start---------------------------------------------------------------
 
     const callBackSmartMetaData = useCallback((Array: any, unSelectTrue: any, Taxtype: any, checkData: any) => {
-        if (Array) {
+        if (Array !== undefined) {
             if (!isItemExists(SelectedMetadataItem, Array.Id)) {
                 SelectedMetadataItem.push(Array);
-                if (SelectedMetadataItem.length === 2) {
-                    setSmartmetadataCompareButton(true)
-                    setSmartmetadataRestructureButton(false);
-                } else if (SelectedMetadataItem.length === 1) {
+                if (SelectedMetadataItem.length === 1) {
                     setSmartmetadataRestructureButton(true)
                     setSmartmetadataCompareButton(false);
-                } else if (SelectedMetadataItem.length >= 3) {
-                    setSmartmetadataCompareButton(false);
-                    setSmartmetadataRestructureButton(false);
+                } else if (SelectedMetadataItem.length === 2) {
+                    setSmartmetadataRestructureButton(false)
+                    setSmartmetadataCompareButton(true);
                 } else {
                     setSmartmetadataCompareButton(false);
                     setSmartmetadataRestructureButton(false);
                 }
             }
         } else {
-            if (unSelectTrue) {
+            if (unSelectTrue !== undefined && !unSelectTrue) {
                 setRestructureIcon(false)
                 if (Array && CopySmartmetadata.length !== 0) {
                     let array = CopySmartmetadata;
@@ -394,23 +393,32 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 }
             }
         }
+        if (unSelectTrue) {
+            setRestructureIcon(true);
+        }
         if (Taxtype) {
             SmartmetadataItems = [];
+            Array = {};
             setRestructureIcon(false)
             setSelectedItem({});
             LoadSmartMetadata();
         }
     }, []);
     const callChildFunction = (items: any) => {
-        if (childRefdata.current) {
-            childRefdata.current.callChildFunction(items);
+        if (MyContextValue) {
+            MyContextValue?.OpenModal(items);
         }
     };
-    const trueTopIcon = (items: any) => {
-        if (childRefdata.current) {
-            childRefdata.current.trueTopIcon(items);
+    const OpenTopRestructureIcon = () => {
+        if (MyContextValue) {
+            MyContextValue?.OpenModal();
         }
-    };
+    }
+    const SmartrestructureFunct = (restr: any) => {
+        setRestructureIcon(restr)
+        //setSmartmetadataRestructure(restr);
+        setSmartmetadata((prev: any) => [...prev])
+    }
     //-------------------------------------------------- RESTRUCTURING FUNCTION end---------------------------------------------------------------
     //-------------------------------------------------- COPY GENERATE JSON FUNCTION start---------------------------------------------------------------
     async function copyTextToClipboard(JSONdata: any) {
@@ -508,7 +516,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                             {
                                 SmartmetadataRestructure === true ?
                                     <RestructureSmartMetaData
-                                        RestructureButton={SmartmetadataRestructure} childRefdata={childRefdata} AllList={selectedProps.AllList} ref={childRef} AllMetaData={Smartmetadata} restructureItemCallBack={callBackSmartMetaData} restructureItem={SelectedMetadataItem} />
+                                        RestructureButton={SmartmetadataRestructure} childRefdata={childRefdata} AllList={selectedProps.AllList} ref={childRef} AllMetaData={Smartmetadata} restructureItemCallBack={callBackSmartMetaData} restructureItem={SelectedMetadataItem} SmartrestructureFunct={SmartrestructureFunct} />
                                     : ''
                             }
                         </span>
