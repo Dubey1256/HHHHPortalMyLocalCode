@@ -2216,7 +2216,7 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
     }
     let siteConfig: any = await loadSmartMetadata(allListId, "Sites")
     let filteredSiteConfig = [];
-    if (pertiCularSites != null) {
+    if (pertiCularSites != null && pertiCularSites != undefined ) {
         filteredSiteConfig = siteConfig.filter((site: any) => pertiCularSites?.find((item: any) => site?.Title?.toLowerCase() == item?.toLowerCase()))
     } else if (showOffShore == true) {
         filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites" )
