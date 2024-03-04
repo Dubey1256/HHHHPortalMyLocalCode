@@ -23,6 +23,7 @@ import RelevantDocuments from './RelevantDocuments';
 import SmartInformation from './SmartInformation';
 import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/VersionHistory';
 import TasksTable from './TaskfooterTable';
+import RadimadeTable from '../../../globalComponents/RadimadeTable'
 import EmailComponenet from './emailComponent';
 import AncTool from '../../../globalComponents/AncTool/AncTool'
 import { myContextValue } from '../../../globalComponents/globalCommon'
@@ -269,6 +270,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       TaskTimeSheetListID: this.props.TaskTimeSheetListID,
       DocumentsListID: this.props.DocumentsListID,
       SmartInformationListID: this.props.SmartInformationListID,
+      PortFolioTypeID:  this.props.PortFolioTypeID,
       siteUrl: this.props.siteUrl,
       TaskTypeID: this.props.TaskTypeID,
       isShowTimeEntry: isShowTimeEntry,
@@ -2790,7 +2792,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
             {console.log("context data ================", myContextValue)}
 
             <div className="row">
-              {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.TaskTypeTitle != "" && this.state.Result.TaskTypeTitle != undefined && this.state.Result.TaskTypeTitle != 'Task' ? <TasksTable props={this.state.Result} AllMasterTasks={this.masterTaskData} AllSiteTasks={this.allDataOfTask} AllListId={AllListId} Context={this.props?.Context} /> : ''}
+              {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.TaskTypeTitle != "" && this.state.Result.TaskTypeTitle != undefined && this.state.Result.TaskTypeTitle != 'Task' ?
+              //  <TasksTable props={this.state.Result} AllMasterTasks={this.masterTaskData} AllSiteTasks={this.allDataOfTask} AllListId={AllListId} Context={this.props?.Context} />
+              <RadimadeTable   tableId="TaskProfile"AllListId={AllListId}configration={"AllAwt"} SelectedSiteForTask={[this.state?.listName]}  SelectedItem={this.state.Result}></RadimadeTable> 
+               : ''}
             </div>
             <div className='row'>
 
