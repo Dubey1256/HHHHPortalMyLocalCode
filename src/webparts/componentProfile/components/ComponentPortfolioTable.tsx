@@ -824,7 +824,18 @@ const switchGroupbyData = () => {
     }
 
     
-   
+    const combinedArray = componentData;
+    componentData = combinedArray.reduce((accumulator:any, currentElement:any) => {
+      
+      const isDuplicate = accumulator.some((el:any) => el.Id === currentElement.Id || el.ID === currentElement.ID);
+      
+     
+      if (!isDuplicate) {
+        accumulator.push(currentElement);
+      }
+    
+      return accumulator;
+    }, []); 
    let newArray:any = []
    if(componentData != undefined && componentData.length > 1 && isAllTaskSelected == true){
     if(componentData[0]?.Title == 'Others' || componentData[1]?.Title == 'Others' && componentData[0]?.TaskType.Title == 'Activities'){

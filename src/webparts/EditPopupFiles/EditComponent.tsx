@@ -53,13 +53,7 @@ let componentDetailsData: any = [];
 let count = 0;
 let ID: any;
 
-function EditInstitution({
-  item,
-  SelectD,
-  Calls,
-  usedFor,
-  portfolioTypeData,
-}: any) {
+function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
   // var AssignedToIds: any = [];
   ResponsibleTeamIds = [];
   AssignedToIds = [];
@@ -293,7 +287,7 @@ function EditInstitution({
           "Portfolios/Title"
         )
         .expand("Portfolios")
-        .filter("Item_x0020_Type eq 'Project' and Portfolios/Id eq " + item.Id)
+        .filter("(Item_x0020_Type eq 'Project' or Item_x0020_Type eq 'Sprint') and Portfolios/Id eq " + item.Id)
         .top(4000)
         .getAll();
 
