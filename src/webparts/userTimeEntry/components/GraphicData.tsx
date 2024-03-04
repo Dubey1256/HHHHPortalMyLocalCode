@@ -3,81 +3,96 @@ import { Panel, PanelType } from "office-ui-fabric-react";
 import ReactApexChart from 'react-apexcharts';
 
 const GraphData = ( data: any ) => {
-
-    
-    const calculateTotalTimeByDay = (data: any) => {
-        const totalTimeByDay: { [key: string]: number } = {};
-        const getDayName = (dateString: string): string => {
+      
+  const calculateTotalTimeByDay = (data: any) => {
+    const totalTimeByDay: { [key: string]: { [key: string]: number } } = {}; // Object to store total time by day and site
+       const getDayName = (dateString: string): string => {
             const date = new Date(dateString);
             const day = ('0' + date.getDate()).slice(-2); 
             const month = ('0' + (date.getMonth() + 1)).slice(-2); 
             return `${day}/${month}`; 
           };
+    data.forEach((entry: any) => {
+        // Extract the TaskDate, TaskTime, and Site
+        const { NewTimeEntryDate, TaskTime, Site } = entry;
+        const taskTimeNumber = parseFloat(TaskTime); // Parse TaskTime as a number
 
-        data.forEach((entry:any) => {
-          // Extract the TaskDate and parse TaskTime as a number
-          const { NewTimeEntryDate, TaskTime } = entry;
-          const taskTimeNumber = parseFloat(TaskTime); // Parse TaskTime as a number
-      
-          const dayName = getDayName(NewTimeEntryDate);
-    
-          if (totalTimeByDay[dayName]) {
-            totalTimeByDay[dayName] += taskTimeNumber;
-          } else {
-            // If it doesn't exist, initialize the total time for that day
-            totalTimeByDay[dayName] = taskTimeNumber;
-          }
-        });
-      
-        const sortedDates = Object.keys(totalTimeByDay).sort((a, b) => {
-    const dateA = new Date(a.split('/').reverse().join('-'));
-    const dateB = new Date(b.split('/').reverse().join('-'));
-    return dateA.getTime() - dateB.getTime();
-  });
+        const dayName = getDayName(NewTimeEntryDate);
 
-  // Create chart data from sorted dates
-  const chartData = sortedDates.map(date => ({
-    Day: date,
-    Time: totalTimeByDay[date]
-  }));
+        // If the day entry doesn't exist, initialize it
+        if (!totalTimeByDay[dayName]) {
+            totalTimeByDay[dayName] = {};
+            totalTimeByDay[dayName].total = 0; // Initialize total time for the day
+        }
 
-  return chartData;
-    };
-      
+        // If the site entry for the day doesn't exist, initialize it
+        if (!totalTimeByDay[dayName][Site]) {
+            totalTimeByDay[dayName][Site] = 0;
+        }
 
+        // Add the task time to the total time for the site on that day
+        totalTimeByDay[dayName][Site] += taskTimeNumber;
+
+        // Add the task time to the total time for the day
+        totalTimeByDay[dayName].total += taskTimeNumber;
+    });
+
+    // Convert the accumulated data into chart data format
+    const chartData = Object.keys(totalTimeByDay).map(day => {
+        const { total, ...sites } = totalTimeByDay[day]; // Extract total time for the day
+        const siteData = Object.keys(sites).map(site => ({
+            Site: site,
+            Time: sites[site]
+        }));
+        return { Day: day, Time: total, SiteData: siteData };
+    });
+
+    return chartData;
+};
     const totalTimeByDay = calculateTotalTimeByDay(data.data);
     console.log(totalTimeByDay)
+    console.log(totalTimeByDay)
 
-      console.log(totalTimeByDay)
-    const chartData = {
-        options: {
-          chart: {
-            id: 'basic-bar'
-          },
-          xaxis: {
-            categories: totalTimeByDay.map((entry:any) => entry.Day)
-          },
-          tooltip: {
-            enabled: true, // Enable tooltip
-          },
-          dataPointMouseEnter: function (event: any, chartContext: any, config: any) {
-            const siteName = data.data[config.seriesIndex].Site; // Get the site name from the series name
-            const time = config.w.config.series[config.seriesIndex].data[config.dataPointIndex]; // Get the time for the data point
-            const siteData = data.data[config.seriesIndex]; // Get the site data from the original data array
-            const siteProperty = siteData.Site; // Access the Site property from the site data
-            chartContext.w.globals.tooltipTitle = `${siteProperty}: ${time} hours`; // Set tooltip content
-          }
-        },
-        
-        series: [{
-          name: 'Time',
-          data: totalTimeByDay.map((entry:any) => entry.Time)
-        }]
-      };
-    
+    const handleDataPointMouseEnter = (event:any, chartContext:any, config:any) => {
+      const dayData = totalTimeByDay[config.dataPointIndex];
+      const siteData = dayData.SiteData.map(site => `${site.Site}: ${site.Time} hours`).join('<br>');
+      chartContext.w.globals.tooltipTitle = siteData;
+  };
+const chartData = {
+  options: {
+      chart: {
+          id: 'basic-bar'
+      },
+      xaxis: {
+          categories: totalTimeByDay.map((entry: any) => entry.Day)
+      },
+      tooltip: {
+        custom: function({ series, seriesIndex, dataPointIndex, w }: any) {
+          const dayData = totalTimeByDay[dataPointIndex]; 
+          const siteData = dayData.SiteData.map(site => ` ${site.Time} h - ${site.Site}`).join('<br>'); 
+          return '<div class="custom-tooltip" style="border: 1px solid #aeabab;padding: 4px; width:200px">' +
+            '<div>' + siteData + '</div>' + 
+            '</div>';
+        }
+     },
+     dataLabels: {
+        enabled: false
+    },
+    events: {
+        dataPointMouseEnter: handleDataPointMouseEnter
+    }
+  },
+  series: [{
+      name: 'Time',
+      data: totalTimeByDay.map((entry: any) => ({
+          x: entry.Day, // Assuming entry.Day is the x-value
+          y: entry.Time, // Assuming entry.Time is the y-value
+          SiteData: entry.SiteData // Assuming entry.SiteData is the array of site data
+      }))
+  }]
+};
 
-
-      
+ 
   const setModalIsOpenToFalse = () => {
     data?.Call();
   };
@@ -118,7 +133,7 @@ const GraphData = ( data: any ) => {
       >
         <div id="bar-chart border">
          
-            <ReactApexChart options={chartData?.options} series={chartData?.series} type="bar" height={350} />
+            <ReactApexChart options={chartData?.options} series={chartData?.series}  type="bar" height={350} />
           
         </div>
       </Panel>
