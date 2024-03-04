@@ -9,6 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import { ColumnDef } from "@tanstack/react-table";
 import { SlArrowRight, SlArrowDown } from "react-icons/sl";
+import { BsBarChartLine } from "react-icons/bs";
 import { Col, Row } from 'react-bootstrap';
 import FileSaver from 'file-saver';
 import * as XLSX from "xlsx";
@@ -23,6 +24,8 @@ import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import PageLoader from "../../../globalComponents/pageLoader";
 import CentralizedSiteComposition from "../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition";
 import ShareTimeSheet from '../../../globalComponents/ShareTimeSheet';
+//import EmployeePieChart from '../../employeDashBoard/components/EmployeePieChart';
+import GraphData from './GraphicData';
 var AllListId: any;
 var siteConfig: any[] = []
 var AllPortfolios: any[] = [];
@@ -33,7 +36,7 @@ let totalTimedata: any = []
 let QueryStringId: any = '';
 let DateType: any = 'This Week'
 export interface IUserTimeEntryState {
-  Result: any; taskUsers: any; checked: any; expanded: any; DateType: any, IsShareTimeEntry: boolean, checkedSites: any; expandedSites: any; filterItems: any; filterSites: any; ImageSelectedUsers: any; startdate: Date;
+  Result: any; taskUsers: any; checked: any;IsOpenTimeSheetPopup:any, expanded: any; DateType: any, IsShareTimeEntry: boolean, checkedSites: any; expandedSites: any; filterItems: any; filterSites: any; ImageSelectedUsers: any; startdate: Date;
   enddate: Date; SitesConfig: any; AllTimeEntry: any; SelectGroupName: string; checkedAll: boolean; checkedAllSites: boolean; checkedParentNode: any; resultSummary: any;
   ShowingAllData: any; loaded: any; expandIcons: boolean; columns: ColumnDef<any, unknown>[]; IsMasterTask: any; IsTask: any; IsPresetPopup: any; PresetEndDate: any;
   PresetStartDate: any; PreSetItem: any; isStartDatePickerOne: boolean; isEndDatePickerOne: boolean; IsCheckedComponent: boolean; IsCheckedService: boolean; selectedRadio: any;
@@ -50,7 +53,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
   public constructor(props: IUserTimeEntryProps, state: IUserTimeEntryState) {
     super(props);
     this.state = {
-      Result: {}, taskUsers: [], DateType: '', IsShareTimeEntry: false, showShareTimesheet: false,disableProperty:true, checked: [], expanded: [], checkedSites: [], expandedSites: [], filterItems: [], filterSites: [], ImageSelectedUsers: [], startdate: new Date(),
+      Result: {}, taskUsers: [], DateType: '',IsOpenTimeSheetPopup:false, IsShareTimeEntry: false, showShareTimesheet: false,disableProperty:true, checked: [], expanded: [], checkedSites: [], expandedSites: [], filterItems: [], filterSites: [], ImageSelectedUsers: [], startdate: new Date(),
       enddate: new Date(), SitesConfig: [], AllTimeEntry: [], SelectGroupName: '', checkedAll: false, expandIcons: false, checkedAllSites: false, checkedParentNode: [],
       resultSummary: { totalTime: 0, totalDays: 0 }, ShowingAllData: [], loaded: true, columns: [], IsTask: '', IsMasterTask: '', IsPresetPopup: false, PresetEndDate: new Date(),
       PresetStartDate: new Date(), PreSetItem: {}, isStartDatePickerOne: true, isEndDatePickerOne: false, IsCheckedComponent: true, IsCheckedService: true, selectedRadio: 'ThisWeek',
@@ -64,6 +67,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     this.GetResult();
   }
   componentDidMount() {
+    
     window.addEventListener('keydown', this.handleKeyDown);
   }
   componentWillUnmount() {
@@ -804,6 +808,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     startdt = new Date(this.state?.PresetStartDate);
     enddt = new Date(this.state?.PresetEndDate);
+    if(RadioType == ''){
+      DateType = 'Custom'
+    }
     if (this.state.startdate.getTime() == startdt.getTime() && this.state.enddate.getTime() == enddt.getTime()) {
       RadioType = 'Presettime';
     }
@@ -957,7 +964,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     } else if (startDateOf == 'Last Month') {
         const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
         const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-        var change = (Moment(startingDateOfLastMonth).add(17, 'days').format())
+        var change = (Moment(startingDateOfLastMonth).add(10, 'days').format())
         var b = new Date(change)
         formattedDate = b;
     } else if (startDateOf == 'Last Week') {
@@ -968,72 +975,125 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
     return formattedDate;
 }
-  private async LoadAllTimeSheetaData() {
-    let AllTimeEntry: any = [];
-    let arraycount = 0;
-    this.setState({
-      loaded: true,
-    })
-    if (AllTimeSheetResult == undefined || AllTimeSheetResult?.length == 0) {
-      let startDate = this.getStartingDate('Last Month').toISOString();
+
+private async LoadAllTimeSheetaData() {
+  let AllTimeEntry: any = [];
+  let arraycount = 0;
+  this.setState({
+    loaded: true,
+  })
+  if(DateType == 'Today' || DateType == 'Yesterday' || DateType == 'This Week' || DateType == 'Last Week' || DateType == 'This Month'){
+    let startDate = this.getStartingDate('Last Month').toISOString();
+    
+    try {
+    
+        if (this?.state?.TimeSheetLists != undefined && this?.state?.TimeSheetLists.length > 0) {
+          this?.state?.TimeSheetLists.map(async (site: any) => {
+            let web = new Web(site?.siteUrl);
+            let TimeEntry = []
+            await web.lists.getById(site?.listId).items.select(site?.query).filter(`(Modified ge '${startDate}') and (TimesheetTitle/Id ne null)`).getAll()
+            .then((data: any) => {
+              TimeEntry = data
+              console.log(data);
+              TimeEntry.map((entry: any) => {
+                AllTimeEntry.push(entry)
+              });
+              arraycount++;
+            })
+            let currentCount = this?.state?.TimeSheetLists?.length;
+            if (arraycount === currentCount) {
+              AllTimeSheetResult = AllTimeEntry;
+              this.LoadAllSiteAllTasks()
+              this.updatefilter(true);
+
+            }
+          })
+        }
       
-      try {
-        if(DateType == 'Today' || DateType == 'Yesterday' || DateType == 'This Week' || DateType == 'Last Week' || DateType == 'This Month'){
-          if (this?.state?.TimeSheetLists != undefined && this?.state?.TimeSheetLists.length > 0) {
-            this?.state?.TimeSheetLists.map(async (site: any) => {
-              let web = new Web(site?.siteUrl);
-              let TimeEntry = []
-              await web.lists.getById(site?.listId).items.select(site?.query).filter(`(Modified ge '${startDate}') and (TimesheetTitle/Id ne null)`).getAll()
-              .then((data: any) => {
-                TimeEntry = data
-                console.log(data);
-                TimeEntry.map((entry: any) => {
-                  AllTimeEntry.push(entry)
-                });
-                arraycount++;
-              })
-              let currentCount = this?.state?.TimeSheetLists?.length;
-              if (arraycount === currentCount) {
-                AllTimeSheetResult = AllTimeEntry;
-                this.LoadAllSiteAllTasks()
-                this.updatefilter(true);
-  
-              }
-            })
-          }
-        }
-        else{
-          if (this?.state?.TimeSheetLists != undefined && this?.state?.TimeSheetLists.length > 0) {
-            this?.state?.TimeSheetLists.map(async (site: any) => {
-              let web = new Web(site?.siteUrl);
-              let TimeEntry = []
-              await web.lists.getById(site?.listId).items.select(site?.query).getAll()
-              .then((data: any) => {
-                TimeEntry = data
-                console.log(data);
-                TimeEntry.map((entry: any) => {
-                  AllTimeEntry.push(entry)
-                });
-                arraycount++;
-              })
-              let currentCount = this?.state?.TimeSheetLists?.length;
-              if (arraycount === currentCount) {
-                AllTimeSheetResult = AllTimeEntry;
-                this.LoadAllSiteAllTasks()
-                this.updatefilter(true);
-  
-              }
-            })
-          }
-        }
-       
-      } catch (e) {
-        console.log(e)
-      }
+      // else{
+      //   if (this?.state?.TimeSheetLists != undefined && this?.state?.TimeSheetLists.length > 0) {
+      //     this?.state?.TimeSheetLists.map(async (site: any) => {
+      //       let web = new Web(site?.siteUrl);
+      //       let TimeEntry = []
+      //       await web.lists.getById(site?.listId).items.select(site?.query).getAll()
+      //       .then((data: any) => {
+      //         TimeEntry = data
+      //         console.log(data);
+      //         TimeEntry.map((entry: any) => {
+      //           AllTimeEntry.push(entry)
+      //         });
+      //         arraycount++;
+      //       })
+      //       let currentCount = this?.state?.TimeSheetLists?.length;
+      //       if (arraycount === currentCount) {
+      //         AllTimeSheetResult = AllTimeEntry;
+      //         this.LoadAllSiteAllTasks()
+      //         this.updatefilter(true);
+
+      //       }
+      //     })
+      //   }
+      // }
+     
+    } catch (e) {
+      console.log(e)
     }
-    else {
-      this.updatefilter(true);
+   // this.updatefilter(true);
+  }
+  else {
+   this.reRender();
+    this.forceUpdate();
+    AllTimeSheetResult=[]
+    if (this?.state?.TimeSheetLists != undefined && this?.state?.TimeSheetLists.length > 0) {
+      this?.state?.TimeSheetLists.map(async (site: any) => {
+        let web = new Web(site?.siteUrl);
+        let TimeEntry = []
+        await web.lists.getById(site?.listId).items.select(site?.query).getAll()
+        .then((data: any) => {
+          TimeEntry = data
+          console.log(data);
+          TimeEntry.map((entry: any) => {
+            AllTimeEntry.push(entry)
+          });
+          arraycount++;
+        })
+        let currentCount = this?.state?.TimeSheetLists?.length;
+        if (arraycount === currentCount) {
+          AllTimeSheetResult = AllTimeEntry;
+           this.updatefilter(true);
+          this.LoadAllSiteAllTasks()
+
+        }
+      })
     }
+    
+  }
+}
+private reRender=()=>{
+  this.setState({
+    loaded: true,
+  })
+  return(
+    <>
+    {this.state.loaded && <PageLoader />}
+    </>
+  )
+}
+  private CallBack = () => {
+    //setIsOpenTimeSheetPopup(false)
+    this.setState({
+      IsOpenTimeSheetPopup: false
+    })
+  }
+  private showGraph = (tileName: any) => {
+    if(DateType == 'Custom'){
+      let start =  Moment(this.state.startdate).format("DD/MM/YYYY");
+      let end =  Moment(this.state.startdate).format("DD/MM/YYYY");
+      DateType = `${start} - ${end}`
+    }
+    this.setState({
+      IsOpenTimeSheetPopup: true
+    })
   }
   private async generateTimeEntry() {
     let FilterTimeEntry: any[] = []
@@ -1173,6 +1233,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     getAllTimeEntry?.forEach(function (item: any, index: any) {
       item.TimeEntryId = index;
     })
+    AllTimeSheetResult=[]
     this.getJSONTimeEntry(getAllTimeEntry);
     if (getAllTimeEntry == undefined || getAllTimeEntry?.length == 0) {
       this.setState({
@@ -1809,6 +1870,10 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     return count;
   }
+  private customTableHeaderButtons = (
+   
+    <a className='barChart' title='Open Bar Graph' onClick={this.showGraph}><BsBarChartLine /></a>
+)
   private onCheck(checked: any) {
     debugger;
     this.setState({ checked }, () => {
@@ -2490,8 +2555,13 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
           <div className='col'>
             <section className='TableContentSection'>
               <div className="Alltable p-0">
+              <span>
+        {/* {this.state.IsOpenTimeSheetPopup == true && <EmployeePieChart  selectedUser={this.state.ImageSelectedUsers} IsOpenTimeSheetPopup={this.state.IsOpenTimeSheetPopup} Call={() => { this.CallBack() }} selected/>} */}
+          {this.state.IsOpenTimeSheetPopup == true && <GraphData  data={this.state.AllTimeEntry} IsOpenTimeSheetPopup={this.state.IsOpenTimeSheetPopup}  DateType={DateType} Call={() => { this.CallBack() }} selected/>} 
+      </span>
+    
                 <div className="wrapper">
-                  <GlobalCommanTable expandIcon={true} showCatIcon={true} exportToExcelCategoryReport={this.exportToExcel} showHeader={true} showDateTime={' | Time: ' + this.state.resultSummary.totalTime + ' | Days: (' + this.state.resultSummary.totalDays + ')'} columns={this.state.columns} data={this.state.AllTimeEntry} callBackData={this.callBackData} TaskUsers={AllTaskUser} AllListId={this?.props} portfolioColor={portfolioColor} />
+                  <GlobalCommanTable expandIcon={true} customHeaderButtonAvailable={true} customTableHeaderButtons={this.customTableHeaderButtons} showCatIcon={true} exportToExcelCategoryReport={this.exportToExcel} showHeader={true} showDateTime={' | Time: ' + this.state.resultSummary.totalTime + ' | Days: (' + this.state.resultSummary.totalDays + ')'} columns={this.state.columns} data={this.state.AllTimeEntry} callBackData={this.callBackData} TaskUsers={AllTaskUser} AllListId={this?.props} portfolioColor={portfolioColor} />
                 </div>
               </div>
             </section>
