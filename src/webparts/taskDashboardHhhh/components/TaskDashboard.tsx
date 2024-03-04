@@ -399,7 +399,7 @@ const TaskDashboard = (props: any) => {
         try {
             if (currentUserId != undefined && siteConfig?.length > 0) {
 
-                let smartmeta: any[] = await globalCommon?.loadAllSiteTasks(AllListId,undefined,true);
+                let smartmeta: any[] = await globalCommon?.loadAllSiteTasks(AllListId,undefined,undefined,true);
                 smartmeta?.map((task: any) => {
                     try {
 
