@@ -547,7 +547,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                     {/*---- Task Type Categories ----------------------------------------*/}
                     <div className="card">
                         <div className='alignCenter card-header siteColor'>
-                            <b className='siteColor'> Select Category </b>
+                            <b className='siteColor'> Select Category* </b>
                             <span className="hover-text alignIcon">
                                 <span className="svg__iconbox svg__icon--info dark"></span>
                                 <span className="tooltip-text pop-right">
@@ -670,7 +670,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                                 target="_blank"
                                                 data-interception="off"
                                                 className="textDotted"
-                                                href={`${ItemDetails.siteUrl}/SitePages/Project-Management.aspx?ProjectId==${CreateTaskInfo.Project?.Id}`}
+                                                href={`${ItemDetails.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId==${CreateTaskInfo.Project?.Id}`}
                                             >
                                                 {CreateTaskInfo.Project?.Title}
                                             </a>

@@ -4,28 +4,29 @@ import pnp, { sp, Web } from "sp-pnp-js";
 import ServiceComponentPortfolioPopup from "../EditTaskPopup/ServiceComponentPortfolioPopup";
 import SelectedTaskUpdateOnPopup from "./selectedTaskUpdateOnPopup";
 import Picker from "../EditTaskPopup/SmartMetaDataPicker";
-import * as GlobalFunctionForUpdateItem from '../GlobalFunctionForUpdateItems'; 
+import * as GlobalFunctionForUpdateItem from '../GlobalFunctionForUpdateItems';
 
 
 export const addedCreatedDataFromAWT = (itemData: any, dataToPush: any) => {
     for (let val of itemData) {
-        if (dataToPush?.Portfolio?.Id === val.Id && (val?.ParentTask?.Id === 0 || val?.ParentTask?.Id === undefined)) {
-            const existingIndex = val.subRows?.findIndex((subRow: any) => subRow?.Id === dataToPush?.Id);
-            if (existingIndex !== -1) {
+        if (dataToPush?.Portfolio?.Id === val.Id && (val?.ParentTask?.Id === 0 || val?.ParentTask?.Id === undefined) && (val.Title != 'Others')) {
+            const existingIndex = val.subRows?.findIndex((subRow: any) => subRow?.Id === dataToPush?.Id && (dataToPush?.siteType === subRow?.siteType));
+            if (existingIndex !== -1 && existingIndex != undefined) {
                 val.subRows[existingIndex] = dataToPush;
-            } else {
-                val.subRows = val.subRows || [];
-                val?.subRows?.push(dataToPush);
+                return true;
             }
-        } else if (dataToPush?.ParentTask?.Id === val.Id && dataToPush?.siteType === val?.siteType) {
+        } else if (dataToPush?.ParentTask?.Id === val.Id && dataToPush?.siteType === val?.siteType && (val.Title != 'Others')) {
             const existingIndex = val.subRows?.findIndex((subRow: any) => subRow?.Id === dataToPush?.Id && dataToPush?.siteType === subRow?.siteType);
-            if (existingIndex !== -1) {
+            if (existingIndex !== -1 && existingIndex != undefined) {
                 val.subRows[existingIndex] = dataToPush;
-            } else {
-                val.subRows = val.subRows || [];
-                val?.subRows?.push(dataToPush);
+                return true;
             }
-            return true;
+        } else if (val?.Title === 'Others') {
+            const existingIndex = val.subRows?.findIndex((subRow: any) => subRow?.Id === dataToPush?.Id && (dataToPush?.siteType === subRow?.siteType));
+            if (existingIndex !== -1 && existingIndex != undefined) {
+                val.subRows[existingIndex] = dataToPush;
+                return true;
+            }
         } else if (val?.subRows) {
             if (addedCreatedDataFromAWT(val.subRows, dataToPush)) {
                 return true;

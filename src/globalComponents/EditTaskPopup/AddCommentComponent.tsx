@@ -56,6 +56,8 @@ const AddCommentComponent = (FbData: any) => {
                 tempArray.push(dataItem);
             })
             setFeedBackArray(tempArray);
+        }else{
+            setFeedBackArray([])   
         }
         getCurrentUserDetails();
     }, [FbData.Data?.length])

@@ -213,7 +213,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
       }
     };
     let statusDropDown = [
-      { rankTitle: "Select Status", rank: null },
+      { rankTitle: "Select Status", rank: 0 },
       { rankTitle: "Not Started", rank: 0 },
       { rankTitle: "In Progress", rank: 10 },
       { rankTitle: "Completed", rank: 100 },
@@ -272,7 +272,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
           .getByTitle(listName)
           .items.getById(itemId)
           .update({
-            [fieldName]: fieldValue,
+            [fieldName]: fieldValue != '' ? fieldValue : null,
           });
 
         setEditing(false);
@@ -1583,7 +1583,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                   <a
                                     href={
                                       SelectedProp.siteUrl +
-                                      "/SitePages/Project-Management.aspx?ProjectId=" +
+                                      "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                                       item?.Id
                                     }
                                     data-interception="off"
@@ -1782,7 +1782,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                   <a
                                     href={
                                       SelectedProp.siteUrl +
-                                      "/SitePages/Project-Management.aspx?ProjectId=" +
+                                      "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                                       item?.Id
                                     }
                                     data-interception="off"

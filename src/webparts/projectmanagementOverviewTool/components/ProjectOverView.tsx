@@ -332,7 +332,7 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != undefined ? <span>
-                            <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Project?.Id}`} data-interception="off" target="_blank">
+                            <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.Project?.Id}`} data-interception="off" target="_blank">
                                 {row?.original?.ProjectTitle}
                             </a>
                         </span> : ''}
@@ -585,7 +585,7 @@ export default function ProjectOverview(props: any) {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
                     <div className='alignCenter'>
-                        <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
+                        <a className='hreflink' href={row?.original?.siteType == "Project" ? `${AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.Id}`: `${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
                         {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5'><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
                     </div>
 
@@ -958,7 +958,7 @@ export default function ProjectOverview(props: any) {
                     `<table cellpadding="0" cellspacing="0" align="center" style="margin-top:10px; margin-left:${group?.Item_x0020_Type == 'Sprint' ? '20px' : ''}" width="100%" border="0">
                     <tr>
                     <td width="20%" height="30" align="left" valign="middle"bgcolor=${bgColor} style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:${textColor};"><strong>Title</strong></td>
-                    <td height="30" colspan="6" bgcolor="#eee" style="padding-left: 10px; color: #eee;border: 1px solid #a19f9f;"><strong><a style="text-decoration: none;" href =${AllListId.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${group?.Id}> ${group?.PortfolioStructureID} - ${group?.Title}</a></strong></td>
+                    <td height="30" colspan="6" bgcolor="#eee" style="padding-left: 10px; color: #eee;border: 1px solid #a19f9f;"><strong><a style="text-decoration: none;" href =${AllListId.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${group?.Id}> ${group?.PortfolioStructureID} - ${group?.Title}</a></strong></td>
                     </tr>
                     <tr>
                     <td width="10%" height="30" align="left" valign="middle" bgcolor=${bgColor} style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:${textColor};"><strong>Project Priority</strong></td>
@@ -1383,8 +1383,10 @@ export default function ProjectOverview(props: any) {
                 }
             } else {
                 setCheckBoxData([])
-                setTableProperty([])
-                setTrueRestructuring(false)
+                if (childRef.current.table.getSelectedRowModel().flatRows.length == 0) {
+                  setTrueRestructuring(false)
+              }
+                
             }
             if (ShowingData != undefined) {
                 setShowingData([ShowingData])
@@ -1475,9 +1477,9 @@ export default function ProjectOverview(props: any) {
         renderData = [];
         renderData = renderData.concat(getData)
         refreshData()
-        if (callback == true) {
-            GetMasterData();
-        }
+        // if (callback == true) {
+        //     GetMasterData();
+        // }
 
     }, []);
 
@@ -1754,7 +1756,7 @@ export default function ProjectOverview(props: any) {
 
             {
                 trueRestructuring == true ?
-                    <RestructuringCom AllSitesTaskData={AllSitesAllTasks} AllMasterTasksData={MyAllData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllTaskUser} contextValue={AllListId} allData={workingTodayFiltered ? data : flatData} restructureCallBack={restructureCallback} restructureItem={TableProperty} />
+                    <RestructuringCom AllSitesTaskData={AllSitesAllTasks} AllMasterTasksData={MyAllData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllTaskUser} contextValue={AllListId} allData={workingTodayFiltered ? data : flatData} restructureCallBack={restructureCallback} findPage = {"ProjectOverView"} restructureItem={childRef.current.table.getSelectedRowModel().flatRows} />
                     : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
             }
             <label className="switch me-2" htmlFor="checkbox">

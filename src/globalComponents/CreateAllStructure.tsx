@@ -13,6 +13,7 @@ let CurrentUserData: any = ''
 
 let isDisable = false
 let isDisableSub = false
+let subCount= 0;
 const CreateAllStructureComponent = (props: any) => {
     CurrentUserId = props?.PropsValue?.Context.pageContext?._legacyPageContext.userId;
     const [OpenAddStructurePopup, setOpenAddStructurePopup] = React.useState(true)
@@ -106,12 +107,13 @@ const CreateAllStructureComponent = (props: any) => {
         }
         if (type === 'subcomponent') {
             const newSubComponents = [...components];
-            newSubComponents[index].SubComponent.splice(subIndex, 1);
+            newSubComponents[index].SubComponent.splice(subIndex, 1)
             setSubComponents(newSubComponents);
         }
         if (type === 'feature') {
             const newFeatures = [...components];
             newFeatures[index].SubComponent[subIndex].Feature.splice(FeaIndex, 1);
+            newFeatures[index].isCheckedFea = false;
             setFeature(newFeatures);
         }
     };
@@ -160,40 +162,59 @@ const CreateAllStructureComponent = (props: any) => {
 
                 // Save subcomponents
                 const subcomponents = [];
-               
                 for (const subcomponent of component?.SubComponent) {
                     let Sublevel: any = ''
                     let SubPortfolioStr = ''
-                    if (props.SelectedItem?.PortfolioType != undefined) {
-                        let array: any = []
-                        CheckPortfolioType(props.SelectedItem.PortfolioType)
-                        array.push(props.SelectedItem)
-                        var PortfolioStructureId = array
-                    }
+                    // if (props.SelectedItem?.PortfolioType != undefined) {
+                    //     let array: any = []
+                    //     CheckPortfolioType(props.SelectedItem.PortfolioType)
+                    //     array.push(props.SelectedItem)
+                    //     var PortfolioStructureId = array
+                    // }
                    
-                    else{
-                        var PortfolioStructureIdSub = await getPortfolioStructureId('SubComponent', createdComponent)
-                    }
-                  
-                    if (PortfolioStructureIdSub?.length == 0 || PortfolioStructureIdSub == undefined) {
-                        if(PortfolioStructureId != undefined && PortfolioStructureId.length > 0 && PortfolioStructureId[0].subRows != undefined){
-                        Sublevel = 1
-                        PortfolioStructureId[0]?.subRows?.forEach((val:any)=>{
-                            if(val.Item_x0020_Type == 'SubComponent'){
-                                Sublevel++
-                            }
-                        })
-                        }
-                        else{
+                
+                         var PortfolioStructureIdSub = await getPortfolioStructureId('SubComponent', createdComponent)
+                         console.log(PortfolioStructureIdSub)
+                         if(PortfolioStructureIdSub.length == 0){
                             Sublevel = 1
-                        }
+                            SubPortfolioStr = createdComponent?.PortfolioStructureID + '-' + 'S' + Sublevel
+                         }
+                         else{
+                            const parts = PortfolioStructureIdSub[0]?.PortfolioStructureID.split('-');
+                            const prefix = parts[0];
+                             const currentValue = parseInt(parts[1].substring(1)); // Extract the numeric part and parse it to an integer
+                           const newValue = currentValue + 1;
+                           SubPortfolioStr = `${prefix}-S${newValue}`;
+                           Sublevel = PortfolioStructureIdSub[0]?.PortfolioLevel + 1
+                        
+                         }
+                         
+                    // if (PortfolioStructureIdSub?.length == 0 || PortfolioStructureIdSub == undefined) {
+                    //     if(PortfolioStructureId != undefined && PortfolioStructureId.length > 0 && PortfolioStructureId[0].subRows != undefined){
+                    //         Sublevel ++
+                    //         subCount ++
+                    //         if(subCount > 1){
+                    //             Sublevel = subCount
+                    //         }
+                    //         else{
+                    //             PortfolioStructureId[0]?.subRows?.forEach((val:any)=>{
+                    //                 if(val.Item_x0020_Type == 'SubComponent'){
+                    //                     Sublevel++
+                    //                 }
+                    //             })
+                    //         }
+                     
+                    //     }
+                    //     else{
+                    //         Sublevel = 1
+                    //     }
                        
-                        SubPortfolioStr = createdComponent?.PortfolioStructureID + '-' + 'S' + Sublevel
-                    }
-                    else {
-                        Sublevel = PortfolioStructureIdSub[0].PortfolioLevel + 1
-                        SubPortfolioStr = createdComponent?.PortfolioStructureID + '-' + 'S' + Sublevel
-                    }
+                    //     SubPortfolioStr = createdComponent?.PortfolioStructureID + '-' + 'S' + Sublevel
+                    // }
+                    // else {
+                    //     Sublevel = PortfolioStructureIdSub[0].PortfolioLevel + 1
+                    //     SubPortfolioStr = createdComponent?.PortfolioStructureID + '-' + 'S' + Sublevel
+                    // }
 
                     let subcomponentItem: any = {
                         Item_x0020_Type: 'SubComponent',
@@ -203,6 +224,7 @@ const CreateAllStructureComponent = (props: any) => {
                         PortfolioStructureID: SubPortfolioStr,
                         PortfolioTypeId: PortfoliotypeData != ''?PortfoliotypeData?.Id:1,
                     };
+                   
                     // Create subcomponent item in SharePoint list
 
                     const createdSubcomponent = await createListItem('Master Tasks', subcomponentItem);
@@ -229,7 +251,13 @@ const CreateAllStructureComponent = (props: any) => {
                                 FeaPortfolioStr = props.SelectedItem?.PortfolioStructureID + '-' + 'F' + fealevel
                             }
                             else{
-                                FeaPortfolioStr = PortfolioStructureIdFea[0]?.PortfolioStructureID + '-' + 'F' + fealevel
+                                if(PortfolioStructureIdFea[0]?.Item_x0020_Type == 'SubComponent'){
+                                    FeaPortfolioStr = PortfolioStructureIdFea[0]?.PortfolioStructureID + '-' + 'F' + fealevel
+                                }
+                                else{
+                                    FeaPortfolioStr = createdSubcomponent?.PortfolioStructureID + '-' + 'F' + fealevel
+                                }
+                               
                             }
                             
                         }
@@ -364,7 +392,7 @@ const CreateAllStructureComponent = (props: any) => {
         let results = await sp.web.lists
             .getByTitle('Master Tasks')
             .items
-            .select("Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Parent/Id", "PortfolioType/Id", "PortfolioType/Title")
+            .select("Id", "Title", "PortfolioLevel",'Item_x0020_Type', "PortfolioStructureID", "Parent/Id", "PortfolioType/Id", "PortfolioType/Title")
             .expand("Parent,PortfolioType")
             .filter(filter)
             .orderBy("PortfolioLevel", false)
@@ -380,7 +408,7 @@ const CreateAllStructureComponent = (props: any) => {
             if (component.isCheckedSub == true) {
                 Subcomponent.isCheckedFea = true;
             } else {
-                component.isCheckedFea = true;
+                component.SubComponent[subIndex].isCheckedFea = true;
             }
 
             setCount(count + 1)
@@ -430,12 +458,11 @@ const CreateAllStructureComponent = (props: any) => {
 
                     {props?.SelectedItem == undefined && <>
                         <label><b>Select Portfolio Type</b></label>
-                        <div className="d-flex">
+                        <div className="my-2 alignCenter SpfxCheckRadio">
                             {props?.portfolioTypeData.map((item: any) => {
                                 return (
-                                    <div className="mx-2 mb-2 mt-2">
-                                        <label className='label--radio'><input className='radio' defaultChecked={defaultPortfolioType.toLowerCase() === item.Title.toLowerCase()} name='PortfolioType' type='radio' onClick={() => CheckPortfolioType(item)} ></input>{item.Title}</label>
-                                    </div>)
+                                        <label className='label--radio alignCenter'><input className='radio' defaultChecked={defaultPortfolioType.toLowerCase() === item.Title.toLowerCase()} name='PortfolioType' type='radio' onClick={() => CheckPortfolioType(item)} ></input>{item.Title}</label>
+                                    )
                             })}
                         </div> </>}
 
@@ -626,67 +653,76 @@ const CreateAllStructureComponent = (props: any) => {
                                 </div> }
                                 
                                 <div className="mt-2 ps-4">
-                                    {component?.SubComponent?.map((Subcomponent: any, indexSub: any) => (
-                                        <div key={Subcomponent.id} className="form-group">
-                                            {(Subcomponent.isCheckedSub  || (props?.SelectedItem?.Item_x0020_Type != 'SubComponent' && props?.SelectedItem != undefined)) &&
-                                                <div>
-                                                    <label className="form-label full-width" htmlFor={`exampleFormControlInput${Subcomponent.id}`}>
-                                                        <span>{indexSub + 1} - </span> SubComponent
-                                                        <span className="pull-right">
-                                                            <label className='SpfxCheckRadio me-0'>
-                                                                <input type="radio" name="Feature" checked={Subcomponent.isCheckedFea} onChange={() => handleFeatureChange(index, indexSub, component, Subcomponent)} className="radio" />Feature
-                                                            </label>
-                                                        </span>
-                                                    </label>
-                                                    <div className="input-group">
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            id={`exampleFormControlInput${Subcomponent.id}`}
-                                                            placeholder=""
-                                                            value={Subcomponent.value}
-                                                            onChange={(event) => handleInputChange(index, indexSub, 0, event, 'subcomponent')}
-                                                        />
-                                                        {indexSub === component.SubComponent.length - 1 && (
-                                                            <div className="input-group-append alignCenter">
-                                                                <span onClick={() => handleAddSubComponent(index, indexSub, 0, 'SubComponent')} title="Add" className="svg__iconbox mx-1 svg__icon--Plus hreflink"></span>
-                                                                {component.SubComponent.length > 1 && (
-                                                                    <span onClick={() => handleDelete(index, indexSub, 0, 'subcomponent')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>
-                                                                )}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            }
-                                            {(Subcomponent.isCheckedFea || component.isCheckedFea || isDisableSub == true || props?.SelectedItem?.Item_x0020_Type == 'SubComponent') &&
-                                                <div className="mt-2 ps-4">
-                                                    {Subcomponent?.Feature?.map((Features: any, indexFea: any) => (
-                                                        <div key={Features.id} className="form-group">
-                                                            <span>{indexFea + 1} - </span>
-                                                            <label htmlFor={`exampleFormControlInput${Features.id}`}>Feature</label>
-                                                            <div className="input-group">
-                                                                <input
-                                                                    type="text"
-                                                                    className="form-control"
-                                                                    id={`exampleFormControlInput${Features.id}`}
-                                                                    placeholder=""
-                                                                    value={Features.value}
-                                                                    onChange={(event) => handleInputChange(index, indexSub, indexFea, event, 'feature')}
-                                                                />
-                                                                {indexFea === Subcomponent.Feature.length - 1 && (
-                                                                    <div className="input-group-append alignCenter">
-                                                                        <span onClick={() => handleAddSubComponent(index, indexSub, indexFea, 'Feature')} title="Add" className="svg__iconbox mx-1 svg__icon--Plus hreflink"></span>
-                                                                        {Subcomponent.Feature.length > 1 && (
-                                                                            <span onClick={() => handleDelete(index, indexSub, indexFea, 'feature')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>
-                                                                        )}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>}
-                                        </div>
-                                    ))}
+                                {component?.SubComponent?.map((Subcomponent: any, indexSub: any) => (
+    <div key={Subcomponent.id} className="form-group">
+        {(Subcomponent.isCheckedSub  || (props?.SelectedItem?.Item_x0020_Type != 'SubComponent' && props?.SelectedItem != undefined)) &&
+            <div>
+                <label className="form-label full-width" htmlFor={`exampleFormControlInput${Subcomponent.id}`}>
+                    <span>{indexSub + 1} - </span> SubComponent
+                    <span className="pull-right">
+                        <label className='SpfxCheckRadio me-0'>
+                            <input 
+                                type="radio" 
+                                name={`Feature${indexSub}`} // Ensure unique name for each radio group
+                                checked={Subcomponent.isCheckedFea} 
+                                onChange={() => handleFeatureChange(index, indexSub, component, Subcomponent)} 
+                                className="radio" 
+                            />
+                            Feature
+                        </label>
+                    </span>
+                </label>
+                <div className="input-group">
+                    <input
+                        type="text"
+                        className="form-control"
+                        id={`exampleFormControlInput${Subcomponent.id}`}
+                        placeholder=""
+                        value={Subcomponent.value}
+                        onChange={(event) => handleInputChange(index, indexSub, 0, event, 'subcomponent')}
+                    />
+                    {component.SubComponent.length == 1 && <span onClick={() => handleDelete(index, indexSub, 0, 'subcomponent')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>}
+                    {indexSub === component.SubComponent.length - 1 && (
+                        <div className="input-group-append alignCenter">
+                            <span onClick={() => handleAddSubComponent(index, indexSub, 0, 'SubComponent')} title="Add" className="svg__iconbox mx-1 svg__icon--Plus hreflink"></span>
+                            {component.SubComponent.length > 1 && (
+                                <span onClick={() => handleDelete(index, indexSub, 0, 'subcomponent')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+        }
+        {(Subcomponent.isCheckedFea || component.isCheckedFea || isDisableSub == true || props?.SelectedItem?.Item_x0020_Type == 'SubComponent') &&
+            <div className="mt-2 ps-4">
+                {Subcomponent?.Feature?.map((Features: any, indexFea: any) => (
+                    <div key={Features.id} className="form-group">
+                        <span>{indexFea + 1} - </span>
+                        <label htmlFor={`exampleFormControlInput${Features.id}`}>Feature</label>
+                        <div className="input-group">
+                            <input
+                                type="text"
+                                className="form-control"
+                                id={`exampleFormControlInput${Features.id}`}
+                                placeholder=""
+                                value={Features.value}
+                                onChange={(event) => handleInputChange(index, indexSub, indexFea, event, 'feature')}
+                            />
+                            {Subcomponent.Feature.length == 1 && <span onClick={() => handleDelete(index, indexSub, indexFea, 'feature')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>}
+                            {indexFea === Subcomponent.Feature.length - 1 && (
+                                <div className="input-group-append alignCenter">
+                                    <span onClick={() => handleAddSubComponent(index, indexSub, indexFea, 'Feature')} title="Add" className="svg__iconbox mx-1 svg__icon--Plus hreflink"></span>
+                                    {Subcomponent.Feature.length > 1 && (
+                                        <span onClick={() => handleDelete(index, indexSub, indexFea, 'feature')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                ))}
+            </div>}
+    </div>
+))}
                                 </div>
                             </div>
                         ))}

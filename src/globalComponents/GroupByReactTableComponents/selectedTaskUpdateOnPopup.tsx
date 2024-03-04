@@ -15,6 +15,7 @@ import * as globalCommon from "../globalCommon";
 import PageLoader from "../pageLoader";
 import InlineBulkEditingTask from "./InlineBulkEditingTask";
 import * as GlobalFunctionForUpdateItem from '../GlobalFunctionForUpdateItems';
+import Tooltip from "../Tooltip";
 let childRefdata: any;
 const SelectedTaskUpdateOnPopup = (item: any) => {
     const childRef: any = React.useRef<any>();
@@ -309,7 +310,10 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
     const onRenderCustomHeader = () => {
         return (
             <>
-                <div className="alignCenter subheading"><span className="siteColor">Bulk Editing for Multiple Items</span></div>
+                <div className="alignCenter subheading">
+                    <span className="siteColor">Bulk Editing for Multiple Items</span>
+                </div>
+                <Tooltip ComponentId={6797} />
             </>
         );
     };
@@ -565,7 +569,7 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) ?
-                            <div className="d-flex"><span style={{ width: '44%' }}><a style={row?.original?.updatedPortfolioStructureID ? { color: "#5b5b5be0" } : row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${item?.ContextValue?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                            <div className="d-flex"><span style={{ width: '44%' }}><a style={row?.original?.updatedPortfolioStructureID ? { color: "#5b5b5be0" } : row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${item?.ContextValue?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
                                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={item?.ContextValue} /></a></span> <span className="px-1" style={{ width: '10%', textAlign: 'center' }}>{row?.original?.updatedPortfolioStructureID ? " | " : ''}</span> <span style={{ fontWeight: 600, textAlign: 'right', width: '44%' }}>
                                     <InlineBulkEditingTask columnName="Project" item={row?.original} ContextValue={item?.ContextValue} popupData={popupData} setPopupData={setPopupData} value={row?.original?.updatedPortfolioStructureID} inlineEditingCallBack={inlineEditingCallBack} />
                                 </span></div>
