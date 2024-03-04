@@ -162,7 +162,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const addNewGroup = async () => {
         let web = new Web(baseUrl);
         await web.lists.getById(TaskUserListId).items.add({
-            Title: addTitle,
+            Title: title,
             Suffix: suffix,
             SortOrder: sortOrder,
             ItemType: "Group"
@@ -170,7 +170,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             console.log(res);
             const newItem = res.data;
             setGroupData(prevData => [...prevData, newItem]);
-            setAddTitle("");
+            setTitle("");
             setSuffix("");
             setSortOrder("");
             fetchAPIData()

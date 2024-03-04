@@ -1713,7 +1713,7 @@ function CreateTaskComponent(props: any) {
                         {props?.projectId == undefined ?
                             <h4 className="titleBorder">General Information</h4> : ''}
                         <div className='row p-0'>
-                            <div className='col-sm-6 ps-0 '>
+                            <div className='col-sm-6  '>
                                 <div className='input-group'>
                                     <label className='full-width'>Task Name</label>
                                     <input type="text" placeholder='Enter task Name' className='form-control' value={save.taskName} onChange={(e) => { changeTitle(e) }}></input>
@@ -1766,7 +1766,7 @@ function CreateTaskComponent(props: any) {
 
 
                             </div>
-                            <div className='col-sm-3 pe-0 '>
+                            <div className='col-sm-3'>
                                 <div className="input-group mb-2">
                                     <label className="form-label full-width">
                                         Project
@@ -1808,7 +1808,7 @@ function CreateTaskComponent(props: any) {
 
                             </div>
 
-                            <div className='col pe-0 ps-0 mt-2'>
+                            <div className='col mt-2'>
                                 <div className='input-group'>
                                     <label className='full-width'>Task URL</label>
                                     <input type="text" className='form-control' placeholder='Enter task Url' value={save.taskUrl} onChange={(e) => UrlPasteTitle(e)} disabled={burgerMenuTaskDetails?.Siteurl?.length > 0}></input>

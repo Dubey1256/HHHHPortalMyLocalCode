@@ -9,6 +9,7 @@ import * as globalCommon from '../globalCommon';
 import { Web } from "sp-pnp-js";
 import moment from "moment";
 import _ from "lodash";
+import CheckboxTree from 'react-checkbox-tree';
 import HtmlEditorCard from "../HtmlEditor/HtmlEditor";
 import Picker from "../EditTaskPopup/SmartMetaDataPicker";
 import { FaLeftLong, FaRightLong } from "react-icons/fa6";
@@ -228,8 +229,11 @@ const CompareTool = (props: any) => {
     }
     const checkCategory = function (item: any, category: any, Item: any) {
         Item?.TaskTimeSheetCategoriesGrouping?.forEach((categoryTitle: any) => {
-            if (categoryTitle?.Id == category)
+            if (categoryTitle?.Id == category) {
                 categoryTitle.subRows.push(item);
+                categoryTitle.values.push(item);
+
+            }
         })
     }
 
@@ -278,6 +282,7 @@ const CompareTool = (props: any) => {
                     child.CategoryTitleShow = true;
                     if (child.AdditionalTime != undefined && child?.AdditionalTime?.length > 0 && (child.subRows == undefined || child.subRows.length == 0)) {
                         child.subRows = child.AdditionalTime;
+                        child.values = child.AdditionalTime;
                         child.TaskDate = undefined;
                     }
                     if (!IsExistsData(finalData, child))
@@ -582,7 +587,7 @@ const CompareTool = (props: any) => {
             if (items?.Item_x0020_Type === "Component" || items?.Item_x0020_Type === "SubComponent" || items?.Item_x0020_Type === "Feature" || items?.Item_x0020_Type === "Project" || items?.Item_x0020_Type === "Sprint") {
                 select = "ID,Id,Title,Mileage,PortfolioLevel,Synonyms,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo,TechnicalExplanations,SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,PriorityRank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title,Portfolios/Id,ClientTime,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title,FeatureType/Id,FeatureType/Title,AssignedTo/Title,AssignedTo/Id,TeamMembers/Title,TeamMembers/Id,ResponsibleTeam/Title,ResponsibleTeam/Id,PortfolioType/Title,PortfolioType/Id&$expand=Parent,PortfolioType,Portfolios,TaskCategories,AssignedTo,ClientCategory,TeamMembers,ResponsibleTeam,FeatureType,Author,Editor"
             } else
-                select = "ID,Id,Mileage,BasicImageInfo,ParentTask/Title,ClientActivity,ParentTask/Id,ItemRank,TaskLevel,OffshoreComments,CompletedDate,ComponentLink,AdminStatus,TeamMembers/Id,ClientCategory/Id,ClientCategory/Title,TaskID,ResponsibleTeam/Id,ResponsibleTeam/Title,ParentTask/TaskID,TaskType/Level,PriorityRank,TeamMembers/Title,FeedBack,Title,Id,ID,DueDate,Comments,Categories,Status,Sitestagging,Body,PercentComplete,StartDate,ClientCategory,Priority,TaskType/Id,TaskType/Title,Portfolio/Id,Portfolio/ItemType,Portfolio/PortfolioStructureID,Portfolio/Title,TaskCategories/Id,TaskCategories/Title,TeamMembers/Name,Project/Id,Project/PortfolioStructureID,Project/Title,Project/PriorityRank,AssignedTo/Id,AssignedTo/Title,AssignedToId,Author/Id,Author/Title,Editor/Id,Editor/Title,Created,Modified,IsTodaysTask,workingThisWeek&$expand=ParentTask, Portfolio,TaskType,ClientCategory,TeamMembers,ResponsibleTeam,AssignedTo,Editor,Author,TaskCategories,Project";
+                select = "ID,Id,Mileage,BasicImageInfo,ParentTask/Title,ClientActivity,ParentTask/Id,ItemRank,TaskLevel,OffshoreComments,CompletedDate,ComponentLink,AdminStatus,TeamMembers/Id,ClientCategory/Id,ClientCategory/Title,TaskID,ResponsibleTeam/Id,ResponsibleTeam/Title,ParentTask/TaskID,TaskType/Level,PriorityRank,TeamMembers/Title,FeedBack,Title,Id,ID,DueDate,Comments,Categories,Status,Sitestagging,Body,PercentComplete,StartDate,ClientCategory,Priority,TaskType/Id,TaskType/Title,Portfolio/Id,Portfolio/ItemType,Portfolio/PortfolioStructureID,Portfolio/Title,TaskCategories/Id,TaskCategories/Title,TeamMembers/Name,Project/Id,Project/PortfolioStructureID,Project/Title,Project/PriorityRank,AssignedTo/Id,AssignedTo/Title,AssignedToId,Author/Id,Author/Title,Editor/Id,Editor/Title,Created,Modified,IsTodaysTask,workingThisWeek,Attachments,AttachmentFiles&$expand=ParentTask, Portfolio,TaskType,ClientCategory,TeamMembers,ResponsibleTeam,AssignedTo,Editor,Author,TaskCategories,Project,AttachmentFiles";
 
             await globalCommon.getData(
                 props?.contextValue?.siteUrl,
@@ -597,7 +602,9 @@ const CompareTool = (props: any) => {
                     let SiteCompositionTemp: any = [];
                     SiteCompositionTemp = globalCommon.parseJSON(datas[0]?.Sitestagging);
                     //  datas[0].SiteComposition = datas[0].SiteComposition == undefined ? [] : datas[0].SiteComposition;
-
+                    datas[0].attachment = [];
+                    if (datas[0]?.TaskType?.Id != undefined)
+                        datas[0].attachment = globalCommon.parseJSON(datas[0].BasicImageInfo);
 
                     if (datas[0].ClientCategory?.length > 0) {
                         let TempCCItems: any = [];
@@ -659,8 +666,9 @@ const CompareTool = (props: any) => {
 
 
                     }
-
-                    datas[0].FeatureType = datas[0]?.FeatureType === undefined ? [] : [{ Id: datas[0]?.FeatureType?.Id, Title: datas[0]?.FeatureType?.Title }];
+                    datas[0].FeatureType = [];
+                    if (datas[0]?.FeatureType?.Id != undefined)
+                        datas[0].FeatureType = [{ Id: datas[0]?.FeatureType?.Id, Title: datas[0]?.FeatureType?.Title }];
                     // datas[0].ProjectItem = datas[0]?.Portfolios === undefined ? [] : datas[0]?.Portfolios;
                     datas[0].ResponsibileUsers = [];
                     if (datas[0]?.CompletedDate != undefined && datas[0]?.CompletedDate != null)
@@ -863,9 +871,20 @@ const CompareTool = (props: any) => {
         }
         return isExists;
     }
+    const IsExistsDataNew = (array: any, taggedItem: any) => {
+        let isExists = false;
+        for (let index = 0; index < array.length; index++) {
+            let item = array[index];
+            if (taggedItem.checked === true) {
+                isExists = true;
+                //return false;
+            }
+        }
+        return isExists;
+    }
     const taggedChildItems = (index: any, property: any, value: any) => {
-        const selectedItem = value.filter((obj:any) => obj.checked === true);
-        if (selectedItem?.length > 0) {
+        const selectedItem = value.filter((obj: any) => obj.checked === true);
+        if (selectedItem?.length > 0 && property != 'finalData') {
             setHistory((prevHistory) => [...prevHistory, _.cloneDeep(data)]);
             const updatedItems = _.cloneDeep(data);
             const indexValue = index == 1 ? 0 : 1
@@ -876,7 +895,8 @@ const CompareTool = (props: any) => {
                 if (!IsExistsData(updatedItems[index][property], taggedItems))
                     updatedItems[index][property].unshift(taggedItems);
                 updatedItems[index][property].map((elem: any) => {
-                    elem.checked = false
+                    if (elem.checked)
+                        elem.checked = false
                 })
             }
             else if ((property === "AssignToUsers" || property === "TeamMembersUsers" || property === "ResponsibileUsers")) {
@@ -886,13 +906,34 @@ const CompareTool = (props: any) => {
                     if (!IsExistsData(updatedItems[index][property], selectedItems[0])) {
                         updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
                         updatedItems[index][property].map((elem: any) => {
-                            elem.checked = false
+                            if (elem.checked)
+                                elem.checked = false
                         })
                     }
                 } else if (selectedItems?.length > 0) {
                     updatedItems[index][property] = selectedItems;
                     updatedItems[index][property]?.map((elem: any) => {
-                        elem.checked = false
+                        if (elem.checked)
+                            elem.checked = false
+                    })
+                }
+            }
+            else if ((property === "attachment")) {
+                const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
+
+                if (updatedItems[index][property]?.length > 0 && selectedItems?.length > 0) {
+                    if (!IsExistsDataNew(updatedItems[index][property], selectedItems[0])) {
+                        updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
+                        updatedItems[index][property].map((elem: any) => {
+                            if (elem.checked)
+                                elem.checked = false
+                        })
+                    }
+                } else if (selectedItems?.length > 0) {
+                    updatedItems[index][property] = selectedItems;
+                    updatedItems[index][property]?.map((elem: any) => {
+                        if (elem.checked)
+                            elem.checked = false
                     })
                 }
             }
@@ -905,28 +946,58 @@ const CompareTool = (props: any) => {
                     if (!IsExistsData(updatedItems[index][property], selectedItems[0])) {
                         updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
                         updatedItems[index][property].map((elem: any) => {
-                            elem.checked = false
+                            if (elem.checked)
+                                elem.checked = false
                         })
                     }
                 } else if (selectedItems?.length > 0) {
                     updatedItems[index][property] = selectedItems;
                     updatedItems[index][property]?.map((elem: any) => {
-                        elem.checked = false
+                        if (elem.checked)
+                            elem.checked = false
                     })
                 }
 
             }
 
-            else {
-                const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
-                if (selectedItems?.length === 0)
-                    alert("please select items " + property)
-            }
 
             setData(updatedItems);
             setTaggedItems({});
             rerender()
         }
+        if (property === 'finalData') {
+            const updatedItems = _.cloneDeep(data);
+            const indexValue = index == 1 ? 0 : 1
+            const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
+            const UnselectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked != true);
+            updatedItems[indexValue][property] = UnselectedItems;
+            if (updatedItems[index][property]?.length > 0 && selectedItems?.length > 0) {
+                if (!IsExistsData(updatedItems[index][property], selectedItems[0])) {
+                    updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
+                    updatedItems[index][property].map((elem: any) => {
+                        if (elem.checked)
+                            elem.checked = false
+                    })
+                }
+            } else if (selectedItems?.length > 0) {
+                updatedItems[index][property] = selectedItems;
+                updatedItems[index][property]?.map((elem: any) => {
+                    if (elem.checked)
+                        elem.checked = false
+                })
+            }
+
+            setData(updatedItems);
+            setTaggedItems({});
+            rerender()
+
+        }
+
+        // else {
+        //     const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
+        //     if (selectedItems?.length === 0)
+        //         alert("please select items " + property)
+        // }
     };
 
     const undoChanges = () => {
@@ -1001,7 +1072,7 @@ const CompareTool = (props: any) => {
     };
     const handleCheckboxChange = (index: any, item: any, property: any) => {
         item.checked = !item.checked;
-        rerender();
+        // rerender();
     };
     const closeHtmlEditor = () => {
         setHtmlEditor({ ...htmlEditor, condition: false, })
@@ -1232,6 +1303,7 @@ const CompareTool = (props: any) => {
                 if (AllTimesheetCategoriesData?.length > 0) {
                     AllTimesheetCategoriesData = AllTimesheetCategoriesData.map((TimeSheetCategory: any) => {
                         TimeSheetCategory.subRows = [];
+                        TimeSheetCategory.values = [];
                         TimeSheetCategory.IsSelectTimeEntry = false;
                         if (TimeSheetCategory.ParentId == 303) {
                             TempTimeSheetCategoryArray.push(TimeSheetCategory);
@@ -1752,8 +1824,114 @@ const CompareTool = (props: any) => {
             console.error('Error in the first block:', error);
         }
     }
+
+    // const UploadImageFunction = (NewlyCreatedTask: any, Data: any, imageName: any): Promise<any> => {
+    //     return new Promise<void>(async (resolve, reject) => {
+    //         let src = Data.data_url?.split(",")[1];
+    //         let byteArray = new Uint8Array(
+    //             atob(src)
+    //                 ?.split("")
+    //                 ?.map(function (c) {
+    //                     return c.charCodeAt(0);
+    //                 })
+    //         );
+    //         if (byteArray) {
+    //             try {
+    //                 let web = new Web(element.siteUrl);element.siteUrl, element.listId
+    //                 let item = web.lists.getById(ItemDetails.listId).items.getById(NewlyCreatedTask?.Id);
+    //                 await item.attachmentFiles.add(imageName, byteArray);
+    //                 console.log("New Attachment added");
+    //                 resolve();
+    //             } catch (error) {
+    //                 reject(error);
+    //             }
+    //         }
+    //     });
+    // };
+
+    const ConvertAttachment = async (CreateTaskInfo: any) => {
+        if (CreateTaskInfo?.attachment?.length > 0) {
+            let ImageUploadCount: any = 0;
+            let UpdatedData: any = CreateTaskInfo;
+            let BasicImageInfoArray: any = [];
+            for (let ImageIndex = 0; ImageIndex < CreateTaskInfo?.attachment?.length;) {
+                const ImageItem = CreateTaskInfo?.attachment[ImageIndex];
+                if (ImageItem != undefined && ImageItem?.ImageName?.indexOf(CreateTaskInfo?.Id) === -1) {
+                    let date = new Date();
+                    let timeStamp = date.getTime();
+                    let fileName: string = "T" + UpdatedData.Id + "-Image" + ImageIndex + "-" + UpdatedData.Title?.replace(/["/':?%]/g, "")?.slice(0, 40) + " " + timeStamp + ".jpg";
+                    const GlobalCurrentUserData = TaskUser?.filter((obj: any) => obj.Id === props.contextValue.Context?.pageContext._legacyPageContext.userId);
+                    let PrepareImageObject = {
+                        ImageName: fileName,
+                        UploadeDate: moment(new Date()).format("DD/MM/YYYY"),
+                        ImageUrl: CreateTaskInfo?.siteUrl + "/Lists/" + CreateTaskInfo?.siteType + "/Attachments/" + UpdatedData?.Id + "/" + fileName,
+
+                        UserImage: GlobalCurrentUserData[0]?.Item_x0020_Cover?.Url ? GlobalCurrentUserData[0]?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                        UserName: props.contextValue.userDisplayName,
+                        Description: ImageItem.Description != undefined ? ImageItem.Description : "",
+                    };
+                    await CopyAttachedImageFunction(UpdatedData, ImageIndex, fileName);
+                    BasicImageInfoArray.push(PrepareImageObject);
+                    ImageUploadCount++;
+                    ImageIndex++;
+                } else {
+                    BasicImageInfoArray.push(ImageItem);
+                    ImageUploadCount++;
+                    ImageIndex++;
+                }
+
+            }
+
+            if (ImageUploadCount == CreateTaskInfo?.attachment?.length) {
+                let web = new Web(CreateTaskInfo?.siteUrl);
+                await web.lists
+                    .getById(CreateTaskInfo?.listId)
+                    .items.getById(UpdatedData?.Id)
+                    .update({ BasicImageInfo: BasicImageInfoArray?.length > 0 ? JSON.stringify(BasicImageInfoArray) : null }).then(() => {
+                        console.log("Image JSON Updated !!");
+                    });
+            }
+        }
+    }
+    const CopyAttachedImageFunction = async (NewlyCreatedTask: any, ImageIndex: any, fileName: any) => {
+        let ItemDetailsNew: any = data?.filter((obj: any) => obj.Id != NewlyCreatedTask?.Id);
+        const ItemDetails: any = ItemDetailsNew?.length > 0 ? ItemDetailsNew[0] : "";
+
+        let web = new Web(ItemDetails?.siteUrl);
+        // let Response: any = await web.lists
+        //     .getById(ItemDetails?.listId)
+        //     .items.getById(ItemDetails?.Id)
+        //     .select("Id,Title,Attachments,AttachmentFiles")
+        //     .expand("AttachmentFiles")
+        //     .get();
+        for (let index = 0; index < ItemDetails?.AttachmentFiles?.length; index++) {
+            try {
+                if (ImageIndex == index) {
+                    const value: any = ItemDetails?.AttachmentFiles[index];
+                    const sourceEndpoint = `${ItemDetails?.siteUrl}/_api/web/lists/getbytitle('${ItemDetails?.siteType}')/items(${ItemDetails?.Id})/AttachmentFiles/getByFileName('${value.FileName}')/$value`;
+                    const ResponseData = await fetch(sourceEndpoint, {
+                        method: "GET",
+                        headers: {
+                            Accept: "application/json;odata=nometadata",
+                        },
+                    });
+                    if (ResponseData.ok) {
+                        const binaryData = await ResponseData.arrayBuffer();
+                        console.log("Binary Data:", binaryData);
+                        var uint8Array = new Uint8Array(binaryData);
+                        const item = await web.lists.getById(ItemDetails?.listId).items.getById(NewlyCreatedTask?.Id).get();
+                        const currentETag = item ? item['@odata.etag'] : null;
+                        await web.lists.getById(ItemDetails?.listId).items.getById(NewlyCreatedTask?.Id).attachmentFiles.add(fileName, uint8Array), currentETag, { headers: { "If-Match": currentETag } }
+                    }
+                }
+            } catch (error) {
+                console.log("error in copy image attachment function", error.message)
+            }
+        }
+    }
     const TaskPost = (Item: any, type: any) => {
         try {
+            ConvertAttachment(Item);
             var AssignedToIds: any = [];
             var TeamMembersIds: any = [];
             let ResponsibleTeamIds: any = [];
@@ -2065,8 +2243,52 @@ const CompareTool = (props: any) => {
                 ))}
         </>
     );
+    const loadMorefilter = (filteritem: any, property: any, index: any) => {
+        const updatedItems = _.cloneDeep(data);
+        if (filteritem.values.length > 0) {
+            filteritem.values.forEach((childitem: any) => {
+                if (filteritem?.Id === childitem?.MainParentId) {
+                    if (filteritem.expand === true) {
+                        filteritem.expand = false;
+                    }
+                    else {
+                        filteritem.expand = true;
+                    }
+                }
+            })
+        }
+        updatedItems[index][property].forEach((obj: any) => {
+            if (filteritem.Id == obj.Id)
+                obj.expand = filteritem.expand;
+        })
+        setData(updatedItems);
+    }
+    const handleGroupCheckboxChanged = (event: any, groupitem: any, property: any, index: any) => {
+        const updatedItems = _.cloneDeep(data);
+        const ischecked = event.target.checked;
+        if (ischecked) {
+            groupitem.selected = true;
+            groupitem?.values?.map((child: any) => {
+                child.selected = true;
+            })
+        }
+        else {
+            groupitem.selected = false;
+            groupitem?.values?.map((fitm: any) => {
+                fitm.selected = false;
+            })
 
-    // export default TreeNode;
+        }
+        updatedItems[index][property]?.forEach((obj: any) => {
+            if (groupitem.Id == obj.Id)
+                obj.selected = groupitem.selected;
+            obj?.values?.forEach((child: any) => {
+                if (child.Id === child?.MainParentId)
+                    child.selected = groupitem.selected;
+            })
+        })
+        setData(updatedItems);
+    }
 
     return (
         <>
@@ -2262,7 +2484,7 @@ const CompareTool = (props: any) => {
 
                                                 <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
                                                 <span> <a target="_blank" className="ms-2" data-interception="off"
-                                                    href={`${items?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items?.Id}&Site=${items?.Id}`}>
+                                                    href={`${items?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items?.Id}`}>
                                                     {items?.Title}
                                                 </a></span>
                                             </div>
@@ -2443,34 +2665,34 @@ const CompareTool = (props: any) => {
                                 <label className="fw-semibold form-label">Team Leaders</label>
                                 <div className="my-1 SearchTableCategoryComponent">
                                     {
-                                        data[0]?.AssignToUsers?.length > 0 && data[0]?.AssignToUsers?.map((items: any) =>
+                                        data[0]?.ResponsibileUsers?.length > 0 && data[0]?.ResponsibileUsers?.map((items: any) =>
                                             <span className="SpfxCheckRadio alignCenter">
-                                                <input type="checkbox" className="form-check-input me-1 mt-0" onChange={() => handleCheckboxChange(0, items, 'AssignToUsers')} />
+                                                <input type="checkbox" className="form-check-input me-1" onChange={() => handleCheckboxChange(0, items, 'ResponsibileUsers')} />
                                                 <img className="workmember" src={items?.userImage} />
                                                 <span className="ms-1">{items?.Title}</span>
                                             </span>)
-                                    }</div>
+                                    }
+                                </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
                                 <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'AssignToUsers', data[1]?.AssignToUsers)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'AssignToUsers', data[0]?.AssignToUsers)} /></div>
+                                    <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'ResponsibileUsers', data[1]?.ResponsibileUsers)} /></div>
+                                    <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'ResponsibileUsers', data[0]?.ResponsibileUsers)} /></div>
                                 </div>
                             </Col>
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <label className="fw-semibold form-label">Team Leaders</label>
-                                <div className="my-1 SearchTableCategoryComponent">
-                                    {
-                                        data[1]?.AssignToUsers?.length > 0 && data[1]?.AssignToUsers?.map((items: any) =>
-                                            <span className="SpfxCheckRadio alignCenter">
-                                                <input type="checkbox" className="form-check-input me-1 mt-0" onChange={() => handleCheckboxChange(1, items, 'AssignToUsers')} />
-                                                <img className="workmember" src={items?.userImage} />
-                                                <span className="ms-1">{items?.Title}</span>
-                                            </span>)
-                                    }</div>
+                                {
+                                    data[1]?.ResponsibileUsers?.length > 0 && data[1]?.ResponsibileUsers?.map((items: any) =>
+                                        <span className="SpfxCheckRadio alignCenter">
+                                            <input type="checkbox" className="form-check-input me-1" onChange={() => handleCheckboxChange(1, items, 'ResponsibileUsers')} />
+                                            <img className="workmember" src={items?.userImage} />
+                                            <span className="ms-1">{items?.Title}</span>
+                                        </span>)
+                                }
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('AssignToUsers')} />
+                                <LuUndo2 size="25" onClick={() => undoChangescolumns('ResponsibileUsers')} />
                             </Col>
                         </Row>
                         {<Row className="Metadatapannel">
@@ -2494,7 +2716,7 @@ const CompareTool = (props: any) => {
                                 </div>
                             </Col>
                             <Col sm="5" md="5" lg="5" className="contentSec">
-                                {data[0]?.Item_x0020_Type === 'Task' ?
+                                {data[0]?.TaskType?.Id != undefined ?
                                     <label className="fw-semibold form-label">TeamMembers</label>
                                     : <label className="fw-semibold form-label">Responsible Team</label>}
                                 {
@@ -2514,10 +2736,11 @@ const CompareTool = (props: any) => {
                         {data[0]?.TaskType?.Id != undefined && <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <label className="fw-semibold form-label">Working Members</label>
+
                                 {
-                                    data[0]?.ResponsibileUsers?.length > 0 && data[0]?.ResponsibileUsers?.map((items: any) =>
+                                    data[0]?.AssignToUsers?.length > 0 && data[0]?.AssignToUsers?.map((items: any) =>
                                         <span className="SpfxCheckRadio alignCenter">
-                                            <input type="checkbox" className="form-check-input me-1" onChange={() => handleCheckboxChange(0, items, 'ResponsibileUsers')} />
+                                            <input type="checkbox" className="form-check-input me-1 mt-0" onChange={() => handleCheckboxChange(0, items, 'AssignToUsers')} />
                                             <img className="workmember" src={items?.userImage} />
                                             <span className="ms-1">{items?.Title}</span>
                                         </span>)
@@ -2525,23 +2748,26 @@ const CompareTool = (props: any) => {
                             </Col>
                             <Col sm="1" md="1" lg="1" className="iconSec">
                                 <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'ResponsibileUsers', data[1]?.ResponsibileUsers)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'ResponsibileUsers', data[0]?.ResponsibileUsers)} /></div>
+                                    <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'AssignToUsers', data[1]?.AssignToUsers)} /></div>
+                                    <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'AssignToUsers', data[0]?.AssignToUsers)} /></div>
                                 </div>
                             </Col>
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <label className="fw-semibold form-label">Working Members</label>
-                                {
-                                    data[1]?.ResponsibileUsers?.length > 0 && data[1]?.ResponsibileUsers?.map((items: any) =>
-                                        <span className="SpfxCheckRadio alignCenter">
-                                            <input type="checkbox" className="form-check-input me-1" onChange={() => handleCheckboxChange(1, items, 'ResponsibileUsers')} />
-                                            <img className="workmember" src={items?.userImage} />
-                                            <span className="ms-1">{items?.Title}</span>
-                                        </span>)
-                                }
+
+                                <div className="my-1 SearchTableCategoryComponent">
+                                    {
+                                        data[1]?.AssignToUsers?.length > 0 && data[1]?.AssignToUsers?.map((items: any) =>
+                                            <span className="SpfxCheckRadio alignCenter">
+                                                <input type="checkbox" className="form-check-input me-1 mt-0" onChange={() => handleCheckboxChange(1, items, 'AssignToUsers')} />
+                                                <img className="workmember" src={items?.userImage} />
+                                                <span className="ms-1">{items?.Title}</span>
+                                            </span>)
+                                    }
+                                </div>
                             </Col>
                             <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('ResponsibileUsers')} />
+                                <LuUndo2 size="25" onClick={() => undoChangescolumns('AssignToUsers')} />
                             </Col>
                         </Row>}
                         <Row className="Metadatapannel">
@@ -2613,25 +2839,62 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('SiteComposition')} />
                             </Col>
                         </Row>
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5" className="sit-preview contentSec">
-                                <label className="fw-semibold form-label">Image</label>
-                                <span className="ms-3"><img src={data[0]?.Item_x002d_Image?.Url} /></span>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="iconSec">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'Item_x002d_Image', data[1]?.Item_x002d_Image)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'Item_x002d_Image', data[0]?.Item_x002d_Image)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5" className="sit-preview contentSec">
-                                <label className="fw-semibold form-label">Image</label>
-                                <span className="ms-3"><img src={data[1]?.Item_x002d_Image?.Url} /></span>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('Item_x002d_Image')} />
-                            </Col>
-                        </Row>
+                        {data[0]?.TaskType?.Id != undefined ?
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5" className="sit-preview contentSec">
+                                    <label className="fw-semibold full-width form-label">Image</label>
+                                    <div className="scrollbar maXh-300">
+                                        {data[0]?.attachment?.length > 0 && data[0]?.attachment?.map((attach: any) => {
+
+                                            return (
+                                                <div className="ms-3 my-1">
+                                                    <input type="checkbox" className="form-check-input me-1" onChange={() => handleCheckboxChange(0, attach, 'attachment')} />
+                                                    <img src={attach?.ImageUrl} />
+                                                </div>
+                                            )
+                                        })}</div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="iconSec">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'attachment', data[1]?.attachment)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'attachment', data[0]?.attachment)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5" className="sit-preview contentSec">
+                                    <label className="fw-semibold full-width form-label">Image</label>
+                                    <div className="scrollbar maXh-300">
+                                        {data[1]?.attachment?.length > 0 && data[1]?.attachment.map((attach: any) => {
+
+                                            return (<div className="ms-3 my-1">
+                                                <input type="checkbox" className="form-check-input me-1" onChange={() => handleCheckboxChange(1, attach, 'attachment')} />
+                                                <img src={attach?.ImageUrl} />
+                                            </div>
+                                            )
+                                        })}</div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('attachment')} />
+                                </Col>
+                            </Row>
+                            : <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5" className="sit-preview contentSec">
+                                    <label className="fw-semibold full-width form-label">Image</label>
+                                    <span className="ms-3"><img src={data[0]?.Item_x002d_Image?.Url} /></span>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="iconSec">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'Item_x002d_Image', data[1]?.Item_x002d_Image)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'Item_x002d_Image', data[0]?.Item_x002d_Image)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5" className="sit-preview contentSec">
+                                    <label className="fw-semibold full-width form-label">Image</label>
+                                    <span className="ms-3"><img src={data[1]?.Item_x002d_Image?.Url} /></span>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('Item_x002d_Image')} />
+                                </Col>
+                            </Row>}
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
@@ -3728,38 +3991,142 @@ const CompareTool = (props: any) => {
 
                                     <div className="input-group" >
                                         <label className="fw-semibold full-width form-label">Time Entries</label>
-                                        {data[0]?.finalData?.length > 0 ? (
+                                        {/* {data[0]?.finalData?.length > 0 ? (
                                             <GlobalCommanTable
                                                 columns={TimeEntryColumnsFirst}
                                                 data={data[0]?.finalData}
                                                 callBackData={callBackDataFirst}
                                                 expendedTrue={true}
                                             />
-                                        ) : <div className="d-flex justify-content-center">No Timesheet Available</div>}
+                                        ) : <div className="d-flex justify-content-center">No Timesheet Available</div>} */}
+
+                                        <table width="100%" className="indicator_search">
+                                            <tbody>
+                                                <tr>
+                                                    {data[0]?.finalData?.length > 0 && data[0]?.finalData?.map((filteritem: any, index: any) => {
+                                                        return (
+                                                            <div>
+                                                                <span id="filterexpand">
+                                                                    {filteritem.expand && filteritem?.values?.length > 0 && <SlArrowDown onClick={() => loadMorefilter(filteritem, 'finalData', 0)}></SlArrowDown>}
+                                                                    {!filteritem.expand && filteritem?.values?.length > 0 && <SlArrowRight onClick={() => loadMorefilter(filteritem, 'finalData', 0)}></SlArrowRight>}
+                                                                </span>
+                                                                <span>
+                                                                    <input className='form-check-input' type="checkbox" id={filteritem.Title} value={filteritem.Title} checked={filteritem.selected} onChange={(event) => handleGroupCheckboxChanged(event, filteritem, 'finalData', 0)} /> {filteritem.Title}
+                                                                </span>
+                                                                <ul>
+                                                                    {filteritem.expand === true && filteritem?.values?.length > 0 && filteritem.values?.map((child: any) => {
+                                                                        return (<>
+                                                                            <li style={{ listStyle: 'none' }} className="alignCenter">
+                                                                                <div style={{ width: "10%" }}>
+                                                                                    <input className='form-check-input' type="checkbox" id={child.Title} value={child.Title} checked={child.selected} onChange={(event) => handleGroupCheckboxChanged(event, child, 'finalData', 0)} /> {child.Title}
+                                                                                </div>
+                                                                                <div style={{ width: "25%" }}>
+                                                                                    {child.TaskDate}
+                                                                                </div>
+                                                                                <div style={{ width: "10%" }}>{child.TaskTime}</div>
+                                                                                <div style={{ width: "50%" }}>{child.Description}</div>
+                                                                            </li></>)
+                                                                    })}
+                                                                </ul>
+                                                            </div>)
+                                                    })}
+
+
+
+                                                    {/* {data[0]?.finalData?.length > 0 ? (
+                                                        data[0]?.finalData.map((Group: any, index: any) => {
+                                                            return (
+                                                          <>  <td>
+                                                                <fieldset>
+                                                                    <legend ng-if="item!='teamSites'" className="ng-scope">
+                                                                    <input type='checkbox' checked={Group.checked} value={Group.Title}  onChange={(e) => onCheck((e), index ,data[0]?.finalData)} ></input>   <span className="ng-binding">{Group.Title}</span>
+                                                                    </legend>
+                                                                </fieldset>
+                                                                <CheckboxTree
+                                                                    nodes={Group.values}
+                                                                    checked={Group.checked}
+                                                                    expanded={Group.expanded}
+                                                                    onCheck={checked => onCheck(checked, index ,data[0]?.finalData)}
+                                                                    onExpand={expanded => onExpanded(expanded, index ,data[0]?.finalData)}
+                                                                    nativeCheckboxes={true}
+                                                                    showNodeIcon={false}
+                                                                    checkModel={'all'}
+                                                                />
+                                                            </td>
+                                                            <td>{Group.TaskDate}</td><td>{Group.TaskTime}</td><td>{Group.TaskTime}</td>
+                                                            
+                                                            </>
+                                                            )
+
+                                                        }
+                                                        )): <div className="d-flex justify-content-center">No Timesheet Available</div>
+
+                                                    } */}
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+
+
+
                                     </div>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="iconSec">
                                     <div className="text-center">
-                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'HelpDescription', data[1]?.HelpDescription)} /></div>
-                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'HelpDescription', data[0]?.HelpDescription)} /></div>
+                                        <div><FaLeftLong size="16" onClick={() => taggedChildItems(0, 'finalData', data[1]?.finalData)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => taggedChildItems(1, 'finalData', data[0]?.finalData)} /></div>
                                     </div>
                                 </Col>
                                 <Col sm="5" md="5" lg="5" className="contentSec">
 
                                     <div className="input-group">
                                         <label className="fw-semibold full-width form-label">Time Entries</label>
-                                        {data[1]?.finalData?.length > 0 ? (
+                                        {/* {data[1]?.finalData?.length > 0 ? (
                                             <GlobalCommanTable
                                                 columns={TimeEntryColumnsSecond}
                                                 data={data[1]?.finalData}
                                                 callBackData={callBackDataSecond}
                                                 expendedTrue={true}
+
                                             />
-                                        ) : <div className="d-flex justify-content-center">No Timesheet Available</div>}
+                                        ) : <div className="d-flex justify-content-center">No Timesheet Available</div>} */}
+                                        <table width="100%" className="indicator_search">
+                                            <tbody>
+                                                <tr>
+                                                    {data[1]?.finalData?.length > 0 && data[1]?.finalData?.map((filteritem: any, index: any) => {
+                                                        return (
+                                                            <div>
+                                                                <span id="filterexpand">
+                                                                    {filteritem.expand && filteritem?.values?.length > 0 && <SlArrowDown onClick={() => loadMorefilter(filteritem, 'finalData', 1)}></SlArrowDown>}
+                                                                    {!filteritem.expand && filteritem?.values?.length > 0 && <SlArrowRight onClick={() => loadMorefilter(filteritem, 'finalData', 1)}></SlArrowRight>}
+                                                                </span>
+                                                                <span>
+                                                                    <input className='form-check-input' type="checkbox" id={filteritem.Title} value={filteritem.Title} checked={filteritem.selected} onChange={(event) => handleGroupCheckboxChanged(event, filteritem, 'finalData', 1)} /> {filteritem.Title}
+                                                                </span>
+                                                                <ul>
+                                                                    {filteritem.expand === true && filteritem?.values?.length > 0 && filteritem.values?.map((child: any) => {
+                                                                        return (<>
+                                                                            <li style={{ listStyle: 'none' }}>
+                                                                                <div style={{ width: "10%" }}>
+                                                                                    <input className='form-check-input' type="checkbox" id={child.Title} value={child.Title} checked={child.selected} onChange={(event) => handleGroupCheckboxChanged(event, child, 'finalData', 1)} /> {child.Title}
+                                                                                </div>
+                                                                                <div style={{ width: "25%" }}>
+                                                                                    {child.TaskDate}
+                                                                                </div>
+                                                                                <div style={{ width: "10%" }}>{child.TaskTime}</div>
+                                                                                <div style={{ width: "50%" }}>{child.Description}</div>
+                                                                            </li></>)
+                                                                    })}
+                                                                </ul>
+                                                            </div>)
+                                                    })}
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </Col>
                                 <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                    <LuUndo2 size="25" />
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('finalData')} />
                                 </Col>
                             </Row>
                         }
