@@ -2794,7 +2794,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
             <div className="row">
               {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.TaskTypeTitle != "" && this.state.Result.TaskTypeTitle != undefined && this.state.Result.TaskTypeTitle != 'Task' ?
               //  <TasksTable props={this.state.Result} AllMasterTasks={this.masterTaskData} AllSiteTasks={this.allDataOfTask} AllListId={AllListId} Context={this.props?.Context} />
-              <RadimadeTable   tableId="TaskProfile"AllListId={AllListId}configration={"AllAwt"} SelectedSiteForTask={[this.state?.listName]}  SelectedItem={this.state.Result}></RadimadeTable> 
+              <RadimadeTable   tableId="TaskProfilegit"AllListId={AllListId}configration={"AllAwt"} SelectedSiteForTask={[this.state?.listName]}  SelectedItem={this.state.Result}></RadimadeTable> 
                : ''}
             </div>
             <div className='row'>
