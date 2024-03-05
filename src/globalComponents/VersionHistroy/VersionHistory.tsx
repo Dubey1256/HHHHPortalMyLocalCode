@@ -20,7 +20,7 @@ export default function VersionHistory(props: any) {
     const siteTypeUrl = props.siteUrls;
     const listId = props?.listId
     const ItemId = props?.taskId;
-    let sitetype = window?.location?.search?.split("&Site=")[1] || "Master Tasks";
+    let sitetype = window?.location?.search !== '' ? window?.location?.search?.split("&Site=")[1] || "Master Tasks" : 'Task Users';
     const RequiredListIds: any = props?.RequiredListIds;
     let tempEstimatedArrayData: any;
     const [show, setShow] = React.useState(false);
@@ -352,26 +352,44 @@ export default function VersionHistory(props: any) {
                         }
                         else if (key === 'TechnicalExplanations') {
                             newKey = 'TechnicalExplanations';
-                            const shortvalue = $.parseHTML(currentObj.TechnicalExplanations)[0].textContent;
-                            differingPairs[newKey] = shortvalue;
+                            try {
+                                const shortvalue = $.parseHTML(currentObj.TechnicalExplanations)[0].textContent;
+                                differingPairs[newKey] = shortvalue;
+                            }
+                            catch (e) {
+                                console.log(e);
+                            }
+
                         }
                         else if (key === 'Deliverables') {
                             newKey = 'Deliverables';
-                            const Deliverablesvalue = $.parseHTML(currentObj.Deliverables)[0].textContent;
-                            differingPairs[newKey] = Deliverablesvalue;
+                            try {
+                                const Deliverablesvalue = $.parseHTML(currentObj.Deliverables)[0].textContent;
+                                differingPairs[newKey] = Deliverablesvalue;
+                            }
+                            catch (e) {
+                                console.log(e);
+                            }
+
                         }
                         else if (key === 'CategoriesItemsJson' && currentObj.CategoriesItemsJson != undefined && currentObj.CategoriesItemsJson != '[]') {
                             const newKey = 'CategoriesItems';
                             let Deliverablesvalue = '';
-                            const parsedItems = JSON.parse(currentObj.CategoriesItemsJson);
-
-                            if (parsedItems.length >= 2) {
-                                parsedItems.forEach((item: any) => {
-                                    Deliverablesvalue += ';' + item.Title;
-                                });
-                            } else if (parsedItems.length === 1) {
-                                Deliverablesvalue = parsedItems[0].Title + ';';
+                            try {
+                                if (currentObj?.CategoriesItemsJson != undefined && currentObj?.CategoriesItemsJson != null && currentObj?.CategoriesItemsJson != '[]')
+                                    var parsedItems = JSON.parse(currentObj?.CategoriesItemsJson);
+                                if (parsedItems.length >= 2) {
+                                    parsedItems.forEach((item: any) => {
+                                        Deliverablesvalue += ';' + item.Title;
+                                    });
+                                } else if (parsedItems.length === 1) {
+                                    Deliverablesvalue = parsedItems[0].Title + ';';
+                                }
                             }
+                            catch (e) {
+                                console.log(e);
+                            }
+
                             differingPairs[newKey] = Deliverablesvalue;
                         }
                         else {
@@ -483,25 +501,41 @@ export default function VersionHistory(props: any) {
                             }
                             else if (key === 'TechnicalExplanations') {
                                 newKey = 'TechnicalExplanations';
-                                const shortvalue = $.parseHTML(currentObj.TechnicalExplanations)[0].textContent;
-                                differingPairs[newKey] = shortvalue;
+                                try {
+                                    const shortvalue = $.parseHTML(currentObj.TechnicalExplanations)[0].textContent;
+                                    differingPairs[newKey] = shortvalue;
+                                }
+                                catch (e) {
+                                    console.log(e);
+                                }
+
                             }
                             else if (key === 'Deliverables') {
                                 newKey = 'Deliverables';
-                                const Deliverablesvalue = $.parseHTML(currentObj.Deliverables)[0].textContent;
-                                differingPairs[newKey] = Deliverablesvalue;
+                                try {
+                                    const Deliverablesvalue = $.parseHTML(currentObj.Deliverables)[0].textContent;
+                                    differingPairs[newKey] = Deliverablesvalue;
+                                }
+                                catch (e) {
+                                    console.log(e);
+                                }
                             }
                             else if (key === 'CategoriesItemsJson' && currentObj.CategoriesItemsJson != undefined && currentObj.CategoriesItemsJson != '[]') {
                                 const newKey = 'CategoriesItems';
                                 let Deliverablesvalue = '';
-                                const parsedItems = JSON.parse(currentObj.CategoriesItemsJson);
-
-                                if (parsedItems.length >= 2) {
-                                    parsedItems.forEach((item: any) => {
-                                        Deliverablesvalue += ';' + item.Title;
-                                    });
-                                } else if (parsedItems.length === 1) {
-                                    Deliverablesvalue = parsedItems[0].Title + ';';
+                                try {
+                                    if (currentObj?.CategoriesItemsJson != undefined && currentObj?.CategoriesItemsJson != null && currentObj?.CategoriesItemsJson != '[]')
+                                        var parsedItems = JSON.parse(currentObj?.CategoriesItemsJson);
+                                    if (parsedItems.length >= 2) {
+                                        parsedItems.forEach((item: any) => {
+                                            Deliverablesvalue += ';' + item.Title;
+                                        });
+                                    } else if (parsedItems.length === 1) {
+                                        Deliverablesvalue = parsedItems[0].Title + ';';
+                                    }
+                                }
+                                catch (e) {
+                                    console.log(e);
                                 }
                                 differingPairs[newKey] = Deliverablesvalue;
                             }
@@ -524,7 +558,6 @@ export default function VersionHistory(props: any) {
             }
 
         }
-
         return differingValues;
     }
     // Function to compare arrays and objects recursively based on their IDs
