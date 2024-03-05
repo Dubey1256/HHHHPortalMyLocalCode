@@ -59,7 +59,8 @@ const SmartInformation = (props: any, ref: any) => {
   const [Editdocpanel, setEditdocpanel] = useState(false);
   const [EditSmartinfoValue, setEditSmartinfoValue] = useState(null);
   const [Today, setToday] = useState(moment().format("DD/MM/YYYY"));
-  const [folderCreated, setFolderCreated] = useState(true)
+  const [folderCreated, setFolderCreated] = useState(true);
+  const [sourceTitle, setsourceTitle] = useState('');
   const handleClose = () => {
     if (addSmartInfoPopupAddlinkDoc2 == false) {
 
@@ -100,6 +101,7 @@ const SmartInformation = (props: any, ref: any) => {
           }
         })
       }
+      setsourceTitle(item.Title);
       setEditSmartinfoValue(item);
       setallSetValue({ ...allValue, Title: item.Title, URL: item?.URL?.Url, Description: item?.Description, InfoType: item?.InfoType?.Title, Acronym: item?.Acronym, SelectedFolder: item.SelectedFolder });
       setShow(true);
@@ -388,6 +390,8 @@ const SmartInformation = (props: any, ref: any) => {
 
   const InfoType = (InfoType: any) => {
     setallSetValue({ ...allValue, InfoType: InfoType })
+    var title = 'Information Source -';
+    setsourceTitle(title);
   }
 
   //=========panel header for smartinformation  post and edit ===================
@@ -395,7 +399,7 @@ const SmartInformation = (props: any, ref: any) => {
     return (
       <>
         <div className='subheading'>
-          {popupEdit ? `Edit SmartInformation - ${allValue?.Title}` : `Add SmartInformation - ${taskInfo?.Title}`}
+          {popupEdit ? `Edit SmartInformation - ${allValue?.Title === '' ? sourceTitle : allValue?.Title}` : `Add SmartInformation - ${taskInfo?.Title}`}
         </div>
         <Tooltip ComponentId='3299' />
       </>
@@ -466,7 +470,7 @@ const SmartInformation = (props: any, ref: any) => {
         }
         const web = new Web(props?.AllListId?.siteUrl);
         let postdata = {
-          Title: allValue?.Title != "" ? allValue?.Title : taskInfo?.Title,
+          Title: allValue?.Title != "" ? allValue?.Title : allValue.InfoType === 'Information Source' ? sourceTitle : taskInfo?.Title,
           Acronym: allValue.Acronym != null ? allValue?.Acronym : "",
           InfoTypeId: metaDataId != undefined ? metaDataId : null,
           Description: allValue?.Description != "" ? allValue?.Description : "",
@@ -930,6 +934,13 @@ const SmartInformation = (props: any, ref: any) => {
 
   const handleSource = (value: any) => {
     setInfoSource(value);
+    if (sourceTitle.split('-')[1] === '') {
+      var title = sourceTitle + value.text
+    }
+    else {
+      var title = sourceTitle.split('-')[0] + '-' + value.text
+    }
+    setsourceTitle(title);
   }
 
   //================ drag and drop function or mthod ===================
@@ -967,7 +978,7 @@ const SmartInformation = (props: any, ref: any) => {
         if (InfoSource?.key != 0 && (smartnoteAuthor != undefined || smartnoteAuthor?.length != 0) && (InfoDate != undefined || InfoDate != '')) {
           var desc = `Requirement has been received from ${smartnoteAuthor?.length > 0 ? smartnoteAuthor[0]?.Title : smartnoteAuthor?.Title} through ${InfoSource?.text} on ${moment(InfoDate).format('DD/MM/YYYY')}`
           setinfodescription(desc);
-          setallSetValue({ ...allValue, Title: `Information Source - ${InfoSource.text}`, Description: desc })
+          //setallSetValue({ ...allValue, Title: `Information Source - ${InfoSource.text}`, Description: desc })
           setHtmleditorcall(true)
         }
 
@@ -1113,7 +1124,8 @@ const SmartInformation = (props: any, ref: any) => {
                 <label htmlFor="Title" className='form-label full-width'>Title
                   <span className='ml-1 mr-1 text-danger'>*</span>
                   {popupEdit != true && <span className='mx-2'><input type="checkbox" className="form-check-input" onClick={(e) => checkboxFunction(e)} /></span>}</label>
-                <input type="text" className="form-control" value={allValue?.Title} id="Title" onChange={(e) => changeInputField(e.target.value, "Title")} autoComplete='off' />
+                {allValue?.InfoType == 'Information Source' ? <input type="text" className="form-control" value={sourceTitle} id="Title" onChange={(e) => setsourceTitle(e.target.value)} autoComplete='off' /> :
+                  <input type="text" className="form-control" value={allValue?.Title} id="Title" onChange={(e) => changeInputField(e.target.value, "Title")} autoComplete='off' />}
                 {/* {allValue.AstricMesaage &&<span className='ml-1 mr-1 text-danger'>Please enter your Title !</span>} */}
                 {filterSmartinfo != undefined && filterSmartinfo.length > 0 && <div className='bg-Fa border overflow-auto'><ul className='list-group mx-2 tex'> {filterSmartinfo.map((smartinfofilter: any) => {
                   return (
@@ -1150,7 +1162,7 @@ const SmartInformation = (props: any, ref: any) => {
             </div></div>}
             {allValue.InfoType != null && allValue.InfoType == "Information Source" && <div className='col-md-6 d-flex gap-3'>
               <span className='input-group class-input'>
-                <label className='form-label full-width fw-semibold'> Author: </label>
+                <label className='form-label full-width fw-semibold'> Author <span className='ml-1 mr-1 text-danger'>*</span> </label>
                 <div className='w-100'>
                   <PeoplePicker context={props.Context} titleText="" personSelectionLimit={1} showHiddenInUI={false}
                     principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => smartNoteAuthor(items)}
@@ -1158,11 +1170,11 @@ const SmartInformation = (props: any, ref: any) => {
                 </div>
               </span>
               <span className='input-group'>
-                <label htmlFor="InfoDate" className='full-width'> Date: </label>
+                <label htmlFor="InfoDate" className='full-width'> Date <span className='ml-1 mr-1 text-danger'>*</span> </label>
                 <input type="date" className='full-width' id="dateforIonfosource" value={InfoDate != undefined && InfoDate != '' ? moment(InfoDate).format("YYYY-MM-DD") : ''} onChange={(e) => setInfoDate(e.target.value)} />
               </span>
               <span className='input-group'>
-                <label htmlFor="InfoDate" className='full-width'> Source: </label>
+                <label htmlFor="InfoDate" className='full-width'> Source <span className='ml-1 mr-1 text-danger'>*</span> </label>
                 {/* <input type="text" className='full-width' value={InfoSource} onChange={(e) => setInfoSource(e.target.value)} /> */}
                 {/* <select className='full-width' name="cars" id="InfoType" value={InfoSource} onChange={(e) => setInfoSource(e.target.value)}>
                   <option value='team'>Team</option>
@@ -1199,7 +1211,7 @@ const SmartInformation = (props: any, ref: any) => {
               <span className='mx-2'>|</span>
 
               <span><a title='Add Link/ Document' className='ForAll hreflink' style={{ cursor: "pointer" }} onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link/ Document</a></span>
-              <Button className='btn btn-primary ms-1 me-1' onClick={saveSharewebItem} disabled={allValue.InfoType === 'Information Source' ? (allValue?.Title == '' || smartnoteAuthor?.length == 0 || InfoDate == '' || InfoSource.key == 0) : allValue?.Title == ''}>
+              <Button className='btn btn-primary ms-1 me-1' onClick={saveSharewebItem} disabled={allValue.InfoType === 'Information Source' ? (sourceTitle == '' || smartnoteAuthor?.length == 0 || InfoDate == '' || InfoSource.key == 0) : allValue?.Title == ''}>
                 Save
               </Button>
               <Button className='btn btn-default mx-1' onClick={() => handleClose()}>
@@ -1344,4 +1356,5 @@ const SmartInformation = (props: any, ref: any) => {
   )
 }
 export default forwardRef(SmartInformation);
+
 
