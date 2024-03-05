@@ -978,7 +978,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                                                     data={data} callBackData={callBackData} TaskUsers={AllUsers} showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem}
                                                     taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration} showingAllPortFolioCount={true}
                                                     showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal}
-                                                    bulkEditIcon={true} setData={setData} setLoaded={setLoaded} AllListId={ContextValue} columnSettingIcon={true}
+                                                    bulkEditIcon={true} setData={setData} setLoaded={setLoaded} AllListId={ContextValue} columnSettingIcon={true} tableId="groupByDashBoard"
                                                 />
                                             </div>
                                         </div>

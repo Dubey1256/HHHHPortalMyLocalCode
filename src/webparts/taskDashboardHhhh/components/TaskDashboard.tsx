@@ -185,7 +185,7 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Last Month') {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-            var change = (Moment(startingDateOfLastMonth).add(30, 'days').format())
+            var change = (Moment(startingDateOfLastMonth).add(17, 'days').format())
             var b = new Date(change)
             formattedDate = b;
         } else if (startDateOf == 'Last Week') {
@@ -399,7 +399,7 @@ const TaskDashboard = (props: any) => {
         try {
             if (currentUserId != undefined && siteConfig?.length > 0) {
 
-                let smartmeta: any[] = await globalCommon?.loadAllSiteTasks(AllListId);
+                let smartmeta: any[] = await globalCommon?.loadAllSiteTasks(AllListId,undefined,undefined,true);
                 smartmeta?.map((task: any) => {
                     try {
 
@@ -1929,9 +1929,6 @@ const TaskDashboard = (props: any) => {
 
 
                             }
-
-
-
                             teamsTaskBody.push(body);
                         }
                     })
@@ -1942,7 +1939,7 @@ const TaskDashboard = (props: any) => {
                 finalBody.push(TeamTitle)
                 }
             })
-            let sendAllTasks =
+            let sendAllTasks:any =
                 '<span style="font-size: 18px;margin-bottom: 10px;">'
                 + 'Hi there, <br><br>'
                 + "Below is the today's working task of all the team members :"
@@ -1955,13 +1952,14 @@ const TaskDashboard = (props: any) => {
                 + '<h3>'
                 + currentUserData?.Title
                 + '</h3>'
-            SendEmailFinal(to, subject, sendAllTasks);
+              
+             SendEmailFinal(to, subject, sendAllTasks.replaceAll(",","  "));
 
         }
 
 
     }
-
+    
     //end
 
     //Toggle Team 

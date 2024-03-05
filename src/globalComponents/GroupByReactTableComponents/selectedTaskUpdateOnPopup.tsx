@@ -15,6 +15,7 @@ import * as globalCommon from "../globalCommon";
 import PageLoader from "../pageLoader";
 import InlineBulkEditingTask from "./InlineBulkEditingTask";
 import * as GlobalFunctionForUpdateItem from '../GlobalFunctionForUpdateItems';
+import Tooltip from "../Tooltip";
 let childRefdata: any;
 const SelectedTaskUpdateOnPopup = (item: any) => {
     const childRef: any = React.useRef<any>();
@@ -309,7 +310,10 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
     const onRenderCustomHeader = () => {
         return (
             <>
-                <div className="alignCenter subheading"><span className="siteColor">Bulk Editing for Multiple Items</span></div>
+                <div className="alignCenter subheading">
+                    <span className="siteColor">Bulk Editing for Multiple Items</span>
+                </div>
+                <Tooltip ComponentId={6797} />
             </>
         );
     };

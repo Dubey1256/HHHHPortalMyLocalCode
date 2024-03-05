@@ -1822,8 +1822,8 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
                 "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "Help_x0020_Information", "PriorityRank",
                 "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id",
                 "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "Deliverables",
-                "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "FeatureType/Title", "FeatureType/Id","Portfolios/Id","Portfolios/Title", "Editor/Id", "Modified", "Editor/Title")
-            .expand("Parent", "PortfolioType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "FeatureType", "ResponsibleTeam", "Editor","Portfolios").filter(filter != null ? filter : '')
+                "TechnicalExplanations", "Help_x0020_Information", "AdminNotes", "Background", "Idea", "ValueAdded", "FeatureType/Title", "FeatureType/Id", "Portfolios/Id", "Portfolios/Title", "Editor/Id", "Modified", "Editor/Title")
+            .expand("Parent", "PortfolioType", "AssignedTo", "Author", "ClientCategory", "TeamMembers", "FeatureType", "ResponsibleTeam", "Editor", "Portfolios").filter(filter != null ? filter : '')
             .getAll();
 
         // console.log("all Service and Coponent data form global Call=======", AllMasterTaskData);
@@ -2209,19 +2209,20 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
 
     }
 }
-export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | null, pertiCularSites?: any | null) => {
+export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | null, pertiCularSites?: any | null, showOffShore?: any | undefined) => {
     let query = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,EstimatedTimeDescription,ClientActivityJson,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
     if (filter != undefined) {
         query += `&$filter=${filter}`
     }
     let siteConfig: any = await loadSmartMetadata(allListId, "Sites")
     let filteredSiteConfig = [];
-    if (pertiCularSites != null) {
+    if (pertiCularSites != null && pertiCularSites != undefined ) {
         filteredSiteConfig = siteConfig.filter((site: any) => pertiCularSites?.find((item: any) => site?.Title?.toLowerCase() == item?.toLowerCase()))
-    } else {
+    } else if (showOffShore == true) {
+        filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites" )
+    } else   {
         filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.Title != "Offshore Tasks")
     }
-
     let AllSiteTasks: any = []
     if (filteredSiteConfig?.length > 0) {
         const fetchPromises = filteredSiteConfig.map(async (site: any) => {
@@ -2496,10 +2497,10 @@ export const getBreadCrumbHierarchyAllData = async (item: any, AllListId: any, A
             Object.siteType = item?.siteType;
             return getBreadCrumbHierarchyAllData(Object, AllListId, AllItems);
         } else if (Object?.Id === item?.Parent?.Id) {
-            item.siteType ="Master Tasks"
+            item.siteType = "Master Tasks"
             Object.subRows = [item]; AllItems?.push(item)
             if (Object?.Parent == undefined) {
-                Object.siteType="Master Tasks"
+                Object.siteType = "Master Tasks"
                 Object.subRows = [item]; AllItems?.push(Object)
             } else {
                 return getBreadCrumbHierarchyAllData(Object, AllListId, AllItems);
@@ -2513,7 +2514,7 @@ export const getBreadCrumbHierarchyAllData = async (item: any, AllListId: any, A
             Object.subRows = [item];
             AllItems?.push(item)
             if (Object?.Parent == undefined) {
-                Object.siteType="Master Tasks"
+                Object.siteType = "Master Tasks"
                 Object.subRows = [Object];
                 AllItems?.push(Object)
             }
@@ -2590,24 +2591,24 @@ export const replaceURLsWithAnchorTags = (text: any) => {
 }
 //--------------------------------------Share TimeSheet Report-----------------------------------------------------------------------
 
-export const  ShareTimeSheet=async (AllTaskTimeEntries:any,taskUser:any,Context:any,type:any)=>{
-    let AllData:any=[]
-   const currentLoginUserId = Context.pageContext?._legacyPageContext.userId;
-   const  CurrentUserTitle = Context.pageContext?._legacyPageContext?.userDisplayName;
-  
+export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Context: any, type: any) => {
+    let AllData: any = []
+    const currentLoginUserId = Context.pageContext?._legacyPageContext.userId;
+    const CurrentUserTitle = Context.pageContext?._legacyPageContext?.userDisplayName;
+
     const startDate = getStartingDate(type);
     const endDate = getEndingDate(type);
     const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
     const endDateMidnight = new Date(endDate.setHours(0, 0, 0, 0));
 
     var startDateMid = moment(startDateMidnight).format("DD/MM/YYYY")
-     var eventDateMid = moment(endDateMidnight).format("DD/MM/YYYY")
-        var NewStartDate = startDateMid.split("/")
-        var NewEndDate = eventDateMid.split("/")
+    var eventDateMid = moment(endDateMidnight).format("DD/MM/YYYY")
+    var NewStartDate = startDateMid.split("/")
+    var NewEndDate = eventDateMid.split("/")
 
-        var End = NewEndDate[2] + NewEndDate[1] + NewEndDate[0]
-        var starts = NewStartDate[2] + NewStartDate[1] + NewStartDate[0]
-        const { weekTimeEntries, totalTime } = AllTaskTimeEntries?.reduce(
+    var End = NewEndDate[2] + NewEndDate[1] + NewEndDate[0]
+    var starts = NewStartDate[2] + NewStartDate[1] + NewStartDate[0]
+    const { weekTimeEntries, totalTime } = AllTaskTimeEntries?.reduce(
         (acc: any, timeEntry: any) => {
             try {
                 if (timeEntry?.AdditionalTimeEntry) {
@@ -2624,7 +2625,7 @@ export const  ShareTimeSheet=async (AllTaskTimeEntries:any,taskUser:any,Context:
                             filledTime?.AuthorId == currentLoginUserId &&
                             seleteddate >= starts &&
                             seleteddate <= End && timeEntry?.taskDetails[0]
-                            
+
                         ) {
                             const data = { ...timeEntry.taskDetails[0] } || {};
                             const taskTime = parseFloat(filledTime.TaskTime);
@@ -2641,7 +2642,7 @@ export const  ShareTimeSheet=async (AllTaskTimeEntries:any,taskUser:any,Context:
                 }
 
             } catch (error) {
-                
+
             }
             return acc;
         },
@@ -2653,153 +2654,155 @@ export const  ShareTimeSheet=async (AllTaskTimeEntries:any,taskUser:any,Context:
     AllData = weekTimeEntries;
     var input = `${type}time entries`
     var day = type;
-       let currentDate = moment(new Date()).format("DD/MM/YYYY")
-       var today = new Date();
-       const yesterdays = new Date(today.setDate(today.getDate() - 1))
-       const yesterday = moment(yesterdays).format("DD/MM/YYYY")
-       let body: any = '';
-       let text = '';
-       let to: any = [];
-       let body1: any = [];
-       let userApprover:any = '';
-       let email:any = [];
-      
-          taskUser?.map((user: any) => {
-           user.UserManagerMail = [];
-           user.UserManagerName = ''
-           user?.Approver?.map((Approver: any, index: any) => {
-               if (index == 0) {
+    let currentDate = moment(new Date()).format("DD/MM/YYYY")
+    var today = new Date();
+    const yesterdays = new Date(today.setDate(today.getDate() - 1))
+    const yesterday = moment(yesterdays).format("DD/MM/YYYY")
+    let body: any = '';
+    let text = '';
+    let to: any = [];
+    let body1: any = [];
+    let userApprover: any = '';
+    let email: any = [];
 
-                   user.UserManagerName = Approver?.Title;
-               } else {
-                   user.UserManagerName += ' ,' + Approver?.Title
-               }
-               let Mail = Approver?.Name?.split('|')[2]
-               user.UserManagerMail.push(Mail)
-           })
-           if (user?.AssingedToUser?.Id == currentLoginUserId && user?.Title != undefined) {
-               to = user?.UserManagerMail;
-               userApprover = user?.UserManagerName;
-               email.push(user?.UserManagerMail)
-           }
-       });
-       
-       let confirmation = confirm('Your' + ' ' + input + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + userApprover + ')' + '.' + '\n' + 'Do you want to continue?')
-       if (confirmation) {
-           body = body.replaceAll('>,<', '><').replaceAll(',', '')
-       }
-       
-           // var subject = currentLoginUser + `- ${selectedTimeReport} Time Entries`;
-            let timeSheetData:any =  await currentUserTimeEntryCalculation(AllTaskTimeEntries,currentLoginUserId);
-            var updatedCategoryTime:any = {};
-            for (const key in timeSheetData) {
-                if (timeSheetData.hasOwnProperty(key)) {
-                  let newKey = key;
-              
-                  // Replace 'this month' with 'thisMonth'
-                  newKey = newKey.replace('this month', 'thisMonth');
-                  
-                  // Replace 'this week' with 'thisWeek'
-                  newKey = newKey.replace('this week', 'thisWeek');
-              
-                  updatedCategoryTime[newKey] = timeSheetData[key];
-                }
-              }
-              
-              if(day == 'Today'){
-               var subject = "Daily Timesheet - " + CurrentUserTitle + ' - '+  currentDate  +  ' - ' + (updatedCategoryTime.today) + ' hours '
-              }
-              if(day == 'Yesterday'){
-               var subject = "Daily Timesheet - " + CurrentUserTitle + ' - '+  yesterday  +  ' - ' + (updatedCategoryTime.yesterday) + ' hours '
-              }
-              AllData.map((item: any) => {
-               item.ClientCategories = ''
-               item.ClientCategory.forEach((val: any, index: number) => {
-                   item.ClientCategories += val.Title;
-           
-                   // Add a comma only if it's not the last item
-                   if (index < item.ClientCategory.length - 1) {
-                       item.ClientCategories += '; ';
-                   }
-               });
-                
-                    
-               text =
-               '<tr>' +
-               '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.siteType + '</td>'
-               + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">'+ '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Project-Management-Profile.aspx?ProjectId=' + item.Project?.Id +'><span style="font-size:13px">'+  (item?.Project == undefined?'':item?.Project.Title) + '</span></a>' + '</p>' +  '</td>'
-               + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:135px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Portfolio-Profile.aspx?taskId=' + item?.Portfolio?.Id +'><span style="font-size:13px">'+ (item.Portfolio == undefined?'':item.Portfolio.Title) +'</span></a>' + '</p>' + '</td>'
-               + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px">' + item.Title + '</span></a>' + '</p>' + '</td>'
-               + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.TaskTime + '</td>'
-               + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;text-align:center">' + item?.Description + '</td>'
-               + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:120px;text-align:center">' + (item?.SmartPriority !== undefined ? item?.SmartPriority : '')+ '</td>'
-               + '<td style="border:1px solid #ccc;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:130px;text-align:center">' + item.ClientCategories + '</td>'
-              
-           body1.push(text);
+    taskUser?.map((user: any) => {
+        user.UserManagerMail = [];
+        user.UserManagerName = ''
+        user?.Approver?.map((Approver: any, index: any) => {
+            if (index == 0) {
+
+                user.UserManagerName = Approver?.Title;
+            } else {
+                user.UserManagerName += ' ,' + Approver?.Title
+            }
+            let Mail = Approver?.Name?.split('|')[2]
+            user.UserManagerMail.push(Mail)
+        })
+        if (user?.AssingedToUser?.Id == currentLoginUserId && user?.Title != undefined) {
+            to = user?.UserManagerMail;
+            userApprover = user?.UserManagerName;
+            email.push(user?.UserManagerMail)
+        }
+    });
+
    
-       });
-            body =
-                `<table width="100%" align="center" cellpadding="0" cellspacing="0" border="0">
+        body = body.replaceAll('>,<', '><').replaceAll(',', '')
+    
+
+    // var subject = currentLoginUser + `- ${selectedTimeReport} Time Entries`;
+    let timeSheetData: any = await currentUserTimeEntryCalculation(AllTaskTimeEntries, currentLoginUserId);
+    var updatedCategoryTime: any = {};
+    for (const key in timeSheetData) {
+        if (timeSheetData.hasOwnProperty(key)) {
+            let newKey = key;
+
+            // Replace 'this month' with 'thisMonth'
+            newKey = newKey.replace('this month', 'thisMonth');
+
+            // Replace 'this week' with 'thisWeek'
+            newKey = newKey.replace('this week', 'thisWeek');
+
+            updatedCategoryTime[newKey] = timeSheetData[key];
+        }
+    }
+
+    if (day == 'Today') {
+        var subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + currentDate + ' - ' + (updatedCategoryTime.today) + ' hours '
+    }
+    if (day == 'Yesterday') {
+        var subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + yesterday + ' - ' + (updatedCategoryTime.yesterday) + ' hours '
+    }
+    AllData.map((item: any) => {
+        item.ClientCategories = ''
+        item.ClientCategory.forEach((val: any, index: number) => {
+            item.ClientCategories += val.Title;
+
+            // Add a comma only if it's not the last item
+            if (index < item.ClientCategory.length - 1) {
+                item.ClientCategories += '; ';
+            }
+        });
+
+
+        text =
+            '<tr>' +
+            '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.siteType + '</td>'
+            + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Project-Management-Profile.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px">' + (item?.Project == undefined ? '' : item?.Project.Title) + '</span></a>' + '</p>' + '</td>'
+            + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:135px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Portfolio-Profile.aspx?taskId=' + item?.Portfolio?.Id + '><span style="font-size:13px">' + (item.Portfolio == undefined ? '' : item.Portfolio.Title) + '</span></a>' + '</p>' + '</td>'
+            + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px">' + item.Title + '</span></a>' + '</p>' + '</td>'
+            + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.TaskTime + '</td>'
+            + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;text-align:center">' + item?.Description + '</td>'
+            + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:120px;text-align:center">' + (item?.SmartPriority !== undefined ? item?.SmartPriority : '') + '</td>'
+            + '<td style="border:1px solid #ccc;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:130px;text-align:center">' + item.ClientCategories + '</td>'
+
+        body1.push(text);
+
+    });
+    body =
+        `<table width="100%" align="center" cellpadding="0" cellspacing="0" border="0">
             <thead>
             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Username: </td><td style="padding: 5px 0px;"> <a style="text-decoration:none;" href='${Context?.pageContext?.web?.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${currentLoginUserId}'>${CurrentUserTitle}</a></td></tr>
-            <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours ${day} :</td><td style="padding: 5px 0px;">${day=='Today'?updatedCategoryTime.today:updatedCategoryTime.yesterday} Hours</td></tr>
+            <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours ${day} :</td><td style="padding: 5px 0px;">${day == 'Today' ? updatedCategoryTime.today : updatedCategoryTime.yesterday} Hours</td></tr>
             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours this week :</td><td style="padding: 5px 0px;">${updatedCategoryTime.thisWeek} Hours</td></tr>
             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600;padding: 5px 0px;width: 210px;">Total hours this month :</td><td style="padding: 5px 0px;">${updatedCategoryTime.thisMonth} Hours</td></tr>
             <tr valign="middle" style="font-size:15px;"><td colspan="2" style="padding: 5px 0px;"><a style="text-decoration:none;" href ='${Context.pageContext?.web?.absoluteUrl}/SitePages/UserTimeEntry.aspx?userId=${currentLoginUserId}'>Click here to open Online-Timesheet</a></td></tr>
             </thead>
             </table> `
-                + '<table style="margin-top:20px;" cellspacing="0" cellpadding="0" width="100%" border="0">'
-                + '<thead>'
-                + '<tr>'
-                    + '<th style="line-height:24px;font-size:15px;padding:5px;width:40px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Site' + '</th>'
-                    + '<th style="line-height:24px;font-size:15px;padding:5px;width:250px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Project Title' + '</th>'
-                    + '<th style="line-height:24px;font-size:15px;padding:5px;width:135px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Component' + '</th>'
-                    + '<th style="line-height:24px;font-size:15px;padding:5px;width:250px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Task Name' + '</th>'
-                    + '<th style="line-height:24px;font-size:15px;padding:5px;width:40px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Time' + '</th>'
-                    + '<th style="line-height:24px;font-size:15px;padding:5px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Time Entry Description' + '</th>'
-                    + '<th style="line-height:24px;font-size:15px;padding:5px;width:120px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Smart Priority' + '</th>'
-                    + '<th style="line-height:24px;font-size:15px;padding:5px;width:130px;border:1px solid #ccc;" bgcolor="#f5f5f5">' + 'Client Category' + '</th>'
-                    + '</tr>'
-                + '</thead>'
-                + '<tbody>'
-                + '<tr>'
-                + body1
-                + '</tr>'
-                + '</tbody>'
-                + '</table>'
-                
-            body = body.replaceAll('>,<', '><').replaceAll(',', '')
-        
+        + '<table style="margin-top:20px;" cellspacing="0" cellpadding="0" width="100%" border="0">'
+        + '<thead>'
+        + '<tr>'
+        + '<th style="line-height:24px;font-size:15px;padding:5px;width:40px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Site' + '</th>'
+        + '<th style="line-height:24px;font-size:15px;padding:5px;width:250px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Project Title' + '</th>'
+        + '<th style="line-height:24px;font-size:15px;padding:5px;width:135px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Component' + '</th>'
+        + '<th style="line-height:24px;font-size:15px;padding:5px;width:250px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Task Name' + '</th>'
+        + '<th style="line-height:24px;font-size:15px;padding:5px;width:40px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Time' + '</th>'
+        + '<th style="line-height:24px;font-size:15px;padding:5px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Time Entry Description' + '</th>'
+        + '<th style="line-height:24px;font-size:15px;padding:5px;width:120px;border:1px solid #ccc;border-right:0px;" bgcolor="#f5f5f5">' + 'Smart Priority' + '</th>'
+        + '<th style="line-height:24px;font-size:15px;padding:5px;width:130px;border:1px solid #ccc;" bgcolor="#f5f5f5">' + 'Client Category' + '</th>'
+        + '</tr>'
+        + '</thead>'
+        + '<tbody>'
+        + '<tr>'
+        + body1
+        + '</tr>'
+        + '</tbody>'
+        + '</table>'
 
-       if (body1.length > 0 && body1 != undefined) {
-           //SendEmailFinal(to, subject, body,Context);
-           let sp = spfi().using(spSPFx(Context));
-    sp.utility.sendEmail({
-        //Body of Email  
-        Body: body,
-        //Subject of Email  
-        Subject: subject,
-        //Array of string for To of Email  
-        To: to,
-        AdditionalHeaders: {
-            "content-type": "text/html",
-            'Reply-To': 'santosh.kumar@smalsus.com'
-        },
-    }).then(() => {
-        console.log("Email Sent!");
-        alert('Email sent sucessfully');
-      
+    body = body.replaceAll('>,<', '><').replaceAll(',', '')
 
-    }).catch((err) => {
-        console.log(err.message);
-    });
-       } else {
-           alert("No entries available");
-       }
-   }
+    let confirmation = confirm('Your' + ' ' + input + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + userApprover + ')' + '.' + '\n' + 'Do you want to continue?')
+    if (confirmation) {
+        if (body1.length > 0 && body1 != undefined) {
+            //SendEmailFinal(to, subject, body,Context);
+            let sp = spfi().using(spSPFx(Context));
+            sp.utility.sendEmail({
+                //Body of Email  
+                Body: body,
+                //Subject of Email  
+                Subject: subject,
+                //Array of string for To of Email  
+                To: to,
+                AdditionalHeaders: {
+                    "content-type": "text/html",
+                    'Reply-To': 'santosh.kumar@smalsus.com'
+                },
+            }).then(() => {
+                console.log("Email Sent!");
+                alert('Email sent sucessfully');
     
-const currentUserTimeEntryCalculation = async(AllTaskTimeEntries:any,currentLoginUserId:any) => {
-    const timesheetDistribution = ['Today','Yesterday','This Week', 'This Month'];
+    
+            }).catch((err) => {
+                console.log(err.message);
+            });
+        } else {
+            alert("No entries available");
+        }
+    }
+    
+}
+
+const currentUserTimeEntryCalculation = async (AllTaskTimeEntries: any, currentLoginUserId: any) => {
+    const timesheetDistribution = ['Today', 'Yesterday', 'This Week', 'This Month'];
     const allTimeCategoryTime = timesheetDistribution?.reduce((totals, start) => {
         const startDate = getStartingDate(start);
         const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
@@ -2818,8 +2821,8 @@ const currentUserTimeEntryCalculation = async(AllTaskTimeEntries:any,currentLogi
                     if (
                         filledTime?.AuthorId == currentLoginUserId &&
                         timeFillDate >= startDateMidnight &&
-                        timeFillDate <= endDateMidnight 
-                       
+                        timeFillDate <= endDateMidnight
+
                     ) {
                         return taskAcc + parseFloat(filledTime.TaskTime);
                     }
@@ -2836,7 +2839,7 @@ const currentUserTimeEntryCalculation = async(AllTaskTimeEntries:any,currentLogi
         return { ...totals, [start.toLowerCase()]: total };
     }, {
         today: 0,
-        yesterday:0,
+        yesterday: 0,
         thisWeek: 0,
         thisMonth: 0,
     });
@@ -2918,8 +2921,10 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
     let DesignMemberleaveHours: any = 0;
     let startDate: any = ''
     let DevCount: any = 0;
+    let Trainee: any = 0;
     let DesignCount: any = 0;
     let QACount: any = 0;
+    let TranineesNum: any = 0;
     const LeaveUserData = await GetleaveUser(TaskUser, Context)
     console.log(LeaveUserData)
     //-------------------------leave User Data---------------------------------------------------------------------------------------
@@ -2936,7 +2941,7 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
 
     const currentLoginUserId = Context.pageContext?._legacyPageContext.userId;
     selectedUser?.forEach((items: any) => {
-        if (items?.UserGroup?.Title == 'Senior Developer Team' || items?.UserGroup?.Title == 'Smalsus Lead Team' || items?.UserGroup?.Title == 'Junior Developer Team') {
+        if (items?.UserGroup?.Title == 'Senior Developer Team' || items?.UserGroup?.Title == 'Smalsus Lead Team' || items?.UserGroup?.Title == 'Junior Developer Team' || items?.UserGroup?.Title == 'Trainees') {
             DevCount++
         }
         if ((items?.TimeCategory == 'Design' && items.Company == 'Smalsus') || items?.UserGroup?.Title == 'Design Team') {
@@ -2945,6 +2950,7 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
         if ((items?.TimeCategory == 'QA' && items.Company == 'Smalsus') && items?.UserGroup?.Title != 'Ex-Staff') {
             QACount++
         }
+
     })
     TaskUser?.forEach((val: any) => {
         AllTimeEntry?.map((item: any) => {
@@ -2989,20 +2995,22 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
     LeaveUserData?.forEach((items: any) => {
         if (select >= items.Start && select <= items.EndDate) {
             items.TaskDate = startDate
-            if (items?.Department == 'Development' && items.TaskTitle == 'Leave') {
+            if (items?.Department == 'Development') {
                 DevelopmentMembers++
                 DevelopmentleaveHours += items.totaltime
             }
-    
-            if (items?.Department == 'Design' && items.TaskTitle == 'Leave') {
+
+            if (items?.Department == 'Design') {
                 DesignMembers++
                 DesignMemberleaveHours += items.totaltime
             }
-    
-            if (items?.Department == 'QA' && items.TaskTitle == 'Leave') {
+
+            if (items?.Department == 'QA') {
                 QAMembers++
                 QAleaveHours += items.totaltime
             }
+
+
             AllTimeEntry.push(items)
         }
     })
@@ -3030,18 +3038,21 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
         })
 
     })
-   
+
     AllTimeEntry?.forEach((item: any) => {
-        
+
 
         if (item.PriorityRank == undefined || item.PriorityRank == '') {
             item.PriorityRank = '';
         }
+        if (item.TaskTitle == undefined || item.TaskTitle == '') {
+            item.TaskTitle = '';
+        }
         if (item.ComponentName == undefined || item.ComponentName == '') {
             item.ComponentName = '';
         }
-        if (item.ClientCategoryy == undefined || item.ClientCategoryy == '') {
-            item.ClientCategoryy = '';
+        if (item.ClientCategorySearch == undefined || item.ClientCategorySearch == '') {
+            item.ClientCategorySearch = '';
         }
         if (item.PercentComplete == undefined || item.PercentComplete == '') {
             item.PercentComplete = '';

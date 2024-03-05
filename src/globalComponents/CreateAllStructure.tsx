@@ -274,21 +274,21 @@ const CreateAllStructureComponent = (props: any) => {
                         // Create feature item in SharePoint list
 
 
-                        await createListItem('Master Tasks', featureItem);
+                        const featureData = await createListItem('Master Tasks', featureItem);
 
 
                         // Add feature to the features array
                         if (featureItem.Title != "") {
                             features.push({
-                                Id: featureItem?.Id,
-                                ID: featureItem?.Id,
+                                Id: featureData?.Id,
+                                ID: featureData?.Id,
                                 Title: featureItem?.Title,
                                 siteType: "Master Tasks",
                                 SiteIconTitle: featureItem?.Item_x0020_Type?.charAt(0),
                                 TaskID: featureItem?.PortfolioStructureID,
                                 Created: Moment(featureItem?.Created).format("DD/MM/YYYY"),
                                 DisplayCreateDate: Moment(featureItem?.Created).format("DD/MM/YYYY"),
-                                Author: { "Id": featureItem?.AuthorId, 'Title': CurrentUserData?.Title, 'autherImage': CurrentUserData?.Item_x0020_Cover?.Url },
+                                Author: { "Id": CurrentUserId, 'Title': CurrentUserData?.Title, 'autherImage': CurrentUserData?.Item_x0020_Cover?.Url },
                                 PortfolioType: PortfoliotypeData,
                                 PortfolioStructureID:featureItem?.PortfolioStructureID,
                                 Item_x0020_Type :'Feature'
@@ -457,13 +457,12 @@ const CreateAllStructureComponent = (props: any) => {
                 <div className='modal-body '>
 
                     {props?.SelectedItem == undefined && <>
-                        <label><b>Select Portfolio type</b></label>
-                        <div className="d-flex">
+                        <label><b>Select Portfolio Type</b></label>
+                        <div className="my-2 alignCenter SpfxCheckRadio">
                             {props?.portfolioTypeData.map((item: any) => {
                                 return (
-                                    <div className="mx-2 mb-2 mt-2">
-                                        <label className='label--radio'><input className='radio' defaultChecked={defaultPortfolioType.toLowerCase() === item.Title.toLowerCase()} name='PortfolioType' type='radio' onClick={() => CheckPortfolioType(item)} ></input>{item.Title}</label>
-                                    </div>)
+                                        <label className='label--radio alignCenter'><input className='radio' defaultChecked={defaultPortfolioType.toLowerCase() === item.Title.toLowerCase()} name='PortfolioType' type='radio' onClick={() => CheckPortfolioType(item)} ></input>{item.Title}</label>
+                                    )
                             })}
                         </div> </>}
 

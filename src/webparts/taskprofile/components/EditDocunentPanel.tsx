@@ -14,6 +14,7 @@ const EditDocumentpanel = (props: any) => {
   const [EditdocumentsData, setEditdocumentsData]: any = React.useState();
   const [isOpenImageTab, setisOpenImageTab] = React.useState(false);
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = React.useState(false);
+  const [DocumentTypes, setDocumentTypes] = React.useState([]);
   let ItemRank = [
     { rankTitle: 'Select Item Rank', rank: null },
     { rankTitle: '(8) Top Highlights', rank: 8 },
@@ -28,19 +29,34 @@ const EditDocumentpanel = (props: any) => {
   React.useEffect(() => {
     if (props?.editData != undefined) {
       LoadMasterTaskList().then((smartData: any) => {
-        loadSelectedDocuments()
+        loadSelectedDocuments();
+        loadDocumentType();
       }).catch((error: any) => {
         console.log(error)
       })
     }
   }, [props?.editData != undefined])
 
+  const loadDocumentType = async () => {
+    try {
+      const web = new Web(props?.AllListId?.siteUrl);
+      const fieldsData = await web.lists.getById(props?.AllListId?.DocumentsListID).fields.filter("EntityPropertyName eq 'DocumentType'").select('Choices').get();
+      if (fieldsData && fieldsData[0].Choices) {
+        setDocumentTypes(fieldsData[0].Choices);
+        console.log('DropdownArray', DocumentTypes);
+      } else {
+        console.error('No Choices found');
+      }
+    } catch (error) {
+      console.error('Error loading dropdown:', error);
+    }
+  };
   const loadSelectedDocuments = async () => {
     const web = new Web(props?.AllListId?.siteUrl);
     try {
       await web.lists.getById(props?.AllListId?.DocumentsListID)
         .items.getById(props?.editData?.Id)
-        .select('Id', 'Title', 'PriorityRank', 'Year', 'Body', 'recipients', 'senderEmail', 'creationTime', 'Item_x0020_Cover', 'Portfolios/Id', 'Portfolios/Title', 'File_x0020_Type', 'FileLeafRef', 'FileDirRef', 'ItemRank', 'ItemType', 'Url', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'EncodedAbsUrl')
+        .select('Id', 'Title', 'PriorityRank', 'DocumentType', 'Year', 'Body', 'recipients', 'senderEmail', 'creationTime', 'Item_x0020_Cover', 'Portfolios/Id', 'Portfolios/Title', 'File_x0020_Type', 'FileLeafRef', 'FileDirRef', 'ItemRank', 'ItemType', 'Url', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'EncodedAbsUrl')
         .expand('Author,Editor,Portfolios')
         .get()
         .then((Data) => {
@@ -144,6 +160,7 @@ const EditDocumentpanel = (props: any) => {
         ItemRank: EditdocumentsData?.ItemRank == 'Select Item Rank' ? null : EditdocumentsData?.ItemRank,
         Year: EditdocumentsData.Year,
         ItemType: EditdocumentsData.ItemType,
+        DocumentType: EditdocumentsData?.DocumentType,
         PortfoliosId: { "results": componetServicetagData.length > 0 ? componetServicetagData : [] },
         Body: EditdocumentsData?.Body,
         Item_x0020_Cover: {
@@ -306,6 +323,16 @@ const EditDocumentpanel = (props: any) => {
                           value={h?.rank} >{h?.rankTitle}</option>
                       )
                     })}
+                  </select>
+                </div>
+                <div className="input-group">
+                  <label className="full-width">Document Type</label>
+                  <select className="form-select" defaultValue={EditdocumentsData?.DocumentType} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, DocumentType: e.target.value })}>
+                    {DocumentTypes?.map((item: any, index: any) => (
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>

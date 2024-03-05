@@ -28,6 +28,7 @@ import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPo
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 import CentralizedSiteComposition from "../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition";
 import KeyDocuments from "../../taskprofile/components/KeyDocument";
+import RadimadeTable from "../../../globalComponents/RadimadeTable";
 const sp = spfi();
 let AllClientCategoryDataBackup: any = [];
 // Work the Inline Editing
@@ -213,7 +214,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
       }
     };
     let statusDropDown = [
-      { rankTitle: "Select Status", rank: null },
+      { rankTitle: "Select Status", rank: 0 },
       { rankTitle: "Not Started", rank: 0 },
       { rankTitle: "In Progress", rank: 10 },
       { rankTitle: "Completed", rank: 100 },
@@ -2227,14 +2228,14 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         </section>
 
         {/* table secation artical */}
-
-        {data.map((item: any) => (
+        {data?.length>0 && <RadimadeTable   tableId="PortfolioProfile"  AllListId={ContextValue} configration={"CSFAWT"} SelectedItem={data[0]}  ComponentFilter={data[0]?.PortfolioType?.Title} TaskFilter={ "PercentComplete lt '0.90'"}></RadimadeTable>}
+        {/* {data.map((item: any) => (
           <ComponentTable
             props={item}
             NextProp={ContextValue}
             Iconssc={Iconpps}
           />
-        ))}
+        ))} */}
 
         <footer className="float-start full_width mt-2 ">
           <div className="d-flex justify-content-between me-3 p-2">
