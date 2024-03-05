@@ -745,12 +745,12 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                         <input
                                             type='date'
                                             className="form-control"
-                                            defaultValue={Moment(ItemDetails.DueDate).format("YYYY/MM/DD")}
+                                            defaultValue={Moment(ItemDetails.DueDate).format("YYYY-MM-DD")}
                                             onChange={(e) => setCreateTaskInfo({ ...CreateTaskInfo, DueDate: e.target.value })}
                                         /> :
                                         <input
                                             type='date'
-                                            placeholder='Enter Task Priority'
+                                            placeholder='Enter Due Date'
                                             className="form-control"
                                             onChange={(e) => setCreateTaskInfo({ ...CreateTaskInfo, DueDate: e.target.value })}
                                         />
@@ -760,7 +760,11 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                         </div>
                         <div className='row'>
                             <div className=' d-flex py-2 border-start border-end '>
-                                <div className='current-Task-section' style={{ width: "47%" }}>Relevant-URL: <a href={ItemDetails?.Relevant_Url} className='siteColor'>{ItemDetails?.Relevant_Url}</a></div>
+                                <div className='current-Task-section' style={{ width: "47%" }}>Relevant-URL:
+                                    <span>
+                                        <a href={ItemDetails?.Relevant_Url} target="_blank" data-interception="off" className='siteColor'>{ItemDetails?.Relevant_Url}</a>
+                                    </span>
+                                </div>
                                 <div className='Move-data-current-to-new text-center' style={{ width: "6%" }} title='Swipe data left to right' ><BsArrowRightSquare onClick={() => SwipeDataFunction("Relevant_Url")} /></div>
                                 <div className='new-task-section' style={{ width: "47%" }}>Relevant-URL:
                                     {CreateTaskInfo.Relevant_Url ?
