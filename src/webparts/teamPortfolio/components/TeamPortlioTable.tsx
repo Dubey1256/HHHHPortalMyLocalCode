@@ -587,7 +587,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     .expand(
                         "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo", "Editor", "Author",
                         "TaskCategories", "Project",
-                    ).orderBy("orderby", false).filter("(PercentComplete eq 0.0 or (PercentComplete gt 0.0 and PercentComplete lt 0.89) or PercentComplete eq 0.89)").getAll(5000);
+                    ).orderBy("orderby", false).filter("(PercentComplete eq 0.0 or PercentComplete eq null) or (PercentComplete gt 0.0 and PercentComplete lt 0.89) or PercentComplete eq 0.89)").getAll(5000);
 
                 console.log(AllTasksMatches);
                 Counter++;
