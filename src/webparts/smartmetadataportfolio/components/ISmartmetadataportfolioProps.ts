@@ -11,4 +11,5 @@ export interface ISmartmetadataportfolioProps {
   SPSitesListUrl: string;
   TaskUsertListID: string;
   siteUrl: any
+  Context: any
 }

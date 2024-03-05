@@ -374,7 +374,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             size: 50,
             cell: (info) => (<div className='pull-right alignCenter'>
                 <span onClick={() => handleUpdateMemberClick(info.row.original)} className='svg__iconbox svg__icon--edit' title='Edit'></span>
-                <span onClick={() => handleDeleteClick(info.row.original)} className='svg__iconbox svg__icon--trash' title='Trash'></span>
             </div>),
             enableColumnFilter: false,
             enableSorting: false,
