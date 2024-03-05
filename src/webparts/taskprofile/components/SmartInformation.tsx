@@ -39,7 +39,7 @@ const SmartInformation = (props: any, ref: any) => {
   const [isUserNameValid, setIsUserNameValid] = useState(false);
   const [filterSmartinfo, setFiltersmartinfo] = useState([]);
   const [InfoDate, setInfoDate] = React.useState('');
-  const [infodescription, setinfodescription] = React.useState('');
+  // const [infodescription, setinfodescription] = React.useState('');
   const [InfoSource, setInfoSource] = React.useState<any>({ text: 'Select Source', key: 0 });
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
   const [uplodDoc, setUploaddoc] = useState(null);
@@ -973,19 +973,9 @@ const SmartInformation = (props: any, ref: any) => {
 
   const checkboxFunction = (e: any) => {
     console.log(e);
-    if (e.currentTarget.checked) {
-      if (allValue?.InfoType === 'Information Source') {
-        if (InfoSource?.key != 0 && (smartnoteAuthor != undefined || smartnoteAuthor?.length != 0) && (InfoDate != undefined || InfoDate != '')) {
-          var desc = `Requirement has been received from ${smartnoteAuthor?.length > 0 ? smartnoteAuthor[0]?.Title : smartnoteAuthor?.Title} through ${InfoSource?.text} on ${moment(InfoDate).format('DD/MM/YYYY')}`
-          setinfodescription(desc);
-          //setallSetValue({ ...allValue, Title: `Information Source - ${InfoSource.text}`, Description: desc })
-          setHtmleditorcall(true)
-        }
-
-      }
-      else { setallSetValue({ ...allValue, Title: `Quick-${taskInfo?.Title}-${Today}` }) }
-    } else {
-      setinfodescription('');
+    if (e.currentTarget.checked) {      
+      setallSetValue({ ...allValue, Title: `Quick-${taskInfo?.Title}-${Today}` }) 
+    } else {   
       setallSetValue({ ...allValue, Title: "" })
     }
 
@@ -1191,7 +1181,7 @@ const SmartInformation = (props: any, ref: any) => {
             </div>}
           </div>
         </div>
-        <div className='mt-3'>{Htmleditorcall || infodescription.length ? <HtmlEditorCard editorValue={infodescription} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard> : <HtmlEditorCard editorValue={allValue?.Description != null ? allValue?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard>}</div>
+        <div className='mt-3'><HtmlEditorCard editorValue={allValue?.Description != null ? allValue?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
             <div className={popupEdit ? "col-sm-4 text-lg-start ps-1" : "col-sm-6 text-lg-start ps-1"}>
