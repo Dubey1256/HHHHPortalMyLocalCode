@@ -127,6 +127,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const [openCompareToolPopup, setOpenCompareToolPopup] = React.useState(false);
     const [dynamicColumnsValue, setDynamicColumnsValue] = React.useState([])
     const rerender = React.useReducer(() => ({}), {})[1];
+    const [ActiveCompareToolButton, setActiveCompareToolButton] = React.useState(false);
     // const [tableHeight, setTableHeight] = React.useState(window.innerHeight);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
     let ComponetsData: any = {};
@@ -189,8 +190,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 'Level',
                 'Title',
                 'SortOrder',
-            )
-            .get();
+            ).get();
         setTaskTypeData(taskTypeData);
         if (taskTypeData?.length > 0 && taskTypeData != undefined) {
             taskTypeData?.forEach((obj: any) => {
@@ -1618,838 +1618,710 @@ function TeamPortlioTable(SelectedProp: any) {
         setData(groupByButtonClickData);
     }
 
-    React.useEffect(() => {
-        let dynamicColumns: any = [
-            {
-                DisplayName: "portfolioItemsSearch",
-                InternalName: "portfolioItemsSearch",
-                id: "portfolioItemsSearch",
-                placeholder: "Type",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 95,
-                isColumnVisible: true,
-                callComponent: "",
-                isComponent: false,
-                sortOrder: 1,
-            },
-            {
-                DisplayName: "TaskID",
-                InternalName: "TaskID",
-                id: "TaskID",
-                placeholder: "ID",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 190,
-                isColumnVisible: true,
-                callComponent: "ReactPopperTooltipSingleLevel",
-                isComponent: true,
-                sortOrder: 2,
-            },
-            {
-                DisplayName: "Title",
-                InternalName: "Title",
-                id: "Title",
-                placeholder: "Title",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 500,
-                isColumnVisible: true,
-                callComponent: "",
-                isComponent: false,
-                sortOrder: 3,
-            },
-            {
-                DisplayName: "ProjectTitle",
-                InternalName: "ProjectTitle",
-                id: "ProjectTitle",
-                placeholder: "Project",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 70,
-                isColumnVisible: true,
-                callComponent: "",
-                isComponent: false,
-                sortOrder: 4,
-            },
-            {
-                DisplayName: "TaskTypeValue",
-                InternalName: "TaskTypeValue",
-                id: "TaskTypeValue",
-                placeholder: "Task Type",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 110,
-                isColumnVisible: true,
-                callComponent: "",
-                isComponent: false,
-                columnType: "textMultiline",
-                sortOrder: 5,
-            },
-            {
-                DisplayName: "FeatureTypeTitle",
-                InternalName: "FeatureTypeTitle",
-                id: "FeatureTypeTitle",
-                placeholder: "Feature Type",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 110,
-                isColumnVisible: false,
-                callComponent: "",
-                isComponent: false,
-                columnType: "textMultiline",
-                sortOrder: 6,
-            },
-            {
-                DisplayName: "ClientCategorySearch",
-                InternalName: "ClientCategorySearch",
-                id: "ClientCategorySearch",
-                placeholder: "Client Category",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 95,
-                isColumnVisible: true,
-                callComponent: "",
-                isComponent: false,
-                sortOrder: 7,
-            },
-            {
-                DisplayName: "AllTeamName",
-                InternalName: "AllTeamName",
-                id: "AllTeamName",
-                placeholder: "Team",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 100,
-                isColumnVisible: true,
-                callComponent: "",
-                isComponent: false,
-                sortOrder: 8,
-            },
-            {
-                DisplayName: "PercentComplete",
-                InternalName: "PercentComplete",
-                id: "PercentComplete",
-                placeholder: "Status",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 42,
-                isColumnVisible: true,
-                callComponent: "",
-                isComponent: false,
-                columnType: "number",
-                sortOrder: 9,
-            },
-            {
-                DisplayName: "ItemRank",
-                InternalName: "ItemRank",
-                id: "ItemRank",
-                placeholder: "Item Rank",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 42,
-                isColumnVisible: true,
-                callComponent: "",
-                isComponent: false,
-                columnType: "number",
-                sortOrder: 10,
-            },
-            {
-                DisplayName: "PriorityRank",
-                InternalName: "PriorityRank",
-                id: "PriorityRank",
-                placeholder: "Priority Rank",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 42,
-                isColumnVisible: false,
-                callComponent: "",
-                isComponent: false,
-                columnType: "number",
-                sortOrder: 11,
-            },
-            {
-                DisplayName: "SmartPriority",
-                InternalName: "SmartPriority",
-                id: "SmartPriority",
-                placeholder: "Smart Priority",
-                showFormulaOnHover: "showFormulaOnHover",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 42,
-                isColumnVisible: true,
-                callComponent: "",
-                isComponent: false,
-                columnType: "number",
-                sortOrder: 12,
-            },
-            {
-                DisplayName: "DisplayDueDate",
-                InternalName: "DueDate",
-                id: "DueDate",
-                placeholder: "DueDate",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 91,
-                isColumnVisible: true,
-                callComponent: "",
-                isComponent: false,
-                columnType: "date",
-                iconVisible: "",
-                sortOrder: 14,
-            },
-            {
-                DisplayName: "DisplayCreateDate",
-                InternalName: "Created",
-                id: "Created",
-                placeholder: "Created",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 105,
-                isColumnVisible: true,
-                callComponent: "",
-                isComponent: false,
-                iconVisible: "Author",
-                columnType: "date",
-                sortOrder: 15,
-            },
-            {
-                DisplayName: "DisplayModifiedDate",
-                InternalName: "Modified",
-                id: "Modified",
-                placeholder: "Modified",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 105,
-                isColumnVisible: false,
-                callComponent: "",
-                isComponent: false,
-                iconVisible: "Editor",
-                columnType: "date",
-                sortOrder: 16,
-            },
-            {
-                DisplayName: "TotalTaskTime",
-                InternalName: "TotalTaskTime",
-                id: "TotalTaskTime",
-                placeholder: "Smart Time",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 49,
-                isColumnVisible: true,
-                callComponent: "",
-                isComponent: false,
-                columnType: "number",
-                sortOrder: 17,
-            },
-            {
-                DisplayName: "descriptionsDeliverablesSearch",
-                InternalName: "descriptionsDeliverablesSearch",
-                id: "descriptionsDeliverablesSearch",
-                placeholder: "Deliverables",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 56,
-                isColumnVisible: false,
-                callComponent: "",
-                isComponent: false,
-                columnType: "infoIcon",
-                sortOrder: 18,
-            },
-            {
-                DisplayName: "descriptionsHelpInformationSarch",
-                InternalName: "Help_x0020_Information",
-                id: "descriptionsHelpInformationSarch",
-                placeholder: "Help Information",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 56,
-                isColumnVisible: false,
-                callComponent: "",
-                isComponent: false,
-                columnType: "infoIcon",
-                sortOrder: 19,
-            },
-            {
-                DisplayName: "descriptionsShortDescriptionSearch",
-                InternalName: "Short_x0020_Description_x0020_On",
-                id: "descriptionsShortDescriptionSearch",
-                placeholder: "Short Description",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 56,
-                isColumnVisible: false,
-                callComponent: "",
-                isComponent: false,
-                columnType: "infoIcon",
-                sortOrder: 20,
-            },
-            {
-                DisplayName: "descriptionsTechnicalExplanationsSearch",
-                InternalName: "TechnicalExplanations",
-                id: "descriptionsTechnicalExplanationsSearch",
-                placeholder: "Technical Explanations",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 56,
-                isColumnVisible: false,
-                callComponent: "",
-                isComponent: false,
-                columnType: "infoIcon",
-                sortOrder: 21,
-            },
-            {
-                DisplayName: "descriptionsBodySearch",
-                InternalName: "Body",
-                id: "descriptionsBodySearch",
-                placeholder: "Body",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 56,
-                isColumnVisible: false,
-                callComponent: "",
-                isComponent: false,
-                columnType: "infoIcon",
-                sortOrder: 22,
-            },
-            {
-                DisplayName: "descriptionsValueAddedSearch",
-                InternalName: "ValueAdded",
-                id: "descriptionsValueAddedSearch",
-                placeholder: "Value Added",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 56,
-                isColumnVisible: false,
-                callComponent: "",
-                isComponent: false,
-                columnType: "infoIcon",
-                sortOrder: 23,
-            },
-            {
-                DisplayName: "descriptionsAdminNotesSearch",
-                InternalName: "AdminNotes",
-                id: "descriptionsAdminNotesSearch",
-                placeholder: "Admin Notes",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 56,
-                isColumnVisible: false,
-                callComponent: "",
-                isComponent: false,
-                columnType: "infoIcon",
-                sortOrder: 24,
-            },
-            {
-                DisplayName: "descriptionsIdeaSearch",
-                InternalName: "Idea",
-                id: "descriptionsIdeaSearch",
-                placeholder: "Idea",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 56,
-                isColumnVisible: false,
-                callComponent: "",
-                isComponent: false,
-                columnType: "infoIcon",
-                sortOrder: 25,
-            },
-            {
-                DisplayName: "descriptionsBackgroundSearch",
-                InternalName: "Background",
-                id: "descriptionsBackgroundSearch",
-                placeholder: "Background",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 56,
-                isColumnVisible: false,
-                callComponent: "",
-                isComponent: false,
-                columnType: "infoIcon",
-                sortOrder: 26,
-            },
-            {
-                DisplayName: "HelpInformationVerified",
-                InternalName: "HelpInformationVerified",
-                id: "HelpInformationVerified",
-                placeholder: "verified",
-                header: "",
-                resetColumnFilters: false,
-                isColumnDefultSortingAsc: false,
-                isColumnDefultSortingDesc: false,
-                size: 130,
-                isColumnVisible: false,
-                callComponent: "",
-                isComponent: true,
-                columnType: "",
-                sortOrder: 27,
-            },
-        ];
-        const dynamicColumnsPrepareValue: any = dynamicColumns?.map((column: any) => {
-            if (column.id === "portfolioItemsSearch") {
-                return {
-                    accessorFn: (row: any) => row?.portfolioItemsSearch,
-                    cell: ({ row, getValue }: any) => (
-                        <div className="alignCenter">
-                            {row?.original?.SiteIcon != undefined ? (
-                                <div className="alignCenter" title="Show All Child">
-                                    <img title={row?.original?.TaskType?.Title} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
-                                        row?.original?.TaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember me-1"
-                                    }
-                                        src={row?.original?.SiteIcon}>
-                                    </img>
-                                </div>
-                            ) : (
-                                <>
-                                    {row?.original?.Title != "Others" ? (
-                                        <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
-                                            row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
-                                        }>
-                                            {row?.original?.SiteIconTitle}
-                                        </div>
-                                    ) : (
-                                        ""
-                                    )}
-                                </>
-                            )}
-                        </div>
-                    ),
-                    id: column?.id,
-                    placeholder: column?.placeholder,
-                    header: "",
-                    resetColumnFilters: false,
-                    size: column?.size,
-                    isColumnVisible: column?.isColumnVisible,
-                    isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
-                };
-            } else if (column.id === "TaskID") {
-                return {
-                    accessorFn: (row: any) => row?.TaskID,
-                    cell: ({ row, getValue }: any) => (
-                        <>
-                            <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
-                        </>
-                    ),
-                    id: column?.id,
-                    placeholder: column?.placeholder,
-                    header: "",
-                    resetColumnFilters: false,
-                    size: column?.size,
-                    isColumnVisible: column?.isColumnVisible,
-                    isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
-                };
-            } else if (column.id === "Title") {
-                return {
-                    accessorFn: (row: any) => row?.Title,
-                    cell: ({ row, column, getValue }: any) => (
-                        <div className="alignCenter">
-                            <span className="columnFixedTitle">
-                                {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
-                                    <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
-                                        href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID} >
-                                        <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
-                                    </a>
-                                )}
-                                {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== "Others" && (
-                                    <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
-                                        href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType} >
-                                        <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
-                                    </a>
-                                )}
-                                {row?.original.Title === "Others" ? (
-                                    <span className="text-content" title={row?.original?.Title} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.Title}</span>
-                                ) : (
-                                    ""
-                                )}
-                            </span>
-                            {row?.original?.Categories == 'Draft' ?
-                                <FaCompressArrowsAlt style={{ height: '11px', width: '20px', color: `${row?.original?.PortfolioType?.Color}` }} /> : ''}
-                            {row?.original?.subRows?.length > 0 ?
-                                <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
-                            {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != '' && (
-                                <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
-                            )}
-                        </div>
-                    ),
-                    id: column?.id,
-                    placeholder: column?.placeholder,
-                    header: "",
-                    resetColumnFilters: false,
-                    size: column?.size,
-                    isColumnVisible: column?.isColumnVisible,
-                    isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
-                };
-            } else if (column.id === "ProjectTitle") {
-                return {
-                    accessorFn: (row: any) => row?.projectStructerId + "." + row?.ProjectTitle,
-                    cell: ({ row, column, getValue }: any) => (
-                        <>
-                            {row?.original?.ProjectTitle != (null || undefined) &&
-                                <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                                    <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
-                            }
-                        </>
-                    ),
-                    id: column?.id,
-                    placeholder: column?.placeholder,
-                    header: "",
-                    resetColumnFilters: false,
-                    size: column?.size,
-                    isColumnVisible: column?.isColumnVisible,
-                    isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
-                };
-            } else if (column.columnType === "textMultiline") {
-                return {
-                    accessorFn: (row: any) => row?.[column.InternalName],
-                    cell: ({ row, column, getValue }: any) => (
-                        <>
-                            <span style={{ display: "flex", maxWidth: column?.size - 10 }}>
-                                <span title={row?.original?.[column.InternalName]} style={{ flexGrow: 1, overflow: 'hidden', textOverflow: "ellipsis", whiteSpace: 'nowrap' }}>
-                                    <HighlightableCell value={row?.original?.[column.InternalName]} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
-                                </span>
-                            </span>
-                        </>
-                    ),
-                    id: column?.id,
-                    placeholder: column?.placeholder,
-                    header: "",
-                    resetColumnFilters: false,
-                    size: column?.size,
-                    isColumnVisible: column?.isColumnVisible,
-                    isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
-                };
-            } else if (column.id === "ClientCategorySearch") {
-                return {
-                    accessorFn: (row: any) => row?.ClientCategorySearch,
-                    cell: ({ row }: any) => (
-                        <>
-                            <ShowClintCatogory clintData={row?.original} AllMetadata={metaDataItem} />
-                        </>
-                    ),
-                    id: column?.id,
-                    placeholder: column?.placeholder,
-                    header: "",
-                    resetColumnFilters: false,
-                    size: column?.size,
-                    isColumnVisible: column?.isColumnVisible,
-                    isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
-                };
-            } else if (column.id === "AllTeamName") {
-                let columnName = column?.InternalName;
-                return {
-                    accessorFn: (row: any) => row?.[columnName],
-                    cell: ({ row }: any) => (
-                        <div className="alignCenter">
-                            <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={TaskUsers} Context={SelectedProp?.SelectedProp} />
-                        </div>
-                    ),
-                    id: column?.id,
-                    placeholder: column?.placeholder,
-                    header: "",
-                    resetColumnFilters: false,
-                    size: column?.size,
-                    isColumnVisible: column?.isColumnVisible,
-                    isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
-                };
-            } else if (column.columnType === "number") {
-                return {
-                    accessorFn: (row: any) => row?.[column.InternalName],
-                    cell: ({ row }: any) => (
-                        <div className="text-center" title={row?.original?.[column?.showFormulaOnHover]}>{row?.original?.[column.InternalName] != 0 ? row?.original?.[column.InternalName] : null}</div>
-                    ),
-                    filterFn: (row: any, columnName: any, filterValue: any) => {
-                        if (row?.original?.[column.InternalName] == filterValue) {
-                            return true
-                        } else {
-                            return false
-                        }
-                    },
-                    id: column?.id,
-                    placeholder: column?.placeholder,
-                    header: "",
-                    resetColumnFilters: false,
-                    size: column?.size,
-                    isColumnVisible: column?.isColumnVisible,
-                    isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
-                };
-            } else if (column.columnType === "infoIcon") {
-                return {
-                    accessorFn: (row: any) => row?.[column.DisplayName],
-                    cell: ({ row }: any) => (
-                        <div className="alignCenter">
-                            <span>{row?.original?.[column.DisplayName] ? row?.original?.[column.DisplayName]?.length : ""}</span>
-                            {row?.original?.[column.DisplayName] && <InfoIconsToolTip row={row?.original} SingleColumnData={[column.InternalName]} />}
-                        </div>
-                    ),
-                    id: column?.id,
-                    placeholder: column?.placeholder,
-                    header: "",
-                    resetColumnFilters: false,
-                    size: column?.size,
-                    isColumnVisible: column?.isColumnVisible,
-                    isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
-                };
-            } else if (column.id === "HelpInformationVerified") {
-                return {
-                    accessorFn: (row: any) => row?.HelpInformationVerified,
-                    cell: ({ row }: any) => (
-                        <div className="alignCenter">
-                            {row?.original?.HelpInformationVerified && <span> <TrafficLightComponent columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>}
-                        </div>
-                    ),
-                    id: column?.id,
-                    placeholder: column?.placeholder,
-                    header: "",
-                    resetColumnFilters: false,
-                    size: column?.size,
-                    isColumnVisible: column?.isColumnVisible,
-                    isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
-                };
-            } else if (column.columnType === "date" && column?.iconVisible === "") {
-                let columnName = column?.InternalName;
-                let colDisplay = column?.DisplayName;
-                return {
-                    accessorFn: (row: any) => row?.[columnName],
-                    cell: ({ row, column, getValue }: any) => (
-                        <HighlightableCell value={row?.original?.[colDisplay]} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
-                    ),
-                    filterFn: (row: any, columnName: any, filterValue: any) => {
-                        if (row?.original?.[colDisplay]?.includes(filterValue)) {
-                            return true
-                        } else {
-                            return false
-                        }
-                    },
-                    id: column?.id,
-                    placeholder: column?.placeholder,
-                    header: "",
-                    resetColumnFilters: false,
-                    size: column?.size,
-                    isColumnVisible: column?.isColumnVisible,
-                    isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
-                };
-            } else if (column.columnType === "date" && column?.iconVisible != "") {
-                let columnName = column?.InternalName;
-                let colDisplay = column?.DisplayName;
-                let iconName = column.iconVisible;
-                return {
-                    accessorFn: (row: any) => row?.[columnName],
-                    cell: ({ row, column }: any) => (
-                        <div className="alignCenter">
-                            {row?.original?.Created == null ? ("") : (
-                                <>
-                                    <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.[colDisplay]} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
-                                    {row?.original?.[iconName] != undefined &&
-                                        <>
-                                            <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.[iconName]?.Id}&Name=${row?.original?.[iconName]?.Title}`}
-                                                target="_blank" data-interception="off">
-                                                <img title={row?.original?.[iconName]?.Title} className="workmember ms-1" src={row?.original?.[iconName]?.autherImage} />
-                                            </a>
-                                        </>
-                                    }
-                                </>
-                            )}
-                        </div>
-                    ),
-                    filterFn: (row: any, columnName: any, filterValue: any) => {
-                        if (row?.original?.[iconName]?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.[`${column.DisplayName}`]?.includes(filterValue)) {
-                            return true
-                        } else {
-                            return false
-                        }
-                    },
-                    id: column?.id,
-                    placeholder: column?.placeholder,
-                    header: "",
-                    resetColumnFilters: false,
-                    size: column?.size,
-                    isColumnVisible: column?.isColumnVisible,
-                    isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
-                };
-            }
-        });
-        setDynamicColumnsValue(dynamicColumnsPrepareValue)
-        // dynamicColumnsValue = [];
-        // dynamicColumnsValue = dynamicColumnsValue.concat(dynamicColumnsPrepareValue);
-    }, [data])
-    const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
-        () => [
-            {
-                accessorKey: "",
-                placeholder: "",
-                hasCheckbox: true,
-                hasCustomExpanded: hasCustomExpanded,
-                hasExpanded: hasExpanded,
-                isHeaderNotAvlable: isHeaderNotAvlable,
-                size: 55,
-                id: 'Id',
-            },
-            ...dynamicColumnsValue,
-            {
-                accessorKey: "descriptionsSearch",
-                placeholder: "descriptionsSearch",
-                header: "",
-                resetColumnFilters: false,
-                id: "descriptionsSearch",
-                isColumnVisible: false
-            },
-            {
-                accessorKey: "commentsSearch",
-                placeholder: "commentsSearch",
-                header: "",
-                resetColumnFilters: false,
-                id: "commentsSearch",
-                isColumnVisible: false
-            },
-            {
-                accessorKey: "timeSheetsDescriptionSearch",
-                placeholder: "timeSheetsDescriptionSearch",
-                header: "",
-                resetColumnFilters: false,
-                id: "timeSheetsDescriptionSearch",
-                isColumnVisible: false
-            },
-            {
-                cell: ({ row }) => (
-                    <>
-                        {row?.original?.siteType != "Master Tasks" && row?.original?.Title != "Others" && (
-                            <a className="alignCenter" onClick={(e) => EditDataTimeEntryData(e, row.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
-                                <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
-                            </a>
-                        )}
-                    </>
-                ),
-                id: "timeShitsIcons",
-                canSort: false,
-                placeholder: "",
-                size: 1,
-                isColumnVisible: true
-            },
-            {
-                header: ({ table }: any) => (
-                    <>{
-                        topCompoIcon ?
-                            <span style={{ backgroundColor: `${portfolioColor}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
-                                <span className="svg__iconbox svg__icon--re-structure"></span>
-                            </span>
-                            : ''
-                    }
-                    </>
-                ),
-                cell: ({ row, getValue }) => (
-                    <>
-                        {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
-                            <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
-                                <span className="svg__iconbox svg__icon--re-structure"> </span>
-                            </span>
-                        )}
-                        {/* {getValue()} */}
-                    </>
-                ),
-                id: "Restructure",
-                canSort: false,
-                placeholder: "",
-                size: 1,
-                isColumnVisible: true
-            },
-            {
-                cell: ({ row, getValue }) => (
-                    <>
-                        {row?.original?.siteType === "Master Tasks" &&
-                            row?.original?.Title !== "Others" && (
-                                <a className="alignCenter"
-                                    href="#"
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="auto"
-                                    title={'Edit ' + `${row.original.Title}`}
-                                >
-                                    {" "}
-                                    <span
-                                        className="svg__iconbox svg__icon--edit"
-                                        onClick={(e) => EditComponentPopup(row?.original)}
-                                    ></span>
-                                </a>
-                            )}
-                        {row?.original?.siteType != "Master Tasks" &&
-                            row?.original?.Title !== "Others" && (
-                                <a className="alignCenter"
-                                    href="#"
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="auto"
-                                    title={'Edit ' + `${row.original.Title}`}
-                                >
-                                    {" "}
-                                    <span
-                                        className="svg__iconbox svg__icon--edit"
-                                        onClick={(e) => EditItemTaskPopup(row?.original)}
-                                    ></span>
-                                </a>
-                            )}
-                        {/* {getValue()} */}
-                    </>
-                ),
-                id: "editIcon",
-                canSort: false,
-                placeholder: "",
-                header: "",
-                size: 30,
-                isColumnVisible: true
-            },
-        ],
-        [data]
-    );
-
-
+    // React.useEffect(() => {
+    //     let dynamicColumns: any = [
+    //         {
+    //             DisplayName: "portfolioItemsSearch",
+    //             InternalName: "portfolioItemsSearch",
+    //             id: "portfolioItemsSearch",
+    //             placeholder: "Type",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 95,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             sortOrder: 1,
+    //         },
+    //         {
+    //             DisplayName: "TaskID",
+    //             InternalName: "TaskID",
+    //             id: "TaskID",
+    //             placeholder: "ID",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 190,
+    //             isColumnVisible: true,
+    //             callComponent: "ReactPopperTooltipSingleLevel",
+    //             isComponent: true,
+    //             sortOrder: 2,
+    //         },
+    //         {
+    //             DisplayName: "Title",
+    //             InternalName: "Title",
+    //             id: "Title",
+    //             placeholder: "Title",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 500,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             sortOrder: 3,
+    //         },
+    //         {
+    //             DisplayName: "ProjectTitle",
+    //             InternalName: "ProjectTitle",
+    //             id: "ProjectTitle",
+    //             placeholder: "Project",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 70,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             sortOrder: 4,
+    //         },
+    //         {
+    //             DisplayName: "TaskTypeValue",
+    //             InternalName: "TaskTypeValue",
+    //             id: "TaskTypeValue",
+    //             placeholder: "Task Type",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 110,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "textMultiline",
+    //             sortOrder: 5,
+    //         },
+    //         {
+    //             DisplayName: "FeatureTypeTitle",
+    //             InternalName: "FeatureTypeTitle",
+    //             id: "FeatureTypeTitle",
+    //             placeholder: "Feature Type",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 110,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "textMultiline",
+    //             sortOrder: 6,
+    //         },
+    //         {
+    //             DisplayName: "ClientCategorySearch",
+    //             InternalName: "ClientCategorySearch",
+    //             id: "ClientCategorySearch",
+    //             placeholder: "Client Category",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 95,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             sortOrder: 7,
+    //         },
+    //         {
+    //             DisplayName: "AllTeamName",
+    //             InternalName: "AllTeamName",
+    //             id: "AllTeamName",
+    //             placeholder: "Team",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 100,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             sortOrder: 8,
+    //         },
+    //         {
+    //             DisplayName: "PercentComplete",
+    //             InternalName: "PercentComplete",
+    //             id: "PercentComplete",
+    //             placeholder: "Status",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 42,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "number",
+    //             sortOrder: 9,
+    //         },
+    //         {
+    //             DisplayName: "ItemRank",
+    //             InternalName: "ItemRank",
+    //             id: "ItemRank",
+    //             placeholder: "Item Rank",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 42,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "number",
+    //             sortOrder: 10,
+    //         },
+    //         {
+    //             DisplayName: "PriorityRank",
+    //             InternalName: "PriorityRank",
+    //             id: "PriorityRank",
+    //             placeholder: "Priority Rank",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 42,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "number",
+    //             sortOrder: 11,
+    //         },
+    //         {
+    //             DisplayName: "SmartPriority",
+    //             InternalName: "SmartPriority",
+    //             id: "SmartPriority",
+    //             placeholder: "Smart Priority",
+    //             showFormulaOnHover: "showFormulaOnHover",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 42,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "number",
+    //             sortOrder: 12,
+    //         },
+    //         {
+    //             DisplayName: "DisplayDueDate",
+    //             InternalName: "DueDate",
+    //             id: "DueDate",
+    //             placeholder: "DueDate",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 91,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "date",
+    //             iconVisible: "",
+    //             sortOrder: 14,
+    //         },
+    //         {
+    //             DisplayName: "DisplayCreateDate",
+    //             InternalName: "Created",
+    //             id: "Created",
+    //             placeholder: "Created",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 105,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             iconVisible: "Author",
+    //             columnType: "date",
+    //             sortOrder: 15,
+    //         },
+    //         {
+    //             DisplayName: "DisplayModifiedDate",
+    //             InternalName: "Modified",
+    //             id: "Modified",
+    //             placeholder: "Modified",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 105,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             iconVisible: "Editor",
+    //             columnType: "date",
+    //             sortOrder: 16,
+    //         },
+    //         {
+    //             DisplayName: "TotalTaskTime",
+    //             InternalName: "TotalTaskTime",
+    //             id: "TotalTaskTime",
+    //             placeholder: "Smart Time",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 49,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "number",
+    //             sortOrder: 17,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsDeliverablesSearch",
+    //             InternalName: "descriptionsDeliverablesSearch",
+    //             id: "descriptionsDeliverablesSearch",
+    //             placeholder: "Deliverables",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 18,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsHelpInformationSarch",
+    //             InternalName: "Help_x0020_Information",
+    //             id: "descriptionsHelpInformationSarch",
+    //             placeholder: "Help Information",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 19,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsShortDescriptionSearch",
+    //             InternalName: "Short_x0020_Description_x0020_On",
+    //             id: "descriptionsShortDescriptionSearch",
+    //             placeholder: "Short Description",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 20,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsTechnicalExplanationsSearch",
+    //             InternalName: "TechnicalExplanations",
+    //             id: "descriptionsTechnicalExplanationsSearch",
+    //             placeholder: "Technical Explanations",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 21,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsBodySearch",
+    //             InternalName: "Body",
+    //             id: "descriptionsBodySearch",
+    //             placeholder: "Body",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 22,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsValueAddedSearch",
+    //             InternalName: "ValueAdded",
+    //             id: "descriptionsValueAddedSearch",
+    //             placeholder: "Value Added",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 23,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsAdminNotesSearch",
+    //             InternalName: "AdminNotes",
+    //             id: "descriptionsAdminNotesSearch",
+    //             placeholder: "Admin Notes",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 24,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsIdeaSearch",
+    //             InternalName: "Idea",
+    //             id: "descriptionsIdeaSearch",
+    //             placeholder: "Idea",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 25,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsBackgroundSearch",
+    //             InternalName: "Background",
+    //             id: "descriptionsBackgroundSearch",
+    //             placeholder: "Background",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 26,
+    //         },
+    //         {
+    //             DisplayName: "HelpInformationVerified",
+    //             InternalName: "HelpInformationVerified",
+    //             id: "HelpInformationVerified",
+    //             placeholder: "verified",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 130,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: true,
+    //             columnType: "",
+    //             sortOrder: 27,
+    //         },
+    //     ];
+    //     const dynamicColumnsPrepareValue: any = dynamicColumns?.map((column: any) => {
+    //         if (column.id === "portfolioItemsSearch") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.portfolioItemsSearch,
+    //                 cell: ({ row, getValue }: any) => (
+    //                     <div className="alignCenter">
+    //                         {row?.original?.SiteIcon != undefined ? (
+    //                             <div className="alignCenter" title="Show All Child">
+    //                                 <img title={row?.original?.TaskType?.Title} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
+    //                                     row?.original?.TaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember me-1"
+    //                                 }
+    //                                     src={row?.original?.SiteIcon}>
+    //                                 </img>
+    //                             </div>
+    //                         ) : (
+    //                             <>
+    //                                 {row?.original?.Title != "Others" ? (
+    //                                     <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+    //                                         row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+    //                                     }>
+    //                                         {row?.original?.SiteIconTitle}
+    //                                     </div>
+    //                                 ) : (
+    //                                     ""
+    //                                 )}
+    //                             </>
+    //                         )}
+    //                     </div>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.id === "TaskID") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.TaskID,
+    //                 cell: ({ row, getValue }: any) => (
+    //                     <>
+    //                         <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
+    //                     </>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.id === "Title") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.Title,
+    //                 cell: ({ row, column, getValue }: any) => (
+    //                     <div className="alignCenter">
+    //                         <span className="columnFixedTitle">
+    //                             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
+    //                                 <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
+    //                                     href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID} >
+    //                                     <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+    //                                 </a>
+    //                             )}
+    //                             {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== "Others" && (
+    //                                 <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
+    //                                     href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType} >
+    //                                     <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+    //                                 </a>
+    //                             )}
+    //                             {row?.original.Title === "Others" ? (
+    //                                 <span className="text-content" title={row?.original?.Title} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.Title}</span>
+    //                             ) : (
+    //                                 ""
+    //                             )}
+    //                         </span>
+    //                         {row?.original?.Categories == 'Draft' ?
+    //                             <FaCompressArrowsAlt style={{ height: '11px', width: '20px', color: `${row?.original?.PortfolioType?.Color}` }} /> : ''}
+    //                         {row?.original?.subRows?.length > 0 ?
+    //                             <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
+    //                         {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != '' && (
+    //                             <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
+    //                         )}
+    //                     </div>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.id === "ProjectTitle") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.projectStructerId + "." + row?.ProjectTitle,
+    //                 cell: ({ row, column, getValue }: any) => (
+    //                     <>
+    //                         {row?.original?.ProjectTitle != (null || undefined) &&
+    //                             <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+    //                                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
+    //                         }
+    //                     </>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.columnType === "textMultiline") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.[column.InternalName],
+    //                 cell: ({ row, column, getValue }: any) => (
+    //                     <>
+    //                         <span style={{ display: "flex", maxWidth: column?.size - 10 }}>
+    //                             <span title={row?.original?.[column.InternalName]} style={{ flexGrow: 1, overflow: 'hidden', textOverflow: "ellipsis", whiteSpace: 'nowrap' }}>
+    //                                 <HighlightableCell value={row?.original?.[column.InternalName]} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+    //                             </span>
+    //                         </span>
+    //                     </>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.id === "ClientCategorySearch") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.ClientCategorySearch,
+    //                 cell: ({ row }: any) => (
+    //                     <>
+    //                         <ShowClintCatogory clintData={row?.original} AllMetadata={metaDataItem} />
+    //                     </>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.id === "AllTeamName") {
+    //             let columnName = column?.InternalName;
+    //             return {
+    //                 accessorFn: (row: any) => row?.[columnName],
+    //                 cell: ({ row }: any) => (
+    //                     <div className="alignCenter">
+    //                         <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={TaskUsers} Context={SelectedProp?.SelectedProp} />
+    //                     </div>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.columnType === "number") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.[column.InternalName],
+    //                 cell: ({ row }: any) => (
+    //                     <div className="text-center" title={row?.original?.[column?.showFormulaOnHover]}>{row?.original?.[column.InternalName] != 0 ? row?.original?.[column.InternalName] : null}</div>
+    //                 ),
+    //                 filterFn: (row: any, columnName: any, filterValue: any) => {
+    //                     if (row?.original?.[column.InternalName] == filterValue) {
+    //                         return true
+    //                     } else {
+    //                         return false
+    //                     }
+    //                 },
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.columnType === "infoIcon") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.[column.DisplayName],
+    //                 cell: ({ row }: any) => (
+    //                     <div className="alignCenter">
+    //                         <span>{row?.original?.[column.DisplayName] ? row?.original?.[column.DisplayName]?.length : ""}</span>
+    //                         {row?.original?.[column.DisplayName] && <InfoIconsToolTip row={row?.original} SingleColumnData={[column.InternalName]} />}
+    //                     </div>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.id === "HelpInformationVerified") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.HelpInformationVerified,
+    //                 cell: ({ row }: any) => (
+    //                     <div className="alignCenter">
+    //                         {row?.original?.HelpInformationVerified && <span> <TrafficLightComponent columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>}
+    //                     </div>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.columnType === "date" && column?.iconVisible === "") {
+    //             let columnName = column?.InternalName;
+    //             let colDisplay = column?.DisplayName;
+    //             return {
+    //                 accessorFn: (row: any) => row?.[columnName],
+    //                 cell: ({ row, column, getValue }: any) => (
+    //                     <HighlightableCell value={row?.original?.[colDisplay]} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+    //                 ),
+    //                 filterFn: (row: any, columnName: any, filterValue: any) => {
+    //                     if (row?.original?.[colDisplay]?.includes(filterValue)) {
+    //                         return true
+    //                     } else {
+    //                         return false
+    //                     }
+    //                 },
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.columnType === "date" && column?.iconVisible != "") {
+    //             let columnName = column?.InternalName;
+    //             let colDisplay = column?.DisplayName;
+    //             let iconName = column.iconVisible;
+    //             return {
+    //                 accessorFn: (row: any) => row?.[columnName],
+    //                 cell: ({ row, column }: any) => (
+    //                     <div className="alignCenter">
+    //                         {row?.original?.Created == null ? ("") : (
+    //                             <>
+    //                                 <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.[colDisplay]} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
+    //                                 {row?.original?.[iconName] != undefined &&
+    //                                     <>
+    //                                         <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.[iconName]?.Id}&Name=${row?.original?.[iconName]?.Title}`}
+    //                                             target="_blank" data-interception="off">
+    //                                             <img title={row?.original?.[iconName]?.Title} className="workmember ms-1" src={row?.original?.[iconName]?.autherImage} />
+    //                                         </a>
+    //                                     </>
+    //                                 }
+    //                             </>
+    //                         )}
+    //                     </div>
+    //                 ),
+    //                 filterFn: (row: any, columnName: any, filterValue: any) => {
+    //                     if (row?.original?.[iconName]?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.[`${column.DisplayName}`]?.includes(filterValue)) {
+    //                         return true
+    //                     } else {
+    //                         return false
+    //                     }
+    //                 },
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         }
+    //     });
+    //     setDynamicColumnsValue(dynamicColumnsPrepareValue)
+    //     // dynamicColumnsValue = [];
+    //     // dynamicColumnsValue = dynamicColumnsValue.concat(dynamicColumnsPrepareValue);
+    // }, [data])
     // const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
     //     () => [
     //         {
@@ -2462,472 +2334,7 @@ function TeamPortlioTable(SelectedProp: any) {
     //             size: 55,
     //             id: 'Id',
     //         },
-    //         {
-    //             accessorFn: (row) => row?.portfolioItemsSearch,
-    //             cell: ({ row, getValue }) => (
-    //                 <div className="alignCenter">
-    //                     {row?.original?.SiteIcon != undefined ? (
-    //                         <div className="alignCenter" title="Show All Child">
-    //                             <img title={row?.original?.TaskType?.Title} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
-    //                                 row?.original?.TaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember me-1"
-    //                             }
-    //                                 src={row?.original?.SiteIcon}>
-    //                             </img>
-    //                         </div>
-    //                     ) : (
-    //                         <>
-    //                             {row?.original?.Title != "Others" ? (
-    //                                 <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
-    //                                     row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
-    //                                 }>
-    //                                     {row?.original?.SiteIconTitle}
-    //                                 </div>
-    //                             ) : (
-    //                                 ""
-    //                             )}
-    //                         </>
-    //                     )}
-    //                 </div>
-    //             ),
-    //             id: "portfolioItemsSearch",
-    //             placeholder: "Type",
-    //             header: "",
-    //             resetColumnFilters: false,
-    //             size: 95,
-    //             isColumnVisible: true
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.TaskID,
-    //             cell: ({ row, getValue }) => (
-    //                 <>
-    //                     <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
-    //                 </>
-    //             ),
-    //             id: "TaskID",
-    //             placeholder: "ID",
-    //             header: "",
-    //             resetColumnFilters: false,
-    //             isColumnDefultSortingAsc: isColumnDefultSortingAsc,
-    //             size: 190,
-    //             isColumnVisible: true
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.Title,
-    //             cell: ({ row, column, getValue }) => (
-    //                 <div className="alignCenter">
-    //                     <span className="columnFixedTitle">
-    //                         {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
-    //                             <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
-    //                                 href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID} >
-    //                                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
-    //                             </a>
-    //                         )}
-    //                         {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== "Others" && (
-    //                             <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
-    //                                 href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType} >
-    //                                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
-    //                             </a>
-    //                         )}
-    //                         {row?.original.Title === "Others" ? (
-    //                             <span className="text-content" title={row?.original?.Title} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.Title}</span>
-    //                         ) : (
-    //                             ""
-    //                         )}
-    //                     </span>
-    //                     {row?.original?.Categories == 'Draft' ?
-    //                         <FaCompressArrowsAlt style={{ height: '11px', width: '20px', color: `${row?.original?.PortfolioType?.Color}` }} /> : ''}
-    //                     {row?.original?.subRows?.length > 0 ?
-    //                         <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
-    //                     {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != '' && (
-    //                         <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
-    //                     )}
-    //                 </div>
-    //             ),
-    //             id: "Title",
-    //             placeholder: "Title",
-    //             resetColumnFilters: false,
-    //             header: "",
-    //             size: 500,
-    //             isColumnVisible: true
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
-    //             cell: ({ row, column, getValue }) => (
-    //                 <>
-    //                     {row?.original?.ProjectTitle != (null || undefined) &&
-    //                         <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
-    //                             <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
-    //                     }
-    //                 </>
-    //             ),
-    //             id: 'ProjectTitle',
-    //             placeholder: "Project",
-    //             resetColumnFilters: false,
-    //             header: "",
-    //             size: 70,
-    //             isColumnVisible: true
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.TaskTypeValue,
-    //             cell: ({ row, column, getValue }) => (
-    //                 <>
-    //                     <span className="columnFixedTaskCate">
-    //                         <span title={row?.original?.TaskTypeValue} className="text-content">
-    //                             <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
-    //                         </span>
-    //                     </span>
-    //                 </>
-    //             ),
-    //             placeholder: "Task Type",
-    //             header: "",
-    //             resetColumnFilters: false,
-    //             size: 130,
-    //             id: "TaskTypeValue",
-    //             isColumnVisible: true
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.ClientCategorySearch,
-    //             cell: ({ row }) => (
-    //                 <>
-    //                     <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
-    //                 </>
-    //             ),
-    //             id: "ClientCategorySearch",
-    //             placeholder: "Client Category",
-    //             header: "",
-    //             resetColumnFilters: false,
-    //             size: 95,
-    //             isColumnVisible: true
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.AllTeamName,
-    //             cell: ({ row }) => (
-    //                 <div className="alignCenter">
-    //                     <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} Context={SelectedProp?.SelectedProp} />
-    //                 </div>
-    //             ),
-    //             id: "AllTeamName",
-    //             placeholder: "Team",
-    //             resetColumnFilters: false,
-    //             header: "",
-    //             size: 100,
-    //             isColumnVisible: true
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.PercentComplete,
-    //             cell: ({ row }) => (
-    //                 <div className="text-center">{row?.original?.PercentComplete}</div>
-    //             ),
-    //             id: "PercentComplete",
-    //             placeholder: "Status",
-    //             resetColumnFilters: false,
-    //             header: "",
-    //             size: 42,
-    //             isColumnVisible: true
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.ItemRank,
-    //             cell: ({ row }) => (
-    //                 <div className="text-center">{row?.original?.ItemRank}</div>
-    //             ),
-    //             id: "ItemRank",
-    //             placeholder: "Item Rank",
-    //             resetColumnFilters: false,
-    //             header: "",
-    //             size: 42,
-    //             isColumnVisible: true
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.SmartPriority,
-    //             cell: ({ row }) => (
-    //                 <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority != 0 ? row?.original?.SmartPriority : null}</div>
-    //             ),
-    //             filterFn: (row: any, columnName: any, filterValue: any) => {
-    //                 if (row?.original?.SmartPriority == filterValue) {
-    //                     return true
-    //                 } else {
-    //                     return false
-    //                 }
-    //             },
-    //             id: "SmartPriority",
-    //             placeholder: "SmartPriority",
-    //             resetColumnFilters: false,
-    //             header: "",
-    //             size: 42,
-    //             isColumnVisible: true
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.PriorityRank,
-    //             cell: ({ row }) => (
-    //                 <div className="text-center">{row?.original?.PriorityRank}</div>
-    //             ),
-    //             filterFn: (row: any, columnName: any, filterValue: any) => {
-    //                 if (row?.original?.PriorityRank == filterValue) {
-    //                     return true
-    //                 } else {
-    //                     return false
-    //                 }
-    //             },
-    //             id: "PriorityRank",
-    //             placeholder: "Priority Rank",
-    //             resetColumnFilters: false,
-    //             header: "",
-    //             size: 42,
-    //             isColumnVisible: false
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.descriptionsDeliverablesSearch,
-    //             cell: ({ row }) => (
-    //                 <div className="alignCenter">
-    //                     <span>{row?.original?.descriptionsDeliverablesSearch ? row?.original?.descriptionsDeliverablesSearch?.length : ""}</span>
-    //                     {row?.original?.descriptionsDeliverablesSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"descriptionsDeliverablesSearch"} />}
-    //                 </div>
-    //             ),
-    //             id: "descriptionsDeliverablesSearch",
-    //             placeholder: "Deliverables",
-    //             header: "",
-    //             resetColumnFilters: false,
-    //             size: 56,
-    //             isColumnVisible: false
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.descriptionsHelpInformationSarch,
-    //             cell: ({ row }) => (
-    //                 <div className="alignCenter">
-    //                     <span>{row?.original?.descriptionsHelpInformationSarch ? row?.original?.descriptionsHelpInformationSarch?.length : ""}</span>
-    //                     {row?.original?.descriptionsHelpInformationSarch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Help_x0020_Information"} />}
-    //                 </div>
-    //             ),
-    //             id: "descriptionsHelpInformationSarch",
-    //             placeholder: "Help Information",
-    //             header: "",
-    //             resetColumnFilters: false,
-    //             size: 56,
-    //             isColumnVisible: false
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.descriptionsShortDescriptionSearch,
-    //             cell: ({ row }) => (
-    //                 <div className="alignCenter">
-    //                     <span>{row?.original?.descriptionsShortDescriptionSearch ? row?.original?.descriptionsShortDescriptionSearch?.length : ""}</span>
-    //                     {row?.original?.descriptionsShortDescriptionSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Short_x0020_Description_x0020_On"} />}
-    //                 </div>
-    //             ),
-    //             id: "descriptionsShortDescriptionSearch",
-    //             placeholder: "Short Description",
-    //             header: "",
-    //             resetColumnFilters: false,
-    //             size: 56,
-    //             isColumnVisible: false
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.descriptionsTechnicalExplanationsSearch,
-    //             cell: ({ row }) => (
-    //                 <div className="alignCenter">
-    //                     <span>{row?.original?.descriptionsTechnicalExplanationsSearch ? row?.original?.descriptionsTechnicalExplanationsSearch?.length : ""}</span>
-    //                     {row?.original?.descriptionsTechnicalExplanationsSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"TechnicalExplanations"} />}
-    //                 </div>
-    //             ),
-    //             id: "descriptionsTechnicalExplanationsSearch",
-    //             placeholder: "Technical Explanations",
-    //             header: "",
-    //             resetColumnFilters: false,
-    //             size: 56,
-    //             isColumnVisible: false
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.descriptionsBodySearch,
-    //             cell: ({ row }) => (
-    //                 <div className="alignCenter">
-    //                     <span>{row?.original?.descriptionsBodySearch ? row?.original?.descriptionsBodySearch?.length : ""}</span>
-    //                     {row?.original?.descriptionsBodySearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Body"} />}
-    //                 </div>
-    //             ),
-    //             id: "descriptionsBodySearch",
-    //             placeholder: "Body",
-    //             header: "",
-    //             resetColumnFilters: false,
-    //             size: 56,
-    //             isColumnVisible: false
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.descriptionsAdminNotesSearch,
-    //             cell: ({ row }) => (
-    //                 <div className="alignCenter">
-    //                     <span>{row?.original?.descriptionsAdminNotesSearch ? row?.original?.descriptionsAdminNotesSearch?.length : ""}</span>
-    //                     {row?.original?.descriptionsAdminNotesSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"AdminNotes"} />}
-    //                 </div>
-    //             ),
-    //             id: "descriptionsAdminNotesSearch",
-    //             placeholder: "AdminNotes",
-    //             header: "",
-    //             resetColumnFilters: false,
-    //             size: 56,
-    //             isColumnVisible: false
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.descriptionsValueAddedSearch,
-    //             cell: ({ row }) => (
-    //                 <div className="alignCenter">
-    //                     <span>{row?.original?.descriptionsValueAddedSearch ? row?.original?.descriptionsValueAddedSearch?.length : ""}</span>
-    //                     {row?.original?.descriptionsValueAddedSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"ValueAdded"} />}
-    //                 </div>
-    //             ),
-    //             id: "descriptionsValueAddedSearch",
-    //             placeholder: "ValueAdded",
-    //             header: "",
-    //             resetColumnFilters: false,
-    //             size: 56,
-    //             isColumnVisible: false
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.descriptionsIdeaSearch,
-    //             cell: ({ row }) => (
-    //                 <div className="alignCenter">
-    //                     <span>{row?.original?.descriptionsIdeaSearch ? row?.original?.descriptionsIdeaSearch?.length : ""}</span>
-    //                     {row?.original?.descriptionsIdeaSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Idea"} />}
-    //                 </div>
-    //             ),
-    //             id: "descriptionsIdeaSearch",
-    //             placeholder: "Idea",
-    //             header: "",
-    //             resetColumnFilters: false,
-    //             size: 56,
-    //             isColumnVisible: false
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.descriptionsBackgroundSearch,
-    //             cell: ({ row }) => (
-    //                 <>
-    //                     <span>{row?.original?.descriptionsBackgroundSearch ? row?.original?.descriptionsBackgroundSearch?.length : ""}</span>
-    //                     {row?.original?.descriptionsBackgroundSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Background"} />}
-    //                 </>
-    //             ),
-    //             id: "descriptionsBackgroundSearch",
-    //             placeholder: "Background",
-    //             header: "",
-    //             resetColumnFilters: false,
-    //             size: 80,
-    //             isColumnVisible: false
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.HelpInformationVerified,
-    //             cell: ({ row }) => (
-    //                 <div className="alignCenter">
-    //                     {row?.original?.HelpInformationVerified && <span> <TrafficLightComponent columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>}
-    //                 </div>
-    //             ),
-    //             id: "HelpInformationVerified",
-    //             placeholder: "verified",
-    //             header: "",
-    //             resetColumnFilters: false,
-    //             size: 130,
-    //             isColumnVisible: false
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.FeatureTypeTitle,
-    //             cell: ({ row }) => (
-    //                 <>
-    //                     <span style={{ display: "flex", maxWidth: '60px' }}>
-    //                         <span style={{ flexGrow: 1, overflow: 'hidden', textOverflow: "ellipsis", whiteSpace: 'nowrap' }} title={row?.original?.FeatureTypeTitle} >{row?.original?.FeatureTypeTitle}</span>
-    //                     </span>
-    //                 </>
-    //             ),
-    //             id: "FeatureTypeTitle",
-    //             placeholder: "Feature Type",
-    //             header: "",
-    //             resetColumnFilters: false,
-    //             size: 70,
-    //             isColumnVisible: false
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.DueDate,
-    //             cell: ({ row, column, getValue }) => (
-    //                 <HighlightableCell value={row?.original?.DisplayDueDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
-    //             ),
-    //             filterFn: (row: any, columnName: any, filterValue: any) => {
-    //                 if (row?.original?.DisplayDueDate?.includes(filterValue)) {
-    //                     return true
-    //                 } else {
-    //                     return false
-    //                 }
-    //             },
-    //             id: 'DueDate',
-    //             resetColumnFilters: false,
-    //             resetSorting: false,
-    //             placeholder: "DueDate",
-    //             header: "",
-    //             size: 91,
-    //             isColumnVisible: true
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.Created,
-    //             cell: ({ row, column }) => (
-    //                 <div className="alignCenter">
-    //                     {row?.original?.Created == null ? ("") : (
-    //                         <>
-    //                             <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.DisplayCreateDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
-    //                             {row?.original?.Author != undefined &&
-    //                                 <>
-    //                                     <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
-    //                                         target="_blank" data-interception="off">
-    //                                         <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.Author?.autherImage} />
-    //                                     </a>
-    //                                 </>
-    //                             }
-    //                         </>
-    //                     )}
-    //                 </div>
-    //             ),
-    //             id: 'Created',
-    //             resetColumnFilters: false,
-    //             resetSorting: false,
-    //             placeholder: "Created",
-    //             isColumnVisible: true,
-    //             filterFn: (row: any, columnName: any, filterValue: any) => {
-    //                 if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
-    //                     return true
-    //                 } else {
-    //                     return false
-    //                 }
-    //             },
-    //             header: "",
-    //             size: 125
-    //         },
-    //         {
-    //             accessorFn: (row) => row?.Modified,
-    //             cell: ({ row, column }) => (
-    //                 <div className="alignCenter">
-    //                     {row?.original?.Modified == null ? ("") : (
-    //                         <>
-    //                             <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.DisplayModifiedDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
-    //                             {row?.original?.Editor != undefined &&
-    //                                 <>
-    //                                     <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
-    //                                         target="_blank" data-interception="off">
-    //                                         <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={row?.original?.Editor?.autherImage} />
-    //                                     </a>
-    //                                 </>
-    //                             }
-    //                         </>
-    //                     )}
-    //                 </div>
-    //             ),
-    //             id: 'Modified',
-    //             resetColumnFilters: false,
-    //             resetSorting: false,
-    //             placeholder: "Modified",
-    //             isColumnVisible: false,
-    //             filterFn: (row: any, columnName: any, filterValue: any) => {
-    //                 if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
-    //                     return true
-    //                 } else {
-    //                     return false
-    //                 }
-    //             },
-    //             header: "",
-    //             size: 115
-    //         },
+    //         ...dynamicColumnsValue,
     //         {
     //             accessorKey: "descriptionsSearch",
     //             placeholder: "descriptionsSearch",
@@ -2951,15 +2358,6 @@ function TeamPortlioTable(SelectedProp: any) {
     //             resetColumnFilters: false,
     //             id: "timeSheetsDescriptionSearch",
     //             isColumnVisible: false
-    //         },
-    //         {
-    //             accessorKey: "TotalTaskTime",
-    //             id: "TotalTaskTime",
-    //             placeholder: "Smart Time",
-    //             header: "",
-    //             resetColumnFilters: false,
-    //             size: 49,
-    //             isColumnVisible: true
     //         },
     //         {
     //             cell: ({ row }) => (
@@ -3050,6 +2448,604 @@ function TeamPortlioTable(SelectedProp: any) {
     //     ],
     //     [data]
     // );
+
+
+    const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
+        () => [
+            {
+                accessorKey: "",
+                placeholder: "",
+                hasCheckbox: true,
+                hasCustomExpanded: hasCustomExpanded,
+                hasExpanded: hasExpanded,
+                isHeaderNotAvlable: isHeaderNotAvlable,
+                size: 55,
+                id: 'Id',
+            },
+            {
+                accessorFn: (row) => row?.portfolioItemsSearch,
+                cell: ({ row, getValue }) => (
+                    <div className="alignCenter">
+                        {row?.original?.SiteIcon != undefined ? (
+                            <div className="alignCenter" title="Show All Child">
+                                <img title={row?.original?.TaskType?.Title} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
+                                    row?.original?.TaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember me-1"
+                                }
+                                    src={row?.original?.SiteIcon}>
+                                </img>
+                            </div>
+                        ) : (
+                            <>
+                                {row?.original?.Title != "Others" ? (
+                                    <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+                                        row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+                                    }>
+                                        {row?.original?.SiteIconTitle}
+                                    </div>
+                                ) : (
+                                    ""
+                                )}
+                            </>
+                        )}
+                    </div>
+                ),
+                id: "portfolioItemsSearch",
+                placeholder: "Type",
+                header: "",
+                resetColumnFilters: false,
+                size: 95,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.TaskID,
+                cell: ({ row, getValue }) => (
+                    <>
+                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
+                    </>
+                ),
+                id: "TaskID",
+                placeholder: "ID",
+                header: "",
+                resetColumnFilters: false,
+                isColumnDefultSortingAsc: isColumnDefultSortingAsc,
+                size: 190,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.Title,
+                cell: ({ row, column, getValue }) => (
+                    <div className="alignCenter">
+                        <span className="columnFixedTitle">
+                            {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
+                                <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
+                                    href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID} >
+                                    <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+                                </a>
+                            )}
+                            {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== "Others" && (
+                                <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
+                                    href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType} >
+                                    <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+                                </a>
+                            )}
+                            {row?.original.Title === "Others" ? (
+                                <span className="text-content" title={row?.original?.Title} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.Title}</span>
+                            ) : (
+                                ""
+                            )}
+                        </span>
+                        {row?.original?.Categories?.includes("Draft") ?
+                            <FaCompressArrowsAlt style={{ height: '11px', width: '20px', color: `${row?.original?.PortfolioType?.Color}` }} /> : ''}
+                        {row?.original?.subRows?.length > 0 ?
+                            <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
+                        {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != '' && (
+                            <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
+                        )}
+                    </div>
+                ),
+                id: "Title",
+                placeholder: "Title",
+                resetColumnFilters: false,
+                header: "",
+                size: 500,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        {row?.original?.ProjectTitle != (null || undefined) &&
+                            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
+                        }
+                    </>
+                ),
+                id: 'ProjectTitle',
+                placeholder: "Project",
+                resetColumnFilters: false,
+                header: "",
+                size: 70,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.TaskTypeValue,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+                    </>
+                ),
+                placeholder: "Task Type",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "TaskTypeValue",
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.ClientCategorySearch,
+                cell: ({ row }) => (
+                    <>
+                        <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
+                    </>
+                ),
+                id: "ClientCategorySearch",
+                placeholder: "Client Category",
+                header: "",
+                resetColumnFilters: false,
+                size: 95,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.AllTeamName,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} Context={SelectedProp?.SelectedProp} />
+                    </div>
+                ),
+                id: "AllTeamName",
+                placeholder: "Team",
+                resetColumnFilters: false,
+                header: "",
+                size: 100,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.PercentComplete,
+                cell: ({ row }) => (
+                    <div className="text-center">{row?.original?.PercentComplete}</div>
+                ),
+                id: "PercentComplete",
+                placeholder: "Status",
+                resetColumnFilters: false,
+                header: "",
+                size: 55,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.ItemRank,
+                cell: ({ row }) => (
+                    <div className="text-center">{row?.original?.ItemRank}</div>
+                ),
+                id: "ItemRank",
+                placeholder: "Item Rank",
+                resetColumnFilters: false,
+                header: "",
+                size: 55,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.SmartPriority,
+                cell: ({ row }) => (
+                    <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority != 0 ? row?.original?.SmartPriority : null}</div>
+                ),
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.SmartPriority == filterValue) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                id: "SmartPriority",
+                placeholder: "SmartPriority",
+                resetColumnFilters: false,
+                header: "",
+                size: 55,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.PriorityRank,
+                cell: ({ row }) => (
+                    <div className="text-center">{row?.original?.PriorityRank}</div>
+                ),
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.PriorityRank == filterValue) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                id: "PriorityRank",
+                placeholder: "Priority Rank",
+                resetColumnFilters: false,
+                header: "",
+                size: 55,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsDeliverablesSearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsDeliverablesSearch ? row?.original?.descriptionsDeliverablesSearch?.length : ""}</span>
+                        {row?.original?.descriptionsDeliverablesSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"descriptionsDeliverablesSearch"} />}
+                    </div>
+                ),
+                id: "descriptionsDeliverablesSearch",
+                placeholder: "Deliverables",
+                header: "",
+                resetColumnFilters: false,
+                size: 56,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsHelpInformationSarch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsHelpInformationSarch ? row?.original?.descriptionsHelpInformationSarch?.length : ""}</span>
+                        {row?.original?.descriptionsHelpInformationSarch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Help_x0020_Information"} />}
+                    </div>
+                ),
+                id: "descriptionsHelpInformationSarch",
+                placeholder: "Help Information",
+                header: "",
+                resetColumnFilters: false,
+                size: 56,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsShortDescriptionSearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsShortDescriptionSearch ? row?.original?.descriptionsShortDescriptionSearch?.length : ""}</span>
+                        {row?.original?.descriptionsShortDescriptionSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Short_x0020_Description_x0020_On"} />}
+                    </div>
+                ),
+                id: "descriptionsShortDescriptionSearch",
+                placeholder: "Short Description",
+                header: "",
+                resetColumnFilters: false,
+                size: 56,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsTechnicalExplanationsSearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsTechnicalExplanationsSearch ? row?.original?.descriptionsTechnicalExplanationsSearch?.length : ""}</span>
+                        {row?.original?.descriptionsTechnicalExplanationsSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"TechnicalExplanations"} />}
+                    </div>
+                ),
+                id: "descriptionsTechnicalExplanationsSearch",
+                placeholder: "Technical Explanations",
+                header: "",
+                resetColumnFilters: false,
+                size: 56,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsBodySearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsBodySearch ? row?.original?.descriptionsBodySearch?.length : ""}</span>
+                        {row?.original?.descriptionsBodySearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Body"} />}
+                    </div>
+                ),
+                id: "descriptionsBodySearch",
+                placeholder: "Body",
+                header: "",
+                resetColumnFilters: false,
+                size: 56,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsAdminNotesSearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsAdminNotesSearch ? row?.original?.descriptionsAdminNotesSearch?.length : ""}</span>
+                        {row?.original?.descriptionsAdminNotesSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"AdminNotes"} />}
+                    </div>
+                ),
+                id: "descriptionsAdminNotesSearch",
+                placeholder: "AdminNotes",
+                header: "",
+                resetColumnFilters: false,
+                size: 56,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsValueAddedSearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsValueAddedSearch ? row?.original?.descriptionsValueAddedSearch?.length : ""}</span>
+                        {row?.original?.descriptionsValueAddedSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"ValueAdded"} />}
+                    </div>
+                ),
+                id: "descriptionsValueAddedSearch",
+                placeholder: "ValueAdded",
+                header: "",
+                resetColumnFilters: false,
+                size: 56,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsIdeaSearch,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        <span>{row?.original?.descriptionsIdeaSearch ? row?.original?.descriptionsIdeaSearch?.length : ""}</span>
+                        {row?.original?.descriptionsIdeaSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Idea"} />}
+                    </div>
+                ),
+                id: "descriptionsIdeaSearch",
+                placeholder: "Idea",
+                header: "",
+                resetColumnFilters: false,
+                size: 56,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.descriptionsBackgroundSearch,
+                cell: ({ row }) => (
+                    <>
+                        <span>{row?.original?.descriptionsBackgroundSearch ? row?.original?.descriptionsBackgroundSearch?.length : ""}</span>
+                        {row?.original?.descriptionsBackgroundSearch && <InfoIconsToolTip row={row?.original} SingleColumnData={"Background"} />}
+                    </>
+                ),
+                id: "descriptionsBackgroundSearch",
+                placeholder: "Background",
+                header: "",
+                resetColumnFilters: false,
+                size: 80,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.HelpInformationVerified,
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        {row?.original?.HelpInformationVerified && <span> <TrafficLightComponent columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>}
+                    </div>
+                ),
+                id: "HelpInformationVerified",
+                placeholder: "verified",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.FeatureTypeTitle,
+                cell: ({ row }) => (
+                    <>
+                        <span style={{ display: "flex", maxWidth: '60px' }}>
+                            <span style={{ flexGrow: 1, overflow: 'hidden', textOverflow: "ellipsis", whiteSpace: 'nowrap' }} title={row?.original?.FeatureTypeTitle} >{row?.original?.FeatureTypeTitle}</span>
+                        </span>
+                    </>
+                ),
+                id: "FeatureTypeTitle",
+                placeholder: "Feature Type",
+                header: "",
+                resetColumnFilters: false,
+                size: 70,
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.DueDate,
+                cell: ({ row, column, getValue }) => (
+                    <HighlightableCell value={row?.original?.DisplayDueDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+                ),
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                id: 'DueDate',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "DueDate",
+                header: "",
+                size: 91,
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.Created,
+                cell: ({ row, column }) => (
+                    <div className="alignCenter">
+                        {row?.original?.Created == null ? ("") : (
+                            <>
+                                <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.DisplayCreateDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
+                                {row?.original?.Author != undefined &&
+                                    <>
+                                        <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                                            target="_blank" data-interception="off">
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.Author?.autherImage} />
+                                        </a>
+                                    </>
+                                }
+                            </>
+                        )}
+                    </div>
+                ),
+                id: 'Created',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Created",
+                isColumnVisible: true,
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                header: "",
+                size: 105
+            },
+            {
+                accessorFn: (row) => row?.Modified,
+                cell: ({ row, column }) => (
+                    <div className="alignCenter">
+                        {row?.original?.Modified == null ? ("") : (
+                            <>
+                                <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.DisplayModifiedDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
+                                {row?.original?.Editor != undefined &&
+                                    <>
+                                        <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
+                                            target="_blank" data-interception="off">
+                                            <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={row?.original?.Editor?.autherImage} />
+                                        </a>
+                                    </>
+                                }
+                            </>
+                        )}
+                    </div>
+                ),
+                id: 'Modified',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Modified",
+                isColumnVisible: false,
+                filterFn: (row: any, columnName: any, filterValue: any) => {
+                    if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                header: "",
+                size: 105
+            },
+            {
+                accessorKey: "descriptionsSearch",
+                placeholder: "descriptionsSearch",
+                header: "",
+                resetColumnFilters: false,
+                id: "descriptionsSearch",
+                isColumnVisible: false
+            },
+            {
+                accessorKey: "commentsSearch",
+                placeholder: "commentsSearch",
+                header: "",
+                resetColumnFilters: false,
+                id: "commentsSearch",
+                isColumnVisible: false
+            },
+            {
+                accessorKey: "timeSheetsDescriptionSearch",
+                placeholder: "timeSheetsDescriptionSearch",
+                header: "",
+                resetColumnFilters: false,
+                id: "timeSheetsDescriptionSearch",
+                isColumnVisible: false
+            },
+            {
+                accessorKey: "TotalTaskTime",
+                id: "TotalTaskTime",
+                placeholder: "Smart Time",
+                header: "",
+                resetColumnFilters: false,
+                size: 49,
+                isColumnVisible: true
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        {row?.original?.siteType != "Master Tasks" && row?.original?.Title != "Others" && (
+                            <a className="alignCenter" onClick={(e) => EditDataTimeEntryData(e, row.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
+                                <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
+                            </a>
+                        )}
+                    </>
+                ),
+                id: "timeShitsIcons",
+                canSort: false,
+                placeholder: "",
+                size: 1,
+                isColumnVisible: true
+            },
+            {
+                header: ({ table }: any) => (
+                    <>{
+                        topCompoIcon ?
+                            <span style={{ backgroundColor: `${portfolioColor}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
+                                <span className="svg__iconbox svg__icon--re-structure"></span>
+                            </span>
+                            : ''
+                    }
+                    </>
+                ),
+                cell: ({ row, getValue }) => (
+                    <>
+                        {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
+                            <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
+                                <span className="svg__iconbox svg__icon--re-structure"> </span>
+                            </span>
+                        )}
+                        {/* {getValue()} */}
+                    </>
+                ),
+                id: "Restructure",
+                canSort: false,
+                placeholder: "",
+                size: 1,
+                isColumnVisible: true
+            },
+            {
+                cell: ({ row, getValue }) => (
+                    <>
+                        {row?.original?.siteType === "Master Tasks" &&
+                            row?.original?.Title !== "Others" && (
+                                <a className="alignCenter"
+                                    href="#"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="auto"
+                                    title={'Edit ' + `${row.original.Title}`}
+                                >
+                                    {" "}
+                                    <span
+                                        className="svg__iconbox svg__icon--edit"
+                                        onClick={(e) => EditComponentPopup(row?.original)}
+                                    ></span>
+                                </a>
+                            )}
+                        {row?.original?.siteType != "Master Tasks" &&
+                            row?.original?.Title !== "Others" && (
+                                <a className="alignCenter"
+                                    href="#"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="auto"
+                                    title={'Edit ' + `${row.original.Title}`}
+                                >
+                                    {" "}
+                                    <span
+                                        className="svg__iconbox svg__icon--edit"
+                                        onClick={(e) => EditItemTaskPopup(row?.original)}
+                                    ></span>
+                                </a>
+                            )}
+                        {/* {getValue()} */}
+                    </>
+                ),
+                id: "editIcon",
+                canSort: false,
+                placeholder: "",
+                header: "",
+                size: 30,
+                isColumnVisible: true
+            },
+        ],
+        [data]
+    );
 
     //-------------------------------------------------- restructuring function start---------------------------------------------------------------
 
@@ -3436,15 +3432,8 @@ function TeamPortlioTable(SelectedProp: any) {
     const onRenderCustomHeaderMain = () => {
         return (
             <div className="d-flex full-width pb-1">
-                <div
-                    style={{
-                        marginRight: "auto",
-                        fontSize: "20px",
-                        fontWeight: "600",
-                        marginLeft: "20px",
-                    }}
-                >
-                    <span>{`Create Item`}</span>
+                <div className="subheading">
+                    <span className="siteColor">{`Create Item`}</span>
                 </div>
                 <Tooltip ComponentId={1746} />
             </div>
@@ -3459,9 +3448,28 @@ function TeamPortlioTable(SelectedProp: any) {
             setOpenCompareToolPopup(false);
         }
     }, []);
-    const openCompareTool = () => {
-        setOpenCompareToolPopup(true);
+
+    const trigerAllEventButton = (eventValue: any) => {
+        if (eventValue === "Compare") {
+            setOpenCompareToolPopup(true);
+        }
     }
+    React.useEffect(() => {
+        if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length === 2) {
+            if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined && (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Tasks' || childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Tasks')) {
+                setActiveCompareToolButton(true);
+            } else if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType != undefined) {
+                setActiveCompareToolButton(true);
+            }
+        } else {
+            setActiveCompareToolButton(false);
+        }
+    }, [childRef?.current?.table?.getSelectedRowModel()?.flatRows])
+    const customTableHeaderButtons = (
+        (ActiveCompareToolButton) ?
+            < button type="button" className="btn btn-primary" title='Compare' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
+            <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Compare</button>
+    )
     /////end////////////
     //-------------------------------------------------------------End---------------------------------------------------------------------------------
 
@@ -3516,15 +3524,15 @@ function TeamPortlioTable(SelectedProp: any) {
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
                                         <div>
-                                            <GlobalCommanTable tableId="teamPortfolio" showRestructureButton={true} showCompareButton={true} openCompareTool={openCompareTool} columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup}
+                                            <GlobalCommanTable showRestructureButton={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup}
                                                 masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup}
                                                 flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
                                                 flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef}
                                                 callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers}
                                                 portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration}
                                                 showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity}
-                                                // showPopupHeader={true}
-                                                showHeader={true}
+                                                customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons}
+                                                showHeader={true} tableId="teamPortfolio" columnSettingIcon={true}
                                             />
                                         </div>
                                     </div>
@@ -3551,6 +3559,11 @@ function TeamPortlioTable(SelectedProp: any) {
                     taskUser={AllUsers}
                     portfolioTypeData={portfolioTypeData}
                     PropsValue={ContextValue}
+                    SelectedItem={
+                        checkedList != null && checkedList?.Id != undefined
+                            ? checkedList
+                            : props
+                    }
                 />
 
             </Panel>

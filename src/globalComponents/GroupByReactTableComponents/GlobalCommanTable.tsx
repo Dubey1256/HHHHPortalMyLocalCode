@@ -39,6 +39,7 @@ import BulkEditingFeature from './BulkEditingFeature';
 import BulkEditingConfrigation from './BulkEditingConfrigation';
 import ColumnsSetting from './ColumnsSetting';
 import HeaderButtonMenuPopup from './HeaderButtonMenuPopup';
+import { Web } from 'sp-pnp-js';
 // import TileBasedTasks from './TileBasedTasks';
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -299,6 +300,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [showPagination, setShowPagination] = React.useState(items?.showPagination ? items?.showPagination : false);
     const [showPaginationSetting, setShowPaginationSetting] = React.useState(false);
     const [tableSettingPageSize, setTableSettingPageSize] = React.useState(0);
+    const [settingConfrigrationData, setSettingConfrigrationData] = React.useState([]);
     React.useEffect(() => {
         if (fixedWidth === true) {
             try {
@@ -422,6 +424,21 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const bulkEditingSettingPopupEvent = () => {
         setBulkEditingSettingPopup(true);
     }
+
+    const fetchSettingConfrigrationData = () => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const web = new Web(items?.AllListId?.siteUrl);
+                const resultsArray = await web.lists.getByTitle('AdminConfigurations').items.select('Id', 'Title', 'Value', 'Key', 'Description', 'DisplayTitle', 'Configurations', "Author/Id", "Author/Title").expand("Author").filter(`Title eq '${tableId}' and Author/Id eq ${items?.AllListId?.Context?.pageContext?.legacyPageContext?.userId}`).get();
+                let configurationData = resultsArray?.map((smart: any) => JSON.parse(smart?.Configurations));
+                configurationData[0].ConfrigId = resultsArray[0]?.Id;
+                console.log(resultsArray);
+                setSettingConfrigrationData(configurationData);
+                resolve(configurationData);
+            } catch (error) { console.error(error); reject(error); }
+        });
+    };
+    React.useEffect(() => { const fetchData = async () => { try { await fetchSettingConfrigrationData(); } catch (error) { console.error('Error:', error); } }; fetchData(); }, [columns]);
     ///******************** Bulk Editing Setting End************* */
     React.useEffect(() => {
         if (columns?.length > 0 && columns != undefined) {
@@ -429,10 +446,13 @@ const GlobalCommanTable = (items: any, ref: any) => {
             let columnVisibilityResult: any = {};
             let preSetColumnSettingVisibility: any = {};
             let preSetColumnOrdring: any = [];
+            console.log(settingConfrigrationData);
             columns = columns.map((updatedSortDec: any) => {
                 try {
-                    if ((localStorage.getItem(tableId) != undefined && localStorage.getItem(tableId)) && Object.keys(JSON.parse(localStorage.getItem(tableId)))?.length > 0 && (items?.columnSettingIcon === true)) {
-                        const preSetColumnsValue = JSON.parse(localStorage.getItem(tableId));
+                    // if ((localStorage.getItem(tableId) != undefined && localStorage.getItem(tableId)) && Object.keys(JSON.parse(localStorage.getItem(tableId)))?.length > 0 && (items?.columnSettingIcon === true)) {
+                    if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableId && (items?.columnSettingIcon === true)) {
+                        // const preSetColumnsValue = JSON.parse(localStorage.getItem(tableId));
+                        const preSetColumnsValue = settingConfrigrationData[0]
                         if (preSetColumnsValue?.tableId === items?.tableId) {
                             preSetColumnSettingVisibility = preSetColumnsValue?.columnSettingVisibility;
                             preSetColumnOrdring = preSetColumnsValue
@@ -490,8 +510,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 setSorting([]);
             }
             try {
-                if (localStorage.getItem(tableId) && Object.keys(JSON.parse(localStorage.getItem(tableId)))?.length > 0 && (items?.columnSettingIcon === true)) {
-                    const preSetColumnsValue = JSON.parse(localStorage.getItem(tableId));
+                // if (localStorage.getItem(tableId) && Object.keys(JSON.parse(localStorage.getItem(tableId)))?.length > 0 && (items?.columnSettingIcon === true)) {
+                if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableId && (items?.columnSettingIcon === true)) {
+                    // const preSetColumnsValue = JSON.parse(localStorage.getItem(tableId));
+                    const preSetColumnsValue = settingConfrigrationData[0]
                     if (preSetColumnsValue?.tableId === items?.tableId) {
                         makeConfrigrationColumnsDefult()
                     }
@@ -505,8 +527,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     const makeConfrigrationColumnsDefult = () => {
         try {
-            if (localStorage.getItem(tableId) && Object.keys(JSON.parse(localStorage.getItem(tableId)))?.length > 0 && (items?.columnSettingIcon === true)) {
-                const eventSetting = JSON.parse(localStorage.getItem(tableId));
+            // if (localStorage.getItem(tableId) && Object.keys(JSON.parse(localStorage.getItem(tableId)))?.length > 0 && (items?.columnSettingIcon === true)) {
+            if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableId && (items?.columnSettingIcon === true)) {
+                // const eventSetting = JSON.parse(localStorage.getItem(tableId));
+                const eventSetting = settingConfrigrationData[0]
                 if (eventSetting?.columanSize?.length > 0) {
                     table?.getHeaderGroups()?.map((elem: any) => {
                         elem?.headers?.map((elem1: any) => {
@@ -1117,7 +1141,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             {showHeaderLocalStored === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
                     {showingAllPortFolioCount === true ? <div className='alignCenter mt--2'>
-                        <label className='alignCenter'>
+                        <label className=''>
                             <label style={{ color: "#333333" }}>
                                 Showing
                             </label>
@@ -1532,7 +1556,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCount={selectedFilterCount} setSelectedFilterCount={setSelectedFilterCount} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
             {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
             {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} />}
-            {columnSettingPopup && <ColumnsSetting tableSettingPageSize={tableSettingPageSize} tableHeight={parentRef?.current?.style?.height} columnOrder={columnOrder} setSorting={setSorting} sorting={sorting} headerGroup={table?.getHeaderGroups()} tableId={items?.tableId} showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility} />}
+            {columnSettingPopup && <ColumnsSetting ContextValue={items?.AllListId} settingConfrigrationData={settingConfrigrationData} tableSettingPageSize={tableSettingPageSize} tableHeight={parentRef?.current?.style?.height} columnOrder={columnOrder} setSorting={setSorting} sorting={sorting} headerGroup={table?.getHeaderGroups()} tableId={items?.tableId} showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility} />}
 
             {coustomButtonMenuPopup && <HeaderButtonMenuPopup isOpen={coustomButtonMenuPopup} coustomButtonMenuToolBoxCallback={coustomButtonMenuToolBoxCallback} setCoustomButtonMenuPopup={setCoustomButtonMenuPopup}
                 selectedRow={table?.getSelectedRowModel()?.flatRows} ShowTeamFunc={ShowTeamFunc} portfolioColor={portfolioColor}
