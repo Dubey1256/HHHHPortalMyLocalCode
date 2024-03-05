@@ -3740,7 +3740,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           <h2 className="heading">Timesheet <a className="f-13 pull-right" data-interception="off" target="_blank" href='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CategoriesWeeklyMultipleReportDetails-Old.aspx'>Old Categories Weekly Multiple Report Details</a></h2>
         </div>
 
-        <div className="smartFilter bg-light border mb-3 col row">
+        <div className="smartFilter bg-light border mb-3">
           <div className="report-taskuser ps-0 pe-1" id="TimeSheet-Section">
             {/* <details className='pt-1 m-0 allfilter' open> */}
             {/* <summary>
@@ -4020,7 +4020,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         </div>
         <div className='container-fluid p-0'>
           <div className='TableSection'>
-            <div id="showSearchBox" className="container p-0">
+            <div id="showSearchBox">
               <div className='Alltable'>
                 <div className='col-sm-12 p-0 smart'>
                   <div className=''>
