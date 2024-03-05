@@ -660,7 +660,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                         <div className='row'>
                             <div className=' d-flex py-2 border-start border-end '>
                                 <div className='current-Task-section' style={{ width: "47%" }}>Project: <span className='siteColor ms-2'>{ItemDetails?.Project?.Title}</span></div>
-                                <div className='Move-data-current-to-new text-center' style={{ width: "6%" }} title='Swipe data left to right'><BsArrowRightSquare onClick={() => SwipePortfolioAndProject("Project", ItemDetails?.Portfolio)} /></div>
+                                <div className='Move-data-current-to-new text-center' style={{ width: "6%" }} title='Swipe data left to right'><BsArrowRightSquare onClick={() => SwipePortfolioAndProject("Project", ItemDetails?.Project)} /></div>
                                 <div className='new-task-section input-group' style={{ width: "47%" }}>
                                     <label className='form-label full-width'> Project:</label>
                                     {CreateTaskInfo.Project?.Title ?
