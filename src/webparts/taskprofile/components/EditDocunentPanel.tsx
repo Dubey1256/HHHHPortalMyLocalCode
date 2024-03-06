@@ -8,13 +8,12 @@ import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 import ImageInformation from '../../EditPopupFiles/ImageInformation';
 let mastertaskdetails: any = []
-let recipientdata: any = []
 let copyEditData: any = {}
+
 const EditDocumentpanel = (props: any) => {
   const [EditdocumentsData, setEditdocumentsData]: any = React.useState();
   const [isOpenImageTab, setisOpenImageTab] = React.useState(false);
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = React.useState(false);
-  const [DocumentTypes, setDocumentTypes] = React.useState([]);
   let ItemRank = [
     { rankTitle: 'Select Item Rank', rank: null },
     { rankTitle: '(8) Top Highlights', rank: 8 },
@@ -26,37 +25,29 @@ const EditDocumentpanel = (props: any) => {
     { rankTitle: '(1) Archive', rank: 1 },
     { rankTitle: '(0) No Show', rank: 0 }
   ]
+
+  let ReceiverId: any = [];
+  let ReceiverCC: any = [];
+  let recipientLabel = "";
+  let recipientLabelCC = "";
+  let emailString = "";
+
   React.useEffect(() => {
     if (props?.editData != undefined) {
       LoadMasterTaskList().then((smartData: any) => {
-        loadSelectedDocuments();
-        loadDocumentType();
+        loadSelectedDocuments()
       }).catch((error: any) => {
         console.log(error)
       })
     }
   }, [props?.editData != undefined])
 
-  const loadDocumentType = async () => {
-    try {
-      const web = new Web(props?.AllListId?.siteUrl);
-      const fieldsData = await web.lists.getById(props?.AllListId?.DocumentsListID).fields.filter("EntityPropertyName eq 'DocumentType'").select('Choices').get();
-      if (fieldsData && fieldsData[0].Choices) {
-        setDocumentTypes(fieldsData[0].Choices);
-        console.log('DropdownArray', DocumentTypes);
-      } else {
-        console.error('No Choices found');
-      }
-    } catch (error) {
-      console.error('Error loading dropdown:', error);
-    }
-  };
   const loadSelectedDocuments = async () => {
     const web = new Web(props?.AllListId?.siteUrl);
     try {
       await web.lists.getById(props?.AllListId?.DocumentsListID)
         .items.getById(props?.editData?.Id)
-        .select('Id', 'Title', 'PriorityRank', 'DocumentType', 'Year', 'Body', 'recipients', 'senderEmail', 'creationTime', 'Item_x0020_Cover', 'Portfolios/Id', 'Portfolios/Title', 'File_x0020_Type', 'FileLeafRef', 'FileDirRef', 'ItemRank', 'ItemType', 'Url', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'EncodedAbsUrl')
+        .select('Id', 'Title', 'PriorityRank', 'Year', 'Body', 'recipients', 'senderEmail', 'creationTime', 'Item_x0020_Cover', 'Portfolios/Id', 'Portfolios/Title', 'File_x0020_Type', 'FileLeafRef', 'FileDirRef', 'ItemRank', 'ItemType', 'Url', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'EncodedAbsUrl')
         .expand('Author,Editor,Portfolios')
         .get()
         .then((Data) => {
@@ -160,7 +151,6 @@ const EditDocumentpanel = (props: any) => {
         ItemRank: EditdocumentsData?.ItemRank == 'Select Item Rank' ? null : EditdocumentsData?.ItemRank,
         Year: EditdocumentsData.Year,
         ItemType: EditdocumentsData.ItemType,
-        DocumentType: EditdocumentsData?.DocumentType,
         PortfoliosId: { "results": componetServicetagData.length > 0 ? componetServicetagData : [] },
         Body: EditdocumentsData?.Body,
         Item_x0020_Cover: {
@@ -196,18 +186,54 @@ const EditDocumentpanel = (props: any) => {
         }
       })
   }
+
+  // {
+  //   (EditdocumentsData?.recipients) ?
+  //     (JSON.parse(EditdocumentsData?.recipients)?.map((item: any) => {
+  //       if (item.recipType == "to") {
+  //         if (item.email.length > 1) {
+  //           ReceiverId += item.email + "; ";
+  //         }
+  //         recipientLabel = `To: ${ReceiverId}`;
+  //         return {
+  //           recipientLabel
+  //         }
+  //       }
+  //       let lastSemicolonIndex = recipientLabel.lastIndexOf(';');
+  //       if (lastSemicolonIndex !== -1) {
+  //         // Remove the last semicolon using substrings
+  //         recipientLabel = recipientLabel.substring(0, lastSemicolonIndex) + recipientLabel.substring(lastSemicolonIndex + 1);
+  //       }
+  //       if (item.recipType == "cc") {
+  //         ReceiverCC += item.email + "; ";
+  //         recipientLabelCC = `CC: ${ReceiverCC}`;
+  //         return {
+  //           recipientLabelCC
+  //         }
+  //       }
+  //       // let lastSemicolonIndexCC = recipientLabelCC.lastIndexOf(';');
+  //       // if (lastSemicolonIndexCC !== -1) {
+  //       //   // Remove the last semicolon using substrings
+  //       //   recipientLabelCC = recipientLabelCC.substring(0, lastSemicolonIndexCC) + recipientLabelCC.substring(lastSemicolonIndexCC + 1);
+  //       // }
+  //     })) :
+  //     ""
+  // }
+  // let lastSemicolonIndexCC = recipientLabelCC.lastIndexOf(';');
+  // if (lastSemicolonIndexCC !== -1) {
+  //   // Remove the last semicolon using substrings
+  //   recipientLabelCC = recipientLabelCC.substring(0, lastSemicolonIndexCC) + recipientLabelCC.substring(lastSemicolonIndexCC + 1);
+  // }
+
   const imageTabCallBack = React.useCallback((data: any) => {
     console.log(EditdocumentsData);
     console.log(data)
     if (data != undefined) {
       setEditdocumentsData(data);
     }
-
   }, [])
 
-
   const onRenderCustomHeaderDocuments = () => {
-
     return (
       <>
         <div className='ps-4 siteColor subheading'>
@@ -325,16 +351,6 @@ const EditDocumentpanel = (props: any) => {
                     })}
                   </select>
                 </div>
-                <div className="input-group">
-                  <label className="full-width">Document Type</label>
-                  <select className="form-select" defaultValue={EditdocumentsData?.DocumentType} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, DocumentType: e.target.value })}>
-                    {DocumentTypes?.map((item: any, index: any) => (
-                      <option key={index} value={item}>
-                        {item}
-                      </option>
-                    ))}
-                  </select>
-                </div>
               </div>
               <div className='d-flex mt-3'>
                 <div className="input-group"><label className="full-width ">Title </label>
@@ -371,15 +387,66 @@ const EditDocumentpanel = (props: any) => {
               {EditdocumentsData?.File_x0020_Type === "msg" ?
                 <>
                   <div className='mt-3'>
-                    <div className="input-group"><label className="form-label full-width ">Recipients </label>
-                      <div className='w-50'>
-                        {(EditdocumentsData?.recipients) ?
-                          (JSON.parse(EditdocumentsData?.recipients)?.map((item: any) => {
+                    <label className="form-label full-width ">Recipients </label>
+                    <div className="input-group gap-1">
+                      <label className='form-label full-width'>To:</label>
+                      {(EditdocumentsData?.recipients) ?
+                        (JSON.parse(EditdocumentsData?.recipients)?.map((item: any) => {
+                          if (item.recipType == "to") {
                             return (
-                              <input type="text" className="form-control" value={`${item?.email} (${item?.recipType})`} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, recipients: e.target.value })} />
+                              <div className="col-sm-3">
+                                <div className="full-width replaceInput pe-2 alignCenter" onChange={(e) =>
+                                  setEditdocumentsData({
+                                    ...EditdocumentsData,
+                                    recipients: e.target,
+                                  })}>
+                                  <span className='textDotted'>{item.email}</span>
+                                </div>
+                              </div>
                             )
-                          })) :
-                          <input type="text" className="form-control" onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, recipients: e.target.value })} />
+                          }
+                        }))
+                        :
+                        <div className="col-sm-3"
+                          onChange={(e) =>
+                            setEditdocumentsData({
+                              ...EditdocumentsData,
+                              recipients: e.target,
+                            })
+                          }
+                        >
+                          <div className="full-width replaceInput pe-2 alignCenter"></div>
+                        </div>
+
+                      }
+                      <div className='input-group gap-1'>
+                        <label className="form-label full-width">CC:</label>                                    
+                        {(EditdocumentsData?.recipients !== null) ?
+                          (JSON.parse(EditdocumentsData?.recipients)?.map((items: any) => {
+                            if (items.recipType === "cc") {
+                              return (
+                                <div className="col-sm-3">
+                                  <div className="full-width replaceInput pe-2 alignCenter" onChange={(e) =>
+                                    setEditdocumentsData({
+                                      ...EditdocumentsData,
+                                      recipients: e.target,
+                                    })}>
+                                   (<span className='textDotted'>{items.email}</span>)
+                                  </div></div>
+                              )
+                            }               
+                          }))
+                          :
+                          <div className="col-sm-3"
+                            onChange={(e) =>
+                              setEditdocumentsData({
+                                ...EditdocumentsData,
+                                recipients: e.target,
+                              })
+                            }
+                          >
+                            <div className="full-width replaceInput pe-2 alignCenter"></div>
+                          </div>
                         }
                       </div>
                     </div>
@@ -387,11 +454,11 @@ const EditDocumentpanel = (props: any) => {
 
                   <div className='d-flex gap-4 mt-2'>
                     <div className="input-group">
-                      <label className="full-width">SenderEmail</label>
+                      <label className="full-width">Sender</label>
                       <input type="text" className="form-control" value={EditdocumentsData?.senderEmail} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, senderEmail: e.target.value })} />
 
                     </div>
-                    <div className="input-group"><label className=" full-width ">CreationTime </label>
+                    <div className="input-group"><label className=" full-width ">Creation Date & Time </label>
                       {EditdocumentsData?.creationTime ?
                         <input type="datetime" className="form-control" value={moment(EditdocumentsData?.creationTime).format("DD/MM/YYYY HH:mm")} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, creationTime: e.target.value })} />
                         :
@@ -454,3 +521,40 @@ const EditDocumentpanel = (props: any) => {
   )
 }
 export default EditDocumentpanel;
+
+
+// {JSON.parse(EditdocumentsData?.recipients).map((val:any) => {
+//   if (val.recipType === 'to') {
+//     return val.email += val.allreciptId.replace('undefined');
+//   }
+//   return(
+//     <input type="text" className="form-control" value={`${val?.recipType == "to" ? "To" :"" || val?.recipType == "cc" ? "CC" :""} : ${val?.allreciptId}`} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, recipients: e.target.value })} />
+
+//   )
+// }).join(';')}
+
+
+// {(EditdocumentsData?.recipients) ?
+//   (JSON.parse(EditdocumentsData?.recipients)?.map((val: any) => {
+//       if (val.recipType === 'to') {
+//           val.email += val?.allreciptId;
+//           return (
+//               <input key={val.email} type="text" className="form-control" value={`To: ${val.email}`} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, recipients: e.target.value })} />
+//           );
+//       } else if (val.recipType === 'cc') {
+//           val.email += val?.allreciptId;
+//           return (
+//               <input key={val.email} type="text" className="form-control" value={`CC: ${val.email}`} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, recipients: e.target.value })} />
+//           );
+//       }
+//       return null;
+//   }).join(';')) :
+//   <input type="text" className="form-control" onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, recipients: e.target.value })} />
+// }
+
+
+
+
+
+
+{/* <input type="text" className="form-control" value={`${item?.recipType == "to" ? "To" :"" || item?.recipType == "cc" ? "CC" :""} : ${ReceiverId.replaceAll("undefined")}`} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, recipients: e.target.value })} /> */ }
