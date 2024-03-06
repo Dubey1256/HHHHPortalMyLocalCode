@@ -128,6 +128,7 @@ function TeamPortlioTable(SelectedProp: any) {
     const [dynamicColumnsValue, setDynamicColumnsValue] = React.useState([])
     const rerender = React.useReducer(() => ({}), {})[1];
     const [ActiveCompareToolButton, setActiveCompareToolButton] = React.useState(false);
+    const [taskCatagory, setTaskCatagory] = React.useState([]);
     // const [tableHeight, setTableHeight] = React.useState(window.innerHeight);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
     let ComponetsData: any = {};
@@ -214,8 +215,8 @@ function TeamPortlioTable(SelectedProp: any) {
         let siteConfigSites: any = []
         var Priority: any = []
         // let PrecentComplete: any = [];
-        // let Categories: any = [];
         // let FeatureType: any = []
+        let Categories: any = [];
         let web = new Web(ContextValue.siteUrl);
         let smartmetaDetails: any = [];
         smartmetaDetails = await web.lists
@@ -233,10 +234,14 @@ function TeamPortlioTable(SelectedProp: any) {
             if (newtest?.TaxType == 'Priority Rank') {
                 Priority?.push(newtest)
             }
+            if (newtest.TaxType == 'Categories') {
+                Categories.push(newtest);
+            }
         })
         if (siteConfigSites?.length > 0) {
             setSiteConfig(siteConfigSites)
         }
+        setTaskCatagory(Categories);
         metaDataItem.push(...smartmetaDetails)
         setMetadata(smartmetaDetails);
     };
@@ -513,7 +518,7 @@ function TeamPortlioTable(SelectedProp: any) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                                 }
                             }
-                            // result = globalCommon.findTaskCategoryParent(taskCatagory, result)
+                            result = globalCommon.findTaskCategoryParent(taskCatagory, result)
                             result.SmartPriority = globalCommon.calculateSmartPriority(result);
                             result["Item_x0020_Type"] = "Task";
                             TasksItem.push(result);
@@ -787,7 +792,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             }
                         }
                         result.SmartPriority = globalCommon.calculateSmartPriority(result);
-                        // result = globalCommon.findTaskCategoryParent(taskCatagory, result)
+                        result = globalCommon.findTaskCategoryParent(taskCatagory, result);
                         result["Item_x0020_Type"] = "Task";
                         TasksItem.push(result);
                         AllTasksData.push(result);
@@ -2580,6 +2585,62 @@ function TeamPortlioTable(SelectedProp: any) {
                 size: 130,
                 id: "TaskTypeValue",
                 isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.Type,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+                    </>
+                ),
+                placeholder: "Type",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "Type",
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.Attention,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+                    </>
+                ),
+                placeholder: "Attention",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "Attention",
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.Admin,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+                    </>
+                ),
+                placeholder: "Admin",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "Admin",
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.Actions,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+                    </>
+                ),
+                placeholder: "Actions",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "Actions",
+                isColumnVisible: false
             },
             {
                 accessorFn: (row) => row?.ClientCategorySearch,
