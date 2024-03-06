@@ -1947,7 +1947,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                 <div className="col-9">
                   <div className="team_member row">
                     <div className='col-md-8 '>
-                      <div className='bg-Ff p-2 rounded-1 row'>
+                      <div className='bg-Ff p-2 boxshadow  rounded-1 row'>
                       <div className='col-md-6 p-0'>
                         <dl>
                           <dt className='bg-Fa'>Task Id</dt>
@@ -2169,7 +2169,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                     </div>
 
                     <div className='col-md-4'>
-                      <div className='bg-Ff p-2 rounded-1 '>
+                      <div className='bg-Ff p-2 rounded-1 boxshadow  '>
                         
                       <dl>
 
@@ -2303,10 +2303,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                     <div className="col mt-2">
                       <div className="Taskaddcomment row">
                         {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 &&
-                          <div className="bg-white col-sm-4 mt-2 p-0">
+                          <div className="bg-white col-sm-4 mt-2 p-0 boxshadow mb-3">
                             <label className='form-label full-width fw-semibold titleheading'>Images</label>
                             {this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.map((imgData: any, i: any) => {
-                              return <div className="taskimage border mb-3">
+                              return <div className="taskimage border ">
 
 
                                 <a className='images' target="_blank" data-interception="off" href={imgData?.ImageUrl}>
@@ -2352,7 +2352,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                             this.state.Result["TaskTypeTitle"] == 'Task' || this.state.Result["TaskTypeTitle"] == "Workstream" || this.state.Result["TaskTypeTitle"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
                             this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                             this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' && this.state.countfeedback >= 0 &&
-                            <div className={"Addcomment " + "manage_gap"}>
+                            <div className={"Addcomment boxshadow " + " manage_gap"}>
                               <label className='form-label full-width fw-semibold titleheading'>Task description</label>
                               {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
                                 if (typeof fbData == "object") {
@@ -2718,7 +2718,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                     {this.backGroundComment && <div className="col mt-2">
                       <div className="Taskaddcomment row">
                         {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"].length > 0 &&
-                          <div className="bg-white col-sm-4 mt-2 p-0">
+                          <div className="bg-white col-sm-4 mt-2 p-0 boxshadow">
                             {this.state.Result["OffshoreImageUrl"] != null && this.state.Result["OffshoreImageUrl"]?.map((imgData: any, i: any) => {
                               return <div className="taskimage border mb-3">
                                 <a className='images' target="_blank" data-interception="off" href={imgData?.ImageUrl}>
