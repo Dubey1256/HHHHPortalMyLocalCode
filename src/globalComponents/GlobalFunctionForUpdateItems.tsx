@@ -1356,6 +1356,232 @@ export const getDataByKey = (DataArray: any, keyName: any) => {
 }
 
 
+// This is used for send MS Teams Notification for Bottleneck and Attention Category Tasks 
+
+export const GenerateMSTeamsNotification = (RequiredData: any) => {
+    try {
+        if (RequiredData?.Title?.length > 0) {
+            return (
+                <table cellPadding="0" width="100%" style={{ width: "100.0%" }}>
+                    <tbody>
+                        <tr>
+                            <td width="70%" valign="top" style={{ width: '70.0%', padding: '.75pt .75pt .75pt .75pt' }}>
+                                <table cellPadding="0" width="99%" style={{ width: "99.0%" }}>
+                                    <tbody>
+                                        <tr>
+                                            <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Task Id:</span></b><u></u><u></u></p>
+                                            </td>
+                                            <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData?.TaskId}</span><u></u><u></u></p>
+                                            </td>
+                                            <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Component:</span></b><u></u><u></u></p>
+                                            </td>
+                                            <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p>{RequiredData["Component"] != null &&
+                                                    RequiredData["Component"].length > 0 &&
+                                                    <span style={{ fontSize: '10.0pt', color: 'black' }}>
+                                                        {joinObjectValues(RequiredData["Component"])}
+                                                    </span>
+                                                }
+                                                    <span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            </td>
+                                            <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Priority:</span></b><u></u><u></u></p>
+                                            </td>
+                                            <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["Priority"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Start Date:</span></b><u></u><u></u></p>
+                                            </td>
+                                            <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined ? Moment(RequiredData["StartDate"]).format("DD-MMMM-YYYY") : ""}</span><u></u><u></u></p>
+                                            </td>
+                                            <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Completion Date:</span></b><u></u><u></u></p>
+                                            </td>
+                                            <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined ? Moment(RequiredData["CompletedDate"]).format("DD-MMMM-YYYY") : ""}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            </td>
+                                            <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Due Date:</span></b><u></u><u></u></p>
+                                            </td>
+                                            <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined ? Moment(RequiredData["DueDate"]).format("DD-MMMM-YYYY") : ''}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Team Members:</span></b><u></u><u></u></p>
+                                            </td>
+                                            <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p>{RequiredData["TeamMembers"] != null &&
+                                                    RequiredData["TeamMembers"].length > 0 &&
+                                                    <span style={{ fontSize: '10.0pt', color: 'black' }}>
+                                                        {joinObjectValues(RequiredData["TeamMembers"])}
+                                                    </span>
+                                                }
+                                                    <span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            </td>
+                                            <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created:</span></b><u></u><u></u></p>
+                                            </td>
+                                            <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{Moment(RequiredData["Created"]).format("DD-MMMM-YYYY")}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            </td>
+                                            <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created By:</span></b><u></u><u></u></p>
+                                            </td>
+                                            <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["Author"] != null && RequiredData["Author"] != undefined && RequiredData["Author"].Title}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Categories:</span></b><u></u><u></u></p>
+                                            </td>
+                                            <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["Categories"]}</span><u></u><u></u></p>
+                                            </td>
+                                            <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Status:</span></b><u></u><u></u></p>
+                                            </td>
+                                            <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                {RequiredData["Status"]}
+                                            </td>
+                                            <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>% Complete:</span></b><u></u><u></u></p>
+                                            </td>
+                                            <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                {RequiredData["PercentComplete"]}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>URL:</span></b><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            </td>
+                                            <td colSpan={7} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><span style={{ fontSize: '10.0pt', color: 'black' }}>
+                                                    {RequiredData["ComponentLink"] != null &&
+                                                        <a href={RequiredData["ComponentLink"].Url} target="_blank">{RequiredData["ComponentLink"].Url}</a>
+                                                    }</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Smart Priority:</span></b><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            </td>
+                                            <td colSpan={7} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                {RequiredData["SmartPriority"]}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                {RequiredData["FeedBack"] != null &&
+                                    RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
+                                    RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title?.length > 8 ?
+                                    <table cellPadding="0" width="100%" style={{ width: "100.0%" }}>
+                                        <tbody>
+                                            <th>
+                                                <td style={{ padding: '.75pt .75pt .75pt .75pt' }}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Task Description:</span></b></td>
+                                            </th>
+                                            {RequiredData["FeedBack"] != null &&
+                                                RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
+                                                RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title != '' &&
+                                                RequiredData["FeedBack"][0]?.FeedBackDescriptions.map((fbData: any, i: any) => {
+                                                    return (<>
+                                                        <tr>
+                                                            <td width="50px" align="center" style={{ border: "1px solid rgb(204, 204, 204)" }}>
+                                                                <span style={{ fontSize: "10pt", color: "rgb(111, 111, 111)" }}>
+                                                                    <span>{i + 1}</span> <br />
+
+                                                                </span>
+                                                            </td>
+                                                            <td style={{ padding: "0px 2px 0px 10px", border: "1px solid #ccc" }}><span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span>
+                                                                {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
+                                                                    return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                                                                        <div style={{ marginBottom: '3.75pt' }}>
+                                                                            <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span>{fbComment.AuthorName} - {fbComment.Created}<u></u><u></u></span></p>
+                                                                        </div>
+                                                                        <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span><u></u><u></u></span></p>
+                                                                    </div>
+                                                                })}
+                                                            </td>
+                                                        </tr>
+                                                        {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map((fbSubData: any, j: any) => {
+                                                            return <>
+                                                                <tr>
+                                                                    <td width="50px" align="center" style={{ border: "1px solid rgb(204, 204, 204)" }}>
+                                                                        <span style={{ fontSize: "10pt", color: "rgb(111, 111, 111)" }}>
+                                                                            <span>{i + 1}.{j + 1}</span> <br />
+
+                                                                        </span>
+                                                                    </td>
+                                                                    <td style={{ padding: "0px 2px 0px 10px", border: "1px solid #ccc" }}
+                                                                    ><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
+                                                                        {fbSubData['Comments'] != null && fbSubData['Comments']?.length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
+                                                                            return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                                                                                <div style={{ marginBottom: '3.75pt' }}>
+                                                                                    <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}<u></u><u></u></span></p>
+                                                                                </div>
+                                                                                <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span><u></u><u></u></span></p>
+                                                                            </div>
+                                                                        })}
+                                                                    </td>
+                                                                </tr>
+                                                            </>
+                                                        })}
+                                                    </>)
+                                                })}
+                                        </tbody>
+                                    </table>
+                                    :
+                                    null
+                                }
+                            </td>
+                            {RequiredData?.CommentsArray?.length > 0 ?
+                                <td width="22%" style={{ width: '22.0%', padding: '.75pt .75pt .75pt .75pt' }}>
+                                    <table className='table table-striped ' cellPadding={0} width="100%" style={{ width: '100.0%', border: 'solid #dddddd 1.0pt', borderRadius: '4px' }}>
+                                        <tbody>
+                                            <tr>
+                                                <td style={{ border: 'none', borderBottom: 'solid #dddddd 1.0pt', background: 'whitesmoke', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                    <b style={{ marginBottom: '1.25pt' }}><span>Comments:<u></u><u></u></span></b>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style={{ border: 'none', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                    {RequiredData["CommentsArray"] != undefined && RequiredData["CommentsArray"]?.length > 0 && RequiredData["CommentsArray"]?.map((cmtData: any, i: any) => {
+                                                        return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                                                            <div style={{ marginBottom: "3.75pt" }}>
+                                                                <p style={{ marginBottom: '1.25pt' }}>
+                                                                    <span style={{ color: 'black', background: '#fbfbfb' }}>{cmtData.AuthorName} - {cmtData.Created}</span></p>
+                                                            </div>
+                                                            <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
+                                                                <span style={{ color: 'black' }}>{cmtData.Description}</span></p>
+                                                        </div>
+                                                    })}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                                : null
+                            }
+                        </tr>
+                    </tbody>
+                </table>
+            )
+        }
+    } catch (error) {
+        console.log("Error:", error.message)
+    }
+
+}
+
 
 
 

@@ -737,7 +737,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                         </div>
                         <div className='row'>
                             <div className='d-flex py-2 border-start border-end '>
-                                <div className='current-Task-section' style={{ width: "47%" }}>DueDate: <span className='siteColor ms-2'>{Moment(ItemDetails.DueDate).format("DD/MM/YYYY")}</span></div>
+                                <div className='current-Task-section' style={{ width: "47%" }}>DueDate: <span className='siteColor ms-2'>{ItemDetails.DueDate ? Moment(ItemDetails.DueDate).format("DD/MM/YYYY") : ""}</span></div>
                                 <div className='Move-data-current-to-new text-center' style={{ width: "6%" }} title='Swipe data left to right' ><BsArrowRightSquare onClick={() => SwipeDataFunction("DueDate")} /></div>
                                 <div className='new-task-section' style={{ width: "47%" }}>
                                     DueDate:
@@ -858,17 +858,6 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                                                         {ImageItem.UploadeDate
                                                                             ? ImageItem.UploadeDate
                                                                             : ""}
-                                                                    </span>
-                                                                    <span className="mx-1">
-                                                                        <img
-                                                                            className="imgAuthor"
-                                                                            title={ImageItem.UserName}
-                                                                            src={
-                                                                                ImageItem.UserImage
-                                                                                    ? ImageItem.UserImage
-                                                                                    : ""
-                                                                            }
-                                                                        />
                                                                     </span>
                                                                 </div>
                                                                 <div className="alignCenter">
