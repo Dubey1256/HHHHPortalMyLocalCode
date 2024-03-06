@@ -3260,3 +3260,16 @@ const GetleaveUser = async (TaskUser: any, Context: any) => {
     console.log(finalData)
     return finalData
 }
+export const findTaskCategoryParent = (taskCategories: any, result: any) => {
+    if (taskCategories?.length > 0 && result.TaskCategories?.length > 0) {
+        let newTaskCat = taskCategories?.filter((val: any) => result?.TaskCategories?.some((elem: any) => val.Id === elem.Id));
+        newTaskCat.map((elemVal: any) => {
+            if (result[elemVal?.Parent?.Title]) {
+                result[elemVal?.Parent?.Title] += ` ${elemVal?.Title}`
+            } else {
+                result[elemVal?.Parent?.Title] = elemVal?.Title;
+            }
+        })
+    }
+    return result;
+}
