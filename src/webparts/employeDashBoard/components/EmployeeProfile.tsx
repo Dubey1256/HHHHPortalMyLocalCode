@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react'; Moment
 import { Web } from 'sp-pnp-js';
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import { myContextValue } from '../../../globalComponents/globalCommon'
@@ -19,6 +19,7 @@ let LoginUserTeamMembers: any = [];
 let ActiveTile = ''
 let DashboardTitle: any = '';
 let timeSheetConfig: any = {};
+let dates: any = [];
 const EmployeProfile = (props: any) => {
   const params = new URLSearchParams(window.location.search);
   let DashboardId: any = params.get('DashBoardId');
@@ -45,7 +46,36 @@ const EmployeProfile = (props: any) => {
     loadTaskUsers();
     annouceMent();
     getAllData(true)
+    generateDateRange()
   }, []);
+  const generateDateRange = () => {
+    let Count = 0;
+    // You can adjust the number of days displayed in the carousel
+    const daysToDisplay = 60;
+    while (Count < daysToDisplay) {
+      let today: any = new Date();
+      const currentDate = today;
+      currentDate.setDate(today.getDate() + Count);
+      currentDate.setHours(0, 0, 0, 0);
+      if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) {
+        let DateObject = { "DisplayDate": '', "ServerDate": '', IsShowTask: false }
+        DateObject.DisplayDate = Moment(currentDate).format("DD/MM/YYYY");
+        DateObject.ServerDate = currentDate
+        if (Count == 0) {
+          DateObject.DisplayDate = 'Today';
+          dates.push(DateObject);
+        }
+        else if (Count == 1) {
+          DateObject.DisplayDate = 'Tomorrow';
+          dates.push(DateObject);
+        }
+        else {
+          dates.push(DateObject);
+        }
+      }
+      Count++;
+    }
+  };
   const timeEntryIndex: any = {};
   const smartTimeTotal = async () => {
     let AllTimeEntries = [];
@@ -343,20 +373,48 @@ const EmployeProfile = (props: any) => {
             }
           })
           if (!isTaskUserExist(LoginUserTeamMembers, currentUserData))
-            LoginUserTeamMembers.push(currentUserData)
+            LoginUserTeamMembers.unshift(currentUserData)
           config.Tasks = LoginUserTeamMembers;
-
           if (config?.Tasks != undefined && config?.Tasks?.length > 0) {
             config?.Tasks.map((User: any) => {
-              array.map((Task: any) => {
-                if (Task?.AssignedTo != undefined && Task?.AssignedTo?.length > 0) {
-                  Task?.AssignedTo?.forEach((assign: any) => {
-                    if (assign.Id != undefined && User.AssingedToUserId != undefined && assign.Id === User.AssingedToUserId && Task.IsTodaysTask === true && !isTaskItemExists(User?.Tasks, Task)) {
-                      User.Tasks.push(Task);
-                    }
-                  })
-                }
+              User.dates = JSON.parse(JSON.stringify(dates));
+              User.dates.map((Date: any) => {
+                Date.ServerDate = Moment(Date?.ServerDate)
+                Date.ServerDate = Date.ServerDate?._d;
+                Date.ServerDate.setHours(0, 0, 0, 0)
+                if (Date?.Tasks == undefined)
+                  Date.Tasks = [];
+                Date.TotalTask = 0;
+                Date.TotalEstimatedTime = 0
+                array.map((Task: any) => {
+                  if (Task?.WorkingAction != undefined && Task?.WorkingAction != '' && Task?.WorkingAction?.length > 0) {
+                    Task?.WorkingAction?.map((workingDetails: any) => {
+                      if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
+                        let WorkingDate: any = Moment(workingDetails.WorkingDate, 'DD/MM/YYYY');
+                        WorkingDate?._d.setHours(0, 0, 0, 0)
+                        workingDetails?.WorkingMember?.forEach((Id: any) => {
+                          if (User.AssingedToUserId != undefined && Id === User.AssingedToUserId && Date.ServerDate.getTime() == WorkingDate?._d.getTime() && !isTaskItemExists(Date.Tasks, Task)) {
+                            Date.Tasks.push(Task)
+                            Date.TotalTask += 1;
+                            Date.TotalEstimatedTime += Task?.EstimatedTime;
+                          }
+                        })
+                      }
+                    })
+                  }
+                })
               })
+              // array.map((Task: any) => {
+              //   if (Task?.AssignedTo != undefined && Task?.AssignedTo?.length > 0) {
+              //     Task?.AssignedTo?.forEach((assign: any) => {
+              //       if (assign.Id != undefined && User.AssingedToUserId != undefined && assign.Id === User.AssingedToUserId && Task.IsTodaysTask === true && !isTaskItemExists(User?.Tasks, Task)) {
+              //         User.Tasks.push(Task);
+              //         User.TotalTask += 1;
+              //         User.TotalEstimatedTime += Task?.EstimatedTime;
+              //       }
+              //     })
+              //   }
+              // })
             })
           }
         }
@@ -431,6 +489,19 @@ const EmployeProfile = (props: any) => {
               return childText + subtextText;
             }).join('');
             items.descriptionsSearch = DiscriptionSearchData
+          }
+          let EstimatedDesc: any = [];
+          items.EstimatedTime = 0;
+          if (items?.EstimatedTimeDescription != undefined && items?.EstimatedTimeDescription != '' && items?.EstimatedTimeDescription != null) {
+            EstimatedDesc = JSON.parse(items?.EstimatedTimeDescription)
+          }
+          if (items?.WorkingAction != undefined && items?.WorkingAction != '' && items?.WorkingAction != null) {
+            items.WorkingAction = JSON.parse(items?.WorkingAction)
+          }
+          if (EstimatedDesc?.length > 0) {
+            EstimatedDesc?.map((time: any) => {
+              items.EstimatedTime += Number(time?.EstimatedTime)
+            })
           }
           items.TaskTypeValue = '';
           if (items?.TaskCategories?.length > 0) {
@@ -837,10 +908,10 @@ const EmployeProfile = (props: any) => {
   return (
     <>
       {progressBar && <PageLoader />}
-      <myContextValue.Provider value={{ ...myContextValue, AllMetadata: smartmetaDataDetails, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
+      <myContextValue.Provider value={{ ...myContextValue, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
         <div> <Header /></div>
         <TaskStatusTbl />
-      </myContextValue.Provider>
+      </myContextValue.Provider >
     </>
   );
 };

@@ -50,7 +50,7 @@ const Header = () => {
     dots: false,
     infinite: true,
     speed: 1000,
-    slidesToShow: 8,
+    slidesToShow: 12,
     slidesToScroll: 1,
     //autoplay: true, // Enable autoplay
     // autoplaySpeed: 500
@@ -183,7 +183,7 @@ const Header = () => {
             {DashboardConfig.map((items: any, index: any) => (
               items?.TileName && (
                 <>
-                  <div className={`${activeTile === items?.TileName ? 'col alignCenter me-1 mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-1 p-3 bg-white mb-3 hreflink shadow-sm'}`}
+                  <div className={`${activeTile === items?.TileName ? 'col alignCenter me-3 mb-3 hreflink  p-3 empBg shadow-sm active empBg' : 'col alignCenter me-3 p-3 bg-white mb-3 hreflink shadow-sm'}`}
                     onClick={() => handleTileClick(items?.TileName)}>
                     {/* {items?.AdditonalHeader == true ? <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16" >
                         <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
