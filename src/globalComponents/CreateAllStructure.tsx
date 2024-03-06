@@ -367,7 +367,8 @@ const CreateAllStructureComponent = (props: any) => {
     const createListItem = async (listName: string, item: any) => {
         if (item.Title != "") {
             try {
-                const result = await sp.web.lists.getByTitle(listName).items.add(item);
+                let web = new Web(props?.SelectedItem?.siteUrl);
+                const result = await web.lists.getByTitle(listName).items.add(item);
                 return result.data;
             } catch (error) {
                 throw new Error(`Failed to create item in the list. Error: ${error}`);
