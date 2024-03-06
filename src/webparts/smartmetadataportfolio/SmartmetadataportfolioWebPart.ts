@@ -21,6 +21,7 @@ export interface ISmartmetadataportfolioWebPartProps {
   description: string;
   PageUrl: any
   siteUrl: any
+  Context: any
 }
 
 export default class SmartmetadataportfolioWebPart extends BaseClientSideWebPart<ISmartmetadataportfolioWebPartProps> {
@@ -43,7 +44,8 @@ export default class SmartmetadataportfolioWebPart extends BaseClientSideWebPart
         SPTopNavigationListID: this.properties.SPTopNavigationListID,
         TaskUsertListID: this.properties.TaskUsertListID,
         PageUrl: this.context?.pageContext?.site?.serverRequestPath,
-        siteUrl: this.context.pageContext.web.absoluteUrl
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        Context: this.context
       }
     );
 
