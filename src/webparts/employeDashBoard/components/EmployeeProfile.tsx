@@ -19,6 +19,7 @@ let LoginUserTeamMembers: any = [];
 let ActiveTile = ''
 let DashboardTitle: any = '';
 let timeSheetConfig: any = {};
+let TimeSheetLists: any = [];
 let dates: any = [];
 const EmployeProfile = (props: any) => {
   const params = new URLSearchParams(window.location.search);
@@ -31,6 +32,7 @@ const EmployeProfile = (props: any) => {
   const [approverEmail, setApproverEmail]: any = useState([]);
   const [timesheetListConfig, setTimesheetListConfig] = React.useState<any>()
   const [smartmetaDataDetails, setSmartmetaDataDetails] = React.useState([])
+  const [IsCallContext, setIsCallContext] = React.useState(false)
   try {
     $("#spPageCanvasContent").removeClass();
     $("#spPageCanvasContent").addClass("hundred");
@@ -126,6 +128,7 @@ const EmployeProfile = (props: any) => {
         newtest.DataLoadNew = false;
       if (newtest?.TaxType == 'timesheetListConfigrations') {
         timeSheetConfig = newtest;
+        TimeSheetLists = JSON.parse(timeSheetConfig?.Configurations)
       }
     })
     setSmartmetaDataDetails(smartmetaDetails);
@@ -322,6 +325,34 @@ const EmployeProfile = (props: any) => {
     })
     return Tasks = Tasks.filter((type: any) => type.isShifted == false);
   }
+  const getStartingDate = (startDateOf: any) => {
+    const startingDate = new Date();
+    let formattedDate = startingDate;
+    if (startDateOf == 'This Week') {
+      startingDate.setDate(startingDate.getDate() - startingDate.getDay());
+      formattedDate = startingDate;
+    } else if (startDateOf == 'Today') {
+      formattedDate = startingDate;
+    } else if (startDateOf == 'Yesterday') {
+      startingDate.setDate(startingDate.getDate() - 1);
+      formattedDate = startingDate;
+    } else if (startDateOf == 'This Month') {
+      startingDate.setDate(1);
+      formattedDate = startingDate;
+    } else if (startDateOf == 'Last Month') {
+      const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
+      const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
+      var change = (Moment(startingDateOfLastMonth).add(10, 'days').format())
+      var b = new Date(change)
+      formattedDate = b;
+    } else if (startDateOf == 'Last Week') {
+      const lastWeek = new Date(startingDate.getFullYear(), startingDate.getMonth(), startingDate.getDate() - 7);
+      const startingDateOfLastWeek = new Date(lastWeek.getFullYear(), lastWeek.getMonth(), lastWeek.getDate() - lastWeek.getDay() + 1);
+      formattedDate = startingDateOfLastWeek;
+    }
+
+    return formattedDate;
+  }
   const MakeFinalData = () => {
     var today = new Date();
     var time = today.getHours() + ":" + today.getMinutes();
@@ -352,6 +383,7 @@ const EmployeProfile = (props: any) => {
             });
           }
         }
+        setIsCallContext(true);
       }
       else if (config?.DataSource == 'TaskUsers') {
         if (config?.selectFilterType != 'custom') {
@@ -363,12 +395,12 @@ const EmployeProfile = (props: any) => {
           taskUsers?.map((item: any) => {
             if (item[config['Status']] != undefined && Array.isArray(item[config['Status']]) && item[config['Status']]?.length > 0) {
               item[config['Status']].forEach((teamMember: any) => {
-                if (teamMember?.Id === props?.props?.Context?.pageContext?.legacyPageContext?.userId && !isTaskUserExist(LoginUserTeamMembers, item))
+                if (teamMember?.Id === props?.props?.Context?.pageContext?.legacyPageContext?.userId && !isTaskUserExist(LoginUserTeamMembers, item) && item?.ItemType != 'Group')
                   LoginUserTeamMembers.push(item)
               })
             }
             else if (item[config['Status']] != undefined && typeof item[config['Status']] === 'object' && item[config['Status']] !== null) {
-              if ((item[config['Status']]?.Id == props?.props?.Context?.pageContext?.legacyPageContext?.userId || item[config['Status']]?.Id == currentUserData?.Id) && !isTaskUserExist(LoginUserTeamMembers, item))
+              if ((item[config['Status']]?.Id == props?.props?.Context?.pageContext?.legacyPageContext?.userId || item[config['Status']]?.Id == currentUserData?.Id) && !isTaskUserExist(LoginUserTeamMembers, item) && item?.ItemType != 'Group')
                 LoginUserTeamMembers.push(item)
             }
           })
@@ -417,6 +449,87 @@ const EmployeProfile = (props: any) => {
               // })
             })
           }
+        }
+        setIsCallContext(true);
+      }
+      else if (config?.DataSource == 'TimeSheet') {
+        config.LoadDefaultFilter = false;
+        let CurrentDate = new Date();
+        CurrentDate.setHours(0, 0, 0, 0)
+        let arraycount = 0;
+        let TempArray: any = []
+        let ThisWeek = getStartingDate('This Week').toISOString();
+        if (TimeSheetLists != undefined && TimeSheetLists?.length > 0) {
+          TimeSheetLists.map((site: any) => {
+            let web = new Web(site?.siteUrl);
+            web.lists.getById(site?.listId).items.select(site?.query).filter(`(Modified ge '${ThisWeek}') and (TimesheetTitle/Id ne null)`).getAll()
+              .then((data: any) => {
+                console.log(data);
+                data.map((entry: any) => {
+                  if (entry?.AdditionalTimeEntry != undefined && entry?.AdditionalTimeEntry != null && entry?.AdditionalTimeEntry != '') {
+                    entry.AdditionalTimeEntry = JSON.parse(entry?.AdditionalTimeEntry)
+                    entry.AuthorName = '';
+                    entry.AuthorImage = ''
+                    entry.TaskTime = 0
+                    entry.TaskDate = undefined
+                    entry.CreatedServerDate = undefined
+                    if (entry.AdditionalTimeEntry != undefined && entry.AdditionalTimeEntry?.length > 0) {
+                      entry.AdditionalTimeEntry?.map((TimeEntry: any) => {
+                        entry.AuthorName = TimeEntry?.AuthorName;
+                        entry.AuthorImage = TimeEntry?.AuthorImage;
+                        entry.TaskTime = TimeEntry?.TaskTime;
+                        entry.TaskDate = TimeEntry?.TaskDate;
+                        entry.CreatedServerDate = new Date(entry.Created)
+                        entry.CreatedServerDate.setHours(0, 0, 0, 0)
+                        if (entry.TaskDate != null) {
+                          var dateValues = entry?.TaskDate?.split("/");
+                          var dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
+                          var NewDate = new Date(dp);
+                          entry.sortTaskDate = NewDate;
+                          entry.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
+                        }
+                        entry.Description = TimeEntry?.Description;
+                      })
+                    }
+                  }
+                  entry.listId = site?.listId;
+                  entry.siteUrl = site?.siteUrl
+                  if (entry?.CreatedServerDate != undefined && CurrentDate != undefined && CurrentDate.getTime() == entry?.CreatedServerDate.getTime()) {
+                    TempArray.push(entry)
+                  }
+                });
+                arraycount++;
+                let currentCount = TimeSheetLists?.length;
+                if (arraycount === currentCount) {
+                  let TeamMember: any = []
+                  taskUsers?.map((item: any) => {
+                    if (item[config['Status']] != undefined && Array.isArray(item[config['Status']]) && item[config['Status']]?.length > 0) {
+                      item[config['Status']].forEach((teamMember: any) => {
+                        if (teamMember?.Id === props?.props?.Context?.pageContext?.legacyPageContext?.userId && !isTaskUserExist(TeamMember, item) && item?.ItemType != 'Group')
+                          TeamMember.push(item)
+                      })
+                    }
+                    else if (item[config['Status']] != undefined && typeof item[config['Status']] === 'object' && item[config['Status']] !== null) {
+                      if ((item[config['Status']]?.Id == props?.props?.Context?.pageContext?.legacyPageContext?.userId || item[config['Status']]?.Id == currentUserData?.Id) && !isTaskUserExist(TeamMember, item) && item?.ItemType != 'Group')
+                        TeamMember.push(item)
+                    }
+                  })
+                  if (TempArray != undefined && TempArray?.length > 0 && TeamMember?.length > 0) {
+                    TeamMember?.map((User: any) => {
+                      TempArray?.map((TimeEntry: any) => {
+                        if (User?.AssingedToUserId != undefined && TimeEntry?.AuthorId != undefined && TimeEntry?.AuthorId == User?.AssingedToUserId) {
+                          config.Tasks.push(TimeEntry)
+                        }
+                      })
+                    })
+                  }
+                  setIsCallContext(true);
+                }
+              }).catch((error: any) => {
+                console.log(error)
+              })
+
+          })
         }
       }
     })
@@ -908,10 +1021,10 @@ const EmployeProfile = (props: any) => {
   return (
     <>
       {progressBar && <PageLoader />}
-      <myContextValue.Provider value={{ ...myContextValue, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
+      {IsCallContext == true && <myContextValue.Provider value={{ ...myContextValue, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
         <div> <Header /></div>
         <TaskStatusTbl />
-      </myContextValue.Provider >
+      </myContextValue.Provider >}
     </>
   );
 };
