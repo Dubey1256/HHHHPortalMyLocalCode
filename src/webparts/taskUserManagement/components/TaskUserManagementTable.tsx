@@ -162,7 +162,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const addNewGroup = async () => {
         let web = new Web(baseUrl);
         await web.lists.getById(TaskUserListId).items.add({
-            Title: addTitle,
+            Title: title,
             Suffix: suffix,
             SortOrder: sortOrder,
             ItemType: "Group"
@@ -170,7 +170,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             console.log(res);
             const newItem = res.data;
             setGroupData(prevData => [...prevData, newItem]);
-            setAddTitle("");
+            setTitle("");
             setSuffix("");
             setSortOrder("");
             fetchAPIData()
@@ -374,7 +374,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             size: 50,
             cell: (info) => (<div className='pull-right alignCenter'>
                 <span onClick={() => handleUpdateMemberClick(info.row.original)} className='svg__iconbox svg__icon--edit' title='Edit'></span>
-                <span onClick={() => handleDeleteClick(info.row.original)} className='svg__iconbox svg__icon--trash' title='Trash'></span>
             </div>),
             enableColumnFilter: false,
             enableSorting: false,

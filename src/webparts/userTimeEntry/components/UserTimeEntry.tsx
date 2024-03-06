@@ -67,6 +67,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     this.GetResult();
   }
   componentDidMount() {
+    
     window.addEventListener('keydown', this.handleKeyDown);
   }
   componentWillUnmount() {
@@ -807,6 +808,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     }
     startdt = new Date(this.state?.PresetStartDate);
     enddt = new Date(this.state?.PresetEndDate);
+    if(RadioType == ''){
+      DateType = 'Custom'
+    }
     if (this.state.startdate.getTime() == startdt.getTime() && this.state.enddate.getTime() == enddt.getTime()) {
       RadioType = 'Presettime';
     }
@@ -971,17 +975,18 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
     return formattedDate;
 }
+
 private async LoadAllTimeSheetaData() {
   let AllTimeEntry: any = [];
   let arraycount = 0;
   this.setState({
     loaded: true,
   })
-  if (AllTimeSheetResult == undefined || AllTimeSheetResult?.length == 0) {
+  if(DateType == 'Today' || DateType == 'Yesterday' || DateType == 'This Week' || DateType == 'Last Week' || DateType == 'This Month'){
     let startDate = this.getStartingDate('Last Month').toISOString();
     
     try {
-      if(DateType == 'Today' || DateType == 'Yesterday' || DateType == 'This Week' || DateType == 'Last Week' || DateType == 'This Month'){
+    
         if (this?.state?.TimeSheetLists != undefined && this?.state?.TimeSheetLists.length > 0) {
           this?.state?.TimeSheetLists.map(async (site: any) => {
             let web = new Web(site?.siteUrl);
@@ -1004,39 +1009,75 @@ private async LoadAllTimeSheetaData() {
             }
           })
         }
-      }
-      else{
-        if (this?.state?.TimeSheetLists != undefined && this?.state?.TimeSheetLists.length > 0) {
-          this?.state?.TimeSheetLists.map(async (site: any) => {
-            let web = new Web(site?.siteUrl);
-            let TimeEntry = []
-            await web.lists.getById(site?.listId).items.select(site?.query).getAll()
-            .then((data: any) => {
-              TimeEntry = data
-              console.log(data);
-              TimeEntry.map((entry: any) => {
-                AllTimeEntry.push(entry)
-              });
-              arraycount++;
-            })
-            let currentCount = this?.state?.TimeSheetLists?.length;
-            if (arraycount === currentCount) {
-              AllTimeSheetResult = AllTimeEntry;
-              this.LoadAllSiteAllTasks()
-              this.updatefilter(true);
+      
+      // else{
+      //   if (this?.state?.TimeSheetLists != undefined && this?.state?.TimeSheetLists.length > 0) {
+      //     this?.state?.TimeSheetLists.map(async (site: any) => {
+      //       let web = new Web(site?.siteUrl);
+      //       let TimeEntry = []
+      //       await web.lists.getById(site?.listId).items.select(site?.query).getAll()
+      //       .then((data: any) => {
+      //         TimeEntry = data
+      //         console.log(data);
+      //         TimeEntry.map((entry: any) => {
+      //           AllTimeEntry.push(entry)
+      //         });
+      //         arraycount++;
+      //       })
+      //       let currentCount = this?.state?.TimeSheetLists?.length;
+      //       if (arraycount === currentCount) {
+      //         AllTimeSheetResult = AllTimeEntry;
+      //         this.LoadAllSiteAllTasks()
+      //         this.updatefilter(true);
 
-            }
-          })
-        }
-      }
+      //       }
+      //     })
+      //   }
+      // }
      
     } catch (e) {
       console.log(e)
     }
+   // this.updatefilter(true);
   }
   else {
-    this.updatefilter(true);
+   this.reRender();
+    this.forceUpdate();
+    AllTimeSheetResult=[]
+    if (this?.state?.TimeSheetLists != undefined && this?.state?.TimeSheetLists.length > 0) {
+      this?.state?.TimeSheetLists.map(async (site: any) => {
+        let web = new Web(site?.siteUrl);
+        let TimeEntry = []
+        await web.lists.getById(site?.listId).items.select(site?.query).getAll()
+        .then((data: any) => {
+          TimeEntry = data
+          console.log(data);
+          TimeEntry.map((entry: any) => {
+            AllTimeEntry.push(entry)
+          });
+          arraycount++;
+        })
+        let currentCount = this?.state?.TimeSheetLists?.length;
+        if (arraycount === currentCount) {
+          AllTimeSheetResult = AllTimeEntry;
+           this.updatefilter(true);
+          this.LoadAllSiteAllTasks()
+
+        }
+      })
+    }
+    
   }
+}
+private reRender=()=>{
+  this.setState({
+    loaded: true,
+  })
+  return(
+    <>
+    {this.state.loaded && <PageLoader />}
+    </>
+  )
 }
   private CallBack = () => {
     //setIsOpenTimeSheetPopup(false)
@@ -1045,6 +1086,11 @@ private async LoadAllTimeSheetaData() {
     })
   }
   private showGraph = (tileName: any) => {
+    if(DateType == 'Custom'){
+      let start =  Moment(this.state.startdate).format("DD/MM/YYYY");
+      let end =  Moment(this.state.enddate).format("DD/MM/YYYY");
+      DateType = `${start} - ${end}`
+    }
     this.setState({
       IsOpenTimeSheetPopup: true
     })
@@ -2511,7 +2557,7 @@ private async LoadAllTimeSheetaData() {
               <div className="Alltable p-0">
               <span>
         {/* {this.state.IsOpenTimeSheetPopup == true && <EmployeePieChart  selectedUser={this.state.ImageSelectedUsers} IsOpenTimeSheetPopup={this.state.IsOpenTimeSheetPopup} Call={() => { this.CallBack() }} selected/>} */}
-          {this.state.IsOpenTimeSheetPopup == true && <GraphData  data={this.state.AllTimeEntry} IsOpenTimeSheetPopup={this.state.IsOpenTimeSheetPopup} Call={() => { this.CallBack() }} selected/>} 
+          {this.state.IsOpenTimeSheetPopup == true && <GraphData  data={this.state.AllTimeEntry} IsOpenTimeSheetPopup={this.state.IsOpenTimeSheetPopup}  DateType={DateType} Call={() => { this.CallBack() }} selected/>} 
       </span>
     
                 <div className="wrapper">
