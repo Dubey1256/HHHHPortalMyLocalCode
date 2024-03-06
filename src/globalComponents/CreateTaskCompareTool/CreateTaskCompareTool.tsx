@@ -859,17 +859,6 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                                                             ? ImageItem.UploadeDate
                                                                             : ""}
                                                                     </span>
-                                                                    <span className="mx-1">
-                                                                        <img
-                                                                            className="imgAuthor"
-                                                                            title={ImageItem.UserName}
-                                                                            src={
-                                                                                ImageItem.UserImage
-                                                                                    ? ImageItem.UserImage
-                                                                                    : ""
-                                                                            }
-                                                                        />
-                                                                    </span>
                                                                 </div>
                                                                 <div className="alignCenter">
                                                                     <span
