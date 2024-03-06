@@ -2189,7 +2189,15 @@ function ReadyMadeTable(SelectedProp: any) {
                 val.subRows = val.subRows || [];
                 val?.subRows?.push(dataToPush);
                 return true;
-            } else if (dataToPush?.ParentTask?.Id === val.Id && dataToPush?.siteType === val?.siteType) {
+            } 
+           
+               else if (dataToPush?.PortfolioId === val.Id && dataToPush?.ParentTask?.Id !=undefined) {
+                    val.subRows = val.subRows || [];
+                    val?.subRows?.push(dataToPush);
+                    return true;
+                }
+            
+            else if (dataToPush?.ParentTask?.Id === val.Id && dataToPush?.siteType === val?.siteType) {
                 val.subRows = val.subRows || [];
                 val?.subRows?.push(dataToPush);
                 return true;
