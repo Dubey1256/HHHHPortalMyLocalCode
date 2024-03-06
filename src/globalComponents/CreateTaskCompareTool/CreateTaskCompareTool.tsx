@@ -745,12 +745,12 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                         <input
                                             type='date'
                                             className="form-control"
-                                            defaultValue={Moment(ItemDetails.DueDate).format("YYYY/MM/DD")}
+                                            defaultValue={Moment(ItemDetails.DueDate).format("YYYY-MM-DD")}
                                             onChange={(e) => setCreateTaskInfo({ ...CreateTaskInfo, DueDate: e.target.value })}
                                         /> :
                                         <input
                                             type='date'
-                                            placeholder='Enter Task Priority'
+                                            placeholder='Enter Due Date'
                                             className="form-control"
                                             onChange={(e) => setCreateTaskInfo({ ...CreateTaskInfo, DueDate: e.target.value })}
                                         />

@@ -2769,7 +2769,7 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
         + '</table>'
 
     body = body.replaceAll('>,<', '><').replaceAll(',', '')
-
+    let EmailSubject:string = `TimeSheet : ${currentDate}`
     let confirmation = confirm('Your' + ' ' + input + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + userApprover + ')' + '.' + '\n' + 'Do you want to continue?')
     if (confirmation) {
         if (body1.length > 0 && body1 != undefined) {
@@ -2779,7 +2779,7 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
                 //Body of Email  
                 Body: body,
                 //Subject of Email  
-                Subject: subject,
+                Subject: EmailSubject,
                 //Array of string for To of Email  
                 To: to,
                 AdditionalHeaders: {
@@ -2789,8 +2789,6 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
             }).then(() => {
                 console.log("Email Sent!");
                 alert('Email sent sucessfully');
-    
-    
             }).catch((err) => {
                 console.log(err.message);
             });
@@ -3261,4 +3259,17 @@ const GetleaveUser = async (TaskUser: any, Context: any) => {
     })
     console.log(finalData)
     return finalData
+}
+export const findTaskCategoryParent = (taskCategories: any, result: any) => {
+    if (taskCategories?.length > 0 && result.TaskCategories?.length > 0) {
+        let newTaskCat = taskCategories?.filter((val: any) => result?.TaskCategories?.some((elem: any) => val.Id === elem.Id));
+        newTaskCat.map((elemVal: any) => {
+            if (result[elemVal?.Parent?.Title]) {
+                result[elemVal?.Parent?.Title] += ` ${elemVal?.Title}`
+            } else {
+                result[elemVal?.Parent?.Title] = elemVal?.Title;
+            }
+        })
+    }
+    return result;
 }

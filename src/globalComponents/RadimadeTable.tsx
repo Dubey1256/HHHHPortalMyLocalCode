@@ -454,6 +454,7 @@ function ReadyMadeTable(SelectedProp: any) {
 
     // * page loade Task Data Only * ///////
     const LoadAllSiteTasks = function () {
+   
         let AllTasksData: any = [];
         let Counter = 0;
         if (siteConfig != undefined && siteConfig.length > 0) {
@@ -1013,48 +1014,52 @@ function ReadyMadeTable(SelectedProp: any) {
 
     React.useEffect(() => {
         if (AllMasterTasksData?.length > 0) {
-            isColumnDefultSortingAsc = false
-            hasCustomExpanded = true
-            hasExpanded = true
-            isHeaderNotAvlable = false
-            setLoaded(false);
-            componentData = [];
-            AfterFilterTaskCount = [];
-            let count = 0;
-            let afterFilter = true;
-            setAllSmartFilterDataBackup(structuredClone(AllMasterTasksData));
-
-            portfolioTypeData?.map((port: any, index: any) => {
-                count = count + 1;
-                componentGrouping(port?.Id, index);
-            })
-            if (portfolioTypeData?.length === count) {
-                executeOnce();
-            }
-
-            // if (IsUpdated === "") {
-
-            // }
-            //  else if (IsUpdated.length) {
-            //     portfolioTypeData?.map((port: any) => {
-            //         if (IsUpdated.toLowerCase() === port?.Title?.toLowerCase()) {
-            //             count = count + 1;
-            //             componentGrouping(port?.Id, '');
-            //         }
-            //     })
-            // }
-            // taskTypeDataItem?.filter((taskLevelcount: any) => { taskLevelcount[taskLevelcount.Title + 'filterNumber'] = 0 });
-            AfterFilterTaskCount = AfterFilterTaskCount?.filter((ele: any, ind: any, arr: any) => {
-                const isDuplicate = arr.findIndex((elem: any) => { return (elem.ID === ele.ID || elem.Id === ele.Id) && elem.siteType === ele.siteType; }) !== ind
-                return !isDuplicate;
-            })
-            // countTaskAWTLevel(AfterFilterTaskCount, afterFilter);
-            childRef?.current?.setRowSelection({});
-            childRef?.current?.setColumnFilters([]);
-            childRef?.current?.setGlobalFilter('');
+            DataPrepareForCSFAWT()
         }
     }, [(AllMasterTasksData.length > 0 && AllSiteTasksData?.length > 0)]);
 
+
+    function DataPrepareForCSFAWT(){
+        isColumnDefultSortingAsc = false
+        hasCustomExpanded = true
+        hasExpanded = true
+        isHeaderNotAvlable = false
+        setLoaded(false);
+        componentData = [];
+        AfterFilterTaskCount = [];
+        let count = 0;
+        let afterFilter = true;
+        setAllSmartFilterDataBackup(structuredClone(AllMasterTasksData));
+
+        portfolioTypeData?.map((port: any, index: any) => {
+            count = count + 1;
+            componentGrouping(port?.Id, index);
+        })
+        if (portfolioTypeData?.length === count) {
+            executeOnce();
+        }
+
+        // if (IsUpdated === "") {
+
+        // }
+        //  else if (IsUpdated.length) {
+        //     portfolioTypeData?.map((port: any) => {
+        //         if (IsUpdated.toLowerCase() === port?.Title?.toLowerCase()) {
+        //             count = count + 1;
+        //             componentGrouping(port?.Id, '');
+        //         }
+        //     })
+        // }
+        // taskTypeDataItem?.filter((taskLevelcount: any) => { taskLevelcount[taskLevelcount.Title + 'filterNumber'] = 0 });
+        AfterFilterTaskCount = AfterFilterTaskCount?.filter((ele: any, ind: any, arr: any) => {
+            const isDuplicate = arr.findIndex((elem: any) => { return (elem.ID === ele.ID || elem.Id === ele.Id) && elem.siteType === ele.siteType; }) !== ind
+            return !isDuplicate;
+        })
+        // countTaskAWTLevel(AfterFilterTaskCount, afterFilter);
+        childRef?.current?.setRowSelection({});
+        childRef?.current?.setColumnFilters([]);
+        childRef?.current?.setGlobalFilter('');
+    }
     function structuredClone(obj: any): any {
         return JSON.parse(JSON.stringify(obj));
     }
@@ -1317,50 +1322,8 @@ function ReadyMadeTable(SelectedProp: any) {
         });
         items.subRows = items?.subRows?.concat(findws);
     };
-
+   
     // *************** wst grouping function End   *******************************
-  
-    // const countTaskAWTLevel = (countTaskAWTLevel: any, afterFilter: any) => {
-    //     if (countTaskAWTLevel.length > 0 && afterFilter !== true) {
-    //         taskTypeDataItem?.filter((taskLevelcount: any) => { taskLevelcount[taskLevelcount.Title + 'number'] = 0 });
-    //         countTaskAWTLevel?.map((result: any) => {
-    //             taskTypeDataItem?.map((type: any) => {
-    //                 if (result?.TaskType?.Title === type.Title) {
-    //                     type[type.Title + 'number'] += 1;
-    //                 }
-    //             });
-    //         });
-    //     } else if (countTaskAWTLevel?.length > 0 && afterFilter === true) {
-    //         countTaskAWTLevel?.map((result: any) => {
-    //             taskTypeDataItem?.map((type: any) => {
-    //                 if (result?.TaskType?.Title === type.Title) {
-    //                     type[type.Title + 'filterNumber'] += 1;
-    //                 }
-    //             });
-    //         });
-    //         let taskLabelCountBackup: any = []
-    //         try {
-    //             taskLabelCountBackup = JSON.parse(JSON.stringify(taskTypeDataItem));
-    //         } catch (error) {
-    //             console.log('Json parse error countTaskAWTLevel function');
-    //         }
-    //         setTaskTypeDataItemBackup(taskLabelCountBackup)
-    //     }
-    // };
-    // const countComponentLevel = (countTaskAWTLevel: any, afterFilter: any) => {
-    //     if (countTaskAWTLevel?.length > 0 && afterFilter === true) {
-    //         countTaskAWTLevel?.map((result: any) => {
-    //             portfolioTypeDataItem?.map((type: any) => {
-    //                 if (result?.Item_x0020_Type === type.Title && result.PortfolioType != undefined) {
-    //                     type[type.Title + 'filterNumber'] += 1;
-    //                 }
-    //             })
-    //         })
-    //     }
-    // }
-
-
-
     // const updatedSmartFilterFlatViewData = (data: any) => {
     //     hasCustomExpanded = false
     //     hasExpanded = false
@@ -2329,51 +2292,83 @@ function ReadyMadeTable(SelectedProp: any) {
 
     const CreateActivityPopup = (type: any) => {
         setActiveTile(type)
-        if (checkedList?.TaskType === undefined) {
-            checkedList.NoteCall = type;
+        if(SelectedProp?.SelectedItem!=undefined && checkedList?.Id==undefined){
+            if (SelectedProp?.SelectedItem?.TaskType === undefined) {
+                SelectedProp.SelectedItem.NoteCall = type;
+    
+            }
+            if (SelectedProp?.SelectedItem?.TaskType?.Id == 1) {
+                SelectedProp.SelectedItem.NoteCall = type;
+            }
+            if (SelectedProp?.SelectedItem?.TaskType?.Id == 3) {
+                SelectedProp.SelectedItem.NoteCall = type;
+            }
+            if (SelectedProp?.SelectedItem?.TaskType?.Id == 2) {
+                alert("You can not create ny item inside Task");
+            }   
 
+        }else{
+            if (checkedList?.TaskType === undefined) {
+                checkedList.NoteCall = type;
+    
+            }
+            if (checkedList?.TaskType?.Id == 1) {
+                checkedList.NoteCall = type;
+            }
+            if (checkedList?.TaskType?.Id == 3) {
+                checkedList.NoteCall = type;
+            }
+            if (checkedList?.TaskType?.Id == 2) {
+                alert("You can not create ny item inside Task");
+            }
         }
-        if (checkedList?.TaskType?.Id == 1) {
-            checkedList.NoteCall = type;
-        }
-        if (checkedList?.TaskType?.Id == 3) {
-            checkedList.NoteCall = type;
-        }
-        if (checkedList?.TaskType?.Id == 2) {
-            alert("You can not create ny item inside Task");
-        }
+      
     };
 
     const Createbutton = () => {
         if (SelectedProp?.configration == "AllAwt") {
-            if (checkedList?.TaskType === undefined) {
-                // SelectedProp.props.NoteCall = type;
-                // checkedList.NoteCall = type;
-                setIsOpenWorkstream(true);
-                setActiveTile("")
+            if(SelectedProp?.SelectedItem !=undefined && checkedList?.TaskType==undefined){
+               
+                 if ( SelectedProp.SelectedItem?.TaskType?.Id == 1) {
+                  setIsOpenWorkstream(true);
+                    setActiveTile("")
+                }
+                if (SelectedProp.SelectedItem?.TaskType?.Id  == 3) {
+                    SelectedProp.SelectedItem.NoteCall = "Task";
+                    checkedList.NoteCall = "Task";
+                    setIsOpenWorkstream(true);
+                    setActiveTile("")
+                }  
+            }else{
+                if (checkedList?.TaskType === undefined) {
+                    // SelectedProp.SelectedItem.NoteCall = "Activities";
+                    setIsOpenActivity(true);
+                   setActiveTile("")
+               
+                }
+                if (checkedList?.TaskType?.Id == 1) {
+                    SelectedProp.SelectedItem.NoteCall = "Task";
+                    checkedList.NoteCall = "Task";
+                    setIsOpenWorkstream(true);
+                    setActiveTile("")
+                }
+                if (checkedList?.TaskType?.Id == 3) {
+                    SelectedProp.SelectedItem.NoteCall = "Task";
+                    checkedList.NoteCall = "Task";
+                    setIsOpenWorkstream(true);
+                    setActiveTile("")
+                }
             }
-            if (checkedList?.TaskType?.Id == 1) {
-                SelectedProp.SelectedItem.NoteCall = "Task";
-                checkedList.NoteCall = "Task";
-                setIsOpenWorkstream(true);
-                setActiveTile("")
-            }
-            if (checkedList?.TaskType?.Id == 3) {
-                SelectedProp.SelectedItem.NoteCall = "Task";
-                checkedList.NoteCall = "Task";
-                setIsOpenWorkstream(true);
-                setActiveTile("")
-            }
+            
 
         } else {
             if (checkedList?.TaskType === undefined) {
-                // SelectedProp.props.NoteCall = type;
-                // checkedList.NoteCall = type;
-                setIsOpenActivity(true);
+                // SelectedProp.props.NoteCall = "Activities";
+                 setIsOpenActivity(true);
                 setActiveTile("")
             }
             if (checkedList?.TaskType?.Id == 1) {
-                // checkedList.NoteCall = type;
+                // checkedList.NoteCall = "Activities";
                 setIsOpenWorkstream(true);
                 setActiveTile("")
             }
@@ -2512,7 +2507,8 @@ function ReadyMadeTable(SelectedProp: any) {
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
                                         <div>
-                                            <GlobalCommanTable columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup}
+                                            <GlobalCommanTable columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} showFilterIcon={SelectedProp?.configration != "AllAwt"} tableId={SelectedProp.tableId}
+                                            // loadFilterTask={FilterAllTask()}
                                                 masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup}
                                                 flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
                                                 flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef}
@@ -2520,7 +2516,9 @@ function ReadyMadeTable(SelectedProp: any) {
                                                 showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration}
                                                 showingAllPortFolioCount={true}
                                                 customHeaderButtonAvailable={true} customTableHeaderButtons={SelectedProp?.configration == "AllAwt" ? customTableHeaderButtonsAllAWT : customTableHeaderButtons} />
+                                          {!loaded && <PageLoader />}
                                         </div>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -2685,7 +2683,7 @@ function ReadyMadeTable(SelectedProp: any) {
                     Context={SelectedProp?.AllListId?.Context}
                 ></TimeEntryPopup>
             )}
-            {!loaded && <PageLoader />}
+          
         </div>
     );
 }
