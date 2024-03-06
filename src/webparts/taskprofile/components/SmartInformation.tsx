@@ -921,7 +921,13 @@ const SmartInformation = (props: any, ref: any) => {
   const smartNoteAuthor = (item: any) => {
     if (item.length > 0) {
       const email = item.length > 0 ? item[0].loginName.split('|').pop() : null;
-      const member = taskUser.filter((elem: any) => elem.Email === email)
+
+      if (item[0].text === 'Stefan Hochhuth') {
+        var member = taskUser.filter((elem: any) => elem.AssingedToUser != undefined && elem.AssingedToUser.Id === 32)
+      }
+      else {
+        var member = taskUser.filter((elem: any) => elem.Email === email)
+      }
       setsmartnoteAuthor(member)
       setIsUserNameValid(true);
     }
