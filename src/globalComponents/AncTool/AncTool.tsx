@@ -9,7 +9,7 @@ import { Button, ModalBody } from "react-bootstrap";
 import * as GlobalFunction from '../globalCommon';
 import SmartInformation from '../../webparts/taskprofile/components/SmartInformation';
 import ExcelJS from 'exceljs';
-import { Dropdown, Panel, PanelType } from 'office-ui-fabric-react';
+import { Dropdown, Panel, PanelType, Modal } from 'office-ui-fabric-react';
 import MsgReader from "@kenjiuno/msgreader"
 import PageLoader from '../pageLoader';
 import EditDocument from '../../webparts/taskprofile/components/EditDocunentPanel'
@@ -1387,10 +1387,10 @@ const AncTool = (props: any) => {
                                             <span className='d-block ancHover hreflink fontColor3 f-12 mt--5 mb-1'>Word</span>
                                         </div>
                                         <div onClick={() => createBlankExcelXlsx()} className={createNewDocType == 'xlsx' ? 'selected text-center w-25' : 'text-center w-25'}>
-                                            <span  style={{ width: "28px", height: "28px" }} className='svg__iconbox svg__icon--xlsx hreflink' title='Excel'></span>
+                                            <span style={{ width: "28px", height: "28px" }} className='svg__iconbox svg__icon--xlsx hreflink' title='Excel'></span>
                                             <span className='d-block ancHover fontColor3 f-12 mt--5 mb-1'>Excel</span>
                                         </div>
-                                        <div  onClick={() => createBlankPowerPointPptx()} className={createNewDocType == 'pptx' ? 'selected text-center w-25' : 'text-center w-25'}>
+                                        <div onClick={() => createBlankPowerPointPptx()} className={createNewDocType == 'pptx' ? 'selected text-center w-25' : 'text-center w-25'}>
                                             <span style={{ width: "28px", height: "28px" }} className='svg__iconbox svg__icon--ppt hreflink' title='PPT'></span>
                                             <span className='d-block ancHover fontColor3 f-12 mt--5 mb-1'>PPT</span>
                                         </div>
