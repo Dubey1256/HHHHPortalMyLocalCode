@@ -213,6 +213,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       this.masterTaskData = this.masterTaskData?.concat([...CallBackData?.FlatProjectData, ...CallBackData?.AllData])
       this.masterForHierarchy = this.masterForHierarchy?.concat([...CallBackData?.FlatProjectData, ...CallBackData?.AllData])
       this.GetResult();
+    }else{
+      this.GetResult();
     }
   }
   private taskResult: any;
