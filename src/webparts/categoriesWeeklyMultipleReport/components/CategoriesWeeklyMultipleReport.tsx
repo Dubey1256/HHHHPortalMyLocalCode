@@ -2079,6 +2079,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           }
           filte.TotalValue = total;
           filte.TaskTime = total;
+          filte.Site = total;
           filte.TotalSmartTime = total;
           filte.AdjustedTime = filte.TotalValue;
           filte.RoundAdjustedTime = Roundfigurtotal;
@@ -2136,20 +2137,26 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           chil.QuickEditItem = false;
         })
       })
-      this.AllTimeEntry = this.CategoryItemsArray;
+     
 
       this.CategoryItemsArray?.forEach((obj: any) => {
+       // obj.Site = obj.siteType;
+        obj.TaskTime = obj.TotalSmartTime;
+        obj.NewTimeEntryDate = new Date(obj.TimeEntrykDateNew);
         obj?.subRows?.forEach((sub: any) => {
+         // sub.Site = sub.siteType;
+          sub.TaskTime = sub.SmartHoursTotal;
+          sub.NewTimeEntryDate = obj.TimeEntrykDateNew;
           sub?.AllTask?.forEach((task: any) => {
-            task.Site = task.siteType;
-            task.TaskTime = task.Effort;
-            task.NewTimeEntryDate = task.TimeEntrykDateNew;
-            this.state.AllTaskEntry.push(task);
+            obj.Site = task.siteType;
+            task.TaskTime = task.SmartHoursTotal;
+            sub.Site = task.siteType;
+            sub.NewTimeEntryDate = task.TimeEntrykDateNew;
           })
         })
 
       });
-
+      this.AllTimeEntry = this.CategoryItemsArray;
       this.setState({
         showDateTime: (
           <span className='alignCenter'>
@@ -2493,6 +2500,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     }
     let st = StartDate.split('/');
     Item['getUserName'] = 'Week ' + Moment(new Date(StartDate)).format('YYYY-MM-DD');
+    Item['TimeEntrykDateNew'] = StartDate;
     //Item['getUserName']
     Item['getMonthYearDate'] = new Date(StartDate).toLocaleDateString('en-us', { year: "numeric", month: "short" });
     if (this.AllYearMonth.length == 0) {
@@ -4154,7 +4162,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             context={this?.props?.Context}
           ></EditTaskPopup>
         )}
-        {this.state.IsOpenTimeSheetPopup == true && <GraphData data={this.state.AllTaskEntry} IsOpenTimeSheetPopup={this.state.IsOpenTimeSheetPopup} DateType={DateType} Call={() => { this.CallBack() }} selected />}
+        {this.state.IsOpenTimeSheetPopup == true && <GraphData data={this.state.AllTimeEntry} IsOpenTimeSheetPopup={this.state.IsOpenTimeSheetPopup} DateType={DateType} Call={() => { this.CallBack() }} selected />}
       </div>
 
     );
