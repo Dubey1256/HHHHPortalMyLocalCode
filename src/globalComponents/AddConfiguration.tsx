@@ -17,7 +17,7 @@ const AddConfiguration = (props: any) => {
     const [SmartFav, setSmartFav] = React.useState<any>([]);
     const [AllTaskUsers, setAllTaskUsers] = React.useState<any>([]);
     const [DashboardTemplate, setDashboardTemplate] = React.useState<any>([]);
-    const [DataSource, setDataSource] = React.useState<any>([{ "key": "Tasks", "text": "Tasks" }, { "key": "TaskUsers", "text": "TaskUsers" },]);
+    const [DataSource, setDataSource] = React.useState<any>([{ "key": "Tasks", "text": "Tasks" }, { "key": "TaskUsers", "text": "TaskUsers" }, { "key": "TimeSheet", "text": "TimeSheet" },]);
     const [DashboardTitle, setDashboardTitle] = React.useState<any>('');
     const [IsCheck, setIsCheck] = React.useState<any>(false);
     let [StatusOptions, setStatusOptions] = React.useState([{ value: 0, status: "0% Not Started", }, { value: 1, status: "1% For Approval", }, { value: 2, status: "2% Follow Up", }, { value: 3, status: "3% Approved", },
@@ -438,31 +438,33 @@ const AddConfiguration = (props: any) => {
                                                     </div>
                                                 </Col>
                                             </Row>
+
                                             <Row className="Metadatapannel">
-                                                <Col sm="12" md="12" lg="12">
+                                                {items.DataSource != 'TimeSheet' && <Col sm="12" md="12" lg="12">
                                                     <label className='form-label full-width SpfxCheckRadio mb-1'>
                                                         <input type="radio" className='radio' value="custom" checked={items?.selectFilterType === 'custom'} onChange={(e) => handleFilterChange(e, index, items)} />
                                                         Custom Filter
                                                         <input type="radio" className='radio ms-3' value="smartFav" checked={items?.selectFilterType === 'smartFav'} onChange={(e) => handleFilterChange(e, index, items)} />
                                                         SmartFav Filter
                                                     </label>
-                                                </Col>
-                                                {items.DataSource == "Tasks" && items?.selectFilterType == 'custom' && <Col sm="4" md="4" lg="4">
-                                                    <><label className='form-label full-width'>My Role</label>
-                                                        <label className='form-label full-width SpfxCheckRadio'>
-                                                            <input type="radio" className='radio' value="ResponsibleTeam" checked={items?.selectUserFilterType === 'ResponsibleTeam'} onChange={(e) => handleUserFilterChange(e, index, items)} />
-                                                            Task Lead
-                                                        </label>
-                                                        <label className='form-label full-width SpfxCheckRadio'>
-                                                            <input type="radio" className='radio' value="TeamMembers" checked={items?.selectUserFilterType === 'TeamMembers'} onChange={(e) => handleUserFilterChange(e, index, items)} />
-                                                            Task Member
-                                                        </label>
-                                                        <label className='form-label full-width SpfxCheckRadio'>
-                                                            <input type="radio" className='radio' value="AssignedTo" checked={items?.selectUserFilterType === 'AssignedTo'} onChange={(e) => handleUserFilterChange(e, index, items)} />
-                                                            Working Task
-                                                        </label>
-                                                    </>
                                                 </Col>}
+                                                {items.DataSource == "Tasks" && items?.selectFilterType == 'custom' &&
+                                                    <Col sm="4" md="4" lg="4">
+                                                        <><label className='form-label full-width'>My Role</label>
+                                                            <label className='form-label full-width SpfxCheckRadio'>
+                                                                <input type="radio" className='radio' value="ResponsibleTeam" checked={items?.selectUserFilterType === 'ResponsibleTeam'} onChange={(e) => handleUserFilterChange(e, index, items)} />
+                                                                Task Lead
+                                                            </label>
+                                                            <label className='form-label full-width SpfxCheckRadio'>
+                                                                <input type="radio" className='radio' value="TeamMembers" checked={items?.selectUserFilterType === 'TeamMembers'} onChange={(e) => handleUserFilterChange(e, index, items)} />
+                                                                Task Member
+                                                            </label>
+                                                            <label className='form-label full-width SpfxCheckRadio'>
+                                                                <input type="radio" className='radio' value="AssignedTo" checked={items?.selectUserFilterType === 'AssignedTo'} onChange={(e) => handleUserFilterChange(e, index, items)} />
+                                                                Working Task
+                                                            </label>
+                                                        </>
+                                                    </Col>}
                                                 <Col sm="4" md="4" lg="4">
                                                     {items.DataSource == "Tasks" && items?.selectFilterType == 'smartFav' && <><label className='form-label full-width'>Select Filter</label><Dropdown id="FiltesSmartFav" options={[{ key: '', text: '' }, ...(SmartFav?.map((item: any) => ({ key: item?.UpdatedId, text: item?.Title })) || [])]} selectedKey={items?.smartFevId}
                                                         onChange={(e, option) => handleSelectFilterChange(option?.key, index, items)}
@@ -476,7 +478,7 @@ const AddConfiguration = (props: any) => {
                                                         onChange={(e, option) => handleSelectFilterChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }} /></>
                                                     }
-                                                    {items.DataSource == "TaskUsers" && items?.selectFilterType == 'custom' && <><label className='form-label full-width'>Select Filter</label><Dropdown id="FiltesCustomTaskUser" options={[{ key: '', text: '' }, ...(CustomUserFilter?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.Status}
+                                                    {(items.DataSource == "TaskUsers" && items?.selectFilterType == 'custom') || (items.DataSource == 'TimeSheet') && <><label className='form-label full-width'>Select Filter</label><Dropdown id="FiltesCustomTaskUser" options={[{ key: '', text: '' }, ...(CustomUserFilter?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.Status}
                                                         onChange={(e, option) => handleCustomUserFilterChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }} /></>
                                                     }

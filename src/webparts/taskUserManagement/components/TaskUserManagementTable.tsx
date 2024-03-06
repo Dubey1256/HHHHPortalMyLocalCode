@@ -276,7 +276,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                             Title: title ? title : item.Title,
                             Suffix: suffix ? suffix : item.Suffix,
                             SortOrder: sortOrder ? sortOrder : item.SortOrder,
-                            // AssingedToUserId: assignedToGroup.length > 0 ? assignedToGroup[0]?.Id : null,
                         };
                     }
                     return item;
@@ -309,7 +308,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <img
                         className='me-1 workmember'
-                        src={row.original.Item_x0020_Cover?.Url || 'https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg'}
+                        src={row.original.Item_x0020_Cover != null ? row.original?.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                         alt="User"
                     // style={{ marginRight: '10px', width: '32px', height: '32px' }}
                     />
@@ -404,8 +403,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 },
             },
             {
-                // accessorKey: "TaskId",
-                // header: null,
                 cell: (info) => (<div className='pull-right alignCenter'>
                     <span onClick={() => handleUpdateClick(info.row.original)} className='svg__iconbox svg__icon--edit' title='Edit'></span>
                     <span onClick={() => handleDeleteClick(info.row.original)} className='svg__iconbox svg__icon--trash' title='Trash'></span>
@@ -421,9 +418,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
 
     const userIdentifier = memberToUpdate?.AssingedToUser?.Name;
     const email = userIdentifier ? userIdentifier.split('|').pop() : '';
-
-    // const userIdentifier2 = memberToUpdate?.Approver?.[0]?.Name;
-    // const email2 = userIdentifier2 ? userIdentifier2.split('|').pop() : '';
 
     const userIdentifiers = memberToUpdate?.Approver?.map((approver: any) => approver.Name) || [];
     const emails = userIdentifiers.map((identifier: any) => identifier.split('|').pop());
@@ -451,16 +445,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         }
     }
 
-    // const ApproverFunction = (item: any) => {
-    //     if (item.length > 0) {
-    //         const email = item.length > 0 ? item[0].loginName.split('|').pop() : null;
-    //         const member = data.filter((elem: any) => elem.Email === email)
-    //         setApprover(member)
-    //     }
-    //     else {
-    //         setApprover([])
-    //     }
-    // }
     const ApproverFunction = (items: any[]) => {
         if (items.length > 0) {
             const approvers = items.map(item => {
@@ -494,7 +478,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             }
             if (TempArray != undefined && TempArray.length > 0) {
                 setAutoSuggestData(TempArray);
-                // setSearchedProjectKey(SearchedKeyWord);
             }
         } else {
             setAutoSuggestData([]);
@@ -566,14 +549,11 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const cancelUpdate = () => {
         setSelectedApprovalType(memberToUpdate.IsApprovalMail);
         setSelectedCompany(memberToUpdate.Company);
-        // setSelectedRoles(memberToUpdate.Role || []);
         setSelectedRoles(Array.isArray(memberToUpdate.Role) ? memberToUpdate.Role : []);
         setIsActive(memberToUpdate.IsActive);
         setIsTaskNotifications(memberToUpdate.IsTaskNotifications);
         setUserCategory(memberToUpdate.TimeCategory)
         setSelectedCategories(JSON.parse(memberToUpdate.CategoriesItemsJson))
-        // setAssignedToUser(memberToUpdate.AssingedToUser?.Id)
-        // setApprover([memberToUpdate.Approver?.[0]?.Id])
         const Approvers: any = memberToUpdate?.Approver?.map((item: any) => item.Id)
         setApprover([Approvers])
         setUserTeam(memberToUpdate.Team)
@@ -604,10 +584,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         setSelectedCategories(selected);
     };
 
-    // const renderRadios = (approvalCategory: any) => {
-    //     console.log(approvalCategory)
-    // }
-
     const transformCategoriesToNodes = (categories: any) => {
         return categories.map((category: any) => {
             // Check if the category has children
@@ -623,25 +599,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             return node;
         });
     };
-
-    // const transformCategoriesToNodes = (categories: any, ) => {
-    //     return categories.map((category: any) => {
-    //         // Skip the Approval category's children as they are rendered separately
-    //         if (parentId === 'Approval') return null;
-
-    //         const hasChildren = category.children && category.children.length > 0;
-    //         const node = {
-    //             value: category.Id.toString(),
-    //             label: category.Title,
-    //             children: hasChildren ? transformCategoriesToNodes(category.children, category.Title) : []
-    //         };
-    //         return node;
-    //     }).filter(Boolean); // Remove any null entries
-    // };
-
-
-
-
 
     const icons: any = {
         check: <FaCheckSquare />,
@@ -720,7 +677,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         <li
                                             className="hreflink list-group-item rounded-0 list-group-item-action"
                                             key={Item.id}
-                                        // onClick={() => window.open(`${Item?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${Item?.Id}`, '_blank')}
                                         >
                                             <a>{Item.Title}</a>
                                         </li>
@@ -731,7 +687,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                     ) : null}
                 </div>
 
-                {/* <input className='form-control' type="text" value={title} onChange={(e: any) => setTitle(e.target.value)} /> */}
                 <footer className='modal-footer mt-2'>
                     <button type='button' className='btn me-2 btn-primary' onClick={() => addTeamMember()}>Save</button>
                     <button type='button' className='btn btn-default' onClick={cancelAdd}>Cancel</button>
@@ -788,10 +743,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                     </div>
                 </div>
                 <footer className='modal-footer mt-2'>
-                    {/* <DefaultButton className="btn btn-primary mt-3 p-3 shadow"
-                        onClick={() => updateGroup()}>Update</DefaultButton>
-                    <DefaultButton className="btn btn-primary mt-3 p-3 shadow"
-                        onClick={() => setOpenUpdateGroupPopup(false)}>Cancel</DefaultButton> */}
                     <button type='button' onClick={() => updateGroup()} className='btn me-2 btn-primary'>Update</button>
                     <button type='button' onClick={() => setOpenUpdateGroupPopup(false)} className='btn btn-default'>Cancel</button>
                 </footer>
@@ -900,11 +851,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                         <label className='form-label full-width fw-semibold'>Approver:</label>
                                         <div>
                                         <PeoplePicker context={context} titleText="" 
-                                        // styles={{
-                                        //     input: {
-                                        //         border: '1px solid #ccc'
-                                        //     },
-                                        // }}
                                             personSelectionLimit={4} showHiddenInUI={false} principalTypes=
                                             {[PrincipalType.User]} resolveDelay={1000} onChange={(items) => ApproverFunction(items)}
                                             defaultSelectedUsers={emails.length > 0 ? emails : []} />
@@ -999,34 +945,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                                         showExpandAll={false}
                                                     />
                                                 </div>
-
-                                                {/* <div className="categories-container">
-                                                                {MyCategories?.map((parent: any) => (
-                                                                    <div key={parent?.Id} className="parent-category">
-                                                                        <div className="parent-title">{parent?.Title}</div>
-                                                                        <div className="child-categories">
-                                                                            {parent?.children?.map((child: any) => (
-                                                                                <>
-                                                                                    <div key={child?.Id} className="child-category">{child?.Title}</div>
-                                                                                    <div className="child-categories">
-                                                                                        {child?.children?.map((subChild: any) => (
-                                                                                            <div key={subChild?.Id} className="child-category">{subChild?.Title}</div>
-                                                                                        ))}
-                                                                                    </div>
-                                                                                </>
-                                                                            ))}
-                                                                        </div>
-                                                                    </div>
-                                                                ))}
-                                                            </div> */}
-
-                                                {/* <PrimaryButton text="Select Category" menuProps={{ items: menuItems }} styles={{ root: { display: 'block', width: '100%' } }} />
-                                                        {(selectedCategories || []).map((category: any) => (
-                                                            <div key={category.Id} className='alignCenter block'>
-                                                                <span className='wid90'>{category.Title}</span>
-                                                                <span className='svg__iconbox svg__icon--cross light hreflink'></span>
-                                                            </div>
-                                                        ))} */}
                                             </>
                                             : ""}
                                     </Row>
@@ -1138,7 +1056,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                     type="button"
                                     className="btn btn-default btn-default ms-1"
                                     onClick={cancelUpdate}
-                                // onClick={() => setOpenUpdateMemberPopup(false)}
                                 >
                                     Cancel
                                 </button>
@@ -1172,31 +1089,3 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
 
 export default TaskUserManagementTable;
 
-
-
-// private onRenderCustomHeaderCreateNewUser = () => {
-//     return (
-//         <>
-
-//             <div className='siteColor subheading'>
-//                 Create New User
-//             </div>
-//             <Tooltip ComponentId='1757' />
-//         </>
-//     );
-// };
-
-
-
-{/* <div className="categories-container">
-  {MyCategories.map((parent) => (
-    <div key={parent.Id} className="parent-category">
-      <div className="parent-title">{parent.Title}</div>
-      <div className="child-categories">
-        {parent.children.map((child) => (
-          <div key={child.Id} className="child-category">{child.Title}</div>
-        ))}
-      </div>
-    </div>
-  ))}
-</div> */}
