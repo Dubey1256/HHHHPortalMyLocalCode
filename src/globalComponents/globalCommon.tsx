@@ -2216,11 +2216,11 @@ export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | nu
     }
     let siteConfig: any = await loadSmartMetadata(allListId, "Sites")
     let filteredSiteConfig = [];
-    if (pertiCularSites != null && pertiCularSites != undefined ) {
+    if (pertiCularSites != null && pertiCularSites != undefined) {
         filteredSiteConfig = siteConfig.filter((site: any) => pertiCularSites?.find((item: any) => site?.Title?.toLowerCase() == item?.toLowerCase()))
     } else if (showOffShore == true) {
-        filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites" )
-    } else   {
+        filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites")
+    } else {
         filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.Title != "Offshore Tasks")
     }
     let AllSiteTasks: any = []
@@ -2685,9 +2685,9 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
         }
     });
 
-   
-        body = body.replaceAll('>,<', '><').replaceAll(',', '')
-    
+
+    body = body.replaceAll('>,<', '><').replaceAll(',', '')
+
 
     // var subject = currentLoginUser + `- ${selectedTimeReport} Time Entries`;
     let timeSheetData: any = await currentUserTimeEntryCalculation(AllTaskTimeEntries, currentLoginUserId);
@@ -2705,12 +2705,12 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
             updatedCategoryTime[newKey] = timeSheetData[key];
         }
     }
-
+    var subject: any;
     if (day == 'Today') {
-        var subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + currentDate + ' - ' + (updatedCategoryTime.today) + ' hours '
+        subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + currentDate + ' - ' + (updatedCategoryTime.today) + ' hours '
     }
     if (day == 'Yesterday') {
-        var subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + yesterday + ' - ' + (updatedCategoryTime.yesterday) + ' hours '
+        subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + yesterday + ' - ' + (updatedCategoryTime.yesterday) + ' hours '
     }
     AllData.map((item: any) => {
         item.ClientCategories = ''
@@ -2769,6 +2769,7 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
         + '</table>'
 
     body = body.replaceAll('>,<', '><').replaceAll(',', '')
+    let EmailSubject: string = `TimeSheet : ${currentDate}`;
 
     let confirmation = confirm('Your' + ' ' + input + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + userApprover + ')' + '.' + '\n' + 'Do you want to continue?')
     if (confirmation) {
@@ -2789,8 +2790,6 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
             }).then(() => {
                 console.log("Email Sent!");
                 alert('Email sent sucessfully');
-    
-    
             }).catch((err) => {
                 console.log(err.message);
             });
@@ -2798,7 +2797,7 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
             alert("No entries available");
         }
     }
-    
+
 }
 
 const currentUserTimeEntryCalculation = async (AllTaskTimeEntries: any, currentLoginUserId: any) => {
@@ -3130,12 +3129,12 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
         '</tbody>' +
         '</table>'
     var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/UserTimeEntry.aspx";
-
+    var ReportDatetime: any;
     if (DateType == 'Yesterday' || DateType == 'Today') {
-        var ReportDatetime = startDate;
+        ReportDatetime = startDate;
     }
     else {
-        var ReportDatetime: any = `${startDate} - ${endDate}`
+        ReportDatetime = `${startDate} - ${endDate}`
     }
 
     var body: any =
@@ -3261,4 +3260,17 @@ const GetleaveUser = async (TaskUser: any, Context: any) => {
     })
     console.log(finalData)
     return finalData
+}
+export const findTaskCategoryParent = (taskCategories: any, result: any) => {
+    if (taskCategories?.length > 0 && result.TaskCategories?.length > 0) {
+        let newTaskCat = taskCategories?.filter((val: any) => result?.TaskCategories?.some((elem: any) => val.Id === elem.Id));
+        newTaskCat.map((elemVal: any) => {
+            if (result[elemVal?.Parent?.Title]) {
+                result[elemVal?.Parent?.Title] += ` ${elemVal?.Title}`
+            } else {
+                result[elemVal?.Parent?.Title] = elemVal?.Title;
+            }
+        })
+    }
+    return result;
 }

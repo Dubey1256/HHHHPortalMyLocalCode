@@ -2,11 +2,13 @@ import * as React from 'react';
 import { Panel, PanelType } from "office-ui-fabric-react";
 import ReactApexChart from 'react-apexcharts';
 import * as Moment from "moment";
-const  DateTime = require("luxon");
 const GraphData = (data: any) => {
   const mydata = data.data.sort(datecomp);
   const calculateTotalTimeByDay = (data: any) => {
-
+    interface DayDetails {
+      total: number;
+      subRows: any[]; // Replace `any` with a more specific type if possible
+    }
     const totalTimeByDay: { [key: string]: { [key: string]: number } } = {};
     const getDayName = (dateString: string): string => {
       const date = new Date(dateString);
@@ -16,7 +18,7 @@ const GraphData = (data: any) => {
       return `${day}/${month}/${year}`;
     };
     data.forEach((entry: any) => {
-      const { NewTimeEntryDate, TaskTime, Site } = entry;
+      const { NewTimeEntryDate, TaskTime, Site,subRows} = entry;
       const taskTimeNumber = parseFloat(TaskTime); // Parse TaskTime as a number
 
       const dayName = getDayName(NewTimeEntryDate);
@@ -24,17 +26,22 @@ const GraphData = (data: any) => {
       if (!totalTimeByDay[dayName]) {
         totalTimeByDay[dayName] = {};
         totalTimeByDay[dayName].total = 0;
+       // totalTimeByDay[dayName][subRows] = [];
       }
 
 
       if (!totalTimeByDay[dayName][Site]) {
         totalTimeByDay[dayName][Site] = 0;
       }
+      // if (!totalTimeByDay[dayName][subRows]) {
+      //   totalTimeByDay[dayName][subRows] = [];
+      // }
 
 
       totalTimeByDay[dayName][Site] += taskTimeNumber;
 
       totalTimeByDay[dayName].total += taskTimeNumber;
+     // totalTimeByDay[dayName].subRows =entry.subRows;
     });
 
     // Convert the accumulated data into chart data format
@@ -42,7 +49,8 @@ const GraphData = (data: any) => {
       const { total, ...sites } = totalTimeByDay[day]; // Extract total time for the day
       const siteData = Object.keys(sites).map(site => ({
         Site: site,
-        Time: sites[site]
+        Time: sites[site],
+      //  subRows:site["subRows"]
       }));
       return { Day: day, Time: total, SiteData: siteData };
     });
@@ -59,8 +67,15 @@ const GraphData = (data: any) => {
 
     // Extract the first and last dates from the array
     // Moment(data[0].Day).format("DD/MM/YYYY")
+    let lastdateLength =(data.length - 1);
     const startDate: any = new Date(Moment(data[0].Day).format("DD/MM/YYYY"));
-    const endDate = new Date(Moment(data[data.length - 1].Day).format("DD/MM/YYYY"));
+    const dateParts = data[lastdateLength].Day?.split('/');
+    const year = parseInt(dateParts[2], 10);
+    const month = parseInt(dateParts[0], 10) - 1; // Months are 0 indexed
+    const day = parseInt(dateParts[1], 10);
+
+    const endDate = new Date(year, month, day)
+    // const endDate:any = new Date(Moment().format("DD/MM/YYYY"));
 
     // Iterate over the dates from the start date to the end date
     let currentDate = new Date(startDate);
@@ -71,15 +86,9 @@ const GraphData = (data: any) => {
       const existingDate = data.find((item: any) => item.Day === formattedDate);
 
       // If the current date is missing, add it to the result array
-      if (!existingDate) {
-        let riBeoushed: any = {}
-        riBeoushed.Day = formattedDate;
-        riBeoushed.SiteData = [];
-        riBeoushed.Time = 0;
-        result.push(riBeoushed);
-      }else{
+      if (existingDate?.SiteData?.length>0)
         result.push(existingDate);
-      }
+      
 
       // If the current date is equal to the end date, break the loop
       if (currentDate.setHours(0,0,0,0) === endDate.setHours(0,0,0,0) ) {
