@@ -470,7 +470,7 @@ const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId != 10
              <td width="104px" height="40px" style="color: #333;height:40px;width:104px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;text-decoration-line: underline;color: #2F5596;"><a style="color: #2F5596;" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmalsusLeaveCalendar.aspx">
                  <span style="color: #2F5596;">${item?.enddate}</span></td>
              <td width="140px" height="40px" style="color: #333;height:40px;width:140px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;" >${item.Designation}</td>
-             <td width="160px" height="40px" style="color: #333;height:40px;width:160px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;">${item?.TotalLeave}</td>
+             <td width="104px" height="40px" style="color: #333;height:40px;width:160px;font-family: Segoe UI;font-size: 14px;font-style: normal;font-weight: 400;border-right: 1px solid #EEE;border-bottom: 1px solid #EEE;text-align: center;padding: 0px 8px;">${item?.TotalLeave}</td>
          </tr>`
 
     })
