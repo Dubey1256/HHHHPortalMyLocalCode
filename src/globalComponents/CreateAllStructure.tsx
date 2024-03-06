@@ -599,10 +599,10 @@ const CreateAllStructureComponent = (props: any) => {
                                 {(component.value || component?.SubComponent?.length) &&
                                     <label className="form-label full-width" htmlFor={`exampleFormControlInput${component.id}`}>
                                         {isDisable == false &&
-                                            <>
+                                            <b>
                                                 <span>{index + 1} - </span>
                                                 <span>Component</span>
-                                            </>
+                                            </b>
                                         }
                                         <span className={isDisable ? '' : "pull-right"}>
                                             <label className='SpfxCheckRadio'>
@@ -659,7 +659,7 @@ const CreateAllStructureComponent = (props: any) => {
         {(Subcomponent.isCheckedSub  || (props?.SelectedItem?.Item_x0020_Type != 'SubComponent' && props?.SelectedItem != undefined)) &&
             <div>
                 <label className="form-label full-width" htmlFor={`exampleFormControlInput${Subcomponent.id}`}>
-                    <span>{indexSub + 1} - </span> SubComponent
+                <b> <span>{indexSub + 1} - </span> SubComponent</b>
                     <span className="pull-right">
                         <label className='SpfxCheckRadio me-0'>
                             <input 
@@ -698,8 +698,8 @@ const CreateAllStructureComponent = (props: any) => {
             <div className="mt-2 ps-4">
                 {Subcomponent?.Feature?.map((Features: any, indexFea: any) => (
                     <div key={Features.id} className="form-group">
-                        <span>{indexFea + 1} - </span>
-                        <label htmlFor={`exampleFormControlInput${Features.id}`}>Feature</label>
+                        <b><span>{indexFea + 1} - </span>
+                        <label htmlFor={`exampleFormControlInput${Features.id}`}>Feature</label></b>
                         <div className="input-group">
                             <input
                                 type="text"
