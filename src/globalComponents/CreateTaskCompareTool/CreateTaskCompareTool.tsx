@@ -320,7 +320,8 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                             const ImageItem = CreateTaskInfo?.UploadedImage[ImageIndex];
                             let date = new Date();
                             let timeStamp = date.getTime();
-                            let fileName: string = "T" + UpdatedData.Id + "-Image" + ImageIndex + "-" + UpdatedData.Title?.replace(/["/':?%]/g, "")?.slice(0, 40) + " " + timeStamp + ".jpg";
+                            let UpdateIndex: any = ImageIndex + 1;
+                            let fileName: string = "T" + UpdatedData.Id + "-Image" + UpdateIndex + "-" + UpdatedData.Title?.replace(/["/':?%]/g, "")?.slice(0, 40) + " " + timeStamp + ".jpg";
                             let PrepareImageObject = {
                                 ImageName: fileName,
                                 UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
@@ -760,10 +761,9 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                         </div>
                         <div className='row'>
                             <div className=' d-flex py-2 border-start border-end '>
-                                <div className='current-Task-section' style={{ width: "47%" }}>Relevant-URL:
-                                    <span>
-                                        <a href={ItemDetails?.Relevant_Url} target="_blank" data-interception="off" className='siteColor'>{ItemDetails?.Relevant_Url}</a>
-                                    </span>
+                                <div className='current-Task-section' style={{ width: "47%" }}>
+                                    <label className='full-width form-label'>Relevant-URL:</label>
+                                    <a href={ItemDetails?.Relevant_Url} target="_blank" data-interception="off" className='siteColor text-break'>{ItemDetails?.Relevant_Url}</a>
                                 </div>
                                 <div className='Move-data-current-to-new text-center' style={{ width: "6%" }} title='Swipe data left to right' ><BsArrowRightSquare onClick={() => SwipeDataFunction("Relevant_Url")} /></div>
                                 <div className='new-task-section' style={{ width: "47%" }}>Relevant-URL:
