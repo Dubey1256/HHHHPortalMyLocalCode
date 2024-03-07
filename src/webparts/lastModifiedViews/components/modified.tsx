@@ -15,6 +15,8 @@ import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryCompone
 import EditInstitutionPopup from '../../contactSearch/components/contact-search/popup-components/EditInstitutionPopup';
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import EditPage from '../../../globalComponents/EditPanelPage/EditPage'
+import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
+
 let allSite: any = {
   GMBHSite: false,
   HrSite: false,
@@ -299,7 +301,6 @@ export const Modified = (props: any) => {
           data = data.filter((item: any) => { return (item.Title != null) })
         }
       }
-
       else {
         data?.map((item: any) => {
           item.fontColorTask = '#000066';
@@ -318,6 +319,12 @@ export const Modified = (props: any) => {
           item.siteImage = allSite?.SiteIcon;
           item.SiteIcon = item.siteUrlOld + item.siteImage
           item.AllusersName = [];
+          if (item?.FeedBack != undefined) {
+            item.descriptionsSearch = globalCommon.descriptionSearchData(item)
+        } else {
+          item.descriptionsSearch = '';
+        }
+
           if (item.GmBHSiteCheck == true) {
             item.SiteIcon = item.siteUrl + "/SiteCollectionImages/ICONS/Foundation/Icon_GmBH.png";
           }
@@ -1722,10 +1729,12 @@ export const Modified = (props: any) => {
         },
         {
           accessorKey: "Title",
-          cell: ({ row }) => (
+          cell: ({ row }) => (<>
             <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
               {row.original.Title}
             </a>
+            {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>}
+            </>
           ),
           id: "Title",
           placeholder: "Title", header: "",
