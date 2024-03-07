@@ -14,6 +14,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import GlobalCommanTable from "../GroupByReactTableComponents/GlobalCommanTable";
 import "bootstrap/dist/css/bootstrap.min.css";
+import CustomAlert from "../../globalComponents/TimeEntry/CustomAlert";
 import Tooltip from "../Tooltip";
 import * as globalCommon from "../globalCommon";
 import HighlightableCell from "../highlight";
@@ -77,6 +78,7 @@ const TimeEntryPopup = (item: any) => {
     CurrentSiteUrl = item?.Context?.pageContext?.web?.absoluteUrl;
   }
 
+  const [isAlertVisible, setIsAlertVisible] = React.useState(false);
   const [AllTimeSheetDataNew, setTimeSheet] = React.useState([]);
   const [date, setDate] = React.useState(undefined);
   const [showCat, setshowCat] = React.useState([]);
@@ -132,7 +134,7 @@ const TimeEntryPopup = (item: any) => {
   const [TimeInHours, setTimeInHours] = React.useState(0);
   const [TimeInMinutes, setTimeInMinutes] = React.useState<any>(0);
   const [categoryData, setCategoryData] = React.useState([]);
-
+  const toggleDialog = () => setIsAlertVisible(false);
   let smartTermName = "Task" + item.props.siteType;
 
   // -------------------Load TaskUse------------------------------------------------------------------------------------------
@@ -724,6 +726,35 @@ const TimeEntryPopup = (item: any) => {
 
   const getStructureData = function () {
     TaskCate = AllTimeSpentDetails;
+    
+    AllTimeSpentDetails?.map((item: any) => {
+      if (item?.subRows != undefined && item?.subRows?.length > 0) {
+         item?.subRows.map((value:any)=>
+         {
+          if(!value.Status)
+          {
+            value.Status="Draft";
+          }
+
+         })
+      }})
+    AllTimeSpentDetails?.map((item: any) => {
+      if (item?.subRows != undefined && item?.subRows?.length > 0) {
+        item?.subRows.map((value: any) => {
+          if (value?.Status != undefined) {
+            if (value?.Status == "Draft") {
+              value.lableColor = "yellowForTimeSheet";
+            } else if (value?.Status == "Rejected") {
+              value.lableColor = "redForTimeSheet";
+            } else if (value?.Status == "Approved") {
+              value.lableColor = "greenForTimeSheet";
+            } else if (value?.Status == "Approval") {
+              value.lableColor = "blueForTimeSheet";
+            }
+          }
+        });
+      }
+    });
 
     AllTimeSpentDetails.forEach((items: any) => {
       if (items.TimesheetTitle.Id === undefined) {
@@ -833,7 +864,7 @@ const TimeEntryPopup = (item: any) => {
       if (items.subRows != undefined && items.subRows.length > 0) {
         $.each(items.subRows, function (index: any, child: any) {
           const title = child.Title;
-
+          
           if (!finalData[title]) {
             finalData[title] = [child];
           } else {
@@ -972,6 +1003,41 @@ const TimeEntryPopup = (item: any) => {
       if (taxItem.TaxType === taxType) Items.push(taxItem);
     });
     return Items;
+  };
+
+  // ---------------------------------------------------- Changing Task Status------------------------------------------------------------------------------
+
+  const changeTaskStatus = async (childNew: any) => {
+    let updatedData = [];
+
+    for (const subItem of AllTimeSpentDetails) {
+      if (subItem.Id === childNew.MainParentId && subItem.subRows?.length > 0) {
+        for (const newSubItem of subItem.subRows) {
+          if (newSubItem?.ID === childNew?.ID) {
+            newSubItem.Status = "Approval";
+            console.log("newSubItem?.ID",newSubItem?.ID,"childNew?.ID",childNew?.ID )
+          }
+        }
+
+        updatedData = subItem.subRows;
+      }
+    }
+
+    const listId = TimeSheetlistId;
+
+    let web = new Web(`${CurrentSiteUrl}`);
+
+    await web.lists
+      .getById(listId)
+      .items.getById(childNew.ParentID)
+      .update({
+        AdditionalTimeEntry: JSON.stringify(updatedData),
+      })
+      .then((res) => {
+        console.log(res);
+
+        setupdateData(updateData + 1);
+      });
   };
 
   //------------------------------------------------------Load Timesheet Data-----------------------------------------------------------------------------
@@ -1537,7 +1603,7 @@ const TimeEntryPopup = (item: any) => {
         UpdatedData.AuthorName == undefined &&
         UpdatedData.AuthorName == null
       ) {
-        alert("Please Add user on Task User Management");
+        setIsAlertVisible(true);
       }
     }
 
@@ -1913,6 +1979,7 @@ const TimeEntryPopup = (item: any) => {
         if (MyData != undefined && MyData.length > 0) {
           update["AuthorName"] = CurrentUser.AuthorName;
           update["AuthorId"] = CurntUserId;
+          update["Status"] = "Draft";
           update["AuthorImage"] = CurrentUser.AuthorImage;
           update["ID"] = timeSpentId.ID + 1;
           update["Id"] = timeSpentId.ID + 1;
@@ -1926,6 +1993,7 @@ const TimeEntryPopup = (item: any) => {
           UpdatedData = MyData;
         } else {
           update["AuthorName"] = CurrentUser.AuthorName;
+          update["Status"] = "Draft";
           update["AuthorImage"] = CurrentUser.AuthorImage;
           update["AuthorId"] = CurntUserId;
           update["ID"] = 0;
@@ -2023,6 +2091,7 @@ const TimeEntryPopup = (item: any) => {
     update["AuthorName"] = CurrentUser.AuthorName;
     update["AuthorImage"] = CurrentUser.AuthorImage;
     update["AuthorId"] = CurntUserId;
+    update["Status"] = "Draft";
     update["ID"] = 0;
     update["Id"] = 0;
     update["MainParentId"] = items.Id;
@@ -2414,6 +2483,18 @@ const TimeEntryPopup = (item: any) => {
     // setFlatview((flatview: any) => ([...flatview]))
   };
 
+
+  const getStatusClassName = (status:any) => {
+    switch (status) {
+      case "Draft":
+        return "svg__iconbox svg__icon--forApproval hreflink"; 
+      case "Rejected":
+        return "svg__iconbox svg__icon--forApproval hreflink"; 
+      default:
+        return "svg__iconbox svg__icon--forApproval Disabled-Link"; 
+    }
+  };
+
   //------------------------------------------------------------Define columns-----------------------------------------------------------------------------
   const column = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
@@ -2581,6 +2662,11 @@ const TimeEntryPopup = (item: any) => {
             ) : (
               <>
                 {" "}
+                <span
+                  title="Submit"
+                  className={getStatusClassName(row?.original?.Status)}
+                  onClick={() => changeTaskStatus(row?.original)}
+                ></span>{" "}
                 <img
                   title="Copy"
                   className="hreflink"
@@ -3415,6 +3501,15 @@ const TimeEntryPopup = (item: any) => {
           </button>
         </div>
       </Panel>
+      {isAlertVisible ? (
+        <CustomAlert
+          hidden={!isAlertVisible}
+          toggleDialog={toggleDialog}
+          message="You are not part of Team members of this site. Please click here to add yourself or contact the site administrator."
+          linkText="Please Click Here!"
+          linkUrl="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskUser-Management.aspx"
+        />
+      ) : null}
     </div>
   );
 };
