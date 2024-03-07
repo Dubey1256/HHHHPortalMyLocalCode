@@ -22,4 +22,25 @@ build.rig.getTasks = function () {
 };
 
 build.tslintCmd.enabled = false;
+// Access webpack configuration
+build.configureWebpack.mergeConfig({
+  additionalConfiguration: (generatedConfiguration) => {
+    generatedConfiguration.module.rules.push({
+      test: /node_modules[\/\\]@?reactflow[\/\\].*.js$/,
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: ['@babel/preset-env', "@babel/preset-react"],
+          plugins: [
+            "@babel/plugin-proposal-optional-chaining",
+            "@babel/plugin-proposal-nullish-coalescing-operator",
+          ]
+        }
+      }
+    });
+
+    return generatedConfiguration;
+  }
+});
+
 build.initialize(require('gulp'));
