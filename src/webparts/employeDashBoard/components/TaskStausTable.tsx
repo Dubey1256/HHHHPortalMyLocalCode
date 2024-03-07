@@ -20,6 +20,8 @@ import AddConfiguration from "../../../globalComponents/AddConfiguration";
 import { GrNext, GrPrevious } from "react-icons/gr";
 import * as Moment from "moment";
 import Slider from "react-slick";
+import { ColumnDef } from "@tanstack/react-table";
+import HighlightableCell from "../../../globalComponents/highlight";
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -82,7 +84,8 @@ const TaskStatusTbl = (Tile: any) => {
     siteUrl: ContextData?.siteUrl,
     TaskTimeSheetListID: ContextData?.propsValue?.TaskTimeSheetListID,
     isShowTimeEntry: true,
-    isShowSiteCompostion: true
+    isShowSiteCompostion: true,
+    Context: ContextData?.propsValue?.Context
   };
   if (AllapprovalTask && AllapprovalTask.length > 0 && flagApproval != true) {
     flagApproval = true
@@ -373,290 +376,384 @@ const TaskStatusTbl = (Tile: any) => {
     ContextData?.callbackFunction()
   }
   const generateDynamicColumns = (item: any) => {
-    return [{
-      accessorKey: "",
-      placeholder: "",
-      hasCheckbox: true,
-      hasCustomExpanded: item?.GroupByView,
-      hasExpanded: item?.GroupByView,
-      size: 50,
-      id: "Id"
-    },
-    {
-      cell: ({ row, getValue }: any) => (
-        <div>
-          <img width={"20px"} height={"20px"} className="rounded-circle" src={row?.original?.SiteIcon} />
-        </div>
-      ),
-      accessorKey: "",
-      id: "SiteIcon",
-      canSort: false,
-      placeholder: "",
-      size: 80,
-      isColumnVisible: true
-    },
-    {
-      accessorKey: "TaskID",
-      placeholder: "ID",
-      id: 'TaskID',
-      size: 180,
-      isColumnVisible: true,
-      cell: ({ row, getValue }: any) => (
-        <span className="d-flex">
-          <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={item?.Tasks} AllListId={ContextData?.propsValue?.Context} />
-        </span>
-      ),
-    },
-    {
-      accessorFn: (row: any) => row?.Title,
-      cell: ({ row, getValue }: any) => (
-        <div>
-          <a className="hreflink" draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)} target='_blank' style={{ textDecoration: 'none', cursor: 'pointer' }} href={`${ContextData.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
-            rel='noopener noreferrer' data-interception="off" > {row?.original?.Title}
-          </a>
-          {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != "" && (
-            <span className="alignIcon"> <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
-          )}
-        </div>
-      ),
-      id: "Title",
-      placeholder: "Title",
-      resetColumnFilters: false,
-      header: "",
-      size: 460,
-      isColumnVisible: true
-    },
-    {
-      accessorFn: (row: any) => row?.SmartPriority,
-      cell: ({ row }: any) => (
-        <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority != 0 ? row?.original?.SmartPriority : null}</div>
-      ),
-      filterFn: (row: any, columnName: any, filterValue: any) => {
-        if (row?.original?.SmartPriority?.includes(filterValue)) {
-          return true
-        }
-        else {
-          return false
-        }
+    if (item?.DataSource != 'TimeSheet') {
+      return [{
+        accessorKey: "",
+        placeholder: "",
+        hasCheckbox: true,
+        hasCustomExpanded: item?.GroupByView,
+        hasExpanded: item?.GroupByView,
+        size: 50,
+        id: "Id"
       },
-      id: "SmartPriority",
-      placeholder: "SmartPriority",
-      resetColumnFilters: false,
-      resetSorting: false,
-      isColumnDefultSortingDesc: true,
-      header: "",
-      size: 190,
-      isColumnVisible: true
-    },
-    {
-      accessorFn: (row: any) => row?.PriorityRank,
-      cell: ({ row }: any) => (
-        <div className="text-center">{row?.original?.PriorityRank}</div>
-      ),
-      filterFn: (row: any, columnName: any, filterValue: any) => {
-        if (row?.original?.PriorityRank == filterValue) {
-          return true
-        } else {
-          return false
-        }
+      {
+        cell: ({ row, getValue }: any) => (
+          <div>
+            <img width={"20px"} height={"20px"} className="rounded-circle" src={row?.original?.SiteIcon} />
+          </div>
+        ),
+        accessorKey: "",
+        id: "SiteIcon",
+        canSort: false,
+        placeholder: "",
+        size: 80,
+        isColumnVisible: true
       },
-      id: "PriorityRank",
-      placeholder: "Priority Rank",
-      resetColumnFilters: false,
-      header: "",
-      size: 42,
-      isColumnVisible: false
-    },
-    {
-      accessorFn: (row: any) => row?.projectStructerId + "." + row?.ProjectTitle,
-      cell: ({ row, column, getValue }: any) => (
-        <>
-          {row?.original?.ProjectTitle != (null || undefined) &&
-            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextData?.propsValue?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
-              <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextData?.propsValue} /></a></span>
+      {
+        accessorKey: "TaskID",
+        placeholder: "ID",
+        id: 'TaskID',
+        size: 180,
+        isColumnVisible: true,
+        cell: ({ row, getValue }: any) => (
+          <span className="d-flex">
+            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={item?.Tasks} AllListId={ContextData?.propsValue?.Context} />
+          </span>
+        ),
+      },
+      {
+        accessorFn: (row: any) => row?.Title,
+        cell: ({ row, getValue }: any) => (
+          <div>
+            <a className="hreflink" draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)} target='_blank' style={{ textDecoration: 'none', cursor: 'pointer' }} href={`${ContextData.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
+              rel='noopener noreferrer' data-interception="off" > {row?.original?.Title}
+            </a>
+            {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != "" && (
+              <span className="alignIcon"> <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
+            )}
+          </div>
+        ),
+        id: "Title",
+        placeholder: "Title",
+        resetColumnFilters: false,
+        header: "",
+        size: 460,
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row: any) => row?.SmartPriority,
+        cell: ({ row }: any) => (
+          <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority != 0 ? row?.original?.SmartPriority : null}</div>
+        ),
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.SmartPriority?.includes(filterValue)) {
+            return true
           }
-        </>
-      ),
-      id: 'ProjectTitle',
-      placeholder: "Project",
-      resetColumnFilters: false,
-      header: "",
-      size: 70,
-      isColumnVisible: false
-    },
-    {
-      accessorKey: "percentage",
-      placeholder: "% Complete",
-      header: "",
-      resetColumnFilters: false,
-      size: 140,
-      id: "percentage",
-      isColumnVisible: true
-    },
-    {
-      accessorFn: (row: any) => row?.TaskTypeValue,
-      cell: ({ row, column, getValue }: any) => (
-        <>
-          <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"></span></span>
-        </>
-      ),
-      placeholder: "Task Type",
-      header: "",
-      resetColumnFilters: false,
-      size: 130,
-      id: "TaskTypeValue",
-      isColumnVisible: false
-    },
-    {
-      accessorFn: (row: any) => row?.ClientCategorySearch,
-      cell: ({ row }: any) => (
-        <>
-          <ShowClintCatogory clintData={row?.original} AllMetadata={ContextData?.AllMetadata} />
-        </>
-      ),
-      id: "ClientCategorySearch",
-      placeholder: "Client Category",
-      header: "",
-      resetColumnFilters: false,
-      size: 95,
-      isColumnVisible: false
-    },
-    {
-      accessorFn: (row: any) => row?.AllTeamName,
-      cell: ({ row }: any) => (
-        <div className="alignCenter">
-          <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={ContextData?.AllTaskUser} Context={ContextData?.propsValue} />
-        </div>
-      ),
-      id: "AllTeamName",
-      placeholder: "Team",
-      resetColumnFilters: false,
-      header: "",
-      size: 100,
-      isColumnVisible: false
-    },
-    {
-      accessorFn: (row: any) => row?.ItemRank,
-      cell: ({ row }: any) => (
-        <div className="text-center">{row?.original?.ItemRank}</div>
-      ),
-      id: "ItemRank",
-      placeholder: "Item Rank",
-      resetColumnFilters: false,
-      header: "",
-      size: 42,
-      isColumnVisible: false
-    },
-    {
-      accessorFn: (row: any) => row?.Created,
-      cell: ({ row, column }: any) => (
-        <div className="alignCenter">
-          {row?.original?.Created == null ? ("") : (
-            <>
-              <div className='ms-1'>{row?.original?.DisplayCreateDate} </div>
-              {row?.original?.Author != undefined &&
-                <>
-                  <a href={`${ContextData?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`} target="_blank" data-interception="off">
-                    <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.Author?.autherImage} />
-                  </a>
-                </>
-              }
-            </>
-          )}
-        </div>
-      ),
-      id: 'Created',
-      resetColumnFilters: false,
-      resetSorting: false,
-      placeholder: "Created",
-      filterFn: (row: any, columnName: any, filterValue: any) => {
-        if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
-          return true
-        } else {
-          return false
-        }
+          else {
+            return false
+          }
+        },
+        id: "SmartPriority",
+        placeholder: "SmartPriority",
+        resetColumnFilters: false,
+        resetSorting: false,
+        isColumnDefultSortingDesc: true,
+        header: "",
+        size: 190,
+        isColumnVisible: true
       },
-      header: "",
-      size: 100,
-      isColumnVisible: true
-    },
-    {
-      accessorFn: (row: any) => row?.DueDate,
-      cell: ({ row, column, getValue }: any) => (
-        <div className='ms-1'>{row?.original?.DisplayDueDate}</div>
-      ),
-      filterFn: (row: any, columnName: any, filterValue: any) => {
-        if (row?.original?.DisplayDueDate?.includes(filterValue)) {
-          return true
-        } else {
-          return false
-        }
+      {
+        accessorFn: (row: any) => row?.PriorityRank,
+        cell: ({ row }: any) => (
+          <div className="text-center">{row?.original?.PriorityRank}</div>
+        ),
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.PriorityRank == filterValue) {
+            return true
+          } else {
+            return false
+          }
+        },
+        id: "PriorityRank",
+        placeholder: "Priority Rank",
+        resetColumnFilters: false,
+        header: "",
+        size: 42,
+        isColumnVisible: false
       },
-      id: 'DueDate',
-      resetColumnFilters: false,
-      resetSorting: false,
-      placeholder: "DueDate",
-      header: "",
-      size: 91,
-      isColumnVisible: false
-    },
-    {
-      accessorFn: (row: any) => row?.Modified,
-      cell: ({ row, column }: any) => (
-        <div className="alignCenter">
-          {row?.original?.Modified == null ? ("") : (
-            <>
-              <div style={{ width: "75px" }} className="me-1">{row?.original?.DisplayModifiedDate}</div>
-              {row?.original?.Editor != undefined &&
-                <>
-                  <a href={`${ContextData?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
-                    target="_blank" data-interception="off">
-                    <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={row?.original?.Editor?.autherImage} />
-                  </a>
-                </>
-              }
-            </>
-          )}
-        </div>
-      ),
-      id: 'Modified',
-      resetColumnFilters: false,
-      resetSorting: false,
-      placeholder: "Modified",
-      isColumnVisible: false,
-      filterFn: (row: any, columnName: any, filterValue: any) => {
-        if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
-          return true
-        } else {
-          return false
-        }
+      {
+        accessorFn: (row: any) => row?.projectStructerId + "." + row?.ProjectTitle,
+        cell: ({ row, column, getValue }: any) => (
+          <>
+            {row?.original?.ProjectTitle != (null || undefined) &&
+              <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextData?.propsValue?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextData?.propsValue} /></a></span>
+            }
+          </>
+        ),
+        id: 'ProjectTitle',
+        placeholder: "Project",
+        resetColumnFilters: false,
+        header: "",
+        size: 70,
+        isColumnVisible: false
       },
-      header: "",
-      size: 115
-    },
-    {
-      accessorKey: "TotalTaskTime",
-      id: "TotalTaskTime",
-      placeholder: "Smart Time",
-      header: "",
-      resetColumnFilters: false,
-      size: 49,
-      isColumnVisible: false
-    },
-    {
-      cell: ({ row, getValue }: any) => (
-        <span title="Edit Task" className="alignIcon svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
+      {
+        accessorKey: "percentage",
+        placeholder: "% Complete",
+        header: "",
+        resetColumnFilters: false,
+        size: 140,
+        id: "percentage",
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row: any) => row?.TaskTypeValue,
+        cell: ({ row, column, getValue }: any) => (
+          <>
+            <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"></span></span>
+          </>
+        ),
+        placeholder: "Task Type",
+        header: "",
+        resetColumnFilters: false,
+        size: 130,
+        id: "TaskTypeValue",
+        isColumnVisible: false
+      },
+      {
+        accessorFn: (row: any) => row?.ClientCategorySearch,
+        cell: ({ row }: any) => (
+          <>
+            <ShowClintCatogory clintData={row?.original} AllMetadata={ContextData?.AllMetadata} />
+          </>
+        ),
+        id: "ClientCategorySearch",
+        placeholder: "Client Category",
+        header: "",
+        resetColumnFilters: false,
+        size: 95,
+        isColumnVisible: false
+      },
+      {
+        accessorFn: (row: any) => row?.AllTeamName,
+        cell: ({ row }: any) => (
+          <div className="alignCenter">
+            <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={ContextData?.AllTaskUser} Context={ContextData?.propsValue} />
+          </div>
+        ),
+        id: "AllTeamName",
+        placeholder: "Team",
+        resetColumnFilters: false,
+        header: "",
+        size: 100,
+        isColumnVisible: false
+      },
+      {
+        accessorFn: (row: any) => row?.ItemRank,
+        cell: ({ row }: any) => (
+          <div className="text-center">{row?.original?.ItemRank}</div>
+        ),
+        id: "ItemRank",
+        placeholder: "Item Rank",
+        resetColumnFilters: false,
+        header: "",
+        size: 42,
+        isColumnVisible: false
+      },
+      {
+        accessorFn: (row: any) => row?.Created,
+        cell: ({ row, column }: any) => (
+          <div className="alignCenter">
+            {row?.original?.Created == null ? ("") : (
+              <>
+                <div className='ms-1'>{row?.original?.DisplayCreateDate} </div>
+                {row?.original?.Author != undefined &&
+                  <>
+                    <a href={`${ContextData?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`} target="_blank" data-interception="off">
+                      <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.Author?.autherImage} />
+                    </a>
+                  </>
+                }
+              </>
+            )}
+          </div>
+        ),
+        id: 'Created',
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Created",
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        header: "",
+        size: 100,
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row: any) => row?.DueDate,
+        cell: ({ row, column, getValue }: any) => (
+          <div className='ms-1'>{row?.original?.DisplayDueDate}</div>
+        ),
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        id: 'DueDate',
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "DueDate",
+        header: "",
+        size: 91,
+        isColumnVisible: false
+      },
+      {
+        accessorFn: (row: any) => row?.Modified,
+        cell: ({ row, column }: any) => (
+          <div className="alignCenter">
+            {row?.original?.Modified == null ? ("") : (
+              <>
+                <div style={{ width: "75px" }} className="me-1">{row?.original?.DisplayModifiedDate}</div>
+                {row?.original?.Editor != undefined &&
+                  <>
+                    <a href={`${ContextData?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
+                      target="_blank" data-interception="off">
+                      <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={row?.original?.Editor?.autherImage} />
+                    </a>
+                  </>
+                }
+              </>
+            )}
+          </div>
+        ),
+        id: 'Modified',
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Modified",
+        isColumnVisible: false,
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        header: "",
+        size: 115
+      },
+      {
+        accessorKey: "TotalTaskTime",
+        id: "TotalTaskTime",
+        placeholder: "Smart Time",
+        header: "",
+        resetColumnFilters: false,
+        size: 49,
+        isColumnVisible: false
+      },
+      {
+        cell: ({ row, getValue }: any) => (
+          <span title="Edit Task" className="alignIcon svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
 
-      ),
-      id: 'EditTaskPopup',
-      canSort: false,
-      placeholder: "",
-      header: "",
-      resetColumnFilters: false,
-      resetSorting: false,
-      size: 45,
-      isColumnVisible: true
-    },]
+        ),
+        id: 'EditTaskPopup',
+        canSort: false,
+        placeholder: "",
+        header: "",
+        resetColumnFilters: false,
+        resetSorting: false,
+        size: 45,
+        isColumnVisible: true
+      },]
+    }
+    else if (item?.DataSource == 'TimeSheet') {
+      return [
+        {
+          accessorKey: "",
+          placeholder: "",
+          hasCustomExpanded: false,
+          hasExpanded: false,
+          size: 20,
+          margin: 0,
+          id: "Id"
+        },
+        {
+          accessorFn: (row: any) => row?.AuthorName,
+          id: "AuthorName",
+          placeholder: "AuthorName",
+          header: "",
+          size: 340,
+          isColumnVisible: true,
+          cell: ({ row }: any) => (
+            <>
+              <span>
+                <div className="d-flex">
+                  <>
+                    <span>
+                      {row?.original?.AuthorImage != "" && row?.original.AuthorImage != null ? (
+                        <img
+                          className="AssignUserPhoto1 bdrbox m-0 wid29" title={row?.original.AuthorName} data-toggle="popover" data-trigger="hover" src={row?.original.AuthorImage}  ></img>
+                      ) : (
+                        <>  {" "}  <img className="AssignUserPhoto1 bdrbox m-0 wid29" title={row?.original.AuthorName} data-toggle="popover" data-trigger="hover"
+                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg" ></img>
+                        </>
+                      )}
+                      <span className="mx-1">{row?.original?.AuthorName}</span>
+                    </span>
+                  </>
+                </div>
+              </span>
+            </>
+          )
+        },
+        {
+          accessorFn: (row: any) => row?.sortTaskDate,
+          cell: ({ row, column }: any) => (
+            <div className="alignCenter">
+              {row?.original?.Created == null ? ("") : (
+                <>
+                  <HighlightableCell value={row?.original?.TaskDates} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : null} />
+                </>
+              )}
+            </div>
+          ),
+          id: 'Created',
+          resetColumnFilters: false,
+          resetSorting: false,
+          placeholder: "Created",
+          filterFn: (row: any, columnName: any, filterValue: any) => {
+            if (row?.original?.TaskDates?.toLowerCase()?.includes(filterValue)) {
+              return true
+            } else {
+              return false
+            }
+          },
+          header: "",
+          size: 125,
+          isColumnVisible: true
+        },
+        {
+          accessorKey: "TaskTime",
+          placeholder: "TaskTime",
+          header: "",
+          size: 95,
+          isColumnVisible: true
+        },
+        {
+          accessorKey: "Description",
+          placeholder: "Description",
+          header: "",
+          isColumnVisible: true
+        },
+        {
+          id: "ff",
+          accessorKey: "",
+          size: 75,
+          canSort: false,
+          placeholder: "",
+          isColumnVisible: true,
+          cell: ({ row }: any) => (
+            <div className="alignCenter gap-1 pull-right">
+            </div>
+          )
+        },]
+    }
   }
   if (Tile.activeTile != undefined && DashboardConfigCopy != undefined && DashboardConfigCopy?.length > 0)
     DashboardConfig = DashboardConfigCopy.filter((config: any) => config?.TileName == '' || config?.TileName == Tile.activeTile);
@@ -810,7 +907,7 @@ const TaskStatusTbl = (Tile: any) => {
                       <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id + "Dashboard"} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
                     )}
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
-                      {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={ContextData.Context} emailStatus={"Approved"} items={approveItem} />}
+                      {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={AllListId} emailStatus={"Approved"} items={approveItem} />}
                     </span>}
                   </div>
                 </div>}
@@ -896,7 +993,7 @@ const TaskStatusTbl = (Tile: any) => {
                                   <>
                                     <h3 className="f-15">{user?.Title} {Date?.DisplayDate} Task</h3>
                                     <div key={index} className="Alltable maXh-300 mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} style={{ height: "300px" }}>
-                                      <GlobalCommanTable columnSettingIcon={true} tableId={config?.Id + index + "Dashboard"} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={ContextData?.propsValue} wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
+                                      <GlobalCommanTable columnSettingIcon={true} tableId={config?.Id + index + "Dashboard"} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
                                         callBackData={callBackData} />
                                     </div>
                                   </>
@@ -909,18 +1006,28 @@ const TaskStatusTbl = (Tile: any) => {
                     }
                   </>
                 }
+                {config?.DataSource == 'TimeSheet' &&
+                  <>
+                    <div className="Alltable maXh-300" style={{ height: "300px" }} >
+                      {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
+                        <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id + "Dashboard"} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                      )}
+                    </div>
+                  </>}
               </section>}
-              {config.IsMyNotes == true && config?.ShowWebpart == true && config?.GroupByView == undefined &&
+              {
+                config.IsMyNotes == true && config?.ShowWebpart == true && config?.GroupByView == undefined &&
                 <div className="empAllSec notesSec shadow-sm clearfix">
                   <MyNotes config={config} IsShowConfigBtn={IsShowConfigBtn} />
                 </div>
               }
-              {config.IsUpcomingBday == true && config?.ShowWebpart == true && config?.GroupByView == undefined &&
+              {
+                config.IsUpcomingBday == true && config?.ShowWebpart == true && config?.GroupByView == undefined &&
                 <div className="empAllSec birthSec shadow-sm clearfix">
                   <ComingBirthday config={config} IsShowConfigBtn={IsShowConfigBtn} />
                 </div>
               }
-            </div>
+            </div >
           );
           currentRow.push(box);
           if (currentRow.length === config.highestColumn || index === DashboardConfig.length - 1) {
