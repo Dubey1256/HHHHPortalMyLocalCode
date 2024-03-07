@@ -1088,7 +1088,7 @@ private reRender=()=>{
   private showGraph = (tileName: any) => {
     if(DateType == 'Custom'){
       let start =  Moment(this.state.startdate).format("DD/MM/YYYY");
-      let end =  Moment(this.state.startdate).format("DD/MM/YYYY");
+      let end =  Moment(this.state.enddate).format("DD/MM/YYYY");
       DateType = `${start} - ${end}`
     }
     this.setState({

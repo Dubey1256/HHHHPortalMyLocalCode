@@ -5,6 +5,7 @@ import * as Moment from "moment";
 import { Web, sp } from "sp-pnp-js";
 import Picker from "./SmartMetaDataPicker";
 import Example from "./FroalaCommnetBoxes";
+import ReactDOM from "react-dom";
 import * as globalCommon from "../globalCommon";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -37,7 +38,7 @@ import BackgroundCommentComponent from "./BackgroundCommentComponent";
 import EmailNotificationMail from "./EmailNotificationMail";
 import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
-
+import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -1563,14 +1564,15 @@ const EditTaskPopup = (Items: any) => {
     const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         setIsComponentPicker(false);
         let uniqueIds: any = {};
-        let checkForOnHold: any = tempShareWebTypeData?.some((category: any) => category.Title === "On-Hold");
+        let checkForOnHoldAndBottleneck: any = tempShareWebTypeData?.some((category: any) => category.Title === "On-Hold" && category.Title === "Bottleneck");
         let checkForDesign: any = tempShareWebTypeData?.some((category: any) => category.Title === "Design");
         if (usedFor == "For-Panel") {
             let TempArrya: any = [];
             selectCategoryData?.map((selectedData: any) => {
-                if (selectedData.Title == "On-Hold" && !checkForOnHold) {
+                if ((selectedData.Title == "On-Hold" || selectedData.Title == "Bottleneck") && !checkForOnHoldAndBottleneck) {
                     onHoldCategory.push(selectedData);
                     setOnHoldPanel(true);
+                    setSendCategoryName(selectedData.Title)
                 } else {
                     TempArrya.push(selectedData);
                 }
@@ -1597,9 +1599,10 @@ const EditTaskPopup = (Items: any) => {
             tempShareWebTypeData = TempArrya;
         } else {
             selectCategoryData.forEach((existingData: any) => {
-                if (existingData.Title == "On-Hold" && !checkForOnHold) {
+                if ((existingData.Title == "On-Hold" || existingData.Title == "Bottleneck") && !checkForOnHoldAndBottleneck) {
                     onHoldCategory.push(existingData);
                     setOnHoldPanel(true);
+                    setSendCategoryName(existingData.Title)
                 } else {
                     tempShareWebTypeData.push(existingData);
                 }
@@ -2454,35 +2457,6 @@ const EditTaskPopup = (Items: any) => {
                 });
         }
 
-        if (IsSendAttentionMsgStatus) {
-            let txtComment = `You have been tagged as ${SendCategoryName == "Bottleneck" ? SendCategoryName : "Attention"} in the below task by ${Items.context.pageContext._user.displayName}`;
-            let TeamMsg =
-                txtComment +
-                `</br> <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + EditData.Id + "&Site=" + EditData.siteType}>${EditData.TaskId}-${EditData.Title}</a>`;
-            if (SendCategoryName == "Bottleneck") {
-                let sendUserEmail: any = [];
-                TaskAssignedTo?.map((userDtl: any) => {
-                    taskUsers?.map((allUserItem: any) => {
-                        if (userDtl.Id == allUserItem.AssingedToUserId) {
-                            sendUserEmail.push(allUserItem.Email);
-                        }
-                    });
-                });
-                if (sendUserEmail?.length > 0) {
-                    await globalCommon.SendTeamMessage(
-                        sendUserEmail,
-                        TeamMsg,
-                        Items.context
-                    );
-                }
-            } else {
-                await globalCommon.SendTeamMessage(
-                    userSendAttentionEmails,
-                    TeamMsg,
-                    Items.context
-                );
-            }
-        }
 
         if (TaskShuoldBeUpdate) {
             try {
@@ -2573,18 +2547,108 @@ const EditTaskPopup = (Items: any) => {
                         TaskDetailsFromCall[0].TaskId = globalCommon.GetTaskId(
                             TaskDetailsFromCall[0]
                         );
+                        if (
+                            TaskDetailsFromCall != undefined &&
+                            TaskDetailsFromCall.length > 0
+                        ) {
+                            TaskDetailsFromCall[0].TaskCreatorData = EditData.TaskCreatorData;
+                            TaskDetailsFromCall[0].TaskApprovers = EditData.TaskApprovers;
+                            TaskDetailsFromCall[0].Approvere = EditData.Approvere;
+                            TaskDetailsFromCall[0].currentUser = EditData.CurrentUserData;
+                            TaskDetailsFromCall[0].FeedBack = JSON.parse(
+                                TaskDetailsFromCall[0].FeedBack
+                            );
+                            TaskDetailsFromCall[0].siteType = EditData.siteType;
+                            TaskDetailsFromCall[0].siteUrl = siteUrls;
+                            TaskDetailsFromCall[0].siteIcon = Items.Items.SiteIcon;
+                        }
                         let UpdatedDataObject: any = TaskDetailsFromCall[0]
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
                         UpdatedDataObject.SmartPriority = NewSmartPriority;
                         UpdatedDataObject.siteType = EditData.siteType;
-
+                        let CommentArrayData: any = UpdatedDataObject?.Comments?.length > 5 ? JSON.parse(UpdatedDataObject?.Comments) : '';
+                        UpdatedDataObject.CommentsArray = [];
+                        let ReasonStatement: string;
+                        if (CommentArrayData?.length > 0) {
+                            CommentArrayData?.map((CommentData: any) => {
+                                if (CommentData?.CommentFor?.length > 3) {
+                                    ReasonStatement = CommentData?.Description;
+                                } else {
+                                    UpdatedDataObject.CommentsArray?.push(CommentData);
+                                }
+                            })
+                        }
+                        const uniqueIds: any = {};
+                        const result = tempShareWebTypeData.filter((item: any) => {
+                            if (!uniqueIds[item.Id]) {
+                                uniqueIds[item.Id] = true;
+                                return true;
+                            }
+                            return false;
+                        });
+                        const TaskCategories = result.map((item: any) => item.Title).join(', ');
+                        // This is used for Bottleneck and Attention task category Teams Notification 
+                        let GetPreparedHTML: any = GlobalFunctionForUpdateItems.GenerateMSTeamsNotification(UpdatedDataObject);
+                        const containerDiv = document.createElement('div');
+                        const reactElement = React.createElement(GetPreparedHTML?.type, GetPreparedHTML?.props);
+                        ReactDOM.render(reactElement, containerDiv);
+                        let finalTaskInfo: any = containerDiv.innerHTML
+                        if (IsSendAttentionMsgStatus) {
+                            let sendUserEmail: any = [];
+                            let RecieverName: string = '';
+                            TaskAssignedTo?.map((userDtl: any) => {
+                                taskUsers?.map((allUserItem: any) => {
+                                    if (userDtl.Id == allUserItem.AssingedToUserId) {
+                                        sendUserEmail.push(allUserItem.Email);
+                                        if (RecieverName?.length > 3) {
+                                            RecieverName = "Team"
+                                        } else {
+                                            RecieverName = allUserItem.Title;
+                                        }
+                                    }
+                                });
+                            });
+                            let txtComment = `<b>Hi ${RecieverName},</b> 
+                            <p></p>
+                            You have been tagged as <b> ${SendCategoryName == "Bottleneck" ? SendCategoryName : "Attention"}</b> in the below task.`;
+                            let TeamMsg = `${txtComment} 
+                            <p>
+                            <br/>
+                            <b>Reason : </b> <span>${ReasonStatement}</span>
+                            <p></p>
+                            <b>Task Details : </b> <span>${finalTaskInfo}</span>
+                            </br>
+                            <p>
+                            Task Link:  
+                            <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
+                             Click-Here
+                            </a>
+                            <p></p>
+                            <b>
+                            Thanks, </br>
+                            Task Management Team
+                            </b>`;
+                            if (SendCategoryName == "Bottleneck") {
+                                if (sendUserEmail?.length > 0) {
+                                    globalCommon.SendTeamMessage(
+                                        sendUserEmail,
+                                        TeamMsg,
+                                        Items.context
+                                    );
+                                }
+                            } else {
+                                globalCommon.SendTeamMessage(
+                                    userSendAttentionEmails,
+                                    TeamMsg,
+                                    Items.context
+                                );
+                            }
+                        }
                         // This is used for send MS Teams Notification 
-
                         if (!IsUserFromHHHHTeam && SendCategoryName !== "Bottleneck") {
                             try {
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
-
                                 const addEmailAndUserName = (userItem: any) => {
                                     if (userItem.AssingedToUserId !== currentUserId) {
                                         sendUserEmails.push(userItem.Email);
@@ -2612,15 +2676,7 @@ const EditTaskPopup = (Items: any) => {
                                     });
                                 }
 
-                                const uniqueIds: any = {};
-                                const result = tempShareWebTypeData.filter((item: any) => {
-                                    if (!uniqueIds[item.Id]) {
-                                        uniqueIds[item.Id] = true;
-                                        return true;
-                                    }
-                                    return false;
-                                });
-                                const TaskCategories = result.map((item: any) => item.Title).join(', ');
+
                                 let CommonMsg = '';
                                 let checkStatusUpdate = Number(taskPercentageValue) * 100;
                                 if (SendMsgToAuthor) {
@@ -2641,9 +2697,11 @@ const EditTaskPopup = (Items: any) => {
                                             break;
                                     }
                                 }
-                                const SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> </br> 
+                                const SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> 
+                                </br> 
                                     <p>
-                                    Task Link:  <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
+                                    Task Link:  
+                                    <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
                                      ${UpdatedDataObject.TaskId}-${UpdatedDataObject.Title}
                                     </a>
                                     </br>
@@ -2661,7 +2719,12 @@ const EditTaskPopup = (Items: any) => {
                                 const SendUserEmailFinal: any = sendUserEmails.filter((item: any, index: any) => sendUserEmails.indexOf(item) === index);
                                 if ((sendMSGCheck || SendMsgToAuthor || TeamMemberChanged || TeamLeaderChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
                                     if (sendUserEmails.length > 0) {
-                                        await globalCommon.SendTeamMessage(SendUserEmailFinal, SendMessage, Items.context);
+                                        // await sendTeamMessagePromise(SendUserEmailFinal, SendMessage, Items.context)
+                                        globalCommon.SendTeamMessage(SendUserEmailFinal, SendMessage, Items.context).then(() => {
+                                            console.log("MS Teams Message Send Succesfully !!!!")
+                                        }).catch((error) => {
+                                            console.log("MS Teams Message Not Send !!!!", error.message)
+                                        })
                                     }
                                 }
                             } catch (error) {
@@ -2683,6 +2746,7 @@ const EditTaskPopup = (Items: any) => {
                                     console.log(response);
                                     console.log("Design Email Notification Sent !!");
                                 });
+
                             }
                         }
 
@@ -2715,23 +2779,6 @@ const EditTaskPopup = (Items: any) => {
                                 //EditData.TaskApprovers.push(EditData?.Author)
                             }
                         }
-
-                        if (
-                            TaskDetailsFromCall != undefined &&
-                            TaskDetailsFromCall.length > 0
-                        ) {
-                            TaskDetailsFromCall[0].TaskCreatorData = EditData.TaskCreatorData;
-                            TaskDetailsFromCall[0].TaskApprovers = EditData.TaskApprovers;
-                            TaskDetailsFromCall[0].Approvere = EditData.Approvere;
-                            TaskDetailsFromCall[0].currentUser = EditData.CurrentUserData;
-                            TaskDetailsFromCall[0].FeedBack = JSON.parse(
-                                TaskDetailsFromCall[0].FeedBack
-                            );
-                            TaskDetailsFromCall[0].siteType = EditData.siteType;
-                            TaskDetailsFromCall[0].siteUrl = siteUrls;
-                            TaskDetailsFromCall[0].siteIcon = Items.Items.SiteIcon;
-                        }
-
                         let spaceIndex = EditData.TaskCreatorData[0]?.Title.lastIndexOf(' ');
                         if (spaceIndex !== -1) {
                             TaskDetailsFromCall[0].CreatorTitle = EditData.TaskCreatorData[0]?.Title.substring(0, spaceIndex);
@@ -2849,6 +2896,7 @@ const EditTaskPopup = (Items: any) => {
             }
         }
     };
+
 
     const MakeUpdateDataJSON = async () => {
         var UploadImageArray: any = [];
@@ -5251,6 +5299,7 @@ const EditTaskPopup = (Items: any) => {
                     Context={Context}
                     callback={editTaskPopupCallBack}
                     usedFor="Task-Popup"
+                    CommentFor={SendCategoryName}
                 />
                 : null}
 
@@ -5264,6 +5313,7 @@ const EditTaskPopup = (Items: any) => {
                 onRenderFooter={onRenderCustomFooterMain}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
+                    {!loaded ? <PageLoader /> : ''}
                     <div className="modal-body mb-5">
                         <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
                             <button
