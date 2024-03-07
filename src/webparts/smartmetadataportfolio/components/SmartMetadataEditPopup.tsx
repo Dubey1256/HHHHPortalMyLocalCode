@@ -811,7 +811,7 @@ export default function SmartMetadataEditPopup(props: any) {
                         </div>
                         <div className={activeTab == 'ImageInfo' ? 'tab-pane fade show active' : 'tab-pane fade show active tab-pane fade'} id="ImageInfo" role="tabpanel" aria-labelledby="ImageInfo">   {activeTab == 'ImageInfo' && (
                             <div className="modal-body" style={{ overflowY: 'auto' }}>
-                                <ImageTabComponenet EditSmartMetaData={props?.MetadataItems} AllListId={props?.AllList} Context={props?.AllList?.Context} callBack={callBackData} />
+                                <ImageTabComponenet EditdocumentsData={props?.modalInstance} AllListId={props?.AllList} Context={props?.AllList?.Context} callBack={callBackData} />
                             </div>
                         )}
                         </div>
@@ -922,7 +922,7 @@ export default function SmartMetadataEditPopup(props: any) {
                         </div>
                     </footer>
                     {
-                        loaded ? <PageLoader /> : ''
+                        activeTab === "TaskInfo" && loaded ? <PageLoader /> : ''
                     }
                 </Panel>
             </div >

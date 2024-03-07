@@ -27,6 +27,7 @@ export interface ITaskprofileWebPartProps {
   DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08';
   TaskTimeSheetListID: '464fb776-e4b3-404c-8261-7d3c50ff343f';
   TaskTypeID:"21b55c7b-5748-483a-905a-62ef663972dc";
+  PortFolioTypeID: "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
   TimeEntry: any;
   SiteCompostion: any;
 }
@@ -61,6 +62,7 @@ export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofi
         TaskUsertListID: this.properties.TaskUsertListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
         SmartInformationListID: this.properties.SmartInformationListID,
+        PortFolioTypeID:this.properties.PortFolioTypeID,
         DocumentsListID: this.properties.DocumentsListID,
         TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
         TaskTypeID:this.properties.TaskTypeID,
@@ -128,6 +130,9 @@ export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofi
                 }),
                 PropertyPaneTextField('SmartInformationListID', {
                   label: 'SmartInformationListID'
+                }),
+                PropertyPaneTextField('PortFolioTypeID', {
+                  label: "PortFolioTypeID"
                 }),
                 PropertyPaneTextField('DocumentsListID', {
                   label: "DocumentsListID"

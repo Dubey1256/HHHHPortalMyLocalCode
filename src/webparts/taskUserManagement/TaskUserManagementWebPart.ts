@@ -35,9 +35,9 @@ export default class TaskUserManagementWebPart extends BaseClientSideWebPart<ITa
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         context: this.context,
-        TaskUserListId:"b318ba84-e21d-4876-8851-88b94b9dc300",
-        SmartMetaDataId: "01a34938-8c7e-4ea6-a003-cee649e8c67a",
-        SitePagesList: "16839758-4688-49D5-A45F-CFCED9F80BA6"
+        TaskUserListId:this.properties.TaskUserListId,
+        SmartMetaDataId: this.properties.SmartMetaDataId,
+        SitePagesList: this.properties.SitePagesList
       }
     );
 

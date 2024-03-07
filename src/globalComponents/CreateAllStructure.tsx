@@ -3,7 +3,7 @@ import * as $ from "jquery";
 import * as Moment from "moment";
 import { Panel, PanelType } from "office-ui-fabric-react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { sp } from "sp-pnp-js";
+import { Web, sp } from "sp-pnp-js";
 import PageLoader from "./pageLoader";
 let defaultPortfolioType = 'Component'
 let PortfoliotypeData: any = '';
@@ -274,21 +274,21 @@ const CreateAllStructureComponent = (props: any) => {
                         // Create feature item in SharePoint list
 
 
-                        await createListItem('Master Tasks', featureItem);
+                        const featureData = await createListItem('Master Tasks', featureItem);
 
 
                         // Add feature to the features array
                         if (featureItem.Title != "") {
                             features.push({
-                                Id: featureItem?.Id,
-                                ID: featureItem?.Id,
+                                Id: featureData?.Id,
+                                ID: featureData?.Id,
                                 Title: featureItem?.Title,
                                 siteType: "Master Tasks",
                                 SiteIconTitle: featureItem?.Item_x0020_Type?.charAt(0),
                                 TaskID: featureItem?.PortfolioStructureID,
                                 Created: Moment(featureItem?.Created).format("DD/MM/YYYY"),
                                 DisplayCreateDate: Moment(featureItem?.Created).format("DD/MM/YYYY"),
-                                Author: { "Id": featureItem?.AuthorId, 'Title': CurrentUserData?.Title, 'autherImage': CurrentUserData?.Item_x0020_Cover?.Url },
+                                Author: { "Id": CurrentUserId, 'Title': CurrentUserData?.Title, 'autherImage': CurrentUserData?.Item_x0020_Cover?.Url },
                                 PortfolioType: PortfoliotypeData,
                                 PortfolioStructureID:featureItem?.PortfolioStructureID,
                                 Item_x0020_Type :'Feature'
@@ -367,7 +367,8 @@ const CreateAllStructureComponent = (props: any) => {
     const createListItem = async (listName: string, item: any) => {
         if (item.Title != "") {
             try {
-                const result = await sp.web.lists.getByTitle(listName).items.add(item);
+                let web = new Web(props?.PropsValue?.siteUrl);
+                const result = await web.lists.getByTitle(listName).items.add(item);
                 return result.data;
             } catch (error) {
                 throw new Error(`Failed to create item in the list. Error: ${error}`);
@@ -388,8 +389,8 @@ const CreateAllStructureComponent = (props: any) => {
             //filter = "Parent/Id eq '" + item.Id
         }
 
-
-        let results = await sp.web.lists
+        let web = new Web(props?.PropsValue?.siteUrl);
+        let results = await web.lists
             .getByTitle('Master Tasks')
             .items
             .select("Id", "Title", "PortfolioLevel",'Item_x0020_Type', "PortfolioStructureID", "Parent/Id", "PortfolioType/Id", "PortfolioType/Title")
@@ -598,10 +599,10 @@ const CreateAllStructureComponent = (props: any) => {
                                 {(component.value || component?.SubComponent?.length) &&
                                     <label className="form-label full-width" htmlFor={`exampleFormControlInput${component.id}`}>
                                         {isDisable == false &&
-                                            <>
+                                            <b>
                                                 <span>{index + 1} - </span>
                                                 <span>Component</span>
-                                            </>
+                                            </b>
                                         }
                                         <span className={isDisable ? '' : "pull-right"}>
                                             <label className='SpfxCheckRadio'>
@@ -658,7 +659,7 @@ const CreateAllStructureComponent = (props: any) => {
         {(Subcomponent.isCheckedSub  || (props?.SelectedItem?.Item_x0020_Type != 'SubComponent' && props?.SelectedItem != undefined)) &&
             <div>
                 <label className="form-label full-width" htmlFor={`exampleFormControlInput${Subcomponent.id}`}>
-                    <span>{indexSub + 1} - </span> SubComponent
+                <b> <span>{indexSub + 1} - </span> SubComponent</b>
                     <span className="pull-right">
                         <label className='SpfxCheckRadio me-0'>
                             <input 
@@ -697,8 +698,8 @@ const CreateAllStructureComponent = (props: any) => {
             <div className="mt-2 ps-4">
                 {Subcomponent?.Feature?.map((Features: any, indexFea: any) => (
                     <div key={Features.id} className="form-group">
-                        <span>{indexFea + 1} - </span>
-                        <label htmlFor={`exampleFormControlInput${Features.id}`}>Feature</label>
+                        <b><span>{indexFea + 1} - </span>
+                        <label htmlFor={`exampleFormControlInput${Features.id}`}>Feature</label></b>
                         <div className="input-group">
                             <input
                                 type="text"

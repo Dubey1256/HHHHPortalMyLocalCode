@@ -2,12 +2,13 @@ import * as React from 'react';
 import { Panel, PanelType } from "office-ui-fabric-react";
 import ReactApexChart from 'react-apexcharts';
 import * as Moment from "moment";
-let EndDate:any;
 const GraphData = (data: any) => {
   const mydata = data.data.sort(datecomp);
- 
   const calculateTotalTimeByDay = (data: any) => {
-  
+    interface DayDetails {
+      total: number;
+      subRows: any[]; // Replace `any` with a more specific type if possible
+    }
     const totalTimeByDay: { [key: string]: { [key: string]: number } } = {};
     const getDayName = (dateString: string): string => {
       const date = new Date(dateString);
@@ -17,7 +18,7 @@ const GraphData = (data: any) => {
       return `${day}/${month}/${year}`;
     };
     data.forEach((entry: any) => {
-      const { NewTimeEntryDate, TaskTime, Site } = entry;
+      const { NewTimeEntryDate, TaskTime, Site,subRows} = entry;
       const taskTimeNumber = parseFloat(TaskTime); // Parse TaskTime as a number
 
       const dayName = getDayName(NewTimeEntryDate);
@@ -25,25 +26,31 @@ const GraphData = (data: any) => {
       if (!totalTimeByDay[dayName]) {
         totalTimeByDay[dayName] = {};
         totalTimeByDay[dayName].total = 0;
+       // totalTimeByDay[dayName][subRows] = [];
       }
 
 
       if (!totalTimeByDay[dayName][Site]) {
         totalTimeByDay[dayName][Site] = 0;
       }
+      // if (!totalTimeByDay[dayName][subRows]) {
+      //   totalTimeByDay[dayName][subRows] = [];
+      // }
 
 
       totalTimeByDay[dayName][Site] += taskTimeNumber;
 
       totalTimeByDay[dayName].total += taskTimeNumber;
+     // totalTimeByDay[dayName].subRows =entry.subRows;
     });
 
     // Convert the accumulated data into chart data format
-    const chartData = Object.keys(totalTimeByDay)?.map(day => {
+    const chartData = Object.keys(totalTimeByDay).map(day => {
       const { total, ...sites } = totalTimeByDay[day]; // Extract total time for the day
       const siteData = Object.keys(sites).map(site => ({
         Site: site,
-        Time: sites[site]
+        Time: sites[site],
+      //  subRows:site["subRows"]
       }));
       return { Day: day, Time: total, SiteData: siteData };
     });
@@ -57,31 +64,37 @@ const GraphData = (data: any) => {
 
   function fillMissingDates(data: any) {
     const result = [];
+
+    // Extract the first and last dates from the array
+    // Moment(data[0].Day).format("DD/MM/YYYY")
     let lastdateLength =(data.length - 1);
     const startDate: any = new Date(Moment(data[0].Day).format("DD/MM/YYYY"));
     const dateParts = data[lastdateLength].Day?.split('/');
     const year = parseInt(dateParts[2], 10);
-    const month = parseInt(dateParts[1], 10) - 1; // Months are 0 indexed
-    const day = parseInt(dateParts[0], 10);
- 
-    const endDate = new Date(year, month, day)
+    const month = parseInt(dateParts[0], 10) - 1; // Months are 0 indexed
+    const day = parseInt(dateParts[1], 10);
 
+    const endDate = new Date(year, month, day)
+    // const endDate:any = new Date(Moment().format("DD/MM/YYYY"));
+
+    // Iterate over the dates from the start date to the end date
     let currentDate = new Date(startDate);
     while (currentDate <= endDate) {
       const formattedDate = currentDate.toLocaleDateString('en-GB'); // Format the date as 'dd/mm/yyyy'
+
+      // Check if the current date exists in the data array
       const existingDate = data.find((item: any) => item.Day === formattedDate);
-      if (!existingDate) {
-        let riBeoushed: any = {}
-        riBeoushed.Day = formattedDate;
-        riBeoushed.SiteData = [];
-        riBeoushed.Time = 0;
-        result.push(riBeoushed);
-      }else{
+
+      // If the current date is missing, add it to the result array
+      if (existingDate?.SiteData?.length>0)
         result.push(existingDate);
-      }
+      
+
+      // If the current date is equal to the end date, break the loop
       if (currentDate.setHours(0,0,0,0) === endDate.setHours(0,0,0,0) ) {
         return result;
       }
+      // Move to the next date
       currentDate.setDate(currentDate.getDate() + 1);
     }
 
@@ -101,9 +114,9 @@ const GraphData = (data: any) => {
   };
   
 
-  const startDate = totalTimeByDay[0]?.Day;
-  const numDays = totalTimeByDay?.length;
-  let dummyData=new Date(totalTimeByDay[totalTimeByDay?.length - 1].Day)
+  const startDate = totalTimeByDay[0].Day;
+  const numDays = totalTimeByDay.length;
+  let dummyData=new Date(totalTimeByDay[totalTimeByDay.length - 1].Day)
   const dateRange = generateDateRange(startDate, numDays)
   const formattedDateRange = dateRange.map(date => {
     const [day, month, year] = date.split('/');
@@ -117,20 +130,27 @@ const GraphData = (data: any) => {
     }
   });
 
-  totalTimeByDay?.sort((a: any, b: any) => {
+  totalTimeByDay.sort((a: any, b: any) => {
     const dateA: any = new Date(a.Day.split('/').reverse().join('-'));
     const dateB: any = new Date(b.Day.split('/').reverse().join('-'));
     return dateA - dateB;
   });
-  let copytotalTimeByDay= JSON.parse(JSON.stringify(totalTimeByDay))
-  const checkData = fillMissingDates(copytotalTimeByDay);
-  if(checkData?.length>0){
-    console.log(checkData)
-    totalTimeByDay=checkData;
-  }
+  const checkData = fillMissingDates(totalTimeByDay);
+  console.log(checkData)
   
+  checkData?.forEach((obj:any) =>{
+    obj.SiteData =[];
+    mydata?.forEach((dat:any) =>{
+      const startDate: any = Moment(dat.TimeEntrykDateNew).format("DD/MM/YYYY");
+      if(obj?.Day ===startDate){
+        dat.Time =dat.TaskTime;
+        obj.SiteData =dat.subRows;
+      }
+    })
+  })
+  totalTimeByDay=checkData;
 
-  const formattedTotalTimeByDay = totalTimeByDay?.map(entry => {
+  const formattedTotalTimeByDay = totalTimeByDay.map(entry => {
     const [day, month] = entry.Day.split('/'); // Split the day and month components
     entry.Day = `${day}/${month}`; // Reassign the Day property in the desired format
     return entry;

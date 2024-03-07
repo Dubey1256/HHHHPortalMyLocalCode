@@ -55,6 +55,8 @@ let hasExpanded: any = true
 let isHeaderNotAvlable: any = false
 let isColumnDefultSortingAsc: any = false;
 let tasksDataLoadUpdate: any = []
+let metaDataItem: any = [];
+// let dynamicColumnsValue: any = [];
 function TeamPortlioTable(SelectedProp: any) {
     const childRef = React.useRef<any>();
     if (childRef != null) {
@@ -123,8 +125,10 @@ function TeamPortlioTable(SelectedProp: any) {
     const [updatedSmartFilterFlatView, setUpdatedSmartFilterFlatView] = React.useState(false);
     const [flatViewDataAll, setFlatViewDataAll] = React.useState([]);
     const [openCompareToolPopup, setOpenCompareToolPopup] = React.useState(false);
+    const [dynamicColumnsValue, setDynamicColumnsValue] = React.useState([])
     const rerender = React.useReducer(() => ({}), {})[1];
     const [ActiveCompareToolButton, setActiveCompareToolButton] = React.useState(false);
+    const [taskCatagory, setTaskCatagory] = React.useState([]);
     // const [tableHeight, setTableHeight] = React.useState(window.innerHeight);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
     let ComponetsData: any = {};
@@ -187,8 +191,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 'Level',
                 'Title',
                 'SortOrder',
-            )
-            .get();
+            ).get();
         setTaskTypeData(taskTypeData);
         if (taskTypeData?.length > 0 && taskTypeData != undefined) {
             taskTypeData?.forEach((obj: any) => {
@@ -212,8 +215,8 @@ function TeamPortlioTable(SelectedProp: any) {
         let siteConfigSites: any = []
         var Priority: any = []
         // let PrecentComplete: any = [];
-        // let Categories: any = [];
         // let FeatureType: any = []
+        let Categories: any = [];
         let web = new Web(ContextValue.siteUrl);
         let smartmetaDetails: any = [];
         smartmetaDetails = await web.lists
@@ -231,10 +234,15 @@ function TeamPortlioTable(SelectedProp: any) {
             if (newtest?.TaxType == 'Priority Rank') {
                 Priority?.push(newtest)
             }
+            if (newtest.TaxType == 'Categories') {
+                Categories.push(newtest);
+            }
         })
         if (siteConfigSites?.length > 0) {
             setSiteConfig(siteConfigSites)
         }
+        setTaskCatagory(Categories);
+        metaDataItem.push(...smartmetaDetails)
         setMetadata(smartmetaDetails);
     };
     const findPortFolioIconsAndPortfolio = async () => {
@@ -333,214 +341,213 @@ function TeamPortlioTable(SelectedProp: any) {
                         item["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                         item.fontColorTask = "#000"
                     });
-                }
-                AllTasksSiteTasks = AllTasksSiteTasks.concat(AllTasksMatches);
-                if (Counter == siteConfig.length) {
-                    map(AllTasksSiteTasks, (result: any) => {
-                        result.Id = result.Id != undefined ? result.Id : result.ID;
-                        result.TeamLeaderUser = [];
-                        result.AllTeamName = result.AllTeamName === undefined ? "" : result.AllTeamName;
-                        result.chekbox = false;
-                        result.timeSheetsDescriptionSearch = '';
-                        result.SmartPriority = 0;
-                        result.TaskTypeValue = '';
-                        result.projectPriorityOnHover = '';
-                        result.taskPriorityOnHover = result?.PriorityRank;
-                        result.showFormulaOnHover;
-                        result.portfolioItemsSearch = '';
-                        result.commentsSearch = '';
-                        result.descriptionsSearch = '';
-                        result.descriptionsDeliverablesSearch = '';
-                        result.descriptionsHelpInformationSarch = '';
-                        result.descriptionsShortDescriptionSearch = '';
-                        result.descriptionsTechnicalExplanationsSearch = '';
-                        result.descriptionsBodySearch = '';
-                        result.descriptionsAdminNotesSearch = '';
-                        result.descriptionsValueAddedSearch = '';
-                        result.descriptionsIdeaSearch = '';
-                        result.descriptionsBackgroundSearch = '';
-                        result.FeatureTypeTitle = ''
-                        if (result?.DueDate != null && result?.DueDate != undefined) {
-                            result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
-                        }
-                        if (result?.Modified != null && result?.Modified != undefined) {
-                            result.serverModifiedDate = new Date(result?.Modified).setHours(0, 0, 0, 0)
-                        }
-                        if (result?.Created != null && result?.Created != undefined) {
-                            result.serverCreatedDate = new Date(result?.Created).setHours(0, 0, 0, 0)
-                        }
-                        result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
-                        if (result.DisplayCreateDate == "Invalid date" || "") {
-                            result.DisplayCreateDate = result.DisplayCreateDate.replaceAll("Invalid date", "");
-                        }
-                        result.DisplayModifiedDate = Moment(result.Modified).format("DD/MM/YYYY");
-                        if (result.Editor) {
-                            result.Editor.autherImage = findUserByName(result.Editor?.Id)
-                        }
-                        if (result.Author) {
-                            result.Author.autherImage = findUserByName(result.Author?.Id)
-                        }
-                        result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
-                        if (result.DisplayDueDate == "Invalid date" || "") {
-                            result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
-                        }
-                        if (result?.TaskType) {
-                            result.portfolioItemsSearch = result?.TaskType?.Title;
-                        }
+                    AllTasksSiteTasks = AllTasksSiteTasks.concat(AllTasksMatches);
+                    if (Counter == siteConfig.length) {
+                        map(AllTasksSiteTasks, (result: any) => {
+                            result.Id = result.Id != undefined ? result.Id : result.ID;
+                            result.TeamLeaderUser = [];
+                            result.AllTeamName = result.AllTeamName === undefined ? "" : result.AllTeamName;
+                            result.chekbox = false;
+                            result.timeSheetsDescriptionSearch = '';
+                            result.SmartPriority = 0;
+                            result.TaskTypeValue = '';
+                            result.projectPriorityOnHover = '';
+                            result.taskPriorityOnHover = result?.PriorityRank;
+                            result.showFormulaOnHover;
+                            result.portfolioItemsSearch = '';
+                            result.commentsSearch = '';
+                            result.descriptionsSearch = '';
+                            result.descriptionsDeliverablesSearch = '';
+                            result.descriptionsHelpInformationSarch = '';
+                            result.descriptionsShortDescriptionSearch = '';
+                            result.descriptionsTechnicalExplanationsSearch = '';
+                            result.descriptionsBodySearch = '';
+                            result.descriptionsAdminNotesSearch = '';
+                            result.descriptionsValueAddedSearch = '';
+                            result.descriptionsIdeaSearch = '';
+                            result.descriptionsBackgroundSearch = '';
+                            result.FeatureTypeTitle = ''
+                            if (result?.DueDate != null && result?.DueDate != undefined) {
+                                result.serverDueDate = new Date(result?.DueDate).setHours(0, 0, 0, 0)
+                            }
+                            if (result?.Modified != null && result?.Modified != undefined) {
+                                result.serverModifiedDate = new Date(result?.Modified).setHours(0, 0, 0, 0)
+                            }
+                            if (result?.Created != null && result?.Created != undefined) {
+                                result.serverCreatedDate = new Date(result?.Created).setHours(0, 0, 0, 0)
+                            }
+                            result.DisplayCreateDate = Moment(result.Created).format("DD/MM/YYYY");
+                            if (result.DisplayCreateDate == "Invalid date" || "") {
+                                result.DisplayCreateDate = result.DisplayCreateDate.replaceAll("Invalid date", "");
+                            }
+                            result.DisplayModifiedDate = Moment(result.Modified).format("DD/MM/YYYY");
+                            if (result.Editor) {
+                                result.Editor.autherImage = findUserByName(result.Editor?.Id)
+                            }
+                            if (result.Author) {
+                                result.Author.autherImage = findUserByName(result.Author?.Id)
+                            }
+                            result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
+                            if (result.DisplayDueDate == "Invalid date" || "") {
+                                result.DisplayDueDate = result?.DisplayDueDate.replaceAll("Invalid date", "");
+                            }
+                            if (result?.TaskType) {
+                                result.portfolioItemsSearch = result?.TaskType?.Title;
+                            }
 
-                        result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+                            result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
 
-                        if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
-                            result.percentCompleteValue = parseInt(result?.PercentComplete);
-                        }
-                        if (result?.Portfolio != undefined) {
-                            allMasterTaskDataFlatLoadeViewBackup.map((item: any) => {
-                                if (item.Id === result?.Portfolio?.Id) {
-                                    result.Portfolio = item
-                                    result.PortfolioType = item?.PortfolioType
-                                }
-                            })
-                        }
-                        result.chekbox = false;
-                        if (result?.FeedBack && result?.FeedBack != undefined) {
-                            const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
-                            let descriptionSearchData = '';
-                            try {
-                                const feedbackData = JSON.parse(result.FeedBack);
-                                descriptionSearchData = feedbackData[0]?.FeedBackDescriptions?.map((child: any) => {
-                                    const childText = cleanText(child?.Title);
-                                    const comments = (child?.Comments || [])?.map((comment: any) => {
-                                        const commentText = cleanText(comment?.Title);
-                                        const replyText = (comment?.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
-                                        return [commentText, replyText]?.filter(Boolean).join(' ');
-                                    }).join(' ');
-
-                                    const subtextData = (child.Subtext || [])?.map((subtext: any) => {
-                                        const subtextComment = cleanText(subtext?.Title);
-                                        const subtextReply = (subtext.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
-                                        const subtextComments = (subtext.Comments || [])?.map((subComment: any) => {
-                                            const subCommentTitle = cleanText(subComment?.Title);
-                                            const subCommentReplyText = (subComment.ReplyMessages || []).map((val: any) => cleanText(val?.Title)).join(' ');
-                                            return [subCommentTitle, subCommentReplyText]?.filter(Boolean).join(' ');
+                            if (result.PercentComplete != undefined && result.PercentComplete != '' && result.PercentComplete != null) {
+                                result.percentCompleteValue = parseInt(result?.PercentComplete);
+                            }
+                            if (result?.Portfolio != undefined) {
+                                allMasterTaskDataFlatLoadeViewBackup.map((item: any) => {
+                                    if (item.Id === result?.Portfolio?.Id) {
+                                        result.Portfolio = item
+                                        result.PortfolioType = item?.PortfolioType
+                                    }
+                                })
+                            }
+                            result.chekbox = false;
+                            if (result?.FeedBack && result?.FeedBack != undefined) {
+                                const cleanText = (text: any) => text?.replace(/(<([^>]+)>)/gi, '').replace(/\n/g, '');
+                                let descriptionSearchData = '';
+                                try {
+                                    const feedbackData = JSON.parse(result.FeedBack);
+                                    descriptionSearchData = feedbackData[0]?.FeedBackDescriptions?.map((child: any) => {
+                                        const childText = cleanText(child?.Title);
+                                        const comments = (child?.Comments || [])?.map((comment: any) => {
+                                            const commentText = cleanText(comment?.Title);
+                                            const replyText = (comment?.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
+                                            return [commentText, replyText]?.filter(Boolean).join(' ');
                                         }).join(' ');
-                                        return [subtextComment, subtextReply, subtextComments].filter(Boolean).join(' ');
+
+                                        const subtextData = (child.Subtext || [])?.map((subtext: any) => {
+                                            const subtextComment = cleanText(subtext?.Title);
+                                            const subtextReply = (subtext.ReplyMessages || [])?.map((val: any) => cleanText(val?.Title)).join(' ');
+                                            const subtextComments = (subtext.Comments || [])?.map((subComment: any) => {
+                                                const subCommentTitle = cleanText(subComment?.Title);
+                                                const subCommentReplyText = (subComment.ReplyMessages || []).map((val: any) => cleanText(val?.Title)).join(' ');
+                                                return [subCommentTitle, subCommentReplyText]?.filter(Boolean).join(' ');
+                                            }).join(' ');
+                                            return [subtextComment, subtextReply, subtextComments].filter(Boolean).join(' ');
+                                        }).join(' ');
+
+                                        return [childText, comments, subtextData].filter(Boolean).join(' ');
                                     }).join(' ');
 
-                                    return [childText, comments, subtextData].filter(Boolean).join(' ');
-                                }).join(' ');
-
-                                result.descriptionsSearch = descriptionSearchData;
+                                    result.descriptionsSearch = descriptionSearchData;
+                                } catch (error) {
+                                    console.error("Error:", error);
+                                }
+                            }
+                            try {
+                                if (result?.Comments != null && result?.Comments != undefined) {
+                                    const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
+                                    const commentsFormData = JSON?.parse(cleanedComments);
+                                    result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
+                                        return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
+                                    }, "").trim();
+                                }
                             } catch (error) {
-                                console.error("Error:", error);
+                                console.error("An error occurred:", error);
                             }
-                        }
+                            if (
+                                result.AssignedTo != undefined &&
+                                result.AssignedTo.length > 0
+                            ) {
+                                map(result.AssignedTo, (Assig: any) => {
+                                    if (Assig.Id != undefined) {
+                                        map(AllUsers, (users: any) => {
+                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                                                users.ItemCover = users.Item_x0020_Cover;
+                                                result.TeamLeaderUser.push(users);
+                                                result.AllTeamName += users.Title + ";";
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                            if (result.ResponsibleTeam != undefined && result.ResponsibleTeam.length > 0) {
+                                map(result.ResponsibleTeam, (Assig: any) => {
+                                    if (Assig.Id != undefined) {
+                                        map(AllUsers, (users: any) => {
+                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                                                users.ItemCover = users.Item_x0020_Cover;
+                                                result.TeamLeaderUser.push(users);
+                                                result.AllTeamName += users.Title + ";";
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                            if (
+                                result.TeamMembers != undefined &&
+                                result.TeamMembers.length > 0
+                            ) {
+                                map(result.TeamMembers, (Assig: any) => {
+                                    if (Assig.Id != undefined) {
+                                        map(AllUsers, (users: any) => {
+                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
+                                                users.ItemCover = users.Item_x0020_Cover;
+                                                result.TeamLeaderUser.push(users);
+                                                result.AllTeamName += users.Title + ";";
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                            if (result?.TaskCategories?.length > 0) {
+                                result.TaskTypeValue = result?.TaskCategories?.map((val: any) => val.Title).join(",")
+                            }
+
+                            if (result?.ClientCategory?.length > 0) {
+                                result.ClientCategorySearch = result?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
+                            } else {
+                                result.ClientCategorySearch = ''
+                            }
+                            result["TaskID"] = globalCommon.GetTaskId(result);
+                            if (result.Project) {
+                                result.ProjectTitle = result?.Project?.Title;
+                                result.ProjectId = result?.Project?.Id;
+                                result.projectStructerId = result?.Project?.PortfolioStructureID
+                                const title = result?.Project?.Title || '';
+                                const formattedDueDate = Moment(result?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+                                result.joinedData = [];
+                                if (result?.projectStructerId && title || formattedDueDate) {
+                                    result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+                                }
+                            }
+                            result = globalCommon.findTaskCategoryParent(taskCatagory, result)
+                            result.SmartPriority = globalCommon.calculateSmartPriority(result);
+                            result["Item_x0020_Type"] = "Task";
+                            TasksItem.push(result);
+                            AllSiteTasksDataBackGroundLoad.push(result)
+                        });
+                        smartTimeUseLocalStorage(AllSiteTasksDataBackGroundLoad)
+                        console.log("loade All Data > 89% is ========", AllSiteTasksDataBackGroundLoad)
+                        // tasksDataLoadUpdate.push(AllSiteTasksData);
+                        tasksDataLoadUpdate = tasksDataLoadUpdate.concat(allTaskDataFlatLoadeViewBackup);
+
+                        tasksDataLoadUpdate = tasksDataLoadUpdate.concat(AllSiteTasksDataBackGroundLoad);
+                        setAllSiteTasksDataLoadAll(tasksDataLoadUpdate);
+                        let taskBackup: any = []
                         try {
-                            if (result?.Comments != null && result?.Comments != undefined) {
-                                const cleanedComments = result?.Comments?.replace(/[^\x20-\x7E]/g, '');
-                                const commentsFormData = JSON?.parse(cleanedComments);
-                                result.commentsSearch = commentsFormData?.reduce((accumulator: any, comment: any) => {
-                                    return (accumulator + comment.Title + " " + comment?.ReplyMessages?.map((reply: any) => reply?.Title).join(" ") + " ");
-                                }, "").trim();
-                            }
+                            taskBackup = JSON.parse(JSON.stringify(tasksDataLoadUpdate));
                         } catch (error) {
-                            console.error("An error occurred:", error);
+                            console.log("backup Json parse error backGround Loade All Task Data")
                         }
-                        if (
-                            result.AssignedTo != undefined &&
-                            result.AssignedTo.length > 0
-                        ) {
-                            map(result.AssignedTo, (Assig: any) => {
-                                if (Assig.Id != undefined) {
-                                    map(AllUsers, (users: any) => {
-                                        if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
-                                            users.ItemCover = users.Item_x0020_Cover;
-                                            result.TeamLeaderUser.push(users);
-                                            result.AllTeamName += users.Title + ";";
-                                        }
-                                    });
-                                }
-                            });
+                        allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
+                        let allTaskDataFlatLoadeViewBackupAllData: any = [];
+                        try {
+                            allTaskDataFlatLoadeViewBackupAllData = JSON.parse(JSON.stringify(AllSiteTasksDataBackGroundLoad))
+                        } catch (error) {
+                            console.log("backup Json parse error backGround Loade All Task Data")
                         }
-                        if (result.ResponsibleTeam != undefined && result.ResponsibleTeam.length > 0) {
-                            map(result.ResponsibleTeam, (Assig: any) => {
-                                if (Assig.Id != undefined) {
-                                    map(AllUsers, (users: any) => {
-                                        if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
-                                            users.ItemCover = users.Item_x0020_Cover;
-                                            result.TeamLeaderUser.push(users);
-                                            result.AllTeamName += users.Title + ";";
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                        if (
-                            result.TeamMembers != undefined &&
-                            result.TeamMembers.length > 0
-                        ) {
-                            map(result.TeamMembers, (Assig: any) => {
-                                if (Assig.Id != undefined) {
-                                    map(AllUsers, (users: any) => {
-                                        if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
-                                            users.ItemCover = users.Item_x0020_Cover;
-                                            result.TeamLeaderUser.push(users);
-                                            result.AllTeamName += users.Title + ";";
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                        if (result?.TaskCategories?.length > 0) {
-                            result.TaskTypeValue = result?.TaskCategories?.map((val: any) => val.Title).join(",")
-                        }
-
-                        if (result?.ClientCategory?.length > 0) {
-                            result.ClientCategorySearch = result?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
-                        } else {
-                            result.ClientCategorySearch = ''
-                        }
-                        result["TaskID"] = globalCommon.GetTaskId(result);
-                        if (result.Project) {
-                            result.ProjectTitle = result?.Project?.Title;
-                            result.ProjectId = result?.Project?.Id;
-                            result.projectStructerId = result?.Project?.PortfolioStructureID
-                            const title = result?.Project?.Title || '';
-                            const formattedDueDate = Moment(result?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
-                            result.joinedData = [];
-                            if (result?.projectStructerId && title || formattedDueDate) {
-                                result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
-                            }
-                        }
-                        // result = globalCommon.findTaskCategoryParent(taskCatagory, result)
-                        result.SmartPriority = globalCommon.calculateSmartPriority(result);
-                        result["Item_x0020_Type"] = "Task";
-                        TasksItem.push(result);
-                        AllSiteTasksDataBackGroundLoad.push(result)
-                    });
-                    smartTimeUseLocalStorage(AllSiteTasksDataBackGroundLoad)
-                    console.log("loade All Data > 89% is ========", AllSiteTasksDataBackGroundLoad)
-                    // tasksDataLoadUpdate.push(AllSiteTasksData);
-                    tasksDataLoadUpdate = tasksDataLoadUpdate.concat(allTaskDataFlatLoadeViewBackup);
-
-                    tasksDataLoadUpdate = tasksDataLoadUpdate.concat(AllSiteTasksDataBackGroundLoad);
-                    setAllSiteTasksDataLoadAll(tasksDataLoadUpdate);
-                    let taskBackup: any = []
-                    try {
-                        taskBackup = JSON.parse(JSON.stringify(tasksDataLoadUpdate));
-                    } catch (error) {
-                        console.log("backup Json parse error backGround Loade All Task Data")
+                        allTaskDataFlatLoadeViewBackup = allTaskDataFlatLoadeViewBackup.concat(allTaskDataFlatLoadeViewBackupAllData);
+                        firstTimeFullDataGrouping();
                     }
-                    allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
-                    let allTaskDataFlatLoadeViewBackupAllData: any = [];
-                    try {
-                        allTaskDataFlatLoadeViewBackupAllData = JSON.parse(JSON.stringify(AllSiteTasksDataBackGroundLoad))
-                    } catch (error) {
-                        console.log("backup Json parse error backGround Loade All Task Data")
-                    }
-                    allTaskDataFlatLoadeViewBackup = allTaskDataFlatLoadeViewBackup.concat(allTaskDataFlatLoadeViewBackupAllData);
-                    firstTimeFullDataGrouping();
                 }
-
             });
             await Promise.all(fetchPromises)
             return tasksDataLoadUpdate
@@ -555,6 +562,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 task.timeSheetsDescriptionSearch = "";
                 const key = `Task${task?.siteType + task.Id}`;
                 if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
+                    // task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                    task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndexLocalStorage[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndexLocalStorage[key]?.TotalTaskTime;
                     // task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
                     task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndexLocalStorage[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndexLocalStorage[key]?.TotalTaskTime;
                     task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
@@ -583,7 +592,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     .expand(
                         "ParentTask", "Portfolio", "TaskType", "ClientCategory", "TeamMembers", "ResponsibleTeam", "AssignedTo", "Editor", "Author",
                         "TaskCategories", "Project",
-                    ).orderBy("orderby", false).filter("(PercentComplete eq 0.0 or (PercentComplete gt 0.0 and PercentComplete lt 0.89) or PercentComplete eq 0.89)").getAll(5000);
+                    ).orderBy("orderby", false).filter("(PercentComplete eq 0.0 or PercentComplete eq null or (PercentComplete gt 0.0 and PercentComplete lt 0.89) or PercentComplete eq 0.89)").getAll(5000);
 
                 console.log(AllTasksMatches);
                 Counter++;
@@ -602,7 +611,6 @@ function TeamPortlioTable(SelectedProp: any) {
                         // if (item?.TaskCategories?.some((category: any) => category.Title.toLowerCase() === "draft")) { item.isDrafted = true; }
                     });
                 }
-
                 AllTasks = AllTasks.concat(AllTasksMatches);
                 if (Counter == siteConfig.length) {
                     // AllTasks = AllTasks?.filter((type: any) => type.isDrafted === false);
@@ -784,7 +792,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             }
                         }
                         result.SmartPriority = globalCommon.calculateSmartPriority(result);
-                        // result = globalCommon.findTaskCategoryParent(taskCatagory, result)
+                        result = globalCommon.findTaskCategoryParent(taskCatagory, result);
                         result["Item_x0020_Type"] = "Task";
                         TasksItem.push(result);
                         AllTasksData.push(result);
@@ -800,6 +808,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                     // allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
                 }
+
             });
             // GetComponents();
         }
@@ -1613,6 +1622,839 @@ function TeamPortlioTable(SelectedProp: any) {
         setclickFlatView(false);
         setData(groupByButtonClickData);
     }
+
+    // React.useEffect(() => {
+    //     let dynamicColumns: any = [
+    //         {
+    //             DisplayName: "portfolioItemsSearch",
+    //             InternalName: "portfolioItemsSearch",
+    //             id: "portfolioItemsSearch",
+    //             placeholder: "Type",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 95,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             sortOrder: 1,
+    //         },
+    //         {
+    //             DisplayName: "TaskID",
+    //             InternalName: "TaskID",
+    //             id: "TaskID",
+    //             placeholder: "ID",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 190,
+    //             isColumnVisible: true,
+    //             callComponent: "ReactPopperTooltipSingleLevel",
+    //             isComponent: true,
+    //             sortOrder: 2,
+    //         },
+    //         {
+    //             DisplayName: "Title",
+    //             InternalName: "Title",
+    //             id: "Title",
+    //             placeholder: "Title",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 500,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             sortOrder: 3,
+    //         },
+    //         {
+    //             DisplayName: "ProjectTitle",
+    //             InternalName: "ProjectTitle",
+    //             id: "ProjectTitle",
+    //             placeholder: "Project",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 70,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             sortOrder: 4,
+    //         },
+    //         {
+    //             DisplayName: "TaskTypeValue",
+    //             InternalName: "TaskTypeValue",
+    //             id: "TaskTypeValue",
+    //             placeholder: "Task Type",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 110,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "textMultiline",
+    //             sortOrder: 5,
+    //         },
+    //         {
+    //             DisplayName: "FeatureTypeTitle",
+    //             InternalName: "FeatureTypeTitle",
+    //             id: "FeatureTypeTitle",
+    //             placeholder: "Feature Type",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 110,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "textMultiline",
+    //             sortOrder: 6,
+    //         },
+    //         {
+    //             DisplayName: "ClientCategorySearch",
+    //             InternalName: "ClientCategorySearch",
+    //             id: "ClientCategorySearch",
+    //             placeholder: "Client Category",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 95,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             sortOrder: 7,
+    //         },
+    //         {
+    //             DisplayName: "AllTeamName",
+    //             InternalName: "AllTeamName",
+    //             id: "AllTeamName",
+    //             placeholder: "Team",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 100,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             sortOrder: 8,
+    //         },
+    //         {
+    //             DisplayName: "PercentComplete",
+    //             InternalName: "PercentComplete",
+    //             id: "PercentComplete",
+    //             placeholder: "Status",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 42,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "number",
+    //             sortOrder: 9,
+    //         },
+    //         {
+    //             DisplayName: "ItemRank",
+    //             InternalName: "ItemRank",
+    //             id: "ItemRank",
+    //             placeholder: "Item Rank",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 42,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "number",
+    //             sortOrder: 10,
+    //         },
+    //         {
+    //             DisplayName: "PriorityRank",
+    //             InternalName: "PriorityRank",
+    //             id: "PriorityRank",
+    //             placeholder: "Priority Rank",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 42,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "number",
+    //             sortOrder: 11,
+    //         },
+    //         {
+    //             DisplayName: "SmartPriority",
+    //             InternalName: "SmartPriority",
+    //             id: "SmartPriority",
+    //             placeholder: "Smart Priority",
+    //             showFormulaOnHover: "showFormulaOnHover",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 42,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "number",
+    //             sortOrder: 12,
+    //         },
+    //         {
+    //             DisplayName: "DisplayDueDate",
+    //             InternalName: "DueDate",
+    //             id: "DueDate",
+    //             placeholder: "DueDate",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 91,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "date",
+    //             iconVisible: "",
+    //             sortOrder: 14,
+    //         },
+    //         {
+    //             DisplayName: "DisplayCreateDate",
+    //             InternalName: "Created",
+    //             id: "Created",
+    //             placeholder: "Created",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 105,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             iconVisible: "Author",
+    //             columnType: "date",
+    //             sortOrder: 15,
+    //         },
+    //         {
+    //             DisplayName: "DisplayModifiedDate",
+    //             InternalName: "Modified",
+    //             id: "Modified",
+    //             placeholder: "Modified",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 105,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             iconVisible: "Editor",
+    //             columnType: "date",
+    //             sortOrder: 16,
+    //         },
+    //         {
+    //             DisplayName: "TotalTaskTime",
+    //             InternalName: "TotalTaskTime",
+    //             id: "TotalTaskTime",
+    //             placeholder: "Smart Time",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 49,
+    //             isColumnVisible: true,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "number",
+    //             sortOrder: 17,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsDeliverablesSearch",
+    //             InternalName: "descriptionsDeliverablesSearch",
+    //             id: "descriptionsDeliverablesSearch",
+    //             placeholder: "Deliverables",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 18,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsHelpInformationSarch",
+    //             InternalName: "Help_x0020_Information",
+    //             id: "descriptionsHelpInformationSarch",
+    //             placeholder: "Help Information",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 19,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsShortDescriptionSearch",
+    //             InternalName: "Short_x0020_Description_x0020_On",
+    //             id: "descriptionsShortDescriptionSearch",
+    //             placeholder: "Short Description",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 20,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsTechnicalExplanationsSearch",
+    //             InternalName: "TechnicalExplanations",
+    //             id: "descriptionsTechnicalExplanationsSearch",
+    //             placeholder: "Technical Explanations",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 21,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsBodySearch",
+    //             InternalName: "Body",
+    //             id: "descriptionsBodySearch",
+    //             placeholder: "Body",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 22,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsValueAddedSearch",
+    //             InternalName: "ValueAdded",
+    //             id: "descriptionsValueAddedSearch",
+    //             placeholder: "Value Added",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 23,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsAdminNotesSearch",
+    //             InternalName: "AdminNotes",
+    //             id: "descriptionsAdminNotesSearch",
+    //             placeholder: "Admin Notes",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 24,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsIdeaSearch",
+    //             InternalName: "Idea",
+    //             id: "descriptionsIdeaSearch",
+    //             placeholder: "Idea",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 25,
+    //         },
+    //         {
+    //             DisplayName: "descriptionsBackgroundSearch",
+    //             InternalName: "Background",
+    //             id: "descriptionsBackgroundSearch",
+    //             placeholder: "Background",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 56,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: false,
+    //             columnType: "infoIcon",
+    //             sortOrder: 26,
+    //         },
+    //         {
+    //             DisplayName: "HelpInformationVerified",
+    //             InternalName: "HelpInformationVerified",
+    //             id: "HelpInformationVerified",
+    //             placeholder: "verified",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             isColumnDefultSortingAsc: false,
+    //             isColumnDefultSortingDesc: false,
+    //             size: 130,
+    //             isColumnVisible: false,
+    //             callComponent: "",
+    //             isComponent: true,
+    //             columnType: "",
+    //             sortOrder: 27,
+    //         },
+    //     ];
+    //     const dynamicColumnsPrepareValue: any = dynamicColumns?.map((column: any) => {
+    //         if (column.id === "portfolioItemsSearch") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.portfolioItemsSearch,
+    //                 cell: ({ row, getValue }: any) => (
+    //                     <div className="alignCenter">
+    //                         {row?.original?.SiteIcon != undefined ? (
+    //                             <div className="alignCenter" title="Show All Child">
+    //                                 <img title={row?.original?.TaskType?.Title} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
+    //                                     row?.original?.TaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember me-1"
+    //                                 }
+    //                                     src={row?.original?.SiteIcon}>
+    //                                 </img>
+    //                             </div>
+    //                         ) : (
+    //                             <>
+    //                                 {row?.original?.Title != "Others" ? (
+    //                                     <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+    //                                         row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+    //                                     }>
+    //                                         {row?.original?.SiteIconTitle}
+    //                                     </div>
+    //                                 ) : (
+    //                                     ""
+    //                                 )}
+    //                             </>
+    //                         )}
+    //                     </div>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.id === "TaskID") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.TaskID,
+    //                 cell: ({ row, getValue }: any) => (
+    //                     <>
+    //                         <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
+    //                     </>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.id === "Title") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.Title,
+    //                 cell: ({ row, column, getValue }: any) => (
+    //                     <div className="alignCenter">
+    //                         <span className="columnFixedTitle">
+    //                             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
+    //                                 <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
+    //                                     href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID} >
+    //                                     <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+    //                                 </a>
+    //                             )}
+    //                             {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== "Others" && (
+    //                                 <a className="text-content hreflink" title={row?.original?.Title} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
+    //                                     href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType} >
+    //                                     <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+    //                                 </a>
+    //                             )}
+    //                             {row?.original.Title === "Others" ? (
+    //                                 <span className="text-content" title={row?.original?.Title} style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}>{row?.original?.Title}</span>
+    //                             ) : (
+    //                                 ""
+    //                             )}
+    //                         </span>
+    //                         {row?.original?.Categories == 'Draft' ?
+    //                             <FaCompressArrowsAlt style={{ height: '11px', width: '20px', color: `${row?.original?.PortfolioType?.Color}` }} /> : ''}
+    //                         {row?.original?.subRows?.length > 0 ?
+    //                             <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
+    //                         {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != '' && (
+    //                             <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
+    //                         )}
+    //                     </div>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.id === "ProjectTitle") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.projectStructerId + "." + row?.ProjectTitle,
+    //                 cell: ({ row, column, getValue }: any) => (
+    //                     <>
+    //                         {row?.original?.ProjectTitle != (null || undefined) &&
+    //                             <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+    //                                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
+    //                         }
+    //                     </>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.columnType === "textMultiline") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.[column.InternalName],
+    //                 cell: ({ row, column, getValue }: any) => (
+    //                     <>
+    //                         <span style={{ display: "flex", maxWidth: column?.size - 10 }}>
+    //                             <span title={row?.original?.[column.InternalName]} style={{ flexGrow: 1, overflow: 'hidden', textOverflow: "ellipsis", whiteSpace: 'nowrap' }}>
+    //                                 <HighlightableCell value={row?.original?.[column.InternalName]} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+    //                             </span>
+    //                         </span>
+    //                     </>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.id === "ClientCategorySearch") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.ClientCategorySearch,
+    //                 cell: ({ row }: any) => (
+    //                     <>
+    //                         <ShowClintCatogory clintData={row?.original} AllMetadata={metaDataItem} />
+    //                     </>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.id === "AllTeamName") {
+    //             let columnName = column?.InternalName;
+    //             return {
+    //                 accessorFn: (row: any) => row?.[columnName],
+    //                 cell: ({ row }: any) => (
+    //                     <div className="alignCenter">
+    //                         <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={TaskUsers} Context={SelectedProp?.SelectedProp} />
+    //                     </div>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.columnType === "number") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.[column.InternalName],
+    //                 cell: ({ row }: any) => (
+    //                     <div className="text-center" title={row?.original?.[column?.showFormulaOnHover]}>{row?.original?.[column.InternalName] != 0 ? row?.original?.[column.InternalName] : null}</div>
+    //                 ),
+    //                 filterFn: (row: any, columnName: any, filterValue: any) => {
+    //                     if (row?.original?.[column.InternalName] == filterValue) {
+    //                         return true
+    //                     } else {
+    //                         return false
+    //                     }
+    //                 },
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.columnType === "infoIcon") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.[column.DisplayName],
+    //                 cell: ({ row }: any) => (
+    //                     <div className="alignCenter">
+    //                         <span>{row?.original?.[column.DisplayName] ? row?.original?.[column.DisplayName]?.length : ""}</span>
+    //                         {row?.original?.[column.DisplayName] && <InfoIconsToolTip row={row?.original} SingleColumnData={[column.InternalName]} />}
+    //                     </div>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.id === "HelpInformationVerified") {
+    //             return {
+    //                 accessorFn: (row: any) => row?.HelpInformationVerified,
+    //                 cell: ({ row }: any) => (
+    //                     <div className="alignCenter">
+    //                         {row?.original?.HelpInformationVerified && <span> <TrafficLightComponent columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>}
+    //                     </div>
+    //                 ),
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.columnType === "date" && column?.iconVisible === "") {
+    //             let columnName = column?.InternalName;
+    //             let colDisplay = column?.DisplayName;
+    //             return {
+    //                 accessorFn: (row: any) => row?.[columnName],
+    //                 cell: ({ row, column, getValue }: any) => (
+    //                     <HighlightableCell value={row?.original?.[colDisplay]} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
+    //                 ),
+    //                 filterFn: (row: any, columnName: any, filterValue: any) => {
+    //                     if (row?.original?.[colDisplay]?.includes(filterValue)) {
+    //                         return true
+    //                     } else {
+    //                         return false
+    //                     }
+    //                 },
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         } else if (column.columnType === "date" && column?.iconVisible != "") {
+    //             let columnName = column?.InternalName;
+    //             let colDisplay = column?.DisplayName;
+    //             let iconName = column.iconVisible;
+    //             return {
+    //                 accessorFn: (row: any) => row?.[columnName],
+    //                 cell: ({ row, column }: any) => (
+    //                     <div className="alignCenter">
+    //                         {row?.original?.Created == null ? ("") : (
+    //                             <>
+    //                                 <div style={{ width: "75px" }} className="me-1"><HighlightableCell value={row?.original?.[colDisplay]} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></div>
+    //                                 {row?.original?.[iconName] != undefined &&
+    //                                     <>
+    //                                         <a href={`${ContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.[iconName]?.Id}&Name=${row?.original?.[iconName]?.Title}`}
+    //                                             target="_blank" data-interception="off">
+    //                                             <img title={row?.original?.[iconName]?.Title} className="workmember ms-1" src={row?.original?.[iconName]?.autherImage} />
+    //                                         </a>
+    //                                     </>
+    //                                 }
+    //                             </>
+    //                         )}
+    //                     </div>
+    //                 ),
+    //                 filterFn: (row: any, columnName: any, filterValue: any) => {
+    //                     if (row?.original?.[iconName]?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.[`${column.DisplayName}`]?.includes(filterValue)) {
+    //                         return true
+    //                     } else {
+    //                         return false
+    //                     }
+    //                 },
+    //                 id: column?.id,
+    //                 placeholder: column?.placeholder,
+    //                 header: "",
+    //                 resetColumnFilters: false,
+    //                 size: column?.size,
+    //                 isColumnVisible: column?.isColumnVisible,
+    //                 isColumnDefultSortingAsc: column?.isColumnDefultSortingAsc,
+    //             };
+    //         }
+    //     });
+    //     setDynamicColumnsValue(dynamicColumnsPrepareValue)
+    //     // dynamicColumnsValue = [];
+    //     // dynamicColumnsValue = dynamicColumnsValue.concat(dynamicColumnsPrepareValue);
+    // }, [data])
+    // const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
+    //     () => [
+    //         {
+    //             accessorKey: "",
+    //             placeholder: "",
+    //             hasCheckbox: true,
+    //             hasCustomExpanded: hasCustomExpanded,
+    //             hasExpanded: hasExpanded,
+    //             isHeaderNotAvlable: isHeaderNotAvlable,
+    //             size: 55,
+    //             id: 'Id',
+    //         },
+    //         ...dynamicColumnsValue,
+    //         {
+    //             accessorKey: "descriptionsSearch",
+    //             placeholder: "descriptionsSearch",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             id: "descriptionsSearch",
+    //             isColumnVisible: false
+    //         },
+    //         {
+    //             accessorKey: "commentsSearch",
+    //             placeholder: "commentsSearch",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             id: "commentsSearch",
+    //             isColumnVisible: false
+    //         },
+    //         {
+    //             accessorKey: "timeSheetsDescriptionSearch",
+    //             placeholder: "timeSheetsDescriptionSearch",
+    //             header: "",
+    //             resetColumnFilters: false,
+    //             id: "timeSheetsDescriptionSearch",
+    //             isColumnVisible: false
+    //         },
+    //         {
+    //             cell: ({ row }) => (
+    //                 <>
+    //                     {row?.original?.siteType != "Master Tasks" && row?.original?.Title != "Others" && (
+    //                         <a className="alignCenter" onClick={(e) => EditDataTimeEntryData(e, row.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
+    //                             <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
+    //                         </a>
+    //                     )}
+    //                 </>
+    //             ),
+    //             id: "timeShitsIcons",
+    //             canSort: false,
+    //             placeholder: "",
+    //             size: 1,
+    //             isColumnVisible: true
+    //         },
+    //         {
+    //             header: ({ table }: any) => (
+    //                 <>{
+    //                     topCompoIcon ?
+    //                         <span style={{ backgroundColor: `${portfolioColor}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
+    //                             <span className="svg__iconbox svg__icon--re-structure"></span>
+    //                         </span>
+    //                         : ''
+    //                 }
+    //                 </>
+    //             ),
+    //             cell: ({ row, getValue }) => (
+    //                 <>
+    //                     {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
+    //                         <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
+    //                             <span className="svg__iconbox svg__icon--re-structure"> </span>
+    //                         </span>
+    //                     )}
+    //                     {/* {getValue()} */}
+    //                 </>
+    //             ),
+    //             id: "Restructure",
+    //             canSort: false,
+    //             placeholder: "",
+    //             size: 1,
+    //             isColumnVisible: true
+    //         },
+    //         {
+    //             cell: ({ row, getValue }) => (
+    //                 <>
+    //                     {row?.original?.siteType === "Master Tasks" &&
+    //                         row?.original?.Title !== "Others" && (
+    //                             <a className="alignCenter"
+    //                                 href="#"
+    //                                 data-bs-toggle="tooltip"
+    //                                 data-bs-placement="auto"
+    //                                 title={'Edit ' + `${row.original.Title}`}
+    //                             >
+    //                                 {" "}
+    //                                 <span
+    //                                     className="svg__iconbox svg__icon--edit"
+    //                                     onClick={(e) => EditComponentPopup(row?.original)}
+    //                                 ></span>
+    //                             </a>
+    //                         )}
+    //                     {row?.original?.siteType != "Master Tasks" &&
+    //                         row?.original?.Title !== "Others" && (
+    //                             <a className="alignCenter"
+    //                                 href="#"
+    //                                 data-bs-toggle="tooltip"
+    //                                 data-bs-placement="auto"
+    //                                 title={'Edit ' + `${row.original.Title}`}
+    //                             >
+    //                                 {" "}
+    //                                 <span
+    //                                     className="svg__iconbox svg__icon--edit"
+    //                                     onClick={(e) => EditItemTaskPopup(row?.original)}
+    //                                 ></span>
+    //                             </a>
+    //                         )}
+    //                     {/* {getValue()} */}
+    //                 </>
+    //             ),
+    //             id: "editIcon",
+    //             canSort: false,
+    //             placeholder: "",
+    //             header: "",
+    //             size: 30,
+    //             isColumnVisible: true
+    //         },
+    //     ],
+    //     [data]
+    // );
+
+
     const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
@@ -1671,7 +2513,6 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 isColumnDefultSortingAsc: isColumnDefultSortingAsc,
-                // isColumnDefultSortingAsc:true,
                 size: 190,
                 isColumnVisible: true
             },
@@ -1711,7 +2552,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 450,
+                size: 500,
                 isColumnVisible: true
             },
             {
@@ -1744,6 +2585,62 @@ function TeamPortlioTable(SelectedProp: any) {
                 size: 130,
                 id: "TaskTypeValue",
                 isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.Type,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+                    </>
+                ),
+                placeholder: "Type",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "Type",
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.Attention,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+                    </>
+                ),
+                placeholder: "Attention",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "Attention",
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.Admin,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+                    </>
+                ),
+                placeholder: "Admin",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "Admin",
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.Actions,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+                    </>
+                ),
+                placeholder: "Actions",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "Actions",
+                isColumnVisible: false
             },
             {
                 accessorFn: (row) => row?.ClientCategorySearch,
@@ -2052,7 +2949,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 },
                 header: "",
-                size: 125
+                size: 105
             },
             {
                 accessorFn: (row) => row?.Modified,
@@ -2086,7 +2983,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 },
                 header: "",
-                size: 115
+                size: 105
             },
             {
                 accessorKey: "descriptionsSearch",
@@ -2287,21 +3184,21 @@ function TeamPortlioTable(SelectedProp: any) {
 
     let isOpenPopup = false;
 
-    const callbackdataAllStructure = React.useCallback((item)=>{
-        if(item[0]?.SelectedItem != undefined){
-            copyDtaArray.map((val:any)=>{
-                item[0]?.subRows.map((childs:any)=>{
-                    if(item[0].SelectedItem == val.Id){
+    const callbackdataAllStructure = React.useCallback((item) => {
+        if (item[0]?.SelectedItem != undefined) {
+            copyDtaArray.map((val: any) => {
+                item[0]?.subRows.map((childs: any) => {
+                    if (item[0].SelectedItem == val.Id) {
                         val.subRows.unshift(childs)
                     }
-                    if(val.subRows != undefined && val.subRows.length > 0){
-                        val.subRows?.map((child:any)=>{
-                            if(item[0].SelectedItem == child.Id){
+                    if (val.subRows != undefined && val.subRows.length > 0) {
+                        val.subRows?.map((child: any) => {
+                            if (item[0].SelectedItem == child.Id) {
                                 child.subRows.unshift(childs)
                             }
-                            if(child.subRows != undefined && child.subRows.length > 0){
-                                child.subRows?.map((Subchild:any)=>{
-                                    if(item[0].SelectedItem == Subchild.Id){
+                            if (child.subRows != undefined && child.subRows.length > 0) {
+                                child.subRows?.map((Subchild: any) => {
+                                    if (item[0].SelectedItem == Subchild.Id) {
                                         Subchild.subRows.unshift(childs)
                                     }
                                 })
@@ -2310,10 +3207,10 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 })
             })
-            
+
         }
-        if(item != undefined && item.length>0 && item[0].SelectedItem ==  undefined){
-            item.forEach((value:any)=>{
+        if (item != undefined && item.length > 0 && item[0].SelectedItem == undefined) {
+            item.forEach((value: any) => {
                 copyDtaArray.unshift(value)
             })
         }
@@ -2323,7 +3220,7 @@ function TeamPortlioTable(SelectedProp: any) {
         renderData = renderData.concat(copyDtaArray)
         refreshData();
 
-    },[])
+    }, [])
 
     const AddStructureCallBackCall = React.useCallback((item) => {
         childRef?.current?.setRowSelection({});
@@ -2688,14 +3585,16 @@ function TeamPortlioTable(SelectedProp: any) {
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
                                         <div>
-                                            <GlobalCommanTable showRestructureButton={true} columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup}
+                                            <GlobalCommanTable showRestructureButton={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup}
                                                 masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup}
                                                 flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
                                                 flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotalFunction} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef}
                                                 callChildFunction={callChildFunction} AllListId={ContextValue} columns={columns} restructureCallBack={callBackData1} data={data} callBackData={callBackData} TaskUsers={AllUsers}
-                                                showHeader={true} portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration}
+                                                portfolioColor={portfolioColor} portfolioTypeData={portfolioTypeDataItem} taskTypeDataItem={taskTypeDataItem} fixedWidth={true} portfolioTypeConfrigration={portfolioTypeConfrigration}
                                                 showingAllPortFolioCount={true} showCreationAllButton={true} OpenAddStructureModal={OpenAddStructureModal} addActivity={addActivity}
-                                                customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} />
+                                                customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons}
+                                                showHeader={true} tableId="teamPortfolio" columnSettingIcon={true}
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -2704,7 +3603,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     </section>
                 </div>
             </section>
-             <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={callbackdataAllStructure} >
+            <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={callbackdataAllStructure} >
                 {/* <PortfolioStructureCreationCard
                     CreatOpen={CreateOpenCall}
                     Close={AddStructureCallBackCall}
@@ -2716,17 +3615,17 @@ function TeamPortlioTable(SelectedProp: any) {
                             : props
                     }
                 /> */}
-                <CreateAllStructureComponent 
-                 Close={callbackdataAllStructure}
-                 taskUser={AllUsers}
-                 portfolioTypeData={portfolioTypeData}
-                 PropsValue={ContextValue}
-                 SelectedItem={
-                    checkedList != null && checkedList?.Id != undefined
-                        ? checkedList
-                        : props
-                }
-                 />
+                <CreateAllStructureComponent
+                    Close={callbackdataAllStructure}
+                    taskUser={AllUsers}
+                    portfolioTypeData={portfolioTypeData}
+                    PropsValue={ContextValue}
+                    SelectedItem={
+                        checkedList != null && checkedList?.Id != undefined
+                            ? checkedList
+                            : props
+                    }
+                />
 
             </Panel>
 
