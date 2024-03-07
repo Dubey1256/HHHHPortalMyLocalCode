@@ -568,8 +568,15 @@ const AncTool = (props: any) => {
                                                         creationTime: msgfile?.creationTime != undefined ? new Date(msgfile?.creationTime).toISOString() : null
                                                     }
                                                 }
-                                                if (props?.item?.Portfolio?.Id != undefined) {
+                                                if (props?.item?.Portfolio?.Id != undefined && siteColName != 'Portfolios') {
                                                     postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
+                                                }
+                                                 if(props?.item?.Project?.Id != undefined && siteColName != 'Portfolios'){
+                                                    if(postData?.PortfoliosId?.results?.length>0){
+                                                        postData?.PortfoliosId?.results?.push(props?.item?.Project?.Id);
+                                                    }else{
+                                                        postData.PortfoliosId = { "results": [props?.item?.Project?.Id] };
+                                                    }
                                                 }
                                                 let web = new Web(props?.AllListId?.siteUrl);
                                                 await web.lists.getByTitle('Documents').items.getById(file.Id)
@@ -626,6 +633,7 @@ const AncTool = (props: any) => {
     // Tag and Untag Existing Documents//
     const tagSelectedDoc = async (file: any) => {
         let resultArray: any = [];
+     
         if (file[siteName] != undefined && file[siteName].length > 0) {
             file[siteName].map((task: any) => {
                 if (task?.Id != undefined) {
@@ -633,8 +641,11 @@ const AncTool = (props: any) => {
                 }
             })
         }
-        if (!file?.PortfoliosId?.some((portfolio: any) => portfolio == props?.item?.Portfolio?.Id) && props?.item?.Portfolio?.Id != undefined) {
+        if (!file?.PortfoliosId?.some((portfolio: any) => portfolio == props?.item?.Portfolio?.Id) && props?.item?.Portfolio?.Id != undefined && siteName != 'Portfolios') {
             file?.PortfoliosId?.push(props?.item?.Portfolio?.Id);
+        }
+        if (!file?.PortfoliosId?.some((portfolio: any) => portfolio == props?.item?.Project?.Id) && props?.item?.Project?.Id != undefined && siteName != 'Portfolios') {
+            file?.PortfoliosId?.push(props?.item?.Project?.Id);
         }
         if (!AllReadytagged?.some((doc: any) => file.Id == doc.Id) && !resultArray.some((taskID: any) => taskID == props?.item?.Id)) {
             resultArray.push(props?.item?.Id)
@@ -807,8 +818,15 @@ const AncTool = (props: any) => {
                                         ItemRank: 5,
                                         Title: getUploadedFileName(fileName)
                                     }
-                                    if (props?.item?.Portfolio?.Id != undefined) {
+                                    if (props?.item?.Portfolio?.Id != undefined && siteColName != 'Portfolios') {
                                         postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
+                                    }
+                                    if(props?.item?.Project?.Id != undefined && siteColName != 'Portfolios'){
+                                        if(postData?.PortfoliosId?.results?.length>0){
+                                            postData?.PortfoliosId?.results?.push(props?.item?.Project?.Id);
+                                        }else{
+                                            postData.PortfoliosId = { "results": [props?.item?.Project?.Id] };
+                                        }
                                     }
                                     let web = new Web(props?.AllListId?.siteUrl);
                                     await web.lists.getByTitle('Documents').items.getById(file.Id)

@@ -2035,6 +2035,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               child.AdjustedTime = totalnew;
               child.TotalValue = totalnew;
               child.TotalSmartTime = totalnew;
+              child.Time = totalnew;
               child.SmartHoursTotal = child.TotalSmartTime;
               child.SmartHoursTime = parseFloat(totalnew.toString()).toFixed(2);
               child.Rountfiguretime = parseFloat(totalnew.toString()).toFixed(2);
@@ -2144,13 +2145,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         obj.TaskTime = obj.TotalSmartTime;
         obj.NewTimeEntryDate = new Date(obj.TimeEntrykDateNew);
         obj?.subRows?.forEach((sub: any) => {
-         // sub.Site = sub.siteType;
+          sub.Site = sub.Firstlevel;
           sub.TaskTime = sub.SmartHoursTotal;
+          sub.Time = sub.SmartHoursTotal;
           sub.NewTimeEntryDate = obj.TimeEntrykDateNew;
           sub?.AllTask?.forEach((task: any) => {
             obj.Site = task.siteType;
             task.TaskTime = task.SmartHoursTotal;
-            sub.Site = task.siteType;
+            task.Time = task.SmartHoursTotal;
             sub.NewTimeEntryDate = task.TimeEntrykDateNew;
           })
         })
