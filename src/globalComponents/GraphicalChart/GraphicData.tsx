@@ -137,6 +137,17 @@ const GraphData = (data: any) => {
   });
   const checkData = fillMissingDates(totalTimeByDay);
   console.log(checkData)
+  
+  checkData?.forEach((obj:any) =>{
+    obj.SiteData =[];
+    mydata?.forEach((dat:any) =>{
+      const startDate: any = Moment(dat.TimeEntrykDateNew).format("DD/MM/YYYY");
+      if(obj?.Day ===startDate){
+        dat.Time =dat.TaskTime;
+        obj.SiteData =dat.subRows;
+      }
+    })
+  })
   totalTimeByDay=checkData;
 
   const formattedTotalTimeByDay = totalTimeByDay.map(entry => {

@@ -367,7 +367,7 @@ const CreateAllStructureComponent = (props: any) => {
     const createListItem = async (listName: string, item: any) => {
         if (item.Title != "") {
             try {
-                let web = new Web(props?.SelectedItem?.siteUrl);
+                let web = new Web(props?.PropsValue?.siteUrl);
                 const result = await web.lists.getByTitle(listName).items.add(item);
                 return result.data;
             } catch (error) {
@@ -389,7 +389,7 @@ const CreateAllStructureComponent = (props: any) => {
             //filter = "Parent/Id eq '" + item.Id
         }
 
-        let web = new Web(props?.SelectedItem?.siteUrl);
+        let web = new Web(props?.PropsValue?.siteUrl);
         let results = await web.lists
             .getByTitle('Master Tasks')
             .items

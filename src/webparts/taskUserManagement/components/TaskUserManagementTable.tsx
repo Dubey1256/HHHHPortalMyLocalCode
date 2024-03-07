@@ -10,8 +10,6 @@ import ImagesC from "../../EditPopupFiles/ImageInformation";
 import { DefaultButton, PrimaryButton } from '@fluentui/react/lib/Button';
 import VersionHistoryPopup from "../../../globalComponents/VersionHistroy/VersionHistory";
 import "bootstrap/js/dist/tab";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
 import moment from 'moment';
 import Tooltip from '../../../globalComponents/Tooltip';
 import zIndex from '@material-ui/core/styles/zIndex';
@@ -43,8 +41,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     const [openGroupPopup, setOpenGroupPopup] = useState(false);
     const [openUpdateGroupPopup, setOpenUpdateGroupPopup] = useState(false);
     const [openUpdateMemberPopup, setOpenUpdateMemberPopup] = useState(false);
-    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-    const [itemToDelete, setItemToDelete] = useState(null);
     const [itemToUpdate, setItemToUpdate] = useState(null);
     const [memberToUpdate, setMemberToUpdate] = useState(null);
     const [autoSuggestData, setAutoSuggestData] = useState(null);
@@ -121,11 +117,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         setGroupData(TaskGroupsListData);
     }, [TaskUsersListData, TaskGroupsListData]);
 
-    const handleDeleteClick = (item: any) => {
-        setItemToDelete(item);
-        setShowConfirmationModal(true);
-    };
-
     const handleUpdateMemberClick = (item: any) => {
         setMemberToUpdate(item);
         setOpenUpdateMemberPopup(true);
@@ -178,18 +169,17 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         })
     }
 
-    const deleteTeamMember = async () => {
+    const deleteTeamMember = async (items: any) => {
         let web = new Web(baseUrl);
-        if (itemToDelete) {
-            await web.lists.getById(TaskUserListId).items.getById(itemToDelete.Id).recycle()
+        var deleteAlert = confirm("Are you sure you want to delete this?")
+        if (deleteAlert) {
+            await web.lists.getById(TaskUserListId).items.getById(items?.Id).recycle()
                 .then(i => {
                     console.log(i);
-                    setData((prevData: any) => prevData.filter((item: any) => item.Id !== itemToDelete.Id));
-                    setGroupData(prevData => prevData.filter(item => item.Id !== itemToDelete.Id));
-                    setItemToDelete(null);
+                    setData((prevData: any) => prevData.filter((item: any) => item.Id !== items?.Id));
+                    setGroupData(prevData => prevData.filter(item => item.Id !== items?.Id));
                     fetchAPIData()
                     setOpenUpdateMemberPopup(false)
-                    setShowConfirmationModal(false);
                 });
         }
     }
@@ -405,7 +395,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             {
                 cell: (info) => (<div className='pull-right alignCenter'>
                     <span onClick={() => handleUpdateClick(info.row.original)} className='svg__iconbox svg__icon--edit' title='Edit'></span>
-                    <span onClick={() => handleDeleteClick(info.row.original)} className='svg__iconbox svg__icon--trash' title='Trash'></span>
+                    <span onClick={() => deleteTeamMember(info.row.original)} className='svg__iconbox svg__icon--trash' title='Trash'></span>
                 </div>),
                 id: "editIcon",
                 canSort: false,
@@ -1003,7 +993,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                 </span>
                             </div>
                             <div className="text-left">
-                                <a onClick={() => handleDeleteClick(memberToUpdate)}>
+                                <a onClick={() => deleteTeamMember(memberToUpdate)}>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="20"
@@ -1064,25 +1054,6 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                     </div>
                 </footer>
             </Panel >
-            <Modal
-                show={showConfirmationModal}
-                onHide={() => setShowConfirmationModal(false)}
-                backdrop="static"
-                keyboard={false} style={{ zIndex: "9999999" }}
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title className='subheading'>Warning</Modal.Title>
-                </Modal.Header>
-                <Modal.Body className='text-center p-2'>Are you sure you want to delete this?</Modal.Body>
-                <Modal.Footer>
-                    <button type='button' onClick={() => setShowConfirmationModal(false)} className='btn me-2 btn-primary'>
-                        Cancel
-                    </button>
-                    <button type='button' onClick={deleteTeamMember} className='btn btn-default'>
-                        Delete
-                    </button>
-                </Modal.Footer>
-            </Modal>
         </>
     )
 }
