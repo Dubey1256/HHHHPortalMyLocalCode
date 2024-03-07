@@ -431,7 +431,7 @@ const EditDocumentpanel = (props: any) => {
                                       ...EditdocumentsData,
                                       recipients: e.target,
                                     })}>
-                                   (<span className='textDotted'>{items.email}</span>)
+                                   <span className='textDotted'>{items.email}</span>
                                   </div></div>
                               )
                             }               
