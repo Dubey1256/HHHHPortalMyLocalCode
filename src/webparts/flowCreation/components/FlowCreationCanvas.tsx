@@ -41,16 +41,12 @@ export default function FlowCreationCanvas(props: any) {
   }, []);
   const loadComponentDetails = async (compId?: any) => {
     let AllListId = {
-      siteUrl: 'https://hhhhteams.sharepoint.com/sites/HHHH/SP',
-      MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf',
-      TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300',
-      SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a',
-      SmartInformationListID: 'edf0a6fb-f80e-4772-ab1e-666af03f7ccd',
-      DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08',
-      TaskTimeSheetListID: '464fb776-e4b3-404c-8261-7d3c50ff343f',
-      AdminConfigrationListID: 'e968902a-3021-4af2-a30a-174ea95cf8fa',
-      TimeEntry: false,
-      SiteCompostion: false,
+      TaskUsertListID: '117bc416-3fbf-4641-8584-20d149078ee8',
+      siteUrl: 'https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP',
+      SmartMetadataListID: '0af5c538-1190-4fe5-8644-d01252e79d4b',
+      MasterTaskListID: '26a4b2e7-1d92-4f76-b8cb-1fa110f39b34',
+      DocumentsListID: '18c9128d-3710-4ceb-a714-9ce9d1a0dae4',
+      SmartInformationListID: '2f30fa5b-fbee-4a80-ad2d-865a943e68a8',
     }
     try {
       const params = new URLSearchParams(window.location.search)
