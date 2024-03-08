@@ -277,6 +277,7 @@ const AddConfiguration = (props: any) => {
         setIsCheck(check)
         let newArray = [...NewItem];
         let Template = [...DashboardTemplate];
+        let IsExecuteElse = true
         Template?.forEach((item: any, Itemindex: any) => {
             if (Itemindex == index && check == true) {
                 item.IsSelectedTemp = true;
@@ -287,15 +288,24 @@ const AddConfiguration = (props: any) => {
                 else {
                     newArray.push(item)
                 }
+                IsExecuteElse = false;
             }
-            else {
+            else if (Itemindex == index && check == false) {
+                item.IsSelectedTemp = false;
+                newArray = newArray.filter((item: any, Itemindex) => Itemindex != index && item?.IsTemplate == true)
+                IsExecuteElse = false;
+            }
+        })
+        if (IsExecuteElse == true) {
+            Template?.forEach((item: any, Itemindex: any) => {
                 item.IsSelectedTemp = false;
                 newArray = newArray.filter((item: any) => item?.TileName != items?.TileName && item?.IsTemplate != true)
                 if (newArray?.length == 0)
                     newArray.push(defaultConfig)
-            }
-        })
+            })
+        }
         setDashboardTemplate(Template);
+
         setNewItem(newArray);
     }
     const handleFilterChange = (event: any, index: any, items: any) => {
@@ -330,17 +340,18 @@ const AddConfiguration = (props: any) => {
                             </div>
                         </Col>
                         <Col sm="6" md="6" lg="6">
-                            <div className="input-group">
-                                <label className='form-label full-width'>Templates</label>
-                                {DashboardTemplate != undefined && DashboardTemplate?.length > 0 && DashboardTemplate.map((items: any, index: any) => {
-                                    return (
-                                        <>
+                            <label className='form-label full-width'>Templates</label>
+                            {DashboardTemplate != undefined && DashboardTemplate?.length > 0 && DashboardTemplate.map((items: any, index: any) => {
+                                return (
+                                    <>
+                                        <div >
                                             <input type="checkbox" checked={items?.IsSelectedTemp} className="form-check-input me-1" onClick={(e: any) => SelectedTemplate(e.target.checked, items, index)} />
                                             <label className="form-check-label">{items?.WebpartTitle}</label>
-                                        </>
-                                    )
-                                })}
-                            </div>
+                                        </div>
+                                    </>
+                                )
+                            })}
+
                         </Col>
                     </Row>}
                     <Row className="Metadatapannel p-2 mb-2">
