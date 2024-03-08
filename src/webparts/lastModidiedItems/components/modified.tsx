@@ -93,7 +93,7 @@ export const Modified = (props: any) => {
       PortFolioTypeID: props?.props?.PortFolioTypeID,
       context: props?.props?.context,
       TaskUserListId: props?.props?.TaskUsertListID,
-
+      isShowTimeEntry:props?.props?.TimeEntry,
 
     }
     setEditLists(editListsAll)
@@ -298,7 +298,7 @@ export const Modified = (props: any) => {
           }
         })
         if (allSite.TabName == 'DOCUMENTS') {
-          data = data.filter((item: any) => { return (item.Title != null) })
+          // data = data.filter((item: any) => { return (item.Title != null) })
         }
       }
       else {
