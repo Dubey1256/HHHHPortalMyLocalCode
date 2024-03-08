@@ -53,8 +53,7 @@ let isColumnDefultSortingAsc: any = false;
 
 function ReadyMadeTable(SelectedProp: any) {
     const childRef = React.useRef<any>();
-   
- const restructuringRef = React.useRef<any>();
+    const restructuringRef = React.useRef<any>();
     if (childRef != null) {
         childRefdata = { ...childRef };
 
@@ -2019,6 +2018,7 @@ function ReadyMadeTable(SelectedProp: any) {
 
 
     //  Function to call the child component's function
+
     const callChildFunction = (items: any) => {
         if (restructuringRef.current) {
             restructuringRef.current.OpenModal(items);
@@ -2029,8 +2029,6 @@ function ReadyMadeTable(SelectedProp: any) {
             restructuringRef.current.trueTopIcon(items);
         }
     };
-
-   
     //-------------------------------------------------- restructuring function end---------------------------------------------------------------
 
     //// popup Edit Task And Component///
@@ -2518,7 +2516,7 @@ function ReadyMadeTable(SelectedProp: any) {
                                 <div className="col-sm-12 p-0 smart">
                                     <div>
                                         <div>
-                                            <GlobalCommanTable columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} showFilterIcon={SelectedProp?.configration != "AllAwt"} tableId={SelectedProp.tableId}
+                                            <GlobalCommanTable  tableId={SelectedProp?.tableId}columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} showFilterIcon={SelectedProp?.configration != "AllAwt"}
                                             // loadFilterTask={FilterAllTask()}
                                                 masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup}
                                                 flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
@@ -2699,3 +2697,23 @@ function ReadyMadeTable(SelectedProp: any) {
     );
 }
 export default ReadyMadeTable;
+
+
+
+// useCase:  
+
+//     AllListId:{} required alllist id  siteUrl,Context,MasterTaskListID,TaskUsertListID,SmartMetadataListID,PortFolioTypeID,TaskTypeID,
+//    " CSFAWT"
+//    " AllAwt"
+//     "AllCSF"
+    
+//     SelectedItem:{} we have to pass the  data and give the all child data  inside that component,
+
+//     SelectedSiteForTask:["hhhh","de"],
+//     ExcludeSiteForTask:["shareweb"],
+//     TaskFilter:'',// like PercentComplete gt 0.89 or (PercentComplete eq 0.0 or (PercentComplete gt 0.0 and PercentComplete lt 0.89) or PercentComplete eq 0.89)
+//     ComponentFilter:""// like service ,component ,event 
+  
+
+ 
+//    <RadimadeTable AllListId={AllListId}configration={"CSFAWT"} TaskFilter={ "PercentComplete lt '0.90'"}/>
