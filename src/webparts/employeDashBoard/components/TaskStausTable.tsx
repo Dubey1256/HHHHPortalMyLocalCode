@@ -22,6 +22,8 @@ import * as Moment from "moment";
 import Slider from "react-slick";
 import { ColumnDef } from "@tanstack/react-table";
 import HighlightableCell from "../../../globalComponents/highlight";
+import { MdOutlineGppGood, MdGppBad } from "react-icons/Md";
+import { FocusTrapCallout, FocusZone, FocusZoneTabbableElements, Panel, PanelType, Stack, Text, } from '@fluentui/react';
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -44,6 +46,7 @@ const TaskStatusTbl = (Tile: any) => {
   const [result, setResult]: any = React.useState(false);
   const [ActiveTile, setActiveTile] = React.useState(Tile?.activeTile);
   const [dateRange, setDateRange] = React.useState<any>([]);
+  const [isRejectItem, setisRejectItem] = React.useState<any>(undefined);
   const settings = {
     dots: false, infinite: true, speed: 500, slidesToShow: 6, slidesToScroll: 1, nextArrow: <SamplePrevNextArrow type="next" />, prevArrow: <SamplePrevNextArrow type="prev" />,
     beforeChange: handleBeforeChange,
@@ -372,10 +375,120 @@ const TaskStatusTbl = (Tile: any) => {
     }
     return isExists;
   }
+  const openRejectPopup = (RejectedItem: any) => {
+    RejectedItem.PreviousComment = ''
+    if (RejectedItem?.RejectedDetails == undefined) {
+      RejectedItem.RejectedDetails = { "RejectedComment": "", "AuthorName": ContextData?.currentUserData?.Title, "AuthorId": ContextData?.currentUserData?.AssingedToUserId, "AuthorImage": ContextData?.currentUserData?.ItemCover != undefined ? ContextData?.currentUserData?.ItemCover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg" }
+    }
+    else {
+      RejectedItem.PreviousComment = RejectedItem.RejectedDetails?.RejectedComment;
+    }
+    setisRejectItem(RejectedItem)
+  }
+  const updateRejectComment = (e: any) => {
+    console.log(e.target.value)
+    let RejectedItem: any = { ...isRejectItem }
+    RejectedItem.RejectedDetails.RejectedComment = e.target.value
+    setisRejectItem(RejectedItem)
+  }
+  const SaveRejectPopup = async (Type: any, Item: any) => {
+    if (Type != 'ApprovedAll') {
+      let RejectedItem: any;
+      if (Item != undefined && Item != '')
+        RejectedItem = { ...Item }
+      else
+        RejectedItem = { ...isRejectItem }
+      RejectedItem.Status = Type;
+      if (ContextData?.AllTimeEntry != undefined && ContextData?.AllTimeEntry?.length > 0 && RejectedItem != undefined) {
+        let UpdatedItem = ContextData?.AllTimeEntry.filter((item: any) => item.Id != undefined && item.Id == RejectedItem?.UpdatedId)[0]
+        if (UpdatedItem?.AdditionalTimeEntry != undefined && UpdatedItem?.AdditionalTimeEntry?.length > 0) {
+          UpdatedItem?.AdditionalTimeEntry.forEach((TimeEntry: any) => {
+            if (TimeEntry?.ID != undefined && RejectedItem?.ID != undefined && TimeEntry?.ID == RejectedItem?.ID) {
+              TimeEntry.Status = RejectedItem.Status
+              if (RejectedItem?.RejectedDetails != undefined && RejectedItem.RejectedDetails?.RejectedComment != undefined && RejectedItem.RejectedDetails?.RejectedComment != '')
+                TimeEntry.RejectedDetails = RejectedItem?.RejectedDetails
+            }
+            delete TimeEntry?.TaskDates;
+            delete TimeEntry?.sortTaskDate;
+            delete TimeEntry?.PreviousComment;
+            delete TimeEntry?.UpdatedId;
+          })
+          setisRejectItem(undefined)
+          let web = new Web(UpdatedItem?.siteUrl);
+          await web.lists.getById(UpdatedItem?.listId).items.getById(UpdatedItem.Id).update({ AdditionalTimeEntry: JSON.stringify(UpdatedItem?.AdditionalTimeEntry), })
+            .then(async (res: any) => {
+              DashboardConfig?.map((Config: any) => {
+                if (Config?.DataSource == 'TimeSheet' && Config.Tasks != undefined && Config.Tasks?.length > 0) {
+                  Config.Tasks?.forEach((Time: any, index: any) => {
+                    if (Time?.ID == RejectedItem?.ID && (Time?.UpdatedId == undefined || Time?.UpdatedId == RejectedItem?.UpdatedId)) {
+                      Config.Tasks?.splice(index, 1)
+                    }
+                  });
+                }
+              })
+              console.log('Updated Succesfully')
+              DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+              setisRejectItem(undefined)
+              alert("Time Entry " + Type + " Successfully.")
+              setActiveTile(Tile?.activeTile)
+              rerender();
+            }).catch((err: any) => {
+              console.log(err);
+            })
+        }
+      }
+    }
+    else if (Type == 'ApprovedAll') {
+      let Count = 0;
+      if (ContextData?.AllTimeEntry != undefined && ContextData?.AllTimeEntry?.length > 0) {
+        ContextData?.AllTimeEntry.forEach((Item: any) => {
+          if (Item?.AdditionalTimeEntry != undefined && Item?.AdditionalTimeEntry?.length > 0) {
+            Item?.AdditionalTimeEntry.forEach((TimeEntry: any) => {
+              TimeEntry.Status = 'Approved';
+              delete TimeEntry?.TaskDates;
+              delete TimeEntry?.sortTaskDate;
+              delete TimeEntry?.PreviousComment;
+              delete TimeEntry?.UpdatedId;
+
+            })
+          }
+          let web = new Web(Item?.siteUrl);
+          web.lists.getById(Item?.listId).items.getById(Item.Id).update({ AdditionalTimeEntry: JSON.stringify(Item?.AdditionalTimeEntry), })
+            .then((res: any) => {
+              setisRejectItem(undefined)
+              Count++;
+              if (Count == ContextData?.AllTimeEntry?.length) {
+                DashboardConfig?.map((Config: any) => {
+                  if (Config?.DataSource == 'TimeSheet') {
+                    Config.Tasks = [];
+                  }
+                })
+                console.log('Updated Succesfully')
+                alert("All Time Entry Approved Successfully.")
+                DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+                setActiveTile(Tile?.activeTile)
+                rerender();
+              }
+            }).catch((err: any) => {
+              Count++;
+              console.log(err);
+            })
+        })
+      }
+    }
+  }
+  const CancelRejectPopup = () => {
+    let RejectedItem: any = { ...isRejectItem }
+    if (RejectedItem.PreviousComment != undefined && RejectedItem.RejectedDetails != undefined)
+      RejectedItem.RejectedDetails.RejectedComment = RejectedItem.PreviousComment;
+    setisRejectItem(RejectedItem)
+    setisRejectItem(undefined)
+  }
   const LoadTimeSheet = () => {
     ContextData?.callbackFunction()
   }
-  const generateDynamicColumns = (item: any) => {
+
+  const generateDynamicColumns = (item: any, index: any) => {
     if (item?.DataSource != 'TimeSheet') {
       return [{
         accessorKey: "",
@@ -706,7 +819,7 @@ const TaskStatusTbl = (Tile: any) => {
           accessorFn: (row: any) => row?.sortTaskDate,
           cell: ({ row, column }: any) => (
             <div className="alignCenter">
-              {row?.original?.Created == null ? ("") : (
+              {row?.original?.TaskDate == null ? ("") : (
                 <>
                   <HighlightableCell value={row?.original?.TaskDates} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : null} />
                 </>
@@ -748,8 +861,10 @@ const TaskStatusTbl = (Tile: any) => {
           canSort: false,
           placeholder: "",
           isColumnVisible: true,
-          cell: ({ row }: any) => (
-            <div className="alignCenter gap-1 pull-right">
+          cell: ({ row, index }: any) => (
+            <div className="alignCenter gap-1 pull-right approvelicon position-relative" >
+              <span title="Approve" onClick={() => SaveRejectPopup('Approved', row?.original,)} ><MdOutlineGppGood style={{ color: "#008f47", fontSize: "22px" }} /> </span>
+              <span title="Reject" data-toggle="tooltip" data-placement="bottom" id={`Reply-${row?.index}`} onClick={() => openRejectPopup(row?.original)}><MdGppBad style={{ color: "#dc3545", fontSize: "22px" }} /></span>
             </div>
           )
         },]
@@ -757,9 +872,9 @@ const TaskStatusTbl = (Tile: any) => {
   }
   if (Tile.activeTile != undefined && DashboardConfigCopy != undefined && DashboardConfigCopy?.length > 0)
     DashboardConfig = DashboardConfigCopy.filter((config: any) => config?.TileName == '' || config?.TileName == Tile.activeTile);
-  const updatedDashboardConfig = DashboardConfig?.map((item: any) => {
+  const updatedDashboardConfig = DashboardConfig?.map((item: any, index: any) => {
     let columnss: any = [];
-    columnss = generateDynamicColumns(item);
+    columnss = generateDynamicColumns(item, index);
     return { ...item, column: columnss };
   });
   DashboardConfig = updatedDashboardConfig;
@@ -1008,8 +1123,19 @@ const TaskStatusTbl = (Tile: any) => {
                 }
                 {config?.DataSource == 'TimeSheet' &&
                   <>
+                    <div className="alignCenter mb-2 empAllSec justify-content-between">
+                      <span className="fw-bold">
+                      </span>
+                      <span className="alignCenter">
+                        {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
+                        <span className="empCol me-3 hreflink" onClick={() => SaveRejectPopup('ApprovedAll', undefined)}>Approve All</span>
+                      </span>
+                    </div>
                     <div className="Alltable maXh-300" style={{ height: "300px" }} >
                       {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
+                        <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id + "Dashboard"} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                      )}
+                      {config?.Tasks != undefined && config?.Tasks?.length == 0 && (
                         <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id + "Dashboard"} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
                       )}
                     </div>
@@ -1044,6 +1170,15 @@ const TaskStatusTbl = (Tile: any) => {
     });
     return rows;
   };
+  const onRenderCustomHeadereditcomment = () => {
+    return (
+      <>
+        <div className='subheading' >
+          Rejected Comment
+        </div>
+      </>
+    );
+  };
   return (
     <>
       <div>
@@ -1056,6 +1191,22 @@ const TaskStatusTbl = (Tile: any) => {
           {IsManageConfigPopup && <AddConfiguration DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} SingleWebpart={true} props={ContextData?.propsValue} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />}
         </span>
       </div>
+      {
+        isRejectItem != undefined && isRejectItem != '' ? (
+          <Panel onRenderHeader={onRenderCustomHeadereditcomment}
+            isOpen={isRejectItem}
+            onDismiss={CancelRejectPopup}
+            isBlocking={false}>
+            <div className="modal-body">
+              <textarea className="form-control" style={{ height: '140px' }} onChange={(e) => updateRejectComment(e)}  ></textarea>
+            </div>
+            <footer className='modal-footer mt-2'>
+              <button className='btn btn-primary me-2 mb-2' onClick={() => SaveRejectPopup('Rejected', undefined)} disabled={isRejectItem?.RejectedDetails == undefined || isRejectItem?.RejectedDetails.RejectedComment == '' || isRejectItem?.RejectedDetails.RejectedComment == undefined} >Save</button>
+              <button className='btn btn-default mb-2' onClick={CancelRejectPopup}  >Cancel</button>
+            </footer>
+          </Panel>
+        ) : null
+      }
     </>
   );
 };
