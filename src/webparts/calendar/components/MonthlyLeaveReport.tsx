@@ -46,10 +46,15 @@ export const MonthlyLeaveReport = (props: any) => {
     try {
       const Data: any[] = await web.lists.getById(props.props.TaskUsertListID).items.select("Id,Title,TimeCategory,Team,CategoriesItemsJson,Suffix,SortOrder,IsApprovalMail,Item_x0020_Cover,ItemType,Created,Company,Role,Modified,IsActive,IsTaskNotifications,DraftCategory,UserGroup/Title,UserGroup/Id,AssingedToUser/Title,AssingedToUser/Name,AssingedToUser/Id,Author/Name,Author/Title,Editor/Name,Approver/Id,Approver/Title,Approver/Name,Editor/Title,Email")
         .expand("Author,Editor,AssingedToUser,UserGroup,Approver").orderBy("Title", true).get();
-
-      let filteredData = Data.filter((item: any) =>
+        let filteredData :any=[];
+       if(props?.props?.siteUrl === "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH"){
+        filteredData = Data;
+       } else{
+        filteredData = Data.filter((item: any) =>
         item.Title != 'HHHH Team' && item.Title != 'External Staff' && item.Title != 'Ex Staff'
       )
+       }
+    
       // const mydata = Data.filter((item) => item.UserGroupId != null && item.UserGroupId !== 131 && item.UserGroupId !== 147 && item.UserGroupId !== 7 && item.AssingedToUserId !== 9);
       for (let index = 0; index < filteredData?.length; index++) {
         let element = filteredData[index];
