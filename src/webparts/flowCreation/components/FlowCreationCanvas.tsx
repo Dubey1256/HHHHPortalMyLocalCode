@@ -1,0 +1,437 @@
+import React, { useState, useRef } from "react";
+import ReactFlow, {
+  ReactFlowProvider,
+  addEdge,
+  Controls,
+  useEdgesState,
+  useNodesState
+} from "reactflow";
+import "./styles.css";
+import { toJpeg } from 'html-to-image';
+import 'reactflow/dist/style.css';
+import { Panel, PanelType } from 'office-ui-fabric-react'
+import Button from 'react-bootstrap/Button';
+import * as globalCommon from "../../../globalComponents/globalCommon";
+import EditInstitution from "../../EditPopupFiles/EditComponent";
+import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
+let id = 0;
+const getId = () => `dndnode_${id++}`;
+
+export default function FlowCreationCanvas(props: any) {
+  const initialNodes: any = [
+    { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
+  ];
+  const [IsComponent, setIsComponent] = React.useState(false);
+  const [IsProjectPopup, setIsProjectPopup] = React.useState(false);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  const reactFlowWrapper = useRef(null);
+  const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  // const [elements, setElements] = useState(initialNodes);
+  const onConnect = React.useCallback((params: any) => setEdges((eds: any) => addEdge(params, eds)), [setEdges]);
+  const onLoad = (_reactFlowInstance: any) =>
+    setReactFlowInstance(_reactFlowInstance);
+  const onDragOver = (event: any) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+  };
+  React.useEffect(() => {
+    loadComponentDetails()
+  }, []);
+  const loadComponentDetails = async (compId?: any) => {
+    let AllListId = {
+      siteUrl: 'https://hhhhteams.sharepoint.com/sites/HHHH/SP',
+      MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf',
+      TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300',
+      SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a',
+      SmartInformationListID: 'edf0a6fb-f80e-4772-ab1e-666af03f7ccd',
+      DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08',
+      TaskTimeSheetListID: '464fb776-e4b3-404c-8261-7d3c50ff343f',
+      AdminConfigrationListID: 'e968902a-3021-4af2-a30a-174ea95cf8fa',
+      TimeEntry: false,
+      SiteCompostion: false,
+    }
+    try {
+      const params = new URLSearchParams(window.location.search)
+      let itemId = params.get('ItemId')
+      let itemType = params.get('ItemType');
+      let foundComp: any = {};
+      const result = await globalCommon.GetServiceAndComponentAllData(AllListId)
+      if (itemType == 'Portfolio' && result?.AllData?.length > 0 && itemId != undefined) {
+        foundComp = result?.AllData?.find((portfolio: any) => portfolio?.Id == itemId);
+      } else if (itemType == 'Project' && result?.FlatProjectData?.length > 0 && itemId != undefined) {
+        foundComp = result?.FlatProjectData?.find((portfolio: any) => portfolio?.Id == itemId);
+      }
+      // foundComp = {
+      //   Id: 1,
+      //   Parent: {},
+      //   Title: 'Abc',
+      //   subRows: [
+      //     {
+      //       Id: 2,
+      //       Parent: { Id: 1 },
+      //       subRows: [
+      //         { Id: 12, Parent: { Id: 2 }, Title: 'Xyz' },
+      //         { Id: 32, Parent: { Id: 2 }, Title: 'sdr' },
+      //         { Id: 45, Parent: { Id: 2 }, Title: 'frt' }
+      //       ],
+      //       Title: 'Xyz'
+      //     },
+      //     { Id: 3, Parent: { Id: 1 }, Title: 'sdr' },
+      //     { Id: 4, Parent: { Id: 1 }, Title: 'frt' }
+      //   ]
+      // }
+      // const flowRes = generateNodesAndEdges(foundComp);
+      // setNodes(flowRes?.nodes)
+      // setEdges(flowRes?.edges)
+      if (foundComp?.Id != undefined) {
+        if (itemType == 'Portfolio' && result?.AllData?.length > 0 && itemId != undefined) {
+          const groupedResult = globalCommon?.componentGrouping(foundComp, result?.AllData);
+          console.log(groupedResult?.comp)
+          const flowRes = generateNodesAndEdges(groupedResult?.comp);
+          setNodes(flowRes?.nodes)
+          setEdges(flowRes?.edges)
+        } else if (itemType == 'Project' && result?.FlatProjectData?.length > 0 && itemId != undefined) {
+          const groupedResult = globalCommon?.componentGrouping(foundComp, result?.FlatProjectData);
+          console.log(groupedResult?.comp)
+          const flowRes = generateNodesAndEdges(groupedResult?.comp);
+          setNodes(flowRes?.nodes)
+          setEdges(flowRes?.edges)
+        }
+
+        // console.log("Nodes:", nodes);
+        // console.log("Edges:", edges);
+      }
+
+    } catch (e) {
+
+    }
+  }
+  function generateNodesAndEdges(data: any) {
+    let nodes: any = [];
+    let edges: any = [];
+    let minimumSpacing = 30
+    const levelColors = ['#e7e6e6', '#f1f1f1', '#C0C0C0', '#D3D3D3', '#E0E0E0']; // Define colors for each level
+
+    // Function to calculate the width and total width of a subtree
+    function calculateSubTreeWidths(subRows: any) {
+      if (!subRows || subRows.length === 0) return { maxWidth: 0, totalWidth: 1, centerX: 0 };
+
+      const widths = subRows.map((row: any) => {
+        const childWidths = calculateSubTreeWidths(row.subRows);
+        return Math.max(childWidths.maxWidth, 1) + 30; // Consider node width + 30
+      });
+
+      const maxWidth = Math.max(...widths);
+      const totalWidth = widths.reduce((sum: any, width: any) => sum + width, 0);
+      const centerX = totalWidth / 2;
+
+      return { maxWidth, totalWidth, centerX };
+    }
+
+    // Recursive function to process subRows
+    function processSubRows(subRows: any, parentId: any, parentY: any, level: any, parentCenterX?: number, individualWidth?: number) {
+      // Handle undefined parentX and individualWidth
+      parentCenterX = parentCenterX || 0; // Default to 0 if not provided
+      individualWidth = individualWidth || 0; // Default to 0 if not provided
+
+      let accumulatedWidth = 0; // Track cumulative width of processed siblings
+
+      subRows.forEach((row: any, index: any) => {
+        const nodeId = `${parentId}-${row.Id}`;
+        let type = 'default';
+
+        if (parentId === '') {
+          type = 'input';
+        } else if (!row.subRows || row?.subRows?.length === 0) {
+          type = 'output';
+        }
+
+        // Calculate x position based on parent center, accumulated width, and spacing
+        const x = parentCenterX + accumulatedWidth + index * individualWidth + minimumSpacing * index;
+
+        // Update accumulated width after positioning
+        accumulatedWidth += minimumSpacing;
+
+        const y = parentY + 100; // Adjust the vertical spacing here
+        const backgroundColor = levelColors[level % levelColors?.length]; // Assign color based on level
+
+        nodes.push({
+          id: nodeId,
+          type,
+          data: {
+            label: <a className='hreflink' href={row?.targetUrl} data-interception="off" target="_blank">
+              {`${row?.PortfolioStructureID} - ${row?.Title}`}
+            </a>,
+          },
+          position: { x, y }, // Remove duplicate position property
+          style: { backgroundColor: backgroundColor },
+        });
+
+        if (parentId) {
+          edges.push({
+            id: `edge-${parentId}-${row?.Id}`,
+            source: parentId,
+            target: nodeId,
+          });
+        }
+
+        if (row?.subRows && row?.subRows?.length > 0) {
+          // Pass calculated values for sub-levels
+          processSubRows(row.subRows, nodeId, y, level + 1, x, individualWidth); // Maintain hierarchy
+        }
+      });
+    }
+
+    const desiredCenterX = window.innerWidth / 2; // Adjust as needed
+    const initialSubTreeWidths = calculateSubTreeWidths(data?.subRows);
+    const x = desiredCenterX;  // Centered at x = 0
+    const parentY = 0; // Starting y position
+
+    nodes.push({
+      id: `${data?.Id}`,
+      type: 'input',
+      data: {
+        label: <a className='hreflink' href={data?.targetUrl} data-interception="off" target="_blank">
+          {`${data?.PortfolioStructureID} - ${data?.Title}`}
+        </a>,
+      },
+      position: { x: x, y: parentY }, // Set x to calculated center
+      style: { backgroundColor: levelColors[0] },
+    });
+
+    if (data?.subRows && data?.subRows?.length > 0) {
+      // Pass initial values for first level processing
+      processSubRows(data?.subRows, `${data?.Id}`, parentY, 1, x, x / (data?.subRows?.length || 1)); // Assuming equal width for root children
+    }
+
+    return { nodes: nodes, edges: edges };
+  }
+
+  // function generateNodesAndEdges(data: any) {
+  //   let nodes: any = [];
+  //   let edges: any = [];
+  //   const levelColors = ['#989898', '#A9A9A9', '#C0C0C0', '#D3D3D3', '#E0E0E0']; // Define colors for each level
+
+  //   // Function to calculate the width and total width of a subtree
+  //   function calculateSubTreeWidths(subRows: any) {
+  //     if (!subRows || subRows.length === 0) return { maxWidth: 0, totalWidth: 1, centerX: 0 };
+
+  //     const widths = subRows.map((row: any) => {
+  //       const childWidths = calculateSubTreeWidths(row.subRows);
+  //       return Math.max(childWidths.maxWidth, 1) + 30; // Consider node width + 30
+  //     });
+
+  //     const maxWidth = Math.max(...widths);
+  //     const totalWidth = widths.reduce((sum: any, width: any) => sum + width, 0);
+  //     const centerX = totalWidth / 2;
+
+  //     return { maxWidth, totalWidth, centerX };
+  //   }
+
+  //   // Recursive function to process subRows
+  //   function processSubRows(subRows:any, parentId: any, parentY: any, level: any) {
+  //     let accumulatedWidth = 0; // Track cumulative width of processed siblings
+
+  //     subRows.forEach((row:any, index:any) => {
+  //       const nodeId = `${parentId}-${row.Id}`;
+  //       let type = 'default';
+
+  //       if (parentId === '') {
+  //         type = 'input';
+  //       } else if (!row.subRows || row?.subRows?.length === 0) {
+  //         type = 'output';
+  //       }
+
+  //       // Calculate x position based on parent center, accumulated width, and spacing
+  //       const x = parentX + accumulatedWidth + index * individualWidth + minimumSpacing * index;
+
+  //       // Update accumulated width after positioning
+  //       accumulatedWidth += individualWidth + minimumSpacing;
+
+  //       const y = parentY + 100; // Adjust the vertical spacing here
+  //       const backgroundColor = levelColors[level % levelColors?.length]; // Assign color based on level
+
+  //       nodes.push({
+  //         id: nodeId,
+  //         type,
+  //         data: {
+  //           label: <a className='hreflink' href={row?.targetUrl} data-interception="off" target="_blank">
+  //             {`${row?.PortfolioStructureID} - ${row?.Title}`}
+  //           </a>,
+  //         },
+  //         position: { x, y }, // Remove duplicate position property
+  //         style: { backgroundColor: backgroundColor },
+  //       });
+
+  //       if (parentId) {
+  //         edges.push({
+  //           id: `edge-${parentId}-${row?.Id}`,
+  //           source: parentId,
+  //           target: nodeId,
+  //         });
+  //       }
+
+  //       if (row?.subRows && row?.subRows?.length > 0) {
+  //         processSubRows(row.subRows, nodeId, x, level + 1); // Keep x position for sub-levels to maintain hierarchy
+  //       }
+  //     });
+  //   }
+
+  //   const initialSubTreeWidths = calculateSubTreeWidths(data?.subRows);
+  //   const initialX = 0 - initialSubTreeWidths.totalWidth / 2; // Centered at x = 0
+  //   const parentY = 0; // Starting y position
+
+  //   nodes.push({
+  //     id: `${data?.Id}`,
+  //     type: 'input',
+  //     data: {
+  //       label: <a className='hreflink' href={data?.targetUrl} data-interception="off" target="_blank">
+  //         {`${data?.PortfolioStructureID} - ${data?.Title}`}
+  //       </a>,
+  //     },
+  //     position: { x: initialX, y: parentY }, // Set x to calculated center
+  //     style: { backgroundColor: levelColors[0] },
+  //   });
+
+  //   if (data?.subRows && data?.subRows?.length > 0) {
+  //     processSubRows(data?.subRows, `${data?.Id}`, parentY, 1); // Start from level 1
+  //   }
+
+  //   return { nodes: nodes, edges: edges };
+  // }
+
+
+
+
+
+  // Example usage:
+
+
+  const onDrop = (event: any) => {
+    event.preventDefault();
+    const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+    const type = event.dataTransfer.getData("application/reactflow");
+    const position = {
+      x: reactFlowBounds.x,
+      y: reactFlowBounds.y
+    };
+    const newNode = {
+      id: getId(),
+      type,
+      position,
+      data: { label: `${type} node` }
+    };
+    setNodes((es: any) => es.concat(newNode));
+  };
+  const onDragStart = (event: any, nodeType: any) => {
+    event.dataTransfer.setData("application/reactflow", nodeType);
+    event.dataTransfer.effectAllowed = "move";
+  };
+  const exportAsJpg = () => {
+    const flowContainer = document.getElementById('flow-container'); // Assuming 'flow-container' is the id of the div containing your React Flow diagram
+    toJpeg(flowContainer)
+      .then(function (dataUrl: any) {
+        const link = document.createElement('a');
+        link.download = 'flow-diagram.jpg';
+        link.href = dataUrl;
+        link.click();
+      });
+  };
+
+
+  const onRenderCustomHeader = (
+  ) => {
+    return (
+      <div className=" full-width pb-1" >
+        {/* {props?.items != undefined && props?.items?.length == 1 &&
+                    <div>
+                        <ul className="spfxbreadcrumb mb-2 ms-2 p-0">
+                            <li><a>Project Management</a></li>
+                            <li>
+                                {" "}
+                                <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${props?.items[0]?.Id}`}>{props?.items[0]?.Title}</a>{" "}
+                            </li>
+                        </ul>
+                    </div>
+                } */}
+        <div className="subheading">
+          <span className="siteColor">
+            Work flow
+          </span>
+        </div>
+      </div>
+    );
+  };
+  const closePopup = () => {
+    props?.CallBack("Close")
+  }
+
+  return (
+    <>
+      <div className="dndflow" >
+        <ReactFlowProvider>
+          <div id={'flow-container'}
+            className="reactflow-wrapper"
+            style={{ height: "600px", width: "600px" }}
+            ref={reactFlowWrapper}
+          >
+            <ReactFlow
+              nodes={nodes} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect}
+              onLoad={onLoad}
+              onDrop={onDrop}
+              onDragOver={onDragOver}
+            >
+              <Controls />
+            </ReactFlow>
+          </div>
+
+
+
+
+          <aside>
+            <div className="description">
+              You can drag these nodes to the pane on the right.
+            </div>
+            <div
+              className="dndnode input"
+              onDragStart={(event) => onDragStart(event, "input")}
+              draggable
+            >
+              Input Node
+            </div>
+            <div
+              className="dndnode"
+              onDragStart={(event) => onDragStart(event, "default")}
+              draggable
+            >
+              Default Node
+            </div>
+            <div
+              className="dndnode output"
+              onDragStart={(event) => onDragStart(event, "output")}
+              draggable
+            >
+              Output Node
+            </div>
+            <button onClick={exportAsJpg}>Export as JPG</button>
+
+          </aside>
+
+        </ReactFlowProvider>
+      </div>
+      {/* {IsComponent && (
+        <EditInstitution
+          item={SharewebComponent}
+          Calls={Callbackfrompopup}
+          SelectD={Dynamic}
+          portfolioTypeData={PortfolitypeData}
+        >
+          {" "}
+        </EditInstitution>
+      )}
+      {IsProjectPopup && <EditProjectPopup props={SharewebComponent} AllListId={Dynamic} Call={Call} showProgressBar={"showProgressBar"}> </EditProjectPopup>} */}
+    </>
+  );
+}

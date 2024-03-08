@@ -14,7 +14,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import GlobalCommanTable from "../GroupByReactTableComponents/GlobalCommanTable";
 import "bootstrap/dist/css/bootstrap.min.css";
-import CustomAlert from "../../globalComponents/TimeEntry/CustomAlert";
+import CustomAlert from "../TimeEntry/CustomAlert";
 import Tooltip from "../Tooltip";
 import * as globalCommon from "../globalCommon";
 import HighlightableCell from "../highlight";
@@ -733,7 +733,7 @@ const TimeEntryPopup = (item: any) => {
          {
           if(!value.Status)
           {
-            value.Status="Draft";
+            value.Status=" ";
           }
 
          })
@@ -755,6 +755,8 @@ const TimeEntryPopup = (item: any) => {
         });
       }
     });
+    
+    
 
     AllTimeSpentDetails.forEach((items: any) => {
       if (items.TimesheetTitle.Id === undefined) {
@@ -768,7 +770,8 @@ const TimeEntryPopup = (item: any) => {
             val.isShifted = true;
             val.show = false;
             val.subRows.forEach((value: any) => {
-              value.ParentID = val.Id;
+              value.ParentID = items.Id+2;
+              value.Status="Draft";
               value.siteListName = val.__metadata.type;
               value.MainParentId = items.Id;
               value.AuthorTitle = val.Author.Title;
@@ -2663,7 +2666,7 @@ const TimeEntryPopup = (item: any) => {
               <>
                 {" "}
                 <span
-                  title="Submit"
+                  title="Send For Approval"
                   className={getStatusClassName(row?.original?.Status)}
                   onClick={() => changeTaskStatus(row?.original)}
                 ></span>{" "}
