@@ -41,12 +41,14 @@ export default function FlowCreationCanvas(props: any) {
   }, []);
   const loadComponentDetails = async (compId?: any) => {
     let AllListId = {
+
       TaskUsertListID: '117bc416-3fbf-4641-8584-20d149078ee8',
       siteUrl: 'https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP',
       SmartMetadataListID: '0af5c538-1190-4fe5-8644-d01252e79d4b',
       MasterTaskListID: '26a4b2e7-1d92-4f76-b8cb-1fa110f39b34',
       DocumentsListID: '18c9128d-3710-4ceb-a714-9ce9d1a0dae4',
       SmartInformationListID: '2f30fa5b-fbee-4a80-ad2d-865a943e68a8',
+
     }
     try {
       const params = new URLSearchParams(window.location.search)
@@ -148,7 +150,9 @@ export default function FlowCreationCanvas(props: any) {
         const x = parentCenterX + accumulatedWidth + index * individualWidth + minimumSpacing * index;
 
         // Update accumulated width after positioning
+
         accumulatedWidth += individualWidth + minimumSpacing;
+
 
         const y = parentY + 100; // Adjust the vertical spacing here
         const backgroundColor = levelColors[level % levelColors?.length]; // Assign color based on level
@@ -175,7 +179,9 @@ export default function FlowCreationCanvas(props: any) {
 
         if (row?.subRows && row?.subRows?.length > 0) {
           // Pass calculated values for sub-levels
-          processSubRows(row.subRows, nodeId, x, level + 1, x, individualWidth); // Maintain hierarchy
+
+          processSubRows(row.subRows, nodeId, y, level + 1, x, individualWidth); // Maintain hierarchy
+
         }
       });
     }

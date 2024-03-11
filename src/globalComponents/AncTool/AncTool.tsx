@@ -673,7 +673,7 @@ const AncTool = (props: any) => {
                 }).catch((err: any) => {
                     console.log(err)
                     if (err.message.includes('423')) {
-                        alert("Document you are trying to Update/Tag is open somewhere else Plese close and try again")
+                        alert("Document you are trying to Update/Tag is open somewhere else. Please close the Document and try again")
                     }
                 })
 
@@ -709,7 +709,7 @@ const AncTool = (props: any) => {
                 }).catch((err: any) => {
                     console.log(err)
                     if (err.message.includes('423')) {
-                        alert("Document you are trying to Update/Tag is open somewhere else Plese close and try again")
+                        alert("Document you are trying to Update/Tag is open somewhere else. Please close the Document and try again")
                     }
                 })
 
