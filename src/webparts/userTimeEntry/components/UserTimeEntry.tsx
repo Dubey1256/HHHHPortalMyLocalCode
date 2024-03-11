@@ -1745,7 +1745,7 @@ export default class UserTimeEntry extends React.Component<
         confi.Title != undefined &&
         confi.Title.toLowerCase() == "offshore tasks"
       )
-        confi.Title = confi.Title.replace(" ", "");
+        confi.Title = confi.Title.replace(" ", " ");
       confi["Sitee" + confi.Title] = "filter=";
     });
     copysitesConfi.forEach(function (confi: any) {
