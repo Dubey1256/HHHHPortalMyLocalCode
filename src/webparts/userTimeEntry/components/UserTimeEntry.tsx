@@ -1284,6 +1284,8 @@ export default class UserTimeEntry extends React.Component<
         break;
 
       case "EntrieMonth":
+        DateType = "This Month";
+        this.setState({ showShareTimesheet: true });
         startdt = new Date(startdt.getFullYear(), startdt.getMonth(), 1);
         enddt = new Date(enddt.getFullYear(), enddt.getMonth() + 1, 0);
         break;
@@ -1306,7 +1308,7 @@ export default class UserTimeEntry extends React.Component<
         break;
 
       case "EntrieYear":
-        DateType = "Year";
+        DateType = "This Year";
         startdt = new Date(new Date().getFullYear(), 0, 1);
         enddt = new Date(new Date().getFullYear(), 11, 31);
         break;
