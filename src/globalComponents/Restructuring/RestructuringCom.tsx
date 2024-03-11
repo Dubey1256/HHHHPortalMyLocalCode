@@ -643,6 +643,7 @@ const RestructuringCom = (props: any, ref: any) => {
         if (array != undefined && array?.length > 0) {
           let newChildarray: any = [];
           let newarrays: any = [];
+          
           array?.map((obj: any) => {
             let actionsPerformed = false;
             restructureItem?.map((items: any) => {
@@ -1127,6 +1128,9 @@ const RestructuringCom = (props: any, ref: any) => {
               }
             });
           });
+          if(restructureItem?.[0].TaskType?.Id === 2 && (props?.queryItems?.Item_x0020_Type == 'Feature' || props?.queryItems?.Item_x0020_Type == 'SubComponent' || props?.queryItems?.Item_x0020_Type == 'Component')){
+                      topCompo = true;
+          }
         }
       }else if (restructureItem[0]?.Item_x0020_Type === "Sprint") {
         let newarrays: any = [];
@@ -3992,7 +3996,7 @@ const RestructuringCom = (props: any, ref: any) => {
   };
 
   const trueTopIcon = (items: any) => {
-    if(RestructureChecked?.length > 1){
+    if(RestructureChecked?.length > 1 || selectedItems?.length > 1){
           setResturuningOpen(true);
     }else{
       setTrueTopCompo(items);
