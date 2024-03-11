@@ -148,7 +148,7 @@ export default function FlowCreationCanvas(props: any) {
         const x = parentCenterX + accumulatedWidth + index * individualWidth + minimumSpacing * index;
 
         // Update accumulated width after positioning
-        accumulatedWidth += individualWidth + minimumSpacing;
+        accumulatedWidth += minimumSpacing;
 
         const y = parentY + 100; // Adjust the vertical spacing here
         const backgroundColor = levelColors[level % levelColors?.length]; // Assign color based on level
