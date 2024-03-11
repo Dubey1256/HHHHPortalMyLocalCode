@@ -274,6 +274,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       SmartInformationListID: this.props.SmartInformationListID,
       PortFolioTypeID:  this.props.PortFolioTypeID,
       siteUrl: this.props.siteUrl,
+      Context:this.props.Context,
       TaskTypeID: this.props.TaskTypeID,
       isShowTimeEntry: isShowTimeEntry,
       isShowSiteCompostion: isShowSiteCompostion
