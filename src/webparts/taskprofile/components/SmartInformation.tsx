@@ -1024,7 +1024,7 @@ const SmartInformation = (props: any, ref: any) => {
   const addDescription = () => {
     
     if (allValue.InfoType === 'Information Source' && smartnoteAuthor.length > 0 && InfoDate != '' && InfoSource.key != 0) {
-      var text = `Requirement has been received from ${smartnoteAuthor[0].Title} through ${InfoSource.text} on ${InfoDate} `;
+      var text = `Requirement has been received from ${smartnoteAuthor[0].Title} through ${InfoSource.text} on ${InfoDate.split('-')[2] + '-' + InfoDate.split('-')[1] + '-' + InfoDate.split('-')[0]} `;
       //setallSetValue({ ...allValue, Description: text })
       if (count === 0) {
         count += 1;
@@ -1274,7 +1274,10 @@ const SmartInformation = (props: any, ref: any) => {
           </div>
         </div>
         {!Htmleditorcall && allValue.InfoType !== 'Information Source' && <div className='mt-3'><HtmlEditorCard editorValue={allValue?.Description != null ? allValue?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>}
-        {(Htmleditorcall || (popupEdit && allValue.InfoType === 'Information Source')) && <div className='mt-3'> <EditorComponent editorState={editorState} setEditorState={setEditorState}/> </div>}
+        
+        {Htmleditorcall && <div className='text-end my-1'><a title='Add Description' className='ForAll hreflink' style={{ cursor: "pointer" }} onClick={() => addDescription()}>Add Source Description</a></div>}
+        {(Htmleditorcall || (popupEdit && allValue.InfoType === 'Information Source')) && <div> <EditorComponent editorState={editorState} setEditorState={setEditorState}/> </div>}
+        
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
             <div className={popupEdit?"col-sm-4 text-lg-start ps-1":"col-sm-6 text-lg-start ps-1"}>
@@ -1285,10 +1288,7 @@ const SmartInformation = (props: any, ref: any) => {
             </div>
 
             <footer className={popupEdit?'col-sm-8 mt-2 p-0':"mt-2 p-0"}>
-              {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}
-              
-              {Htmleditorcall && <span><a title='Add Description' className='ForAll hreflink' style={{ cursor: "pointer" }} onClick={() => addDescription()}>Add Source Description</a><span className='mx-2'>|</span></span>}
-             
+              {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}                            
               <span className='me-2'><a className="ForAll hreflink" target="_blank" data-interception="off"
                                     href={`${props?.Context?._pageContext?._web?.absoluteUrl}/SitePages/ManageSmartMetaData.aspx`}>
                                     Manage Information

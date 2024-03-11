@@ -17,6 +17,7 @@ import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import { FaChevronDown, FaChevronRight, FaMinusSquare, FaPlusSquare, FaSquare, FaCheckSquare } from 'react-icons/fa';
 import { Col, Container, Row } from "react-bootstrap";
+import { SPHttpClient } from "@microsoft/sp-http";
 
 const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUrl, AllListid, TaskUserListId, context, fetchAPIData, smartMetaDataItems }: any) => {
     const [data, setData] = React.useState<any>([]);
@@ -200,11 +201,12 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 // SortOrder: (sortOrder !== undefined && sortOrder !== null) ? sortOrder : memberToUpdate.SortOrder,
                 Role: { "results": selectedRoles },
                 IsTaskNotifications: isTaskNotifications,
-                AssingedToUserId: typeof assignedToUser === 'number' ? assignedToUser : (assignedToUser?.length > 0 ? assignedToUser[0]?.AssingedToUser?.Id : null),
+                AssingedToUserId:
+                  assignedToUser != null ? assignedToUser?.Id: null,
                 // ApproverId: Array.isArray(approver) && approver.every(item => typeof item === 'number' && item != null)
                 //     ? { "results": approver } : (approver.length > 0 && approver[0] != null && approver[0].AssingedToUser?.Id != null) ? { "results": [approver[0].AssingedToUser.Id] } : { "results": [] },
                 ApproverId: Array.isArray(approver) && approver.every(item => typeof item === 'number' && item != null)
-                ? { "results": approver } : Array.isArray(approver) && approver.length > 0 ? { "results": approver?.map(app => app?.AssingedToUser?.Id) } : { "results": [] },
+                ? { "results": approver } : Array.isArray(approver) && approver.length > 0 ? { "results": approver?.map(app => app?.userId) } : { "results": [] },
                 // ApproverId: Array.isArray(approver) && approver.length > 0 ? { "results": approver?.map(app => app?.AssingedToUser?.Id) } : { "results": [] },
                 UserGroupId: userGroup ? parseInt(userGroup) : memberToUpdate?.UserGroup?.Id,
                 Team: userTeam ? userTeam : memberToUpdate.Team,
@@ -422,32 +424,76 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
         console.log(data);
     }, []);
 
-    const AssignedToUser = (item: any) => {
-        if (item.length > 0) {
-            const email = item.length > 0 ? item[0].loginName.split('|').pop() : null;
-            const member = data.filter((elem: any) => elem.Email === email)
-            setAssignedToUser(member)
-            setIsUserNameValid(true);
-        }
-        else {
-            setAssignedToUser([])
-            setIsUserNameValid(false);
-        }
+  const getUserInfo = async (userMail: string) => {
+    const userEndPoint: any = `${context?.pageContext?.web?.absoluteUrl}/_api/Web/EnsureUser`;
+
+    const userData: string = JSON.stringify({
+      logonName: userMail,
+    });
+
+    const userReqData = {
+      body: userData,
+    };
+
+    const resUserInfo = await context?.spHttpClient.post(
+      userEndPoint,
+      SPHttpClient.configurations.v1,
+      userReqData
+    );
+    const userInfo = await resUserInfo.json();
+
+    return userInfo;
+  };
+
+  const AssignedToUser = async (items: any[]) => {
+    let userId: number = undefined;
+    let userTitle: any;
+    let userSuffix: string = undefined;
+    if (items.length > 0) {
+        let userMail = items[0].id.split("|")[2];
+        let userInfo = await getUserInfo(userMail);
+        userId = userInfo.Id;
+        userTitle = userInfo.Title;
+        userSuffix = userTitle
+          .split(" ")
+          .map((i: any) => i.charAt(0))
+          .join("");
+      setAssignedToUser(userInfo);
+      setIsUserNameValid(true);
+    } else {
+      setAssignedToUser([]);
+      setIsUserNameValid(false);
     }
+  };
 
-    const ApproverFunction = (items: any[]) => {
-        if (items.length > 0) {
-            const approvers = items.map(item => {
-                const email = item.loginName.split('|').pop();
-                return data.find((elem: any) => elem.Email === email);
-            }).filter(approver => approver != null); // Filter out any undefined or null values
-
-            setApprover(approvers);
-        } else {
-            setApprover([]);
-        }
+  const ApproverFunction = async (items: any[]) => {
+    let userId: number = undefined;
+    let userTitle: any;
+    let userSuffix: string = undefined;
+    let userMail: any
+    let userInfo: any
+    if (items.length > 0) {
+        const approvers = await Promise.all(items.map(async (selectedusers) => {
+            userMail = selectedusers?.id.split("|")[2];
+            userInfo = await getUserInfo(userMail);
+            userId = userInfo.Id;
+            userTitle = userInfo.Title;
+            userSuffix = userTitle
+                .split(" ")
+                .map((i: any) => i.charAt(0))
+                .join("");
+            
+            return {
+                userId: userId,
+                userTitle: userTitle,
+                userSuffix: userSuffix
+            };
+        }));
+      setApprover(approvers);
+    } else {
+      setApprover([]);
     }
-
+  };
 
     // Autosuggestion code
 
