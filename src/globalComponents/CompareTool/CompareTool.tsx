@@ -32,6 +32,7 @@ let AutoCompleteItemsArray: any = [];
 let catItem: any = {};
 let color: any = false;
 let PutComment: any = "";
+let timesheetListConfigrations: any = {};
 
 let TempTimeSheetCategoryArray: any = [];
 const CompareTool = (props: any) => {
@@ -246,6 +247,7 @@ const CompareTool = (props: any) => {
                         val.isShifted = true;
                         val?.AdditionalTime.forEach((value: any) => {
                             value.ParentID = val.Id;
+                            item.ParentID = val.Id;
                             value.MainParentId = item.Id;
                             item.AdditionalTime.push(value);
                         })
@@ -296,9 +298,21 @@ const CompareTool = (props: any) => {
         Item.finalData = finalData;
     }
     const GetTaskTime = async (Item: any) => {
+        var site = Item.siteType.replace(' ', '');
+        var listID = "";//"464FB776-E4B3-404C-8261-7D3C50FF343F";
+        // if (site != undefined && site == 'Migration' || site == 'ALAKDigital')
+        //     listID = "9ed5c649-3b4e-42db-a186-778ba43c5c93";
+        timesheetListConfigrations?.forEach((time: any) => {
+            if (time?.taskSites?.length > 0) {
+                time?.taskSites?.forEach((obj: any) => {
+                    if (obj === site)
+                        listID = time.listId;
+                })
+            }
+        })
         Item.AllTimeSpentDetails = [];
         Item.CopyAllTimeSpentDetails = [];
-        var site = Item.siteType.replace(' ', '');
+
         if (site != undefined && site.toLowerCase() == 'shareweb')
             site = site.toLowerCase().replace(/\b[a-z]/g, function (letter: string) { return letter.toUpperCase(); });
         if (site != undefined && site.toLowerCase() == 'sharewebqa')
@@ -306,9 +320,7 @@ const CompareTool = (props: any) => {
         var filteres = "Task" + site + "/Id eq " + Item.Id;
         var columns = "Task" + site + "/Id," + "Task" + site + "/Title&$expand=Author,Category,TimesheetTitle," + "Task" + site;
         var select = "Id,Title,TaskDate,TaskTime,Description,AdditionalTimeEntry,AuthorId,Author/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title," + columns + "&$filter=" + filteres + "";
-        var listID = "464FB776-E4B3-404C-8261-7D3C50FF343F";
-        if (site != undefined && site == 'Migration' || site == 'ALAKDigital')
-            listID = "9ed5c649-3b4e-42db-a186-778ba43c5c93";
+
         const web = new Web(props?.contextValue?.siteUrl);
         await web.lists.getById(listID).items.select(select)
             .getAll().then((data: any) => {
@@ -1240,6 +1252,8 @@ const CompareTool = (props: any) => {
                     } else {
                         SmartItemData.newTitle = SmartItemData.Title;
                     }
+                    if (SmartItemData?.TaxType === 'timesheetListConfigrations')
+                        timesheetListConfigrations = globalCommon.parseJSON(SmartItemData.Configurations);
                 });
             }
             AllSitesData = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Sites");
@@ -2080,33 +2094,52 @@ const CompareTool = (props: any) => {
             console.error('Error in the first block:', error);
         }
     }
+    const UpdateParentTimeEntry = async (lookupId: any, Item: any, updateColumn: any, listID: any) => {
+        let web = new Web(Item.siteUrl);
+        var Data = await web.lists
+            .getById(listID)
+            .items.getById(lookupId)
+            .update({
+                [updateColumn]: Item.Id,
+            })
+            .then((res) => {
+
+            });
+    }
     const SaveTimeEntry = async (Item: any, type: any) => {
-        var TimesheetConfiguration: any = [];
-        let TimeSheetlistId: any = '';
-        TimesheetConfiguration?.forEach((val: any) => {
-            TimeSheetlistId = val.TimesheetListId;
-            // siteUrl = val.siteUrl;
-            // listName = val.TimesheetListName;
-        });
-        Item?.bindData?.forEach(async (val: any) => {
+        Item?.finalData?.forEach(async (val: any) => {
             var siteType: any = "Task" + Item.siteType + "Id";
             var SiteId = "Task" + Item?.siteType;
-            let count = 0;
-            let web = new Web(Item.siteUrl);
-            var Data = await web.lists
-                .getById(TimeSheetlistId)
-                .items.getById(val.Id)
-                .update({
-                    [siteType]: Item.Id,
+            if (val[SiteId]?.Id != Item.Id) {
+                let count = 0;
+                var listID = "";//"464FB776-E4B3-404C-8261-7D3C50FF343F";
+                // if (site != undefined && site == 'Migration' || site == 'ALAKDigital')
+                //     listID = "9ed5c649-3b4e-42db-a186-778ba43c5c93";
+                timesheetListConfigrations?.forEach((time: any) => {
+                    if (time?.taskSites?.length > 0) {
+                        time?.taskSites?.forEach((obj: any) => {
+                            if (obj === Item?.siteType)
+                                listID = time.listId;
+                        })
+                    }
                 })
-                .then((res) => {
-                    count++;
-                    // if (count == timesheetData.length && type == 'move') {
-                    //     Items.Items.Action = "Move";
-                    //     setLoaded(true)
-                    //     deleteItemFunction(Items.Items.Id, "Move");
-                    // }
-                });
+                // var listID = "464FB776-E4B3-404C-8261-7D3C50FF343F";
+                // if (Item?.siteType != undefined && Item?.siteType  == 'Migration' || Item?.siteType  == 'ALAKDigital')
+                //     listID = "9ed5c649-3b4e-42db-a186-778ba43c5c93";
+                //  const web = new Web(props?.contextValue?.siteUrl);
+                let web = new Web(Item.siteUrl);
+                var Data = await web.lists
+                    .getById(listID)
+                    .items.getById(val.Id)
+                    .update({
+                        [siteType]: Item.Id,
+                    })
+                    .then((res) => {
+                        val?.values?.forEach(async (child: any) => {
+                            UpdateParentTimeEntry(child.ParentID, Item, siteType, listID)
+                        })
+                    });
+            }
         });
     }
 
@@ -4112,7 +4145,7 @@ const CompareTool = (props: any) => {
 
                                     <div className="input-group">
                                         <label className="fw-semibold full-width form-label">Time Entries</label>
-                                      
+
                                         <table width="100%" className="indicator_search">
                                             <tbody>
                                                 <tr>
