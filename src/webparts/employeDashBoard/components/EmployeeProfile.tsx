@@ -21,6 +21,7 @@ let DashboardTitle: any = '';
 let timeSheetConfig: any = {};
 let TimeSheetLists: any = [];
 let dates: any = [];
+let AllTimeEntry: any = [];
 const EmployeProfile = (props: any) => {
   const params = new URLSearchParams(window.location.search);
   let DashboardId: any = params.get('DashBoardId');
@@ -353,6 +354,17 @@ const EmployeProfile = (props: any) => {
 
     return formattedDate;
   }
+  var isItemExists = function (array: any, Id: any) {
+    var isExists = false;
+    for (let index = 0; index < array.length; index++) {
+      let item = array[index];
+      if (item.Id === Id) {
+        isExists = true;
+        return false;
+      }
+    };
+    return isExists;
+  };
   const MakeFinalData = () => {
     var today = new Date();
     var time = today.getHours() + ":" + today.getMinutes();
@@ -474,28 +486,33 @@ const EmployeProfile = (props: any) => {
                     entry.TaskDate = undefined
                     entry.CreatedServerDate = undefined
                     if (entry.AdditionalTimeEntry != undefined && entry.AdditionalTimeEntry?.length > 0) {
-                      entry.AdditionalTimeEntry?.map((TimeEntry: any) => {
-                        entry.AuthorName = TimeEntry?.AuthorName;
-                        entry.AuthorImage = TimeEntry?.AuthorImage;
-                        entry.TaskTime = TimeEntry?.TaskTime;
-                        entry.TaskDate = TimeEntry?.TaskDate;
-                        entry.CreatedServerDate = new Date(entry.Created)
-                        entry.CreatedServerDate.setHours(0, 0, 0, 0)
-                        if (entry.TaskDate != null) {
-                          var dateValues = entry?.TaskDate?.split("/");
+                      entry.AdditionalTimeEntry?.map((TimeEntry: any, index: any) => {
+                        TimeEntry.UpdatedId = entry?.Id;
+                        if ((TimeEntry?.Id == undefined || TimeEntry?.Id == '') && TimeEntry?.ID != undefined && TimeEntry?.ID != '')
+                          TimeEntry.Id = TimeEntry?.ID;
+                        else if ((TimeEntry?.ID == undefined || TimeEntry?.ID == '') && TimeEntry?.Id != undefined && TimeEntry?.Id != '')
+                          TimeEntry.ID = TimeEntry?.Id;
+                        else {
+                          TimeEntry.Id = index;
+                          TimeEntry.ID = index;
+                        }
+                        if (TimeEntry.TaskDate != null) {
+                          var dateValues = TimeEntry?.TaskDate?.split("/");
                           var dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
                           var NewDate = new Date(dp);
-                          entry.sortTaskDate = NewDate;
-                          entry.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
+                          TimeEntry.sortTaskDate = NewDate;
+                          TimeEntry.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
+                          TimeEntry.sortTaskDate.setHours(0, 0, 0, 0);
                         }
-                        entry.Description = TimeEntry?.Description;
+                        entry.listId = site?.listId;
+                        entry.siteUrl = site?.siteUrl
+                        if (TimeEntry?.sortTaskDate != undefined && CurrentDate != undefined && CurrentDate.getTime() == TimeEntry?.sortTaskDate.getTime() && TimeEntry?.Status == 'For Approval') {
+                          TempArray.push(TimeEntry)
+                          if (!isItemExists(AllTimeEntry, entry.Id))
+                            AllTimeEntry.push(entry);
+                        }
                       })
                     }
-                  }
-                  entry.listId = site?.listId;
-                  entry.siteUrl = site?.siteUrl
-                  if (entry?.CreatedServerDate != undefined && CurrentDate != undefined && CurrentDate.getTime() == entry?.CreatedServerDate.getTime()) {
-                    TempArray.push(entry)
                   }
                 });
                 arraycount++;
@@ -1021,10 +1038,10 @@ const EmployeProfile = (props: any) => {
   return (
     <>
       {progressBar && <PageLoader />}
-      {IsCallContext == true && <myContextValue.Provider value={{ ...myContextValue, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
+      <myContextValue.Provider value={{ ...myContextValue, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
         <div> <Header /></div>
-        <TaskStatusTbl />
-      </myContextValue.Provider >}
+        {IsCallContext == true && <TaskStatusTbl />}
+      </myContextValue.Provider >
     </>
   );
 };
