@@ -62,8 +62,12 @@ let AllMetadata: [] = [];
 
 const TimeEntryPopup = (item: any) => {
   if (item?.props?.siteUrl != undefined) {
-    var Url = item?.props?.siteUrl.split("https://hhhhteams.sharepoint.com");
-    RelativeUrl = Url[1];
+    //var Url = item?.props?.siteUrl.split("https://hhhhteams.sharepoint.com");
+    let index = item?.props?.siteUrl.indexOf('/', 'https://'.length);
+
+    // Extract the substring after the domain
+    RelativeUrl = item?.props?.siteUrl.substring(index);
+    //RelativeUrl = extractedUrl[1];
     CurrentSiteUrl = item?.props?.siteUrl;
     PortfolioType = item?.props?.Portfolio_x0020_Type;
     CurntUserId = item?.Context?.pageContext?._legacyPageContext.userId;
