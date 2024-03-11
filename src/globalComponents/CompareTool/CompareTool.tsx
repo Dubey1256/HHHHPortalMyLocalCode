@@ -2082,7 +2082,7 @@ const CompareTool = (props: any) => {
     }
     const SaveTimeEntry = async (Item: any, type: any) => {
         var TimesheetConfiguration: any = [];
-        let TimeSheetlistId:any ='';
+        let TimeSheetlistId: any = '';
         TimesheetConfiguration?.forEach((val: any) => {
             TimeSheetlistId = val.TimesheetListId;
             // siteUrl = val.siteUrl;
@@ -4061,7 +4061,7 @@ const CompareTool = (props: any) => {
                                                 <tr>
                                                     {data[0]?.finalData?.length > 0 && data[0]?.finalData?.map((filteritem: any, index: any) => {
                                                         return (
-                                                            <>
+                                                            <>{filteritem?.values?.length > 0 && <>
                                                                 <span id="filterexpand">
                                                                     {filteritem.expand && filteritem?.values?.length > 0 && <SlArrowDown onClick={() => loadMorefilter(filteritem, 'finalData', 0)}></SlArrowDown>}
                                                                     {!filteritem.expand && filteritem?.values?.length > 0 && <SlArrowRight onClick={() => loadMorefilter(filteritem, 'finalData', 0)}></SlArrowRight>}
@@ -4090,40 +4090,9 @@ const CompareTool = (props: any) => {
                                                                             </li></>)
                                                                     })}
                                                                 </ul>
-                                                            </>)
+                                                            </>}</>)
                                                     })}
 
-
-
-                                                    {/* {data[0]?.finalData?.length > 0 ? (
-                                                        data[0]?.finalData.map((Group: any, index: any) => {
-                                                            return (
-                                                          <>  <td>
-                                                                <fieldset>
-                                                                    <legend ng-if="item!='teamSites'" className="ng-scope">
-                                                                    <input type='checkbox' checked={Group.checked} value={Group.Title}  onChange={(e) => onCheck((e), index ,data[0]?.finalData)} ></input>   <span className="ng-binding">{Group.Title}</span>
-                                                                    </legend>
-                                                                </fieldset>
-                                                                <CheckboxTree
-                                                                    nodes={Group.values}
-                                                                    checked={Group.checked}
-                                                                    expanded={Group.expanded}
-                                                                    onCheck={checked => onCheck(checked, index ,data[0]?.finalData)}
-                                                                    onExpand={expanded => onExpanded(expanded, index ,data[0]?.finalData)}
-                                                                    nativeCheckboxes={true}
-                                                                    showNodeIcon={false}
-                                                                    checkModel={'all'}
-                                                                />
-                                                            </td>
-                                                            <td>{Group.TaskDate}</td><td>{Group.TaskTime}</td><td>{Group.TaskTime}</td>
-                                                            
-                                                            </>
-                                                            )
-
-                                                        }
-                                                        )): <div className="d-flex justify-content-center">No Timesheet Available</div>
-
-                                                    } */}
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -4143,21 +4112,13 @@ const CompareTool = (props: any) => {
 
                                     <div className="input-group">
                                         <label className="fw-semibold full-width form-label">Time Entries</label>
-                                        {/* {data[1]?.finalData?.length > 0 ? (
-                                            <GlobalCommanTable
-                                                columns={TimeEntryColumnsSecond}
-                                                data={data[1]?.finalData}
-                                                callBackData={callBackDataSecond}
-                                                expendedTrue={true}
-
-                                            />
-                                        ) : <div className="d-flex justify-content-center">No Timesheet Available</div>} */}
+                                      
                                         <table width="100%" className="indicator_search">
                                             <tbody>
                                                 <tr>
                                                     {data[1]?.finalData?.length > 0 && data[1]?.finalData?.map((filteritem: any, index: any) => {
                                                         return (
-                                                            <>
+                                                            <>  {filteritem?.values?.length > 0 && <>
                                                                 <span id="filterexpand">
                                                                     {filteritem.expand && filteritem?.values?.length > 0 && <SlArrowDown onClick={() => loadMorefilter(filteritem, 'finalData', 1)}></SlArrowDown>}
                                                                     {!filteritem.expand && filteritem?.values?.length > 0 && <SlArrowRight onClick={() => loadMorefilter(filteritem, 'finalData', 1)}></SlArrowRight>}
@@ -4168,7 +4129,7 @@ const CompareTool = (props: any) => {
                                                                 <ul>
                                                                     {filteritem.expand === true && filteritem?.values?.length > 0 && filteritem.values?.map((child: any) => {
                                                                         return (<>
-                                                                            <li style={{ listStyle: 'none' }}>
+                                                                            <li style={{ listStyle: 'none' }} className="alignCenter">
                                                                                 {/* <div style={{ width: "5%" }}>
                                                                                     <input className='form-check-input' type="checkbox" id={child.Title} value={child.Title} checked={child.selected} onChange={(event) => handleGroupCheckboxChanged(event, child, 'finalData', 0)} /> {child.Title}
                                                                                 </div> */}
@@ -4186,7 +4147,7 @@ const CompareTool = (props: any) => {
                                                                             </li></>)
                                                                     })}
                                                                 </ul>
-                                                            </>)
+                                                            </>}</>)
                                                     })}
                                                 </tr>
                                             </tbody>
