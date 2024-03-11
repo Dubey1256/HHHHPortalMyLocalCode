@@ -17,6 +17,13 @@ import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 import { Col, Row } from "react-bootstrap";
 import AddConfiguration from "../../../globalComponents/AddConfiguration";
+import { GrNext, GrPrevious } from "react-icons/gr";
+import * as Moment from "moment";
+import Slider from "react-slick";
+import { ColumnDef } from "@tanstack/react-table";
+import HighlightableCell from "../../../globalComponents/highlight";
+import { MdOutlineGppGood, MdGppBad } from "react-icons/Md";
+import { FocusTrapCallout, FocusZone, FocusZoneTabbableElements, Panel, PanelType, Stack, Text, } from '@fluentui/react';
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -38,7 +45,25 @@ const TaskStatusTbl = (Tile: any) => {
   const [editPopup, setEditPopup]: any = React.useState(false);
   const [result, setResult]: any = React.useState(false);
   const [ActiveTile, setActiveTile] = React.useState(Tile?.activeTile);
-
+  const [dateRange, setDateRange] = React.useState<any>([]);
+  const [isRejectItem, setisRejectItem] = React.useState<any>(undefined);
+  const settings = {
+    dots: false, infinite: true, speed: 500, slidesToShow: 6, slidesToScroll: 1, nextArrow: <SamplePrevNextArrow type="next" />, prevArrow: <SamplePrevNextArrow type="prev" />,
+    beforeChange: handleBeforeChange,
+  };
+  const [currentSlide, setCurrentSlide] = React.useState(0);
+  function handleBeforeChange(current: any, next: any) {
+    setCurrentSlide(next);
+  }
+  function SamplePrevNextArrow(props: any) {
+    const { type, className, style, onClick } = props;
+    // Decide whether to display the arrow based on the current slide
+    const shouldDisplay = (type === 'next' && currentSlide < dateRange?.length - 1) || (type === 'prev' && currentSlide > 0);
+    return shouldDisplay ? (
+      <div className={className} style={{ ...style, display: "block" }} onClick={onClick}>
+        {type === 'next' ? <GrNext /> : <GrPrevious />}
+      </div>) : null;
+  }
   if (ContextData != undefined && ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
     AllapprovalTask = ContextData.DashboardConfig.filter((item: any) => item.Id == 6)[0];
     if (AllapprovalTask != undefined && AllapprovalTask.length > 0)
@@ -62,7 +87,8 @@ const TaskStatusTbl = (Tile: any) => {
     siteUrl: ContextData?.siteUrl,
     TaskTimeSheetListID: ContextData?.propsValue?.TaskTimeSheetListID,
     isShowTimeEntry: true,
-    isShowSiteCompostion: true
+    isShowSiteCompostion: true,
+    Context: ContextData?.propsValue?.Context
   };
   if (AllapprovalTask && AllapprovalTask.length > 0 && flagApproval != true) {
     flagApproval = true
@@ -75,13 +101,20 @@ const TaskStatusTbl = (Tile: any) => {
       DashboardConfig = ContextData?.DashboardConfig;
       DashboardConfigCopy = [...DashboardConfig]
     }
+    if (ContextData?.DataRange != undefined && ContextData?.DataRange?.length > 0) {
+      setDateRange(ContextData?.DataRange)
+    }
   }, [ContextData?.DashboardConfig]);
-  const ShowWorkingTask = (config: any, User: any) => {
+  const ShowWorkingTask = (config: any, User: any, Time: any) => {
     DashboardConfig.forEach((configuration: any) => {
       if (configuration?.WebpartTitle == config?.WebpartTitle && configuration?.Tasks != undefined && configuration?.Tasks?.length > 0) {
         configuration?.Tasks.forEach((user: any) => {
-          if (user?.AssingedToUserId != undefined && User?.AssingedToUserId != undefined && user?.AssingedToUserId == User?.AssingedToUserId) {
-            user.IsShowTask = !user.IsShowTask
+          if (user?.dates != undefined && user?.dates?.length > 0) {
+            user?.dates.forEach((Date: any) => {
+              if (Date?.ServerDate.getTime() == Time?.ServerDate.getTime() && user?.AssingedToUserId != undefined && User?.AssingedToUserId != undefined && user?.AssingedToUserId == User?.AssingedToUserId) {
+                Date.IsShowTask = !Date.IsShowTask
+              }
+            })
           }
         })
       }
@@ -97,13 +130,10 @@ const TaskStatusTbl = (Tile: any) => {
     e.dataTransfer.setData("DataId", JSON.stringify(Item))
     console.log('Drag successfuly');
   }
-  const onDropUser = (e: any, User: any, config: any) => {
+  const onDropUser = (e: any, User: any, config: any, WorkingDate: any) => {
     let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
     let sourceUser = globalCommon.parseJSON(e.dataTransfer.getData("sourceUser"))
     let TeamMemberIds = [];
-    let AssignedToIds = [];
-    if (Item?.AssignedTo == undefined)
-      Item.AssignedTo = [];
     if (Item?.TeamMembers == undefined)
       Item.TeamMembers = [];
     if (Item?.TeamMembers != undefined && Item?.TeamMembers?.length > 0) {
@@ -113,16 +143,39 @@ const TaskStatusTbl = (Tile: any) => {
     }
     TeamMemberIds.push(User?.AssingedToUserId);
     Item?.TeamMembers.push({ "Id": User?.AssingedToUserId, "Title": User?.Title })
-    if (Item?.AssignedTo != undefined && Item?.AssignedTo?.length > 0) {
-      Item?.AssignedTo?.map((assignMember: any) => {
-        AssignedToIds.push(assignMember.Id);
-      });
-    }
-    AssignedToIds.push(User?.AssingedToUserId);
-    Item?.AssignedTo.push({ "Id": User?.AssingedToUserId, "Title": User?.Title })
-    if (sourceUser != undefined && sourceUser?.AssingedToUserId != undefined && sourceUser?.AssingedToUserId != '') {
-      AssignedToIds = AssignedToIds.filter((Id: any) => Id != sourceUser?.AssingedToUserId);
-      Item.AssignedTo = Item?.AssignedTo.filter((user: any) => user?.Id != sourceUser?.AssingedToUserId);
+    if (WorkingDate != undefined && WorkingDate != '') {
+      if (WorkingDate == "Today") {
+        let today: any = new Date();
+        today.setDate(today.getDate());
+        today.setHours(0, 0, 0, 0);
+        WorkingDate = Moment(today).format("DD/MM/YYYY");
+
+      }
+      else if (WorkingDate == "Tomorrow") {
+        let today: any = new Date();
+        today.setDate(today.getDate() + 1);
+        today.setHours(0, 0, 0, 0);
+        WorkingDate = Moment(today).format("DD/MM/YYYY");
+      }
+      Item.PrevWorkingAction = JSON.parse(JSON.stringify(Item.WorkingAction))
+      if (Item?.WorkingAction == undefined || Item?.WorkingAction == '') {
+        Item.WorkingAction = [{ 'WorkingDate': WorkingDate, WorkingMember: [User?.AssingedToUserId] }];
+      }
+      else if (Item?.WorkingAction != undefined && Item?.WorkingAction?.length > 0) {
+        let IsAddNew: boolean = true;
+        Item?.WorkingAction?.map((workingDetails: any) => {
+          if (workingDetails?.WorkingDate == WorkingDate) {
+            IsAddNew = false;
+            if (workingDetails?.WorkingMember == undefined)
+              workingDetails.WorkingMember = []
+            if (!IsUserIdExist(workingDetails?.WorkingMember, User?.AssingedToUserId))
+              workingDetails?.WorkingMember.push(User?.AssingedToUserId)
+          }
+        })
+        if (IsAddNew == true) {
+          Item?.WorkingAction.push({ 'WorkingDate': WorkingDate, WorkingMember: [User?.AssingedToUserId] })
+        }
+      }
     }
     Item.percentage = 10 + '%';
     StatusOptions?.map((item: any) => {
@@ -133,11 +186,10 @@ const TaskStatusTbl = (Tile: any) => {
     if (Item != undefined && Item != '') {
       let web = new Web(ContextData?.propsValue?.siteUrl);
       web.lists.getById(Item.listId).items.getById(Item?.Id).update({
-        AssignedToId: { results: AssignedToIds != undefined && AssignedToIds.length > 0 ? AssignedToIds : [], },
         TeamMembersId: { results: TeamMemberIds != undefined && TeamMemberIds.length > 0 ? TeamMemberIds : [], },
-        IsTodaysTask: true,
         PercentComplete: 10 / 100,
         Status: Item?.Status,
+        WorkingAction: JSON.stringify(Item.WorkingAction)
       }).then((res: any) => {
         console.log('Drop successfuly');
         DashboardConfig?.forEach((item: any) => {
@@ -147,6 +199,17 @@ const TaskStatusTbl = (Tile: any) => {
                 task.AssignedTo = Item?.AssignedTo;
                 task.TeamMembers = Item?.TeamMembers;
               }
+              if (task?.dates != undefined && task?.dates?.length > 0) {
+                task?.dates.map((Time: any) => {
+                  if (Time?.Tasks != undefined && Time?.Tasks?.length > 0) {
+                    Time?.Tasks.map((updatedItem: any) => {
+                      if (updatedItem?.Id == Item.Id) {
+                        updatedItem.WorkingAction = Item?.WorkingAction;
+                      }
+                    })
+                  }
+                })
+              }
             });
             if (item?.Tasks != undefined) {
               item.Tasks = item?.Tasks.filter((task: any) => task?.Id != Item.Id);
@@ -155,15 +218,60 @@ const TaskStatusTbl = (Tile: any) => {
           if (item?.WebpartTitle != undefined && config?.WebpartTitle != undefined && item?.WebpartTitle == config?.WebpartTitle) {
             if (item?.Tasks != undefined) {
               item?.Tasks.map((user: any) => {
-                if (user?.AssingedToUserId == User?.AssingedToUserId)
-                  user?.Tasks.push(Item);
-                if (user?.AssingedToUserId == sourceUser?.AssingedToUserId)
-                  user.Tasks = user?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
+                if (user?.AssingedToUserId == User?.AssingedToUserId) {
+                  if (Item?.WorkingAction != undefined && Item?.WorkingAction != '' && Item?.WorkingAction?.length > 0) {
+                    Item?.WorkingAction?.map((workingDetails: any) => {
+                      if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
+                        let WorkingDate: any = Moment(workingDetails?.WorkingDate, 'DD/MM/YYYY');
+                        WorkingDate?._d.setHours(0, 0, 0, 0)
+                        workingDetails?.WorkingMember?.map((assignMember: any) => {
+                          user?.dates.map((Time: any) => {
+                            if (Time?.ServerDate.getTime() == WorkingDate?._d.getTime() && user?.AssingedToUserId == assignMember && !isTaskItemExists(Time?.Tasks, Item)) {
+                              Time?.Tasks.push(Item);
+                              Time.TotalTask = Time?.Tasks?.length;
+                              Time.TotalEstimatedTime += Item?.EstimatedTime;
+                            }
+                          })
+                        })
+                      }
+                    })
+                  }
+                }
+                // if (user?.AssingedToUserId == sourceUser?.AssingedToUserId) {
+                //   if (Item?.PrevWorkingAction != undefined && Item?.PrevWorkingAction != '' && Item?.PrevWorkingAction?.length > 0) {
+                //     Item?.PrevWorkingAction?.map((workingDetails: any) => {
+                //       if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
+                //         let WorkingDate: any = Moment(workingDetails?.WorkingDate, 'DD/MM/YYYY');
+                //         WorkingDate?._d.setHours(0, 0, 0, 0)
+                //         user?.dates.map((Time: any) => {
+                //           if (Time?.ServerDate.getTime() == WorkingDate?._d.getTime()) {
+                //             Time.Tasks = Time?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
+                //             Time.TotalTask = Time?.Tasks?.length;
+                //             Time.TotalEstimatedTime -= Item?.EstimatedTime;
+                //           }
+                //         })
+                //       }
+                //     })
+                //   }
+                // }
               });
             }
           }
         });
         DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+        DashboardConfigCopy?.map((Config: any) => {
+          if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
+            Config?.Tasks?.map((Date: any) => {
+              if (Date?.dates != undefined && Date?.dates?.length > 0) {
+                Date?.dates?.map((Time: any) => {
+                  Time.ServerDate = Moment(Time?.ServerDate)
+                  Time.ServerDate = Time.ServerDate?._d;
+                  Time.ServerDate.setHours(0, 0, 0, 0)
+                })
+              }
+            });
+          }
+        });
         setActiveTile(Tile?.activeTile)
         rerender();
       }).catch((err: any) => {
@@ -178,7 +286,6 @@ const TaskStatusTbl = (Tile: any) => {
       Status = Type
     }
     let Item = globalCommon.parseJSON(e.dataTransfer.getData("DataId"))
-    Item.AssignedTo = [];
     Item.percentage = Status + '%';
     StatusOptions?.map((item: any) => {
       if (Status == item.value) {
@@ -188,26 +295,57 @@ const TaskStatusTbl = (Tile: any) => {
     if (Item != undefined && Item != '') {
       let web = new Web(ContextData?.propsValue?.siteUrl);
       web.lists.getById(Item.listId).items.getById(Item?.Id).update({
-        AssignedToId: { results: [], },
         PercentComplete: Status / 100,
-        IsTodaysTask: false,
         Status: Item?.Status,
+        WorkingAction: '',
       }).then((res: any) => {
         console.log('Drop successfuly');
         DashboardConfig?.forEach((item: any) => {
           if (item?.WebpartTitle != undefined && dragItem?.WebpartTitle != undefined && item?.WebpartTitle == dragItem?.WebpartTitle) {
             if (item?.Tasks != undefined) {
               item?.Tasks.map((user: any) => {
-                if (user?.AssingedToUserId == sourceUser?.AssingedToUserId)
-                  user.Tasks = user?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
+                // if (user?.AssingedToUserId == sourceUser?.AssingedToUserId) {
+                if (Item?.WorkingAction != undefined && Item?.WorkingAction != '' && Item?.WorkingAction?.length > 0) {
+                  Item?.WorkingAction?.map((workingDetails: any) => {
+                    if (workingDetails?.WorkingMember != undefined && workingDetails?.WorkingMember?.length > 0) {
+                      let WorkingDate: any = Moment(workingDetails?.WorkingDate, 'DD/MM/YYYY');
+                      WorkingDate?._d.setHours(0, 0, 0, 0)
+                      user?.dates.map((Time: any) => {
+                        if (Time?.ServerDate.getTime() == WorkingDate?._d.getTime()) {
+                          Time.Tasks = Time?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
+                          Time.TotalTask = Time?.Tasks?.length;
+                          Time.TotalEstimatedTime -= Item?.EstimatedTime;
+                        }
+                      })
+                    }
+                  })
+                }
+                //}
               });
+              if (sourceUser == undefined || sourceUser == '') {
+                item.Tasks = item?.Tasks.filter((Task: any) => Task?.Id != Item.Id);
+              }
             }
           }
           if (item?.WebpartTitle != undefined && config?.WebpartTitle != undefined && item?.WebpartTitle == config?.WebpartTitle) {
             item?.Tasks.push(Item)
           }
         });
+        Item.WorkingAction = '';
         DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+        DashboardConfigCopy?.map((Config: any) => {
+          if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
+            Config?.Tasks?.map((Date: any) => {
+              if (Date?.dates != undefined && Date?.dates?.length > 0) {
+                Date?.dates?.map((Time: any) => {
+                  Time.ServerDate = Moment(Time?.ServerDate)
+                  Time.ServerDate = Time.ServerDate?._d;
+                  Time.ServerDate.setHours(0, 0, 0, 0)
+                })
+              }
+            });
+          }
+        });
         setActiveTile(Tile?.activeTile)
         rerender();
       }).catch((err: any) => {
@@ -215,300 +353,528 @@ const TaskStatusTbl = (Tile: any) => {
       })
     }
   }
+  const isTaskItemExists = (array: any, items: any) => {
+    let isExists = false;
+    for (let index = 0; index < array.length; index++) {
+      let item = array[index];
+      if (item.Id == items.Id && items?.siteType != undefined && items?.siteType != '' && item?.siteType != undefined && item?.siteType != '' && item?.siteType.toLowerCase() == items?.siteType.toLowerCase()) {
+        isExists = true;
+        break;
+      }
+    }
+    return isExists;
+  }
+  const IsUserIdExist = (array: any, items: any) => {
+    let isExists = false;
+    for (let index = 0; index < array.length; index++) {
+      let item = array[index];
+      if (items?.AssingedToUserId != undefined && item != undefined && items?.AssingedToUserId == item) {
+        isExists = true;
+        break;
+      }
+    }
+    return isExists;
+  }
+  const openRejectPopup = (RejectedItem: any) => {
+    RejectedItem.PreviousComment = ''
+    if (RejectedItem?.RejectedDetails == undefined) {
+      RejectedItem.RejectedDetails = { "RejectedComment": "", "AuthorName": ContextData?.currentUserData?.Title, "AuthorId": ContextData?.currentUserData?.AssingedToUserId, "AuthorImage": ContextData?.currentUserData?.ItemCover != undefined ? ContextData?.currentUserData?.ItemCover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg" }
+    }
+    else {
+      RejectedItem.PreviousComment = RejectedItem.RejectedDetails?.RejectedComment;
+    }
+    setisRejectItem(RejectedItem)
+  }
+  const updateRejectComment = (e: any) => {
+    console.log(e.target.value)
+    let RejectedItem: any = { ...isRejectItem }
+    RejectedItem.RejectedDetails.RejectedComment = e.target.value
+    setisRejectItem(RejectedItem)
+  }
+  const SaveRejectPopup = async (Type: any, Item: any) => {
+    if (Type != 'ApprovedAll') {
+      let RejectedItem: any;
+      if (Item != undefined && Item != '')
+        RejectedItem = { ...Item }
+      else
+        RejectedItem = { ...isRejectItem }
+      RejectedItem.Status = Type;
+      if (ContextData?.AllTimeEntry != undefined && ContextData?.AllTimeEntry?.length > 0 && RejectedItem != undefined) {
+        let UpdatedItem = ContextData?.AllTimeEntry.filter((item: any) => item.Id != undefined && item.Id == RejectedItem?.UpdatedId)[0]
+        if (UpdatedItem?.AdditionalTimeEntry != undefined && UpdatedItem?.AdditionalTimeEntry?.length > 0) {
+          UpdatedItem?.AdditionalTimeEntry.forEach((TimeEntry: any) => {
+            if (TimeEntry?.ID != undefined && RejectedItem?.ID != undefined && TimeEntry?.ID == RejectedItem?.ID) {
+              TimeEntry.Status = RejectedItem.Status
+              if (RejectedItem?.RejectedDetails != undefined && RejectedItem.RejectedDetails?.RejectedComment != undefined && RejectedItem.RejectedDetails?.RejectedComment != '')
+                TimeEntry.RejectedDetails = RejectedItem?.RejectedDetails
+            }
+            delete TimeEntry?.TaskDates;
+            delete TimeEntry?.sortTaskDate;
+            delete TimeEntry?.PreviousComment;
+            delete TimeEntry?.UpdatedId;
+          })
+          setisRejectItem(undefined)
+          let web = new Web(UpdatedItem?.siteUrl);
+          await web.lists.getById(UpdatedItem?.listId).items.getById(UpdatedItem.Id).update({ AdditionalTimeEntry: JSON.stringify(UpdatedItem?.AdditionalTimeEntry), })
+            .then(async (res: any) => {
+              DashboardConfig?.map((Config: any) => {
+                if (Config?.DataSource == 'TimeSheet' && Config.Tasks != undefined && Config.Tasks?.length > 0) {
+                  Config.Tasks?.forEach((Time: any, index: any) => {
+                    if (Time?.ID == RejectedItem?.ID && (Time?.UpdatedId == undefined || Time?.UpdatedId == RejectedItem?.UpdatedId)) {
+                      Config.Tasks?.splice(index, 1)
+                    }
+                  });
+                }
+              })
+              console.log('Updated Succesfully')
+              DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+              setisRejectItem(undefined)
+              alert("Time Entry " + Type + " Successfully.")
+              setActiveTile(Tile?.activeTile)
+              rerender();
+            }).catch((err: any) => {
+              console.log(err);
+            })
+        }
+      }
+    }
+    else if (Type == 'ApprovedAll') {
+      let Count = 0;
+      if (ContextData?.AllTimeEntry != undefined && ContextData?.AllTimeEntry?.length > 0) {
+        ContextData?.AllTimeEntry.forEach((Item: any) => {
+          if (Item?.AdditionalTimeEntry != undefined && Item?.AdditionalTimeEntry?.length > 0) {
+            Item?.AdditionalTimeEntry.forEach((TimeEntry: any) => {
+              TimeEntry.Status = 'Approved';
+              delete TimeEntry?.TaskDates;
+              delete TimeEntry?.sortTaskDate;
+              delete TimeEntry?.PreviousComment;
+              delete TimeEntry?.UpdatedId;
+
+            })
+          }
+          let web = new Web(Item?.siteUrl);
+          web.lists.getById(Item?.listId).items.getById(Item.Id).update({ AdditionalTimeEntry: JSON.stringify(Item?.AdditionalTimeEntry), })
+            .then((res: any) => {
+              setisRejectItem(undefined)
+              Count++;
+              if (Count == ContextData?.AllTimeEntry?.length) {
+                DashboardConfig?.map((Config: any) => {
+                  if (Config?.DataSource == 'TimeSheet') {
+                    Config.Tasks = [];
+                  }
+                })
+                console.log('Updated Succesfully')
+                alert("All Time Entry Approved Successfully.")
+                DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+                setActiveTile(Tile?.activeTile)
+                rerender();
+              }
+            }).catch((err: any) => {
+              Count++;
+              console.log(err);
+            })
+        })
+      }
+    }
+  }
+  const CancelRejectPopup = () => {
+    let RejectedItem: any = { ...isRejectItem }
+    if (RejectedItem.PreviousComment != undefined && RejectedItem.RejectedDetails != undefined)
+      RejectedItem.RejectedDetails.RejectedComment = RejectedItem.PreviousComment;
+    setisRejectItem(RejectedItem)
+    setisRejectItem(undefined)
+  }
   const LoadTimeSheet = () => {
     ContextData?.callbackFunction()
   }
-  const generateDynamicColumns = (item: any) => {
-    return [{
-      accessorKey: "",
-      placeholder: "",
-      hasCheckbox: true,
-      hasCustomExpanded: item?.GroupByView,
-      hasExpanded: item?.GroupByView,
-      size: 50,
-      id: "Id"
-    },
-    {
-      cell: ({ row, getValue }: any) => (
-        <div>
-          <img width={"20px"} height={"20px"} className="rounded-circle" src={row?.original?.SiteIcon} />
-        </div>
-      ),
-      accessorKey: "",
-      id: "SiteIcon",
-      canSort: false,
-      placeholder: "",
-      size: 80,
-      isColumnVisible: true
-    },
-    {
-      accessorKey: "TaskID",
-      placeholder: "ID",
-      id: 'TaskID',
-      size: 180,
-      isColumnVisible: true,
-      cell: ({ row, getValue }: any) => (
-        <span className="d-flex">
-          <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={item?.Tasks} AllListId={ContextData?.propsValue?.Context} />
-        </span>
-      ),
-    },
-    {
-      accessorFn: (row: any) => row?.Title,
-      cell: ({ row, getValue }: any) => (
-        <div>
-          <a className="hreflink" draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)} target='_blank' style={{ textDecoration: 'none', cursor: 'pointer' }} href={`${ContextData.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
-            rel='noopener noreferrer' data-interception="off" > {row?.original?.Title}
-          </a>
-          {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != "" && (
-            <span className="alignIcon"> <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
-          )}
-        </div>
-      ),
-      id: "Title",
-      placeholder: "Title",
-      resetColumnFilters: false,
-      header: "",
-      size: 460,
-      isColumnVisible: true
-    },
-    {
-      accessorFn: (row: any) => row?.SmartPriority,
-      cell: ({ row }: any) => (
-        <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority != 0 ? row?.original?.SmartPriority : null}</div>
-      ),
-      filterFn: (row: any, columnName: any, filterValue: any) => {
-        if (row?.original?.SmartPriority?.includes(filterValue)) {
-          return true
-        }
-        else {
-          return false
-        }
-      },
-      id: "SmartPriority",
-      placeholder: "SmartPriority",
-      resetColumnFilters: false,
-      resetSorting: false,
-      isColumnDefultSortingDesc: true,
-      header: "",
-      size: 190,
-      isColumnVisible: true
-    },
-    {
-      accessorFn: (row: any) => row?.PriorityRank,
-      cell: ({ row }: any) => (
-        <div className="text-center">{row?.original?.PriorityRank}</div>
-      ),
-      filterFn: (row: any, columnName: any, filterValue: any) => {
-        if (row?.original?.PriorityRank == filterValue) {
-          return true
-        } else {
-          return false
-        }
-      },
-      id: "PriorityRank",
-      placeholder: "Priority Rank",
-      resetColumnFilters: false,
-      header: "",
-      size: 42,
-      isColumnVisible: false
-    },
-    {
-      accessorFn: (row: any) => row?.projectStructerId + "." + row?.ProjectTitle,
-      cell: ({ row, column, getValue }: any) => (
-        <>
-          {row?.original?.ProjectTitle != (null || undefined) &&
-            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextData?.propsValue?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
-              <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextData?.propsValue} /></a></span>
-          }
-        </>
-      ),
-      id: 'ProjectTitle',
-      placeholder: "Project",
-      resetColumnFilters: false,
-      header: "",
-      size: 70,
-      isColumnVisible: true
-    },
-    {
-      accessorKey: "percentage",
-      placeholder: "% Complete",
-      header: "",
-      resetColumnFilters: false,
-      size: 140,
-      id: "percentage",
-      isColumnVisible: true
-    },
-    {
-      accessorFn: (row: any) => row?.TaskTypeValue,
-      cell: ({ row, column, getValue }: any) => (
-        <>
-          <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"></span></span>
-        </>
-      ),
-      placeholder: "Task Type",
-      header: "",
-      resetColumnFilters: false,
-      size: 130,
-      id: "TaskTypeValue",
-      isColumnVisible: true
-    },
-    {
-      accessorFn: (row: any) => row?.ClientCategorySearch,
-      cell: ({ row }: any) => (
-        <>
-          <ShowClintCatogory clintData={row?.original} AllMetadata={ContextData?.AllMetadata} />
-        </>
-      ),
-      id: "ClientCategorySearch",
-      placeholder: "Client Category",
-      header: "",
-      resetColumnFilters: false,
-      size: 95,
-      isColumnVisible: true
-    },
-    {
-      accessorFn: (row: any) => row?.AllTeamName,
-      cell: ({ row }: any) => (
-        <div className="alignCenter">
-          <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={ContextData?.AllTaskUser} Context={ContextData?.propsValue} />
-        </div>
-      ),
-      id: "AllTeamName",
-      placeholder: "Team",
-      resetColumnFilters: false,
-      header: "",
-      size: 100,
-      isColumnVisible: true
-    },
-    {
-      accessorFn: (row: any) => row?.ItemRank,
-      cell: ({ row }: any) => (
-        <div className="text-center">{row?.original?.ItemRank}</div>
-      ),
-      id: "ItemRank",
-      placeholder: "Item Rank",
-      resetColumnFilters: false,
-      header: "",
-      size: 42,
-      isColumnVisible: true
-    },
-    {
-      accessorFn: (row: any) => row?.Created,
-      cell: ({ row, column }: any) => (
-        <div className="alignCenter">
-          {row?.original?.Created == null ? ("") : (
-            <>
-              <div className='ms-1'>{row?.original?.DisplayCreateDate} </div>
-              {row?.original?.Author != undefined &&
-                <>
-                  <a href={`${ContextData?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`} target="_blank" data-interception="off">
-                    <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.Author?.autherImage} />
-                  </a>
-                </>
-              }
-            </>
-          )}
-        </div>
-      ),
-      id: 'Created',
-      resetColumnFilters: false,
-      resetSorting: false,
-      placeholder: "Created",
-      filterFn: (row: any, columnName: any, filterValue: any) => {
-        if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
-          return true
-        } else {
-          return false
-        }
-      },
-      header: "",
-      size: 100,
-      isColumnVisible: true
-    },
-    {
-      accessorFn: (row: any) => row?.DueDate,
-      cell: ({ row, column, getValue }: any) => (
-        <div className='ms-1'>{row?.original?.DisplayDueDate}</div>
-      ),
-      filterFn: (row: any, columnName: any, filterValue: any) => {
-        if (row?.original?.DisplayDueDate?.includes(filterValue)) {
-          return true
-        } else {
-          return false
-        }
-      },
-      id: 'DueDate',
-      resetColumnFilters: false,
-      resetSorting: false,
-      placeholder: "DueDate",
-      header: "",
-      size: 91,
-      isColumnVisible: true
-    },
-    {
-      accessorFn: (row: any) => row?.Modified,
-      cell: ({ row, column }: any) => (
-        <div className="alignCenter">
-          {row?.original?.Modified == null ? ("") : (
-            <>
-              <div style={{ width: "75px" }} className="me-1">{row?.original?.DisplayModifiedDate}</div>
-              {row?.original?.Editor != undefined &&
-                <>
-                  <a href={`${ContextData?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
-                    target="_blank" data-interception="off">
-                    <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={row?.original?.Editor?.autherImage} />
-                  </a>
-                </>
-              }
-            </>
-          )}
-        </div>
-      ),
-      id: 'Modified',
-      resetColumnFilters: false,
-      resetSorting: false,
-      placeholder: "Modified",
-      isColumnVisible: false,
-      filterFn: (row: any, columnName: any, filterValue: any) => {
-        if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
-          return true
-        } else {
-          return false
-        }
-      },
-      header: "",
-      size: 115
-    },
-    {
-      accessorKey: "TotalTaskTime",
-      id: "TotalTaskTime",
-      placeholder: "Smart Time",
-      header: "",
-      resetColumnFilters: false,
-      size: 49,
-      isColumnVisible: true
-    },
-    {
-      cell: ({ row, getValue }: any) => (
-        <span title="Edit Task" className="alignIcon svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
 
-      ),
-      id: 'EditTaskPopup',
-      canSort: false,
-      placeholder: "",
-      header: "",
-      resetColumnFilters: false,
-      resetSorting: false,
-      size: 45,
-      isColumnVisible: true
-    },]
+  const generateDynamicColumns = (item: any, index: any) => {
+    if (item?.DataSource != 'TimeSheet') {
+      return [{
+        accessorKey: "",
+        placeholder: "",
+        hasCheckbox: true,
+        hasCustomExpanded: item?.GroupByView,
+        hasExpanded: item?.GroupByView,
+        size: 50,
+        id: "Id"
+      },
+      {
+        cell: ({ row, getValue }: any) => (
+          <div>
+            <img width={"20px"} height={"20px"} className="rounded-circle" src={row?.original?.SiteIcon} />
+          </div>
+        ),
+        accessorKey: "",
+        id: "SiteIcon",
+        canSort: false,
+        placeholder: "",
+        size: 80,
+        isColumnVisible: true
+      },
+      {
+        accessorKey: "TaskID",
+        placeholder: "ID",
+        id: 'TaskID',
+        size: 180,
+        isColumnVisible: true,
+        cell: ({ row, getValue }: any) => (
+          <span className="d-flex">
+            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={item?.Tasks} AllListId={ContextData?.propsValue?.Context} />
+          </span>
+        ),
+      },
+      {
+        accessorFn: (row: any) => row?.Title,
+        cell: ({ row, getValue }: any) => (
+          <div>
+            <a className="hreflink" draggable={true} onDragOver={(e) => e.preventDefault()} onDragStart={(e) => startDrag(e, row?.original, row?.original?.Id, item)} target='_blank' style={{ textDecoration: 'none', cursor: 'pointer' }} href={`${ContextData.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}
+              rel='noopener noreferrer' data-interception="off" > {row?.original?.Title}
+            </a>
+            {row?.original?.descriptionsSearch != null && row?.original?.descriptionsSearch != "" && (
+              <span className="alignIcon"> <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>
+            )}
+          </div>
+        ),
+        id: "Title",
+        placeholder: "Title",
+        resetColumnFilters: false,
+        header: "",
+        size: 460,
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row: any) => row?.SmartPriority,
+        cell: ({ row }: any) => (
+          <div className="text-center boldClable" title={row?.original?.showFormulaOnHover}>{row?.original?.SmartPriority != 0 ? row?.original?.SmartPriority : null}</div>
+        ),
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.SmartPriority?.includes(filterValue)) {
+            return true
+          }
+          else {
+            return false
+          }
+        },
+        id: "SmartPriority",
+        placeholder: "SmartPriority",
+        resetColumnFilters: false,
+        resetSorting: false,
+        isColumnDefultSortingDesc: true,
+        header: "",
+        size: 190,
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row: any) => row?.PriorityRank,
+        cell: ({ row }: any) => (
+          <div className="text-center">{row?.original?.PriorityRank}</div>
+        ),
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.PriorityRank == filterValue) {
+            return true
+          } else {
+            return false
+          }
+        },
+        id: "PriorityRank",
+        placeholder: "Priority Rank",
+        resetColumnFilters: false,
+        header: "",
+        size: 42,
+        isColumnVisible: false
+      },
+      {
+        accessorFn: (row: any) => row?.projectStructerId + "." + row?.ProjectTitle,
+        cell: ({ row, column, getValue }: any) => (
+          <>
+            {row?.original?.ProjectTitle != (null || undefined) &&
+              <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextData?.propsValue?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextData?.propsValue} /></a></span>
+            }
+          </>
+        ),
+        id: 'ProjectTitle',
+        placeholder: "Project",
+        resetColumnFilters: false,
+        header: "",
+        size: 70,
+        isColumnVisible: false
+      },
+      {
+        accessorKey: "percentage",
+        placeholder: "% Complete",
+        header: "",
+        resetColumnFilters: false,
+        size: 140,
+        id: "percentage",
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row: any) => row?.TaskTypeValue,
+        cell: ({ row, column, getValue }: any) => (
+          <>
+            <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"></span></span>
+          </>
+        ),
+        placeholder: "Task Type",
+        header: "",
+        resetColumnFilters: false,
+        size: 130,
+        id: "TaskTypeValue",
+        isColumnVisible: false
+      },
+      {
+        accessorFn: (row: any) => row?.ClientCategorySearch,
+        cell: ({ row }: any) => (
+          <>
+            <ShowClintCatogory clintData={row?.original} AllMetadata={ContextData?.AllMetadata} />
+          </>
+        ),
+        id: "ClientCategorySearch",
+        placeholder: "Client Category",
+        header: "",
+        resetColumnFilters: false,
+        size: 95,
+        isColumnVisible: false
+      },
+      {
+        accessorFn: (row: any) => row?.AllTeamName,
+        cell: ({ row }: any) => (
+          <div className="alignCenter">
+            <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={ContextData?.AllTaskUser} Context={ContextData?.propsValue} />
+          </div>
+        ),
+        id: "AllTeamName",
+        placeholder: "Team",
+        resetColumnFilters: false,
+        header: "",
+        size: 100,
+        isColumnVisible: false
+      },
+      {
+        accessorFn: (row: any) => row?.ItemRank,
+        cell: ({ row }: any) => (
+          <div className="text-center">{row?.original?.ItemRank}</div>
+        ),
+        id: "ItemRank",
+        placeholder: "Item Rank",
+        resetColumnFilters: false,
+        header: "",
+        size: 42,
+        isColumnVisible: false
+      },
+      {
+        accessorFn: (row: any) => row?.Created,
+        cell: ({ row, column }: any) => (
+          <div className="alignCenter">
+            {row?.original?.Created == null ? ("") : (
+              <>
+                <div className='ms-1'>{row?.original?.DisplayCreateDate} </div>
+                {row?.original?.Author != undefined &&
+                  <>
+                    <a href={`${ContextData?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`} target="_blank" data-interception="off">
+                      <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.Author?.autherImage} />
+                    </a>
+                  </>
+                }
+              </>
+            )}
+          </div>
+        ),
+        id: 'Created',
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Created",
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        header: "",
+        size: 100,
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row: any) => row?.DueDate,
+        cell: ({ row, column, getValue }: any) => (
+          <div className='ms-1'>{row?.original?.DisplayDueDate}</div>
+        ),
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.DisplayDueDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        id: 'DueDate',
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "DueDate",
+        header: "",
+        size: 91,
+        isColumnVisible: false
+      },
+      {
+        accessorFn: (row: any) => row?.Modified,
+        cell: ({ row, column }: any) => (
+          <div className="alignCenter">
+            {row?.original?.Modified == null ? ("") : (
+              <>
+                <div style={{ width: "75px" }} className="me-1">{row?.original?.DisplayModifiedDate}</div>
+                {row?.original?.Editor != undefined &&
+                  <>
+                    <a href={`${ContextData?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
+                      target="_blank" data-interception="off">
+                      <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={row?.original?.Editor?.autherImage} />
+                    </a>
+                  </>
+                }
+              </>
+            )}
+          </div>
+        ),
+        id: 'Modified',
+        resetColumnFilters: false,
+        resetSorting: false,
+        placeholder: "Modified",
+        isColumnVisible: false,
+        filterFn: (row: any, columnName: any, filterValue: any) => {
+          if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
+            return true
+          } else {
+            return false
+          }
+        },
+        header: "",
+        size: 115
+      },
+      {
+        accessorKey: "TotalTaskTime",
+        id: "TotalTaskTime",
+        placeholder: "Smart Time",
+        header: "",
+        resetColumnFilters: false,
+        size: 49,
+        isColumnVisible: false
+      },
+      {
+        cell: ({ row, getValue }: any) => (
+          <span title="Edit Task" className="alignIcon svg__iconbox svg__icon--edit hreflink ms-1" onClick={() => editPopFunc(row.original)} ></span>
+
+        ),
+        id: 'EditTaskPopup',
+        canSort: false,
+        placeholder: "",
+        header: "",
+        resetColumnFilters: false,
+        resetSorting: false,
+        size: 45,
+        isColumnVisible: true
+      },]
+    }
+    else if (item?.DataSource == 'TimeSheet') {
+      return [
+        {
+          accessorKey: "",
+          placeholder: "",
+          hasCustomExpanded: false,
+          hasExpanded: false,
+          size: 20,
+          margin: 0,
+          id: "Id"
+        },
+        {
+          accessorFn: (row: any) => row?.AuthorName,
+          id: "AuthorName",
+          placeholder: "AuthorName",
+          header: "",
+          size: 340,
+          isColumnVisible: true,
+          cell: ({ row }: any) => (
+            <>
+              <span>
+                <div className="d-flex">
+                  <>
+                    <span>
+                      {row?.original?.AuthorImage != "" && row?.original.AuthorImage != null ? (
+                        <img
+                          className="AssignUserPhoto1 bdrbox m-0 wid29" title={row?.original.AuthorName} data-toggle="popover" data-trigger="hover" src={row?.original.AuthorImage}  ></img>
+                      ) : (
+                        <>  {" "}  <img className="AssignUserPhoto1 bdrbox m-0 wid29" title={row?.original.AuthorName} data-toggle="popover" data-trigger="hover"
+                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg" ></img>
+                        </>
+                      )}
+                      <span className="mx-1">{row?.original?.AuthorName}</span>
+                    </span>
+                  </>
+                </div>
+              </span>
+            </>
+          )
+        },
+        {
+          accessorFn: (row: any) => row?.sortTaskDate,
+          cell: ({ row, column }: any) => (
+            <div className="alignCenter">
+              {row?.original?.TaskDate == null ? ("") : (
+                <>
+                  <HighlightableCell value={row?.original?.TaskDates} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : null} />
+                </>
+              )}
+            </div>
+          ),
+          id: 'Created',
+          resetColumnFilters: false,
+          resetSorting: false,
+          placeholder: "Created",
+          filterFn: (row: any, columnName: any, filterValue: any) => {
+            if (row?.original?.TaskDates?.toLowerCase()?.includes(filterValue)) {
+              return true
+            } else {
+              return false
+            }
+          },
+          header: "",
+          size: 125,
+          isColumnVisible: true
+        },
+        {
+          accessorKey: "TaskTime",
+          placeholder: "TaskTime",
+          header: "",
+          size: 95,
+          isColumnVisible: true
+        },
+        {
+          accessorKey: "Description",
+          placeholder: "Description",
+          header: "",
+          isColumnVisible: true
+        },
+        {
+          id: "ff",
+          accessorKey: "",
+          size: 75,
+          canSort: false,
+          placeholder: "",
+          isColumnVisible: true,
+          cell: ({ row, index }: any) => (
+            <div className="alignCenter gap-1 pull-right approvelicon position-relative" >
+              <span title="Approve" onClick={() => SaveRejectPopup('Approved', row?.original,)} ><MdOutlineGppGood style={{ color: "#008f47", fontSize: "22px" }} /> </span>
+              <span title="Reject" data-toggle="tooltip" data-placement="bottom" id={`Reply-${row?.index}`} onClick={() => openRejectPopup(row?.original)}><MdGppBad style={{ color: "#dc3545", fontSize: "22px" }} /></span>
+            </div>
+          )
+        },]
+    }
   }
   if (Tile.activeTile != undefined && DashboardConfigCopy != undefined && DashboardConfigCopy?.length > 0)
     DashboardConfig = DashboardConfigCopy.filter((config: any) => config?.TileName == '' || config?.TileName == Tile.activeTile);
-  const updatedDashboardConfig = DashboardConfig?.map((item: any) => {
+  const updatedDashboardConfig = DashboardConfig?.map((item: any, index: any) => {
     let columnss: any = [];
-    columnss = generateDynamicColumns(item);
+    columnss = generateDynamicColumns(item, index);
     return { ...item, column: columnss };
   });
   DashboardConfig = updatedDashboardConfig;
@@ -653,10 +1019,10 @@ const TaskStatusTbl = (Tile: any) => {
                   </div>
                   <div className="Alltable maXh-300" style={{ height: "300px" }} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
-                      <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id+"Dashboard"} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                      <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id + "Dashboard"} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
                     )}
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
-                      {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={ContextData.Context} emailStatus={"Approved"} items={approveItem} />}
+                      {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={AllListId} emailStatus={"Approved"} items={approveItem} />}
                     </span>}
                   </div>
                 </div>}
@@ -680,7 +1046,7 @@ const TaskStatusTbl = (Tile: any) => {
                                   return <div className="marginR41 ng-scope">
                                     {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined &&
                                       <span>
-                                        <img draggable={false} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, item, config)} className="large_teamsimg" src={item.Item_x0020_Cover.Url} title={item.AssingedToUser.Title} />
+                                        <img draggable={false} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, item, config, undefined)} className="large_teamsimg" src={item.Item_x0020_Cover.Url} title={item.AssingedToUser.Title} />
                                       </span>
                                     }
                                   </div>
@@ -694,32 +1060,60 @@ const TaskStatusTbl = (Tile: any) => {
                     </div>}
                     {config?.selectFilterType == 'custom' &&
                       <>
-                        <div className={`col-12 px-1 mb-2 my-2`}>
-                          <div className="border">
+                        <div className={`mb-2 px-1  my-2 row`}>
+                          <div className="userdtl col-1">
+                            <div><h6 className="fw-bold">Team</h6></div>
                             {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => (
-                              <div className="top-assign p-1">
-                                {user.Item_x0020_Cover != undefined && user.AssingedToUser != undefined &&
-                                  <span>
-                                    {/* draggable={false} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user)} */}
-                                    <img className={user.IsShowTask == true ? 'activeimg large_teamsimg' : 'large_teamsimg'} onClick={() => ShowWorkingTask(config, user)} src={user.Item_x0020_Cover.Url} title={user.AssingedToUser.Title} />
-                                  </span>
-                                }
-                              </div>
+                              <>
+                                <div className="top-assign p-1 mb-2">
+                                  {user.Item_x0020_Cover != undefined && user.AssingedToUser != undefined &&
+                                    <span>
+                                      <img className={user.IsShowTask == true ? 'large_teamsimg' : 'large_teamsimg'} src={user.Item_x0020_Cover.Url} title={user.AssingedToUser.Title} />
+                                    </span>
+                                  }
+                                </div>
+                                <br />
+                              </>
                             ))}
+                          </div>
+                          <div className="gap-4 userdtlpannel col-11  px-0">
+                            <dl className="user-box">
+                              {dateRange?.length > 0 && <div>
+                                <Slider className='DashBoardslider teammemberdtl' {...settings}>
+                                  {dateRange.map((date: any, index: any) => (
+                                    <div className="usericonsdtl" key={index}>
+                                      <p className="mb-0">{date?.DisplayDate}</p>
+                                      {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => (
+                                        user?.dates != null && user?.dates?.length > 0 && user?.dates.map((time: any, index: number) => (
+                                          date?.ServerDate.getTime() == time?.ServerDate.getTime() && <>
+                                            <dt onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, time?.DisplayDate)} className={time.IsShowTask == true ? 'activeblock px-2 shadow-sm text-center' : 'px-2 shadow-sm text-center'} onClick={() => ShowWorkingTask(config, user, time)}>
+                                              {time?.TotalTask != undefined && time?.TotalTask != '' && <><span title="Total Task">{time?.TotalTask}</span> | <span title="Total Estimation Time">{time?.TotalEstimatedTime}</span></>}
+                                              {time?.TotalTask == undefined || time?.TotalTask == '' && <span>N/A</span>}
+                                            </dt>
+                                          </>
+                                        ))
+                                      ))}
+                                    </div>
+                                  ))}
+                                </Slider>
+                              </div>}
+                            </dl>
                           </div>
                         </div>
                         <div className={`col-12 px-1 mb-2 py-4`}>
                           <>
                             {config?.Tasks != null && config?.Tasks?.length > 0 && config.Tasks.map((user: any, index: number) => (
-                              user.IsShowTask == true && (
-                                <>
-                                  <h3 className="f-15">{user?.Title} Today's Task</h3>
-                                  <div key={index} className="Alltable maXh-300 mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config)} style={{ height: "300px" }}>
-                                    <GlobalCommanTable columnSettingIcon={true}  tableId={config?.Id+"Dashboard"} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={user.Tasks}
-                                      callBackData={callBackData} />
-                                  </div>
-                                </>
-                              )
+                              user?.dates != null && user?.dates?.length > 0 && user?.dates.map((Date: any, index: number) => (
+                                Date.IsShowTask == true && (
+                                  <>
+                                    <h3 className="f-15">{user?.Title} {Date?.DisplayDate} Task</h3>
+                                    <div key={index} className="Alltable maXh-300 mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} style={{ height: "300px" }}>
+                                      <GlobalCommanTable columnSettingIcon={true} tableId={config?.Id + index + "Dashboard"} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
+                                        callBackData={callBackData} />
+                                    </div>
+                                  </>
+                                )
+                              ))
                             ))}
                           </>
                         </div>
@@ -727,18 +1121,39 @@ const TaskStatusTbl = (Tile: any) => {
                     }
                   </>
                 }
+                {config?.DataSource == 'TimeSheet' &&
+                  <>
+                    <div className="alignCenter mb-2 empAllSec justify-content-between">
+                      <span className="fw-bold">
+                      </span>
+                      <span className="alignCenter">
+                        {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
+                        <span className="empCol me-3 hreflink" onClick={() => SaveRejectPopup('ApprovedAll', undefined)}>Approve All</span>
+                      </span>
+                    </div>
+                    <div className="Alltable maXh-300" style={{ height: "300px" }} >
+                      {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
+                        <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id + "Dashboard"} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                      )}
+                      {config?.Tasks != undefined && config?.Tasks?.length == 0 && (
+                        <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id + "Dashboard"} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                      )}
+                    </div>
+                  </>}
               </section>}
-              {config.IsMyNotes == true && config?.ShowWebpart == true && config?.GroupByView == undefined &&
+              {
+                config.IsMyNotes == true && config?.ShowWebpart == true && config?.GroupByView == undefined &&
                 <div className="empAllSec notesSec shadow-sm clearfix">
                   <MyNotes config={config} IsShowConfigBtn={IsShowConfigBtn} />
                 </div>
               }
-              {config.IsUpcomingBday == true && config?.ShowWebpart == true && config?.GroupByView == undefined &&
+              {
+                config.IsUpcomingBday == true && config?.ShowWebpart == true && config?.GroupByView == undefined &&
                 <div className="empAllSec birthSec shadow-sm clearfix">
                   <ComingBirthday config={config} IsShowConfigBtn={IsShowConfigBtn} />
                 </div>
               }
-            </div>
+            </div >
           );
           currentRow.push(box);
           if (currentRow.length === config.highestColumn || index === DashboardConfig.length - 1) {
@@ -755,17 +1170,44 @@ const TaskStatusTbl = (Tile: any) => {
     });
     return rows;
   };
+  const onRenderCustomHeadereditcomment = () => {
+    return (
+      <>
+        <div className='subheading' >
+          Rejected Comment
+        </div>
+      </>
+    );
+  };
   return (
-    <div>
-      {ActiveTile != undefined && generateDashboard()}
-      <span>
-        {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
-      </span>
-      <span>
-        {/* {IsManageConfigPopup && <ManageConfigPopup DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} props={ContextData?.propsValue} SelectedItem={SelectedItem} IsManageConfigPopup={IsManageConfigPopup} CloseConfigPopup={CloseConfigPopup} />} */}
-        {IsManageConfigPopup && <AddConfiguration DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} SingleWebpart={true} props={ContextData?.propsValue} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />}
-      </span>
-    </div>
+    <>
+      <div>
+        {ActiveTile != undefined && generateDashboard()}
+        <span>
+          {editPopup && <EditTaskPopup Items={result} context={ContextData?.propsValue?.Context} AllListId={AllListId} Call={() => { CallBack() }} />}
+        </span>
+        <span>
+          {/* {IsManageConfigPopup && <ManageConfigPopup DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} props={ContextData?.propsValue} SelectedItem={SelectedItem} IsManageConfigPopup={IsManageConfigPopup} CloseConfigPopup={CloseConfigPopup} />} */}
+          {IsManageConfigPopup && <AddConfiguration DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} SingleWebpart={true} props={ContextData?.propsValue} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />}
+        </span>
+      </div>
+      {
+        isRejectItem != undefined && isRejectItem != '' ? (
+          <Panel onRenderHeader={onRenderCustomHeadereditcomment}
+            isOpen={isRejectItem}
+            onDismiss={CancelRejectPopup}
+            isBlocking={false}>
+            <div className="modal-body">
+              <textarea className="form-control" style={{ height: '140px' }} onChange={(e) => updateRejectComment(e)}  ></textarea>
+            </div>
+            <footer className='modal-footer mt-2'>
+              <button className='btn btn-primary me-2 mb-2' onClick={() => SaveRejectPopup('Rejected', undefined)} disabled={isRejectItem?.RejectedDetails == undefined || isRejectItem?.RejectedDetails.RejectedComment == '' || isRejectItem?.RejectedDetails.RejectedComment == undefined} >Save</button>
+              <button className='btn btn-default mb-2' onClick={CancelRejectPopup}  >Cancel</button>
+            </footer>
+          </Panel>
+        ) : null
+      }
+    </>
   );
 };
 export default TaskStatusTbl;
