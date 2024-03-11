@@ -735,23 +735,23 @@ const TimeEntryPopup = (item: any) => {
     AllTimeSpentDetails?.map((item: any) => {
       if (item?.subRows != undefined && item?.subRows?.length > 0) {
         item?.subRows.map((value: any) => {
-          if (value?.Status != undefined) {
-            if (value?.Status == "Draft") {
+          // if (value?.Status != undefined) {
+          //   if (value?.Status == "Draft") {
 
-              value.lableColor = "yellowForTimeSheet"
-            }
-            else if (value?.Status == "Rejected") {
+          //     value.lableColor = "yellowForTimeSheet"
+          //   }
+          //   else if (value?.Status == "Rejected") {
 
-              value.lableColor = "redForTimeSheet"
-            }
-            else if (value?.Status == "Approved") {
+          //     value.lableColor = "redForTimeSheet"
+          //   }
+          //   else if (value?.Status == "Approved") {
 
-              value.lableColor = 'greenForTimeSheet'
-            }
-            else if (value?.Status == "Approval") {
-              value.lableColor = "blueForTimeSheet"
-            }
-          }
+          //     value.lableColor = 'greenForTimeSheet'
+          //   }
+          //   else if (value?.Status == "Approval") {
+          //     value.lableColor = "blueForTimeSheet"
+          //   }
+          // }
         })
       }
 
@@ -866,11 +866,11 @@ const TimeEntryPopup = (item: any) => {
       if (items.subRows != undefined && items.subRows.length > 0) {
         $.each(items.subRows, function (index: any, child: any) {
           const title = child.Title;
-          child.subRows?.map((data: any) => {
-            if (!data.Status) {
-              data.Status = "Draft";
-            }
-          });
+          // child.subRows?.map((data: any) => {
+          //   if (!data.Status) {
+          //     data.Status = "Draft";
+          //   }
+          // });
           if (!finalData[title]) {
             finalData[title] = [child];
           } else {
@@ -1222,7 +1222,7 @@ const TimeEntryPopup = (item: any) => {
                 update["AuthorName"] = UpdatedData.AuthorName;
                 update["AuthorId"] = CurntUserId;
                 update["AuthorImage"] = UpdatedData.AuthorImage;
-                update["Status"]="Draft";
+                //update["Status"]="Draft";
                 update["ID"] = 0;
                 update["MainParentId"] = mainParentId;
                 update["ParentID"] = NewParentId;
@@ -2010,7 +2010,7 @@ const TimeEntryPopup = (item: any) => {
         if (MyData != undefined && MyData.length > 0) {
           update["AuthorName"] = CurrentUser.AuthorName;
           update["AuthorId"] = CurntUserId;
-          update["Status"]="Draft";
+          //update["Status"]="Draft";
           update["AuthorImage"] = CurrentUser.AuthorImage;
           update["ID"] = timeSpentId.ID + 1;
           update["Id"] = timeSpentId.ID + 1;
@@ -2024,7 +2024,7 @@ const TimeEntryPopup = (item: any) => {
           UpdatedData = MyData;
         } else {
           update["AuthorName"] = CurrentUser.AuthorName;
-          update["Status"]="Draft";
+         // update["Status"]="Draft";
           update["AuthorImage"] = CurrentUser.AuthorImage;
           update["AuthorId"] = CurntUserId;
           update["ID"] = 0;
@@ -2122,7 +2122,7 @@ const TimeEntryPopup = (item: any) => {
     update["AuthorName"] = CurrentUser.AuthorName;
     update["AuthorImage"] = CurrentUser.AuthorImage;
     update["AuthorId"] = CurntUserId;
-    update["Status"] = "Draft";
+    //update["Status"] = "Draft";
     update["ID"] = 0;
     update["Id"] = 0;
     update["MainParentId"] = items.Id;
@@ -2514,16 +2514,16 @@ const TimeEntryPopup = (item: any) => {
     // setFlatview((flatview: any) => ([...flatview]))
   };
  // -------------------------------------------------------CHANGE STATUS COLOR FUNCTION ------------------------------------------------------------
-  const getStatusClassName = (status:any) => {
-    switch (status) {
-      case "Draft":
-        return "svg__iconbox svg__icon--forApproval hreflink"; 
-      case "Rejected":
-        return "svg__iconbox svg__icon--forApproval hreflink"; 
-      default:
-        return "svg__iconbox svg__icon--forApproval Disabled-Link"; 
-    }
-  };
+  // const getStatusClassName = (status:any) => {
+  //   switch (status) {
+  //     case "Draft":
+  //       return "svg__iconbox svg__icon--forApproval hreflink"; 
+  //     case "Rejected":
+  //       return "svg__iconbox svg__icon--forApproval hreflink"; 
+  //     default:
+  //       return "svg__iconbox svg__icon--forApproval Disabled-Link"; 
+  //   }
+  // };
 
   //------------------------------------------------------------Define columns-----------------------------------------------------------------------------
   const column = React.useMemo<ColumnDef<any, unknown>[]>(
@@ -2693,14 +2693,15 @@ const TimeEntryPopup = (item: any) => {
             ) : (
               <>
                 {" "}
-                <span
+                {/* <span
                   title="Send For Approval"
                   style={{display:"none"}}
                   className={getStatusClassName(row?.original?.Status)}
                   onClick={() =>
                     changeTaskStatus(row?.original)
                   }
-                ></span>{" "}
+                ></span> */}
+                {" "}
             
 
                 <img
