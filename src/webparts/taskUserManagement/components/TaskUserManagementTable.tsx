@@ -692,7 +692,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             >
                 <div className="modal-body">
                     <div className='input-group'>
-                        <label className='form-label full-width'>User Name: </label>
+                        <label className='form-label full-width'>Title: </label>
                         <input className='form-control' type="text" value={title} onChange={(e: any) => setTitle(e.target.value)} />
                     </div>
                     <div className='input-group my-2'>
