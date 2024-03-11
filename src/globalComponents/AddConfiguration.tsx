@@ -292,8 +292,10 @@ const AddConfiguration = (props: any) => {
             }
             else if (Itemindex == index && check == false) {
                 item.IsSelectedTemp = false;
-                newArray = newArray.filter((item: any, Itemindex) => Itemindex != index && item?.IsTemplate == true)
+                newArray = newArray.filter((item: any) => item?.WebpartTitle != items?.WebpartTitle && item?.IsTemplate == true)
                 IsExecuteElse = false;
+                if (newArray != undefined && newArray?.length == 0)
+                    IsExecuteElse = true;
             }
         })
         if (IsExecuteElse == true) {
@@ -449,16 +451,16 @@ const AddConfiguration = (props: any) => {
                                                     </div>
                                                 </Col>
                                             </Row>
-
                                             <Row className="Metadatapannel">
-                                                {items.DataSource != 'TimeSheet' && <Col sm="12" md="12" lg="12">
-                                                    <label className='form-label full-width SpfxCheckRadio mb-1'>
-                                                        <input type="radio" className='radio' value="custom" checked={items?.selectFilterType === 'custom'} onChange={(e) => handleFilterChange(e, index, items)} />
-                                                        Custom Filter
-                                                        <input type="radio" className='radio ms-3' value="smartFav" checked={items?.selectFilterType === 'smartFav'} onChange={(e) => handleFilterChange(e, index, items)} />
-                                                        SmartFav Filter
-                                                    </label>
-                                                </Col>}
+                                                {items.DataSource != 'TimeSheet' &&
+                                                    <Col sm="12" md="12" lg="12">
+                                                        <label className='form-label full-width SpfxCheckRadio mb-1'>
+                                                            <input type="radio" className='radio' value="custom" checked={items?.selectFilterType === 'custom'} onChange={(e) => handleFilterChange(e, index, items)} />
+                                                            Custom Filter
+                                                            <input type="radio" className='radio ms-3' value="smartFav" checked={items?.selectFilterType === 'smartFav'} onChange={(e) => handleFilterChange(e, index, items)} />
+                                                            SmartFav Filter
+                                                        </label>
+                                                    </Col>}
                                                 {items.DataSource == "Tasks" && items?.selectFilterType == 'custom' &&
                                                     <Col sm="4" md="4" lg="4">
                                                         <><label className='form-label full-width'>My Role</label>
@@ -489,7 +491,11 @@ const AddConfiguration = (props: any) => {
                                                         onChange={(e, option) => handleSelectFilterChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }} /></>
                                                     }
-                                                    {(items.DataSource == "TaskUsers" && items?.selectFilterType == 'custom') || (items.DataSource == 'TimeSheet') && <><label className='form-label full-width'>Select Filter</label><Dropdown id="FiltesCustomTaskUser" options={[{ key: '', text: '' }, ...(CustomUserFilter?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.Status}
+                                                    {items.DataSource == "TaskUsers" && items?.selectFilterType == 'custom' && <><label className='form-label full-width'>Select Filter</label><Dropdown id="FiltesCustomTaskUser" options={[{ key: '', text: '' }, ...(CustomUserFilter?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.Status}
+                                                        onChange={(e, option) => handleCustomUserFilterChange(option?.key, index, items)}
+                                                        styles={{ dropdown: { width: '100%' } }} /></>
+                                                    }
+                                                    {items.DataSource == 'TimeSheet' && <><label className='form-label full-width'>Select Filter</label><Dropdown id="FiltesCustomTaskUser" options={[{ key: '', text: '' }, ...(CustomUserFilter?.map((item: any) => ({ key: item?.value, text: item?.status })) || [])]} selectedKey={items?.Status}
                                                         onChange={(e, option) => handleCustomUserFilterChange(option?.key, index, items)}
                                                         styles={{ dropdown: { width: '100%' } }} /></>
                                                     }
