@@ -1284,6 +1284,8 @@ export default class UserTimeEntry extends React.Component<
         break;
 
       case "EntrieMonth":
+        DateType = "This Month";
+        this.setState({ showShareTimesheet: true });
         startdt = new Date(startdt.getFullYear(), startdt.getMonth(), 1);
         enddt = new Date(enddt.getFullYear(), enddt.getMonth() + 1, 0);
         break;
@@ -1306,7 +1308,7 @@ export default class UserTimeEntry extends React.Component<
         break;
 
       case "EntrieYear":
-        DateType = "Year";
+        DateType = "This Year";
         startdt = new Date(new Date().getFullYear(), 0, 1);
         enddt = new Date(new Date().getFullYear(), 11, 31);
         break;
@@ -1566,7 +1568,7 @@ export default class UserTimeEntry extends React.Component<
           config.Title != undefined &&
           config.Title.toLowerCase() == "offshore tasks"
         )
-          config.Title = config.Title.replace(" "," ");
+          config.Title = "Offshore Tasks";
         let ColumnName = "Task" + config.Title.replace(" ", "");
         if (
           timeTab[ColumnName] != undefined &&
@@ -1743,7 +1745,7 @@ export default class UserTimeEntry extends React.Component<
         confi.Title != undefined &&
         confi.Title.toLowerCase() == "offshore tasks"
       )
-        confi.Title = confi.Title.replace(" ", "");
+        confi.Title = confi.Title.replace(" ", " ");
       confi["Sitee" + confi.Title] = "filter=";
     });
     copysitesConfi.forEach(function (confi: any) {

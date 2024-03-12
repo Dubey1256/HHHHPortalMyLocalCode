@@ -496,7 +496,7 @@ const TaskStatusTbl = (Tile: any) => {
         hasCheckbox: true,
         hasCustomExpanded: item?.GroupByView,
         hasExpanded: item?.GroupByView,
-        size: 50,
+        size: 10,
         id: "Id"
       },
       {
@@ -509,14 +509,14 @@ const TaskStatusTbl = (Tile: any) => {
         id: "SiteIcon",
         canSort: false,
         placeholder: "",
-        size: 80,
+        size: 25,
         isColumnVisible: true
       },
       {
         accessorKey: "TaskID",
         placeholder: "ID",
         id: 'TaskID',
-        size: 180,
+        size: 110,
         isColumnVisible: true,
         cell: ({ row, getValue }: any) => (
           <span className="d-flex">
@@ -540,7 +540,7 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "Title",
         resetColumnFilters: false,
         header: "",
-        size: 460,
+        size: 350,
         isColumnVisible: true
       },
       {
@@ -562,7 +562,7 @@ const TaskStatusTbl = (Tile: any) => {
         resetSorting: false,
         isColumnDefultSortingDesc: true,
         header: "",
-        size: 190,
+        size: 45,
         isColumnVisible: true
       },
       {
@@ -606,7 +606,7 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "% Complete",
         header: "",
         resetColumnFilters: false,
-        size: 140,
+        size: 45,
         id: "percentage",
         isColumnVisible: true
       },
@@ -749,7 +749,7 @@ const TaskStatusTbl = (Tile: any) => {
           }
         },
         header: "",
-        size: 115
+        size: 100
       },
       {
         accessorKey: "TotalTaskTime",
@@ -757,7 +757,7 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "Smart Time",
         header: "",
         resetColumnFilters: false,
-        size: 49,
+        size: 45,
         isColumnVisible: false
       },
       {
@@ -782,7 +782,7 @@ const TaskStatusTbl = (Tile: any) => {
           placeholder: "",
           hasCustomExpanded: false,
           hasExpanded: false,
-          size: 20,
+          size: 5,
           margin: 0,
           id: "Id"
         },
@@ -791,7 +791,7 @@ const TaskStatusTbl = (Tile: any) => {
           id: "AuthorName",
           placeholder: "AuthorName",
           header: "",
-          size: 340,
+          size: 210,
           isColumnVisible: true,
           cell: ({ row }: any) => (
             <>
@@ -838,21 +838,22 @@ const TaskStatusTbl = (Tile: any) => {
             }
           },
           header: "",
-          size: 125,
+          size: 90,
           isColumnVisible: true
         },
         {
           accessorKey: "TaskTime",
           placeholder: "TaskTime",
           header: "",
-          size: 95,
+          size: 40,
           isColumnVisible: true
         },
         {
           accessorKey: "Description",
           placeholder: "Description",
           header: "",
-          isColumnVisible: true
+          isColumnVisible: true,
+          size: 700,
         },
         {
           id: "ff",

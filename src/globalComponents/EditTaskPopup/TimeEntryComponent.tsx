@@ -1135,7 +1135,7 @@ const TimeEntryPopup = (item: any) => {
     getStructurefTimesheetCategories();
     setEditItem(items.Title);
 
-    if (items.siteType == "Offshore Tasks") {
+    if (items.siteType == "Offshore Tasks" || items.siteType == "SharewebQA") {
       var siteType = "OffshoreTasks";
       var filteres = "Task" + siteType + "/Id eq " + items.Id;
       var linkedSite = "Task" + siteType;
@@ -2733,62 +2733,35 @@ const TimeEntryPopup = (item: any) => {
             ) : (
 
               <>
-                {row?.original?.Status == '' ?
-                  <>
-                    <span title="Copy"
-                      className="svg__iconbox svg__icon--copy"
-                      onClick={() => openAddTasktimepopup(row.original, "CopyTime")}
-                    ></span>
-                    <span
-                      title="Edit"
-                      className="svg__iconbox svg__icon--edit hreflink"
-                      onClick={() =>
-                        openAddTasktimepopup(row?.original, "EditTime")
-                      }
-                    ></span>
-                    <span
-                      title="Delete"
-                      className="svg__icon--trash hreflink  svg__iconbox"
-                      onClick={() => deleteTaskTime(row.original)}
-                    ></span>
-                  </>
-                  :
-                  <>
-                    {row?.original?.Status === "Draft" ||
-                      row?.original?.Status === "Rejected" ?
-                      <>
-                        <span
-                          title="Send For Approval"
-                          className="svg__iconbox svg__icon--forApproval hreflink"
-                          onClick={() =>
-                            sendForApproval(row?.original)
-                          }
-                        ></span>
-                        <span title="Copy"
-                          className="svg__iconbox svg__icon--copy"
-                          onClick={() => openAddTasktimepopup(row.original, "CopyTime")}
-                        ></span>
-                      </>
-                      : null}
-                    {" "}
+                {" "}
+                {/* <span
+                  title="Send For Approval"
+                  style={{display:"none"}}
+                  className={getStatusClassName(row?.original?.Status)}
+                  onClick={() =>
+                    changeTaskStatus(row?.original)
+                  }
+                ></span> */}
+                {" "}
+            
 
-
-                    {row?.original?.Status === "Approved" || row?.original?.Status === "Approval" || row?.original?.Status === ""
-                      ? null :
-                      <> <span
-                        title="Edit"
-                        className="svg__iconbox svg__icon--edit hreflink"
-                        onClick={() =>
-                          openAddTasktimepopup(row?.original, "EditTime")
-                        }
-                      ></span>
-                        <span
-                          title="Delete"
-                          className="svg__icon--trash hreflink  svg__iconbox"
-                          onClick={() => deleteTaskTime(row.original)}
-                        ></span> </>}
-                  </>
-                }
+                <span title="Copy"
+                  className="svg__iconbox svg__icon--copy"
+                  onClick={() => openAddTasktimepopup(row.original, "CopyTime")}
+                ></span>
+                 {" "}
+                <span
+                  title="Edit"
+                  className="svg__iconbox svg__icon--edit hreflink"
+                  onClick={() =>
+                    openAddTasktimepopup(row?.original, "EditTime")
+                  }
+                ></span>{" "}
+                <span
+                  title="Delete"
+                  className="svg__icon--trash hreflink  svg__iconbox"
+                  onClick={() => deleteTaskTime(row.original)}
+                ></span>
               </>
             )}
           </div>
