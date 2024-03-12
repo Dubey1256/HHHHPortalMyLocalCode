@@ -1010,6 +1010,9 @@ const TimeEntryPopup = (item: any) => {
 
   const sendForApproval = async (child: any) => {
     var UpdatedData: any = [];
+    if(child.AuthorId == CurntUserId){
+
+    
     $.each(TaskCate, function (index: any, update: any) {
       if (update.Id === child.ParentID && update.AuthorId == CurntUserId) {
         $.each(update.AdditionalTime, function (index: any, updateitem: any) {
@@ -1054,7 +1057,10 @@ const TimeEntryPopup = (item: any) => {
         closeAddTaskTimepopup();
         setupdateData(updateData + 1);
       });
-
+    }
+    else{
+      alert('You are only permitted to submit your own timesheet for approval. Please ensure to send your timesheet for approval')
+    }
 
   }
   // -------------------------------------------------------CHANGE STATUS COLOR FUNCTION ------------------------------------------------------------
