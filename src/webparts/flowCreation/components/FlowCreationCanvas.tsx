@@ -14,9 +14,22 @@ import Button from 'react-bootstrap/Button';
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import EditInstitution from "../../EditPopupFiles/EditComponent";
 import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
+import CustomNode from "./customNode";
 let id = 0;
 const getId = () => `dndnode_${id++}`;
-
+let AllListId: any = {
+  // siteUrl: 'https://hhhhteams.sharepoint.com/sites/HHHH/SP',
+  // MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf',
+  // TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300',
+  // SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a',
+  // SmartInformationListID: 'edf0a6fb-f80e-4772-ab1e-666af03f7ccd',
+  // DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08',
+  // TaskTimeSheetListID: '464fb776-e4b3-404c-8261-7d3c50ff343f',
+  // AdminConfigrationListID: 'e968902a-3021-4af2-a30a-174ea95cf8fa',
+  // PortFolioTypeID: 'c21ab0e4-4984-4ef7-81b5-805efaa3752e',
+  // TimeEntry: false,
+  // SiteCompostion: false,
+}
 export default function FlowCreationCanvas(props: any) {
   const initialNodes: any = [
     { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
@@ -25,7 +38,9 @@ export default function FlowCreationCanvas(props: any) {
   const [IsProjectPopup, setIsProjectPopup] = React.useState(false);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-
+  const nodeTypes = {
+    customNode: CustomNode,
+  };
   const reactFlowWrapper = useRef(null);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   // const [elements, setElements] = useState(initialNodes);
@@ -37,17 +52,34 @@ export default function FlowCreationCanvas(props: any) {
     event.dataTransfer.dropEffect = "move";
   };
   React.useEffect(() => {
+    let isShowTimeEntry: any = false
+    let isShowSiteCompostion: any = false
+    try {
+      isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
+      isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
+    } catch (error: any) {
+      console.log(error)
+    }
+    AllListId = {
+      MasterTaskListID: props?.props?.MasterTaskListID,
+      TaskUsertListID: props?.props?.TaskUsertListID,
+      SmartMetadataListID: props?.props?.SmartMetadataListID,
+      //SiteTaskListID:this.props?.props?.SiteTaskListID,
+      TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
+      DocumentsListID: props?.props?.DocumentsListID,
+      SmartInformationListID: props?.props?.SmartInformationListID,
+      siteUrl: props?.props?.siteUrl,
+      AdminConfigrationListID: props?.props?.AdminConfigrationListID,
+      isShowTimeEntry: isShowTimeEntry,
+      isShowSiteCompostion: isShowSiteCompostion,
+      PortFolioTypeID: props?.props?.PortFolioTypeID,
+      Context: props?.props?.Context,
+      TaskTypeID: props?.props?.TaskTypeID
+    }
     loadComponentDetails()
   }, []);
   const loadComponentDetails = async (compId?: any) => {
-    let AllListId = {
-      TaskUsertListID: '117bc416-3fbf-4641-8584-20d149078ee8',
-      siteUrl: 'https://smalsusinfolabs.sharepoint.com/sites/HHHHQA/SP',
-      SmartMetadataListID: '0af5c538-1190-4fe5-8644-d01252e79d4b',
-      MasterTaskListID: '26a4b2e7-1d92-4f76-b8cb-1fa110f39b34',
-      DocumentsListID: '18c9128d-3710-4ceb-a714-9ce9d1a0dae4',
-      SmartInformationListID: '2f30fa5b-fbee-4a80-ad2d-865a943e68a8',
-    }
+
     try {
       const params = new URLSearchParams(window.location.search)
       let itemId = params.get('ItemId')
@@ -59,28 +91,6 @@ export default function FlowCreationCanvas(props: any) {
       } else if (itemType == 'Project' && result?.FlatProjectData?.length > 0 && itemId != undefined) {
         foundComp = result?.FlatProjectData?.find((portfolio: any) => portfolio?.Id == itemId);
       }
-      // foundComp = {
-      //   Id: 1,
-      //   Parent: {},
-      //   Title: 'Abc',
-      //   subRows: [
-      //     {
-      //       Id: 2,
-      //       Parent: { Id: 1 },
-      //       subRows: [
-      //         { Id: 12, Parent: { Id: 2 }, Title: 'Xyz' },
-      //         { Id: 32, Parent: { Id: 2 }, Title: 'sdr' },
-      //         { Id: 45, Parent: { Id: 2 }, Title: 'frt' }
-      //       ],
-      //       Title: 'Xyz'
-      //     },
-      //     { Id: 3, Parent: { Id: 1 }, Title: 'sdr' },
-      //     { Id: 4, Parent: { Id: 1 }, Title: 'frt' }
-      //   ]
-      // }
-      // const flowRes = generateNodesAndEdges(foundComp);
-      // setNodes(flowRes?.nodes)
-      // setEdges(flowRes?.edges)
       if (foundComp?.Id != undefined) {
         if (itemType == 'Portfolio' && result?.AllData?.length > 0 && itemId != undefined) {
           const groupedResult = globalCommon?.componentGrouping(foundComp, result?.AllData);
@@ -96,8 +106,6 @@ export default function FlowCreationCanvas(props: any) {
           setEdges(flowRes?.edges)
         }
 
-        // console.log("Nodes:", nodes);
-        // console.log("Edges:", edges);
       }
 
     } catch (e) {
@@ -133,33 +141,41 @@ export default function FlowCreationCanvas(props: any) {
       individualWidth = individualWidth || 0; // Default to 0 if not provided
 
       let accumulatedWidth = 0; // Track cumulative width of processed siblings
-
+      let subRowsY = parentY;
       subRows.forEach((row: any, index: any) => {
         const nodeId = `${parentId}-${row.Id}`;
-        let type = 'default';
-
-        if (parentId === '') {
-          type = 'input';
-        } else if (!row.subRows || row?.subRows?.length === 0) {
-          type = 'output';
+        let type = 'customNode';
+        let childLevel = index+1;
+        let handles: any = {}
+        handles.top = true
+        if (!row.subRows || row?.subRows?.length === 0) {
+          handles.bottom = false
+        } else {
+          handles.bottom = true
         }
 
         // Calculate x position based on parent center, accumulated width, and spacing
-        const x = parentCenterX + accumulatedWidth + index * individualWidth + minimumSpacing * index;
-
+        let x = 0;
         // Update accumulated width after positioning
-        accumulatedWidth += individualWidth + minimumSpacing;
-
-        const y = parentY + 100; // Adjust the vertical spacing here
+        accumulatedWidth += minimumSpacing;
+        let y = 0
+        if (level % 2 == 0) {
+          y = subRowsY += 100
+          x = parentCenterX
+        } else {
+          y = parentY + 100;
+          x = parentCenterX + accumulatedWidth + childLevel * individualWidth + minimumSpacing * childLevel;
+        }
+        parentY + 100; // Adjust the vertical spacing here
         const backgroundColor = levelColors[level % levelColors?.length]; // Assign color based on level
-
         nodes.push({
           id: nodeId,
           type,
+          handles,
           data: {
-            label: <a className='hreflink' href={row?.targetUrl} data-interception="off" target="_blank">
-              {`${row?.PortfolioStructureID} - ${row?.Title}`}
-            </a>,
+            AllListId,
+            handles,
+            item: row,
           },
           position: { x, y }, // Remove duplicate position property
           style: { backgroundColor: backgroundColor },
@@ -175,7 +191,7 @@ export default function FlowCreationCanvas(props: any) {
 
         if (row?.subRows && row?.subRows?.length > 0) {
           // Pass calculated values for sub-levels
-          processSubRows(row.subRows, nodeId, x, level + 1, x, individualWidth); // Maintain hierarchy
+          processSubRows(row.subRows, nodeId, y, level + 1, x, individualWidth); // Maintain hierarchy
         }
       });
     }
@@ -187,21 +203,22 @@ export default function FlowCreationCanvas(props: any) {
 
     nodes.push({
       id: `${data?.Id}`,
-      type: 'input',
+      type: 'customNode',
+
       data: {
-        label: <a className='hreflink' href={data?.targetUrl} data-interception="off" target="_blank">
-          {`${data?.PortfolioStructureID} - ${data?.Title}`}
-        </a>,
+        AllListId,
+        handles: {
+          bottom: true,
+        },
+        item: data,
       },
       position: { x: x, y: parentY }, // Set x to calculated center
       style: { backgroundColor: levelColors[0] },
     });
-
     if (data?.subRows && data?.subRows?.length > 0) {
       // Pass initial values for first level processing
       processSubRows(data?.subRows, `${data?.Id}`, parentY, 1, x, x / (data?.subRows?.length || 1)); // Assuming equal width for root children
     }
-
     return { nodes: nodes, edges: edges };
   }
 
@@ -375,7 +392,7 @@ export default function FlowCreationCanvas(props: any) {
           >
             <ReactFlow
               nodes={nodes} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect}
-              onLoad={onLoad}
+              onLoad={onLoad} nodeTypes={nodeTypes}
               onDrop={onDrop}
               onDragOver={onDragOver}
             >
