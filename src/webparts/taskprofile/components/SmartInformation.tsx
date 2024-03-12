@@ -105,6 +105,7 @@ const SmartInformation = (props: any, ref: any) => {
           }
         })
       }      
+      item.Description = item?.Description.replace(/<[^>]*>|&[^;]+;/g, '');
       if (item?.InfoType?.Title === 'Information Source') {        
         setsourceTitle(item.Title);
         setEditorState(insertText(item?.Description, editorState));
