@@ -1,15 +1,17 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { myContextValue } from '../../../globalComponents/globalCommon'
 const WorldClock = () => {
+  const ContextData: any = React.useContext(myContextValue)
   let timeoutId: number;
   const [countryDetails, setCountryDetails] = useState<any>([{
     country: "India",
-    Image: "/sites/HHHH/PublishingImages/Logos/India.png", currentCuntry: false, Time: ""
+    Image: ContextData?.propsValue?.Context?._pageContext?._site?.absoluteUrl + "/PublishingImages/Logos/India.png", currentCuntry: false, Time: ""
   }, {
-    country: "Germany", Image: "/sites/HHHH/PublishingImages/Logos/Germany.png", currentCuntry: false, Time: ""
+    country: "Germany", Image: ContextData?.propsValue?.Context?._pageContext?._site?.absoluteUrl + "/PublishingImages/Logos/Germany.png", currentCuntry: false, Time: ""
   }, {
-    country: "Switzerland", Image: "/sites/HHHH/PublishingImages/Logos/switerland.png", currentCuntry: false, Time: ""
+    country: "Switzerland", Image: ContextData?.propsValue?.Context?._pageContext?._site?.absoluteUrl + "/PublishingImages/Logos/switerland.png", currentCuntry: false, Time: ""
   }]);
   useEffect(() => {
     fetchUserCountry()
