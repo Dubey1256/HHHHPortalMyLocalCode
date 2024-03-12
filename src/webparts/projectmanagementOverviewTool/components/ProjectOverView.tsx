@@ -504,8 +504,11 @@ export default function ProjectOverview(props: any) {
                                             href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
                                             target="_blank"
                                             data-interception="off"
-                                        >
-                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
+                                        >{row?.original?.AuthorImg != undefined ?
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.AuthorImg} /> :
+                                            <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                                            }
+
                                         </a>
                                     </>
                                 ) : (
@@ -585,7 +588,7 @@ export default function ProjectOverview(props: any) {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
                     <div className='alignCenter'>
-                        <a className='hreflink' href={row?.original?.siteType == "Project" ? `${AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.Id}`: `${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
+                        <a className='hreflink' href={row?.original?.siteType == "Project" ? `${AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.Id}` : `${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
                         {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5'><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
                     </div>
 
@@ -723,8 +726,10 @@ export default function ProjectOverview(props: any) {
                                             href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
                                             target="_blank"
                                             data-interception="off"
-                                        >
-                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
+                                        >{row?.original?.createdImg != undefined ?
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} /> :
+                                            <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                                            }
                                         </a>
                                     </>
                                 ) : (
@@ -1093,6 +1098,7 @@ export default function ProjectOverview(props: any) {
                     items.listId = AllListId?.MasterTaskListID;
                     items.AssignedUser = []
                     items.siteType = "Project"
+                    items.createdImg = findUserByName(items?.Author?.Id)
                     items.TeamMembersSearch = '';
                     if (items.AssignedTo != undefined) {
                         items.AssignedTo.map((taskUser: any) => {
@@ -1141,7 +1147,7 @@ export default function ProjectOverview(props: any) {
                                         type[type.Title + 'number'] += 1;
                                     }
                                 })
-                            }   
+                            }
                         })
                     }
                 })
@@ -1384,9 +1390,9 @@ export default function ProjectOverview(props: any) {
             } else {
                 setCheckBoxData([])
                 if (childRef.current.table.getSelectedRowModel().flatRows.length == 0) {
-                  setTrueRestructuring(false)
-              }
-                
+                    setTrueRestructuring(false)
+                }
+
             }
             if (ShowingData != undefined) {
                 setShowingData([ShowingData])
@@ -1417,7 +1423,7 @@ export default function ProjectOverview(props: any) {
                     portFoliotypeCount?.map((type: any) => {
                         if (elem?.Item_x0020_Type === type?.Title) {
                             type[type.Title + 'filterNumber'] += 1;
-                            type[type.Title + 'number'] += 1;                          
+                            type[type.Title + 'number'] += 1;
                         }
                     })
                 }
@@ -1427,7 +1433,7 @@ export default function ProjectOverview(props: any) {
                             portFoliotypeCount?.map((type: any) => {
                                 if (child?.Item_x0020_Type === type?.Title) {
                                     type[type.Title + 'filterNumber'] += 1;
-                                    type[type.Title + 'number'] += 1;                          
+                                    type[type.Title + 'number'] += 1;
                                 }
                             })
                         }
@@ -1437,7 +1443,7 @@ export default function ProjectOverview(props: any) {
             setPortFolioTypeIcon(portFoliotypeCount)
             setData(flatProjectsData);
         }
-        else{
+        else {
             AllProject?.map((elem: any) => {
                 if (elem?.Item_x0020_Type != undefined) {
                     portFoliotypeCount?.map((type: any) => {
@@ -1591,7 +1597,7 @@ export default function ProjectOverview(props: any) {
                     });
                     AllTask.push(items);
                 });
-                
+
                 let workingTodayTasks = smartmeta.filter((itms: any) => {
                     return itms.IsTodaysTask
                 })
@@ -1604,7 +1610,7 @@ export default function ProjectOverview(props: any) {
                                 countType[countType.Title + 'filterNumber'] = (countType[countType.Title + 'filterNumber'] || 0) + 1;
                             }
                         });
-                
+
                         typeData.forEach((dataType: any) => {
                             if (tday?.TaskType?.Title === dataType?.Title) {
                                 dataType[dataType.Title + 'number'] = (dataType[dataType.Title + 'number'] || 0) + 1;
@@ -1756,7 +1762,7 @@ export default function ProjectOverview(props: any) {
 
             {
                 trueRestructuring == true ?
-                    <RestructuringCom AllSitesTaskData={AllSitesAllTasks} AllMasterTasksData={MyAllData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllTaskUser} contextValue={AllListId} allData={workingTodayFiltered ? data : flatData} restructureCallBack={restructureCallback} findPage = {"ProjectOverView"} restructureItem={childRef.current.table.getSelectedRowModel().flatRows} />
+                    <RestructuringCom AllSitesTaskData={AllSitesAllTasks} AllMasterTasksData={MyAllData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllTaskUser} contextValue={AllListId} allData={workingTodayFiltered ? data : flatData} restructureCallBack={restructureCallback} findPage={"ProjectOverView"} restructureItem={childRef.current.table.getSelectedRowModel().flatRows} />
                     : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
             }
             <label className="switch me-2" htmlFor="checkbox">

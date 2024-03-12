@@ -14,6 +14,16 @@ import { IFlowCreationProps } from './components/IFlowCreationProps';
 
 export interface IFlowCreationWebPartProps {
   description: string;
+  MasterTaskListID: any;
+  TaskUsertListID: any;
+  SmartMetadataListID: any;
+  SmartInformationListID: any;
+  DocumentsListID: any;
+  TaskTimeSheetListID: any;
+  PortFolioTypeID: any;
+  TaskTypeID: any;
+  TimeEntry: any;
+  SiteCompostion: any;
 }
 
 export default class FlowCreationWebPart extends BaseClientSideWebPart<IFlowCreationWebPartProps> {
@@ -29,7 +39,19 @@ export default class FlowCreationWebPart extends BaseClientSideWebPart<IFlowCrea
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        Context: this.context,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        MasterTaskListID: this.properties.MasterTaskListID,
+        TaskUsertListID: this.properties.TaskUsertListID,
+        SmartMetadataListID: this.properties.SmartMetadataListID,
+        SmartInformationListID: this.properties.SmartInformationListID,
+        DocumentsListID: this.properties.DocumentsListID,
+        TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
+        TaskTypeID: this.properties.TaskTypeID,
+        PortFolioTypeID:this.properties.PortFolioTypeID,
+        TimeEntry: this.properties.TimeEntry,
+        SiteCompostion: this.properties.SiteCompostion
       }
     );
 
@@ -92,6 +114,35 @@ export default class FlowCreationWebPart extends BaseClientSideWebPart<IFlowCrea
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneTextField('MasterTaskListID', {
+                  label: "MasterTaskListID"
+                }),
+                PropertyPaneTextField('TaskUsertListID', {
+                  label: "TaskUsertListID"
+                }),
+                PropertyPaneTextField('SmartMetadataListID', {
+                  label: "SmartMetadataListID"
+                }),
+                PropertyPaneTextField('SmartInformationListID', {
+                  label: 'SmartInformationListID'
+                }),
+                PropertyPaneTextField('DocumentsListID', {
+                  label: "DocumentsListID"
+                }),
+                PropertyPaneTextField('TaskTimeSheetListID', {
+                  label: "TaskTimeSheetListID"
+                }),
+                PropertyPaneTextField('TaskTypeID', {
+                  label: "TaskTypeID"
+                }),   PropertyPaneTextField('PortFolioTypeID', {
+                  label: "PortFolioTypeID"
+                }),
+                PropertyPaneTextField('TimeEntry', {
+                  label: "TimeEntry"
+                }),
+                PropertyPaneTextField('SiteCompostion', {
+                  label: "SiteCompostion"
                 })
               ]
             }
