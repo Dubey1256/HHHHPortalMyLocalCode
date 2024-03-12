@@ -650,7 +650,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       } if (senderObject.length == 0) {
         userDeatails.push({
           'Title': username,
-          'userImage': "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+          'userImage':"" 
         })
 
       }
@@ -2146,8 +2146,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MM/YYYY") : ""}
                           {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
                             <a title={this.state.Result["Author"][0].Title} className='alignCenter ms-1'>
-                              {this.state.Result["Author"][0].userImage !== "" && <img className="workmember hreflink " src={this.state.Result["Author"][0].userImage} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, this.state.Result["Author"][0]?.Id)} ></img>}
-                              {this.state.Result["Author"][0].userImage === "" && <span className="workmember">{this.state.Result["Author"][0].Suffix}</span>}
+                              {this.state.Result["Author"][0].userImage !== "" && <img className="workmember hreflink " src={this.state.Result["Author"][0].userImage} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, this.state.Result["Author"][0]?.Id)} ></img>
+                              
+                              }
+                              {this.state.Result["Author"][0].userImage === "" && <span title="Default user icons" className="alignIcon svg__iconbox svg__icon--defaultUser "></span>}
                             </a>
 
                           }
@@ -2314,8 +2316,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                     <span>
                                       <span >{imgData?.UploadeDate}</span>
                                       <span className='round px-1'>
-                                        {imgData?.UserImage != null &&
+                                        {imgData?.UserImage != null && imgData?.UserImage!=""?
                                           <img className='align-self-start hreflink ' title={imgData?.UserName} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)} src={imgData?.UserImage} />
+                                        :<span title="Default user icons"  onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
                                         }
                                       </span>
                                       {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
@@ -2445,8 +2448,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                       <div className="">
                                                         <div className="d-flex p-0">
                                                           <div className="col-1 p-0 wid30">
-                                                            <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)} src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
-                                                              fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                                           {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)} 
+                                                            src={ fbComment.AuthorImag} />:
+                                                              <span  onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)} title="Default user icons" className="alignIcon svg__iconbox svg__icon--defaultUser "></span>}
                                                           </div>
                                                           <div className="col-11 pe-0" >
                                                             <div className='d-flex justify-content-between align-items-center'>
@@ -2479,8 +2483,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                             return (
                                                               <div className="d-flex border ms-3 p-2  mb-1">
                                                                 <div className="col-1 p-0 wid30">
-                                                                  <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, replymessage?.AuthorName, this?.taskUsers)} src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
-                                                                    replymessage?.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                                                  {replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != ''?<img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, replymessage?.AuthorName, this?.taskUsers)} 
+                                                                  src={replymessage?.AuthorImage}/>:<span title="Default user icons" className="alignIcon svg__iconbox svg__icon--defaultUser "></span>}
                                                                 </div>
                                                                 <div className="col-11 pe-0" >
                                                                   <div className='d-flex justify-content-between align-items-center'>
@@ -2608,8 +2612,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                         <div className="">
                                                           <div className="d-flex p-0">
                                                             <div className="col-1 p-0 wid30">
-                                                              <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)} src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
-                                                                fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                                             {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)}
+                                                               src={fbComment.AuthorImage}/>:<span title="Default user icons" className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
+                                                    }
                                                             </div>
                                                             <div className="col-11 pad0" key={k}>
                                                               <div className="d-flex justify-content-between align-items-center">
@@ -2642,8 +2647,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                               return (
                                                                 <div className="d-flex border ms-3 p-2  mb-1">
                                                                   <div className="col-1 p-0 wid30">
-                                                                    <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, replymessage?.AuthorName, this?.taskUsers)} src={replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ?
-                                                                      replymessage.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                                                   {replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != ''?<img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, replymessage?.AuthorName, this?.taskUsers)}
+                                                                     src={replymessage.AuthorImage} />:<span title="Default user icons" className="alignIcon svg__iconbox svg__icon--defaultUser "></span>}
                                                                   </div>
                                                                   <div className="col-11 pe-0" >
                                                                     <div className='d-flex justify-content-between align-items-center'>
@@ -2737,8 +2742,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                   <div className="expandicon">
                                     <span >{imgData?.UploadeDate}</span>
                                     <span className='round px-1'>
-                                      {imgData?.UserImage !== null &&
+                                      {imgData?.UserImage !== null &&  imgData?.UserImage!=""?
                                         <img className='align-self-start hreflink ' title={imgData?.UserName} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)} src={imgData?.UserImage} />
+                                     :<span title="Default user icons" onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)}  className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
                                       }
                                     </span>
                                   </div>

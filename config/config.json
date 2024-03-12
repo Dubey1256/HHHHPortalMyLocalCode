@@ -459,6 +459,7 @@
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
     "DatacleanuptoolWebPartStrings": "lib/webparts/datacleanuptool/loc/{locale}.js",
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
+    "FlowCreationWebPartStrings": "lib/webparts/flowCreation/loc/{locale}.js",
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
     "TaskUserManagementWebPartStrings": "lib/webparts/taskUserManagement/loc/{locale}.js",
     "SiteStructureWebPartStrings": "lib/webparts/SiteStructure/loc/{locale}.js",
