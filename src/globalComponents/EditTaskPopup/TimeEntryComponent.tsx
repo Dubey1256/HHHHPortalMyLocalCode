@@ -2725,41 +2725,64 @@ const TimeEntryPopup = (item: any) => {
                 </button>
               </span>
             ) : (
+
               <>
-                {" "}
-                {row?.original?.Status === "Draft" ||
-                  row?.original?.Status === "Rejected" ?
+                {row?.original?.Status == '' ?
                   <>
-                    <span
-                      title="Send For Approval"
-                      className="svg__iconbox svg__icon--forApproval hreflink"
-                      onClick={() =>
-                        sendForApproval(row?.original)
-                      }
-                    ></span>
                     <span title="Copy"
                       className="svg__iconbox svg__icon--copy"
                       onClick={() => openAddTasktimepopup(row.original, "CopyTime")}
                     ></span>
-                  </>
-                  : null}
-                {" "}
-
-
-                {row?.original?.Status === "Approved" || row?.original?.Status === "Approval" || row?.original?.Status === ""
-                  ? null :
-                  <> <span
-                    title="Edit"
-                    className="svg__iconbox svg__icon--edit hreflink"
-                    onClick={() =>
-                      openAddTasktimepopup(row?.original, "EditTime")
-                    }
-                  ></span>
+                    <span
+                      title="Edit"
+                      className="svg__iconbox svg__icon--edit hreflink"
+                      onClick={() =>
+                        openAddTasktimepopup(row?.original, "EditTime")
+                      }
+                    ></span>
                     <span
                       title="Delete"
                       className="svg__icon--trash hreflink  svg__iconbox"
                       onClick={() => deleteTaskTime(row.original)}
-                    ></span> </>}
+                    ></span>
+                  </>
+                  :
+                  <>
+                    {row?.original?.Status === "Draft" ||
+                      row?.original?.Status === "Rejected" ?
+                      <>
+                        <span
+                          title="Send For Approval"
+                          className="svg__iconbox svg__icon--forApproval hreflink"
+                          onClick={() =>
+                            sendForApproval(row?.original)
+                          }
+                        ></span>
+                        <span title="Copy"
+                          className="svg__iconbox svg__icon--copy"
+                          onClick={() => openAddTasktimepopup(row.original, "CopyTime")}
+                        ></span>
+                      </>
+                      : null}
+                    {" "}
+
+
+                    {row?.original?.Status === "Approved" || row?.original?.Status === "Approval" || row?.original?.Status === ""
+                      ? null :
+                      <> <span
+                        title="Edit"
+                        className="svg__iconbox svg__icon--edit hreflink"
+                        onClick={() =>
+                          openAddTasktimepopup(row?.original, "EditTime")
+                        }
+                      ></span>
+                        <span
+                          title="Delete"
+                          className="svg__icon--trash hreflink  svg__iconbox"
+                          onClick={() => deleteTaskTime(row.original)}
+                        ></span> </>}
+                  </>
+                }
               </>
             )}
           </div>
