@@ -1128,7 +1128,7 @@ const TimeEntryPopup = (item: any) => {
     getStructurefTimesheetCategories();
     setEditItem(items.Title);
 
-    if (items.siteType == "Offshore Tasks") {
+    if (items.siteType == "Offshore Tasks" || items.siteType == "SharewebQA") {
       var siteType = "OffshoreTasks";
       var filteres = "Task" + siteType + "/Id eq " + items.Id;
       var linkedSite = "Task" + siteType;
@@ -2704,12 +2704,11 @@ const TimeEntryPopup = (item: any) => {
                 {" "}
             
 
-                <img
-                  title="Copy"
-                  className="hreflink"
-                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png"
+                <span title="Copy"
+                  className="svg__iconbox svg__icon--copy"
                   onClick={() => openAddTasktimepopup(row.original, "CopyTime")}
-                ></img>{" "}
+                ></span>
+                 {" "}
                 <span
                   title="Edit"
                   className="svg__iconbox svg__icon--edit hreflink"
