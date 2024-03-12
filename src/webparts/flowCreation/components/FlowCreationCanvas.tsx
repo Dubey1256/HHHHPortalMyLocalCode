@@ -119,33 +119,40 @@ export default function FlowCreationCanvas(props: any) {
     const levelColors = ['#e7e6e6', '#f1f1f1', '#C0C0C0', '#D3D3D3', '#E0E0E0']; // Define colors for each level
 
     // Function to calculate the width and total width of a subtree
-    function calculateSubTreeWidths(subRows: any) {
-      if (!subRows || subRows.length === 0) return { maxWidth: 0, totalWidth: 1, centerX: 0 };
+    // function calculateSubTreeWidths(subRows: any) {
+    //   if (!subRows || subRows.length === 0) return { maxWidth: 0, totalWidth: 1, centerX: 0 };
 
-      const widths = subRows.map((row: any) => {
-        const childWidths = calculateSubTreeWidths(row.subRows);
-        return Math.max(childWidths.maxWidth, 1) + 30; // Consider node width + 30
-      });
+    //   const widths = subRows.map((row: any) => {
+    //     const childWidths = calculateSubTreeWidths(row.subRows);
+    //     return Math.max(childWidths.maxWidth, 1) + 30; // Consider node width + 30
+    //   });
 
-      const maxWidth = Math.max(...widths);
-      const totalWidth = widths.reduce((sum: any, width: any) => sum + width, 0);
-      const centerX = totalWidth / 2;
+    //   const maxWidth = Math.max(...widths);
+    //   const totalWidth = widths.reduce((sum: any, width: any) => sum + width, 0);
+    //   const centerX = totalWidth / 2;
 
-      return { maxWidth, totalWidth, centerX };
-    }
+    //   return { maxWidth, totalWidth, centerX };
+    // }
 
     // Recursive function to process subRows
-    function processSubRows(subRows: any, parentId: any, parentY: any, level: any, parentCenterX?: number, individualWidth?: number) {
+    function processSubRows(subRows: any, parentId: any, parentY: any, level: any, parentCenterX?: number, individualWidth?: any) {
       // Handle undefined parentX and individualWidth
       parentCenterX = parentCenterX || 0; // Default to 0 if not provided
-      individualWidth = individualWidth || 0; // Default to 0 if not provided
+      // Default to 0 if not provided
 
       let accumulatedWidth = 0; // Track cumulative width of processed siblings
       let subRowsY = parentY;
+      let childLevel = individualWidth;
+      // if (subRows?.length > 0) {
+      //   let startingToBe = individualWidth * subRows?.length;
+      //   startingToBe = startingToBe / 2
+      //   childLevel = startingToBe;
+      // }
+
       subRows.forEach((row: any, index: any) => {
         const nodeId = `${parentId}-${row.Id}`;
         let type = 'customNode';
-        let childLevel = index+1;
+
         let handles: any = {}
         handles.top = true
         if (!row.subRows || row?.subRows?.length === 0) {
@@ -164,7 +171,8 @@ export default function FlowCreationCanvas(props: any) {
           x = parentCenterX
         } else {
           y = parentY + 100;
-          x = parentCenterX + accumulatedWidth + childLevel * individualWidth + minimumSpacing * childLevel;
+          x = childLevel;
+          childLevel += 170
         }
         parentY + 100; // Adjust the vertical spacing here
         const backgroundColor = levelColors[level % levelColors?.length]; // Assign color based on level
@@ -197,7 +205,7 @@ export default function FlowCreationCanvas(props: any) {
     }
 
     const desiredCenterX = window.innerWidth / 2; // Adjust as needed
-    const initialSubTreeWidths = calculateSubTreeWidths(data?.subRows);
+    // const initialSubTreeWidths = calculateSubTreeWidths(data?.subRows);
     const x = desiredCenterX;  // Centered at x = 0
     const parentY = 0; // Starting y position
 
@@ -216,111 +224,14 @@ export default function FlowCreationCanvas(props: any) {
       style: { backgroundColor: levelColors[0] },
     });
     if (data?.subRows && data?.subRows?.length > 0) {
+      let startPoint: any = data?.subRows?.length * 140
+      startPoint = startPoint / 2
+      startPoint = x - startPoint;
       // Pass initial values for first level processing
-      processSubRows(data?.subRows, `${data?.Id}`, parentY, 1, x, x / (data?.subRows?.length || 1)); // Assuming equal width for root children
+      processSubRows(data?.subRows, `${data?.Id}`, parentY, 1, x, startPoint); // Assuming equal width for root children
     }
     return { nodes: nodes, edges: edges };
   }
-
-  // function generateNodesAndEdges(data: any) {
-  //   let nodes: any = [];
-  //   let edges: any = [];
-  //   const levelColors = ['#989898', '#A9A9A9', '#C0C0C0', '#D3D3D3', '#E0E0E0']; // Define colors for each level
-
-  //   // Function to calculate the width and total width of a subtree
-  //   function calculateSubTreeWidths(subRows: any) {
-  //     if (!subRows || subRows.length === 0) return { maxWidth: 0, totalWidth: 1, centerX: 0 };
-
-  //     const widths = subRows.map((row: any) => {
-  //       const childWidths = calculateSubTreeWidths(row.subRows);
-  //       return Math.max(childWidths.maxWidth, 1) + 30; // Consider node width + 30
-  //     });
-
-  //     const maxWidth = Math.max(...widths);
-  //     const totalWidth = widths.reduce((sum: any, width: any) => sum + width, 0);
-  //     const centerX = totalWidth / 2;
-
-  //     return { maxWidth, totalWidth, centerX };
-  //   }
-
-  //   // Recursive function to process subRows
-  //   function processSubRows(subRows:any, parentId: any, parentY: any, level: any) {
-  //     let accumulatedWidth = 0; // Track cumulative width of processed siblings
-
-  //     subRows.forEach((row:any, index:any) => {
-  //       const nodeId = `${parentId}-${row.Id}`;
-  //       let type = 'default';
-
-  //       if (parentId === '') {
-  //         type = 'input';
-  //       } else if (!row.subRows || row?.subRows?.length === 0) {
-  //         type = 'output';
-  //       }
-
-  //       // Calculate x position based on parent center, accumulated width, and spacing
-  //       const x = parentX + accumulatedWidth + index * individualWidth + minimumSpacing * index;
-
-  //       // Update accumulated width after positioning
-  //       accumulatedWidth += individualWidth + minimumSpacing;
-
-  //       const y = parentY + 100; // Adjust the vertical spacing here
-  //       const backgroundColor = levelColors[level % levelColors?.length]; // Assign color based on level
-
-  //       nodes.push({
-  //         id: nodeId,
-  //         type,
-  //         data: {
-  //           label: <a className='hreflink' href={row?.targetUrl} data-interception="off" target="_blank">
-  //             {`${row?.PortfolioStructureID} - ${row?.Title}`}
-  //           </a>,
-  //         },
-  //         position: { x, y }, // Remove duplicate position property
-  //         style: { backgroundColor: backgroundColor },
-  //       });
-
-  //       if (parentId) {
-  //         edges.push({
-  //           id: `edge-${parentId}-${row?.Id}`,
-  //           source: parentId,
-  //           target: nodeId,
-  //         });
-  //       }
-
-  //       if (row?.subRows && row?.subRows?.length > 0) {
-  //         processSubRows(row.subRows, nodeId, x, level + 1); // Keep x position for sub-levels to maintain hierarchy
-  //       }
-  //     });
-  //   }
-
-  //   const initialSubTreeWidths = calculateSubTreeWidths(data?.subRows);
-  //   const initialX = 0 - initialSubTreeWidths.totalWidth / 2; // Centered at x = 0
-  //   const parentY = 0; // Starting y position
-
-  //   nodes.push({
-  //     id: `${data?.Id}`,
-  //     type: 'input',
-  //     data: {
-  //       label: <a className='hreflink' href={data?.targetUrl} data-interception="off" target="_blank">
-  //         {`${data?.PortfolioStructureID} - ${data?.Title}`}
-  //       </a>,
-  //     },
-  //     position: { x: initialX, y: parentY }, // Set x to calculated center
-  //     style: { backgroundColor: levelColors[0] },
-  //   });
-
-  //   if (data?.subRows && data?.subRows?.length > 0) {
-  //     processSubRows(data?.subRows, `${data?.Id}`, parentY, 1); // Start from level 1
-  //   }
-
-  //   return { nodes: nodes, edges: edges };
-  // }
-
-
-
-
-
-  // Example usage:
-
 
   const onDrop = (event: any) => {
     event.preventDefault();
@@ -385,12 +296,12 @@ export default function FlowCreationCanvas(props: any) {
     <>
       <div className="dndflow" >
         <ReactFlowProvider>
-          <div id={'flow-container'}
+          <div
             className="reactflow-wrapper"
             style={{ height: "600px", width: "600px" }}
             ref={reactFlowWrapper}
           >
-            <ReactFlow
+            <ReactFlow id={'flow-container'}
               nodes={nodes} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect}
               onLoad={onLoad} nodeTypes={nodeTypes}
               onDrop={onDrop}
