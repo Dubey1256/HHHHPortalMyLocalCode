@@ -450,7 +450,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             return items
           }
         })
-        let regExpStr = `@[${MentionedValue}](${mentionEmail[0].id})`;
+        let regExpStr = `@[${MentionedValue}](${mentionEmail[0]?.id})`;
         let regExpLiteral = /\[(.*?)\]/gi;
         allMention = regExpStr.match(regExpLiteral);
       } else {
@@ -808,7 +808,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
 
   private detectAndRenderLinks = (html: any) => {
-    //  html = globalCommon?.replaceURLsWithAnchorTags(html)
+    
     const div = document.createElement('div');
     div.innerHTML = html;
     const paragraphs = div.querySelectorAll('p');
@@ -822,11 +822,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
     // Update anchor tags
     const anchorTags = div.querySelectorAll('a');
-    anchorTags.forEach((a) => {
-      a.setAttribute('target', '_blank');
-      a.setAttribute('data-interception', 'off');
-    });
-    return div.innerHTML;
+    // anchorTags.forEach((a) => {
+    //   a.setAttribute('target', '_blank');
+    //   a.setAttribute('data-interception', 'off');
+    // });
+   
+    
+    return  globalCommon?.replaceURLsWithAnchorTags(div.innerHTML);
   };
   public render(): React.ReactElement<ICommentCardProps> {
     return (

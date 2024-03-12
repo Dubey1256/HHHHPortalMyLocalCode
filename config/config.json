@@ -10,6 +10,14 @@
         }
       ]
     },
+    "gmbh-calendar-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/gmbhCalendar/GmbhCalendarWebPart.js",
+          "manifest": "./src/webparts/gmbhCalendar/GmbhCalendarWebPart.manifest.json"
+        }
+      ]
+    },
     "smart-connect-web-part": {
       "components": [
         {
@@ -491,6 +499,7 @@
     "ManagedashboardconfigWebPartStrings": "lib/webparts/managedashboardconfig/loc/{locale}.js",
     "FlowCreationWebPartStrings": "lib/webparts/flowCreation/loc/{locale}.js",
     "SMarttaskWebPartStrings": "lib/webparts/sMarttask/loc/{locale}.js",
+    "GmbhCalendarWebPartStrings": "lib/webparts/gmbhCalendar/loc/{locale}.js",
     "GroupByComponentsDashboardWebPartStrings": "lib/webparts/groupByComponentsDashboard/loc/{locale}.js"
   }
 }
