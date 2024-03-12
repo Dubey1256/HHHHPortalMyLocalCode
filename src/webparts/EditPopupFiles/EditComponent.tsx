@@ -2846,7 +2846,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
     await web.lists
       .getById(RequireData.SmartHelpListID)
       .items.getById(item_Id)
-      .delete()
+      .recycle()
       .then((i: any) => {
         console.log(i);
         SmartHelpDetails.map((catId: any, index: any) => {

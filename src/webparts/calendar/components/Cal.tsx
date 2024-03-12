@@ -532,7 +532,7 @@ const App = (props: any) => {
       await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
         .items.getById(eventids)
-        .delete()
+        .recycle()
 
         .then((i: any) => {
           //console.log(i);
