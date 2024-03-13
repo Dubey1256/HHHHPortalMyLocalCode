@@ -39,6 +39,8 @@ import BulkEditingFeature from './BulkEditingFeature';
 import BulkEditingConfrigation from './BulkEditingConfrigation';
 import ColumnsSetting from './ColumnsSetting';
 import HeaderButtonMenuPopup from './HeaderButtonMenuPopup';
+import { Web } from 'sp-pnp-js';
+// import TileBasedTasks from './TileBasedTasks';
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
     interface FilterFns {
@@ -155,6 +157,7 @@ const getFirstColHeader = ({ hasCheckbox, hasExpanded, isHeaderNotAvlable, portf
             {hasCheckbox && (
                 <span style={hasExpanded ? { marginLeft: '7px', marginBottom: '0px' } : {}} ><IndeterminateCheckbox className="mx-1 " style={{ marginTop: "5px" }} {...{ checked: table.getIsAllRowsSelected(), indeterminate: table.getIsSomeRowsSelected(), onChange: table.getToggleAllRowsSelectedHandler(), }} />{" "}</span>
             )}
+
         </>
     );
 };
@@ -247,7 +250,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     let siteUrl: any = '';
     let showHeader = items?.showHeader
     let showPopupHeader = items?.showPopupHeader
-    let showPagination: any = items?.showPagination;
+    // let showPagination: any = items?.showPagination;
     let usedFor: any = items?.usedFor;
     let portfolioColor = items?.portfolioColor != undefined ? items?.portfolioColor : "#000066";
     let expandIcon = items?.expandIcon;
@@ -255,9 +258,11 @@ const GlobalCommanTable = (items: any, ref: any) => {
     let portfolioTypeData = items?.portfolioTypeData;
     let showingAllPortFolioCount = items?.showingAllPortFolioCount
     let columnVisibilityDataValue: any = {}
+    let tableId = items?.tableId
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
     );
+    const rerender = React.useReducer(() => ({}), {})[1]
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const [rowSelection, setRowSelection] = React.useState({});
@@ -289,8 +294,14 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [categoriesTiles, setCategoriesTiles] = React.useState([]);
     const [coustomButtonMenuPopup, setCoustomButtonMenuPopup] = React.useState(false);
     const [showHeaderLocalStored, setShowHeaderLocalStored] = React.useState(items?.showHeader ? items?.showHeader : false);
+    const [showTilesView, setShowTilesView] = React.useState<any>(false);
+    const [columnOrder, setColumnOrder] = React.useState<string[]>([]);
+    const [wrapperHeight, setWrapperHeight] = React.useState(items?.wrapperHeight?.length > 0 ? items?.wrapperHeight : "");
+    const [showPagination, setShowPagination] = React.useState(items?.showPagination ? items?.showPagination : false);
+    const [showPaginationSetting, setShowPaginationSetting] = React.useState(false);
+    const [tableSettingPageSize, setTableSettingPageSize] = React.useState(0);
+    const [settingConfrigrationData, setSettingConfrigrationData] = React.useState([]);
     React.useEffect(() => {
-
         if (fixedWidth === true) {
             try {
                 $('#spPageCanvasContent').removeClass();
@@ -413,49 +424,178 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const bulkEditingSettingPopupEvent = () => {
         setBulkEditingSettingPopup(true);
     }
-    ///******************** Bulk Editing Setting End************* */
 
+    const fetchSettingConfrigrationData = () => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let configurationData: any = [];
+                const web = new Web(items?.AllListId?.siteUrl);
+                const resultsArray = await web.lists.getByTitle('AdminConfigurations').items.select('Id', 'Title', 'Value', 'Key', 'Description', 'DisplayTitle', 'Configurations', "Author/Id", "Author/Title").expand("Author").filter(`Title eq '${tableId}' and Author/Id eq ${items?.AllListId?.Context?.pageContext?.legacyPageContext?.userId}`).get();
+                configurationData = resultsArray?.map((smart: any) => JSON.parse(smart?.Configurations));
+                if (configurationData?.length > 0) {
+                    configurationData[0].ConfrigId = resultsArray[0]?.Id;
+                }
+                console.log(resultsArray);
+                setSettingConfrigrationData(configurationData);
+                resolve(configurationData);
+            } catch (error) { console.error(error); reject(error); }
+        });
+    };
+    React.useEffect(() => { const fetchData = async () => { try { await fetchSettingConfrigrationData(); } catch (error) { console.error('Error:', error); } }; fetchData(); }, [columns]);
+    ///******************** Bulk Editing Setting End************* */
     React.useEffect(() => {
         if (columns?.length > 0 && columns != undefined) {
             let sortingDescData: any = [];
-            let columnVisibilityResult: any = {}
-            let preSetColumnSettingVisibility: any = {}
-            columns.map((sortDec: any) => {
-                if (sortDec.isColumnDefultSortingDesc === true) {
-                    let obj = { 'id': sortDec.id, desc: true }
-                    sortingDescData.push(obj);
-                } else if (sortDec.isColumnDefultSortingAsc === true) {
-                    let obj = { 'id': sortDec.id, desc: false }
-                    sortingDescData.push(obj);
-                }
-                if (localStorage.getItem('preSetColumnSettingVisibility') && Object.keys(JSON.parse(localStorage.getItem('preSetColumnSettingVisibility')))?.length > 0 && (items?.columnSettingIcon === true)) {
-                    const preSetColumnsValue = JSON.parse(localStorage.getItem('preSetColumnSettingVisibility'));
-                    preSetColumnSettingVisibility = preSetColumnsValue?.columnSettingVisibility;
-                    setShowHeaderLocalStored(preSetColumnsValue?.showHeader)
-                    if (Object.keys(preSetColumnSettingVisibility)?.length) {
-                        const columnId = sortDec.id;
-                        if (preSetColumnSettingVisibility[columnId] !== undefined) {
-                            sortDec.isColumnVisible = preSetColumnSettingVisibility[columnId];
+            let columnVisibilityResult: any = {};
+            let preSetColumnSettingVisibility: any = {};
+            let preSetColumnOrdring: any = [];
+            console.log(settingConfrigrationData);
+            columns = columns.map((updatedSortDec: any) => {
+                try {
+                    // if ((localStorage.getItem(tableId) != undefined && localStorage.getItem(tableId)) && Object.keys(JSON.parse(localStorage.getItem(tableId)))?.length > 0 && (items?.columnSettingIcon === true)) {
+                    if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableId && (items?.columnSettingIcon === true)) {
+                        // const preSetColumnsValue = JSON.parse(localStorage.getItem(tableId));
+                        const preSetColumnsValue = settingConfrigrationData[0]
+                        if (preSetColumnsValue?.tableId === items?.tableId) {
+                            preSetColumnSettingVisibility = preSetColumnsValue?.columnSettingVisibility;
+                            preSetColumnOrdring = preSetColumnsValue
+                            setShowHeaderLocalStored(preSetColumnsValue?.showHeader)
+                            if (Object.keys(preSetColumnSettingVisibility)?.length) {
+                                const columnId = updatedSortDec.id;
+                                if (preSetColumnSettingVisibility[columnId] !== undefined) {
+                                    updatedSortDec.isColumnVisible = preSetColumnSettingVisibility[columnId];
+                                }
+                            }
+                        } else if (updatedSortDec?.isColumnVisible === false && items?.columnSettingIcon === true) {
+                            columnVisibilityResult[updatedSortDec.id] = updatedSortDec.isColumnVisible;
                         }
+                    } else if (updatedSortDec?.isColumnVisible === false && items?.columnSettingIcon === true) {
+                        columnVisibilityResult[updatedSortDec.id] = updatedSortDec.isColumnVisible;
                     }
-
-                } else if (sortDec?.isColumnVisible === false && items?.columnSettingIcon === true) {
-                    columnVisibilityResult[sortDec.id] = sortDec.isColumnVisible;
+                    if (updatedSortDec.isColumnDefultSortingDesc === true) {
+                        let obj = { 'id': updatedSortDec.id, desc: true }
+                        sortingDescData.push(obj);
+                    } else if (updatedSortDec.isColumnDefultSortingAsc === true) {
+                        let obj = { 'id': updatedSortDec.id, desc: false }
+                        sortingDescData.push(obj);
+                    }
+                    return updatedSortDec;
+                } catch (error) {
+                    console.log(error);
+                    localStorage.removeItem(tableId);
+                    location.reload();
                 }
-            })
-            if (Object.keys(preSetColumnSettingVisibility)?.length > 0) {
-                setColumnVisibility(preSetColumnSettingVisibility)
-            } else if (Object.keys(columnVisibilityResult)?.length > 0) {
-                setColumnVisibility(columnVisibilityResult)
-                columnVisibilityDataValue = { ...columnVisibilityResult }
+            });
+            if (preSetColumnOrdring?.columnOrderValue?.length > 0 && preSetColumnOrdring?.tableId === items?.tableId) {
+                const colValue = preSetColumnOrdring?.columnOrderValue?.map((elem: any) => elem.id);
+                setColumnOrder(colValue);
+            } else if (items?.columnSettingIcon === true && tableId) {
+                const colValue = columns?.map((elem: any) => elem.id);
+                setColumnOrder(colValue);
             }
+            if (preSetColumnOrdring?.tableHeightValue?.length > 0 && preSetColumnOrdring?.tableHeightValue != "") {
+                setWrapperHeight(preSetColumnOrdring?.tableHeightValue);
+            }
+            try {
+                if ((Object.keys(preSetColumnSettingVisibility) != null && Object.keys(preSetColumnSettingVisibility) != undefined) && Object.keys(preSetColumnSettingVisibility)?.length > 0 && preSetColumnOrdring?.tableId === items?.tableId) {
+                    setColumnVisibility(preSetColumnSettingVisibility);
+                } else if (Object.keys(columnVisibilityResult)?.length > 0) {
+                    setColumnVisibility(columnVisibilityResult);
+                    columnVisibilityDataValue = { ...columnVisibilityResult };
+                }
+            } catch (error) {
+                console.log(error)
+            }
+
             if (sortingDescData.length > 0) {
                 setSorting(sortingDescData);
             } else {
                 setSorting([]);
             }
+            try {
+                // if (localStorage.getItem(tableId) && Object.keys(JSON.parse(localStorage.getItem(tableId)))?.length > 0 && (items?.columnSettingIcon === true)) {
+                if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableId && (items?.columnSettingIcon === true)) {
+                    // const preSetColumnsValue = JSON.parse(localStorage.getItem(tableId));
+                    const preSetColumnsValue = settingConfrigrationData[0]
+                    if (preSetColumnsValue?.tableId === items?.tableId) {
+                        makeConfrigrationColumnsDefult()
+                    }
+                }
+            } catch (error) {
+                console.log(error)
+            }
         }
-    }, [columns])
+    }, [columns]);
+
+
+    const makeConfrigrationColumnsDefult = () => {
+        try {
+            // if (localStorage.getItem(tableId) && Object.keys(JSON.parse(localStorage.getItem(tableId)))?.length > 0 && (items?.columnSettingIcon === true)) {
+            if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableId && (items?.columnSettingIcon === true)) {
+                // const eventSetting = JSON.parse(localStorage.getItem(tableId));
+                const eventSetting = settingConfrigrationData[0]
+                if (eventSetting?.columanSize?.length > 0) {
+                    table?.getHeaderGroups()?.map((elem: any) => {
+                        elem?.headers?.map((elem1: any) => {
+                            eventSetting?.columanSize?.map((colSize: any) => {
+                                if (colSize?.id === elem1?.column?.id) {
+                                    let sizeValue = { ...colSize }
+                                    elem1.column.columnDef.size = parseInt(sizeValue?.size);
+                                }
+                            })
+                        })
+                    })
+                }
+                if (columns?.length > 0 && columns != undefined) {
+                    let sortingDescData: any = [];
+                    if (Object?.keys(eventSetting?.columnSorting)?.length > 0 || eventSetting?.columanSize?.length > 0) {
+                        columns?.map((updatedSortDec: any) => {
+                            let idMatch = updatedSortDec.id;
+                            if (eventSetting?.columnSorting[idMatch]?.id === updatedSortDec.id) {
+                                if (eventSetting?.columnSorting[idMatch]?.desc === true) {
+                                    let obj = { 'id': updatedSortDec.id, desc: true }
+                                    sortingDescData.push(obj);
+                                }
+                                if (eventSetting?.columnSorting[idMatch]?.asc === true) {
+                                    let obj = { 'id': updatedSortDec.id, desc: false }
+                                    sortingDescData.push(obj);
+                                }
+                            }
+                            eventSetting?.columanSize?.map((elem: any) => {
+                                if (elem?.id === updatedSortDec.id) {
+                                    let sizeValue = { ...elem }
+                                    updatedSortDec.size = parseInt(sizeValue?.size);
+                                }
+                            })
+                        });
+                    }
+                    if (sortingDescData.length > 0) {
+                        setSorting(sortingDescData);
+                    } else {
+                        setSorting([]);
+                    }
+                }
+                try {
+                    if (Object?.keys(eventSetting?.showPageSizeSetting)?.length > 0 && eventSetting?.showPageSizeSetting != undefined) {
+                        if (eventSetting?.showPageSizeSetting?.tablePageSize > 0) {
+                            table?.setPageSize(eventSetting?.showPageSizeSetting?.tablePageSize);
+                            setShowPagination(true);
+                            setShowPaginationSetting(true);
+                            setTableSettingPageSize(eventSetting?.showPageSizeSetting?.tablePageSize)
+                        } else {
+                            setShowPagination(false);
+                            setShowPaginationSetting(false);
+                            setTableSettingPageSize(0)
+                        }
+                    }
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
     /****************** defult Expend Other Section  part *******************/
     React.useEffect(() => {
         if (table?.getRowModel()?.rows.length > 0) {
@@ -483,6 +623,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             sorting,
             rowSelection,
             columnVisibility,
+            columnOrder,
         },
         onSortingChange: setSorting,
         enableMultiRowSelection: items?.multiSelect === false ? items?.multiSelect : true,
@@ -883,8 +1024,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
         parentRef.current.style.height = `${tableHeight}px`;
     };
     React.useEffect(() => {
-        if (items.wrapperHeight) {
-            parentRef.current.style.height = items.wrapperHeight;
+        if (wrapperHeight) {
+            parentRef.current.style.height = wrapperHeight;
         } else {
             setTableHeight();
             window.addEventListener('resize', setTableHeight);
@@ -892,7 +1033,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 window.removeEventListener('resize', setTableHeight);
             };
         }
-    }, []);
+    }, [, wrapperHeight]);
     //Virtual rows
 
 
@@ -953,8 +1094,42 @@ const GlobalCommanTable = (items: any, ref: any) => {
         if (eventSetting != 'close') {
             setColumnSettingPopup(false)
             columnVisibilityDataValue = { ...eventSetting?.columnSettingVisibility }
+            if (eventSetting?.columanSize?.length > 0) {
+                table?.getHeaderGroups()?.map((elem: any) => {
+                    elem?.headers?.map((elem1: any) => {
+                        eventSetting?.columanSize?.map((colSize: any) => {
+                            if (colSize?.id === elem1?.column?.id) {
+                                let sizeValue = { ...colSize }
+                                elem1.column.columnDef.size = parseInt(sizeValue?.size);
+                            }
+                        })
+                    })
+                })
+            }
+            if (eventSetting?.columnOrderValue?.length > 0) {
+                const colValue = eventSetting?.columnOrderValue?.map((elem: any) => elem.id);
+                setColumnOrder(colValue);
+            }
+            if (eventSetting?.tableHeightValue?.length > 0 && eventSetting?.tableHeightValue != "") {
+                setWrapperHeight(eventSetting?.tableHeightValue);
+            } else {
+                setWrapperHeight("");
+            }
+            if (Object.keys(eventSetting?.showPageSizeSetting)?.length > 0) {
+                if (eventSetting?.showPageSizeSetting?.tablePageSize > 0) {
+                    table?.setPageSize(eventSetting?.showPageSizeSetting?.tablePageSize);
+                    setShowPagination(true);
+                    setShowPaginationSetting(true);
+                    setTableSettingPageSize(eventSetting?.showPageSizeSetting?.tablePageSize)
+                } else {
+                    setShowPagination(false);
+                    setShowPaginationSetting(false);
+                    setTableSettingPageSize(0)
+                }
+            }
             setColumnVisibility((prevCheckboxes: any) => ({ ...prevCheckboxes, ...eventSetting?.columnSettingVisibility }));
-            setShowHeaderLocalStored(eventSetting?.showHeader)
+            setShowHeaderLocalStored(eventSetting?.showHeader);
+            setShowTilesView(eventSetting?.showTilesView);
         } else {
             setColumnSettingPopup(false)
         }
@@ -969,51 +1144,83 @@ const GlobalCommanTable = (items: any, ref: any) => {
             {showHeaderLocalStored === true && <div className='tbl-headings justify-content-between fixed-Header top-0' style={{ background: '#e9e9e9' }}>
                 <span className='leftsec'>
                     {showingAllPortFolioCount === true ? <div className='alignCenter mt--2'>
-                        <label>
+                        <label className=''>
                             <label style={{ color: "#333333" }}>
                                 Showing
                             </label>
                             {portfolioTypeData?.map((type: any, index: any) => {
                                 return (
                                     <>
-                                        {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
-                                            <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
+                                        {/* {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
+                                            <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>} */}
+
+                                        {isShowingDataAll === true ? <>
+                                            <label style={{ color: "white" }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
+                                            <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `}/</label>
+                                            <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
+                                            {/* {index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
+                                        </> :
+                                            <>
+                                                <label style={{ color: "white" }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
+                                                <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `}/</label>
+                                                <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
+                                                {/* {index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
+                                            </>}
+                                    </>
+                                )
+                            })}
+                            {items?.taskTypeDataItem?.map((type: any, index: any) => {
+                                return (
+                                    <>
+                                        {isShowingDataAll === true ? <>
+                                            <label style={{ color: "white" }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
+                                            <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `}/</label>
+                                            <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
+                                            {/* {index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
+                                        </> :
+                                            <>
+                                                <label style={{ color: "white" }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
+                                                <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `}/</label>
+                                                <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
+                                                {/* {index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
+                                            </>}
                                     </>
                                 )
                             })}
                         </label>
                         {items?.hideShowingTaskCountToolTip != true ? <>
-                            {!items?.pageName ? <span className="popover__wrapper ms-1 mt--5" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
+                            {!items?.pageName ? <span className="popover__wrapper teamPortfolioTooltip ms-1 mt--5" style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
                                 <span className='svg__iconbox svg__icon--info alignIcon dark mt--2'></span>
-                                <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
-                                    <label style={{ color: "#333333" }}>
+                                <span className="popover__content m-3" style={{ zIndex: 100 }}>
+                                    <label className='ms-1' style={{ color: "#333333" }}>
                                         Showing
                                     </label>
                                     {portfolioTypeData?.map((type: any, index: any) => {
                                         return (
                                             <>
-                                                {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: "#333333" }} className="ms-1"> | </label></> :
-                                                    <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label><label style={{ color: "#333333" }} className="ms-1"> | </label></>}
+                                                {isShowingDataAll === true ? <div className='aligncenter'><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label></div> :
+                                                    <div className='aligncenter'><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label></div>}
                                             </>
                                         )
                                     })}
                                     {items?.taskTypeDataItem?.map((type: any, index: any) => {
                                         return (
                                             <>
-                                                {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
-                                                    <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
+                                                {isShowingDataAll === true ? <div className='aligncenter'><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1}</div> :
+                                                    <div className='aligncenter'><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-0'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1}</div>}
                                             </>
                                         )
                                     })}
                                 </span>
+
                             </span> :
                                 <>
                                     <div className='alignCenter mt--2'>
                                         {items?.taskTypeDataItem?.map((type: any, index: any) => {
                                             return (
                                                 <>
-                                                    {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
-                                                        <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>}
+                                                    {isShowingDataAll === true ? <div className='aligncenter'><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1}</div> :
+                                                        <div className='aligncenter'><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < items?.taskTypeDataItem?.length - 1}</div>}
                                                 </>
                                             )
                                         })}
@@ -1164,7 +1371,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                 <tr key={headerGroup.id} >
                                     {headerGroup.headers.map((header: any, index: any) => {
                                         return (
-                                            <th key={header.id} colSpan={header.colSpan} style={header.column.columnDef.size != undefined && header.column.columnDef.size != 150 ? { width: header.column.columnDef.size + "px" } : {}}>
+                                            <th key={header.id} colSpan={header.colSpan} style={header.column.columnDef.size != undefined && header.column.columnDef.size != 150 ? { width: header.column.columnDef.size + "px", maxWidth: header.column.columnDef.size + "px", minWidth: header.column.columnDef.size + "px" } : {}}>
                                                 {header.isPlaceholder ? null : (
                                                     <div className='position-relative' style={{ display: "flex" }}>
                                                         {flexRender(
@@ -1193,7 +1400,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                                         {showHeaderLocalStored === false && (headerGroup?.headers?.length - 1 === index) && <div className='position-relative hreflink' style={{ display: "flex" }}>
                                                             <div className='dotFilterIcon'><BiDotsVertical style={{ color: 'gray', height: '25px', width: '25px' }} onClick={(event) => coustomButtonMenuToolBox('buttonMenu')} /></div>
                                                         </div>}
-
                                                         {header?.column?.columnDef?.id === "Id" && showHeaderLocalStored === false && <>
                                                             {showingAllPortFolioCount === true ? <>
                                                                 {items?.hideShowingTaskCountToolTip != true ? <>
@@ -1299,7 +1505,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 </div>
             </div>
             {
-                showPagination === true && table?.getFilteredRowModel()?.rows?.length > table.getState().pagination.pageSize ? <div className="d-flex gap-2 items-center mb-3 mx-2  paginationmenu">
+                showPagination === true && showPaginationSetting === false && (table?.getFilteredRowModel()?.rows?.length > table.getState().pagination.pageSize) ? <div className="d-flex gap-2 items-center mb-3 mx-2">
                     <button
                         className="border"
                         onClick={() => table.setPageIndex(0)}
@@ -1354,7 +1560,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCount={selectedFilterCount} setSelectedFilterCount={setSelectedFilterCount} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
             {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
             {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} />}
-            {columnSettingPopup && <ColumnsSetting showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility} />}
+            {columnSettingPopup && <ColumnsSetting ContextValue={items?.AllListId} settingConfrigrationData={settingConfrigrationData} tableSettingPageSize={tableSettingPageSize} tableHeight={parentRef?.current?.style?.height} columnOrder={columnOrder} setSorting={setSorting} sorting={sorting} headerGroup={table?.getHeaderGroups()} tableId={items?.tableId} showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility} />}
 
             {coustomButtonMenuPopup && <HeaderButtonMenuPopup isOpen={coustomButtonMenuPopup} coustomButtonMenuToolBoxCallback={coustomButtonMenuToolBoxCallback} setCoustomButtonMenuPopup={setCoustomButtonMenuPopup}
                 selectedRow={table?.getSelectedRowModel()?.flatRows} ShowTeamFunc={ShowTeamFunc} portfolioColor={portfolioColor}
@@ -1368,6 +1574,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 expandIcon={items?.expandIcon} expndpopup={expndpopup} tablecontiner={tablecontiner}
                 columnSettingIcon={items?.columnSettingIcon} setColumnSettingPopup={setColumnSettingPopup}
             />}
+            {/* {showTilesView && <TileBasedTasks ContextValue={items?.AllListId} AllUsers={items?.TaskUsers} tableData={data} />} */}
         </>
     )
 }

@@ -33,42 +33,6 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
             setRestructureItem(array);
         }
     }, [props?.restructureItem])
-    // useEffect(() => {
-    //     if (props?.restructureItem?.length === 0 && checkItemLength) {
-    //         let topCompo: any = false;
-    //         let array = AllMetaData;
-    //         array?.map((obj: any) => {
-    //             obj.isRestructureActive = false;
-    //             if (obj?.subRows?.length > 0 && obj?.subRows != undefined) {
-    //                 obj?.subRows?.map((Item: any) => {
-    //                     Item.isRestructureActive = false;
-    //                     if (Item?.subRows?.length > 0 && Item?.subRows != undefined) {
-    //                         Item?.subRows?.map((Item1: any) => {
-    //                             Item1.isRestructureActive = false;
-    //                             if (Item1?.subRows?.length > 0 && Item1?.subRows != undefined) {
-    //                                 Item1?.subRows?.map((Item2: any) => {
-    //                                     Item2.isRestructureActive = false;
-    //                                     if (Item2?.subRows?.length > 0 && Item2?.subRows != undefined) {
-    //                                         Item2?.subRows?.map((Item3: any) => {
-    //                                             Item3.isRestructureActive = false;
-    //                                             if (Item3?.subRows?.length > 0 && Item3?.subRows != undefined) {
-    //                                                 Item3?.subRows?.map((Item4: any) => {
-    //                                                     Item4.isRestructureActive = false;
-    //                                                 })
-    //                                             }
-    //                                         })
-    //                                     }
-    //                                 })
-    //                             }
-    //                         })
-    //                     }
-    //                 })
-    //             }
-    //         })
-    //         // props.SmartrestructureFunct(false);
-    //         restructureItemCallBack(array, topCompo);
-    //     }
-    // }, [props.restructureItem.length === 0])
     const buttonRestructureCheck = () => {
         let topCompo: any = false
         if (props?.AllMetaData?.length > 0 && props?.AllMetaData !== undefined && props?.restructureItem?.length > 0 && props?.restructureItem !== undefined) {
@@ -141,12 +105,12 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
     useEffect(() => {
         buttonRestructureCheck();
     }, [props?.RestructureButton])
-    const OpenModal = async (item: any) => {
-        if (item === undefined) {
-            if (props?.restructureItem[0] !== undefined) {
+    const OpenModal = async (item: any, TopTrue: any) => {
+        if (TopTrue) {
+            if (props?.restructureItem[0] !== undefined && item !== undefined) {
                 var postData: any = {
-                    ParentId: 0,
-                    ParentID: 0,
+                    ParentId: item?.Id,
+                    ParentID: item?.Id,
                 };
                 let web = new Web(props?.AllList?.SPSitesListUrl);
                 await web.lists
@@ -154,9 +118,10 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
                     .items.getById(props?.restructureItem[0]?.Id)
                     .update(postData)
                     .then(async (res: any) => {
-                        let array: any = [...AllMetaData];
+                        // let array: any = [...AllMetaData];
+                        console.log(res);
                         setResturuningOpen(false);
-                        restructureItemCallBack(array, false, props?.restructureItem[0]?.TaxType);
+                        restructureItemCallBack(props?.restructureItem[0], false, props?.restructureItem[0]?.TaxType);
                     })
             }
         } else {
@@ -305,6 +270,10 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
                 })
         }
     };
+    const closeRestructurePopup = () => {
+        setResturuningOpen(false)
+        restructureItemCallBack(props?.restructureItem[0], false, props?.restructureItem[0]?.TaxType);
+    }
     const onRenderRestuctureSmartMetadata = () => {
         return (
             <>
@@ -331,7 +300,7 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
                     <button
                         type="button"
                         className="btn btn-default ms-1"
-                        onClick={() => setResturuningOpen(false)}
+                        onClick={() => closeRestructurePopup()}
                     >
                         Cancel
                     </button></div>
@@ -349,67 +318,47 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
                         type={PanelType.medium}
                         isOpen={ResturuningOpen}
                         isBlocking={false}
-                        onDismiss={() => setResturuningOpen(false)}
-                        onRenderHeader={onRenderRestuctureSmartMetadata} onRenderFooterContent={CustomFooter}
+                        onDismiss={() => closeRestructurePopup()}
+                        onRenderHeader={onRenderRestuctureSmartMetadata}
+                        onRenderFooterContent={CustomFooter}
                     >
                         <div>
                             <div>
-                                <div>
-                                    <span> Old: </span>
-                                    {OldArrayBackup?.map((obj: any) => {
-                                        return (
-                                            <span>
-                                                <a
-                                                    data-interception="off"
-                                                    target="_blank"
-                                                    className="hreflink serviceColor_Active"
-                                                >
-                                                    <span>{obj?.Title} </span>
-                                                </a>
-                                                <span>{obj?.newSubChild ? <span>{'>'}{obj?.newSubChild?.Title}</span> : ''}</span>
-                                                <span>{obj?.newSubChild?.newFeatChild ? <span>{'>'}{obj?.newSubChild?.newFeatChild?.Title}</span> : ''}</span>
-                                            </span>
-                                        );
-                                    })}
-                                </div>
-                                <div>
-                                    <span> New: </span>
-                                    {NewArrayBackup?.map((obj: any) => {
-                                        return (
-                                            <span>
-                                                <a
-                                                    data-interception="off"
-                                                    target="_blank"
-                                                    className="hreflink serviceColor_Active"
-                                                >
-                                                    <span>{obj?.Title} </span>
-                                                </a>
-                                                <span>{obj?.newSubChild ? <span>{'>'}{obj?.newSubChild?.Title}</span> : ''}</span>
-                                                <span>{obj?.newSubChild?.newFeatChild ? <span>{'>'}{obj?.newSubChild?.newFeatChild?.Title}</span> : ''}</span>
-                                            </span>
-                                        );
-                                    })}
-                                </div>
+                                <span> Old: </span>
+                                {OldArrayBackup?.map((obj: any) => {
+                                    return (
+                                        <span>
+                                            <a
+                                                data-interception="off"
+                                                target="_blank"
+                                                className="hreflink serviceColor_Active"
+                                            >
+                                                <span>{obj?.Title} </span>
+                                            </a>
+                                            <span>{obj?.newSubChild ? <span>{'>'}{obj?.newSubChild?.Title}</span> : ''}</span>
+                                            <span>{obj?.newSubChild?.newFeatChild ? <span>{'>'}{obj?.newSubChild?.newFeatChild?.Title}</span> : ''}</span>
+                                        </span>
+                                    );
+                                })}
                             </div>
-                            <footer className="mt-2 text-end">
-                                {restructureItem != undefined &&
-                                    restructureItem.length > 0 && (
-                                        <button
-                                            type="button"
-                                            className="btn btn-primary "
-                                            onClick={(e) => UpdateMetaDataRestructure()}
-                                        >
-                                            Save
-                                        </button>
-                                    )}
-                                <button
-                                    type="button"
-                                    className="btn btn-default btn-default ms-1"
-                                    onClick={() => setResturuningOpen(false)}
-                                >
-                                    Cancel
-                                </button>
-                            </footer>
+                            <div>
+                                <span> New: </span>
+                                {NewArrayBackup?.map((obj: any) => {
+                                    return (
+                                        <span>
+                                            <a
+                                                data-interception="off"
+                                                target="_blank"
+                                                className="hreflink serviceColor_Active"
+                                            >
+                                                <span>{obj?.Title} </span>
+                                            </a>
+                                            <span>{obj?.newSubChild ? <span>{'>'}{obj?.newSubChild?.Title}</span> : ''}</span>
+                                            <span>{obj?.newSubChild?.newFeatChild ? <span>{'>'}{obj?.newSubChild?.newFeatChild?.Title}</span> : ''}</span>
+                                        </span>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </Panel> : ''
             }

@@ -14,6 +14,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import GlobalCommanTable from "../GroupByReactTableComponents/GlobalCommanTable";
 import "bootstrap/dist/css/bootstrap.min.css";
+import CustomAlert from "../TimeEntry/CustomAlert";
 import Tooltip from "../Tooltip";
 import * as globalCommon from "../globalCommon";
 import HighlightableCell from "../highlight";
@@ -61,8 +62,12 @@ let AllMetadata: [] = [];
 
 const TimeEntryPopup = (item: any) => {
   if (item?.props?.siteUrl != undefined) {
-    var Url = item?.props?.siteUrl.split("https://hhhhteams.sharepoint.com");
-    RelativeUrl = Url[1];
+    //var Url = item?.props?.siteUrl.split("https://hhhhteams.sharepoint.com");
+    let index = item?.props?.siteUrl.indexOf('/', 'https://'.length);
+
+    // Extract the substring after the domain
+    RelativeUrl = item?.props?.siteUrl.substring(index);
+    //RelativeUrl = extractedUrl[1];
     CurrentSiteUrl = item?.props?.siteUrl;
     PortfolioType = item?.props?.Portfolio_x0020_Type;
     CurntUserId = item?.Context?.pageContext?._legacyPageContext.userId;
@@ -76,7 +81,9 @@ const TimeEntryPopup = (item: any) => {
     RelativeUrl = item?.Context?.pageContext?.web?.serverRelativeUrl;
     CurrentSiteUrl = item?.Context?.pageContext?.web?.absoluteUrl;
   }
-
+  
+ 
+ const [isAlertVisible, setIsAlertVisible] = React.useState(false);
   const [AllTimeSheetDataNew, setTimeSheet] = React.useState([]);
   const [date, setDate] = React.useState(undefined);
   const [showCat, setshowCat] = React.useState([]);
@@ -132,7 +139,7 @@ const TimeEntryPopup = (item: any) => {
   const [TimeInHours, setTimeInHours] = React.useState(0);
   const [TimeInMinutes, setTimeInMinutes] = React.useState<any>(0);
   const [categoryData, setCategoryData] = React.useState([]);
-
+  const toggleDialog = () => setIsAlertVisible(false);
   let smartTermName = "Task" + item.props.siteType;
 
   // -------------------Load TaskUse------------------------------------------------------------------------------------------
@@ -725,6 +732,32 @@ const TimeEntryPopup = (item: any) => {
   const getStructureData = function () {
     TaskCate = AllTimeSpentDetails;
 
+    AllTimeSpentDetails?.map((item: any) => {
+      if (item?.subRows != undefined && item?.subRows?.length > 0) {
+        item?.subRows.map((value: any) => {
+          // if (value?.Status != undefined) {
+          //   if (value?.Status == "Draft") {
+
+          //     value.lableColor = "yellowForTimeSheet"
+          //   }
+          //   else if (value?.Status == "Rejected") {
+
+          //     value.lableColor = "redForTimeSheet"
+          //   }
+          //   else if (value?.Status == "Approved") {
+
+          //     value.lableColor = 'greenForTimeSheet'
+          //   }
+          //   else if (value?.Status == "Approval") {
+          //     value.lableColor = "blueForTimeSheet"
+          //   }
+          // }
+        })
+      }
+
+    })
+
+
     AllTimeSpentDetails.forEach((items: any) => {
       if (items.TimesheetTitle.Id === undefined) {
         items.Expanded = true;
@@ -810,7 +843,7 @@ const TimeEntryPopup = (item: any) => {
             }
             try {
               getDateForTimeEntry(NewDate, val);
-            } catch (e) {}
+            } catch (e) { }
           }
         });
       }
@@ -833,7 +866,11 @@ const TimeEntryPopup = (item: any) => {
       if (items.subRows != undefined && items.subRows.length > 0) {
         $.each(items.subRows, function (index: any, child: any) {
           const title = child.Title;
-
+          // child.subRows?.map((data: any) => {
+          //   if (!data.Status) {
+          //     data.Status = "Draft";
+          //   }
+          // });
           if (!finalData[title]) {
             finalData[title] = [child];
           } else {
@@ -898,8 +935,8 @@ const TimeEntryPopup = (item: any) => {
     }
   }
 
-  const callBackData = React.useCallback((elem: any, ShowingData: any) => {},
-  []);
+  const callBackData = React.useCallback((elem: any, ShowingData: any) => { },
+    []);
   function getDateForTimeEntry(newDate: any, items: any) {
     var LatestDate = [];
     var getMonth = "";
@@ -974,6 +1011,64 @@ const TimeEntryPopup = (item: any) => {
     return Items;
   };
 
+  // ---------------------------------------------------- Changing Task Status------------------------------------------------------------------------------
+
+
+
+  const changeTaskStatus = async (childNew: any) => {
+
+    let updatedData = [];
+
+
+
+
+
+    for (const subItem of AllTimeSpentDetails) {
+
+      if (subItem.Id === childNew.MainParentId && subItem.subRows?.length > 0) {
+
+        for (const newSubItem of subItem.subRows) {
+
+          if (newSubItem?.ParentID === childNew?.ParentID) {
+
+            newSubItem.Status = "Approval";
+
+          }
+
+        }
+
+        updatedData = subItem.subRows;
+
+      }
+
+    }
+
+
+
+    const listId = TimeSheetlistId;
+
+
+
+    let web = new Web(`${CurrentSiteUrl}`);
+
+
+
+    await web.lists.getById(listId).items.getById(childNew.ParentID).update({
+
+      AdditionalTimeEntry: JSON.stringify(updatedData),
+
+    }).then((res) => {
+
+      console.log(res);
+
+      setupdateData(updateData + 1);
+
+    });
+
+  };
+
+
+
   //------------------------------------------------------Load Timesheet Data-----------------------------------------------------------------------------
   const EditData = async (items: any) => {
     AllTimeSpentDetails = [];
@@ -1033,7 +1128,7 @@ const TimeEntryPopup = (item: any) => {
     getStructurefTimesheetCategories();
     setEditItem(items.Title);
 
-    if (items.siteType == "Offshore Tasks") {
+    if (items.siteType == "Offshore Tasks" || items.siteType == "SharewebQA") {
       var siteType = "OffshoreTasks";
       var filteres = "Task" + siteType + "/Id eq " + items.Id;
       var linkedSite = "Task" + siteType;
@@ -1109,7 +1204,7 @@ const TimeEntryPopup = (item: any) => {
                     UpdatedData["Company"] = taskUser.Company;
                     UpdatedData["AuthorImage"] =
                       taskUser.Item_x0020_Cover != undefined &&
-                      taskUser.Item_x0020_Cover.Url != undefined
+                        taskUser.Item_x0020_Cover.Url != undefined
                         ? taskUser.Item_x0020_Cover.Url
                         : "";
                   }
@@ -1127,6 +1222,7 @@ const TimeEntryPopup = (item: any) => {
                 update["AuthorName"] = UpdatedData.AuthorName;
                 update["AuthorId"] = CurntUserId;
                 update["AuthorImage"] = UpdatedData.AuthorImage;
+                //update["Status"]="Draft";
                 update["ID"] = 0;
                 update["MainParentId"] = mainParentId;
                 update["ParentID"] = NewParentId;
@@ -1189,7 +1285,7 @@ const TimeEntryPopup = (item: any) => {
                     item.AuthorName = taskUser.Title;
                     item.AuthorImage =
                       taskUser.Item_x0020_Cover != undefined &&
-                      taskUser.Item_x0020_Cover.Url != undefined
+                        taskUser.Item_x0020_Cover.Url != undefined
                         ? taskUser.Item_x0020_Cover.Url
                         : "";
                   }
@@ -1379,8 +1475,8 @@ const TimeEntryPopup = (item: any) => {
     let itemMetadataAdded = {
       Title:
         newData != undefined &&
-        newData.Title != undefined &&
-        newData.Title != ""
+          newData.Title != undefined &&
+          newData.Title != ""
           ? newData.Title
           : checkCategories,
       [smartTermId]: item.props.Id,
@@ -1460,10 +1556,11 @@ const TimeEntryPopup = (item: any) => {
             let itemMetadataAdded = {
               Title:
                 newData != undefined &&
-                newData.Title != undefined &&
-                newData.Title != ""
+                  newData.Title != undefined &&
+                  newData.Title != ""
                   ? newData.Title
                   : checkCategories,
+
               [smartTermId]: item.props.Id,
               CategoryId: Category,
               // 'Path': `${RelativeUrl}/Lists/${listName}/${UpdatedData.Company}`
@@ -1527,7 +1624,7 @@ const TimeEntryPopup = (item: any) => {
           UpdatedData["Company"] = taskUser.Company;
           UpdatedData["UserImage"] =
             taskUser.Item_x0020_Cover != undefined &&
-            taskUser.Item_x0020_Cover.Url != undefined
+              taskUser.Item_x0020_Cover.Url != undefined
               ? taskUser.Item_x0020_Cover.Url
               : "";
           await saveOldUserTask(UpdatedData);
@@ -1537,7 +1634,7 @@ const TimeEntryPopup = (item: any) => {
         UpdatedData.AuthorName == undefined &&
         UpdatedData.AuthorName == null
       ) {
-        alert("Please Add user on Task User Management");
+        setIsAlertVisible(true);
       }
     }
 
@@ -1553,7 +1650,7 @@ const TimeEntryPopup = (item: any) => {
         UpdatedData["Company"] = taskUser.Company;
         UpdatedData["UserImage"] =
           taskUser.Item_x0020_Cover != undefined &&
-          taskUser.Item_x0020_Cover.Url != undefined
+            taskUser.Item_x0020_Cover.Url != undefined
             ? taskUser.Item_x0020_Cover.Url
             : "";
       }
@@ -1573,8 +1670,8 @@ const TimeEntryPopup = (item: any) => {
     let itemMetadataAdded = {
       Title:
         newData != undefined &&
-        newData.Title != undefined &&
-        newData.Title != ""
+          newData.Title != undefined &&
+          newData.Title != ""
           ? newData.Title
           : checkCategories,
       [smartTermId]: item.props.Id,
@@ -1612,7 +1709,7 @@ const TimeEntryPopup = (item: any) => {
         UpdatedData["Company"] = taskUser.Company;
         UpdatedData["UserImage"] =
           taskUser.Item_x0020_Cover != undefined &&
-          taskUser.Item_x0020_Cover.Url != undefined
+            taskUser.Item_x0020_Cover.Url != undefined
             ? taskUser.Item_x0020_Cover.Url
             : "";
       }
@@ -1632,8 +1729,8 @@ const TimeEntryPopup = (item: any) => {
     let itemMetadataAdded = {
       Title:
         newData != undefined &&
-        newData.Title != undefined &&
-        newData.Title != ""
+          newData.Title != undefined &&
+          newData.Title != ""
           ? newData.Title
           : checkCategories,
       [smartTermId]: item.props.Id,
@@ -1741,7 +1838,7 @@ const TimeEntryPopup = (item: any) => {
           CurrentUser["Company"] = taskUser.Company;
           CurrentUser["AuthorImage"] =
             taskUser.Item_x0020_Cover != undefined &&
-            taskUser.Item_x0020_Cover.Url != undefined
+              taskUser.Item_x0020_Cover.Url != undefined
               ? taskUser.Item_x0020_Cover.Url
               : "";
         }
@@ -1858,7 +1955,7 @@ const TimeEntryPopup = (item: any) => {
           CurrentUser["Company"] = taskUser.Company;
           CurrentUser["AuthorImage"] =
             taskUser.Item_x0020_Cover != undefined &&
-            taskUser.Item_x0020_Cover.Url != undefined
+              taskUser.Item_x0020_Cover.Url != undefined
               ? taskUser.Item_x0020_Cover.Url
               : "";
         }
@@ -1879,7 +1976,7 @@ const TimeEntryPopup = (item: any) => {
         .expand(`Editor,Author,Category,TimesheetTitle,${linkedSite}`)
         .filter(
           `AuthorId eq '${CurntUserId}'` &&
-            `TimesheetTitle/Id eq '${ParentId.Id}'`
+          `TimesheetTitle/Id eq '${ParentId.Id}'`
         )
         .getAll();
       CurrentUserData = CurrentAddData;
@@ -1913,6 +2010,7 @@ const TimeEntryPopup = (item: any) => {
         if (MyData != undefined && MyData.length > 0) {
           update["AuthorName"] = CurrentUser.AuthorName;
           update["AuthorId"] = CurntUserId;
+          //update["Status"]="Draft";
           update["AuthorImage"] = CurrentUser.AuthorImage;
           update["ID"] = timeSpentId.ID + 1;
           update["Id"] = timeSpentId.ID + 1;
@@ -1926,6 +2024,7 @@ const TimeEntryPopup = (item: any) => {
           UpdatedData = MyData;
         } else {
           update["AuthorName"] = CurrentUser.AuthorName;
+         // update["Status"]="Draft";
           update["AuthorImage"] = CurrentUser.AuthorImage;
           update["AuthorId"] = CurntUserId;
           update["ID"] = 0;
@@ -2023,6 +2122,7 @@ const TimeEntryPopup = (item: any) => {
     update["AuthorName"] = CurrentUser.AuthorName;
     update["AuthorImage"] = CurrentUser.AuthorImage;
     update["AuthorId"] = CurntUserId;
+    //update["Status"] = "Draft";
     update["ID"] = 0;
     update["Id"] = 0;
     update["MainParentId"] = items.Id;
@@ -2138,8 +2238,8 @@ const TimeEntryPopup = (item: any) => {
         : Moment(DateFormate).format("DD/MM/YYYY");
     child.Description =
       postData != undefined &&
-      postData.Description != undefined &&
-      postData.Description != ""
+        postData.Description != undefined &&
+        postData.Description != ""
         ? postData.Description
         : child.Description;
 
@@ -2413,6 +2513,17 @@ const TimeEntryPopup = (item: any) => {
 
     // setFlatview((flatview: any) => ([...flatview]))
   };
+ // -------------------------------------------------------CHANGE STATUS COLOR FUNCTION ------------------------------------------------------------
+  // const getStatusClassName = (status:any) => {
+  //   switch (status) {
+  //     case "Draft":
+  //       return "svg__iconbox svg__icon--forApproval hreflink"; 
+  //     case "Rejected":
+  //       return "svg__iconbox svg__icon--forApproval hreflink"; 
+  //     default:
+  //       return "svg__iconbox svg__icon--forApproval Disabled-Link"; 
+  //   }
+  // };
 
   //------------------------------------------------------------Define columns-----------------------------------------------------------------------------
   const column = React.useMemo<ColumnDef<any, unknown>[]>(
@@ -2435,13 +2546,13 @@ const TimeEntryPopup = (item: any) => {
         size: 340,
         cell: ({ row }) => (
           <>
-            <span>
-              <div className="d-flex">
+            <span  >
+              <div className="d-flex" >
                 <>
                   {row?.original?.show === true ? (
                     <span>
                       {row?.original?.AuthorImage != "" &&
-                      row?.original.AuthorImage != null ? (
+                        row?.original.AuthorImage != null ? (
                         <span>
                           <a
                             href={`${CurrentSiteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.AuthorId}&Name=${row?.original?.AuthorTitle}`}
@@ -2509,7 +2620,7 @@ const TimeEntryPopup = (item: any) => {
       {
         accessorFn: (row) => row?.sortTaskDate,
         cell: ({ row, column }) => (
-          <div className="alignCenter">
+          <div className="alignCenter"  >
             {row?.original?.Created == null ? (
               ""
             ) : (
@@ -2558,6 +2669,7 @@ const TimeEntryPopup = (item: any) => {
         accessorKey: "Description",
         placeholder: "Description",
         header: "",
+
       },
       {
         id: "ff",
@@ -2581,12 +2693,22 @@ const TimeEntryPopup = (item: any) => {
             ) : (
               <>
                 {" "}
-                <img
-                  title="Copy"
-                  className="hreflink"
-                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png"
+                {/* <span
+                  title="Send For Approval"
+                  style={{display:"none"}}
+                  className={getStatusClassName(row?.original?.Status)}
+                  onClick={() =>
+                    changeTaskStatus(row?.original)
+                  }
+                ></span> */}
+                {" "}
+            
+
+                <span title="Copy"
+                  className="svg__iconbox svg__icon--copy"
                   onClick={() => openAddTasktimepopup(row.original, "CopyTime")}
-                ></img>{" "}
+                ></span>
+                 {" "}
                 <span
                   title="Edit"
                   className="svg__iconbox svg__icon--edit hreflink"
@@ -3085,8 +3207,8 @@ const TimeEntryPopup = (item: any) => {
                         TimeInMinutes > 0
                           ? TimeInMinutes
                           : saveEditTaskTimeChild?.TaskTimeInMin != undefined
-                          ? saveEditTaskTimeChild.TaskTimeInMin
-                          : 0
+                            ? saveEditTaskTimeChild.TaskTimeInMin
+                            : 0
                       }
                       onChange={(e) => changeTimeFunction(e, PopupType)}
                     />
@@ -3096,13 +3218,12 @@ const TimeEntryPopup = (item: any) => {
                     <input
                       className="form-control bg-e9"
                       type="text"
-                      value={`${
-                        TimeInHours > 0
-                          ? TimeInHours
-                          : saveEditTaskTimeChild?.TaskTime != undefined
+                      value={`${TimeInHours > 0
+                        ? TimeInHours
+                        : saveEditTaskTimeChild?.TaskTime != undefined
                           ? saveEditTaskTimeChild?.TaskTime
                           : 0
-                      } Hours`}
+                        } Hours`}
                     />
                   </div>
                   <div className="col-sm-6 Time-control-buttons">
@@ -3181,9 +3302,9 @@ const TimeEntryPopup = (item: any) => {
                       PopupType == "EditTime" || PopupType == "CopyTime"
                         ? (saveEditTaskTimeChild.Description = e.target.value)
                         : setPostData({
-                            ...postData,
-                            Description: e.target.value,
-                          })
+                          ...postData,
+                          Description: e.target.value,
+                        })
                     }
                   ></textarea>
                 </div>
@@ -3273,7 +3394,7 @@ const TimeEntryPopup = (item: any) => {
                       disabled={
                         (PopupType == "AddTime" ||
                           PopupType == "AddTime Category") &&
-                        TimeInMinutes <= 0
+                          TimeInMinutes <= 0
                           ? true
                           : false
                       }
@@ -3288,7 +3409,7 @@ const TimeEntryPopup = (item: any) => {
                       disabled={
                         (PopupType == "AddTime" ||
                           PopupType == "AddTime Category") &&
-                        TimeInMinutes <= 0
+                          TimeInMinutes <= 0
                           ? true
                           : false || buttonDisable == true
                       }
@@ -3415,6 +3536,18 @@ const TimeEntryPopup = (item: any) => {
           </button>
         </div>
       </Panel>
+      {isAlertVisible ?
+        <CustomAlert
+          hidden={!isAlertVisible}
+          toggleDialog={toggleDialog}
+          message="You are not part of Team members of this site. Please click here to add yourself or contact the site administrator."
+          linkText="Please Click Here!"
+          linkUrl="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskUser-Management.aspx"
+        /> : null
+
+      }
+
+
     </div>
   );
 };

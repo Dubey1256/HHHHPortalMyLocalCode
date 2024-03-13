@@ -9,11 +9,12 @@ import { Button, ModalBody } from "react-bootstrap";
 import * as GlobalFunction from '../globalCommon';
 import SmartInformation from '../../webparts/taskprofile/components/SmartInformation';
 import ExcelJS from 'exceljs';
-import { Dropdown, Panel, PanelType,Modal } from 'office-ui-fabric-react';
+import { Dropdown, Panel, PanelType, Modal } from 'office-ui-fabric-react';
 import MsgReader from "@kenjiuno/msgreader"
 import PageLoader from '../pageLoader';
 import EditDocument from '../../webparts/taskprofile/components/EditDocunentPanel'
 import { myContextValue } from "../../globalComponents/globalCommon";
+import { RiH5 } from 'react-icons/ri';
 let backupExistingFiles: any = [];
 let backupCurrentFolder: any = [];
 let AllFilesAndFolderBackup: any = [];
@@ -567,8 +568,15 @@ const AncTool = (props: any) => {
                                                         creationTime: msgfile?.creationTime != undefined ? new Date(msgfile?.creationTime).toISOString() : null
                                                     }
                                                 }
-                                                if (props?.item?.Portfolio?.Id != undefined) {
+                                                if (props?.item?.Portfolio?.Id != undefined && siteColName != 'Portfolios') {
                                                     postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
+                                                }
+                                                 if(props?.item?.Project?.Id != undefined && siteColName != 'Portfolios'){
+                                                    if(postData?.PortfoliosId?.results?.length>0){
+                                                        postData?.PortfoliosId?.results?.push(props?.item?.Project?.Id);
+                                                    }else{
+                                                        postData.PortfoliosId = { "results": [props?.item?.Project?.Id] };
+                                                    }
                                                 }
                                                 let web = new Web(props?.AllListId?.siteUrl);
                                                 await web.lists.getByTitle('Documents').items.getById(file.Id)
@@ -625,6 +633,7 @@ const AncTool = (props: any) => {
     // Tag and Untag Existing Documents//
     const tagSelectedDoc = async (file: any) => {
         let resultArray: any = [];
+     
         if (file[siteName] != undefined && file[siteName].length > 0) {
             file[siteName].map((task: any) => {
                 if (task?.Id != undefined) {
@@ -632,8 +641,11 @@ const AncTool = (props: any) => {
                 }
             })
         }
-        if (!file?.PortfoliosId?.some((portfolio: any) => portfolio == props?.item?.Portfolio?.Id) && props?.item?.Portfolio?.Id != undefined) {
+        if (!file?.PortfoliosId?.some((portfolio: any) => portfolio == props?.item?.Portfolio?.Id) && props?.item?.Portfolio?.Id != undefined && siteName != 'Portfolios') {
             file?.PortfoliosId?.push(props?.item?.Portfolio?.Id);
+        }
+        if (!file?.PortfoliosId?.some((portfolio: any) => portfolio == props?.item?.Project?.Id) && props?.item?.Project?.Id != undefined && siteName != 'Portfolios') {
+            file?.PortfoliosId?.push(props?.item?.Project?.Id);
         }
         if (!AllReadytagged?.some((doc: any) => file.Id == doc.Id) && !resultArray.some((taskID: any) => taskID == props?.item?.Id)) {
             resultArray.push(props?.item?.Id)
@@ -661,7 +673,7 @@ const AncTool = (props: any) => {
                 }).catch((err: any) => {
                     console.log(err)
                     if (err.message.includes('423')) {
-                        alert("Document you are trying to Update/Tag is open somewhere else Plese close and try again")
+                        alert("Document you are trying to Update/Tag is open somewhere else. Please close the Document and try again")
                     }
                 })
 
@@ -697,7 +709,7 @@ const AncTool = (props: any) => {
                 }).catch((err: any) => {
                     console.log(err)
                     if (err.message.includes('423')) {
-                        alert("Document you are trying to Update/Tag is open somewhere else Plese close and try again")
+                        alert("Document you are trying to Update/Tag is open somewhere else. Please close the Document and try again")
                     }
                 })
 
@@ -806,8 +818,15 @@ const AncTool = (props: any) => {
                                         ItemRank: 5,
                                         Title: getUploadedFileName(fileName)
                                     }
-                                    if (props?.item?.Portfolio?.Id != undefined) {
+                                    if (props?.item?.Portfolio?.Id != undefined && siteColName != 'Portfolios') {
                                         postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
+                                    }
+                                    if(props?.item?.Project?.Id != undefined && siteColName != 'Portfolios'){
+                                        if(postData?.PortfoliosId?.results?.length>0){
+                                            postData?.PortfoliosId?.results?.push(props?.item?.Project?.Id);
+                                        }else{
+                                            postData.PortfoliosId = { "results": [props?.item?.Project?.Id] };
+                                        }
                                     }
                                     let web = new Web(props?.AllListId?.siteUrl);
                                     await web.lists.getByTitle('Documents').items.getById(file.Id)
@@ -1386,10 +1405,10 @@ const AncTool = (props: any) => {
                                             <span className='d-block ancHover hreflink fontColor3 f-12 mt--5 mb-1'>Word</span>
                                         </div>
                                         <div onClick={() => createBlankExcelXlsx()} className={createNewDocType == 'xlsx' ? 'selected text-center w-25' : 'text-center w-25'}>
-                                            <span  style={{ width: "28px", height: "28px" }} className='svg__iconbox svg__icon--xlsx hreflink' title='Excel'></span>
+                                            <span style={{ width: "28px", height: "28px" }} className='svg__iconbox svg__icon--xlsx hreflink' title='Excel'></span>
                                             <span className='d-block ancHover fontColor3 f-12 mt--5 mb-1'>Excel</span>
                                         </div>
-                                        <div  onClick={() => createBlankPowerPointPptx()} className={createNewDocType == 'pptx' ? 'selected text-center w-25' : 'text-center w-25'}>
+                                        <div onClick={() => createBlankPowerPointPptx()} className={createNewDocType == 'pptx' ? 'selected text-center w-25' : 'text-center w-25'}>
                                             <span style={{ width: "28px", height: "28px" }} className='svg__iconbox svg__icon--ppt hreflink' title='PPT'></span>
                                             <span className='d-block ancHover fontColor3 f-12 mt--5 mb-1'>PPT</span>
                                         </div>
@@ -1815,16 +1834,16 @@ const AncTool = (props: any) => {
                 />
             }
             <Modal titleAriaId={`UploadConfirmation`} isOpen={ShowConfirmation} onDismiss={cancelConfirmationPopup} dragOptions={undefined}>
-                <div className='d-flex pt-2'>
-                    <h5 className='ms-2 subheading'>
+                <div className='alignCenter pt-2'>
+                    <div className='ms-2 subheading'>
                         {`${UploadedDocDetails?.fileName} - Upload Confirmation`}
-                    </h5>
-                    <span className='me-2' onClick={() => cancelConfirmationPopup()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
+                    </div>
+                    <span className='me-1' onClick={() => cancelConfirmationPopup()}><i className="svg__iconbox svg__icon--cross dark crossBtn"></i></span>
                 </div>
                 {pageLoaderActive ? <PageLoader /> : ''}
-                <div className="modal-content rounded-0" style={{ width: '681px' }}>
-                    <div className="modal-body p-2">
-                        <Col className='py-1'>
+                <div className="modal-content border-0 rounded-0" style={{ width: '681px' }}>
+                    <div className="modal-body">
+                        <div className='clearfix mx-2'>
                             <Col><span><strong>Folder :</strong> </span><a href={`${rootSiteName}${selectedPath?.displayPath}`} target="_blank" data-interception="off" className='hreflink'> {selectedPath?.displayPath} <span className="svg__iconbox svg__icon--folder ms-1 alignIcon "></span></a></Col>
                             <Col className='mb-2'><strong>Metadata-Tag :</strong> <span>{props?.item?.Title}</span></Col>
 
@@ -1843,7 +1862,8 @@ const AncTool = (props: any) => {
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td><div className='d-flex'><span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</div></td>
+                                                <td><div className='alignCenter'>
+                                                    <span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink me-1'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</div></td>
                                                 {/* <td>{UploadedDocDetails?.uploaded == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross' ></span>}</td>
                                                                 <td>{UploadedDocDetails?.tagged == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross'></span>}</td> */}
                                                 <td className='text-center'>{UploadedDocDetails?.uploaded == true ? <>
@@ -1859,10 +1879,10 @@ const AncTool = (props: any) => {
                                 </div>
 
                             </Col>
-                        </Col>
+                        </div>
                     </div>
                     <footer className='text-end p-2'>
-                        <button className="btn btn-primary me-1" onClick={() => cancelConfirmationPopup()}>OK</button>
+                        <button className="btn btn-primary" onClick={() => cancelConfirmationPopup()}>OK</button>
                     </footer>
                 </div>
             </Modal>

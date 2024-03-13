@@ -32,6 +32,7 @@ let AutoCompleteItemsArray: any = [];
 let catItem: any = {};
 let color: any = false;
 let PutComment: any = "";
+let timesheetListConfigrations: any = {};
 
 let TempTimeSheetCategoryArray: any = [];
 const CompareTool = (props: any) => {
@@ -246,6 +247,7 @@ const CompareTool = (props: any) => {
                         val.isShifted = true;
                         val?.AdditionalTime.forEach((value: any) => {
                             value.ParentID = val.Id;
+                            item.ParentID = val.Id;
                             value.MainParentId = item.Id;
                             item.AdditionalTime.push(value);
                         })
@@ -285,8 +287,10 @@ const CompareTool = (props: any) => {
                         child.values = child.AdditionalTime;
                         child.TaskDate = undefined;
                     }
-                    if (!IsExistsData(finalData, child))
+                    if (!IsExistsDataTime(finalData, child)) {
+                        finalData.expand = true;
                         finalData.push(child);
+                    }
 
                 });
             }
@@ -294,18 +298,29 @@ const CompareTool = (props: any) => {
         Item.finalData = finalData;
     }
     const GetTaskTime = async (Item: any) => {
+        var site = Item.siteType.replace(' ', '');
+        var listID = "";//"464FB776-E4B3-404C-8261-7D3C50FF343F";
+        // if (site != undefined && site == 'Migration' || site == 'ALAKDigital')
+        //     listID = "9ed5c649-3b4e-42db-a186-778ba43c5c93";
+        timesheetListConfigrations?.forEach((time: any) => {
+            if (time?.taskSites?.length > 0) {
+                time?.taskSites?.forEach((obj: any) => {
+                    if (obj === site)
+                        listID = time.listId;
+                })
+            }
+        })
         Item.AllTimeSpentDetails = [];
         Item.CopyAllTimeSpentDetails = [];
-        var site = Item.siteType.replace(' ', '');
+
         if (site != undefined && site.toLowerCase() == 'shareweb')
             site = site.toLowerCase().replace(/\b[a-z]/g, function (letter: string) { return letter.toUpperCase(); });
         if (site != undefined && site.toLowerCase() == 'sharewebqa')
             site = 'OffshoreTasks';
         var filteres = "Task" + site + "/Id eq " + Item.Id;
-        var select = "Id,Title,TaskDate,TaskTime,Description,AdditionalTimeEntry,AuthorId,Author/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Author,Category,TimesheetTitle&$filter=" + filteres + "";
-        var listID = "464FB776-E4B3-404C-8261-7D3C50FF343F";
-        if (site != undefined && site == 'Migration' || site == 'ALAKDigital')
-            listID = "9ed5c649-3b4e-42db-a186-778ba43c5c93";
+        var columns = "Task" + site + "/Id," + "Task" + site + "/Title&$expand=Author,Category,TimesheetTitle," + "Task" + site;
+        var select = "Id,Title,TaskDate,TaskTime,Description,AdditionalTimeEntry,AuthorId,Author/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title," + columns + "&$filter=" + filteres + "";
+
         const web = new Web(props?.contextValue?.siteUrl);
         await web.lists.getById(listID).items.select(select)
             .getAll().then((data: any) => {
@@ -860,6 +875,17 @@ const CompareTool = (props: any) => {
         updatedItems[1] = temp;
         setData(updatedItems);
     }
+    const IsExistsDataTime = (array: any, taggedItem: any) => {
+        let isExists = false;
+        for (let index = 0; index < array.length; index++) {
+            let item = array[index];
+            if (item.Id == taggedItem?.Id) {
+                isExists = true;
+                //return false;
+            }
+        }
+        return isExists;
+    }
     const IsExistsData = (array: any, taggedItem: any) => {
         let isExists = false;
         for (let index = 0; index < array.length; index++) {
@@ -968,22 +994,30 @@ const CompareTool = (props: any) => {
         if (property === 'finalData') {
             const updatedItems = _.cloneDeep(data);
             const indexValue = index == 1 ? 0 : 1
-            const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
-            const UnselectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked != true);
+            // updatedItems[indexValue][property]?.forEach((obj:any) =>{
+            //     if(obj.selected){
+            //         updatedItems[index][property] =  updatedItems[index][property]?.length >0  ?updatedItems[index][property] : updatedItems[index][property]=[] 
+            //         updatedItems[index][property].push(obj);
+            //     }
+
+            //     })
+
+            const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.selected === true);
+            const UnselectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.selected != true);
             updatedItems[indexValue][property] = UnselectedItems;
             if (updatedItems[index][property]?.length > 0 && selectedItems?.length > 0) {
                 if (!IsExistsData(updatedItems[index][property], selectedItems[0])) {
                     updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
                     updatedItems[index][property].map((elem: any) => {
-                        if (elem.checked)
-                            elem.checked = false
+                        if (elem.selected)
+                            elem.ItemMoved = 'Moved'
                     })
                 }
             } else if (selectedItems?.length > 0) {
                 updatedItems[index][property] = selectedItems;
                 updatedItems[index][property]?.map((elem: any) => {
-                    if (elem.checked)
-                        elem.checked = false
+                    if (elem.selected)
+                        elem.ItemMoved = 'Moved'
                 })
             }
 
@@ -1218,6 +1252,8 @@ const CompareTool = (props: any) => {
                     } else {
                         SmartItemData.newTitle = SmartItemData.Title;
                     }
+                    if (SmartItemData?.TaxType === 'timesheetListConfigrations')
+                        timesheetListConfigrations = globalCommon.parseJSON(SmartItemData.Configurations);
                 });
             }
             AllSitesData = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Sites");
@@ -2058,11 +2094,61 @@ const CompareTool = (props: any) => {
             console.error('Error in the first block:', error);
         }
     }
+    const UpdateParentTimeEntry = async (lookupId: any, Item: any, updateColumn: any, listID: any) => {
+        let web = new Web(Item.siteUrl);
+        var Data = await web.lists
+            .getById(listID)
+            .items.getById(lookupId)
+            .update({
+                [updateColumn]: Item.Id,
+            })
+            .then((res) => {
+
+            });
+    }
+    const SaveTimeEntry = async (Item: any, type: any) => {
+        Item?.finalData?.forEach(async (val: any) => {
+            var siteType: any = "Task" + Item.siteType + "Id";
+            var SiteId = "Task" + Item?.siteType;
+            if (val[SiteId]?.Id != Item.Id) {
+                let count = 0;
+                var listID = "";//"464FB776-E4B3-404C-8261-7D3C50FF343F";
+                // if (site != undefined && site == 'Migration' || site == 'ALAKDigital')
+                //     listID = "9ed5c649-3b4e-42db-a186-778ba43c5c93";
+                timesheetListConfigrations?.forEach((time: any) => {
+                    if (time?.taskSites?.length > 0) {
+                        time?.taskSites?.forEach((obj: any) => {
+                            if (obj === Item?.siteType)
+                                listID = time.listId;
+                        })
+                    }
+                })
+                // var listID = "464FB776-E4B3-404C-8261-7D3C50FF343F";
+                // if (Item?.siteType != undefined && Item?.siteType  == 'Migration' || Item?.siteType  == 'ALAKDigital')
+                //     listID = "9ed5c649-3b4e-42db-a186-778ba43c5c93";
+                //  const web = new Web(props?.contextValue?.siteUrl);
+                let web = new Web(Item.siteUrl);
+                var Data = await web.lists
+                    .getById(listID)
+                    .items.getById(val.Id)
+                    .update({
+                        [siteType]: Item.Id,
+                    })
+                    .then((res) => {
+                        val?.values?.forEach(async (child: any) => {
+                            UpdateParentTimeEntry(child.ParentID, Item, siteType, listID)
+                        })
+                    });
+            }
+        });
+    }
 
     const SaveComponent = async (Item: any, type: any) => {
         try {
-            if (Item?.TaskType?.Id != undefined)
+            if (Item?.TaskType?.Id != undefined) {
                 TaskPost(Item, type);
+                SaveTimeEntry(Item, type);
+            }
             else componentPost(Item, type);
 
 
@@ -2245,18 +2331,19 @@ const CompareTool = (props: any) => {
     );
     const loadMorefilter = (filteritem: any, property: any, index: any) => {
         const updatedItems = _.cloneDeep(data);
-        if (filteritem.values.length > 0) {
-            filteritem.values.forEach((childitem: any) => {
-                if (filteritem?.Id === childitem?.MainParentId) {
-                    if (filteritem.expand === true) {
-                        filteritem.expand = false;
-                    }
-                    else {
-                        filteritem.expand = true;
-                    }
-                }
-            })
-        }
+        filteritem.expand = !filteritem.expand;
+        // if (filteritem.values.length > 0) {
+        //     filteritem.values.forEach((childitem: any) => {
+        //         if (filteritem?.Id === childitem?.MainParentId) {
+        //             if (filteritem.expand === true) {
+        //                 filteritem.expand = false;
+        //             }
+        //             else {
+        //                 filteritem.expand = true;
+        //             }
+        //         }
+        //     })
+        // }
         updatedItems[index][property].forEach((obj: any) => {
             if (filteritem.Id == obj.Id)
                 obj.expand = filteritem.expand;
@@ -2283,7 +2370,9 @@ const CompareTool = (props: any) => {
             if (groupitem.Id == obj.Id)
                 obj.selected = groupitem.selected;
             obj?.values?.forEach((child: any) => {
-                if (child.Id === child?.MainParentId)
+                if (groupitem.Id === child?.MainParentId && groupitem?.values?.length > 0)
+                    child.selected = groupitem.selected;
+                if (groupitem.Id === child?.Id && groupitem?.values === undefined)
                     child.selected = groupitem.selected;
             })
         })
@@ -4005,7 +4094,7 @@ const CompareTool = (props: any) => {
                                                 <tr>
                                                     {data[0]?.finalData?.length > 0 && data[0]?.finalData?.map((filteritem: any, index: any) => {
                                                         return (
-                                                            <div>
+                                                            <>{filteritem?.values?.length > 0 && <>
                                                                 <span id="filterexpand">
                                                                     {filteritem.expand && filteritem?.values?.length > 0 && <SlArrowDown onClick={() => loadMorefilter(filteritem, 'finalData', 0)}></SlArrowDown>}
                                                                     {!filteritem.expand && filteritem?.values?.length > 0 && <SlArrowRight onClick={() => loadMorefilter(filteritem, 'finalData', 0)}></SlArrowRight>}
@@ -4017,51 +4106,26 @@ const CompareTool = (props: any) => {
                                                                     {filteritem.expand === true && filteritem?.values?.length > 0 && filteritem.values?.map((child: any) => {
                                                                         return (<>
                                                                             <li style={{ listStyle: 'none' }} className="alignCenter">
-                                                                                <div style={{ width: "10%" }}>
+                                                                                {/* <div style={{ width: "5%" }}>
                                                                                     <input className='form-check-input' type="checkbox" id={child.Title} value={child.Title} checked={child.selected} onChange={(event) => handleGroupCheckboxChanged(event, child, 'finalData', 0)} /> {child.Title}
+                                                                                </div> */}
+                                                                                <div style={{ width: "30%" }}>
+                                                                                    <span className='round  pe-1'>  <img className="ProirityAssignedUserPhoto" src={child?.AuthorImage != undefined && child?.AuthorImage != '' ?
+                                                                                        child.AuthorImage :
+                                                                                        "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                                                                    /></span>{child?.AuthorName}
                                                                                 </div>
-                                                                                <div style={{ width: "25%" }}>
+                                                                                <div style={{ width: "20%" }}>
                                                                                     {child.TaskDate}
                                                                                 </div>
-                                                                                <div style={{ width: "10%" }}>{child.TaskTime}</div>
-                                                                                <div style={{ width: "50%" }}>{child.Description}</div>
+                                                                                <div style={{ width: "8%" }}>{child.TaskTime}</div>
+                                                                                <div style={{ width: "40%" }}>{child.Description}</div>
                                                                             </li></>)
                                                                     })}
                                                                 </ul>
-                                                            </div>)
+                                                            </>}</>)
                                                     })}
 
-
-
-                                                    {/* {data[0]?.finalData?.length > 0 ? (
-                                                        data[0]?.finalData.map((Group: any, index: any) => {
-                                                            return (
-                                                          <>  <td>
-                                                                <fieldset>
-                                                                    <legend ng-if="item!='teamSites'" className="ng-scope">
-                                                                    <input type='checkbox' checked={Group.checked} value={Group.Title}  onChange={(e) => onCheck((e), index ,data[0]?.finalData)} ></input>   <span className="ng-binding">{Group.Title}</span>
-                                                                    </legend>
-                                                                </fieldset>
-                                                                <CheckboxTree
-                                                                    nodes={Group.values}
-                                                                    checked={Group.checked}
-                                                                    expanded={Group.expanded}
-                                                                    onCheck={checked => onCheck(checked, index ,data[0]?.finalData)}
-                                                                    onExpand={expanded => onExpanded(expanded, index ,data[0]?.finalData)}
-                                                                    nativeCheckboxes={true}
-                                                                    showNodeIcon={false}
-                                                                    checkModel={'all'}
-                                                                />
-                                                            </td>
-                                                            <td>{Group.TaskDate}</td><td>{Group.TaskTime}</td><td>{Group.TaskTime}</td>
-                                                            
-                                                            </>
-                                                            )
-
-                                                        }
-                                                        )): <div className="d-flex justify-content-center">No Timesheet Available</div>
-
-                                                    } */}
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -4081,21 +4145,13 @@ const CompareTool = (props: any) => {
 
                                     <div className="input-group">
                                         <label className="fw-semibold full-width form-label">Time Entries</label>
-                                        {/* {data[1]?.finalData?.length > 0 ? (
-                                            <GlobalCommanTable
-                                                columns={TimeEntryColumnsSecond}
-                                                data={data[1]?.finalData}
-                                                callBackData={callBackDataSecond}
-                                                expendedTrue={true}
 
-                                            />
-                                        ) : <div className="d-flex justify-content-center">No Timesheet Available</div>} */}
                                         <table width="100%" className="indicator_search">
                                             <tbody>
                                                 <tr>
                                                     {data[1]?.finalData?.length > 0 && data[1]?.finalData?.map((filteritem: any, index: any) => {
                                                         return (
-                                                            <div>
+                                                            <>  {filteritem?.values?.length > 0 && <>
                                                                 <span id="filterexpand">
                                                                     {filteritem.expand && filteritem?.values?.length > 0 && <SlArrowDown onClick={() => loadMorefilter(filteritem, 'finalData', 1)}></SlArrowDown>}
                                                                     {!filteritem.expand && filteritem?.values?.length > 0 && <SlArrowRight onClick={() => loadMorefilter(filteritem, 'finalData', 1)}></SlArrowRight>}
@@ -4106,19 +4162,25 @@ const CompareTool = (props: any) => {
                                                                 <ul>
                                                                     {filteritem.expand === true && filteritem?.values?.length > 0 && filteritem.values?.map((child: any) => {
                                                                         return (<>
-                                                                            <li style={{ listStyle: 'none' }}>
-                                                                                <div style={{ width: "10%" }}>
-                                                                                    <input className='form-check-input' type="checkbox" id={child.Title} value={child.Title} checked={child.selected} onChange={(event) => handleGroupCheckboxChanged(event, child, 'finalData', 1)} /> {child.Title}
+                                                                            <li style={{ listStyle: 'none' }} className="alignCenter">
+                                                                                {/* <div style={{ width: "5%" }}>
+                                                                                    <input className='form-check-input' type="checkbox" id={child.Title} value={child.Title} checked={child.selected} onChange={(event) => handleGroupCheckboxChanged(event, child, 'finalData', 0)} /> {child.Title}
+                                                                                </div> */}
+                                                                                <div style={{ width: "30%" }}>
+                                                                                    <span className='round  pe-1'>  <img className="ProirityAssignedUserPhoto" src={child?.AuthorImage != undefined && child?.AuthorImage != '' ?
+                                                                                        child.AuthorImage :
+                                                                                        "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                                                                    /></span>{child?.AuthorName}
                                                                                 </div>
-                                                                                <div style={{ width: "25%" }}>
+                                                                                <div style={{ width: "20%" }}>
                                                                                     {child.TaskDate}
                                                                                 </div>
-                                                                                <div style={{ width: "10%" }}>{child.TaskTime}</div>
-                                                                                <div style={{ width: "50%" }}>{child.Description}</div>
+                                                                                <div style={{ width: "8%" }}>{child.TaskTime}</div>
+                                                                                <div style={{ width: "40%" }}>{child.Description}</div>
                                                                             </li></>)
                                                                     })}
                                                                 </ul>
-                                                            </div>)
+                                                            </>}</>)
                                                     })}
                                                 </tr>
                                             </tbody>

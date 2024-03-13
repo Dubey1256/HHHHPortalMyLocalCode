@@ -450,7 +450,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             return items
           }
         })
-        let regExpStr = `@[${MentionedValue}](${mentionEmail[0].id})`;
+        let regExpStr = `@[${MentionedValue}](${mentionEmail[0]?.id})`;
         let regExpLiteral = /\[(.*?)\]/gi;
         allMention = regExpStr.match(regExpLiteral);
       } else {
@@ -768,7 +768,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     this.PostComment('txtComment')
     this.setState({
       isCalloutVisible: false
-    })   
+    })
   }
   private CancelReplyPopup = () => {
     if (this.state?.Result != undefined && this.state?.Result?.Comments != undefined && this.state?.Result?.Comments?.length > 0) {
@@ -805,7 +805,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   //     return part;
   //   });
   // };
+
+
   private detectAndRenderLinks = (html: any) => {
+    
     const div = document.createElement('div');
     div.innerHTML = html;
     const paragraphs = div.querySelectorAll('p');
@@ -817,7 +820,15 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     });
     div.innerHTML = div.innerHTML.replace(/\n/g, '<br>')  // Convert newlines to <br> tags first
     div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
-    return div.innerHTML;
+    // Update anchor tags
+    const anchorTags = div.querySelectorAll('a');
+    // anchorTags.forEach((a) => {
+    //   a.setAttribute('target', '_blank');
+    //   a.setAttribute('data-interception', 'off');
+    // });
+   
+    
+    return  globalCommon?.replaceURLsWithAnchorTags(div.innerHTML);
   };
   public render(): React.ReactElement<ICommentCardProps> {
     return (
