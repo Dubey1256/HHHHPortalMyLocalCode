@@ -175,8 +175,8 @@ const GraphData = (data: any) => {
       tooltip: {
         custom: function ({ series, seriesIndex, dataPointIndex, w }: any) {
           const dayData = formattedTotalTimeByDay[dataPointIndex];
-          const siteData = dayData.SiteData.map(site => ` ${site.Time} h - ${site.Site}`).join('<br>');
-          return '<div class="custom-tooltip" style="border: 1px solid #aeabab;padding: 4px; width:200px">' +
+          const siteData = dayData.SiteData.map(site => ` ${site.Time.toFixed(2)} h - ${site.Site}`).join('<br>');
+          return '<div class="custom-tooltip" style="border: 1px solid #aeabab;padding: 4px; min-width:200px">' +
             '<div>' + siteData + '</div>' +
             '</div>';
         }

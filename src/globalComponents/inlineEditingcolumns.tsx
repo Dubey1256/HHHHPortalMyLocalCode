@@ -1262,7 +1262,7 @@ const inlineEditingcolumns = (props: any) => {
               if (category?.Title == "Immediate") {
                 return (
                   <a title="Immediate">
-                    <span className=" svg__iconbox svg__icon--alert alignIcon  "></span>
+                    <span className=" svg__iconbox svg__icon--alert alignIcon "></span>
                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/urgent.svg")} />  */}
                   </a>
                 );
@@ -1851,18 +1851,17 @@ const inlineEditingcolumns = (props: any) => {
                 <span
                   onClick={() => EditComponentPicker(props?.item)}
                   title="Edit Categories"
-                  className="hreflink svg__iconbox svg__icon--editBox alignIcon"
+                  className="hreflink svg__iconbox svg__icon--editBox"
                 ></span>
               </span>
-            </div>
-            <div className="col-sm-12 padding-0 input-group">
+              <div className="col-sm-12 p-0">
               {SearchedCategoryData?.length > 0 ? (
-                <div className="SmartTableOnTaskPopup col-sm-12">
+                <div className="SmartTableOnTaskPopup">
                   <ul className="list-group">
                     {SearchedCategoryData.map((item: any) => {
                       return (
                         <li
-                          className="hreflink list-group-item rounded-0 list-group-item-action"
+                          className="hreflink list-group-item p-0 rounded-0 list-group-item-action"
                           key={item.id}
                           onClick={
                             () =>
@@ -1878,6 +1877,8 @@ const inlineEditingcolumns = (props: any) => {
                 </div>
               ) : null}
             </div>
+            </div>
+            
 
             {instantCategories?.map((item: any) => {
               return (
