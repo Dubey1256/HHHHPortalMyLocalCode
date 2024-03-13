@@ -736,26 +736,21 @@ const TimeEntryPopup = (item: any) => {
         item?.subRows.map((value: any) => {
           if (value?.Status != undefined) {
             if (value?.Status == "Draft") {
-
               value.lableColor = "yellowForTimeSheet"
             }
             else if (value?.Status == "Rejected") {
-
               value.lableColor = "redForTimeSheet"
             }
             else if (value?.Status == "Approved") {
-
               value.lableColor = 'greenForTimeSheet'
             }
-            else if (value?.Status == "Approval") {
+            else if (value?.Status == "For Approval") {
               value.lableColor = "blueForTimeSheet"
             }
           }
         })
       }
-
     })
-
 
     AllTimeSpentDetails.forEach((items: any) => {
       if (items.TimesheetTitle.Id === undefined) {
@@ -1010,55 +1005,55 @@ const TimeEntryPopup = (item: any) => {
 
   const sendForApproval = async (child: any) => {
     var UpdatedData: any = [];
-    if(child.AuthorId == CurntUserId){
+    if (child.AuthorId == CurntUserId) {
 
-    
-    $.each(TaskCate, function (index: any, update: any) {
-      if (update.Id === child.ParentID && update.AuthorId == CurntUserId) {
-        $.each(update.AdditionalTime, function (index: any, updateitem: any) {
-          isTimes = true;
-          if (updateitem.ID === child.ID) {
-            updateitem.Id = child.ID;
-            updateitem.TaskTime = child.TaskTime;
-            updateitem.TaskTimeInMin = child.TaskTimeInMin;
-            updateitem.TaskDate = child.TaskDate;
-            updateitem.Description = child?.Description;
-            updateitem.Status = 'Approval';
-            UpdatedData.push(updateitem);
-          } else {
-            UpdatedData.push(updateitem);
-          }
-        });
-      }
-    });
-    UpdatedData?.forEach((val: any) => {
-      delete val.TaskDates;
-    });
-    setTaskStatuspopup2(false);
-    if (
-      item.props.siteType == "Migration" ||
-      item.props.siteType == "ALAKDigital"
-    ) {
-      var ListId = TimeSheetlistId;
-    } else {
-      var ListId = TimeSheetlistId;
-    }
-    let web = new Web(`${siteUrl}`);
 
-    await web.lists
-      .getById(ListId)
-      .items.getById(child.ParentID)
-      .update({
-        AdditionalTimeEntry: JSON.stringify(UpdatedData),
-      })
-      .then((res: any) => {
-        console.log(res);
-
-        closeAddTaskTimepopup();
-        setupdateData(updateData + 1);
+      $.each(TaskCate, function (index: any, update: any) {
+        if (update.Id === child.ParentID && update.AuthorId == CurntUserId) {
+          $.each(update.AdditionalTime, function (index: any, updateitem: any) {
+            isTimes = true;
+            if (updateitem.ID === child.ID) {
+              updateitem.Id = child.ID;
+              updateitem.TaskTime = child.TaskTime;
+              updateitem.TaskTimeInMin = child.TaskTimeInMin;
+              updateitem.TaskDate = child.TaskDate;
+              updateitem.Description = child?.Description;
+              updateitem.Status = 'For Approval';
+              UpdatedData.push(updateitem);
+            } else {
+              UpdatedData.push(updateitem);
+            }
+          });
+        }
       });
+      UpdatedData?.forEach((val: any) => {
+        delete val.TaskDates;
+      });
+      setTaskStatuspopup2(false);
+      if (
+        item.props.siteType == "Migration" ||
+        item.props.siteType == "ALAKDigital"
+      ) {
+        var ListId = TimeSheetlistId;
+      } else {
+        var ListId = TimeSheetlistId;
+      }
+      let web = new Web(`${siteUrl}`);
+
+      await web.lists
+        .getById(ListId)
+        .items.getById(child.ParentID)
+        .update({
+          AdditionalTimeEntry: JSON.stringify(UpdatedData),
+        })
+        .then((res: any) => {
+          console.log(res);
+
+          closeAddTaskTimepopup();
+          setupdateData(updateData + 1);
+        });
     }
-    else{
+    else {
       alert('You are only permitted to submit your own timesheet for approval. Please ensure to send your timesheet for approval')
     }
 
@@ -2733,7 +2728,7 @@ const TimeEntryPopup = (item: any) => {
             ) : (
 
               <>
-                {row?.original?.Status == '' ?
+                {row?.original?.Status == undefined || row?.original?.Status == '' ?
                   <>
                     <span title="Copy"
                       className="svg__iconbox svg__icon--copy"
@@ -2773,7 +2768,7 @@ const TimeEntryPopup = (item: any) => {
                     {" "}
 
 
-                    {row?.original?.Status === "Approved" || row?.original?.Status === "Approval" || row?.original?.Status === ""
+                    {row?.original?.Status === "Approved" || row?.original?.Status === "For Approval" || row?.original?.Status === ""
                       ? null :
                       <> <span
                         title="Edit"
