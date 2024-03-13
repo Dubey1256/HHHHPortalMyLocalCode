@@ -31,6 +31,7 @@ import PageLoader from "../../../globalComponents/pageLoader";
 import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
 import TrafficLightComponent from "../../../globalComponents/TrafficLightVerification/TrafficLightComponent";
 import CreateAllStructureComponent from "../../../globalComponents/CreateAllStructure";
+
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
