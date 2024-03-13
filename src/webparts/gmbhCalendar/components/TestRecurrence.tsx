@@ -520,47 +520,21 @@ const Apps = (props: any) => {
 
   function processDataArray(array: any[]) {
     return array.map((item: any) => {
-        let startdate: Date, enddate: Date, createdAt: Date, modifyAt: Date;
-        let localcomp: any[] = [];
-
-        if (!item.alldayevent) {
-            startdate = new Date(item.EventDate);
-            createdAt = new Date(item.Created);
-            modifyAt = new Date(item.Modified);
-            enddate = new Date(item.EndDate);
-        } else {
-            startdate = new Date(item.EventDate);
-            startdate.setHours(startdate.getHours() - 5);
-            startdate.setMinutes(startdate.getMinutes() - 30);
-            enddate = new Date(item.EndDate);
-            enddate.setHours(enddate.getHours() - 5);
-            enddate.setMinutes(enddate.getMinutes() - 30);
-        }
-
-        localcomp.push({
-            iD: item.ID,
-            title: item.Title,
-            start: convertDateTimeOffset(startdate),
-            end: convertDateTimeOffset(enddate)
-        });
-
-        item.clickable = !(item?.Event_x002d_Type === 'Company Holiday' || item?.Event_x002d_Type === 'National Holiday');
-
         const dataEvent = {
             shortD: item.Title,
             iD: item.ID,
             NameId: item?.Employee?.Id,
             title: item.Title,
-            start: startdate,
-            end: enddate,
+            start: item.start,
+            end: item.end,
             location: item.Location,
             desc: item.Description,
             alldayevent: item.fAllDayEvent,
             eventType: item.Event_x002d_Type,
             created: item.Author.Title,
             modify: item.Editor.Title,
-            cTime: createdAt,
-            mTime: modifyAt,
+            cTime: item.Created,
+            mTime: item.Modified,
             Name: item.Employee?.Title,
             Designation: item.Designation,
             HalfDay: item.HalfDay,
@@ -572,13 +546,7 @@ const Apps = (props: any) => {
         return dataEvent;
     });
 }
-let offset: any;
-function convertDateTimeOffset(Date: any): string | undefined {
-    let ConvertDateOffset: string | undefined;
-    if (Date != undefined && Date != "" && offset != undefined)
-        ConvertDateOffset = moment.utc(Date).utcOffset(offset).toDate().toISOString();
-    return ConvertDateOffset;
-}
+
 
 
   const getEvents = async () => {
@@ -596,13 +564,30 @@ function convertDateTimeOffset(Date: any): string | undefined {
         const NonRecurrenceData = results.filter((item) => item?.RecurrenceData == null);
         const Recurrencedatas = results.filter((item) => item?.RecurrenceData != null && item?.RecurrenceData != 'Every 1 day(s)');
         events = []
-        const eventsNonRecurrece = NonRecurrenceData.map(eventDetails => ({
-          ...eventDetails,
-          title: eventDetails.Title,
-          start: new Date(eventDetails?.EventDate), // Convert currentDate to ISO string
-          end: new Date(eventDetails?.EndDate) // Convert currentDate to ISO string
-        }));
-        events = events.concat(eventsNonRecurrece);
+        
+        const eventsNonRecurrence = NonRecurrenceData.map(eventDetails => {
+          let startdate, enddate;
+          if (!eventDetails.fAllDayEvent) {
+              startdate = new Date(eventDetails.EventDate);
+              enddate = new Date(eventDetails.EndDate);
+          } else {
+              startdate = new Date(eventDetails.EventDate);
+              startdate.setHours(startdate.getHours() - 5);
+              startdate.setMinutes(startdate.getMinutes() - 30);
+              enddate = new Date(eventDetails.EndDate);
+              enddate.setHours(enddate.getHours() - 5);
+              enddate.setMinutes(enddate.getMinutes() - 30);
+          }
+          return {
+              ...eventDetails,
+              title: eventDetails.Title,
+              start: startdate,
+              end: enddate
+          };
+      });
+      
+        
+        events = events.concat(eventsNonRecurrence);
         for (const event of Recurrencedatas) {
           let allDates = parseRecurrence(event)
           if (allDates.length > 0) {
