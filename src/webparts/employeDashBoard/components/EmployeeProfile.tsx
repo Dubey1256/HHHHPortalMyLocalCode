@@ -506,6 +506,13 @@ const EmployeProfile = (props: any) => {
                         }
                         entry.listId = site?.listId;
                         entry.siteUrl = site?.siteUrl
+                        if (site?.taskSites != undefined && site?.taskSites?.length > 0) {
+                          site?.taskSites?.forEach((Site: any) => {
+                            if (entry['Task' + Site] != undefined && entry['Task' + Site]?.Id != undefined) {
+                              entry.TaskListType = Site;
+                            }
+                          })
+                        }
                         if (TimeEntry?.sortTaskDate != undefined && CurrentDate != undefined && CurrentDate.getTime() == TimeEntry?.sortTaskDate.getTime() && TimeEntry?.Status == 'For Approval') {
                           TempArray.push(TimeEntry)
                           if (!isItemExists(AllTimeEntry, entry.Id))
