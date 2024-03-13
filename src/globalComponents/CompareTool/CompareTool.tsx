@@ -2073,11 +2073,13 @@ const CompareTool = (props: any) => {
             }
             if (portfolioIds != "")
                 postData.PortfolioId = portfolioIds;
+            else postData.PortfolioId = 0;
             if (projectIds != "")
                 postData.ProjectId = projectIds;
+            else postData.ProjectId = 0;
             if (Item?.FeedBackDescription != undefined && Item.FeedBackDescription.length > 0)
-                postData.FeedBack =  JSON.stringify(Item.FeedBackDescription)
-               
+                postData.FeedBack = JSON.stringify(Item.FeedBackDescription)
+
             globalCommon.updateItemById(props?.contextValue?.siteUrl, Item.listId, postData, Item.Id)
                 .then((returnresult) => {
                     console.log(returnresult);
@@ -3165,23 +3167,21 @@ const CompareTool = (props: any) => {
                         </Row> */}
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
-                                <div className="input-group">
+                                <div className="input-group mb-2">
                                     <label className="fw-semibold full-width form-label">Portfolio Item</label>
-                                    <input type="text" defaultValue={data[1]?.TaskCategories} className="form-control" placeholder="Search Portfolio Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'PortfolioItem0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'PortfolioItem', 0, AllMasterTasksItems?.AllData)} />
-                                    {data[0]?.PortfolioItem != undefined && data[0]?.PortfolioItem?.map((type: any, index: number) => {
-                                        return (
-                                            <div className="block w-100">
-                                                <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
-                                                <span onClick={() => removeItem(type, 0, 'PortfolioItem')} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox" >
-                                                </span>
-                                            </div>
-                                        );
-                                    }
-                                    )}
-                                    <span className="input-group-text">
-                                        <span title="Edit Categories" onClick={() => OpenComponentPicker(data[0], true, 'PortfolioItem')} className="svg__iconbox svg__icon--editBox"></span>
-                                    </span>
-                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'PortfolioItem' && SearchedCategoryData?.length > 0 ? (
+                                    {
+                                        data[0]?.PortfolioItem?.length === 0 ?
+                                            <input type="text" defaultValue={data[1]?.TaskCategories} className="form-control" placeholder="Search Portfolio Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'PortfolioItem0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'PortfolioItem', 0, AllMasterTasksItems?.AllData)} />
+                                            : <>
+                                                <div className="full-width">
+                                                    <div className="full-width replaceInput alignCenter">
+                                                        <a style={{ color: "#fff !important" }} className="textDotted" > {data[0]?.PortfolioItem[0].Title}</a>
+                                                    </div>
+                                                </div>
+                                                <span className="input-group-text">
+                                                    <span title="Edit Portfolio Item" onClick={() => OpenComponentPicker(data[0], true, 'PortfolioItem')} className="svg__iconbox svg__icon--editBox"></span></span>
+                                            </>}
+                                    {data[0]?.PortfolioItem?.length === 0 && autoSearch?.itemIndex === 0 && autoSearch?.property === 'PortfolioItem' && SearchedCategoryData?.length > 0 ? (
                                         <div className="SmartTableOnTaskPopup">
                                             <ul className="list-group hreflink scrollbar maXh-200">
                                                 {SearchedCategoryData?.map((item: any) => {
@@ -3206,9 +3206,20 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Portfolio Item</label>
-                                    <input type="text" className="form-control" placeholder="Search Portfolio Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'PortfolioItem1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'PortfolioItem', 1, AllMasterTasksItems?.AllData)} />
 
-                                    {data[1]?.PortfolioItem != undefined && data[1]?.PortfolioItem?.map((type: any, index: number) => {
+                                    {
+                                        data[1]?.PortfolioItem?.length === 0 ?
+                                            <input type="text" className="form-control" placeholder="Search Portfolio Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'PortfolioItem1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'PortfolioItem', 1, AllMasterTasksItems?.AllData)} />
+                                            : <>
+                                                <div className="full-width">
+                                                    <div className="full-width replaceInput alignCenter">
+                                                        <a style={{ color: "#fff !important" }} className="textDotted" > {data[1]?.PortfolioItem[0].Title}</a>
+                                                    </div>
+                                                </div>
+                                                <span className="input-group-text">
+                                                    <span title="Edit Portfolio Item" onClick={() => OpenComponentPicker(data[1], true, 'PortfolioItem')} className="svg__iconbox svg__icon--editBox"></span></span>
+                                            </>}
+                                    {/* {data[1]?.PortfolioItem != undefined && data[1]?.PortfolioItem?.map((type: any, index: number) => {
                                         return (
                                             <div className="block w-100">
                                                 <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
@@ -3217,11 +3228,11 @@ const CompareTool = (props: any) => {
                                             </div>
                                         );
                                     }
-                                    )}
+                                    )} */}
                                     <span className="input-group-text">
                                         <span title="Edit Categories" onClick={() => OpenComponentPicker(data[1], true, 'PortfolioItem')} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                    {autoSearch?.itemIndex === 1 && autoSearch?.property === 'PortfolioItem' && SearchedCategoryData?.length > 0 ? (
+                                    {data[1]?.PortfolioItem?.length === 0 && autoSearch?.itemIndex === 1 && autoSearch?.property === 'PortfolioItem' && SearchedCategoryData?.length > 0 ? (
                                         <div className="SmartTableOnTaskPopup">
                                             <ul className="list-group hreflink scrollbar maXh-200">
                                                 {SearchedCategoryData?.map((item: any) => {
@@ -3246,21 +3257,21 @@ const CompareTool = (props: any) => {
                                 <Col sm="5" md="5" lg="5" className="contentSec">
                                     <div className="input-group">
                                         <label className="fw-semibold full-width form-label">Feature Type</label>
-                                        <input type="text" defaultValue={data[1]?.TaskCategories} className="form-control" placeholder="Search Feature Type Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'FeatureType0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'FeatureType', 0, AllMasterTasksItems?.AllData)} />
-                                        {data[0]?.FeatureType != undefined && data[0]?.FeatureType?.map((type: any, index: number) => {
-                                            return (
-                                                <div className="block w-100">
-                                                    <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
-                                                    <span onClick={() => removeItem(type, 0, 'FeatureType')} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox" >
-                                                    </span>
+                                        {data[0]?.FeatureType?.length === 0 ?
+                                            <input type="text" defaultValue={data[1]?.TaskCategories} className="form-control" placeholder="Search Feature Type Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'FeatureType0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'FeatureType', 0, AllMasterTasksItems?.AllData)} />
+                                            : <>
+                                                <div className="full-width">
+                                                    <div className="full-width replaceInput alignCenter">
+                                                        <a style={{ color: "#fff !important" }} className="textDotted" > {data[0]?.FeatureType[0].Title}</a>
+                                                    </div>
                                                 </div>
-                                            );
-                                        }
-                                        )}
-                                        <span className="input-group-text">
-                                            <span title="Edit Categories" onClick={() => OpenComponentPicker(data[0], true, 'FeatureType')} className="svg__iconbox svg__icon--editBox"></span>
-                                        </span>
-                                        {autoSearch?.itemIndex === 0 && autoSearch?.property === 'FeatureType' && SearchedCategoryData?.length > 0 ? (
+                                                <span className="input-group-text">
+                                                    <span title="Edit FeatureType" onClick={() => OpenComponentPicker(data[0], true, 'FeatureType')} className="svg__iconbox svg__icon--editBox"></span>
+                                                </span>
+                                            </>}
+
+
+                                        {data[0]?.FeatureType?.length === 0 && autoSearch?.itemIndex === 0 && autoSearch?.property === 'FeatureType' && SearchedCategoryData?.length > 0 ? (
                                             <div className="SmartTableOnTaskPopup">
                                                 <ul className="list-group hreflink scrollbar maXh-200">
                                                     {SearchedCategoryData?.map((item: any) => {
@@ -3285,9 +3296,20 @@ const CompareTool = (props: any) => {
                                 <Col sm="5" md="5" lg="5" className="contentSec">
                                     <div className="input-group">
                                         <label className="fw-semibold full-width form-label">Feature Type</label>
-                                        <input type="text" className="form-control" placeholder="Search Feature Type Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'FeatureType1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'FeatureType', 1, AllMasterTasksItems?.AllData)} />
 
-                                        {data[1]?.FeatureType != undefined && data[1]?.FeatureType?.map((type: any, index: number) => {
+                                        {data[1]?.FeatureType?.length === 0 ?
+                                            <input type="text" className="form-control" placeholder="Search Feature Type Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'FeatureType1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'FeatureType', 1, AllMasterTasksItems?.AllData)} />
+                                            : <>
+                                                <div className="full-width">
+                                                    <div className="full-width replaceInput alignCenter">
+                                                        <a style={{ color: "#fff !important" }} className="textDotted" > {data[1]?.FeatureType[0].Title}</a>
+                                                    </div>
+                                                </div>
+                                                <span className="input-group-text">
+                                                    <span title="Edit FeatureType" onClick={() => OpenComponentPicker(data[1], true, 'FeatureType')} className="svg__iconbox svg__icon--editBox"></span>
+                                                </span>
+                                            </>}
+                                        {/* {data[1]?.FeatureType != undefined && data[1]?.FeatureType?.map((type: any, index: number) => {
                                             return (
                                                 <div className="block w-100">
                                                     <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
@@ -3299,8 +3321,8 @@ const CompareTool = (props: any) => {
                                         )}
                                         <span className="input-group-text">
                                             <span title="Edit Categories" onClick={() => OpenComponentPicker(data[1], true, 'FeatureType')} className="svg__iconbox svg__icon--editBox"></span>
-                                        </span>
-                                        {autoSearch?.itemIndex === 1 && autoSearch?.property === 'FeatureType' && SearchedCategoryData?.length > 0 ? (
+                                        </span> */}
+                                        {data[1]?.FeatureType?.length === 0 && autoSearch?.itemIndex === 1 && autoSearch?.property === 'FeatureType' && SearchedCategoryData?.length > 0 ? (
                                             <div className="SmartTableOnTaskPopup">
                                                 <ul className="list-group hreflink scrollbar maXh-200">
                                                     {SearchedCategoryData?.map((item: any) => {
@@ -3325,8 +3347,20 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Project</label>
-                                    <input type="text" className="form-control" placeholder="Search Project Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ProjectItem0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 0, AllMasterTasksItems?.ProjectData)} />
-                                    {data[0]?.ProjectItem != undefined && data[0]?.ProjectItem?.map((type: any, index: number) => {
+
+                                    {data[0]?.ProjectItem?.length === 0 ?
+                                        <input type="text" className="form-control" placeholder="Search Project Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ProjectItem0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 0, AllMasterTasksItems?.ProjectData)} />
+                                        : <>
+                                            <div className="full-width">
+                                                <div className="full-width replaceInput alignCenter">
+                                                    <a style={{ color: "#fff !important" }} className="textDotted" > {data[0]?.ProjectItem[0].Title}</a>
+                                                </div>
+                                            </div>
+                                            <span className="input-group-text">
+                                                <span title="Edit Project" onClick={() => OpenComponentPicker(data[0], true, 'ProjectItem')} className="svg__iconbox svg__icon--editBox"></span>
+                                            </span>
+                                        </>}
+                                    {/* {data[0]?.ProjectItem != undefined && data[0]?.ProjectItem?.map((type: any, index: number) => {
                                         return (
                                             <div className="block w-100">
                                                 <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
@@ -3338,8 +3372,8 @@ const CompareTool = (props: any) => {
                                     )}
                                     <span className="input-group-text">
                                         <span title="Edit Project" onClick={() => OpenComponentPicker(data[0], true, 'ProjectItem')} className="svg__iconbox svg__icon--editBox"></span>
-                                    </span>
-                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'ProjectItem' && SearchedCategoryData?.length > 0 ? (
+                                    </span> */}
+                                    {data[0]?.ProjectItem?.length === 0 && autoSearch?.itemIndex === 0 && autoSearch?.property === 'ProjectItem' && SearchedCategoryData?.length > 0 ? (
                                         <div className="SmartTableOnTaskPopup">
                                             <ul className="list-group hreflink scrollbar maXh-200">
                                                 {SearchedCategoryData?.map((item: any) => {
@@ -3364,8 +3398,20 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Project</label>
-                                    <input type="text" className="form-control" placeholder="Search Project Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ProjectItem1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 1, AllMasterTasksItems?.ProjectData)} />
-                                    {data[1]?.ProjectItem != undefined && data[1]?.ProjectItem?.map((type: any, index: number) => {
+
+                                    {data[1]?.ProjectItem?.length === 0 ?
+                                        <input type="text" className="form-control" placeholder="Search Project Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ProjectItem1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 1, AllMasterTasksItems?.ProjectData)} />
+                                        : <>
+                                            <div className="full-width">
+                                                <div className="full-width replaceInput alignCenter">
+                                                    <a style={{ color: "#fff !important" }} className="textDotted" > {data[1]?.ProjectItem[0].Title}</a>
+                                                </div>
+                                            </div>
+                                            <span className="input-group-text">
+                                                <span title="Edit Project" onClick={() => OpenComponentPicker(data[1], true, 'ProjectItem')} className="svg__iconbox svg__icon--editBox"></span>
+                                            </span>
+                                        </>}
+                                    {/* {data[1]?.ProjectItem != undefined && data[1]?.ProjectItem?.map((type: any, index: number) => {
                                         return (
                                             <div className="block w-100">
                                                 <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
@@ -3377,8 +3423,8 @@ const CompareTool = (props: any) => {
                                     )}
                                     <span className="input-group-text">
                                         <span title="Edit Project" onClick={() => OpenComponentPicker(data[1], true, 'ProjectItem')} className="svg__iconbox svg__icon--editBox"></span>
-                                    </span>
-                                    {autoSearch?.itemIndex === 1 && autoSearch?.property === 'ProjectItem' && SearchedCategoryData?.length > 0 ? (
+                                    </span> */}
+                                    {data[1]?.ProjectItem?.length === 0 && autoSearch?.itemIndex === 1 && autoSearch?.property === 'ProjectItem' && SearchedCategoryData?.length > 0 ? (
                                         <div className="SmartTableOnTaskPopup">
                                             <ul className="list-group hreflink scrollbar maXh-200">
                                                 {SearchedCategoryData?.map((item: any) => {
