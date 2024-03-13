@@ -144,6 +144,13 @@ const GraphData = (data: any) => {
     });
     console.log(data);
     finaldata = formattedTotalTimeByDay;
+    finaldata.forEach((entry:any) => {
+      let totalTime = 0;
+      entry.SiteData.forEach((site:any) => {
+        totalTime += site.Time;
+      });
+      entry.TotalTime = totalTime;
+    });
   }
   //---------------------------------------End------------------------------------------------------------------------------------------
 
@@ -174,6 +181,7 @@ const GraphData = (data: any) => {
           const siteData = dayData.SiteData.map((site: any) => ` ${site.Time} h - ${site.Site}`).join('<br>');
           return '<div class="custom-tooltip" style="border: 1px solid #aeabab;padding: 4px; width:200px">' +
             '<div>' + siteData + '</div>' +
+            '<div>'+ dayData.Time +' h - '+ 'Total'  + '</div>' +
             '</div>';
         }
       },
@@ -230,7 +238,7 @@ const GraphData = (data: any) => {
   const onRenderCustomHeaderMain = () => {
     return (
       <div className="subheading">
-        {data.DateType}
+        Project hours per day during - {data.DateType}
       </div>
     );
   };
@@ -316,6 +324,13 @@ const GraphData = (data: any) => {
       });
       console.log(formattedTotal);
       finaldata = formattedTotal;
+      finaldata.forEach((entry:any) => {
+        let totalTime = 0;
+        entry.SiteData.forEach((site:any) => {
+          totalTime += site.Time;
+        });
+        entry.TotalTime = totalTime;
+      });
       setCount(count + 1)
     }
 
@@ -351,6 +366,13 @@ const GraphData = (data: any) => {
 
       console.log(monthDataArray);
       finaldata = monthDataArray;
+      finaldata.forEach((entry:any) => {
+        let totalTime = 0;
+        entry.SiteData.forEach((site:any) => {
+          totalTime += site.Time;
+        });
+        entry.TotalTime = totalTime;
+      });
       setCount(count + 1);
     }
   };
