@@ -7,7 +7,7 @@ import {
     PanelType,
 } from "office-ui-fabric-react";
 import Tooltip from '../Tooltip';
-import { MdCompare } from 'react-icons/md';
+import { MdCompare } from 'react-icons/Md';
 import { BsArrowRightSquare } from "react-icons/bs";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import ServiceComponentPortfolioPopup from '../EditTaskPopup/ServiceComponentPortfolioPopup';

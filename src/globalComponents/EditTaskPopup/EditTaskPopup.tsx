@@ -167,6 +167,7 @@ const EditTaskPopup = (Items: any) => {
     const [ApproverPopupStatus, setApproverPopupStatus] = useState(false);
     const [ApproverSearchKey, setApproverSearchKey] = useState("");
     const [ApproverSearchedData, setApproverSearchedData] = useState([]);
+    const [BottleneckSearchedData, setBottleneckSearchedData] = useState([]);
     const [ApproverSearchedDataForPopup, setApproverSearchedDataForPopup] =
         useState([]);
     const [sendEmailStatus, setSendEmailStatus] = useState(false);
@@ -2571,8 +2572,12 @@ const EditTaskPopup = (Items: any) => {
                         let ReasonStatement: string;
                         if (CommentArrayData?.length > 0) {
                             CommentArrayData?.map((CommentData: any) => {
-                                if (CommentData?.CommentFor?.length > 3) {
-                                    ReasonStatement = CommentData?.Description;
+                                if (SendCategoryName == "Bottleneck") {
+                                    if (CommentData?.CommentFor?.length > 3) {
+                                        ReasonStatement = "<b>Reason : </b>" + CommentData?.Description;
+                                    } else {
+                                        UpdatedDataObject.CommentsArray?.push(CommentData);
+                                    }
                                 } else {
                                     UpdatedDataObject.CommentsArray?.push(CommentData);
                                 }
@@ -2614,7 +2619,7 @@ const EditTaskPopup = (Items: any) => {
                             let TeamMsg = `${txtComment} 
                             <p>
                             <br/>
-                            <b>Reason : </b> <span>${ReasonStatement}</span>
+                             <span>${ReasonStatement}</span>
                             <p></p>
                             <b>Task Details : </b> <span>${finalTaskInfo}</span>
                             </br>
@@ -4631,6 +4636,7 @@ const EditTaskPopup = (Items: any) => {
     //     setApproverData(tempArray);
     // }
 
+    
     const autoSuggestionsForApprover = (e: any, type: any) => {
         let searchedKey: any = e.target.value;
         setApproverSearchKey(e.target.value);
@@ -4649,22 +4655,28 @@ const EditTaskPopup = (Items: any) => {
                     });
                 }
             });
+
             if (type == "OnTaskPopup") {
                 setApproverSearchedData(tempArray);
-            } else {
+            } else if (type == "Bottelneck") {
+                setBottleneckSearchedData(tempArray);
+            } else if (type == "OnPanel") {
                 setApproverSearchedDataForPopup(tempArray);
             }
         } else {
             setApproverSearchedData([]);
+            setBottleneckSearchedData([]);
             setApproverSearchedDataForPopup([]);
         }
     };
 
-    const SelectApproverFromAutoSuggestion = (ApproverData: any) => {
+
+    const SelectApproverFromAutoSuggestion = (ApproverData: any, usedFor:string) => {
         selectApproverFunction(ApproverData);
         setApproverSearchedData([]);
         setApproverSearchedDataForPopup([]);
         setApproverSearchKey("");
+        
         setTaskAssignedTo([ApproverData]);
         setTaskTeamMembers([ApproverData]);
         TaskApproverBackupArray = [ApproverData];
@@ -5918,7 +5930,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                             key={item.id}
                                                                                             onClick={() =>
                                                                                                 SelectApproverFromAutoSuggestion(
-                                                                                                    item
+                                                                                                    item, "Approver"
                                                                                                 )
                                                                                             }
                                                                                         >
@@ -5989,7 +6001,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                     <li
                                                                                                         className="hreflink list-group-item rounded-0 list-group-item-action"
                                                                                                         key={item.id}
-                                                                                                        onClick={() => SelectApproverFromAutoSuggestion(item)}
+                                                                                                        onClick={() => SelectApproverFromAutoSuggestion(item, "Approver")}
                                                                                                     >
                                                                                                         <a>{item.NewLabel}</a>
                                                                                                     </li>
@@ -6680,6 +6692,50 @@ const EditTaskPopup = (Items: any) => {
                                                             );
                                                         }
                                                     )}
+                                                </div>
+                                                <div className="input-group">
+                                                    <label className="form-label full-width ">
+                                                        Bottleneck
+                                                    </label>
+                                                    <input
+                                                        type="text"
+
+                                                        className="form-control"
+                                                        placeholder="Tag User For Bottleneck"
+                                                        onChange={(e) => autoSuggestionsForApprover(e, "Bottelneck")}
+                                                    />
+                                                    <span
+                                                        className="input-group-text"
+
+                                                        // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
+                                                        onClick={() => setSmartMedaDataUsedPanel("Status")}
+                                                    >
+                                                        <span
+                                                            title="Add Comment"
+                                                            className="svg__iconbox svg__icon--editBox"
+                                                        ></span>
+                                                    </span>
+                                                    {BottleneckSearchedData?.length > 0 ? (
+                                                    <div className="SmartTableOnTaskPopup" style={{width:"20rem"}}>
+                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                            {BottleneckSearchedData.map((item: any) => {
+                                                                return (
+                                                                    <li
+                                                                        className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                                                        key={item.id}
+                                                                        onClick={() =>
+                                                                            SelectApproverFromAutoSuggestion(
+                                                                                item, "Bottleneck"
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        <a>{item.NewLabel}</a>
+                                                                    </li>
+                                                                );
+                                                            })}
+                                                        </ul>
+                                                    </div>
+                                                ) : null}
                                                 </div>
                                             </div>
                                         </div>
@@ -8109,7 +8165,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                             key={item.id}
                                                                                                             onClick={() =>
                                                                                                                 SelectApproverFromAutoSuggestion(
-                                                                                                                    item
+                                                                                                                    item, "Approver"
                                                                                                                 )
                                                                                                             }
                                                                                                         >
@@ -9431,7 +9487,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <li
                                                     className="hreflink list-group-item rounded-0 list-group-item-action"
                                                     key={item.id}
-                                                    onClick={() => SelectApproverFromAutoSuggestion(item)}
+                                                    onClick={() => SelectApproverFromAutoSuggestion(item, "Approver")}
                                                 >
                                                     <a>{item.NewLabel}</a>
                                                 </li>
