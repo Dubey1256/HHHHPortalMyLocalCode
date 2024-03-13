@@ -4,31 +4,14 @@ import EditInstitution from "../../EditPopupFiles/EditComponent";
 import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
 import { useState } from 'react';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
-
+import { myContextValue } from '../../../globalComponents/globalCommon';
 export default function CustomNode(props: NodeProps<any>) {
-    const [IsComponent, setIsComponent] = React.useState(false);
-    const [IsProjectPopup, setIsProjectPopup] = React.useState(false);
-    const [SharewebComponent, setSharewebComponent]: any = React.useState({});
-    const Callbackfrompopup = () => {
-        setSharewebComponent({})
-        setIsComponent(false)
-        setIsProjectPopup(false)
-    }
-    const EditComponentPopup = (event: any, item: any) => {
-        event.stopPropagation();
-        setSharewebComponent(item)
-        if (item?.ItemCat == "Portfolio") {
-            setIsComponent(true)
-        }
-        if (item?.ItemCat == "Project") {
-            setIsProjectPopup(true)
-        }
-    }
+    const globalContextData: any = React.useContext<any>(myContextValue)
     return (
         <>
 
             <div className='react-flow__node-output' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div className="nodrag" style={{margin:'4px'}}>
+                <div className="nodrag" style={{ margin: '4px' }}>
                     <a className='hreflink ' href={props?.data?.item?.targetUrl} data-interception="off" target="_blank">
                         {`${props?.data?.item?.PortfolioStructureID} - ${props?.data?.item?.Title}`}
                     </a>
@@ -42,7 +25,7 @@ export default function CustomNode(props: NodeProps<any>) {
                         {" "}
                         <span
                             className="svg__iconbox svg__icon--edit"
-                            onClick={(e) => EditComponentPopup(e, props?.data?.item)}
+                            onClick={(e) => globalContextData?.EditComponentPopup(e, props?.data?.item)}
                         ></span>
                     </a>
 
@@ -50,18 +33,7 @@ export default function CustomNode(props: NodeProps<any>) {
 
                 {props?.data?.handles?.bottom == true && <Handle type="source" position={Position.Bottom} />}
                 {props?.data?.handles?.top == true && <Handle type="target" position={Position.Top} />}
-                <div className='nodrag'>
-                    {IsComponent && (
-                        <EditInstitution
-                            item={SharewebComponent}
-                            Calls={Callbackfrompopup}
-                            SelectD={props?.data?.AllListId}
-                        >
-                            {" "}
-                        </EditInstitution>
-                    )}
-                    {IsProjectPopup && <EditProjectPopup props={SharewebComponent} AllListId={props?.data?.AllListId} Call={Callbackfrompopup} > </EditProjectPopup>}
-                </div>
+
 
             </div>
 
