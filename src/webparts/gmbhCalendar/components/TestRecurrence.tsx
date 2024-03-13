@@ -461,11 +461,11 @@ const Apps = (props: any) => {
         
         let targetDate :any= new Date(currentDate.getTime());
         targetDate.setDate(currentDate.getDate() + daysToAdd);
-        currentDate = targetDate
-        const event = eventDataForBinding(eventDetails, currentDate);
+        // currentDate = targetDate
+        const event = eventDataForBinding(eventDetails, targetDate);
         AllEvents.push(event);
-        dates.push(new Date(currentDate));
-        currentDate.setDate(currentDate.getDate() + (weekFrequency * 7));
+        dates.push(new Date(targetDate));
+        // currentDate.setDate(currentDate.getDate() + (weekFrequency * 7));
     });
 }
 
@@ -478,7 +478,7 @@ const Apps = (props: any) => {
       switch (repeatType) {
         case 'daily':
           const { dayFrequency } = frequency;
-          const repeatInstance = rule.repeatInstances ? parseInt(rule.repeatInstances[0]) : Infinity;
+          const repeatInstance = rule.repeatInstances ? parseInt(rule.repeatInstances[0]) : 1000;
           handleDailyRecurrence(frequency, currentDate, dates, AllEvents, eventDetails, endDate, repeatInstance);
           break;
         case 'yearly':
