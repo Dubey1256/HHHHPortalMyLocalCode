@@ -2127,6 +2127,11 @@ function ReadyMadeTable(SelectedProp: any) {
     const addedCreatedDataFromAWT = (arr: any, dataToPush: any) => {
         if (dataToPush?.PortfolioId === SelectedProp.SelectedItem.Id && dataToPush?.ParentTask?.Id === undefined) {
             arr.push(dataToPush)
+            const othersIndex = arr.findIndex((items:any) => items.Title === 'Others')
+            if (othersIndex !== -1) {
+                const othersItem = arr.splice(othersIndex, 1)[0];
+                arr.push(othersItem);
+            }
             //   if(SelectedProp?.UsedFrom=='ProjectManagement'){
             //     try{
             //       globalContextData?.projectCallBackTask()

@@ -24,6 +24,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import HighlightableCell from "../../../globalComponents/highlight";
 import { MdOutlineGppGood, MdGppBad } from "react-icons/Md";
 import { FocusTrapCallout, FocusZone, FocusZoneTabbableElements, Panel, PanelType, Stack, Text, } from '@fluentui/react';
+import { color } from "@mui/system";
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -38,6 +39,7 @@ let StatusOptions = [{ value: 0, taskStatusComment: "Not Started" }, { value: 1,
 { value: 10, taskStatusComment: "working on it" }, { value: 70, taskStatusComment: "Re-Open" }, { value: 75, taskStatusComment: "Deployment Pending" }, { value: 80, taskStatusComment: "In QA Review" },
 { value: 90, taskStatusComment: "Task completed" }, { value: 100, taskStatusComment: "Closed" },]
 const TaskStatusTbl = (Tile: any) => {
+  const childRef = React.useRef<any>();
   const ContextData: any = React.useContext(myContextValue);
   const [state, rerender] = React.useReducer(() => ({}), {});
   const AllTaskUser: any = ContextData?.AlltaskData?.AllTaskUser;
@@ -47,6 +49,8 @@ const TaskStatusTbl = (Tile: any) => {
   const [ActiveTile, setActiveTile] = React.useState(Tile?.activeTile);
   const [dateRange, setDateRange] = React.useState<any>([]);
   const [isRejectItem, setisRejectItem] = React.useState<any>(undefined);
+  const [RefSelectedItem, setRefSelectedItem] = React.useState<any>([]);
+
   const settings = {
     dots: false, infinite: true, speed: 500, slidesToShow: 6, slidesToScroll: 1, nextArrow: <SamplePrevNextArrow type="next" />, prevArrow: <SamplePrevNextArrow type="prev" />,
     beforeChange: handleBeforeChange,
@@ -413,10 +417,11 @@ const TaskStatusTbl = (Tile: any) => {
             delete TimeEntry?.PreviousComment;
             delete TimeEntry?.UpdatedId;
           })
-          setisRejectItem(undefined)
+          //setisRejectItem(undefined)
           let web = new Web(UpdatedItem?.siteUrl);
           await web.lists.getById(UpdatedItem?.listId).items.getById(UpdatedItem.Id).update({ AdditionalTimeEntry: JSON.stringify(UpdatedItem?.AdditionalTimeEntry), })
             .then(async (res: any) => {
+              alert("Time Entry " + Type + " Successfully.")
               DashboardConfig?.map((Config: any) => {
                 if (Config?.DataSource == 'TimeSheet' && Config.Tasks != undefined && Config.Tasks?.length > 0) {
                   Config.Tasks?.forEach((Time: any, index: any) => {
@@ -427,9 +432,34 @@ const TaskStatusTbl = (Tile: any) => {
                 }
               })
               console.log('Updated Succesfully')
+              if (Type == "Rejected") {
+                let sendUserEmail: any = [];
+                let FilterItem = AllTaskUser?.filter((User: any) => User?.AssingedToUserId == RejectedItem?.AuthorId)[0];
+                sendUserEmail.push(FilterItem?.AssingedToUser?.EMail)
+                let TeamMsg = ` <p>Hi ${RejectedItem?.AuthorName},</p>
+                </br>
+                <p>Your timesheet on the task: <a href=${UpdatedItem?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${UpdatedItem['Task' + UpdatedItem?.TaskListType].Id}&Site=${UpdatedItem?.TaskListType}>T${UpdatedItem['Task' + UpdatedItem?.TaskListType].Id}-${UpdatedItem['Task' + UpdatedItem?.TaskListType].Title}</a> has been rejected by your lead. Please have a look and take the necessary action.</p>
+                <p>Reason for rejection:</p>
+                <p>${RejectedItem?.RejectedDetails?.RejectedComment}</p>
+                </br>
+                <p>Thanks,</p>`
+                await globalCommon.SendTeamMessage(sendUserEmail, TeamMsg, ContextData?.propsValue?.Context);
+              }
               DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+              DashboardConfigCopy?.map((Config: any) => {
+                if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
+                  Config?.Tasks?.map((Date: any) => {
+                    if (Date?.dates != undefined && Date?.dates?.length > 0) {
+                      Date?.dates?.map((Time: any) => {
+                        Time.ServerDate = Moment(Time?.ServerDate)
+                        Time.ServerDate = Time.ServerDate?._d;
+                        Time.ServerDate.setHours(0, 0, 0, 0)
+                      })
+                    }
+                  });
+                }
+              });
               setisRejectItem(undefined)
-              alert("Time Entry " + Type + " Successfully.")
               setActiveTile(Tile?.activeTile)
               rerender();
             }).catch((err: any) => {
@@ -442,37 +472,61 @@ const TaskStatusTbl = (Tile: any) => {
       let Count = 0;
       if (ContextData?.AllTimeEntry != undefined && ContextData?.AllTimeEntry?.length > 0) {
         ContextData?.AllTimeEntry.forEach((Item: any) => {
-          if (Item?.AdditionalTimeEntry != undefined && Item?.AdditionalTimeEntry?.length > 0) {
-            Item?.AdditionalTimeEntry.forEach((TimeEntry: any) => {
-              TimeEntry.Status = 'Approved';
-              delete TimeEntry?.TaskDates;
-              delete TimeEntry?.sortTaskDate;
-              delete TimeEntry?.PreviousComment;
-              delete TimeEntry?.UpdatedId;
-
+          if (RefSelectedItem != undefined && RefSelectedItem?.length > 0) {
+            RefSelectedItem?.forEach((SelectedItem: any) => {
+              if (SelectedItem?.original?.UpdatedId == Item.Id) {
+                Item.IsUpdateJSONEntry = true;
+              }
             })
           }
-          let web = new Web(Item?.siteUrl);
-          web.lists.getById(Item?.listId).items.getById(Item.Id).update({ AdditionalTimeEntry: JSON.stringify(Item?.AdditionalTimeEntry), })
-            .then((res: any) => {
-              setisRejectItem(undefined)
-              Count++;
-              if (Count == ContextData?.AllTimeEntry?.length) {
-                DashboardConfig?.map((Config: any) => {
-                  if (Config?.DataSource == 'TimeSheet') {
-                    Config.Tasks = [];
-                  }
-                })
-                console.log('Updated Succesfully')
-                alert("All Time Entry Approved Successfully.")
-                DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
-                setActiveTile(Tile?.activeTile)
-                rerender();
-              }
-            }).catch((err: any) => {
-              Count++;
-              console.log(err);
-            })
+          if (Item?.IsUpdateJSONEntry == true) {
+            if (Item?.AdditionalTimeEntry != undefined && Item?.AdditionalTimeEntry?.length > 0) {
+              Item?.AdditionalTimeEntry.forEach((TimeEntry: any) => {
+                TimeEntry.Status = 'Approved';
+                delete TimeEntry?.TaskDates;
+                delete TimeEntry?.sortTaskDate;
+                delete TimeEntry?.PreviousComment;
+                delete TimeEntry?.UpdatedId;
+
+              })
+            }
+            let web = new Web(Item?.siteUrl);
+            web.lists.getById(Item?.listId).items.getById(Item.Id).update({ AdditionalTimeEntry: JSON.stringify(Item?.AdditionalTimeEntry), })
+              .then((res: any) => {
+                setisRejectItem(undefined)
+                Count++;
+                if (Count == RefSelectedItem?.length) {
+                  const arrayOfIDs = RefSelectedItem?.map((item: any) => item?.original?.UpdatedId);
+                  DashboardConfig?.map((Config: any) => {
+                    if (Config?.DataSource == 'TimeSheet') {
+                      Config.Tasks = Config.Tasks.filter((item: any) => !arrayOfIDs.includes(item.UpdatedId));
+                    }
+                  })
+                  childRef?.current?.setRowSelection({});
+                  console.log('Updated Succesfully')
+                  alert("All Time Entry Approved Successfully.")
+                  DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+                  DashboardConfigCopy?.map((Config: any) => {
+                    if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
+                      Config?.Tasks?.map((Date: any) => {
+                        if (Date?.dates != undefined && Date?.dates?.length > 0) {
+                          Date?.dates?.map((Time: any) => {
+                            Time.ServerDate = Moment(Time?.ServerDate)
+                            Time.ServerDate = Time.ServerDate?._d;
+                            Time.ServerDate.setHours(0, 0, 0, 0)
+                          })
+                        }
+                      });
+                    }
+                  });
+                  setActiveTile(Tile?.activeTile)
+                  rerender();
+                }
+              }).catch((err: any) => {
+                Count++;
+                console.log(err);
+              })
+          }
         })
       }
     }
@@ -481,6 +535,8 @@ const TaskStatusTbl = (Tile: any) => {
     let RejectedItem: any = { ...isRejectItem }
     if (RejectedItem.PreviousComment != undefined && RejectedItem.RejectedDetails != undefined)
       RejectedItem.RejectedDetails.RejectedComment = RejectedItem.PreviousComment;
+    childRef?.current?.setRowSelection({});
+    rerender();
     setisRejectItem(RejectedItem)
     setisRejectItem(undefined)
   }
@@ -496,7 +552,7 @@ const TaskStatusTbl = (Tile: any) => {
         hasCheckbox: true,
         hasCustomExpanded: item?.GroupByView,
         hasExpanded: item?.GroupByView,
-        size: 50,
+        size: 10,
         id: "Id"
       },
       {
@@ -509,14 +565,14 @@ const TaskStatusTbl = (Tile: any) => {
         id: "SiteIcon",
         canSort: false,
         placeholder: "",
-        size: 80,
+        size: 25,
         isColumnVisible: true
       },
       {
         accessorKey: "TaskID",
         placeholder: "ID",
         id: 'TaskID',
-        size: 180,
+        size: 110,
         isColumnVisible: true,
         cell: ({ row, getValue }: any) => (
           <span className="d-flex">
@@ -540,7 +596,7 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "Title",
         resetColumnFilters: false,
         header: "",
-        size: 460,
+        size: 350,
         isColumnVisible: true
       },
       {
@@ -562,7 +618,7 @@ const TaskStatusTbl = (Tile: any) => {
         resetSorting: false,
         isColumnDefultSortingDesc: true,
         header: "",
-        size: 190,
+        size: 45,
         isColumnVisible: true
       },
       {
@@ -606,7 +662,7 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "% Complete",
         header: "",
         resetColumnFilters: false,
-        size: 140,
+        size: 45,
         id: "percentage",
         isColumnVisible: true
       },
@@ -749,7 +805,7 @@ const TaskStatusTbl = (Tile: any) => {
           }
         },
         header: "",
-        size: 115
+        size: 100
       },
       {
         accessorKey: "TotalTaskTime",
@@ -757,7 +813,7 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "Smart Time",
         header: "",
         resetColumnFilters: false,
-        size: 49,
+        size: 45,
         isColumnVisible: false
       },
       {
@@ -780,6 +836,7 @@ const TaskStatusTbl = (Tile: any) => {
         {
           accessorKey: "",
           placeholder: "",
+          hasCheckbox: true,
           hasCustomExpanded: false,
           hasExpanded: false,
           size: 20,
@@ -791,7 +848,7 @@ const TaskStatusTbl = (Tile: any) => {
           id: "AuthorName",
           placeholder: "AuthorName",
           header: "",
-          size: 340,
+          size: 155,
           isColumnVisible: true,
           cell: ({ row }: any) => (
             <>
@@ -838,26 +895,27 @@ const TaskStatusTbl = (Tile: any) => {
             }
           },
           header: "",
-          size: 125,
+          size: 121,
           isColumnVisible: true
         },
         {
           accessorKey: "TaskTime",
           placeholder: "TaskTime",
           header: "",
-          size: 95,
+          size: 40,
           isColumnVisible: true
         },
         {
           accessorKey: "Description",
           placeholder: "Description",
           header: "",
-          isColumnVisible: true
+          isColumnVisible: true,
+          size: 425,
         },
         {
           id: "ff",
           accessorKey: "",
-          size: 75,
+          size: 50,
           canSort: false,
           placeholder: "",
           isColumnVisible: true,
@@ -886,10 +944,16 @@ const TaskStatusTbl = (Tile: any) => {
     setEditPopup(false);
   }
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
-    if (elem != undefined)
+    if (elem != undefined) {
+      setRefSelectedItem(elem)
       approveItem = elem;
-    else
+    }
+    else {
+      setRefSelectedItem(elem)
       approveItem = undefined
+    }
+    //setActiveTile(Tile?.activeTile)
+    rerender();
   }, []);
   const sendEmail = () => {
     approveItem.PercentComplete = 3
@@ -1019,7 +1083,7 @@ const TaskStatusTbl = (Tile: any) => {
                   </div>
                   <div className="Alltable maXh-300" style={{ height: "300px" }} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
-                      <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id + "Dashboard"} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                      <GlobalCommanTable wrapperHeight="87% " tableId={config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
                     )}
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
                       {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={AllListId} emailStatus={"Approved"} items={approveItem} />}
@@ -1108,7 +1172,7 @@ const TaskStatusTbl = (Tile: any) => {
                                   <>
                                     <h3 className="f-15">{user?.Title} {Date?.DisplayDate} Task</h3>
                                     <div key={index} className="Alltable maXh-300 mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} style={{ height: "300px" }}>
-                                      <GlobalCommanTable columnSettingIcon={true} tableId={config?.Id + index + "Dashboard"} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
+                                      <GlobalCommanTable columnSettingIcon={true} multiSelect={true} tableId={config?.Id + index + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
                                         callBackData={callBackData} />
                                     </div>
                                   </>
@@ -1123,20 +1187,21 @@ const TaskStatusTbl = (Tile: any) => {
                 }
                 {config?.DataSource == 'TimeSheet' &&
                   <>
-                    <div className="alignCenter mb-2 empAllSec justify-content-between">
+                    <div className="alignCenter empAllSec justify-content-between">
                       <span className="fw-bold">
                       </span>
                       <span className="alignCenter">
                         {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
-                        <span className="empCol me-3 hreflink" onClick={() => SaveRejectPopup('ApprovedAll', undefined)}>Approve All</span>
+                        {RefSelectedItem?.length > 0 ? <span className="empCol me-1 mt-2 hreflink" onClick={() => SaveRejectPopup('ApprovedAll', undefined)}>Approve All</span>
+                          : <span className="me-1 mt-2 hreflink" style={{ color: "#646464" }}>Approve All</span>}
                       </span>
                     </div>
                     <div className="Alltable maXh-300" style={{ height: "300px" }} >
                       {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
-                        <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id + "Dashboard"} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                        <GlobalCommanTable wrapperHeight="87%" multiSelect={true} tableId={config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
                       )}
                       {config?.Tasks != undefined && config?.Tasks?.length == 0 && (
-                        <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id + "Dashboard"} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                        <GlobalCommanTable wrapperHeight="87%" multiSelect={true} tableId={config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
                       )}
                     </div>
                   </>}

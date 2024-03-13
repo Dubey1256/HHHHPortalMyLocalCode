@@ -504,8 +504,11 @@ export default function ProjectOverview(props: any) {
                                             href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
                                             target="_blank"
                                             data-interception="off"
-                                        >
-                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
+                                        >{row?.original?.AuthorImg != undefined ?
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.AuthorImg} /> :
+                                            <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                                            }
+
                                         </a>
                                     </>
                                 ) : (
@@ -567,6 +570,39 @@ export default function ProjectOverview(props: any) {
                 id: 'Id',
             },
             {
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        {row?.original?.SiteIcon != undefined ? (
+                            <div className="alignCenter" title="Show All Child">
+                                <img title={row?.original?.TaskType?.Title} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
+                                    row?.original?.TaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember me-1"
+                                }
+                                    src={row?.original?.SiteIcon}>
+                                </img>
+                            </div>
+                        ) : (
+                            <>
+                                {row?.original?.Title != "Others" ? (
+                                    <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+                                        row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+                                    }>
+                                        {row?.original?.SiteIconTitle}
+                                    </div>
+                                ) : (
+                                    ""
+                                )}
+                            </>
+                        )}
+                    </div>
+                ),
+                id: "siteIcon",
+                placeholder: "Type",
+                header: "",
+                resetColumnFilters: false,
+                size: 95,
+                isColumnVisible: true
+            },
+            {
                 accessorKey: "TaskID",
                 placeholder: "Id",
                 id: 'TaskID',
@@ -585,7 +621,7 @@ export default function ProjectOverview(props: any) {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
                     <div className='alignCenter'>
-                        <a className='hreflink' href={row?.original?.siteType == "Project" ? `${AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.Id}`: `${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
+                        <a className='hreflink' href={row?.original?.siteType == "Project" ? `${AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.Id}` : `${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
                         {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5'><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
                     </div>
 
@@ -723,8 +759,10 @@ export default function ProjectOverview(props: any) {
                                             href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
                                             target="_blank"
                                             data-interception="off"
-                                        >
-                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={findUserByName(row?.original?.Author?.Id)} />
+                                        >{row?.original?.createdImg != undefined ?
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} /> :
+                                            <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
+                                            }
                                         </a>
                                     </>
                                 ) : (
@@ -1093,6 +1131,7 @@ export default function ProjectOverview(props: any) {
                     items.listId = AllListId?.MasterTaskListID;
                     items.AssignedUser = []
                     items.siteType = "Project"
+                    items.createdImg = findUserByName(items?.Author?.Id)
                     items.TeamMembersSearch = '';
                     if (items.AssignedTo != undefined) {
                         items.AssignedTo.map((taskUser: any) => {
@@ -1131,6 +1170,7 @@ export default function ProjectOverview(props: any) {
                                 type[type.Title + 'number'] += 1;
                             }
                         })
+                        items.SiteIconTitle = items?.Item_x0020_Type.charAt(0)
                     }
                     if (items?.subRows.length > 0) {
                         items?.subRows.map((child: any) => {
@@ -1141,7 +1181,8 @@ export default function ProjectOverview(props: any) {
                                         type[type.Title + 'number'] += 1;
                                     }
                                 })
-                            }   
+                            }
+                            child.SiteIconTitle = child?.Item_x0020_Type.charAt(0)
                         })
                     }
                 })
@@ -1384,9 +1425,9 @@ export default function ProjectOverview(props: any) {
             } else {
                 setCheckBoxData([])
                 if (childRef.current.table.getSelectedRowModel().flatRows.length == 0) {
-                  setTrueRestructuring(false)
-              }
-                
+                    setTrueRestructuring(false)
+                }
+
             }
             if (ShowingData != undefined) {
                 setShowingData([ShowingData])
@@ -1417,7 +1458,7 @@ export default function ProjectOverview(props: any) {
                     portFoliotypeCount?.map((type: any) => {
                         if (elem?.Item_x0020_Type === type?.Title) {
                             type[type.Title + 'filterNumber'] += 1;
-                            type[type.Title + 'number'] += 1;                          
+                            type[type.Title + 'number'] += 1;
                         }
                     })
                 }
@@ -1427,7 +1468,7 @@ export default function ProjectOverview(props: any) {
                             portFoliotypeCount?.map((type: any) => {
                                 if (child?.Item_x0020_Type === type?.Title) {
                                     type[type.Title + 'filterNumber'] += 1;
-                                    type[type.Title + 'number'] += 1;                          
+                                    type[type.Title + 'number'] += 1;
                                 }
                             })
                         }
@@ -1437,7 +1478,7 @@ export default function ProjectOverview(props: any) {
             setPortFolioTypeIcon(portFoliotypeCount)
             setData(flatProjectsData);
         }
-        else{
+        else {
             AllProject?.map((elem: any) => {
                 if (elem?.Item_x0020_Type != undefined) {
                     portFoliotypeCount?.map((type: any) => {
@@ -1591,7 +1632,7 @@ export default function ProjectOverview(props: any) {
                     });
                     AllTask.push(items);
                 });
-                
+
                 let workingTodayTasks = smartmeta.filter((itms: any) => {
                     return itms.IsTodaysTask
                 })
@@ -1604,7 +1645,7 @@ export default function ProjectOverview(props: any) {
                                 countType[countType.Title + 'filterNumber'] = (countType[countType.Title + 'filterNumber'] || 0) + 1;
                             }
                         });
-                
+
                         typeData.forEach((dataType: any) => {
                             if (tday?.TaskType?.Title === dataType?.Title) {
                                 dataType[dataType.Title + 'number'] = (dataType[dataType.Title + 'number'] || 0) + 1;
@@ -1756,7 +1797,7 @@ export default function ProjectOverview(props: any) {
 
             {
                 trueRestructuring == true ?
-                    <RestructuringCom AllSitesTaskData={AllSitesAllTasks} AllMasterTasksData={MyAllData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllTaskUser} contextValue={AllListId} allData={workingTodayFiltered ? data : flatData} restructureCallBack={restructureCallback} findPage = {"ProjectOverView"} restructureItem={childRef.current.table.getSelectedRowModel().flatRows} />
+                    <RestructuringCom AllSitesTaskData={AllSitesAllTasks} AllMasterTasksData={MyAllData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllTaskUser} contextValue={AllListId} allData={workingTodayFiltered ? data : flatData} restructureCallBack={restructureCallback} findPage={"ProjectOverView"} restructureItem={childRef.current.table.getSelectedRowModel().flatRows} />
                     : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
             }
             <label className="switch me-2" htmlFor="checkbox">

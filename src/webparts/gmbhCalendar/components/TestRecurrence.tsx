@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, View, Views, momentLocalizer } from "react-big-calendar";
-import moment from "moment";
+// import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Web } from "sp-pnp-js";
 import { parseString } from 'xml2js';
@@ -16,6 +16,7 @@ import { MonthlyLeaveReport } from "../../calendar/components/MonthlyLeaveReport
 import "react-quill/dist/quill.snow.css";
 import { FaPaperPlane } from "react-icons/fa";
 import EmailComponenet from "../../calendar/components/email";
+import moment from 'moment-timezone';
 moment.locale("en-GB");
 let createdBY: any,
   modofiedBy: any,
@@ -513,10 +514,37 @@ const Apps = (props: any) => {
     }
     return '';
   }
+
+  // this prepare the property 
+  function processDataArray(array:any) {
+    return array.map((item:any) => ({
+      shortD: item.Title,
+      iD: item.ID,
+      NameId: item?.Employee?.Id,
+      title: item.Title,
+      start: item.EventDate,
+      end: item.EndDate,
+      location: item.Location,
+      desc: item.Description,
+      alldayevent: item.fAllDayEvent,
+      eventType: item.Event_x002d_Type,
+      created: item.Author.Title,
+      modify: item.Editor.Title,
+      cTime: item.Created,
+      mTime: item.Modified,
+      Name: item.Employee?.Title,
+      Designation: item.Designation,
+      HalfDay: item.HalfDay,
+      HalfDayTwo: item.HalfDayTwo,
+      clickable: item?.clickable,
+      Color: item.Color
+    }));
+  }
+  
   const getEvents = async () => {
     const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/GmBH");
     const query =
-      "RecurrenceData,Duration,Author/Title,Editor/Title,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo,Color";
+      "RecurrenceData,Duration,Author/Title,Editor/Title,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo,Color,Created,Modified";
     try {
       const results = await web.lists
         .getById("860a08d5-9711-4d8e-bd26-93fe09362bd4")
@@ -529,6 +557,7 @@ const Apps = (props: any) => {
         const Recurrencedatas = results.filter((item) => item?.RecurrenceData != null && item?.RecurrenceData != 'Every 1 day(s)');
         events = []
         const eventsNonRecurrece = NonRecurrenceData.map(eventDetails => ({
+          ...eventDetails,
           title: eventDetails.Title,
           start: new Date(eventDetails?.EventDate).toISOString(), // Convert currentDate to ISO string
           end: new Date(eventDetails?.EndDate).toISOString() // Convert currentDate to ISO string
@@ -551,8 +580,9 @@ const Apps = (props: any) => {
         });
 
         console.log(filteredData); // Display filtered data
+        localArr = processDataArray(filteredData);
+        
         setRecurringEvents(filteredData);
-
       }
     } catch (error) {
       console.error("Error fetching events:", error);
@@ -588,6 +618,7 @@ const Apps = (props: any) => {
         .getById(eventId)
         .select(
           "RecurrenceID",
+          "Editor/Title",
           "MasterSeriesItemID",
           "Id",
           "ID",
@@ -609,9 +640,11 @@ const Apps = (props: any) => {
           "UID",
           "HalfDay",
           "HalfDayTwo",
-          "Color"
+          "Color",
+          "Created",
+          " Modified"
         )
-        .expand("Author")
+        .expand("Author","Editor")
         .get();
 
       const eventDate = await getLocalDateTime(event.EventDate);
@@ -654,6 +687,7 @@ const Apps = (props: any) => {
       const { year, month } = getYearMonthFromDate(event.start);
       return month === currentMonth && year === currentYear;
     });
+    localArr = processDataArray(filteredData);
     setRecurringEvents(filteredData);
   };
   // Handle Show More 
@@ -763,6 +797,7 @@ const Apps = (props: any) => {
       setType(event.Event_x002d_Type);
       sedType(event.Designation);
       setInputValueReason(event.Description);
+      setVId(event.Id);
 
       const eventItem: any = await getEvent(event.Id);
       const startDate = new Date(eventItem.EventDate);
@@ -779,18 +814,20 @@ const Apps = (props: any) => {
       setRecurrenceData(eventItem.RecurrenceData);
       setShowRecurrenceSeriesInfo(true);
       setEditRecurrenceEvent(true);
-
+      
       return;
     }
 
     localArr.forEach((item: any) => {
-      if (item.Id === event.Id) {
+      if (item.iD === event.Id) {
+        const Mystartdate = new Date(item.start);
+        const MyEnddate = new Date(item.end);
         setdisab(true);
-        setVId(item.Id);
+        setVId(item.iD);
         eventPass = event;
         setInputValueName(item.shortD);
-        setStartDate(item.start);
-        setEndDate(item.end);
+        setStartDate(Mystartdate);
+        setEndDate(MyEnddate);
         setdisabl(false);
         setIsChecked(item.alldayevent);
         setIsFirstHalfDChecked(item.HalfDay);
@@ -807,8 +844,15 @@ const Apps = (props: any) => {
         MTime = moment(item.mTime).tz("Asia/Kolkata").format("HH:mm");
         CDate = moment(item.cTime).format("DD-MM-YYYY");
         CTime = moment(item.cTime).tz("Asia/Kolkata").format("HH:mm");
+        
+         MDate = moment(item.mTime).format("DD-MM-YYYY");
+        MTime = moment(item.mTime).tz("Asia/Kolkata").format("HH:mm");
+        CDate = moment(item.cTime).format("DD-MM-YYYY");
+        CTime = moment(item.cTime).tz("Asia/Kolkata").format("HH:mm");
+
         setSelectedTime(moment(item.start).tz("Asia/Kolkata").format("HH:mm"));
         setSelectedTimeEnd(moment(item.end).tz("Asia/Kolkata").format("HH:mm"));
+
         setType(item.eventType);
         sedType(item.Designation);
         setInputValueReason(item.desc);
@@ -859,13 +903,13 @@ const Apps = (props: any) => {
 
           }}
         >
-          {/* <span>
+          <span>
             {(props != undefined || props.props != undefined) && (
               <>
                 <span>{props?.props?.description}</span>
               </>
             )}
-          </span> */}
+          </span> 
         </div>
         <Tooltip ComponentId={977} />
       </>
@@ -1177,7 +1221,7 @@ const Apps = (props: any) => {
             fAllDayEvent: allDay,
             HalfDay: HalfDaye,
             HalfDayTwo: HalfDayT,
-            Designation: newEvent.Designation,
+            // Designation: newEvent.Designation,
             Color: mycolors
           };
 
@@ -1276,7 +1320,7 @@ const Apps = (props: any) => {
         Location: newEvent.loc,
         Event_x002d_Type: newEvent.type,
         Description: newEvent.reason,
-        Designation: newEvent.Designation,
+        // Designation: newEvent.Designation,
         EndDate: ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) + " " + (selectedTimeEnd + "" + ":00"),
         EventDate: ConvertLocalTOServerDateToSave(startDate, selectedTime) + " " + (selectedTime + "" + ":00"),
         HalfDay: newEvent.halfdayevent,
@@ -1311,10 +1355,114 @@ const Apps = (props: any) => {
   const emailCallback = React.useCallback(() => {
     getEvents();
   }, []);
+
+
+  
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = event.target.checked;
+    setIsChecked(checked);
+    // console.log("check", isChecked);
+    if (checked) {
+      startTime = "10:00";
+      endTime = "19:00";
+      setSelectedTimeEnd("19:00");
+      setSelectedTime("10:00");
+      setEndDate(startDate);
+      maxD = startDate;
+      //console.log(maxD);
+      setDisableTime(true);
+      allDay = true;
+      HalfDaye = false;
+      HalfDayT = false;
+      setIsFirstHalfDChecked(false);
+      setisSecondtHalfDChecked(false);
+      //console.log("allDay", allDay);
+    } else {
+      maxD = new Date(8640000000000000);
+      setDisableTime(false);
+      allDay = false;
+      console.log("allDay", allDay);
+    }
+  };
+
+  const handleHalfDayCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = event.target.checked;
+    setIsFirstHalfDChecked(checked);
+    // console.log("check", isChecked);
+    if (checked) {
+      startTime = "10:00";
+      endTime = "19:00";
+      setSelectedTimeEnd("14:30");
+      setSelectedTime("10:00");
+      setEndDate(startDate);
+      maxD = startDate;
+      //console.log(maxD);
+      setDisableTime(true);
+      allDay = false;
+      HalfDayT = false;
+      HalfDaye = true;
+      setisSecondtHalfDChecked(false)
+      setIsChecked(false);
+      //console.log("allDay", allDay);
+    } else {
+      maxD = new Date(8640000000000000);
+      setDisableTime(false);
+      HalfDaye = false;
+      console.log("HalfDay", HalfDaye);
+    }
+  };
+  const handleHalfDayCheckboxChangeSecond = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = event.target.checked
+    setisSecondtHalfDChecked(checked);
+    if (checked) {
+      startTime = "10:00";
+      endTime = "19:00";
+      setSelectedTimeEnd("19:00");
+      setSelectedTime("14:30");
+      setEndDate(startDate);
+      maxD = startDate;
+      //console.log(maxD);
+      setDisableTime(true);
+      allDay = false;
+      HalfDaye = false;
+      HalfDayT = true;
+      setIsFirstHalfDChecked(false)
+
+      setIsChecked(false);
+      //console.log("allDay", allDay);
+    } else {
+      maxD = new Date(8640000000000000);
+      setDisableTime(false);
+      HalfDayT = false;
+      console.log("HalfDayTwo", HalfDayT);
+    }
+  }
+
+  const handleInputChangeLocation = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setLocation((event.target as HTMLInputElement).value);
+  };
+  const HandledLeaveType = (option: any) => {
+    if (option == "Company Holiday" || option == "National Holiday") {
+      setIsChecked(true);
+      allDay = true
+      setIsDisableField(true)
+      setShowRecurrenceSeriesInfo(false);
+      setNewRecurrenceEvent(false);
+    }
+    else {
+      setIsChecked(false);
+      allDay = false
+      setIsDisableField(false)
+    }
+    setType(option)
+  }
   return (
+   
     <div>
-      <div className="w-100 text-end">
-        <a
+    <div className="w-100 text-end">
+    <a
           target="_blank"
           data-interception="off"
           href={`${props.props.siteUrl}/SitePages/TeamCalendar.aspx`}
@@ -1322,167 +1470,162 @@ const Apps = (props: any) => {
           {" "}
           Old Leave Calendar
         </a>
-      </div>
-      <div className="w-100 text-end">
-      <a  href="#" onClick={DownloadLeaveReport}>
-           <span>Generate Monthly Report  | </span>
-        </a>
-        <a
-          target="_blank"
-          data-interception="off"
-          href={`${props.props.siteUrl}/Lists/SmalsusLeaveCalendar/calendar.aspx`}
-        >
-          {" "}
-          Add to Outlook Calendar
-        </a>
-      </div>
-      <div style={{ height: "500pt" }}>
-        
+    </div>
+    <div className="w-100 text-end">
+      <a href="#" onClick={DownloadLeaveReport}>
+        <span>Generate Monthly Report  | </span>
+      </a>
+      <a
+        target="_blank"
+        data-interception="off"
+        href={`${props.props.siteUrl}/Lists/Events/calendar.aspx`}
+      >
+        {" "}
+        Add to Outlook Calendar
+      </a>
+    </div>
+    <div style={{ height: "500pt" }}>
       <a className="mailBtn me-4" href="#" onClick={emailComp}>
-          <FaPaperPlane></FaPaperPlane> <span>Send Leave Summary</span>
-        </a>
-        
-        {/* <button type="button" className="mailBtn" >
-          Email
-        </button> */}
-        <Calendar
-          events={recurringEvents}
-          selectable
-          onSelectSlot={handleSelectSlot}
-          defaultView="month"
-          startAccessor="start"
-          endAccessor="end"
-          defaultDate={moment().toDate()}
-          onShowMore={handleShowMore}
-          views={{ month: true, week: true, day: true, agenda: true }}
-          localizer={localizer}
-          onSelectEvent={handleDateClick}
-          eventPropGetter={eventStyleGetter}
-          onView={(newView: View) => setview(newView)}
-          onNavigate={handleNavigate}
-          view={view as View}
-        />
-
-      </div>
-
-      {email ? (
-        <EmailComponenet
-          Context={props.props.context}
-          Listdata={props.props}
-          data={todayEvent}
-          data2={details}
-          call={emailCallback}
-        />
-      ) : null}
-
-      {isOpen && (
-        <Panel
-          headerText={`Leaves of ${dt}`}
-          isOpen={isOpen}
-          onDismiss={closeModal}
-          /// isFooterAtBottom={true}
-          type={PanelType.medium}
-          closeButtonAriaLabel="Close"
-        >
-          <table className="styled-table">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Edit</th>
-                <th>Delete</th>
-              </tr>
-            </thead>
-            <tbody>
-              {showM?.map((item: any) => {
-                return (
-                  <tr>
-                    <td>{item.title}</td>
-                    <td>
-                      <a href="#" onClick={() => handleDateClick(item)}>
-                        <span
-                          title="Edit"
-                          className="svg__iconbox svg__icon--edit"
-                        ></span>
-                      </a>
-                    </td>
-                    <td>
-                      <a href="#" onClick={() => deleteElement(item?.Id)}>
-                        <span className="svg__iconbox svg__icon--trash"></span>
-                      </a>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </Panel>
-      )}
-
+        <FaPaperPlane></FaPaperPlane> <span>Send Leave Summary</span>
+      </a>
+      <Calendar
+        events={recurringEvents}
+        selectable
+        onSelectSlot={handleSelectSlot}
+        defaultView="month"
+        startAccessor="start"
+        endAccessor="end"
+        defaultDate={moment().toDate()}
+        onShowMore={handleShowMore}
+        views={{ month: true, week: true, day: true, agenda: true }}
+        localizer={localizer}
+        onSelectEvent={handleDateClick}
+        eventPropGetter={eventStyleGetter}
+        onView={(newView: View) => setview(newView)}
+        onNavigate={handleNavigate}
+        view={view as View}
+      />
+    </div>
+    {email ? (
+      <EmailComponenet
+        Context={props.props.context}
+        Listdata={props.props}
+        data={todayEvent}
+        data2={details}
+        call={emailCallback}
+      />
+    ) : null}
+    {isOpen && (
       <Panel
-        onRenderHeader={onRenderCustomHeader}
-        isOpen={m}
-        onDismiss={(e: any) => closem(e)}
-        // isFooterAtBottom={true}
+        headerText={`Leaves of ${dt}`}
+        isOpen={isOpen}
+        onDismiss={closeModal}
+        /// isFooterAtBottom={true}
         type={PanelType.medium}
         closeButtonAriaLabel="Close"
       >
-        <form className="row g-3">
-          {peoplePickerShow ? (
-            <div>
-              <PeoplePicker
-                context={props.props.context}
-                principalTypes={[PrincipalType.User]}
-                personSelectionLimit={1}
-                titleText="Select People"
-                resolveDelay={1000}
-                onChange={people}
-                showtooltip={true}
-                required={true}
-                disabled={IsDisableField}
-              ></PeoplePicker>
-            </div>
-          ) : (
-            ""
-          )}
-          <div className="col-md-12">
-            <TextField
-              label="Short Description"
-              required
-              value={inputValueName}
-              onChange={handleInputChangeName}
+        <table className="styled-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>EndDate</th>
+              <th>Edit</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {showM?.map((item: any) => {
+              return (
+                <tr>
+                  <td>{item.title}</td>
+
+                  <td>{moment(item.end).format("DD/MM/YYYY")}</td>
+                  <td>
+                    <a href="#" onClick={() => handleDateClick(item)}>
+                      <span
+                        title="Edit"
+                        className="svg__iconbox svg__icon--edit"
+                      ></span>
+                    </a>
+                  </td>
+                  <td>
+                    <a href="#" onClick={() => deleteElement(item?.iD)}>
+                      <span className="svg__iconbox svg__icon--trash"></span>
+                    </a>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </Panel>
+    )}
+    <Panel
+      onRenderHeader={onRenderCustomHeader}
+      isOpen={m}
+      onDismiss={(e: any) => closem(e)}
+      type={PanelType.medium}
+      closeButtonAriaLabel="Close"
+    >
+      <form className="row g-3">
+        {peoplePickerShow ? (
+          <div>
+            <PeoplePicker
+              context={props.props.context}
+              principalTypes={[PrincipalType.User]}
+              personSelectionLimit={1}
+              titleText="Select People"
+              resolveDelay={1000}
+              onChange={people}
+              showtooltip={true}
+              required={true}
+              disabled={IsDisableField}
+            ></PeoplePicker>
+          </div>
+        ) : (
+          ""
+        )}
+        <div className="col-md-12">
+          <TextField
+            label="Short Description"
+            required
+            value={inputValueName}
+            onChange={handleInputChangeName}
+          />
+        </div>
+        {showRecurrenceSeriesInfo != true && (
+          <div className="col-md-6">
+            <DatePicker
+              label="Start Date"
+              minDate={minDate}
+              value={startDate}
+              onSelectDate={(date) => setStartDatefunction(date)}
+              hidden={showRecurrenceSeriesInfo}
+              disabled={IsDisableField}
+            />
+            
+          </div>
+        )}
+        {/* {!disableTime ? (
+          <div className="col-md-6  mt-4">
+            <label htmlFor="1" className="w-100">
+              Start Time:
+            </label>
+            <input
+              id="1"
+              type="time"
+              name="Start-time"
+              value={selectedTime}
+              onChange={handleTimeChange}
             />
           </div>
-          {showRecurrenceSeriesInfo != true && (
-            <div className="col-md-6">
-              <DatePicker
-                label="Start Date"
-                minDate={minDate}
-                value={startDate}
-                onSelectDate={(date) => setStartDatefunction(date)}
-                hidden={showRecurrenceSeriesInfo}
-                disabled={IsDisableField}
-              />
-            </div>
-          )}
-          {/* {!disableTime ? (
-            <div className="col-md-6  mt-4">
-              <label htmlFor="1" className="w-100">
-                Start Time:
-              </label>
-              <input
-                id="1"
-                type="time"
-                name="Start-time"
-                value={selectedTime}
-                onChange={handleTimeChange}
-              />
-            </div>
-          ) : (
-            ""
-          )} */}
-          {showRecurrenceSeriesInfo != true && (
-            <div className="col-md-6">
-              <DatePicker
+        ) : (
+          ""
+        )} */}
+        {showRecurrenceSeriesInfo != true && (
+          <div className="col-md-6">
+           
+             <DatePicker
                 label="End Date"
                 value={endDate}
                 minDate={startDate}
@@ -1490,245 +1633,244 @@ const Apps = (props: any) => {
                 onSelectDate={(date) => setEndDate(date)}
                 disabled={IsDisableField}
               />
-            </div>
-          )}
-          {/* {!disableTime ? (
-            <div className="col-md-6  mt-4">
-              <label htmlFor="2" className="w-100">
-                End Time:
-              </label>
-              <input
-                id="2"
-                type="time"
-                name="End-time"
-                value={selectedTimeEnd}
-                onChange={handleTimeChangeEnd}
-              />
-            </div>
-          ) : (
-            ""
-          )} */}
-          <div>
-            <label className="SpfxCheckRadio alignCenter">
-              <input
-                type="checkbox"
-                className="me-1 mt-0 form-check-input"
-                checked={isChecked}
-                // onChange={handleCheckboxChange}
-                disabled={IsDisableField}
-              />
-              All Day Event
-            </label>
           </div>
-          <div>
-            <label className="ms-Label root-251">
-              Select Half Day Event
+        )}
+        {/* {!disableTime ? (
+          <div className="col-md-6  mt-4">
+            <label htmlFor="2" className="w-100">
+              End Time:
             </label>
-            <div className="alignCenter">
-              <label className="SpfxCheckRadio">
-                <input
-                  type="checkbox"
-                  className="me-1 form-check-input"
-                  checked={isFirstHalfDChecked}
-                  // onChange={handleHalfDayCheckboxChange}
-                  disabled={IsDisableField}
-                /> First HalfDay
-              </label>
-              <label className="SpfxCheckRadio">
-                <input
-                  type="checkbox"
-                  className="me-1 form-check-input"
-                  checked={isSecondtHalfDChecked}
-                  // onChange={handleHalfDayCheckboxChangeSecond}
-                  disabled={IsDisableField}
-                /> Second HalfDay
-              </label>
-
-
-            </div>
+            <input
+              id="2"
+              type="time"
+              name="End-time"
+              value={selectedTimeEnd}
+              onChange={handleTimeChangeEnd}
+            />
           </div>
-          {
-            <div>
-              {showRecurrence && (
-                <div
-                  className="bdr-radius"
-                  style={{
-                    display: "inline-block",
-                    verticalAlign: "top",
-                    width: "200px"
-                  }}
-                >
-                  <Toggle
-                    className="rounded-pill"
-                    defaultChecked={false}
-                    checked={showRecurrenceSeriesInfo}
-                    inlineLabel
-                    label="Recurrence ?"
-                    onChange={handleRecurrenceCheck}
-                    disabled={IsDisableField}
-                  />
-                </div>
-              )}
-              {showRecurrenceSeriesInfo && (
-                <EventRecurrenceInfo
-                  context={props.props.context}
-                  display={true}
-                  recurrenceData={recurrenceData}
-                  startDate={startDate}
-                  siteUrl={props.props.siteUrl}
-                  returnRecurrenceData={returnRecurrenceInfo} selectedKey={undefined} selectedRecurrenceRule={undefined}                // selectedKey={selectedKey}
-                // selectedRecurrenceRule={selectedKey}
-                ></EventRecurrenceInfo>
-              )}
-            </div>
-          }
-          <div>
-            <TextField
-              label="Location"
-              value={location}
-              // onChange={handleInputChangeLocation}
+        ) : (
+          ""
+        )} */}
+        <div>
+          <label className="SpfxCheckRadio alignCenter">
+            <input
+              type="checkbox"
+              className="me-1 mt-0 form-check-input"
+              checked={isChecked}
+              onChange={handleCheckboxChange}
               disabled={IsDisableField}
             />
-          </div>{" "}
-          <Dropdown
-            label="Leave Type"
-            options={leaveTypes}
-            selectedKey={type}
-            // defaultSelectedKey="Un-Planned" // Set the defaultSelectedKey to the key of "Planned Leave"
-            // onChange={(e, option) => HandledLeaveType(option.key)}
-            required // Add the "required" attribute
-            errorMessage={type ? "" : "Please select a leave type"} // Display an error message if no type is selected
-          />
-          <Dropdown
-            label="Team"
-            options={Designation}
-            selectedKey={dType}
-            onChange={(e, option) => sedType(option.key)}
-            disabled={IsDisableField}
-            required
-          />
-          <div className="col-md-12">
-            <ReactQuill
-              value={inputValueReason}
-              onChange={handleInputChangeReason}
-              readOnly={IsDisableField}
-            />
-          </div>
-        </form>
+            All Day Event
+          </label>
+        </div>
+        <div>
+          <label className="ms-Label root-251">
+            Select Half Day Event
+          </label>
+          <div className="alignCenter">
+            <label className="SpfxCheckRadio">
+              <input
+                type="checkbox"
+                className="me-1 form-check-input"
+                checked={isFirstHalfDChecked}
+                onChange={handleHalfDayCheckboxChange}
+                disabled={IsDisableField}
+              /> First HalfDay
+            </label>
+            <label className="SpfxCheckRadio">
+              <input
+                type="checkbox"
+                className="me-1 form-check-input"
+                checked={isSecondtHalfDChecked}
+                onChange={handleHalfDayCheckboxChangeSecond}
+                disabled={IsDisableField}
+              /> Second HalfDay
+            </label>
 
-        <br />
-        {/* {!disabl ? (
-          <PrimaryButton
-            disabled={disabl}
-            text="Delete"
-            onClick={deleteElement}
-          />
-        ) : (
-          ""
-        )} */}
-        {/* 
-        {!disabl ? <><PrimaryButton text="Save" onClick={updateElement} />
-        <PrimaryButton text="Cancel" onClick={closem}/>
-        </>: ""}
-        
-        {!disabl ? (<>
+
+          </div>
+        </div>
+        {
           <div>
-            Created {CDate} {CTime} by {createdBY}
-          </div>
-          <div>
-            Last Modified {MDate} {MTime} by {modofiedBy}
-          </div>
-         
-          <a href="#" onClick={deleteElement}>
-          <span className="svg__iconbox svg__icon--trash"></span> Delete this Item
-        </a>
-          </>) : (
-          ""
-        )} */}
-
-        {/* {!disabl ? (
-          
-        ) : (
-          ""
-        )} */}
-        {/* <br />
-        {!disab ? <><PrimaryButton text="Submit" onClick={saveEvent} />
-        <PrimaryButton text="Cancel" onClick={closem}/>
-        </> : ""} */}
-
-        {!disabl ? (
-          <footer>
-            <div className="align-items-center d-flex justify-content-between">
-              <div>
-                <div className="">
-                  Created {CDate} {CTime} by {createdBY}
-                </div>
-                <div>
-                  Last Modified {MDate} {MTime} by {modofiedBy}
-                </div>
-                <div>
-                  <a href="#" onClick={() => deleteElement(vId)}>
-                    <span className="svg__iconbox svg__icon--trash"></span>{" "}
-                    Delete this Item
-                  </a>
-                  <VersionHistoryPopup
-                    taskId={vId}
-                    listId={props.props.SmalsusLeaveCalendar}
-                    siteUrls={props.props.siteUrl}
-                  />
-                </div>
-              </div>
-              <a
-                target="_blank"
-                data-interception="off"
-                href={`${props.props.siteUrl}/Lists/Events/EditForm.aspx?ID=${vId}`}
+            {showRecurrence && (
+              <div
+                className="bdr-radius"
+                style={{
+                  display: "inline-block",
+                  verticalAlign: "top",
+                  width: "200px"
+                }}
               >
-                Open out-of-the-box form
-              </a>
+                <Toggle
+                  className="rounded-pill"
+                  defaultChecked={false}
+                  checked={showRecurrenceSeriesInfo}
+                  inlineLabel
+                  label="Recurrence ?"
+                  onChange={handleRecurrenceCheck}
+                  disabled={IsDisableField}
+                />
+              </div>
+            )}
+            {showRecurrenceSeriesInfo && (
+              <EventRecurrenceInfo
+                context={props.props.context}
+                display={true}
+                recurrenceData={recurrenceData}
+                startDate={startDate}
+                siteUrl={props.props.siteUrl}
+                returnRecurrenceData={returnRecurrenceInfo} selectedKey={undefined} selectedRecurrenceRule={undefined}                // selectedKey={selectedKey}
+              // selectedRecurrenceRule={selectedKey}
+              ></EventRecurrenceInfo>
+            )}
+          </div>
+        }
+        <div>
+          <TextField
+            label="Location"
+            value={location}
+            onChange={handleInputChangeLocation}
+            disabled={IsDisableField}
+          />
+        </div>{" "}
+        <Dropdown
+          label="Leave Type"
+          options={leaveTypes}
+          selectedKey={type}
+          // defaultSelectedKey="Un-Planned" // Set the defaultSelectedKey to the key of "Planned Leave"
+          onChange={(e, option) => HandledLeaveType(option.key)}
+          required // Add the "required" attribute
+          errorMessage={type ? "" : "Please select a leave type"} // Display an error message if no type is selected
+        />
+        <Dropdown
+          label="Team"
+          options={Designation}
+          selectedKey={dType}
+          onChange={(e, option) => sedType(option.key)}
+          disabled={IsDisableField}
+          required
+        />
+        <div className="col-md-12">
+          <ReactQuill
+            value={inputValueReason}
+            onChange={handleInputChangeReason}
+            readOnly={IsDisableField}
+          />
+        </div>
+      </form>
+
+      <br />
+      {/* {!disabl ? (
+        <PrimaryButton
+          disabled={disabl}
+          text="Delete"
+          onClick={deleteElement}
+        />
+      ) : (
+        ""
+      )} */}
+      {/* 
+      {!disabl ? <><PrimaryButton text="Save" onClick={updateElement} />
+      <PrimaryButton text="Cancel" onClick={closem}/>
+      </>: ""}
+      
+      {!disabl ? (<>
+        <div>
+          Created {CDate} {CTime} by {createdBY}
+        </div>
+        <div>
+          Last Modified {MDate} {MTime} by {modofiedBy}
+        </div>
+       
+        <a href="#" onClick={deleteElement}>
+        <span className="svg__iconbox svg__icon--trash"></span> Delete this Item
+      </a>
+        </>) : (
+        ""
+      )} */}
+
+      {/* {!disabl ? (
+        
+      ) : (
+        ""
+      )} */}
+      {/* <br />
+      {!disab ? <><PrimaryButton text="Submit" onClick={saveEvent} />
+      <PrimaryButton text="Cancel" onClick={closem}/>
+      </> : ""} */}
+
+      {!disabl ? (
+        <footer>
+          <div className="align-items-center d-flex justify-content-between">
+            <div>
+              <div className="">
+                Created {CDate} {CTime} by {createdBY}
+              </div>
               <div>
-                <button
-                  type="button"
-                  className="btn btn-default  px-3"
-                  onClick={closem}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="btn btn-primary ms-1 px-3"
-                  onClick={updateElement}
-                >
-                  Save
-                </button>
+                Last Modified {MDate} {MTime} by {modofiedBy}
+              </div>
+              <div>
+                <a href="#" onClick={() => deleteElement(vId)}>
+                  <span className="svg__iconbox svg__icon--trash"></span>{" "}
+                  Delete this Item
+                </a>
+                <VersionHistoryPopup
+                  taskId={vId}
+                  listId={props.props.SmalsusLeaveCalendar}
+                  siteUrls={props.props.siteUrl}
+                />
               </div>
             </div>
-          </footer>
-        ) : (
-          ""
-        )}
-
-        {!disab ? (
-          <div className="modal-footer">
-            <button
-              type="button"
-              className="btn btn-default  px-3"
-              onClick={closem}
-
+            <a
+              target="_blank"
+              data-interception="off"
+              href={`${props.props.siteUrl}/Lists/Events/EditForm.aspx?ID=${vId}`}
             >
-              Cancel
-            </button>
-            <button className="btn btn-primary ms-1 px-3" onClick={saveEvent}>
-              Save
-            </button>
+              Open out-of-the-box form
+            </a>
+            <div>
+              <button
+                type="button"
+                className="btn btn-default  px-3"
+                onClick={closem}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-primary ms-1 px-3"
+                onClick={updateElement}
+              >
+                Save
+              </button>
+            </div>
           </div>
-        ) : (
-          ""
-        )}
+        </footer>
+      ) : (
+        ""
+      )}
 
-      </Panel>
+      {!disab ? (
+        <div className="modal-footer">
+          <button
+            type="button"
+            className="btn btn-default  px-3"
+            onClick={closem}
 
-      {leaveReport ? <MonthlyLeaveReport props={props.props} Context={props.props.context} /> : ""}
-    </div>
-  );
+          >
+            Cancel
+          </button>
+          <button className="btn btn-primary ms-1 px-3" onClick={saveEvent}>
+            Save
+          </button>
+        </div>
+      ) : (
+        ""
+      )}
+
+    </Panel>
+
+    {leaveReport ? <MonthlyLeaveReport props={props.props} Context={props.props.context} callback={() => setleaveReport(false)} /> : ""}
+  </div>);
 }
 
 export default Apps;

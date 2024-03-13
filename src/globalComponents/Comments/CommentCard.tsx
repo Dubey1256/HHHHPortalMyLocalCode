@@ -833,7 +833,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   public render(): React.ReactElement<ICommentCardProps> {
     return (
       <div >
-        <div className='mb-3 card commentsection'>
+        <div className='mb-3 card commentsection boxshadow'>
           <div className='card-header'>
             <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Comments<span><Tooltip ComponentId='586' /></span></div>
           </div>
