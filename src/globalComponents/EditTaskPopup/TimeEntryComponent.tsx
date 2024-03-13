@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable no-prototype-builtins */
+
 import * as React from "react";
 import { sp, Web } from "sp-pnp-js";
 import * as $ from "jquery";
@@ -23,7 +22,7 @@ import {
   MdKeyboardArrowRight,
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
-} from "react-icons/Md";
+} from "react-icons/md";
 
 let AllTimeSpentDetails: any = [];
 let CurntUserId = "";
@@ -81,9 +80,9 @@ const TimeEntryPopup = (item: any) => {
     RelativeUrl = item?.Context?.pageContext?.web?.serverRelativeUrl;
     CurrentSiteUrl = item?.Context?.pageContext?.web?.absoluteUrl;
   }
-  
- 
- const [isAlertVisible, setIsAlertVisible] = React.useState(false);
+
+
+  const [isAlertVisible, setIsAlertVisible] = React.useState(false);
   const [AllTimeSheetDataNew, setTimeSheet] = React.useState([]);
   const [date, setDate] = React.useState(undefined);
   const [showCat, setshowCat] = React.useState([]);
@@ -735,23 +734,23 @@ const TimeEntryPopup = (item: any) => {
     AllTimeSpentDetails?.map((item: any) => {
       if (item?.subRows != undefined && item?.subRows?.length > 0) {
         item?.subRows.map((value: any) => {
-          // if (value?.Status != undefined) {
-          //   if (value?.Status == "Draft") {
+          if (value?.Status != undefined) {
+            if (value?.Status == "Draft") {
 
-          //     value.lableColor = "yellowForTimeSheet"
-          //   }
-          //   else if (value?.Status == "Rejected") {
+              value.lableColor = "yellowForTimeSheet"
+            }
+            else if (value?.Status == "Rejected") {
 
-          //     value.lableColor = "redForTimeSheet"
-          //   }
-          //   else if (value?.Status == "Approved") {
+              value.lableColor = "redForTimeSheet"
+            }
+            else if (value?.Status == "Approved") {
 
-          //     value.lableColor = 'greenForTimeSheet'
-          //   }
-          //   else if (value?.Status == "Approval") {
-          //     value.lableColor = "blueForTimeSheet"
-          //   }
-          // }
+              value.lableColor = 'greenForTimeSheet'
+            }
+            else if (value?.Status == "Approval") {
+              value.lableColor = "blueForTimeSheet"
+            }
+          }
         })
       }
 
@@ -866,11 +865,6 @@ const TimeEntryPopup = (item: any) => {
       if (items.subRows != undefined && items.subRows.length > 0) {
         $.each(items.subRows, function (index: any, child: any) {
           const title = child.Title;
-          // child.subRows?.map((data: any) => {
-          //   if (!data.Status) {
-          //     data.Status = "Draft";
-          //   }
-          // });
           if (!finalData[title]) {
             finalData[title] = [child];
           } else {
@@ -1014,59 +1008,72 @@ const TimeEntryPopup = (item: any) => {
   // ---------------------------------------------------- Changing Task Status------------------------------------------------------------------------------
 
 
+  const sendForApproval = async (child: any) => {
+    var UpdatedData: any = [];
+    if(child.AuthorId == CurntUserId){
 
-  const changeTaskStatus = async (childNew: any) => {
-
-    let updatedData = [];
-
-
-
-
-
-    for (const subItem of AllTimeSpentDetails) {
-
-      if (subItem.Id === childNew.MainParentId && subItem.subRows?.length > 0) {
-
-        for (const newSubItem of subItem.subRows) {
-
-          if (newSubItem?.ParentID === childNew?.ParentID) {
-
-            newSubItem.Status = "Approval";
-
+    
+    $.each(TaskCate, function (index: any, update: any) {
+      if (update.Id === child.ParentID && update.AuthorId == CurntUserId) {
+        $.each(update.AdditionalTime, function (index: any, updateitem: any) {
+          isTimes = true;
+          if (updateitem.ID === child.ID) {
+            updateitem.Id = child.ID;
+            updateitem.TaskTime = child.TaskTime;
+            updateitem.TaskTimeInMin = child.TaskTimeInMin;
+            updateitem.TaskDate = child.TaskDate;
+            updateitem.Description = child?.Description;
+            updateitem.Status = 'Approval';
+            UpdatedData.push(updateitem);
+          } else {
+            UpdatedData.push(updateitem);
           }
-
-        }
-
-        updatedData = subItem.subRows;
-
+        });
       }
+    });
+    UpdatedData?.forEach((val: any) => {
+      delete val.TaskDates;
+    });
+    setTaskStatuspopup2(false);
+    if (
+      item.props.siteType == "Migration" ||
+      item.props.siteType == "ALAKDigital"
+    ) {
+      var ListId = TimeSheetlistId;
+    } else {
+      var ListId = TimeSheetlistId;
+    }
+    let web = new Web(`${siteUrl}`);
 
+    await web.lists
+      .getById(ListId)
+      .items.getById(child.ParentID)
+      .update({
+        AdditionalTimeEntry: JSON.stringify(UpdatedData),
+      })
+      .then((res: any) => {
+        console.log(res);
+
+        closeAddTaskTimepopup();
+        setupdateData(updateData + 1);
+      });
+    }
+    else{
+      alert('You are only permitted to submit your own timesheet for approval. Please ensure to send your timesheet for approval')
     }
 
-
-
-    const listId = TimeSheetlistId;
-
-
-
-    let web = new Web(`${CurrentSiteUrl}`);
-
-
-
-    await web.lists.getById(listId).items.getById(childNew.ParentID).update({
-
-      AdditionalTimeEntry: JSON.stringify(updatedData),
-
-    }).then((res) => {
-
-      console.log(res);
-
-      setupdateData(updateData + 1);
-
-    });
-
+  }
+  // -------------------------------------------------------CHANGE STATUS COLOR FUNCTION ------------------------------------------------------------
+  const getStatusClassName = (status: any) => {
+    switch (status) {
+      case "Draft":
+        return "svg__iconbox svg__icon--forApproval hreflink";
+      case "Rejected":
+        return "svg__iconbox svg__icon--forApproval hreflink";
+      default:
+        return "svg__iconbox svg__icon--forApproval Disabled-Link";
+    }
   };
-
 
 
   //------------------------------------------------------Load Timesheet Data-----------------------------------------------------------------------------
@@ -1200,6 +1207,11 @@ const TimeEntryPopup = (item: any) => {
                 var UpdatedData: any = {};
                 AllUsers.forEach((taskUser: any) => {
                   if (taskUser.AssingedToUserId == CurntUserId) {
+                    if (taskUser?.ApproverId?.length > 0) {
+                      UpdatedData["IsApprover"] = true;
+                    } else {
+                      UpdatedData["IsApprover"] = false;
+                    }
                     UpdatedData["AuthorName"] = taskUser.Title;
                     UpdatedData["Company"] = taskUser.Company;
                     UpdatedData["AuthorImage"] =
@@ -1213,6 +1225,12 @@ const TimeEntryPopup = (item: any) => {
                 if (Datee == "Invalid Date") {
                   Datee = Moment().format();
                 }
+                let TimeSheetStatus: string = '';
+                if (UpdatedData.IsApprover) {
+                  TimeSheetStatus = "Draft"
+                } else {
+                  TimeSheetStatus = ""
+                }
                 var TimeInH: any = TimeInMinutes / 60;
                 TimeInH = TimeInH.toFixed(2);
                 item.TimesheetTitle.Title = NewParentTitle;
@@ -1222,7 +1240,7 @@ const TimeEntryPopup = (item: any) => {
                 update["AuthorName"] = UpdatedData.AuthorName;
                 update["AuthorId"] = CurntUserId;
                 update["AuthorImage"] = UpdatedData.AuthorImage;
-                //update["Status"]="Draft";
+                update["Status"] = TimeSheetStatus;
                 update["ID"] = 0;
                 update["MainParentId"] = mainParentId;
                 update["ParentID"] = NewParentId;
@@ -1834,6 +1852,11 @@ const TimeEntryPopup = (item: any) => {
       var AddMainParent: any = "";
       $.each(AllUsers, function (index: any, taskUser: any) {
         if (taskUser.AssingedToUserId === CurntUserId) {
+          if (taskUser?.ApproverId?.length > 0) {
+            CurrentUser["IsApprover"] = true;
+          } else {
+            CurrentUser["IsApprover"] = false;
+          }
           CurrentUser["AuthorName"] = taskUser.Title;
           CurrentUser["Company"] = taskUser.Company;
           CurrentUser["AuthorImage"] =
@@ -1874,13 +1897,19 @@ const TimeEntryPopup = (item: any) => {
                 }
               }
             );
-
+            let TimeSheetStatus: string = '';
+            if (CurrentUser?.IsApprover) {
+              TimeSheetStatus = "Draft"
+            } else {
+              TimeSheetStatus = "";
+            }
             update["AuthorName"] = CurrentUser.AuthorName;
             update["AuthorImage"] = CurrentUser.AuthorImage;
             update["ID"] = timeSpentId.ID + 1;
             update["AuthorId"] = CurntUserId;
             update["MainParentId"] = AddMainParent;
             update["ParentID"] = AddParent;
+            update["Status"] = TimeSheetStatus;
             update["TaskTime"] =
               TimeInHours != undefined && TimeInHours != 0
                 ? TimeInHours
@@ -1951,6 +1980,11 @@ const TimeEntryPopup = (item: any) => {
       var TimeInMinute: any = changeTime / 60;
       $.each(AllUsers, function (index: any, taskUser: any) {
         if (taskUser.AssingedToUserId === CurntUserId) {
+          if (taskUser?.ApproverId?.length > 0) {
+            CurrentUser["IsApprover"] = true;
+          } else {
+            CurrentUser["IsApprover"] = false;
+          }
           CurrentUser["AuthorName"] = taskUser.Title;
           CurrentUser["Company"] = taskUser.Company;
           CurrentUser["AuthorImage"] =
@@ -2008,9 +2042,15 @@ const TimeEntryPopup = (item: any) => {
         });
 
         if (MyData != undefined && MyData.length > 0) {
+          let TimeSheetStatus: string = '';
+          if (CurrentUser?.IsApprover) {
+            TimeSheetStatus = "Draft"
+          } else {
+            TimeSheetStatus = "";
+          }
           update["AuthorName"] = CurrentUser.AuthorName;
           update["AuthorId"] = CurntUserId;
-          //update["Status"]="Draft";
+          update["Status"] = TimeSheetStatus;
           update["AuthorImage"] = CurrentUser.AuthorImage;
           update["ID"] = timeSpentId.ID + 1;
           update["Id"] = timeSpentId.ID + 1;
@@ -2024,7 +2064,7 @@ const TimeEntryPopup = (item: any) => {
           UpdatedData = MyData;
         } else {
           update["AuthorName"] = CurrentUser.AuthorName;
-         // update["Status"]="Draft";
+          update["Status"] = "Draft";
           update["AuthorImage"] = CurrentUser.AuthorImage;
           update["AuthorId"] = CurntUserId;
           update["ID"] = 0;
@@ -2122,7 +2162,7 @@ const TimeEntryPopup = (item: any) => {
     update["AuthorName"] = CurrentUser.AuthorName;
     update["AuthorImage"] = CurrentUser.AuthorImage;
     update["AuthorId"] = CurntUserId;
-    //update["Status"] = "Draft";
+    update["Status"] = "Draft";
     update["ID"] = 0;
     update["Id"] = 0;
     update["MainParentId"] = items.Id;
@@ -2513,7 +2553,7 @@ const TimeEntryPopup = (item: any) => {
 
     // setFlatview((flatview: any) => ([...flatview]))
   };
- // -------------------------------------------------------CHANGE STATUS COLOR FUNCTION ------------------------------------------------------------
+  // -------------------------------------------------------CHANGE STATUS COLOR FUNCTION ------------------------------------------------------------
   // const getStatusClassName = (status:any) => {
   //   switch (status) {
   //     case "Draft":
@@ -2691,36 +2731,64 @@ const TimeEntryPopup = (item: any) => {
                 </button>
               </span>
             ) : (
-              <>
-                {" "}
-                {/* <span
-                  title="Send For Approval"
-                  style={{display:"none"}}
-                  className={getStatusClassName(row?.original?.Status)}
-                  onClick={() =>
-                    changeTaskStatus(row?.original)
-                  }
-                ></span> */}
-                {" "}
-            
 
-                <span title="Copy"
-                  className="svg__iconbox svg__icon--copy"
-                  onClick={() => openAddTasktimepopup(row.original, "CopyTime")}
-                ></span>
-                 {" "}
-                <span
-                  title="Edit"
-                  className="svg__iconbox svg__icon--edit hreflink"
-                  onClick={() =>
-                    openAddTasktimepopup(row?.original, "EditTime")
-                  }
-                ></span>{" "}
-                <span
-                  title="Delete"
-                  className="svg__icon--trash hreflink  svg__iconbox"
-                  onClick={() => deleteTaskTime(row.original)}
-                ></span>
+              <>
+                {row?.original?.Status == '' ?
+                  <>
+                    <span title="Copy"
+                      className="svg__iconbox svg__icon--copy"
+                      onClick={() => openAddTasktimepopup(row.original, "CopyTime")}
+                    ></span>
+                    <span
+                      title="Edit"
+                      className="svg__iconbox svg__icon--edit hreflink"
+                      onClick={() =>
+                        openAddTasktimepopup(row?.original, "EditTime")
+                      }
+                    ></span>
+                    <span
+                      title="Delete"
+                      className="svg__icon--trash hreflink  svg__iconbox"
+                      onClick={() => deleteTaskTime(row.original)}
+                    ></span>
+                  </>
+                  :
+                  <>
+                    {row?.original?.Status === "Draft" ||
+                      row?.original?.Status === "Rejected" ?
+                      <>
+                        <span
+                          title="Send For Approval"
+                          className="svg__iconbox svg__icon--forApproval hreflink"
+                          onClick={() =>
+                            sendForApproval(row?.original)
+                          }
+                        ></span>
+                        <span title="Copy"
+                          className="svg__iconbox svg__icon--copy"
+                          onClick={() => openAddTasktimepopup(row.original, "CopyTime")}
+                        ></span>
+                      </>
+                      : null}
+                    {" "}
+
+
+                    {row?.original?.Status === "Approved" || row?.original?.Status === "Approval" || row?.original?.Status === ""
+                      ? null :
+                      <> <span
+                        title="Edit"
+                        className="svg__iconbox svg__icon--edit hreflink"
+                        onClick={() =>
+                          openAddTasktimepopup(row?.original, "EditTime")
+                        }
+                      ></span>
+                        <span
+                          title="Delete"
+                          className="svg__icon--trash hreflink  svg__iconbox"
+                          onClick={() => deleteTaskTime(row.original)}
+                        ></span> </>}
+                  </>
+                }
               </>
             )}
           </div>
@@ -3381,7 +3449,9 @@ const TimeEntryPopup = (item: any) => {
                     <>
                       <a
                         target="_blank"
-                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=${saveEditTaskTimeChild?.ParentID}`}
+                        className="hreflink"
+                        data-interception="off"
+                        href={`${CurrentSiteUrl}/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=${saveEditTaskTimeChild?.ParentID}`}
                       >
                         Open out-of-the-box form
                       </a>
