@@ -646,6 +646,9 @@ const CompareTool = (props: any) => {
                     }
                     datas[0].SiteComposition = SiteCompositionTemp;
                     datas[0].Synonyms = globalCommon.parseJSON(datas[0]?.Synonyms);
+                    datas[0].FeedBackDescription = globalCommon.parseJSON(datas[0]?.FeedBack);
+                    if (datas[0].FeedBackDescription === null || datas[0].FeedBackDescription === "")
+                        datas[0].FeedBackDescription = [];
                     datas[0].AssignToUsers = [];
                     datas[0].TeamMembersUsers = [];
                     datas[0]["SiteIcon"] = SmartMetaDataAllItems?.Sites.map((site: any) => {
@@ -2035,7 +2038,7 @@ const CompareTool = (props: any) => {
             let postData: any = {
                 'Title': Item.Title,
                 'Background': Item.Background,
-                'Body': Item.Body,
+                //'Body': Item.Body,
                 'PercentComplete': PercentComplete,
                 'Priority': Item.Priority,
                 'DeliverableSynonyms': Item.DeliverableSynonyms,
@@ -2072,7 +2075,9 @@ const CompareTool = (props: any) => {
                 postData.PortfolioId = portfolioIds;
             if (projectIds != "")
                 postData.ProjectId = projectIds;
-
+            if (Item?.FeedBackDescription != undefined && Item.FeedBackDescription.length > 0)
+                postData.FeedBack =  JSON.stringify(Item.FeedBackDescription)
+               
             globalCommon.updateItemById(props?.contextValue?.siteUrl, Item.listId, postData, Item.Id)
                 .then((returnresult) => {
                     console.log(returnresult);
@@ -2378,6 +2383,23 @@ const CompareTool = (props: any) => {
         })
         setData(updatedItems);
     }
+    const cleanHTML = (html: any, folora: any, index: any) => {
+        html = globalCommon?.replaceURLsWithAnchorTags(html)
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        const paragraphs = div.querySelectorAll('p');
+        // Filter out empty <p> tags
+        paragraphs.forEach((p) => {
+            if (p.innerText.trim() === '') {
+                p.parentNode.removeChild(p); // Remove empty <p> tags
+            }
+        });
+        div.innerHTML = div.innerHTML.replace(/\n/g, '<br>')  // Convert newlines to <br> tags first
+        div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
+
+
+        return div.innerHTML;
+    };
 
     return (
         <>
@@ -3792,36 +3814,88 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('Comments')} />
                             </Col>
                         </Row>
+                        {data[0]?.TaskType === undefined ?
+                            (<Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Description
+                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Body", true) }}></span>
+                                        </label>
+                                        <textarea rows={3} className="form-control" value={data[0]?.Body != undefined && data[0]?.Body != null ? data[0]?.Body?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}>
 
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Description
-                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Body", true) }}></span>
-                                    </label>
-                                    <textarea rows={3} className="form-control" value={data[0]?.Body != undefined && data[0]?.Body != null ? data[0]?.Body?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}>
+                                        </textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="iconSec">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'Body', data[1]?.Body)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'Body', data[0]?.Body)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Description
+                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Body", true) }}></span>
+                                        </label>
+                                        <textarea className="form-control" rows={3} value={data[1]?.Body != undefined && data[1]?.Body != null ? data[1]?.Body?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('Body')} />
+                                </Col>
+                            </Row>)
+                            : (<Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Description
 
-                                    </textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="iconSec">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'Body', data[1]?.Body)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'Body', data[0]?.Body)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Description
-                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Body", true) }}></span>
-                                    </label>
-                                    <textarea className="form-control" rows={3} value={data[1]?.Body != undefined && data[1]?.Body != null ? data[1]?.Body?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('Body')} />
-                            </Col>
-                        </Row>
+                                        </label>
+                                        {data[0]?.FeedBackDescription[0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
+                                            return (
+                                                <div className="w-100">
+                                                    <div className="justify-content-between d-flex">
+                                                        <div className="alignCenter m-0"></div>
+                                                    </div>
+                                                    <div className="d-flex p-0 FeedBack-comment "><div className="border p-1 me-1">
+                                                        <span>{i + 1}</span><ul className="list-none">
+                                                        </ul></div>
+                                                        <div className="border p-2 full-width text-break"><span>
+                                                            <div><span dangerouslySetInnerHTML={{ __html: cleanHTML(fbData?.Title, null, i) }}></span></div>
+                                                        </span></div></div></div>
+                                            )
+                                        })}
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="iconSec">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'FeedBackDescription', data[1]?.FeedBackDescription)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'FeedBackDescription', data[0]?.FeedBackDescription)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Description
+                                        </label>
+                                        {data[1]?.FeedBackDescription[0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
+                                            return (
+                                                <div className="w-100">
+                                                    <div className="justify-content-between d-flex">
+                                                        <div className="alignCenter m-0"></div>
+                                                    </div>
+                                                    <div className="d-flex p-0 FeedBack-comment "><div className="border p-1 me-1">
+                                                        <span>{i + 1}</span><ul className="list-none">
+                                                        </ul></div>
+                                                        <div className="border p-2 full-width text-break"><span>
+                                                            <div><span dangerouslySetInnerHTML={{ __html: cleanHTML(fbData?.Title, null, i) }}></span></div>
+                                                        </span></div></div></div>
+                                            )
+                                        })}
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('FeedBackDescription')} />
+                                </Col>
+                            </Row>)}
 
                         {data[0]?.TaskType === undefined && <span>
                             <Row className="Metadatapannel">
