@@ -49,6 +49,8 @@ const TaskStatusTbl = (Tile: any) => {
   const [ActiveTile, setActiveTile] = React.useState(Tile?.activeTile);
   const [dateRange, setDateRange] = React.useState<any>([]);
   const [isRejectItem, setisRejectItem] = React.useState<any>(undefined);
+  const [RefSelectedItem, setRefSelectedItem] = React.useState<any>([]);
+
   const settings = {
     dots: false, infinite: true, speed: 500, slidesToShow: 6, slidesToScroll: 1, nextArrow: <SamplePrevNextArrow type="next" />, prevArrow: <SamplePrevNextArrow type="prev" />,
     beforeChange: handleBeforeChange,
@@ -386,7 +388,6 @@ const TaskStatusTbl = (Tile: any) => {
       RejectedItem.PreviousComment = RejectedItem.RejectedDetails?.RejectedComment;
     }
     setisRejectItem(RejectedItem)
-    console.log(childRef?.current?.table?.getSelectedRowModel()?.flatRows)
   }
   const updateRejectComment = (e: any) => {
     console.log(e.target.value)
@@ -416,10 +417,21 @@ const TaskStatusTbl = (Tile: any) => {
             delete TimeEntry?.PreviousComment;
             delete TimeEntry?.UpdatedId;
           })
-          setisRejectItem(undefined)
+          //setisRejectItem(undefined)
           let web = new Web(UpdatedItem?.siteUrl);
           await web.lists.getById(UpdatedItem?.listId).items.getById(UpdatedItem.Id).update({ AdditionalTimeEntry: JSON.stringify(UpdatedItem?.AdditionalTimeEntry), })
             .then(async (res: any) => {
+              alert("Time Entry " + Type + " Successfully.")
+              DashboardConfig?.map((Config: any) => {
+                if (Config?.DataSource == 'TimeSheet' && Config.Tasks != undefined && Config.Tasks?.length > 0) {
+                  Config.Tasks?.forEach((Time: any, index: any) => {
+                    if (Time?.ID == RejectedItem?.ID && (Time?.UpdatedId == undefined || Time?.UpdatedId == RejectedItem?.UpdatedId)) {
+                      Config.Tasks?.splice(index, 1)
+                    }
+                  });
+                }
+              })
+              console.log('Updated Succesfully')
               if (Type == "Rejected") {
                 let sendUserEmail: any = [];
                 let FilterItem = AllTaskUser?.filter((User: any) => User?.AssingedToUserId == RejectedItem?.AuthorId)[0];
@@ -433,19 +445,21 @@ const TaskStatusTbl = (Tile: any) => {
                 <p>Thanks,</p>`
                 await globalCommon.SendTeamMessage(sendUserEmail, TeamMsg, ContextData?.propsValue?.Context);
               }
-              DashboardConfig?.map((Config: any) => {
-                if (Config?.DataSource == 'TimeSheet' && Config.Tasks != undefined && Config.Tasks?.length > 0) {
-                  Config.Tasks?.forEach((Time: any, index: any) => {
-                    if (Time?.ID == RejectedItem?.ID && (Time?.UpdatedId == undefined || Time?.UpdatedId == RejectedItem?.UpdatedId)) {
-                      Config.Tasks?.splice(index, 1)
+              DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+              DashboardConfigCopy?.map((Config: any) => {
+                if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
+                  Config?.Tasks?.map((Date: any) => {
+                    if (Date?.dates != undefined && Date?.dates?.length > 0) {
+                      Date?.dates?.map((Time: any) => {
+                        Time.ServerDate = Moment(Time?.ServerDate)
+                        Time.ServerDate = Time.ServerDate?._d;
+                        Time.ServerDate.setHours(0, 0, 0, 0)
+                      })
                     }
                   });
                 }
-              })
-              console.log('Updated Succesfully')
-              DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+              });
               setisRejectItem(undefined)
-              alert("Time Entry " + Type + " Successfully.")
               setActiveTile(Tile?.activeTile)
               rerender();
             }).catch((err: any) => {
@@ -458,8 +472,8 @@ const TaskStatusTbl = (Tile: any) => {
       let Count = 0;
       if (ContextData?.AllTimeEntry != undefined && ContextData?.AllTimeEntry?.length > 0) {
         ContextData?.AllTimeEntry.forEach((Item: any) => {
-          if (childRef?.current?.table?.getSelectedRowModel()?.flatRows != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length > 0) {
-            childRef?.current?.table?.getSelectedRowModel()?.flatRows.forEach((SelectedItem: any) => {
+          if (RefSelectedItem != undefined && RefSelectedItem?.length > 0) {
+            RefSelectedItem?.forEach((SelectedItem: any) => {
               if (SelectedItem?.original?.UpdatedId == Item.Id) {
                 Item.IsUpdateJSONEntry = true;
               }
@@ -481,9 +495,8 @@ const TaskStatusTbl = (Tile: any) => {
               .then((res: any) => {
                 setisRejectItem(undefined)
                 Count++;
-                if (Count == childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length) {
-                  childRef?.current?.table?.getSelectedRowModel()?.flatRows.UpdatedId
-                  const arrayOfIDs = childRef?.current?.table?.getSelectedRowModel()?.flatRows.map((item: any) => item?.original?.UpdatedId);
+                if (Count == RefSelectedItem?.length) {
+                  const arrayOfIDs = RefSelectedItem?.map((item: any) => item?.original?.UpdatedId);
                   DashboardConfig?.map((Config: any) => {
                     if (Config?.DataSource == 'TimeSheet') {
                       Config.Tasks = Config.Tasks.filter((item: any) => !arrayOfIDs.includes(item.UpdatedId));
@@ -493,6 +506,19 @@ const TaskStatusTbl = (Tile: any) => {
                   console.log('Updated Succesfully')
                   alert("All Time Entry Approved Successfully.")
                   DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+                  DashboardConfigCopy?.map((Config: any) => {
+                    if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
+                      Config?.Tasks?.map((Date: any) => {
+                        if (Date?.dates != undefined && Date?.dates?.length > 0) {
+                          Date?.dates?.map((Time: any) => {
+                            Time.ServerDate = Moment(Time?.ServerDate)
+                            Time.ServerDate = Time.ServerDate?._d;
+                            Time.ServerDate.setHours(0, 0, 0, 0)
+                          })
+                        }
+                      });
+                    }
+                  });
                   setActiveTile(Tile?.activeTile)
                   rerender();
                 }
@@ -510,6 +536,7 @@ const TaskStatusTbl = (Tile: any) => {
     if (RejectedItem.PreviousComment != undefined && RejectedItem.RejectedDetails != undefined)
       RejectedItem.RejectedDetails.RejectedComment = RejectedItem.PreviousComment;
     childRef?.current?.setRowSelection({});
+    rerender();
     setisRejectItem(RejectedItem)
     setisRejectItem(undefined)
   }
@@ -812,7 +839,7 @@ const TaskStatusTbl = (Tile: any) => {
           hasCheckbox: true,
           hasCustomExpanded: false,
           hasExpanded: false,
-          size: 5,
+          size: 20,
           margin: 0,
           id: "Id"
         },
@@ -821,7 +848,7 @@ const TaskStatusTbl = (Tile: any) => {
           id: "AuthorName",
           placeholder: "AuthorName",
           header: "",
-          size: 210,
+          size: 155,
           isColumnVisible: true,
           cell: ({ row }: any) => (
             <>
@@ -868,7 +895,7 @@ const TaskStatusTbl = (Tile: any) => {
             }
           },
           header: "",
-          size: 90,
+          size: 121,
           isColumnVisible: true
         },
         {
@@ -883,12 +910,12 @@ const TaskStatusTbl = (Tile: any) => {
           placeholder: "Description",
           header: "",
           isColumnVisible: true,
-          size: 700,
+          size: 425,
         },
         {
           id: "ff",
           accessorKey: "",
-          size: 75,
+          size: 50,
           canSort: false,
           placeholder: "",
           isColumnVisible: true,
@@ -917,10 +944,14 @@ const TaskStatusTbl = (Tile: any) => {
     setEditPopup(false);
   }
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
-    if (elem != undefined)
+    if (elem != undefined) {
+      setRefSelectedItem(elem)
       approveItem = elem;
-    else
+    }
+    else {
+      setRefSelectedItem(elem)
       approveItem = undefined
+    }
     //setActiveTile(Tile?.activeTile)
     rerender();
   }, []);
@@ -1052,7 +1083,7 @@ const TaskStatusTbl = (Tile: any) => {
                   </div>
                   <div className="Alltable maXh-300" style={{ height: "300px" }} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
-                      <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                      <GlobalCommanTable wrapperHeight="87% " tableId={config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
                     )}
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
                       {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={AllListId} emailStatus={"Approved"} items={approveItem} />}
@@ -1141,7 +1172,7 @@ const TaskStatusTbl = (Tile: any) => {
                                   <>
                                     <h3 className="f-15">{user?.Title} {Date?.DisplayDate} Task</h3>
                                     <div key={index} className="Alltable maXh-300 mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} style={{ height: "300px" }}>
-                                      <GlobalCommanTable columnSettingIcon={true} tableId={config?.Id + index + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
+                                      <GlobalCommanTable columnSettingIcon={true} multiSelect={true} tableId={config?.Id + index + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
                                         callBackData={callBackData} />
                                     </div>
                                   </>
@@ -1156,21 +1187,21 @@ const TaskStatusTbl = (Tile: any) => {
                 }
                 {config?.DataSource == 'TimeSheet' &&
                   <>
-                    <div className="alignCenter mb-1 empAllSec justify-content-between">
+                    <div className="alignCenter empAllSec justify-content-between">
                       <span className="fw-bold">
                       </span>
                       <span className="alignCenter">
                         {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
-                        {childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span className="empCol me-1 hreflink" onClick={() => SaveRejectPopup('ApprovedAll', undefined)}>Approve All</span>
-                          : <span className="me-1 hreflink" style={{ color: "#646464" }}>Approve All</span>}
+                        {RefSelectedItem?.length > 0 ? <span className="empCol me-1 mt-2 hreflink" onClick={() => SaveRejectPopup('ApprovedAll', undefined)}>Approve All</span>
+                          : <span className="me-1 mt-2 hreflink" style={{ color: "#646464" }}>Approve All</span>}
                       </span>
                     </div>
                     <div className="Alltable maXh-300" style={{ height: "300px" }} >
                       {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
-                        <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                        <GlobalCommanTable wrapperHeight="87%" multiSelect={true} tableId={config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
                       )}
                       {config?.Tasks != undefined && config?.Tasks?.length == 0 && (
-                        <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                        <GlobalCommanTable wrapperHeight="87%" multiSelect={true} tableId={config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
                       )}
                     </div>
                   </>}
