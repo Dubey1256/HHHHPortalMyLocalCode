@@ -725,7 +725,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 }
             });
         });
-        data[0]?.subRows?.map((task: any) => {
+        AllSiteTasksData?.map((task: any) => {
             task.TotalTaskTime = 0;
             const key = `Task${task?.siteType + task.Id}`;
             if (timeEntryIndex.hasOwnProperty(key) && timeEntryIndex[key]?.Id === task.Id && timeEntryIndex[key]?.siteType === task.siteType) {
@@ -737,7 +737,7 @@ function ReadyMadeTable(SelectedProp: any) {
             localStorage.setItem('timeEntryIndex', dataString);
         }
         console.log("timeEntryIndex", timeEntryIndex)
-        if (data[0]?.subRows?.length > 0) {
+        if (AllSiteTasksData?.length > 0) {
             setData([]);
             portfolioTypeData?.map((port: any, index: any) => {
                 if (SelectedProp?.SelectedItem != undefined) {
@@ -1489,7 +1489,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) &&
-                            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
                                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
                         }
                     </>
@@ -2555,7 +2555,7 @@ function ReadyMadeTable(SelectedProp: any) {
 
             </Panel>
 
-            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.AllListId} />}
+            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.SelectedProp} />}
 
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
