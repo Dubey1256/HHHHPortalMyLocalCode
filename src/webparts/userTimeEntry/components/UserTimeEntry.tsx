@@ -1299,6 +1299,7 @@ export default class UserTimeEntry extends React.Component<
 
       case "Last3Month":
         DateType = "Last3Month";
+        this.setState({ showShareTimesheet: true });
         startdt = new Date();
         startdt.setMonth(startdt.getMonth() - 3);
         startdt.setDate(1);
@@ -1309,18 +1310,21 @@ export default class UserTimeEntry extends React.Component<
 
       case "EntrieYear":
         DateType = "This Year";
+        this.setState({ showShareTimesheet: true });
         startdt = new Date(new Date().getFullYear(), 0, 1);
         enddt = new Date(new Date().getFullYear(), 11, 31);
         break;
 
       case "LastYear":
         DateType = "LastYear";
+        this.setState({ showShareTimesheet: true });
         startdt = new Date(new Date().getFullYear() - 1, 0, 1);
         enddt = new Date(new Date().getFullYear() - 1, 11, 31);
         break;
 
       case "AllTime":
         DateType = "AllTime";
+        this.setState({ showShareTimesheet: true });
         startdt = new Date("2017/01/01");
         enddt = new Date();
         break;
