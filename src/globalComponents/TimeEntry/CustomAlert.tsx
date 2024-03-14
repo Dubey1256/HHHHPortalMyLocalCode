@@ -21,7 +21,7 @@ const CustomAlert = ({ hidden, toggleDialog, message, linkText, linkUrl }:any) =
       <DialogContent>
         <p>
           {messageParts[0]}
-          <a href={linkUrl} target="_blank" rel="noreferrer noopener" style={{ margin: '0 4px' }}>
+          <a href={linkUrl} data-interception="off" target="_blank" rel="noreferrer noopener" style={{ margin: '0 4px' }}>
             {linkText}
           </a>
           {messageParts[1]}
