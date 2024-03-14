@@ -1016,14 +1016,13 @@ const inlineEditingcolumns = (props: any) => {
   const closeTaskStatusUpdatePopup = () => {
     setTaskStatusPopup(false);
   };
-  const handleCategoryChange = (event: any, CategoryId: any) => {
+  const handleCategoryChange = (event: any, CategoryId: any, Category: any) => {
     if (event.target.checked) {
-        setSelectedCatId([...selectedCatId, CategoryId]);
+        setSelectedCatId((prevSelectedCatId: any) => [...prevSelectedCatId, CategoryId]);
+        setCategoriesData((prevCategoriesData: any) => [...prevCategoriesData, Category]);
     } else {
-        const filteredID = selectedCatId.filter((val: any) => val !== CategoryId);
-        setSelectedCatId(filteredID);
-        const filteredCategory = CategoriesData.filter((itm: any) => itm?.Id !== CategoryId)
-        setCategoriesData(filteredCategory)
+        setSelectedCatId((prevSelectedCatId: any) => prevSelectedCatId.filter((val: any) => val !== CategoryId));
+        setCategoriesData((prevCategoriesData: any) => prevCategoriesData.filter((itm: any) => itm?.Id !== CategoryId));
     }
   };
   const closeTaskDueDate = () => {
@@ -1717,7 +1716,7 @@ const inlineEditingcolumns = (props: any) => {
                     id={option.Id}
                     value={option.Id}
                     checked={selectedCatId?.includes(option.Id)}
-                    onChange={(event) => handleCategoryChange(event, option.Id)}
+                    onChange={(event) => handleCategoryChange(event, option.Id, option)}
                   />
                   <a className="alignCenter" title={option.Title}>
                     {option.Title == "Immediate" ? (
