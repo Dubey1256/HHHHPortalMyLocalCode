@@ -1989,7 +1989,7 @@ function ReadyMadeTable(SelectedProp: any) {
     );
 
     //-------------------------------------------------- restructuring function start---------------------------------------------------------------
-
+ 
     const callBackData = React.useCallback((checkData: any) => {
         let array: any = [];
         if (checkData != undefined) {
@@ -2463,13 +2463,13 @@ function ReadyMadeTable(SelectedProp: any) {
     const customTableHeaderButtons = (
         <>
 
-            {(checkedList1?.current != undefined && checkedList1?.current?.length < 2 && checkedList1?.current?.[0]?.Item_x0020_Type != "Feature" && checkedList1?.current?.[0]?.Item_x0020_Type !="Task") && (SelectedProp?.SelectedItem != undefined && SelectedProp?.SelectedItem?.Item_x0020_Type != "Feature" && 'Parent' in SelectedProp?.SelectedItem) ?
+            {(checkedList1?.current != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length<2 && checkedList1?.current?.[0]?.Item_x0020_Type != "Feature" && checkedList1?.current?.[0]?.Item_x0020_Type !="Task") && (SelectedProp?.SelectedItem != undefined && SelectedProp?.SelectedItem?.Item_x0020_Type != "Feature" && 'Parent' in SelectedProp?.SelectedItem) ?
                 <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure" onClick={() => OpenAddStructureModal()}>
                     {" "} Add Structure{" "}</button> :
                 <button type="button" disabled className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure"> {" "} Add Structure{" "}</button>
             }
-            {checkedList != undefined || SelectedProp?.SelectedItem != undefined ?
-                < button type="button" className="btn btn-primary" title='Compare' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => addActivity()}>Add Activity-Task</button> :
+            {(childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length<2) && (checkedList != undefined || SelectedProp?.SelectedItem != undefined) ?
+                < button type="button" className="btn btn-primary" title='Add Activity-Task' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => addActivity()}>Add Activity-Task</button> :
                 <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Add Activity-Task</button>
             }
             {
@@ -2631,6 +2631,7 @@ function ReadyMadeTable(SelectedProp: any) {
                         type="button"
                         className="btn btn-primary mx-2"
                         onClick={() => Createbutton()}
+                        disabled={activeTile===""?true:false}
                     >
                         Create
                     </button>
