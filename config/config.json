@@ -426,6 +426,14 @@
           "manifest": "./src/webparts/flowCreation/FlowCreationWebPart.manifest.json"
         }
       ]
+    },
+    "root-team-portfolio-table-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/rootTeamPortfolioTable/RootTeamPortfolioTableWebPart.js",
+          "manifest": "./src/webparts/rootTeamPortfolioTable/RootTeamPortfolioTableWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -447,6 +455,7 @@
     }
   },
   "localizedResources": {
+    "RootTeamPortfolioTableWebPartStrings": "lib/webparts/rootTeamPortfolioTable/loc/{locale}.js",
     "HelloSpfxWebPartStrings": "lib/webparts/helloSpfx/loc/{locale}.js",
     "EmployeProfileWebPartStrings": "lib/webparts/employeProfile/loc/{locale}.js",
     "ProfilcandidateWebPartStrings": "lib/webparts/profilcandidate/loc/{locale}.js",
