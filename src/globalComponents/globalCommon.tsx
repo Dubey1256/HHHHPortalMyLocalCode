@@ -2709,12 +2709,42 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
         }
     }
     var subject: any;
-    if (day == 'Today') {
-        subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + currentDate + ' - ' + (updatedCategoryTime.today) + ' hours '
+    // if (day == 'Today') {
+    //     subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + currentDate + ' - ' + (updatedCategoryTime.today) + ' hours '
+    // }
+    // if (day == 'Yesterday') {
+    //     subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + yesterday + ' - ' + (updatedCategoryTime.yesterday) + ' hours '
+    // }
+    function padWithZero(num: number): string {
+        return num < 10 ? '0' + num : num.toString();
     }
-    if (day == 'Yesterday') {
-        subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + yesterday + ' - ' + (updatedCategoryTime.yesterday) + ' hours '
+    
+    function formatDate(date: Date): string {
+        const day = padWithZero(date.getDate());
+        const month = padWithZero(date.getMonth() + 1); 
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
     }
+      if (day == "Today") {
+        subject = "Daily Timesheet - " + CurrentUserTitle + " - " + currentDate + " - " + updatedCategoryTime.today +  " hours ";
+      } else if (day == "Yesterday") {
+        subject =
+          "Daily Timesheet - " +
+          CurrentUserTitle +
+          " - " +
+          yesterday +
+          " - " +
+          updatedCategoryTime.yesterday +
+          " hours ";
+      } else {
+        const formattedStartDate = formatDate(startDate);
+        const formattedEndDate = formatDate(endDate);
+        subject =
+          "Daily Timesheet - " +
+          CurrentUserTitle +
+          " - " +
+          `${formattedStartDate} - ${formattedEndDate}`;
+      }
     AllData.map((item: any) => {
         item.ClientCategories = ''
         item.ClientCategory.forEach((val: any, index: number) => {

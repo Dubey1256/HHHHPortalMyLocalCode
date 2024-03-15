@@ -549,42 +549,29 @@ export const MonthlyLeaveReport = (props: any) => {
         user.Id = users.Id;
         const PlanedEventDates = matchedData.map((item: any) => {
           if (item.Event_x002d_Type === "Planned Leave") {
-            let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
-            let endDate = moment(item.EndDate, 'YYYY-MM-DD').startOf('day').format('DD/MM/YYYY');
-            if (startDate !== endDate) {
-              return `${startDate} - ${endDate}`;
-            } else {
-              return startDate;
-            }
+            return moment(item.EventDate).format('DD/MM/YYYY');
           }
         }).filter((date: any) => date);
-        let plannedLeaveString = `${PlanedEventDates.join(', ')}`;
+        let plannedLeaveString = `${PlanedEventDates.join('\n')}`;
         const UnPlanedEventDates = matchedData.map((item: any) => {
           if (item.Event_x002d_Type === "Un-Planned") {
-            let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
-            let endDate = moment(item.EndDate, 'YYYY-MM-DD').startOf('day').format('DD/MM/YYYY');
-            if (startDate !== endDate) {
-              return `${startDate}-${endDate}`;
-            } else {
-              return startDate;
-            }
+            return moment(item.EventDate).format('DD/MM/YYYY');
           }
         }).filter((date: any) => date);
-        let UnplannedLeaveString = `${UnPlanedEventDates.join(', ')}`;
+        let UnplannedLeaveString = `${UnPlanedEventDates.join('\n')}`;
         const HalfdayEventDates = matchedData.map((item: any) => {
           if (item.HalfDay === true || item.HalfDayTwo === true) {
             return moment(item.EventDate).format('DD/MM/YYYY');
           }
 
         }).filter((date: any) => date);
-        let HalfplannedLeaveString = `${HalfdayEventDates.join(', ')}`;
+        let HalfplannedLeaveString = `${HalfdayEventDates.join('\n')}`;
         const RHEventDates = matchedData.map((item: any) => {
           if (item.Event_x002d_Type === "Restricted Holiday") {
             return moment(item.EventDate).format('DD/MM/YYYY');
           }
         }).filter((date: any) => date);
-        let RhplannedLeaveString = `${RHEventDates.join(', ')}`;
-
+        let RhplannedLeaveString = `${RHEventDates.join('\n')}`;
         user.Plannedleave = calculatePlannedLeave(matchedData, "Planned Leave");
         user.Plannedleave = `${user.Plannedleave} ${plannedLeaveString.length != 0 ? `[ ${plannedLeaveString} ]` : ''} `
         user.unplannedleave = calculatePlannedLeave(matchedData, "Un-Planned");
@@ -786,13 +773,13 @@ export const MonthlyLeaveReport = (props: any) => {
                 <table className="w-100">
                   <thead>
                     <tr>
-                      <th className='py-2 border-bottom' style={{width:"12%"}}>No.</th>
-                      <th className='py-2 border-bottom' style={{width:"20%"}}>Name</th>
-                      <th className='py-2 border-bottom' style={{width:"15%"}}>Planned</th>
-                      <th className='py-2 border-bottom' style={{width:"15%"}}>Unplanned</th>
-                      <th className='py-2 border-bottom' style={{width:"13%"}}>RH</th>
-                      <th className='py-2 border-bottom' style={{width:"15%"}}>Half-Day</th>
-                      <th className='py-2 border-bottom' style={{width:"10%"}}>Total Leave</th>
+                      <th className='py-2 border-bottom width13'>No.</th>
+                      <th className='py-2 border-bottom width13'>Name</th>
+                      <th className='py-2 border-bottom width13'>Planned</th>
+                      <th className='py-2 border-bottom width13'>Unplanned</th>
+                      <th className='py-2 border-bottom width13'>RH</th>
+                      <th className='py-2 border-bottomv width13'>Half-Day</th>
+                      <th className='py-2 border-bottom'>Total Leave</th>
                     </tr>
                   </thead>
                   <tbody>

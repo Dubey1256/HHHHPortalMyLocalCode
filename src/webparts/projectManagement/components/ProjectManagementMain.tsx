@@ -31,6 +31,7 @@ import AncTool from '../../../globalComponents/AncTool/AncTool'
 import RelevantDocuments from "../../taskprofile/components/RelevantDocuments";
 import RelevantEmail from '../../taskprofile/components/./ReleventEmails'
 import KeyDocuments from '../../taskprofile/components/KeyDocument';
+import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 //import { BsXCircleFill, BsCheckCircleFill } from "react-icons/bs";
 var QueryId: any = "";
 let smartPortfoliosData: any = [];
@@ -75,6 +76,8 @@ const ProjectManagementMain = (props: any) => {
   // const [item, setItem] = React.useState({});
   const [AllTaskUsers, setAllTaskUsers] = React.useState([]);
   const [groupByButtonClickData, setGroupByButtonClickData] = React.useState([]);
+  const [openTimeEntryPopup, setOpenTimeEntryPopup] = React.useState(false);
+  const [taskTimeDetails, setTaskTimeDetails] = React.useState([]);
   const [clickFlatView, setclickFlatView] = React.useState(false);
   const [flatViewDataAll, setFlatViewDataAll] = React.useState([]);
   const [IsPortfolio, setIsPortfolio] = React.useState(false);
@@ -527,6 +530,13 @@ const ProjectManagementMain = (props: any) => {
           console.log(err.message);
         });
     }
+  };
+  const TimeEntryCallBack = React.useCallback((item1) => {
+    setOpenTimeEntryPopup(false);
+  }, []);
+  const EditDataTimeEntry = (e: any, item: any) => {
+    setTaskTimeDetails(item);
+    setOpenTimeEntryPopup(true);
   };
 
   const EditComponentPopup = (item: any) => {
@@ -1531,21 +1541,39 @@ const ProjectManagementMain = (props: any) => {
       },
       {
         cell: ({ row }) => (
-          <span className="text-end">
-            <span
-              title="Edit Task"
-              onClick={() => EditPopup(row?.original)}
-              className="alignIcon  svg__iconbox svg__icon--edit hreflink"
-            ></span>
-          </span>
+          <>
+            {row?.original?.TaskType != undefined &&
+            (row?.original?.TaskType?.Title == "Activities" ||
+              row?.original?.TaskType?.Title == "Workstream" ||
+              row?.original?.TaskType?.Title == "Task") ? (
+              <>
+                <span
+                  onClick={(e) => EditDataTimeEntry(e, row.original)}
+                  className="svg__iconbox svg__icon--clock"
+                  title="Click To Edit Timesheet"
+                ></span>
+                <span
+                  title="Edit Task"
+                  onClick={(e) => EditPopup(row?.original)}
+                  className="alignIcon svg__iconbox svg__icon--edit hreflink"
+                ></span>
+              </>
+            ) : (
+              <span
+                title="Edit Project"
+                onClick={(e) => EditPopup(row?.original)}
+                className="alignIcon svg__iconbox svg__icon--edit hreflink"
+              ></span>
+            )}
+          </>
         ),
-        id: 'EditPopup',
+        id: "EditPopup",
         accessorKey: "",
         canSort: false,
         resetSorting: false,
         resetColumnFilters: false,
         placeholder: "",
-        size: 55
+        size: 55,
       }
     ],
     [ProjectTableData]
@@ -2105,6 +2133,13 @@ const ProjectManagementMain = (props: any) => {
           </>) : (<div>Project not found</div>)}
 
       </div>
+      {openTimeEntryPopup && (
+        <TimeEntryPopup
+          props={taskTimeDetails}
+          CallBackTimeEntry={TimeEntryCallBack}
+          Context={props?.props?.Context}
+        />
+      )}
     </myContextValue.Provider>
   );
 };

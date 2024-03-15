@@ -570,6 +570,39 @@ export default function ProjectOverview(props: any) {
                 id: 'Id',
             },
             {
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        {row?.original?.SiteIcon != undefined ? (
+                            <div className="alignCenter" title="Show All Child">
+                                <img title={row?.original?.TaskType?.Title} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
+                                    row?.original?.TaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember me-1"
+                                }
+                                    src={row?.original?.SiteIcon}>
+                                </img>
+                            </div>
+                        ) : (
+                            <>
+                                {row?.original?.Title != "Others" ? (
+                                    <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+                                        row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+                                    }>
+                                        {row?.original?.SiteIconTitle}
+                                    </div>
+                                ) : (
+                                    ""
+                                )}
+                            </>
+                        )}
+                    </div>
+                ),
+                id: "siteIcon",
+                placeholder: "Type",
+                header: "",
+                resetColumnFilters: false,
+                size: 95,
+                isColumnVisible: true
+            },
+            {
                 accessorKey: "TaskID",
                 placeholder: "Id",
                 id: 'TaskID',
@@ -1137,6 +1170,7 @@ export default function ProjectOverview(props: any) {
                                 type[type.Title + 'number'] += 1;
                             }
                         })
+                        items.SiteIconTitle = items?.Item_x0020_Type.charAt(0)
                     }
                     if (items?.subRows.length > 0) {
                         items?.subRows.map((child: any) => {
@@ -1148,6 +1182,7 @@ export default function ProjectOverview(props: any) {
                                     }
                                 })
                             }
+                            child.SiteIconTitle = child?.Item_x0020_Type.charAt(0)
                         })
                     }
                 })
