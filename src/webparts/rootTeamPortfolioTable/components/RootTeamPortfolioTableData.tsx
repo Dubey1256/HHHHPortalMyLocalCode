@@ -1040,6 +1040,15 @@ const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
             isColumnVisible: true
         },
         {
+            accessorKey: "siteName",
+            placeholder: "site Name",
+            header: "",
+            resetColumnFilters: false,
+            id: "siteName",
+            isColumnVisible: true,
+            size: 60,
+        },
+        {
             accessorFn: (row) => row?.TaskID,
             cell: ({ row, getValue }) => (
                 <>
@@ -1055,14 +1064,7 @@ const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
             size: 190,
             isColumnVisible: true
         },
-        {
-            accessorKey: "siteName",
-            placeholder: "site Name",
-            header: "",
-            resetColumnFilters: false,
-            id: "siteName",
-            isColumnVisible: false
-        },
+       
         {
             accessorFn: (row) => row?.Title,
             cell: ({ row, column, getValue }) => (
@@ -1646,9 +1648,10 @@ const TimeEntryCallBack = React.useCallback((item1) => {
   return (
      <div id="ExandTableIds" style={{}}>
       {console.log("allportfolioId", AllSubSitePortfolioTypeData)}
-       
+     
       <div><h2 className="heading">Root Team Portfolio</h2>
             </div>
+          
       <section className="Tabl1eContentSection row taskprofilepagegreen">
                 <div className="container-fluid p-0">
                     <section className="TableSection">
