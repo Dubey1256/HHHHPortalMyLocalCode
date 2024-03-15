@@ -1090,7 +1090,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         }
     }, [items?.defultSelectedRows?.length > 0 || items?.defultSelectedPortFolio])
 
-    const columnSettingCallBack = React.useCallback((eventSetting: any) => {
+    const columnSettingCallBack = React.useCallback(async (eventSetting: any) => {
         if (eventSetting != 'close') {
             setColumnSettingPopup(false)
             columnVisibilityDataValue = { ...eventSetting?.columnSettingVisibility }
@@ -1130,6 +1130,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             setColumnVisibility((prevCheckboxes: any) => ({ ...prevCheckboxes, ...eventSetting?.columnSettingVisibility }));
             setShowHeaderLocalStored(eventSetting?.showHeader);
             setShowTilesView(eventSetting?.showTilesView);
+            await fetchSettingConfrigrationData();
         } else {
             setColumnSettingPopup(false)
         }
