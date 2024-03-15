@@ -805,15 +805,15 @@ function CreateTaskComponent(props: any) {
             })
             if (CategoryTitle !== undefined) {
                 CategoryTitle.split(';')?.map((cat: any) => {
-                    if (cat.toLowerCase() === 'design') {
+                    if (cat.toLowerCase() === 'User Experience - UX') {
                         AssignedToIds.push(298)
                         TeamMembersIds.push(298);
                         ResponsibleIds.push(49);
                         taskUsers?.map((User: any) => {
-                            if (User.Title === 'Design' && burgerMenuTaskDetails.TaskType != "Design" && TeamMembersIds.length === 0 && User.AssingedToUserId != null && User.AssingedToUserId != '' && User.AssingedToUserId != undefined) {
+                            if (User.Title === 'User Experience - UX' && burgerMenuTaskDetails.TaskType != "User Experience - UX" && TeamMembersIds.length === 0 && User.AssingedToUserId != null && User.AssingedToUserId != '' && User.AssingedToUserId != undefined) {
                                 TeamMembersIds.push(User.AssingedToUserId);
                             }
-                            else if (User.Title === 'Design' && TeamMembersIds.length > 0) {
+                            else if (User.Title === 'User Experience - UX' && TeamMembersIds.length > 0) {
                                 TeamMembersIds.map((workingMember: any) => {
                                     if (workingMember !== 48 && workingMember !== 49 && User.AssingedToUserId != null && User.AssingedToUserId != '' && User.AssingedToUserId != undefined) {
                                         TeamMembersIds.push(User.AssingedToUserId);
@@ -842,12 +842,12 @@ function CreateTaskComponent(props: any) {
             if (MailArrayTitle != undefined && MailArrayTitle.length > 0) {
                 RecipientMail = [];
                 MailArrayTitle?.map((MailName: any) => {
-                    if (MailName != 'Design') {
+                    if (MailName != 'User Experience - UX') {
                         taskUsers?.map((User: any) => {
                             if (User.Title != undefined && MailName.Title != undefined && User.Title.toLowerCase().indexOf(MailName.Title.toLowerCase()) > -1 && User.ItemType != 'Group') {
                                 RecipientMail.push(User);
                             }
-                            if (MailName?.Title == 'Design' && loggedInUser?.AssingedToUserId != 49 && User?.Title == 'Robert Ungethuem') {
+                            if (MailName?.Title == 'User Experience - UX' && loggedInUser?.AssingedToUserId != 49 && User?.Title == 'Robert Ungethuem') {
                                 RecipientMail.push(User);
                             }
 
@@ -1042,7 +1042,7 @@ function CreateTaskComponent(props: any) {
                             setSendApproverMail(true);
                         }
 
-                        if (CategoryTitle?.indexOf("Design") > -1) {
+                        if (CategoryTitle?.indexOf("User Experience - UX") > -1) {
                             globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'DesignMail', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
                                 console.log(response);
                             });
@@ -1369,7 +1369,7 @@ function CreateTaskComponent(props: any) {
                     }
                 });
             }
-            if (title?.indexOf('Design') > -1) {
+            if (title?.indexOf('User Experience - UX') > -1) {
 
                 var flag = true;
                 taskUsers?.map((User: any) => {

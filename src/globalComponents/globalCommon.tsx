@@ -1427,14 +1427,14 @@ export const sendImmediateEmailNotifications = async (
                             }
                         } else if (
                             UpdateItem?.PercentComplete == 0 &&
-                            UpdateItem?.Category?.toLowerCase()?.indexOf("design") > -1
+                            UpdateItem?.Category?.toLowerCase()?.indexOf("user experience - ux") > -1
                         ) {
                             if (isLoadNotification == "DesignMail") {
                                 Subject =
                                     "[" +
                                     siteType +
                                     " - " +
-                                    "Design" +
+                                    "User Experience - UX" +
                                     "]" +
                                     UpdateItem?.Title +
                                     "";
