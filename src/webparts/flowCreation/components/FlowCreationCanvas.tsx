@@ -12,6 +12,8 @@ import 'reactflow/dist/style.css';
 import { Panel, PanelType } from 'office-ui-fabric-react'
 import Button from 'react-bootstrap/Button';
 import * as globalCommon from "../../../globalComponents/globalCommon";
+import { myContextValue } from "../../../globalComponents/globalCommon";
+
 import EditInstitution from "../../EditPopupFiles/EditComponent";
 import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
 import CustomNode from "./customNode";
@@ -34,8 +36,6 @@ export default function FlowCreationCanvas(props: any) {
   const initialNodes: any = [
     { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
   ];
-  const [IsComponent, setIsComponent] = React.useState(false);
-  const [IsProjectPopup, setIsProjectPopup] = React.useState(false);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const nodeTypes = {
@@ -43,6 +43,24 @@ export default function FlowCreationCanvas(props: any) {
   };
   const reactFlowWrapper = useRef(null);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  const [IsComponent, setIsComponent] = React.useState(false);
+  const [IsProjectPopup, setIsProjectPopup] = React.useState(false);
+  const [SharewebComponent, setSharewebComponent]: any = React.useState({});
+  const Callbackfrompopup = () => {
+    setSharewebComponent({})
+    setIsComponent(false)
+    setIsProjectPopup(false)
+  }
+  const EditComponentPopup = (event: any, item: any) => {
+    event.stopPropagation();
+    setSharewebComponent(item)
+    if (item?.ItemCat == "Portfolio") {
+      setIsComponent(true)
+    }
+    if (item?.ItemCat == "Project") {
+      setIsProjectPopup(true)
+    }
+  }
   // const [elements, setElements] = useState(initialNodes);
   const onConnect = React.useCallback((params: any) => setEdges((eds: any) => addEdge(params, eds)), [setEdges]);
   const onLoad = (_reactFlowInstance: any) =>
@@ -74,6 +92,7 @@ export default function FlowCreationCanvas(props: any) {
       isShowSiteCompostion: isShowSiteCompostion,
       PortFolioTypeID: props?.props?.PortFolioTypeID,
       Context: props?.props?.Context,
+      SmartHelpListID: props?.props?.SmartHelpListID,
       TaskTypeID: props?.props?.TaskTypeID
     }
     loadComponentDetails()
@@ -293,7 +312,7 @@ export default function FlowCreationCanvas(props: any) {
   }
 
   return (
-    <>
+    <myContextValue.Provider value={{ ...myContextValue, AllListId: AllListId, EditComponentPopup: EditComponentPopup }}> <>
       <div className="dndflow" >
         <ReactFlowProvider>
           <div
@@ -314,7 +333,7 @@ export default function FlowCreationCanvas(props: any) {
 
 
 
-          <aside>
+          {/* <aside>
             <div className="description">
               You can drag these nodes to the pane on the right.
             </div>
@@ -341,21 +360,21 @@ export default function FlowCreationCanvas(props: any) {
             </div>
             <button onClick={exportAsJpg}>Export as JPG</button>
 
-          </aside>
+          </aside> */}
 
         </ReactFlowProvider>
       </div>
-      {/* {IsComponent && (
+      {IsComponent && (
         <EditInstitution
           item={SharewebComponent}
           Calls={Callbackfrompopup}
-          SelectD={Dynamic}
-          portfolioTypeData={PortfolitypeData}
+          SelectD={AllListId}
         >
           {" "}
         </EditInstitution>
       )}
-      {IsProjectPopup && <EditProjectPopup props={SharewebComponent} AllListId={Dynamic} Call={Call} showProgressBar={"showProgressBar"}> </EditProjectPopup>} */}
-    </>
+      {IsProjectPopup && <EditProjectPopup props={SharewebComponent} AllListId={AllListId} Call={Callbackfrompopup} > </EditProjectPopup>}
+    </>  </myContextValue.Provider>
   );
 }
+export { myContextValue }
