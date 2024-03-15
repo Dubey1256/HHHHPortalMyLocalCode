@@ -1716,7 +1716,7 @@ const inlineEditingcolumns = (props: any) => {
                     id={option.Id}
                     value={option.Id}
                     checked={selectedCatId?.includes(option.Id)}
-                    onChange={(event) => handleCategoryChange(event, option.Id)}
+                    onChange={(event) => handleCategoryChange(event, option.Id, option)}
                   />
                   <a className="alignCenter" title={option.Title}>
                     {option.Title == "Immediate" ? (
