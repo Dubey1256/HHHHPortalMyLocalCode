@@ -549,29 +549,42 @@ export const MonthlyLeaveReport = (props: any) => {
         user.Id = users.Id;
         const PlanedEventDates = matchedData.map((item: any) => {
           if (item.Event_x002d_Type === "Planned Leave") {
-            return moment(item.EventDate).format('DD/MM/YYYY');
+            let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+            let endDate = moment(item.EndDate, 'YYYY-MM-DD').startOf('day').format('DD/MM/YYYY');
+            if (startDate !== endDate) {
+              return `${startDate} - ${endDate}`;
+            } else {
+              return startDate;
+            }
           }
         }).filter((date: any) => date);
-        let plannedLeaveString = `${PlanedEventDates.join('\n')}`;
+        let plannedLeaveString = `${PlanedEventDates.join(', ')}`;
         const UnPlanedEventDates = matchedData.map((item: any) => {
           if (item.Event_x002d_Type === "Un-Planned") {
-            return moment(item.EventDate).format('DD/MM/YYYY');
+            let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+            let endDate = moment(item.EndDate, 'YYYY-MM-DD').startOf('day').format('DD/MM/YYYY');
+            if (startDate !== endDate) {
+              return `${startDate}-${endDate}`;
+            } else {
+              return startDate;
+            }
           }
         }).filter((date: any) => date);
-        let UnplannedLeaveString = `${UnPlanedEventDates.join('\n')}`;
+        let UnplannedLeaveString = `${UnPlanedEventDates.join(', ')}`;
         const HalfdayEventDates = matchedData.map((item: any) => {
           if (item.HalfDay === true || item.HalfDayTwo === true) {
             return moment(item.EventDate).format('DD/MM/YYYY');
           }
 
         }).filter((date: any) => date);
-        let HalfplannedLeaveString = `${HalfdayEventDates.join('\n')}`;
+        let HalfplannedLeaveString = `${HalfdayEventDates.join(', ')}`;
         const RHEventDates = matchedData.map((item: any) => {
           if (item.Event_x002d_Type === "Restricted Holiday") {
             return moment(item.EventDate).format('DD/MM/YYYY');
           }
         }).filter((date: any) => date);
-        let RhplannedLeaveString = `${RHEventDates.join('\n')}`;
+        let RhplannedLeaveString = `${RHEventDates.join(', ')}`;
+
         user.Plannedleave = calculatePlannedLeave(matchedData, "Planned Leave");
         user.Plannedleave = `${user.Plannedleave} ${plannedLeaveString.length != 0 ? `[ ${plannedLeaveString} ]` : ''} `
         user.unplannedleave = calculatePlannedLeave(matchedData, "Un-Planned");
@@ -586,7 +599,7 @@ export const MonthlyLeaveReport = (props: any) => {
         }
       });
     }
-    setImageSelectedUsers([])
+    //setImageSelectedUsers([])
     setleaveset(true)
   };
   const handleclose = () => {
@@ -616,13 +629,13 @@ export const MonthlyLeaveReport = (props: any) => {
               <summary className='hyperlink'><a className="hreflink pull-left mr-5">All Filters - <span>Task User :</span> </a>
                 {ImageSelectedUsers != null && ImageSelectedUsers.length > 0 && ImageSelectedUsers.map((user: any, i: number) => {
                   return <span className="ng-scope">
-                    <img className="AssignUserPhoto mr-5" title={user?.AssingedToUser?.Title} src={user?.Item_x0020_Cover?.Url} />
+                    <img className="AssignUserPhoto me-1" title={user?.AssingedToUser?.Title} src={user?.Item_x0020_Cover?.Url} />
                   </span>
                 })
                 }
                 {/* <span className="pull-right"><a href="#">Add smart favorite</a></span> */}
-                <span className="pull-left">
-                  <input type="checkbox" className="" onClick={(e) => SelectAllGroupMember(e)} />
+                <span className="">
+                  <input type="checkbox" className="form-check-input mx-1" onClick={(e) => SelectAllGroupMember(e)} />
                   <label>Select All </label>
                 </span>
               </summary>
@@ -773,13 +786,13 @@ export const MonthlyLeaveReport = (props: any) => {
                 <table className="w-100">
                   <thead>
                     <tr>
-                      <th className='py-2 border-bottom width13'>No.</th>
-                      <th className='py-2 border-bottom width13'>Name</th>
-                      <th className='py-2 border-bottom width13'>Planned</th>
-                      <th className='py-2 border-bottom width13'>Unplanned</th>
-                      <th className='py-2 border-bottom width13'>RH</th>
-                      <th className='py-2 border-bottomv width13'>Half-Day</th>
-                      <th className='py-2 border-bottom'>Total Leave</th>
+                      <th className='py-2 border-bottom' style={{width:"12%"}}>No.</th>
+                      <th className='py-2 border-bottom' style={{width:"20%"}}>Name</th>
+                      <th className='py-2 border-bottom' style={{width:"15%"}}>Planned</th>
+                      <th className='py-2 border-bottom' style={{width:"15%"}}>Unplanned</th>
+                      <th className='py-2 border-bottom' style={{width:"13%"}}>RH</th>
+                      <th className='py-2 border-bottom' style={{width:"15%"}}>Half-Day</th>
+                      <th className='py-2 border-bottom' style={{width:"10%"}}>Total Leave</th>
                     </tr>
                   </thead>
                   <tbody>
