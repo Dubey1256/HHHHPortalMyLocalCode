@@ -9,9 +9,11 @@ export default class AlertManagement extends React.Component<IAlertManagementPro
       description,
       isDarkTheme,
       environmentMessage,
+      siteUrl,
       hasTeamsContext,      
       userDisplayName,
-      ContextValue
+      ContextValue,
+      ColumnManagementListID
     } = this.props;
 
     return (

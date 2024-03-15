@@ -586,7 +586,7 @@ export const MonthlyLeaveReport = (props: any) => {
         }
       });
     }
-    setImageSelectedUsers([])
+    //setImageSelectedUsers([])
     setleaveset(true)
   };
   const handleclose = () => {
@@ -616,13 +616,13 @@ export const MonthlyLeaveReport = (props: any) => {
               <summary className='hyperlink'><a className="hreflink pull-left mr-5">All Filters - <span>Task User :</span> </a>
                 {ImageSelectedUsers != null && ImageSelectedUsers.length > 0 && ImageSelectedUsers.map((user: any, i: number) => {
                   return <span className="ng-scope">
-                    <img className="AssignUserPhoto mr-5" title={user?.AssingedToUser?.Title} src={user?.Item_x0020_Cover?.Url} />
+                    <img className="AssignUserPhoto me-1" title={user?.AssingedToUser?.Title} src={user?.Item_x0020_Cover?.Url} />
                   </span>
                 })
                 }
                 {/* <span className="pull-right"><a href="#">Add smart favorite</a></span> */}
-                <span className="pull-left">
-                  <input type="checkbox" className="" onClick={(e) => SelectAllGroupMember(e)} />
+                <span className="">
+                  <input type="checkbox" className="form-check-input mx-1" onClick={(e) => SelectAllGroupMember(e)} />
                   <label>Select All </label>
                 </span>
               </summary>

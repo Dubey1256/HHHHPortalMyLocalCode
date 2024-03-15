@@ -1427,14 +1427,14 @@ export const sendImmediateEmailNotifications = async (
                             }
                         } else if (
                             UpdateItem?.PercentComplete == 0 &&
-                            UpdateItem?.Category?.toLowerCase()?.indexOf("design") > -1
+                            UpdateItem?.Category?.toLowerCase()?.indexOf("user experience - ux") > -1
                         ) {
                             if (isLoadNotification == "DesignMail") {
                                 Subject =
                                     "[" +
                                     siteType +
                                     " - " +
-                                    "Design" +
+                                    "User Experience - UX" +
                                     "]" +
                                     UpdateItem?.Title +
                                     "";
@@ -2581,13 +2581,16 @@ export const AwtGroupingAndUpdatePrarticularColumn = async (findGrouping: any, A
     return { findGrouping, flatdata };
 }
 export const replaceURLsWithAnchorTags = (text: any) => {
-    // Regular expression to match URLs
-    var urlRegex = /(https?:\/\/[^\s]+)/g;
-    // Replace URLs with anchor tags
-    var replacedText = text.replace(urlRegex, function (url: any) {
-        return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
-    });
-    return replacedText;
+    if(text!=undefined){
+   // Regular expression to match URLs
+   var urlRegex = /(https?:\/\/[^\s]+)/g;
+   // Replace URLs with anchor tags
+   var replacedText = text.replace(urlRegex, function (url: any) {
+       return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
+   });
+   return replacedText;
+    }
+ 
 }
 //--------------------------------------Share TimeSheet Report-----------------------------------------------------------------------
 
@@ -2757,7 +2760,7 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
         text =
             '<tr>' +
             '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.siteType + '</td>'
-            + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Project-Management-Profile.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px">' + (item?.Project == undefined ? '' : item?.Project.Title) + '</span></a>' + '</p>' + '</td>'
+            + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/PX-Profile.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px">' + (item?.Project == undefined ? '' : item?.Project.Title) + '</span></a>' + '</p>' + '</td>'
             + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:135px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Portfolio-Profile.aspx?taskId=' + item?.Portfolio?.Id + '><span style="font-size:13px">' + (item.Portfolio == undefined ? '' : item.Portfolio.Title) + '</span></a>' + '</p>' + '</td>'
             + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px">' + item.Title + '</span></a>' + '</p>' + '</td>'
             + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.TaskTime + '</td>'
