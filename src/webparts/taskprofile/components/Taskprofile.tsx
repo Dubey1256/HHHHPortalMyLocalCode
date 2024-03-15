@@ -1561,21 +1561,24 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   //****** remove extra space in folora editor  */
 
   private cleanHTML = (html: any, folora: any, index: any) => {
-    html = globalCommon?.replaceURLsWithAnchorTags(html)
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    const paragraphs = div.querySelectorAll('p');
-    // Filter out empty <p> tags
-    paragraphs.forEach((p) => {
-      if (p.innerText.trim() === '') {
-        p.parentNode.removeChild(p); // Remove empty <p> tags
-      }
-    });
-    div.innerHTML = div.innerHTML.replace(/\n/g, '<br>')  // Convert newlines to <br> tags first
-    div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
+    if(html!=undefined){
+      html = globalCommon?.replaceURLsWithAnchorTags(html)
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      const paragraphs = div.querySelectorAll('p');
+      // Filter out empty <p> tags
+      paragraphs.forEach((p) => {
+        if (p.innerText.trim() === '') {
+          p.parentNode.removeChild(p); // Remove empty <p> tags
+        }
+      });
+      div.innerHTML = div.innerHTML.replace(/\n/g, '<br>')  // Convert newlines to <br> tags first
+      div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
+  
+  
+      return div.innerHTML;
+    }
 
-
-    return div.innerHTML;
   };
 
   //******* End ****************************/

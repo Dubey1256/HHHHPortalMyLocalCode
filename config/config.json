@@ -431,6 +431,13 @@
         {
           "entrypoint": "./lib/webparts/smartDynamicTable/SmartDynamicTableWebPart.js",
           "manifest": "./src/webparts/smartDynamicTable/SmartDynamicTableWebPart.manifest.json"
+
+    "root-team-portfolio-table-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/rootTeamPortfolioTable/RootTeamPortfolioTableWebPart.js",
+          "manifest": "./src/webparts/rootTeamPortfolioTable/RootTeamPortfolioTableWebPart.manifest.json"
+
         }
       ]
     }
@@ -454,6 +461,7 @@
     }
   },
   "localizedResources": {
+    "RootTeamPortfolioTableWebPartStrings": "lib/webparts/rootTeamPortfolioTable/loc/{locale}.js",
     "HelloSpfxWebPartStrings": "lib/webparts/helloSpfx/loc/{locale}.js",
     "EmployeProfileWebPartStrings": "lib/webparts/employeProfile/loc/{locale}.js",
     "ProfilcandidateWebPartStrings": "lib/webparts/profilcandidate/loc/{locale}.js",
