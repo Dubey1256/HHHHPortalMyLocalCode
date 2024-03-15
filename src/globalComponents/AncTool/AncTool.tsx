@@ -83,6 +83,7 @@ const AncTool = (props: any) => {
     const [AllReadytagged, setAllReadytagged]: any = React.useState([]);
     const [editdocpanel, setEditdocpanel] = React.useState(false);
     const [EditdocData, setEditdocData] = React.useState<any>({});
+     const [Doctab, setDoctab] = React.useState('');
     React.useEffect(() => {
         GetSmartMetadata();
         siteUrl = props?.Context?.pageContext?.web?.absoluteUrl;
@@ -403,14 +404,23 @@ const AncTool = (props: any) => {
         );
     };
     // File Drag And Drop And Upload
-    const handleFileDrop = (event: any) => {
+     const handleFileDrop = (event: any) => {
         event.preventDefault();
-        const file = event.dataTransfer.files[0];
-        console.log('Dropped file:', file); // Log the dropped file for debugging
-        setSelectedFile(file);
-        setTimeout(() => {
-            handleUpload(file);
-        }, 2000)
+        const files = event.dataTransfer.files;
+        console.log('Dropped file:', files); // Log the dropped file for debugging
+        // setSelectedFile(file);
+        // setTimeout(() => {
+        //     handleUpload(file);
+        // }, 2000)
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            setSelectedFile(file);
+
+            // Optionally, you can perform an upload operation for each dropped file
+            setTimeout(() => {
+                handleUpload(file);
+            }, 2000 * i); // Delay the upload for each file
+        }
     };
     const handleFileInputChange = (event: any) => {
         const file = event.target.files[0];
@@ -420,9 +430,11 @@ const AncTool = (props: any) => {
         // const rank =parseInt(event.target.value);  
         if (from == 'Upload') {
             setItemRank(event);
+             setDoctab('');
         }
-        if (from == 'linkDoc') {
+        if (from == 'linkDoc' || from == 'DRAGDROP') {
             setLinkDocitemRank(event);
+             setDoctab(from);
         }
     };
     function base64ToArrayBuffer(base64String: string) {
@@ -505,7 +517,7 @@ const AncTool = (props: any) => {
                     let msgfile: any = {};
                     reader.onloadend = async () => {
                         const fileContent = reader.result as ArrayBuffer;
-                        setCreateNewDocType(getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name));
+                        //setCreateNewDocType(getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name));
                         if (getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == 'msg') {
 
                             const reader = new FileReader();
@@ -556,7 +568,7 @@ const AncTool = (props: any) => {
                                                 // Update the document file here
                                                 let postData = {
                                                     [siteColName]: { "results": resultArray },
-                                                    ItemRank: itemRank,
+                                                    ItemRank: Doctab === 'DRAGDROP' ? LinkDocitemRank : itemRank,
                                                     Title: getUploadedFileName(fileName)
                                                 }
                                                 if (getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == 'msg') {
@@ -624,7 +636,7 @@ const AncTool = (props: any) => {
                     console.log("File upload failed:", error);
                 }
             }
-        }, 1500);
+        }, 1000);
         setSelectedFile(null);
         cancelNewCreateFile()
         setItemRank(5);
@@ -1604,7 +1616,7 @@ const AncTool = (props: any) => {
                                                                 id="ItemRankLinkDoc"
                                                                 options={itemRanks.map((rank) => ({ key: rank?.rank, text: rank?.rankTitle }))}
                                                                 selectedKey={LinkDocitemRank}
-                                                                onChange={(e, option) => handleRankChange(option?.key, 'linkDoc')}
+                                                                onChange={(e, option) => handleRankChange(option?.key, 'DRAGDROP')}
                                                                 styles={{ dropdown: { width: '100%' } }}
                                                             />
                                                         </div>

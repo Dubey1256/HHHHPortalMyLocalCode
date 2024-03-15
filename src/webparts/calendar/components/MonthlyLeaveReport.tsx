@@ -3,12 +3,14 @@ import { Web } from 'sp-pnp-js';
 import DatePicker from "react-datepicker";
 import CheckboxTree from 'react-checkbox-tree';
 import "react-datepicker/dist/react-datepicker.css";
+import Tooltip from '../../../globalComponents/Tooltip';
 // @ts-ignore
 import * as html2pdf from 'html2pdf.js';
 import * as XLSX from 'xlsx';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import { setMonth } from 'office-ui-fabric-react';
 import { end } from '@popperjs/core';
+import moment from 'moment';
 
 let allReportData: any = [];
 let filteredData: any = [];
@@ -46,15 +48,10 @@ export const MonthlyLeaveReport = (props: any) => {
     try {
       const Data: any[] = await web.lists.getById(props.props.TaskUsertListID).items.select("Id,Title,TimeCategory,Team,CategoriesItemsJson,Suffix,SortOrder,IsApprovalMail,Item_x0020_Cover,ItemType,Created,Company,Role,Modified,IsActive,IsTaskNotifications,DraftCategory,UserGroup/Title,UserGroup/Id,AssingedToUser/Title,AssingedToUser/Name,AssingedToUser/Id,Author/Name,Author/Title,Editor/Name,Approver/Id,Approver/Title,Approver/Name,Editor/Title,Email")
         .expand("Author,Editor,AssingedToUser,UserGroup,Approver").orderBy("Title", true).get();
-        let filteredData :any=[];
-       if(props?.props?.siteUrl === "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH"){
-        filteredData = Data;
-       } else{
-        filteredData = Data.filter((item: any) =>
+
+      let filteredData = Data.filter((item: any) =>
         item.Title != 'HHHH Team' && item.Title != 'External Staff' && item.Title != 'Ex Staff'
       )
-       }
-    
       // const mydata = Data.filter((item) => item.UserGroupId != null && item.UserGroupId !== 131 && item.UserGroupId !== 147 && item.UserGroupId !== 7 && item.AssingedToUserId !== 9);
       for (let index = 0; index < filteredData?.length; index++) {
         let element = filteredData[index];
@@ -63,6 +60,10 @@ export const MonthlyLeaveReport = (props: any) => {
           // taskUsers.push(element);
         }
       }
+      let currentUser = filteredData.filter((itm: any) =>
+        itm.Title == props?.props?.context?.pageContext?.user?.displayName
+      )
+      setImageSelectedUsers(currentUser);
       setAllTaskuser(filteredData);
     } catch (err) {
       console.log(err.message);
@@ -132,6 +133,7 @@ export const MonthlyLeaveReport = (props: any) => {
         }
       })
     }
+
     else if (select == false) {
       AllTaskuser.forEach((item: any) => {
         if (item?.childs != undefined && item?.childs?.length > 0) {
@@ -161,6 +163,22 @@ export const MonthlyLeaveReport = (props: any) => {
     })
     SelectGroupName = SelectGroupName.replace(/.$/, "");
 
+    if (ImageSelectedUser?.length > 0) {
+      ImageSelectedUser = ImageSelectedUser.reduce(function (
+        previous: any,
+        current: any
+      ) {
+        var alredyExists =
+          previous.filter(function (item: any) {
+            return item.Title === current.Title;
+          }).length > 0;
+        if (!alredyExists) {
+          previous.push(current);
+        }
+        return previous;
+      },
+        []);
+    }
     setImageSelectedUsers(ImageSelectedUser)
     setSelectGroupName(SelectGroupName)
     console.log(ImageSelectedUsers);
@@ -499,51 +517,6 @@ export const MonthlyLeaveReport = (props: any) => {
       itemDate >= startdate && itemDate <= enddate
     );
   });
-  // let selectedmonthdata = leaveData.filter((item: any) => {
-  //   let itemDate = item?.EventDate
-  //   let yearName = selectedYear
-  //   let monthName = selectedMonth
-  //   var isoDateString = itemDate;
-  //   var dateObject = new Date(isoDateString);
-  //   var year = '' + dateObject.getFullYear();
-
-  //   var month = '' + (dateObject.getMonth() + 1);
-
-  //   return (
-  //     yearName == year && monthName == month
-  //   );
-
-  // });
-  // const months = [
-  //   'January', 'February', 'March', 'April', 'May', 'June',
-  //   'July', 'August', 'September', 'October', 'November', 'December'
-  // ];
-  // const currentYear = new Date().getFullYear();
-  // const years: number[] = [];
-
-  // for (let year = 2020; year <= currentYear; year++) {
-  //   years.push(year);
-  // }
-  // console.log(years);
-  // const filteredData: any = selectedmonthdata.filter((member) => member.Employee?.Id === parseInt(selectedUserId, 10));
-  //const filteredData = CurrentMonthData.filter((member) => member.Employee?.Id === selectedUserId);
-
-
-  // let filtereduser = AllTaskuser.filter((item: any) => {
-  //   return item.AssingedToUserId == parseInt(selectedUserId, 10)
-  // })
-
-  // filtereduser.forEach((users: any, Index: any) => {
-  //   let user: any = {};
-  //   user.Number = Index + 1;
-  //   user.Title = users.Title;
-  //   user.Id = users.Id;
-  //   user.Plannedleave = calculatePlannedLeave(filteredData, "Planned Leave");
-  //   user.unplannedleave = calculatePlannedLeave(filteredData, "Un-Planned");
-  //   user.Halfdayleave = calculateTotalHalfday(filteredData, "HalfDay" || "HalfDayTwo");
-  //   user.TotalLeave = calculateTotalWorkingDays(filteredData);
-  //   allReportData.push(user)
-  // });
   const handleDateChange = (event: any) => {
     setSelectedDate(event.target.value);
   };
@@ -568,21 +541,52 @@ export const MonthlyLeaveReport = (props: any) => {
     if (ImageSelectedUsers != null && ImageSelectedUsers != undefined) {
       ImageSelectedUsers.forEach((users: any, Index: any) => {
         let user: any = {};
+        let EventDateForLeave: any = {};
 
         const matchedData: any = CurrentMonthData.filter((member) => member.Employee?.Id === users?.AssingedToUser?.Id);
         user.Number = Index + 1;
         user.Title = users.Title;
         user.Id = users.Id;
+        const PlanedEventDates = matchedData.map((item: any) => {
+          if (item.Event_x002d_Type === "Planned Leave") {
+            return moment(item.EventDate).format('DD/MM/YYYY');
+          }
+        }).filter((date: any) => date);
+        let plannedLeaveString = `${PlanedEventDates.join('\n')}`;
+        const UnPlanedEventDates = matchedData.map((item: any) => {
+          if (item.Event_x002d_Type === "Un-Planned") {
+            return moment(item.EventDate).format('DD/MM/YYYY');
+          }
+        }).filter((date: any) => date);
+        let UnplannedLeaveString = `${UnPlanedEventDates.join('\n')}`;
+        const HalfdayEventDates = matchedData.map((item: any) => {
+          if (item.HalfDay === true || item.HalfDayTwo === true) {
+            return moment(item.EventDate).format('DD/MM/YYYY');
+          }
+
+        }).filter((date: any) => date);
+        let HalfplannedLeaveString = `${HalfdayEventDates.join('\n')}`;
+        const RHEventDates = matchedData.map((item: any) => {
+          if (item.Event_x002d_Type === "Restricted Holiday") {
+            return moment(item.EventDate).format('DD/MM/YYYY');
+          }
+        }).filter((date: any) => date);
+        let RhplannedLeaveString = `${RHEventDates.join('\n')}`;
         user.Plannedleave = calculatePlannedLeave(matchedData, "Planned Leave");
+        user.Plannedleave = `${user.Plannedleave} ${plannedLeaveString.length != 0 ? `[ ${plannedLeaveString} ]` : ''} `
         user.unplannedleave = calculatePlannedLeave(matchedData, "Un-Planned");
+        user.unplannedleave = `${user.unplannedleave}${UnplannedLeaveString.length != 0 ? `[ ${UnplannedLeaveString} ]` : ''} `
         user.Halfdayleave = calculateTotalHalfday(matchedData, "HalfDay" || "HalfDayTwo");
+        user.Halfdayleave = `${user.Halfdayleave}${HalfplannedLeaveString.length != 0 ? `[ ${HalfplannedLeaveString} ]` : ''} `
+        user.RestrictedHoliday = calculatePlannedLeave(matchedData, "Restricted Holiday");
+        user.RestrictedHoliday = `${user.RestrictedHoliday}${RhplannedLeaveString.length != 0 ? `[ ${RhplannedLeaveString} ]` : ''} `
         user.TotalLeave = calculateTotalWorkingDays(matchedData);
         if (startDate && endDate) {
           allReportData.push(user)
         }
       });
     }
-    setImageSelectedUsers([])
+    //setImageSelectedUsers([])
     setleaveset(true)
   };
   const handleclose = () => {
@@ -604,20 +608,21 @@ export const MonthlyLeaveReport = (props: any) => {
       <Modal className='rounded-0 monthlyLeaveReport' show={opendate} onHide={() => handleclose()} >
         <Modal.Header closeButton>
           <Modal.Title>Select a Date</Modal.Title>
+          <Tooltip ComponentId='9802' />
         </Modal.Header>
         <Modal.Body className="p-2">
-          <Row className='smartFilter bg-light border mb-3 col'>
+          <div className='smartFilter bg-light border mb-3 col'>
             <details className='p-0 m-0' open>
               <summary className='hyperlink'><a className="hreflink pull-left mr-5">All Filters - <span>Task User :</span> </a>
                 {ImageSelectedUsers != null && ImageSelectedUsers.length > 0 && ImageSelectedUsers.map((user: any, i: number) => {
                   return <span className="ng-scope">
-                    <img className="AssignUserPhoto mr-5" title={user?.AssingedToUser?.Title} src={user?.Item_x0020_Cover?.Url} />
+                    <img className="AssignUserPhoto me-1" title={user?.AssingedToUser?.Title} src={user?.Item_x0020_Cover?.Url} />
                   </span>
                 })
                 }
                 {/* <span className="pull-right"><a href="#">Add smart favorite</a></span> */}
-                <span className="pull-left">
-                  <input type="checkbox" className="" onClick={(e) => SelectAllGroupMember(e)} />
+                <span className="">
+                  <input type="checkbox" className="form-check-input mx-1" onClick={(e) => SelectAllGroupMember(e)} />
                   <label>Select All </label>
                 </span>
               </summary>
@@ -632,7 +637,7 @@ export const MonthlyLeaveReport = (props: any) => {
                   <div style={{ display: "block" }}>
                     <div className="taskTeamBox ps-40 ">
                       {(AllTaskuser != null && AllTaskuser.length > 0) && AllTaskuser.map((users: any, i: number) => {
-                        return ( users?.childs?.length > 0 && (<div className="top-assign">
+                        return (users?.childs?.length > 0 && (<div className="top-assign">
                           <div className="team ">
                             <label className="BdrBtm">
                               <input style={{ display: 'none' }} className="" type="checkbox" onClick={(e) => SelectedGroup(e, users)} />
@@ -662,7 +667,7 @@ export const MonthlyLeaveReport = (props: any) => {
 
                           </div>
                         </div>
-                      )
+                        )
                         )
                       })
 
@@ -748,7 +753,7 @@ export const MonthlyLeaveReport = (props: any) => {
                 </details>
               </Col>
             </details>
-          </Row>
+          </div>
           <div className="mt-2 text-end modal-footer">
             <Button onClick={() => handleSubmit()} variant="primary" className="btn btn-primary" type="submit">
               Submit
@@ -768,22 +773,24 @@ export const MonthlyLeaveReport = (props: any) => {
                 <table className="w-100">
                   <thead>
                     <tr>
-                      <th className='py-2 border-bottom'>No.</th>
-                      <th className='py-2 border-bottom'>Name</th>
-                      <th className='py-2 border-bottom'>Planned</th>
-                      <th className='py-2 border-bottom'>Unplanned</th>
-                      <th className='py-2 border-bottom'>Half-Day</th>
-                      <th className='py-2 border-bottom'>TotalLeave</th>
+                      <th className='py-2 border-bottom width13'>No.</th>
+                      <th className='py-2 border-bottom width13'>Name</th>
+                      <th className='py-2 border-bottom width13'>Planned</th>
+                      <th className='py-2 border-bottom width13'>Unplanned</th>
+                      <th className='py-2 border-bottom width13'>RH</th>
+                      <th className='py-2 border-bottomv width13'>Half-Day</th>
+                      <th className='py-2 border-bottom'>Total Leave</th>
                     </tr>
                   </thead>
                   <tbody>
                     {allReportData.map((entry: any, index: any) => (
                       <tr key={index}>
-                        <td className='py-2'>{index + 1}</td>
-                        <td className='py-2'>{entry.Title}</td>
-                        <td className='py-2'>{entry.Plannedleave}</td>
-                        <td className='py-2'>{entry.unplannedleave}</td>
-                        <td className='py-2'>{entry.Halfdayleave}</td>
+                        <td className='py-2 text-break'>{index + 1}</td>
+                        <td className='py-2 text-break'>{entry.Title}</td>
+                        <td className='py-2 text-break'>{entry.Plannedleave}</td>
+                        <td className='py-2 text-break'>{entry.unplannedleave}</td>
+                        <td className='py-2 text-break'>{entry.RestrictedHoliday}</td>
+                        <td className='py-2 text-break'>{entry.Halfdayleave}</td>
                         <td className='py-2'>{entry.TotalLeave}</td>
                       </tr>
                     ))}

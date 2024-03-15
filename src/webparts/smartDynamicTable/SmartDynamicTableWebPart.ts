@@ -8,25 +8,23 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'AlertManagementWebPartStrings';
-import AlertManagement from './components/AlertManagement';
-import { IAlertManagementProps } from './components/IAlertManagementProps';
+import * as strings from 'SmartDynamicTableWebPartStrings';
+import SmartDynamicTable from './components/SmartDynamicTable';
+import { ISmartDynamicTableProps } from './components/ISmartDynamicTableProps';
 
-export interface IAlertManagementWebPartProps {
+export interface ISmartDynamicTableWebPartProps {
   description: string;
-  ContextValue:any;
-  ColumnManagementListID:string;
-  
+  TableConfrigrationListId: "5ba41118-890d-409a-b510-278033c0286a";
 }
 
-export default class AlertManagementWebPart extends BaseClientSideWebPart<IAlertManagementWebPartProps> {
+export default class SmartDynamicTableWebPart extends BaseClientSideWebPart<ISmartDynamicTableWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IAlertManagementProps> = React.createElement(
-      AlertManagement,
+    const element: React.ReactElement<ISmartDynamicTableProps> = React.createElement(
+      SmartDynamicTable,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
@@ -34,8 +32,8 @@ export default class AlertManagementWebPart extends BaseClientSideWebPart<IAlert
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         siteUrl: this.context.pageContext.web.absoluteUrl,
-        ContextValue:this.context,
-        ColumnManagementListID:this.properties.ColumnManagementListID
+        TableConfrigrationListId: this.properties.TableConfrigrationListId,
+        Context: this.context,
       }
     );
 
@@ -43,37 +41,17 @@ export default class AlertManagementWebPart extends BaseClientSideWebPart<IAlert
   }
 
   protected onInit(): Promise<void> {
-    return this._getEnvironmentMessage().then(message => {
-      this._environmentMessage = message;
-    });
+    this._environmentMessage = this._getEnvironmentMessage();
+
+    return super.onInit();
   }
 
-
-
-  private _getEnvironmentMessage(): Promise<string> {
-    if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
-      return this.context.sdks.microsoftTeams.teamsJs.app.getContext()
-        .then(context => {
-          let environmentMessage: string = '';
-          switch (context.app.host.name) {
-            case 'Office': // running in Office
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOffice : strings.AppOfficeEnvironment;
-              break;
-            case 'Outlook': // running in Outlook
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
-              break;
-            case 'Teams': // running in Teams
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
-              break;
-            default:
-              throw new Error('Unknown host');
-          }
-
-          return environmentMessage;
-        });
+  private _getEnvironmentMessage(): string {
+    if (!!this.context.sdks.microsoftTeams) { // running in Teams
+      return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
     }
 
-    return Promise.resolve(this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment);
+    return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment;
   }
 
   protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {
@@ -116,9 +94,9 @@ export default class AlertManagementWebPart extends BaseClientSideWebPart<IAlert
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
                 }),
-                PropertyPaneTextField('ColumnManagementListID',{
-                  label:'ColumnManagementListID'
-                })
+                PropertyPaneTextField("TableConfrigrationListId", {
+                  label: "Table Confrigration ListId",
+                }),
               ]
             }
           ]

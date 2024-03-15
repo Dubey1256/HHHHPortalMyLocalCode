@@ -1,11 +1,10 @@
-export interface IAlertManagementProps {
+export interface ISmartDynamicTableProps {
   description: string;
   isDarkTheme: boolean;
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
-  ContextValue:any;
-  siteUrl : any;
-  ColumnManagementListID: string;
-
+  siteUrl : string;
+  Context: any;
+  TableConfrigrationListId:any
 }

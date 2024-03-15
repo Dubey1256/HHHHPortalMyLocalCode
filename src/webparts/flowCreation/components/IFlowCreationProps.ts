@@ -12,6 +12,7 @@ export interface IFlowCreationProps {
   SmartInformationListID: any;
   DocumentsListID: any;
   TaskTimeSheetListID: any;
+  SmartHelpListID:any,
   PortFolioTypeID: any;
   TaskTypeID:any;
   TimeEntry: any;

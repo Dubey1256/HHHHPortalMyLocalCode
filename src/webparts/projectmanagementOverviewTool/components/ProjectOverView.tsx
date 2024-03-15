@@ -332,7 +332,7 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != undefined ? <span>
-                            <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.Project?.Id}`} data-interception="off" target="_blank">
+                            <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.Project?.Id}`} data-interception="off" target="_blank">
                                 {row?.original?.ProjectTitle}
                             </a>
                         </span> : ''}
@@ -570,6 +570,39 @@ export default function ProjectOverview(props: any) {
                 id: 'Id',
             },
             {
+                cell: ({ row }) => (
+                    <div className="alignCenter">
+                        {row?.original?.SiteIcon != undefined ? (
+                            <div className="alignCenter" title="Show All Child">
+                                <img title={row?.original?.TaskType?.Title} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 workmember ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 workmember ml20 me-1" :
+                                    row?.original?.TaskType?.Title == "Workstream" ? "ml-48 workmember ml20 me-1" : row?.original?.TaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.TaskType == undefined ? "ml-60 workmember ml20 me-1" : "workmember me-1"
+                                }
+                                    src={row?.original?.SiteIcon}>
+                                </img>
+                            </div>
+                        ) : (
+                            <>
+                                {row?.original?.Title != "Others" ? (
+                                    <div title={row?.original?.Item_x0020_Type} style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.TaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+                                        row?.original?.TaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.TaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+                                    }>
+                                        {row?.original?.SiteIconTitle}
+                                    </div>
+                                ) : (
+                                    ""
+                                )}
+                            </>
+                        )}
+                    </div>
+                ),
+                id: "siteIcon",
+                placeholder: "Type",
+                header: "",
+                resetColumnFilters: false,
+                size: 95,
+                isColumnVisible: true
+            },
+            {
                 accessorKey: "TaskID",
                 placeholder: "Id",
                 id: 'TaskID',
@@ -588,7 +621,7 @@ export default function ProjectOverview(props: any) {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
                     <div className='alignCenter'>
-                        <a className='hreflink' href={row?.original?.siteType == "Project" ? `${AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.Id}` : `${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
+                        <a className='hreflink' href={row?.original?.siteType == "Project" ? `${AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.Id}` : `${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
                         {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5'><InfoIconsToolTip Discription={row?.original?.Body} row={row?.original} /></span>}
                     </div>
 
@@ -828,7 +861,7 @@ export default function ProjectOverview(props: any) {
                 `<span style="font-size: 18px;margin-bottom: 10px;">
                 Hi there, <br><br>
                 Below is the working today task of all the team members <strong>(Project Wise):</strong>
-                <p><a href =${AllListId?.siteUrl}/SitePages/Project-Management-Overview.aspx?SelectedView=ProjectsTask>Click here for flat overview of the today's tasks</a></p>
+                <p><a href =${AllListId?.siteUrl}/SitePages/PX-Overview.aspx?SelectedView=ProjectsTask>Click here for flat overview of the today's tasks</a></p>
                 </span>
                 ${body}
                 <h3>
@@ -963,7 +996,7 @@ export default function ProjectOverview(props: any) {
                     `<table cellpadding="0" cellspacing="0" align="center" style="margin-top:10px; margin-left:${group?.Item_x0020_Type == 'Sprint' ? '20px' : ''}" width="100%" border="0">
                     <tr>
                     <td width="20%" height="30" align="left" valign="middle"bgcolor=${bgColor} style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:${textColor};"><strong>Title</strong></td>
-                    <td height="30" colspan="6" bgcolor="#eee" style="padding-left: 10px; color: #eee;border: 1px solid #a19f9f;"><strong><a style="text-decoration: none;" href =${AllListId.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${group?.Id}> ${group?.PortfolioStructureID} - ${group?.Title}</a></strong></td>
+                    <td height="30" colspan="6" bgcolor="#eee" style="padding-left: 10px; color: #eee;border: 1px solid #a19f9f;"><strong><a style="text-decoration: none;" href =${AllListId.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${group?.Id}> ${group?.PortfolioStructureID} - ${group?.Title}</a></strong></td>
                     </tr>
                     <tr>
                     <td width="10%" height="30" align="left" valign="middle" bgcolor=${bgColor} style="padding-left:10px;border-bottom: 1px solid #a19f9f;border-right: 1px solid #a19f9f;border-left: 1px solid #a19f9f;color:${textColor};"><strong>Project Priority</strong></td>
@@ -1137,6 +1170,7 @@ export default function ProjectOverview(props: any) {
                                 type[type.Title + 'number'] += 1;
                             }
                         })
+                        items.SiteIconTitle = items?.Item_x0020_Type.charAt(0)
                     }
                     if (items?.subRows.length > 0) {
                         items?.subRows.map((child: any) => {
@@ -1148,6 +1182,7 @@ export default function ProjectOverview(props: any) {
                                     }
                                 })
                             }
+                            child.SiteIconTitle = child?.Item_x0020_Type.charAt(0)
                         })
                     }
                 })

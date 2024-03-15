@@ -386,7 +386,6 @@
         }
       ]
     },
-    
     "hello-spfx-web-part": {
       "components": [
         {
@@ -424,6 +423,14 @@
         {
           "entrypoint": "./lib/webparts/flowCreation/FlowCreationWebPart.js",
           "manifest": "./src/webparts/flowCreation/FlowCreationWebPart.manifest.json"
+        }
+      ]
+    },
+    "smart-dynamic-table-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/smartDynamicTable/SmartDynamicTableWebPart.js",
+          "manifest": "./src/webparts/smartDynamicTable/SmartDynamicTableWebPart.manifest.json"
         }
       ]
     },
@@ -468,7 +475,6 @@
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
     "DatacleanuptoolWebPartStrings": "lib/webparts/datacleanuptool/loc/{locale}.js",
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
-    "FlowCreationWebPartStrings": "lib/webparts/flowCreation/loc/{locale}.js",
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
     "TaskUserManagementWebPartStrings": "lib/webparts/taskUserManagement/loc/{locale}.js",
     "SiteStructureWebPartStrings": "lib/webparts/SiteStructure/loc/{locale}.js",
@@ -492,7 +498,7 @@
     "UpdateTopNavigationWebPartStrings": "lib/webparts/updateTopNavigation/loc/{locale}.js",
     "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js",
     "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js",
-     "LoadMastertaskWebPartStrings":"lib/webparts/loadMastertask/loc/{locale}.js",
+    "LoadMastertaskWebPartStrings": "lib/webparts/loadMastertask/loc/{locale}.js",
     "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js",
     "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js",
     "TestWebPartWebPartStrings": "lib/webparts/ClientCategoryVerification/loc/{locale}.js",
@@ -510,6 +516,7 @@
     "FlowCreationWebPartStrings": "lib/webparts/flowCreation/loc/{locale}.js",
     "SMarttaskWebPartStrings": "lib/webparts/sMarttask/loc/{locale}.js",
     "GmbhCalendarWebPartStrings": "lib/webparts/gmbhCalendar/loc/{locale}.js",
-    "GroupByComponentsDashboardWebPartStrings": "lib/webparts/groupByComponentsDashboard/loc/{locale}.js"
+    "GroupByComponentsDashboardWebPartStrings": "lib/webparts/groupByComponentsDashboard/loc/{locale}.js",
+    "SmartDynamicTableWebPartStrings": "lib/webparts/smartDynamicTable/loc/{locale}.js"
   }
 }
