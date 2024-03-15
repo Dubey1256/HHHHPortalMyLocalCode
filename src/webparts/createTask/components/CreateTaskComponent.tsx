@@ -1775,7 +1775,7 @@ function CreateTaskComponent(props: any) {
                                         <span className="full-width">
                                             <div className="full-width replaceInput pe-0 alignCenter" style={{ width: '90%' }}>
                                                 <a title={selectedProjectData?.Title} target="_blank" data-interception="off" className="textDotted"
-                                                    href={`${base_Url}/SitePages/Project-Management-Profile.aspx?ProjectId=${selectedProjectData?.ID}`} >
+                                                    href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${selectedProjectData?.ID}`} >
                                                     {selectedProjectData?.Title}
                                                 </a>
                                                 <span title="Remove Project" onClick={() => { setSelectedProjectData({}) }}
@@ -2027,7 +2027,7 @@ function CreateTaskComponent(props: any) {
                                         return (
                                             <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action' >
                                                 <input type="radio" className="radio" onClick={() => ComponentServicePopupCallBack([project], undefined, undefined)} checked={selectedProjectData?.Title == project?.Title} />
-                                                <a className="hreflink" title={`${project?.PortfolioStructureID} - ${project?.Title}`} href={`${base_Url}/SitePages/Project-Management-Profile.aspx?ProjectId=${project?.Id}`}
+                                                <a className="hreflink" title={`${project?.PortfolioStructureID} - ${project?.Title}`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
                                                     data-interception="off" target="_blank">{`${project?.PortfolioStructureID} - ${project?.Title}`}</a>
                                             </li>
                                         )
@@ -2045,7 +2045,7 @@ function CreateTaskComponent(props: any) {
                                         return (
                                             <li className='hreflink px-0 list-group-item rounded-0 list-group-item-action'>
                                                 <input type="radio" className="radio" onClick={() => ComponentServicePopupCallBack([project], undefined, undefined)} checked={selectedProjectData?.Title == project?.Title} />
-                                                <a className="hreflink" title={`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`} href={`${base_Url}/SitePages/Project-Management-Profile.aspx?ProjectId=${project?.Id}`}
+                                                <a className="hreflink" title={`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`} href={`${base_Url}/SitePages/PX-Profile.aspx?ProjectId=${project?.Id}`}
                                                     data-interception="off" target="_blank">{`${project?.PortfolioStructureID} - ${project?.Title} (${project?.Count})`}</a>
                                             </li>
                                         )

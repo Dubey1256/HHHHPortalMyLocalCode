@@ -33,6 +33,7 @@ var PostBody = "";
 var AllUsers: any = [];
 var Assin: any = [];
 var AssignedToIds: any = [];
+var GlobalServiceAndComponentData : any = [];
 var ResponsibleTeamIds: any = [];
 var SiteTypeBackupArray: any = [];
 var TeamMemberIds: any = [];
@@ -140,6 +141,8 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
   const [imagetab, setImagetab] = React.useState(false);
   const [instantCategories, setInstantCategories] = React.useState([]);
   const [openPopup, setOpenPopup] = React.useState(false);
+  const [SearchedServiceCompnentData, setSearchedServiceCompnentData] =
+  React.useState<any>([]);
   const [isOpenPopup, setIsOpenPopup] = React.useState(false);
   const [editPopup, setEditPopup] = React.useState(false);
   const [editHelpPopup, setEditHelpPopup] = React.useState(false);
@@ -163,6 +166,8 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
     React.useState(false);
 
   const [SiteCompositionShow, setSiteCompositionShow] = React.useState(false);
+  const [SearchedLinkedPortfolioKey, setSearchedLinkedPortfolioKey] =
+        React.useState<any>("");
   const [composition, setComposition] = React.useState(true);
   const [FeatureTypeData, setFeatureTypeData] = React.useState([]);
   const [autoSearchFeatureType, setAutoSearchFeatureType] = React.useState([]);
@@ -350,6 +355,24 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
     setSearchFeatureType([]);
   };
 
+//   const GetAllComponentAndServiceData = async (ComponentType: any) => {
+//     let PropsObject: any = {
+//         MasterTaskListID: AllListIdData.MasterTaskListID,
+//         siteUrl: AllListIdData.siteUrl,
+//         ComponentType: ComponentType,
+//         TaskUserListId: AllListIdData.TaskUsertListID,
+//     };
+//     let CallBackData = await globalCommon.GetServiceAndComponentAllData(
+//         PropsObject
+//     );
+//     if (CallBackData?.AllData != undefined && CallBackData?.AllData?.length > 0) {
+//         GlobalServiceAndComponentData = CallBackData.AllData;
+//         SetAllProjectData(CallBackData?.FlatProjectData);
+//         AllProjectBackupArray = CallBackData?.FlatProjectData;
+//     }
+// };
+
+
   const GetAllComponentAndServiceData = async () => {
     let PropsObject: any = {
       MasterTaskListID: RequireData.MasterTaskListID,
@@ -360,14 +383,41 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
     let CallBackData = await globalCommon.GetServiceAndComponentAllData(
       PropsObject
     );
-    SetAllProjectData(CallBackData?.FlatProjectData);
-    console.log(CallBackData);
-    // if (CallBackData?.AllData != undefined && CallBackData?.AllData?.length > 0) {
-    //     GlobalServiceAndComponentData = CallBackData.AllData;
-    //     SetAllProjectData(CallBackData?.FlatProjectData);
-    //     AllProjectBackupArray = CallBackData?.FlatProjectData;
-    // }
+
+    if (CallBackData?.AllData != undefined && CallBackData?.AllData?.length > 0) {
+              GlobalServiceAndComponentData = CallBackData.AllData;
+              SetAllProjectData(CallBackData?.FlatProjectData);
+              // AllProjectBackupArray = CallBackData?.FlatProjectData;
+          }
   };
+
+  const autoSuggestionsForServiceAndComponent = (e: any, usedFor: any) => {
+    let SearchedKeyWord: any = e.target.value;
+    let TempArray: any = [];
+    if (SearchedKeyWord.length > 0) {
+        if (
+            GlobalServiceAndComponentData != undefined &&
+            GlobalServiceAndComponentData.length > 0
+        ) {
+            GlobalServiceAndComponentData.map((AllDataItem: any) => {
+                if (
+                    AllDataItem.Path?.toLowerCase()?.includes(
+                        SearchedKeyWord.toLowerCase()
+                    )
+                ) {
+                    TempArray.push(AllDataItem);
+                }
+            });
+        }
+        if (TempArray != undefined && TempArray.length > 0) {
+            if (usedFor == "Portfolio") {
+                setSearchedServiceCompnentData(TempArray);
+            }
+        }
+    } else {
+        setSearchedServiceCompnentData([]);
+    }
+};
 
   React.useEffect(() => {
     GetAllComponentAndServiceData();
@@ -419,19 +469,21 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
         setIsComponent(false);
       }
     } else {
-      if (type == "Multi") {
+      if (type == "Multi" && functionType != "Save") {
         if (item1 != undefined && item1.length > 0) {
           setfilterData(item1);
           console.log("Popup component linkedComponent", item1.linkedComponent);
         }
       }
-      if (type == "Single") {
-        if (item1 != undefined && item1.length > 0 && item1.length > 1) {
-          var newArray = item1.map((obj: { original: any }) => obj.original);
-          setLinkedComponentData(newArray);
+      if (type == "Multi" && functionType == "Save") {
+        if (item1 != undefined && item1.length > 0) {
+        
+          setLinkedComponentData(item1);
+          setSearchedServiceCompnentData([]);
         } else {
           if (item1 != undefined) {
             setLinkedComponentData([item1]);
+            setSearchedServiceCompnentData([]);
           }
         }
       }
@@ -592,23 +644,6 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
       item.Priority = "(1) High";
     }
   };
-
-  // const GetAllComponentAndServiceData = async (ComponentType: any) => {
-  //     let PropsObject: any = {
-  //         MasterTaskListID: RequireData.MasterTaskListID,
-  //         siteUrl: RequireData.siteUrl,
-  //         ComponentType: ComponentType,
-  //         TaskUserListId: AllListIdData.TaskUsertListID,
-  //     };
-  //     let CallBackData = await globalCommon.GetServiceAndComponentAllData(
-  //         PropsObject
-  //     );
-  //     if (CallBackData?.AllData != undefined && CallBackData?.AllData?.length > 0) {
-  //         GlobalServiceAndComponentData = CallBackData.AllData;
-  //         SetAllProjectData(CallBackData?.FlatProjectData);
-  //         AllProjectBackupArray = CallBackData?.FlatProjectData;
-  //     }
-  // };
 
   var getMasterTaskListTasks = async function () {
     //  var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,DeliverableSynonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title";
@@ -2846,7 +2881,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
     await web.lists
       .getById(RequireData.SmartHelpListID)
       .items.getById(item_Id)
-      .recycle()
+      .delete()
       .then((i: any) => {
         console.log(i);
         SmartHelpDetails.map((catId: any, index: any) => {
@@ -3185,22 +3220,6 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                           </div>
                         </div>
                         <div className="col-4 pe-0 mt-2 ">
-                          {/* {EditData?.Portfolio_x0020_Type == "Service" && (
-                                                        <div className="input-group">
-                                                            <label className="form-label full-width">
-                                                                Portfolio Item
-                                                            </label>
-                                                            <input type="text" className="form-control" />
-                                                            <span className="input-group-text">
-                                                                <span onClick={(e) =>
-                                                                    EditComponent(EditData, "Component")
-                                                                } className="svg__iconbox svg__icon--editBox">
-
-                                                                </span>
-
-                                                            </span>
-                                                        </div>
-                                                    )} */}
                           <div className="input-group">
                             <label className="form-label full-width">
                               Portfolio Item
@@ -3209,7 +3228,12 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                             {(linkedComponentData?.length == 0 ||
                               linkedComponentData.length !== 1) && (
                               <>
-                                <input type="text" className="form-control" />
+                                <input type="text" className="form-control"     onChange={(e) =>
+                                                                autoSuggestionsForServiceAndComponent(
+                                                                    e,
+                                                                    "Portfolio"
+                                                                )
+                                                            }/>
                                 <span
                                   className="input-group-text"
                                   placeholder="Project"
@@ -3223,11 +3247,26 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                 </span>
                               </>
                             )}
+                             {SearchedServiceCompnentData?.length > 0 ? (
+                                                        <div className="SmartTableOnTaskPopup">
+                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                {SearchedServiceCompnentData.map((Item: any) => {
+                                                                    return (
+                                                                        <li
+                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                                                            key={Item.id}
+                                                                            onClick={() => Call( [Item] , "Multi","Save")}>
+                                                                            <a>{Item.Path}</a>
+                                                                        </li>
+                                                                    );
+                                                                })}
+                                                            </ul>
+                                                        </div>
+                                                    ) : null}
                           </div>
 
                           {linkedComponentData &&
                           linkedComponentData.length == 1 ? (
-                            //    "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=4310"
                             <div>
                               {linkedComponentData?.map(
                                 (items: any, Index: any) => (
@@ -3292,6 +3331,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                         }
                                       ></span>
                                     </a>
+                                   
                                   </div>
                                 )
                               )}
@@ -3299,81 +3339,13 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                           ) : (
                             ""
                           )}
+                            
 
-                          {/* <input type="text" className="form-control" /> */}
-                          {/* <span className="input-group-text">
-                                                                <span onClick={(e) =>
-                                                                    EditComponent(EditData)
-                                                                } className="svg__iconbox svg__icon--editBox">
 
-                                                                </span>
-                                                            </span> */}
 
-                          {/* <div className="col-sm-12  inner-tabb">
-                                                            {linkedComponentData?.length > 0 ? (
-                                                                <div >
-                                                                    {linkedComponentData?.map((com: any) => {
-                                                                        return (
-                                                                            <>
-                                                                                <div className="block d-flex justify-content-between mb-1">
-                                                                                    <a
-                                                                                        className="hreflink service ps-2"
-                                                                                        target="_blank"
-                                                                                        data-interception="off"
-                                                                                        href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
-                                                                                    >
-                                                                                        {com.Title}
-                                                                                    </a>
-                                                                                    <a className="text-end">
-                                                                                        {" "}
-                                                                                        <span
-                                                                                            className="bg-light svg__icon--cross svg__iconbox"
-                                                                                            onClick={() =>
-                                                                                                setLinkedComponentData([])
-                                                                                            }
-                                                                                        ></span>
-                                                                                    </a>
-                                                                                </div>
-                                                                            </>
-                                                                        );
-                                                                    })}
-                                                                </div>
-                                                            ) : null}
 
-                                                        </div> */}
-                          {/* {EditData?.Portfolio_x0020_Type == "Service" && (
-                                                        <div className="col-sm-12 inner-tabb">
-                                                            {linkedComponentData?.length > 0 ? (
-                                                                <div>
-                                                                    {linkedComponentData?.map((com: any) => {
-                                                                        return (
-                                                                            <>
-                                                                                <div className="colorComponentBgColor d-flex justify-content-between mb-1">
-                                                                                    <a
-                                                                                        className="hreflink service ps-2"
-                                                                                        target="_blank"
-                                                                                        data-interception="off"
-                                                                                        href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
-                                                                                    >
-                                                                                        {com.Title}
-                                                                                    </a>
-                                                                                    <a className="text-end">
-                                                                                        <span
-                                                                                            className="bg-light svg__iconbox svg__icon--cross"
-                                                                                            onClick={() =>
-                                                                                                setLinkedComponentData([])
-                                                                                            }
-                                                                                        ></span>
-                                                                                    </a>
-                                                                                </div>
-                                                                            </>
-                                                                        );
-                                                                    })}
-                                                                </div>
-                                                            ) : null}
 
-                                                        </div>
-                                                    )} */}
+
 
                           <div className="col-sm-12  inner-tabb">
                             <div>
@@ -3947,7 +3919,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                     key={Index}
                                   >
                                     <a
-                                      href={`${SelectD.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId?=${items.Id}`}
+                                      href={`${SelectD.siteUrl}/SitePages/PX-Profile.aspx?ProjectId?=${items.Id}`}
                                       className="textDotted hreflink"
                                       data-interception="off"
                                       target="_blank"
@@ -4008,7 +3980,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                       key={Index}
                                     >
                                       <a
-                                        href={`${SelectD.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId?=${items.Id}`}
+                                        href={`${SelectD.siteUrl}/SitePages/PX-Profile.aspx?ProjectId?=${items.Id}`}
                                         className="wid-90 light"
                                         data-interception="off"
                                         target="_blank"
@@ -5040,7 +5012,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                 Dynamic={RequireData}
                 ComponentType={"Component"}
                 Call={Call}
-                selectionType={"Single"}
+                selectionType={"Multi"}
               />
             ) : null}
 
