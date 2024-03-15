@@ -2923,7 +2923,7 @@ const TimeEntryPopup = (item: any) => {
                           type="text"
                           className="form-control"
                           name="TimeTitle"
-                          value={checkCategoriesTitle}
+                          value={newData.Title != ''?newData.Title:checkCategoriesTitle}
                           onChange={(e) =>
                             setNewData({ ...newData, Title: e.target.value })
                           }
