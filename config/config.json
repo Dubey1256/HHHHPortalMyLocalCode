@@ -386,7 +386,6 @@
         }
       ]
     },
-    
     "hello-spfx-web-part": {
       "components": [
         {
@@ -427,11 +426,18 @@
         }
       ]
     },
+    "smart-dynamic-table-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/smartDynamicTable/SmartDynamicTableWebPart.js",
+          "manifest": "./src/webparts/smartDynamicTable/SmartDynamicTableWebPart.manifest.json"
+
     "root-team-portfolio-table-web-part": {
       "components": [
         {
           "entrypoint": "./lib/webparts/rootTeamPortfolioTable/RootTeamPortfolioTableWebPart.js",
           "manifest": "./src/webparts/rootTeamPortfolioTable/RootTeamPortfolioTableWebPart.manifest.json"
+
         }
       ]
     }
@@ -492,7 +498,7 @@
     "UpdateTopNavigationWebPartStrings": "lib/webparts/updateTopNavigation/loc/{locale}.js",
     "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js",
     "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js",
-     "LoadMastertaskWebPartStrings":"lib/webparts/loadMastertask/loc/{locale}.js",
+    "LoadMastertaskWebPartStrings": "lib/webparts/loadMastertask/loc/{locale}.js",
     "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js",
     "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js",
     "TestWebPartWebPartStrings": "lib/webparts/ClientCategoryVerification/loc/{locale}.js",
@@ -510,6 +516,7 @@
     "FlowCreationWebPartStrings": "lib/webparts/flowCreation/loc/{locale}.js",
     "SMarttaskWebPartStrings": "lib/webparts/sMarttask/loc/{locale}.js",
     "GmbhCalendarWebPartStrings": "lib/webparts/gmbhCalendar/loc/{locale}.js",
-    "GroupByComponentsDashboardWebPartStrings": "lib/webparts/groupByComponentsDashboard/loc/{locale}.js"
+    "GroupByComponentsDashboardWebPartStrings": "lib/webparts/groupByComponentsDashboard/loc/{locale}.js",
+    "SmartDynamicTableWebPartStrings": "lib/webparts/smartDynamicTable/loc/{locale}.js"
   }
 }
