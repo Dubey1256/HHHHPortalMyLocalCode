@@ -568,7 +568,7 @@ const AncTool = (props: any) => {
                                                 // Update the document file here
                                                 let postData = {
                                                     [siteColName]: { "results": resultArray },
-                                                    ItemRank: Doctab === 'DRAGDROP' ? LinkDocitemRank : itemRank,,
+                                                    ItemRank: Doctab === 'DRAGDROP' ? LinkDocitemRank : itemRank,
                                                     Title: getUploadedFileName(fileName)
                                                 }
                                                 if (getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == 'msg') {
