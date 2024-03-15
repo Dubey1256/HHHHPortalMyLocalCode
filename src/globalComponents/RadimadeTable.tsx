@@ -50,7 +50,8 @@ let hasCustomExpanded: any = true
 let hasExpanded: any = true
 let isHeaderNotAvlable: any = false
 let isColumnDefultSortingAsc: any = false;
-
+ let filterTaskType:any=false;
+ let AlltaskfilterData:any;
 function ReadyMadeTable(SelectedProp: any) {
     const childRef = React.useRef<any>();
     const restructuringRef = React.useRef<any>();
@@ -677,7 +678,18 @@ function ReadyMadeTable(SelectedProp: any) {
                             TasksItem.push(result);
                             AllTasksData.push(result);
                         });
-                        setAllSiteTasksData(AllTasksData);
+                        if(filterTaskType){
+                            console.log(AllSiteTasksData)
+                             AlltaskfilterData=[...AllSiteTasksData,...AllTasksData]
+                          
+                            DataPrepareForCSFAWT()
+
+                        }
+                        
+                        else{
+                            setAllSiteTasksData(AllTasksData);
+                        }
+                       
                         // countTaskAWTLevel(AllTasksData, '');
                         // let taskBackup = JSON.parse(JSON.stringify(AllTasksData));
                         // allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
@@ -694,6 +706,7 @@ function ReadyMadeTable(SelectedProp: any) {
         }
     };
     const timeEntryIndex: any = {};
+
     const smartTimeTotal = async () => {
         setLoaded(false)
         count++;
@@ -1204,6 +1217,22 @@ function ReadyMadeTable(SelectedProp: any) {
     const componentActivity = (levelType: any, items: any) => {
         let findActivity: any = []
         let findTasks: any = []
+       if(filterTaskType){
+         
+         if (items?.Id != undefined) {
+            findActivity = AlltaskfilterData?.filter((elem: any) => elem?.TaskType?.Id === levelType.Id && elem?.Portfolio?.Id === items?.Id);
+            findTasks = AlltaskfilterData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && (elem1?.ParentTask?.Id === 0 || elem1?.ParentTask?.Id === undefined) && elem1?.Portfolio?.Id === items?.Id);
+        }
+
+        else {
+            findActivity = AlltaskfilterData?.filter((elem: any) => elem?.TaskType?.Id === levelType.Id);
+            findTasks = AlltaskfilterData?.filter((elem1: any) => {
+                if (elem1?.TaskType?.Id != levelType.Id && (elem1?.ParentTask?.Id === 0 || elem1?.ParentTask?.Id === undefined)) {
+
+                }
+            })
+        }
+       }else{
         if (items?.Id != undefined) {
             findActivity = AllSiteTasksData?.filter((elem: any) => elem?.TaskType?.Id === levelType.Id && elem?.Portfolio?.Id === items?.Id);
             findTasks = AllSiteTasksData?.filter((elem1: any) => elem1?.TaskType?.Id != levelType.Id && (elem1?.ParentTask?.Id === 0 || elem1?.ParentTask?.Id === undefined) && elem1?.Portfolio?.Id === items?.Id);
@@ -1217,6 +1246,9 @@ function ReadyMadeTable(SelectedProp: any) {
                 }
             })
         }
+       }
+       
+      
 
         countAllTasksData = countAllTasksData.concat(findTasks);
         countAllTasksData = countAllTasksData.concat(findActivity);
@@ -1354,7 +1386,13 @@ function ReadyMadeTable(SelectedProp: any) {
         setData(flattenedData);
         // setData(smartAllFilterData);
     }
-
+    const FilterAllTask = ()=>{
+        filterTaskType=true;
+        setLoaded(false)
+        SelectedProp.TaskFilter= "PercentComplete gt '0.89'";
+        LoadAllSiteTasks()
+       
+      }
 
     function flattenData(groupedDataItems: any) {
         const flattenedData: any = [];
@@ -2522,7 +2560,7 @@ function ReadyMadeTable(SelectedProp: any) {
                                     <div>
                                         <div>
                                             <GlobalCommanTable  tableId={SelectedProp?.tableId}columnSettingIcon={true} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} showFilterIcon={SelectedProp?.configration != "AllAwt"}
-                                            // loadFilterTask={FilterAllTask()}
+                                            loadFilterTask={FilterAllTask}
                                                 masterTaskData={allMasterTaskDataFlatLoadeViewBackup} bulkEditIcon={true} portfolioTypeDataItemBackup={portfolioTypeDataItemBackup} taskTypeDataItemBackup={taskTypeDataItemBackup}
                                                 flatViewDataAll={flatViewDataAll} setData={setData} updatedSmartFilterFlatView={updatedSmartFilterFlatView} setLoaded={setLoaded} clickFlatView={clickFlatView} switchFlatViewData={switchFlatViewData}
                                                 flatView={true} switchGroupbyData={switchGroupbyData} smartTimeTotalFunction={smartTimeTotal} SmartTimeIconShow={true} AllMasterTasksData={AllMasterTasksData} ref={childRef}
