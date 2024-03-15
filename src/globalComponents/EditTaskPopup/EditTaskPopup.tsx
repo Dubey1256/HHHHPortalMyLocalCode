@@ -2126,6 +2126,8 @@ const EditTaskPopup = (Items: any) => {
                         EditData.TeamMembers?.length > 0
                     ) {
                         setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
+                    } else if (EditData.ResponsibleTeam?.length > 0) {
+                        setWorkingMemberFromTeam(EditData.ResponsibleTeam, "Development", 0);
                     }
                     StatusOptions?.map((item: any) => {
                         if (StatusInput == item.value) {
@@ -2291,6 +2293,8 @@ const EditTaskPopup = (Items: any) => {
                     EditData.TeamMembers?.length > 0
                 ) {
                     setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
+                } else if (EditData.ResponsibleTeam?.length > 0) {
+                    setWorkingMemberFromTeam(EditData.ResponsibleTeam, "Development", 0);
                 } else {
                     setWorkingMember(0);
                 }

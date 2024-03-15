@@ -564,6 +564,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       }
 
     })
+    this.setState({ IsRoundUpValues: false ,isFocused:true});
+    this.setState({isFocused:true});
     let falg: any = false;
     
     // this.state.bindrowValue?.getParentRows()[0]?.original?.subRows?.forEach((obj: any) => {
@@ -598,7 +600,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.renderData = [];
     this.renderData = this.renderData.concat(this.state.showDateTime)
     this.refreshData();
-    this.setState({ IsRoundUpValues: false ,isFocused:true});
+   
   }
 
   private hideItems = function (e: any, item: any) {
@@ -3413,7 +3415,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       }
 
       if (item.SmartHoursTotal != undefined && item.SmartHoursTotal != undefined) {
-        let daysround: any = (item.TotalValueHours / 8);
+        let daysround: any = (item.SmartHoursTotal / 8);
         contentItem['Days'] = parseFloat(parseFloat(daysround).toFixed(2));
       } else {
         contentItem['Days'] = '';
