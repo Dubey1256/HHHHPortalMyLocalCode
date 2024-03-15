@@ -2486,7 +2486,7 @@ function ReadyMadeTable(SelectedProp: any) {
     const customTableHeaderButtonsAllAWT = (
         <>
 
-            {checkedList1.current.length < 2 || SelectedProp?.SelectedItem != undefined ? <button type="button" className="btn btn-primary" onClick={() => Createbutton()} >{checkedList?.TaskType?.Title == "Workstream" || SelectedProp?.SelectedItem?.TaskType?.Title == "Workstream" ? "Add Task" : "Add Workstream-Task"}</button> :
+            {childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length<2|| SelectedProp?.SelectedItem != undefined ? <button type="button" className="btn btn-primary" onClick={() => Createbutton()} >{checkedList?.TaskType?.Title == "Workstream" || SelectedProp?.SelectedItem?.TaskType?.Title == "Workstream" ? "Add Task" : "Add Workstream-Task"}</button> :
                 <button type="button" className="btn btn-primary" disabled={true} >{checkedList?.TaskType?.Title == "Workstream" || SelectedProp?.SelectedItem?.TaskType?.Title == "Workstream" ? "Add Task" : "Add Workstream-Task"}</button>}
             {
                 trueRestructuring == true ?
