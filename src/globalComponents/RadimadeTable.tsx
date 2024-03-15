@@ -725,7 +725,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 }
             });
         });
-        data[0]?.subRows?.map((task: any) => {
+        AllSiteTasksData?.map((task: any) => {
             task.TotalTaskTime = 0;
             const key = `Task${task?.siteType + task.Id}`;
             if (timeEntryIndex.hasOwnProperty(key) && timeEntryIndex[key]?.Id === task.Id && timeEntryIndex[key]?.siteType === task.siteType) {
@@ -737,7 +737,7 @@ function ReadyMadeTable(SelectedProp: any) {
             localStorage.setItem('timeEntryIndex', dataString);
         }
         console.log("timeEntryIndex", timeEntryIndex)
-        if (data[0]?.subRows?.length > 0) {
+        if (AllSiteTasksData?.length > 0) {
             setData([]);
             portfolioTypeData?.map((port: any, index: any) => {
                 if (SelectedProp?.SelectedItem != undefined) {
@@ -1489,7 +1489,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) &&
-                            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
                                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
                         }
                     </>
@@ -1989,7 +1989,7 @@ function ReadyMadeTable(SelectedProp: any) {
     );
 
     //-------------------------------------------------- restructuring function start---------------------------------------------------------------
-
+ 
     const callBackData = React.useCallback((checkData: any) => {
         let array: any = [];
         if (checkData != undefined) {
@@ -2463,13 +2463,13 @@ function ReadyMadeTable(SelectedProp: any) {
     const customTableHeaderButtons = (
         <>
 
-            {(checkedList1?.current != undefined && checkedList1?.current?.length < 2 && checkedList1?.current?.[0]?.Item_x0020_Type != "Feature" && checkedList1?.current?.[0]?.Item_x0020_Type !="Task") && (SelectedProp?.SelectedItem != undefined && SelectedProp?.SelectedItem?.Item_x0020_Type != "Feature" && 'Parent' in SelectedProp?.SelectedItem) ?
+            {(checkedList1?.current != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length<2 && checkedList1?.current?.[0]?.Item_x0020_Type != "Feature" && checkedList1?.current?.[0]?.Item_x0020_Type !="Task") && (SelectedProp?.SelectedItem != undefined && SelectedProp?.SelectedItem?.Item_x0020_Type != "Feature" && 'Parent' in SelectedProp?.SelectedItem) ?
                 <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure" onClick={() => OpenAddStructureModal()}>
                     {" "} Add Structure{" "}</button> :
                 <button type="button" disabled className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure"> {" "} Add Structure{" "}</button>
             }
-            {checkedList != undefined || SelectedProp?.SelectedItem != undefined ?
-                < button type="button" className="btn btn-primary" title='Compare' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => addActivity()}>Add Activity-Task</button> :
+            {(childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length<2) && (checkedList != undefined || SelectedProp?.SelectedItem != undefined) ?
+                < button type="button" className="btn btn-primary" title='Add Activity-Task' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => addActivity()}>Add Activity-Task</button> :
                 <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} >Add Activity-Task</button>
             }
             {
@@ -2486,7 +2486,7 @@ function ReadyMadeTable(SelectedProp: any) {
     const customTableHeaderButtonsAllAWT = (
         <>
 
-            {checkedList1.current.length < 2 || SelectedProp?.SelectedItem != undefined ? <button type="button" className="btn btn-primary" onClick={() => Createbutton()} >{checkedList?.TaskType?.Title == "Workstream" || SelectedProp?.SelectedItem?.TaskType?.Title == "Workstream" ? "Add Task" : "Add Workstream-Task"}</button> :
+            {childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length<2|| SelectedProp?.SelectedItem != undefined ? <button type="button" className="btn btn-primary" onClick={() => Createbutton()} >{checkedList?.TaskType?.Title == "Workstream" || SelectedProp?.SelectedItem?.TaskType?.Title == "Workstream" ? "Add Task" : "Add Workstream-Task"}</button> :
                 <button type="button" className="btn btn-primary" disabled={true} >{checkedList?.TaskType?.Title == "Workstream" || SelectedProp?.SelectedItem?.TaskType?.Title == "Workstream" ? "Add Task" : "Add Workstream-Task"}</button>}
             {
                 trueRestructuring == true ?
@@ -2555,7 +2555,7 @@ function ReadyMadeTable(SelectedProp: any) {
 
             </Panel>
 
-            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.AllListId} />}
+            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.SelectedProp} />}
 
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
@@ -2631,6 +2631,7 @@ function ReadyMadeTable(SelectedProp: any) {
                         type="button"
                         className="btn btn-primary mx-2"
                         onClick={() => Createbutton()}
+                        disabled={activeTile===""?true:false}
                     >
                         Create
                     </button>

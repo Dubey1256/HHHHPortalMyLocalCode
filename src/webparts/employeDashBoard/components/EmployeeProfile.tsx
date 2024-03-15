@@ -370,7 +370,8 @@ const EmployeProfile = (props: any) => {
     var time = today.getHours() + ":" + today.getMinutes();
     var dateTime = time;
     setCurrentTime(dateTime)
-    const array: any = allData
+    const array: any = allData;
+    const filteredConfig = DashboardConfig.filter((item: any) => item.DataSource === 'TimeSheet')[0];
     DashboardConfig?.forEach((config: any) => {
       if (config?.Tasks == undefined)
         config.Tasks = [];
@@ -395,7 +396,8 @@ const EmployeProfile = (props: any) => {
             });
           }
         }
-        setIsCallContext(true);
+        if (filteredConfig == undefined || filteredConfig == '')
+          setIsCallContext(true);
       }
       else if (config?.DataSource == 'TaskUsers') {
         if (config?.selectFilterType != 'custom') {
@@ -462,7 +464,8 @@ const EmployeProfile = (props: any) => {
             })
           }
         }
-        setIsCallContext(true);
+        if (filteredConfig == undefined || filteredConfig == '')
+          setIsCallContext(true);
       }
       else if (config?.DataSource == 'TimeSheet') {
         config.LoadDefaultFilter = false;
@@ -506,6 +509,13 @@ const EmployeProfile = (props: any) => {
                         }
                         entry.listId = site?.listId;
                         entry.siteUrl = site?.siteUrl
+                        if (site?.taskSites != undefined && site?.taskSites?.length > 0) {
+                          site?.taskSites?.forEach((Site: any) => {
+                            if (entry['Task' + Site] != undefined && entry['Task' + Site]?.Id != undefined) {
+                              entry.TaskListType = Site;
+                            }
+                          })
+                        }
                         if (TimeEntry?.sortTaskDate != undefined && CurrentDate != undefined && CurrentDate.getTime() == TimeEntry?.sortTaskDate.getTime() && TimeEntry?.Status == 'For Approval') {
                           TempArray.push(TimeEntry)
                           if (!isItemExists(AllTimeEntry, entry.Id))
