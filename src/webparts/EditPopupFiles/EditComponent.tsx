@@ -3947,7 +3947,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                     key={Index}
                                   >
                                     <a
-                                      href={`${SelectD.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId?=${items.Id}`}
+                                      href={`${SelectD.siteUrl}/SitePages/PX-Profile.aspx?ProjectId?=${items.Id}`}
                                       className="textDotted hreflink"
                                       data-interception="off"
                                       target="_blank"
@@ -4008,7 +4008,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                       key={Index}
                                     >
                                       <a
-                                        href={`${SelectD.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId?=${items.Id}`}
+                                        href={`${SelectD.siteUrl}/SitePages/PX-Profile.aspx?ProjectId?=${items.Id}`}
                                         className="wid-90 light"
                                         data-interception="off"
                                         target="_blank"
