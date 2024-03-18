@@ -31,6 +31,7 @@ import PageLoader from "../../../globalComponents/pageLoader";
 import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
 import TrafficLightComponent from "../../../globalComponents/TrafficLightVerification/TrafficLightComponent";
 import CreateAllStructureComponent from "../../../globalComponents/CreateAllStructure";
+
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -3189,17 +3190,17 @@ function TeamPortlioTable(SelectedProp: any) {
             copyDtaArray.map((val: any) => {
                 item[0]?.subRows.map((childs: any) => {
                     if (item[0].SelectedItem == val.Id) {
-                        val.subRows.unshift(childs)
+                        val?.subRows?.unshift(childs)
                     }
                     if (val.subRows != undefined && val.subRows.length > 0) {
                         val.subRows?.map((child: any) => {
                             if (item[0].SelectedItem == child.Id) {
-                                child.subRows.unshift(childs)
+                                child?.subRows?.unshift(childs)
                             }
                             if (child.subRows != undefined && child.subRows.length > 0) {
                                 child.subRows?.map((Subchild: any) => {
                                     if (item[0].SelectedItem == Subchild.Id) {
-                                        Subchild.subRows.unshift(childs)
+                                        Subchild?.subRows?.unshift(childs)
                                     }
                                 })
                             }
@@ -3704,7 +3705,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     <button
                         type="button"
                         className="btn btn-primary mx-2"
-                        onClick={() => Createbutton()}
+                        onClick={() => Createbutton()} disabled={activeTile===""?true:false}
                     >
                         Create
                     </button>
