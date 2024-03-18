@@ -80,7 +80,7 @@ export interface ITaskprofileState {
   sendMail: boolean,
   showPopup: any;
   emailcomponentopen: boolean,
-  OpenEODReportPopup: boolean,
+ 
   showhideCommentBoxIndex: any
   ApprovalCommentcheckbox: boolean;
   CommenttoPost: string;
@@ -157,7 +157,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       ApprovalPointCurrentParentIndex: null,
       ApprovalHistoryPopup: false,
       emailcomponentopen: false,
-      OpenEODReportPopup: false,
+     
       emailComponentstatus: null,
       subchildParentIndex: null,
       showcomment_subtext: 'none',
@@ -783,12 +783,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     this.setState({
       sendMail: false,
       emailStatus: ""
-    })
-    this.GetResult();
-  }
-  private async EODReportComponentCallback() {
-    this.setState({
-      OpenEODReportPopup: false,
     })
     this.GetResult();
   }
@@ -2189,7 +2183,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dt className='bg-Fa'>Project</dt>
                         <dd className='bg-Ff full-width'>
                           <div>
-                            {ProjectData?.Title != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
+                            {ProjectData?.Title != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
                               <ReactPopperTooltipSingleLevel ShareWebId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
                             <span className="pull-right svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
                           </div>
@@ -2232,17 +2226,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           </div>
                         }
                       </dl>}
-                      <div className="Sitecomposition my-2">
-                        <a className="sitebutton bg-fxdark alignCenter justify-content-between">
-                          <span className="alignCenter">
-                            <span className="svg__iconbox svg__icon--docx"></span>
-                            <span className="mx-2">Submit EOD Report</span>
-                          </span>
-                          <span className="svg__iconbox svg__icon--editBox hreflink" title="Submit EOD Report Popup"
-                            onClick={() => this.setState({ OpenEODReportPopup: true })}>
-                          </span>
-                        </a>
-                      </div>
+                    
                       {this.state.Result?.EstimatedTimeDescriptionArray?.length > 0 &&
                         <dl className="Sitecomposition my-2">
                           <div className='dropdown'>

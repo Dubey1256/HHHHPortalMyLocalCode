@@ -20,6 +20,7 @@ export interface IFlowCreationWebPartProps {
   SmartInformationListID: any;
   DocumentsListID: any;
   TaskTimeSheetListID: any;
+  SmartHelpListID:any;
   PortFolioTypeID: any;
   TaskTypeID: any;
   TimeEntry: any;
@@ -46,6 +47,7 @@ export default class FlowCreationWebPart extends BaseClientSideWebPart<IFlowCrea
         TaskUsertListID: this.properties.TaskUsertListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
         SmartInformationListID: this.properties.SmartInformationListID,
+        SmartHelpListID:this.properties.SmartHelpListID,
         DocumentsListID: this.properties.DocumentsListID,
         TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
         TaskTypeID: this.properties.TaskTypeID,
@@ -117,6 +119,9 @@ export default class FlowCreationWebPart extends BaseClientSideWebPart<IFlowCrea
                 }),
                 PropertyPaneTextField('MasterTaskListID', {
                   label: "MasterTaskListID"
+                }),
+                PropertyPaneTextField('SmartHelpListID', {
+                  label: 'SmartHelp List'
                 }),
                 PropertyPaneTextField('TaskUsertListID', {
                   label: "TaskUsertListID"
