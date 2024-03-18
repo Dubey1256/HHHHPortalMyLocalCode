@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as moment from 'moment';
-import { ITaskProfileTemplateProps } from './ITaskProfileTemplateProps';
+import { ITaskprofileProps } from './ITaskprofileProps';
 import {
   mergeStyleSets,
   FocusTrapCallout,
@@ -112,7 +112,7 @@ export interface ITaskprofileState {
   counter: any;
 }
 
-class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITaskprofileState> {
+class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> {
   private relevantDocRef: any;
   private smartInfoRef: any;
   private keyDocRef: any
@@ -129,7 +129,7 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
   countemailbutton: number = 0;
   backGroundComment = false;
   this: any;
-  public constructor(props: ITaskProfileTemplateProps, state: ITaskprofileState) {
+  public constructor(props: ITaskprofileProps, state: ITaskprofileState) {
     super(props);
     this.relevantDocRef = React.createRef();
     this.smartInfoRef = React.createRef();
@@ -1835,7 +1835,7 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
 
 
   //********** */ Inline editing End************
-  public render(): React.ReactElement<ITaskProfileTemplateProps> {
+  public render(): React.ReactElement<ITaskprofileProps> {
     buttonId = this.generateButtonId();
     const {
       description,
@@ -2920,5 +2920,5 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
     );
   }
 }
-export default TaskProfileTemplate
+export default Taskprofile
 export { myContextValue }

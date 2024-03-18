@@ -14,6 +14,16 @@ import { ITaskProfileTemplateProps } from './components/ITaskProfileTemplateProp
 
 export interface ITaskProfileTemplateWebPartProps {
   description: string;
+  MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
+  TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
+  SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
+  SmartInformationListID: 'edf0a6fb-f80e-4772-ab1e-666af03f7ccd';
+  DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08';
+  TaskTimeSheetListID: '464fb776-e4b3-404c-8261-7d3c50ff343f';
+  TaskTypeID:"21b55c7b-5748-483a-905a-62ef663972dc";
+  PortFolioTypeID: "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
+  TimeEntry: any;
+  SiteCompostion: any;
 }
 
 export default class TaskProfileTemplateWebPart extends BaseClientSideWebPart<ITaskProfileTemplateWebPartProps> {
@@ -25,11 +35,25 @@ export default class TaskProfileTemplateWebPart extends BaseClientSideWebPart<IT
     const element: React.ReactElement<ITaskProfileTemplateProps> = React.createElement(
       TaskProfileTemplate,
       {
+       
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        // loginName:this.context.pageContext.user.loginName,
+        Context: this.context,
+        MasterTaskListID: this.properties.MasterTaskListID,
+        TaskUsertListID: this.properties.TaskUsertListID,
+        SmartMetadataListID: this.properties.SmartMetadataListID,
+        SmartInformationListID: this.properties.SmartInformationListID,
+        PortFolioTypeID:this.properties.PortFolioTypeID,
+        DocumentsListID: this.properties.DocumentsListID,
+        TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
+        TaskTypeID:this.properties.TaskTypeID,
+        TimeEntry: this.properties.TimeEntry,
+        SiteCompostion: this.properties.SiteCompostion
       }
     );
 
@@ -57,9 +81,7 @@ export default class TaskProfileTemplateWebPart extends BaseClientSideWebPart<IT
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
-            case 'TeamsModern':
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
-              break;
+           
             default:
               environmentMessage = strings.UnknownEnvironment;
           }
@@ -110,7 +132,38 @@ export default class TaskProfileTemplateWebPart extends BaseClientSideWebPart<IT
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
-                })
+                }),
+                PropertyPaneTextField('MasterTaskListID', {
+                  label: "MasterTaskListID"
+                }),
+                PropertyPaneTextField('TaskUsertListID', {
+                  label: "TaskUsertListID"
+                }),
+                PropertyPaneTextField('SmartMetadataListID', {
+                  label: "SmartMetadataListID"
+                }),
+                PropertyPaneTextField('SmartInformationListID', {
+                  label: 'SmartInformationListID'
+                }),
+                PropertyPaneTextField('PortFolioTypeID', {
+                  label: "PortFolioTypeID"
+                }),
+                PropertyPaneTextField('DocumentsListID', {
+                  label: "DocumentsListID"
+                }),
+                PropertyPaneTextField('TaskTimeSheetListID', {
+                  label: "TaskTimeSheetListID"
+                }),
+                PropertyPaneTextField('TaskTypeID', {
+                  label: "TaskTypeID"
+                }),
+                PropertyPaneTextField('TimeEntry', {
+                  label: "TimeEntry"
+                }),
+                PropertyPaneTextField('SiteCompostion', {
+                  label: "SiteCompostion"
+                }),
+                
               ]
             }
           ]
