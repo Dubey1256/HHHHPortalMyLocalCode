@@ -127,7 +127,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   count: number = 0;
 
   countemailbutton: number = 0;
-  backGroundComment = false;
+  backGroundComment = true;
   this: any;
   public constructor(props: ITaskprofileProps, state: ITaskprofileState) {
     super(props);
@@ -531,10 +531,11 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .expand('AssingedToUser,UserGroup,Approver')
       .get();
 
-    taskUsers?.map((item: any, index: any) => {
-      if (this.props?.Context?.pageContext?._legacyPageContext?.userId === (item?.AssingedToUser?.Id) && item?.Company == "Smalsus") {
-        this.backGroundComment = true;
+    taskUsers?.map((item: any) => {
+      if (this.props?.Context?.pageContext?._legacyPageContext?.userId === (item?.AssingedToUser?.Id) && item?.Company === "HHHH") {
+        this.backGroundComment = false;
       }
+  
 
 
     })
@@ -2403,22 +2404,22 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                   <li>
                                                     {fbData['Completed'] != null && fbData['Completed'] &&
 
-                                                      <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Completed.png'></img></span>
+                                                    <span className="svg__iconbox svg__icon--tick"></span>
                                                     }
                                                   </li>
                                                   <li>
                                                     {fbData['HighImportance'] != null && fbData['HighImportance'] &&
-                                                      <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/highPriorty.png'></img></span>
+                                                     <span className="svg__iconbox svg__icon--taskHighPriority"></span>
                                                     }
                                                   </li>
                                                   <li>
                                                     {fbData['LowImportance'] != null && fbData['LowImportance'] &&
-                                                      <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/lowPriority.png'></img></span>
+                                                      <span className="svg__iconbox svg__icon--lowPriority"></span>
                                                     }
                                                   </li>
                                                   <li>
                                                     {fbData['Phone'] != null && fbData['Phone'] &&
-                                                      <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Phone.png'></img></span>
+                                                      <span className="svg__iconbox svg__icon--phone"></span>
                                                     }
                                                   </li>
                                                 </ul>
@@ -2568,22 +2569,22 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                   <ul className="list-none">
                                                     <li>
                                                       {fbSubData?.Completed != null && fbSubData?.Completed &&
-                                                        <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Completed.png'></img></span>
+                                                       <span className="svg__iconbox svg__icon--tick"></span>
                                                       }
                                                     </li>
                                                     <li>
                                                       {fbSubData?.HighImportance != null && fbSubData?.HighImportance &&
-                                                        <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/highPriorty.png'></img></span>
+                                                       <span className="svg__iconbox svg__icon--taskHighPriority"></span>
                                                       }
                                                     </li>
                                                     <li>
                                                       {fbSubData?.LowImportance != null && fbSubData?.LowImportance &&
-                                                        <span><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/lowPriority.png'></img></span>
+                                                        <span className="svg__iconbox svg__icon--lowPriority"></span>
                                                       }
                                                     </li>
                                                     <li>
                                                       {fbSubData?.Phone != null && fbSubData?.Phone &&
-                                                        <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Phone.png'></img></span>
+                                                       <span className="svg__iconbox svg__icon--phone"></span>
                                                       }
                                                     </li>
                                                   </ul>
