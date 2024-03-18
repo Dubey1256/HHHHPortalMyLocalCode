@@ -2560,7 +2560,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) &&
-                            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
                                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
                         }
                     </>
@@ -3189,17 +3189,17 @@ function TeamPortlioTable(SelectedProp: any) {
             copyDtaArray.map((val: any) => {
                 item[0]?.subRows.map((childs: any) => {
                     if (item[0].SelectedItem == val.Id) {
-                        val.subRows.unshift(childs)
+                        val?.subRows?.unshift(childs)
                     }
                     if (val.subRows != undefined && val.subRows.length > 0) {
                         val.subRows?.map((child: any) => {
                             if (item[0].SelectedItem == child.Id) {
-                                child.subRows.unshift(childs)
+                                child?.subRows?.unshift(childs)
                             }
                             if (child.subRows != undefined && child.subRows.length > 0) {
                                 child.subRows?.map((Subchild: any) => {
                                     if (item[0].SelectedItem == Subchild.Id) {
-                                        Subchild.subRows.unshift(childs)
+                                        Subchild?.subRows.unshift(childs)
                                     }
                                 })
                             }
@@ -3704,7 +3704,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     <button
                         type="button"
                         className="btn btn-primary mx-2"
-                        onClick={() => Createbutton()}
+                        onClick={() => Createbutton()} disabled={activeTile===""?true:false}
                     >
                         Create
                     </button>
