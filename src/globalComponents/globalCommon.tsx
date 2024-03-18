@@ -2580,17 +2580,27 @@ export const AwtGroupingAndUpdatePrarticularColumn = async (findGrouping: any, A
     }
     return { findGrouping, flatdata };
 }
-export const replaceURLsWithAnchorTags = (text: any) => {
-    if(text!=undefined){
-   // Regular expression to match URLs
-   var urlRegex = /(https?:\/\/[^\s]+)/g;
-   // Replace URLs with anchor tags
-   var replacedText = text.replace(urlRegex, function (url: any) {
-       return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
-   });
-   return replacedText;
-    }
- 
+export const replaceURLsWithAnchorTags = (text:any) => {
+    // Regular expression to match URLs
+    var urlRegex = /(https?:\/\/[^\s<>"]+)(?=["'\s.,]|$)/g;
+    // Replace URLs with anchor tags
+    let textToIgnore :any= ''
+    var replacedText = text.replace(urlRegex, function (url:any) {
+        if (!isURLInsideAnchorTag(url, text) && !textToIgnore.includes(url)) {
+            console.log(url,'in if')
+            return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
+        } else{
+            textToIgnore += `${url} `
+            return url;
+        }
+    });
+    return replacedText;
+}
+
+function isURLInsideAnchorTag(url:any, text:any) {
+    // Regular expression to match anchor tags
+    var anchorRegex = /<a\s+(?:[^>]*?\s+)?href=(["'])(.*?)\1/i;
+    return anchorRegex.test(text) && anchorRegex.exec(text)[2] === url;
 }
 //--------------------------------------Share TimeSheet Report-----------------------------------------------------------------------
 
