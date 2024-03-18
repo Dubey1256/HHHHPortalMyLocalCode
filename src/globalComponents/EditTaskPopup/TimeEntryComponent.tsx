@@ -2768,7 +2768,7 @@ const TimeEntryPopup = (item: any) => {
                     {" "}
 
 
-                    {row?.original?.Status === "Approved" || row?.original?.Status === "For Approval" || row?.original?.Status === ""
+                    {row?.original?.Status === "Approved" || row?.original?.Status === "For Approval"
                       ? null :
                       <> <span
                         title="Edit"
