@@ -261,7 +261,7 @@ const GlobalCommanTable = (items: any) => {
             if (item?.original?.siteType === "Master Tasks") {
                 window.open(`${siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
             } else if (item?.original?.siteType === "Project") {
-                window.open(`${siteUrl}/SitePages/Project-Management-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
+                window.open(`${siteUrl}/SitePages/PX-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
             } else {
                 window.open(`${siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`, '_blank')
             }

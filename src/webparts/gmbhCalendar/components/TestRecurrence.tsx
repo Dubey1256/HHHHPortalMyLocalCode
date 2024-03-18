@@ -17,6 +17,7 @@ import "react-quill/dist/quill.snow.css";
 import { FaPaperPlane } from "react-icons/fa";
 import EmailComponenet from "../../calendar/components/email";
 import moment from 'moment-timezone';
+import "./style.css";
 moment.locale("en-GB");
 let createdBY: any,
   modofiedBy: any,
@@ -396,6 +397,32 @@ const Apps = (props: any) => {
         while (dates.length < repeatInstance || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) < windowEndDate) {
           if (calculateNextDate(rule, firstDayOfWeek, new Date(dates[dates.length - 1] || startDate), dates, windowEndDate, AllEvents, recurrenceData) === 'break') break;
         }
+        if (AllEvents?.length > 0) {
+          const { repeat } = rule;
+          const repeatType = Object.keys(repeat[0])[0];
+          let currentDate: any = new Date(dates[0])
+          let event: any = {};
+          switch (repeatType) {
+          
+            case 'yearly':
+              currentDate.setFullYear(currentDate.getFullYear() - 1);
+              event = eventDataForBinding(recurrenceData, currentDate)
+              AllEvents?.push(event)
+              dates.push(new Date(currentDate));
+              break;
+            case 'monthly':
+              let MonthToBeIncreased = currentDate.getMonth() - 1;
+              currentDate = currentDate.setMonth(MonthToBeIncreased);
+              event = eventDataForBinding(recurrenceData, currentDate);
+              AllEvents?.push(event);
+              dates.push(new Date(currentDate));
+              break;
+
+            
+            default:
+              return 'break';
+          }
+        }
       });
     } catch (error) {
       console.error("Parsing error", error);
@@ -440,7 +467,7 @@ const Apps = (props: any) => {
     const dayFrequency = parseInt(frequency.dayFrequency);
     let count = 0;
 
-    while (count < repeatInstance || new Date(currentDate).setHours(0, 0, 0, 0) < windowEndDate) {
+    while (count < repeatInstance && new Date(currentDate).setHours(0, 0, 0, 0) < windowEndDate) {
       currentDate.setDate(currentDate.getDate() + dayFrequency);
       const event = eventDataForBinding(eventDetails, currentDate);
       AllEvents.push(event);
@@ -448,26 +475,26 @@ const Apps = (props: any) => {
       count++;
     }
   }
-  function handleWeeklyRecurrence(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any, repeatInstance: any)  {
+  function handleWeeklyRecurrence(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any, repeatInstance: any) {
     let { weekFrequency, days } = frequency;
     days = getKeyWithValueTrue(frequency);
     const daysOfWeek = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
 
-    days?.forEach((day:any) => {
-        const targetDayIndex = daysOfWeek.indexOf(day);
-        let daysToAdd = targetDayIndex - currentDate.getDay();
-        
-        daysToAdd += 7;
-        
-        let targetDate :any= new Date(currentDate.getTime());
-        targetDate.setDate(currentDate.getDate() + daysToAdd);
-        // currentDate = targetDate
-        const event = eventDataForBinding(eventDetails, targetDate);
-        AllEvents.push(event);
-        dates.push(new Date(targetDate));
-        // currentDate.setDate(currentDate.getDate() + (weekFrequency * 7));
+    days?.forEach((day: any) => {
+      const targetDayIndex = daysOfWeek.indexOf(day);
+      let daysToAdd = targetDayIndex - currentDate.getDay();
+
+      daysToAdd += 7;
+
+      let targetDate: any = new Date(currentDate.getTime());
+      targetDate.setDate(currentDate.getDate() + daysToAdd);
+      // currentDate = targetDate
+      const event = eventDataForBinding(eventDetails, targetDate);
+      AllEvents.push(event);
+      dates.push(new Date(targetDate));
+      // currentDate.setDate(currentDate.getDate() + (weekFrequency * 7));
     });
-}
+  }
 
   function calculateNextDate(rule: any, firstDayOfWeek: string, currentDate: any, dates: Date[], endDate?: any, AllEvents?: any, eventDetails?: any): string {
     try {
@@ -483,9 +510,9 @@ const Apps = (props: any) => {
           break;
         case 'yearly':
           const { yearFrequency, month, day } = frequency;
-          currentDate.setFullYear(currentDate.getFullYear() + Number(yearFrequency));
           currentDate.setMonth(Number(month) - 1);
           currentDate.setDate(Number(day));
+          currentDate.setFullYear(currentDate.getFullYear() + Number(yearFrequency));
           event = eventDataForBinding(eventDetails, currentDate)
           AllEvents?.push(event)
           dates.push(new Date(currentDate));
@@ -495,12 +522,14 @@ const Apps = (props: any) => {
           if (dayOfMonth == undefined && frequency?.day != undefined) {
             dayOfMonth = frequency?.day;
           }
-          currentDate.setMonth(currentDate.getMonth() + Number(monthFrequency));
           currentDate.setDate(Number(dayOfMonth));
+          currentDate = currentDate.setMonth(currentDate.getMonth() + Number(monthFrequency));
+
+          event = eventDataForBinding(eventDetails, currentDate);
+          AllEvents?.push(event);
           dates.push(new Date(currentDate));
-          event = eventDataForBinding(eventDetails, currentDate)
-          AllEvents?.push(event)
           break;
+
         case 'weekly':
           // Handle weekly recurrence
           const { weekFrequency, days } = frequency;
@@ -516,36 +545,36 @@ const Apps = (props: any) => {
   }
 
   // this prepare the property 
- 
+
 
   function processDataArray(array: any[]) {
     return array.map((item: any) => {
-        const dataEvent = {
-            shortD: item.Title,
-            iD: item.ID,
-            NameId: item?.Employee?.Id,
-            title: item.Title,
-            start: item.start,
-            end: item.end,
-            location: item.Location,
-            desc: item.Description,
-            alldayevent: item.fAllDayEvent,
-            eventType: item.Event_x002d_Type,
-            created: item.Author.Title,
-            modify: item.Editor.Title,
-            cTime: item.Created,
-            mTime: item.Modified,
-            Name: item.Employee?.Title,
-            Designation: item.Designation,
-            HalfDay: item.HalfDay,
-            HalfDayTwo: item.HalfDayTwo,
-            clickable: item.clickable,
-            Color: item.Color
-        };
+      const dataEvent = {
+        shortD: item.Title,
+        iD: item.ID,
+        NameId: item?.Employee?.Id,
+        title: item.Title,
+        start: item.start,
+        end: item.end,
+        location: item.Location,
+        desc: item.Description,
+        alldayevent: item.fAllDayEvent,
+        eventType: item.Event_x002d_Type,
+        created: item.Author.Title,
+        modify: item.Editor.Title,
+        cTime: item.Created,
+        mTime: item.Modified,
+        Name: item.Employee?.Title,
+        Designation: item.Designation,
+        HalfDay: item.HalfDay,
+        HalfDayTwo: item.HalfDayTwo,
+        clickable: item.clickable,
+        Color: item.Color
+      };
 
-        return dataEvent;
+      return dataEvent;
     });
-}
+  }
 
 
 
@@ -564,29 +593,29 @@ const Apps = (props: any) => {
         const NonRecurrenceData = results.filter((item) => item?.RecurrenceData == null);
         const Recurrencedatas = results.filter((item) => item?.RecurrenceData != null && item?.RecurrenceData != 'Every 1 day(s)');
         events = []
-        
+
         const eventsNonRecurrence = NonRecurrenceData.map(eventDetails => {
           let startdate, enddate;
           if (!eventDetails.fAllDayEvent) {
-              startdate = new Date(eventDetails.EventDate);
-              enddate = new Date(eventDetails.EndDate);
+            startdate = new Date(eventDetails.EventDate);
+            enddate = new Date(eventDetails.EndDate);
           } else {
-              startdate = new Date(eventDetails.EventDate);
-              startdate.setHours(startdate.getHours() - 5);
-              startdate.setMinutes(startdate.getMinutes() - 30);
-              enddate = new Date(eventDetails.EndDate);
-              enddate.setHours(enddate.getHours() - 5);
-              enddate.setMinutes(enddate.getMinutes() - 30);
+            startdate = new Date(eventDetails.EventDate);
+            startdate.setHours(startdate.getHours() - 5);
+            startdate.setMinutes(startdate.getMinutes() - 30);
+            enddate = new Date(eventDetails.EndDate);
+            enddate.setHours(enddate.getHours() - 5);
+            enddate.setMinutes(enddate.getMinutes() - 30);
           }
           return {
-              ...eventDetails,
-              title: eventDetails.Title,
-              start: startdate,
-              end: enddate
+            ...eventDetails,
+            title: eventDetails.Title,
+            start: startdate,
+            end: enddate
           };
-      });
-      
-        
+        });
+
+
         events = events.concat(eventsNonRecurrence);
         for (const event of Recurrencedatas) {
           let allDates = parseRecurrence(event)
@@ -606,7 +635,7 @@ const Apps = (props: any) => {
 
         console.log(filteredData); // Display filtered data
         localArr = processDataArray(filteredData);
-        
+
         setRecurringEvents(filteredData);
       }
     } catch (error) {
@@ -669,7 +698,7 @@ const Apps = (props: any) => {
           "Created",
           " Modified"
         )
-        .expand("Author","Editor")
+        .expand("Author", "Editor")
         .get();
 
       const eventDate = await getLocalDateTime(event.EventDate);
@@ -840,7 +869,7 @@ const Apps = (props: any) => {
       setRecurrenceData(eventItem.RecurrenceData);
       setShowRecurrenceSeriesInfo(true);
       setEditRecurrenceEvent(true);
-      
+
       return;
     }
 
@@ -870,8 +899,8 @@ const Apps = (props: any) => {
         MTime = moment(item.mTime).tz("Asia/Kolkata").format("HH:mm");
         CDate = moment(item.cTime).format("DD-MM-YYYY");
         CTime = moment(item.cTime).tz("Asia/Kolkata").format("HH:mm");
-        
-         MDate = moment(item.mTime).format("DD-MM-YYYY");
+
+        MDate = moment(item.mTime).format("DD-MM-YYYY");
         MTime = moment(item.mTime).tz("Asia/Kolkata").format("HH:mm");
         CDate = moment(item.cTime).format("DD-MM-YYYY");
         CTime = moment(item.cTime).tz("Asia/Kolkata").format("HH:mm");
@@ -935,7 +964,7 @@ const Apps = (props: any) => {
                 <span>{props?.props?.description}</span>
               </>
             )}
-          </span> 
+          </span>
         </div>
         <Tooltip ComponentId={977} />
       </>
@@ -1304,17 +1333,17 @@ const Apps = (props: any) => {
       setSelectedTimeEnd(selectedTimeEnd);
       return;
     }
-  
+
     const web = new Web(props.props.siteUrl);
     const newEvent = {
       title: inputValueName.replace("Un-Planned", type)
-                            .replace("Sick", type)
-                            .replace("Planned Leave", type)
-                            .replace("Restricted Holiday", type)
-                            .replace("Work From Home", type)
-                            .replace("Half Day", type)
-                            .replace("fulldayevent", type)
-                            .replace("LWP", type),
+        .replace("Sick", type)
+        .replace("Planned Leave", type)
+        .replace("Restricted Holiday", type)
+        .replace("Work From Home", type)
+        .replace("Half Day", type)
+        .replace("fulldayevent", type)
+        .replace("LWP", type),
       name: peopleName,
       start: startDate,
       end: endDate,
@@ -1326,7 +1355,7 @@ const Apps = (props: any) => {
       halfdayeventT: isSecondtHalfDChecked,
       fulldayevent: isChecked
     };
-  
+
     if (selectedTime === undefined || selectedTimeEnd === undefined || newEvent.loc === undefined) {
       const date = moment(startDate).tz("Asia/Kolkata");
       setSelectedTime(date.format());
@@ -1334,11 +1363,11 @@ const Apps = (props: any) => {
       setSelectedTimeEnd(dateend.format());
       newEvent.loc = "";
     }
-  
+
     const mycolors = (newEvent.halfdayevent || newEvent.halfdayeventT) ? "#6d36c5" :
-                     (newEvent.type === "Work From Home") ? "#e0a209" :
-                     ((newEvent.type === "Company Holiday") || (newEvent.type === "National Holiday")) ? "#228B22" : "";
-  
+      (newEvent.type === "Work From Home") ? "#e0a209" :
+        ((newEvent.type === "Company Holiday") || (newEvent.type === "National Holiday")) ? "#228B22" : "";
+
     await web.lists.getById(props.props.SmalsusLeaveCalendar)
       .items.getById(eventPass.Id)
       .update({
@@ -1383,7 +1412,7 @@ const Apps = (props: any) => {
   }, []);
 
 
-  
+
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const checked = event.target.checked;
     setIsChecked(checked);
@@ -1490,10 +1519,10 @@ const Apps = (props: any) => {
     setIsOpen(true);
   };
   return (
-   
+
     <div>
-    <div className="w-100 text-end">
-    <a
+      <div className="w-100 text-end">
+        <a
           target="_blank"
           data-interception="off"
           href={`${props.props.siteUrl}/SitePages/TeamCalendar.aspx`}
@@ -1501,143 +1530,143 @@ const Apps = (props: any) => {
           {" "}
           Old Leave Calendar
         </a>
-    </div>
-    <div className="w-100 text-end">
-      <a href="#" onClick={DownloadLeaveReport}>
-        <span>Generate Monthly Report  | </span>
-      </a>
-      <a
-        target="_blank"
-        data-interception="off"
-        href={`${props.props.siteUrl}/Lists/Events/calendar.aspx`}
-      >
-        {" "}
-        Add to Outlook Calendar
-      </a>
-    </div>
-    <div style={{ height: "500pt" }}>
-      <a className="mailBtn me-4" href="#" onClick={emailComp}>
-        <FaPaperPlane></FaPaperPlane> <span>Send Leave Summary</span>
-      </a>
-      <Calendar
-        events={recurringEvents}
-        selectable
-        onSelectSlot={handleSelectSlot}
-        defaultView="month"
-        startAccessor="start"
-        endAccessor="end"
-        defaultDate={moment().toDate()}
-        onShowMore={handleShowMore}
-        views={{ month: true, week: true, day: true, agenda: true }}
-        localizer={localizer}
-        onSelectEvent={handleDateClick}
-        eventPropGetter={eventStyleGetter}
-        onView={(newView: View) => setview(newView)}
-        onNavigate={handleNavigate}
-        view={view as View}
-      />
-    </div>
-    {email ? (
-      <EmailComponenet
-        Context={props.props.context}
-        Listdata={props.props}
-        data={todayEvent}
-        data2={details}
-        call={emailCallback}
-      />
-    ) : null}
-    {isOpen && (
+      </div>
+      <div className="w-100 text-end">
+        <a href="#" onClick={DownloadLeaveReport}>
+          <span>Generate Monthly Report  | </span>
+        </a>
+        <a
+          target="_blank"
+          data-interception="off"
+          href={`${props.props.siteUrl}/Lists/Events/calendar.aspx`}
+        >
+          {" "}
+          Add to Outlook Calendar
+        </a>
+      </div>
+      <div style={{ height: "500pt" }}>
+        <a className="mailBtn me-4" href="#" onClick={emailComp}>
+          <FaPaperPlane></FaPaperPlane> <span>Send Leave Summary</span>
+        </a>
+        <Calendar
+          events={recurringEvents}
+          selectable
+          onSelectSlot={handleSelectSlot}
+          defaultView="month"
+          startAccessor="start"
+          endAccessor="end"
+          defaultDate={moment().toDate()}
+          onShowMore={handleShowMore}
+          views={{ month: true, week: true, day: true, agenda: true }}
+          localizer={localizer}
+          onSelectEvent={handleDateClick}
+          eventPropGetter={eventStyleGetter}
+          onView={(newView: View) => setview(newView)}
+          onNavigate={handleNavigate}
+          view={view as View}
+        />
+      </div>
+      {email ? (
+        <EmailComponenet
+          Context={props.props.context}
+          Listdata={props.props}
+          data={todayEvent}
+          data2={details}
+          call={emailCallback}
+        />
+      ) : null}
+      {isOpen && (
+        <Panel
+          headerText={`Leaves of ${dt}`}
+          isOpen={isOpen}
+          onDismiss={closeModal}
+          /// isFooterAtBottom={true}
+          type={PanelType.medium}
+          closeButtonAriaLabel="Close"
+        >
+          <table className="styled-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>EndDate</th>
+                <th>Edit</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+              {showM?.map((item: any) => {
+                return (
+                  <tr>
+                    <td>{item.title}</td>
+
+                    <td>{moment(item.end).format("DD/MM/YYYY")}</td>
+                    <td>
+                      <a href="#" onClick={() => handleDateClick(item)}>
+                        <span
+                          title="Edit"
+                          className="svg__iconbox svg__icon--edit"
+                        ></span>
+                      </a>
+                    </td>
+                    <td>
+                      <a href="#" onClick={() => deleteElement(item?.Id)}>
+                        <span className="svg__iconbox svg__icon--trash"></span>
+                      </a>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </Panel>
+      )}
       <Panel
-        headerText={`Leaves of ${dt}`}
-        isOpen={isOpen}
-        onDismiss={closeModal}
-        /// isFooterAtBottom={true}
+        onRenderHeader={onRenderCustomHeader}
+        isOpen={m}
+        onDismiss={(e: any) => closem(e)}
         type={PanelType.medium}
         closeButtonAriaLabel="Close"
       >
-        <table className="styled-table">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>EndDate</th>
-              <th>Edit</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {showM?.map((item: any) => {
-              return (
-                <tr>
-                  <td>{item.title}</td>
-
-                  <td>{moment(item.end).format("DD/MM/YYYY")}</td>
-                  <td>
-                    <a href="#" onClick={() => handleDateClick(item)}>
-                      <span
-                        title="Edit"
-                        className="svg__iconbox svg__icon--edit"
-                      ></span>
-                    </a>
-                  </td>
-                  <td>
-                    <a href="#" onClick={() => deleteElement(item?.iD)}>
-                      <span className="svg__iconbox svg__icon--trash"></span>
-                    </a>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </Panel>
-    )}
-    <Panel
-      onRenderHeader={onRenderCustomHeader}
-      isOpen={m}
-      onDismiss={(e: any) => closem(e)}
-      type={PanelType.medium}
-      closeButtonAriaLabel="Close"
-    >
-      <form className="row g-3">
-        {peoplePickerShow ? (
-          <div>
-            <PeoplePicker
-              context={props.props.context}
-              principalTypes={[PrincipalType.User]}
-              personSelectionLimit={1}
-              titleText="Select People"
-              resolveDelay={1000}
-              onChange={people}
-              showtooltip={true}
-              required={true}
-              disabled={IsDisableField}
-            ></PeoplePicker>
-          </div>
-        ) : (
-          ""
-        )}
-        <div className="col-md-12">
-          <TextField
-            label="Short Description"
-            required
-            value={inputValueName}
-            onChange={handleInputChangeName}
-          />
-        </div>
-        {showRecurrenceSeriesInfo != true && (
-          <div className="col-md-6">
-            <DatePicker
-              label="Start Date"
-              minDate={minDate}
-              value={startDate}
-              onSelectDate={(date) => setStartDatefunction(date)}
-              hidden={showRecurrenceSeriesInfo}
-              disabled={IsDisableField}
+        <form className="row g-3">
+          {peoplePickerShow ? (
+            <div>
+              <PeoplePicker
+                context={props.props.context}
+                principalTypes={[PrincipalType.User]}
+                personSelectionLimit={1}
+                titleText="Select People"
+                resolveDelay={1000}
+                onChange={people}
+                showtooltip={true}
+                required={true}
+                disabled={IsDisableField}
+              ></PeoplePicker>
+            </div>
+          ) : (
+            ""
+          )}
+          <div className="col-md-12">
+            <TextField
+              label="Short Description"
+              required
+              value={inputValueName}
+              onChange={handleInputChangeName}
             />
-            
           </div>
-        )}
-        {/* {!disableTime ? (
+          {showRecurrenceSeriesInfo != true && (
+            <div className="col-md-6">
+              <DatePicker
+                label="Start Date"
+                minDate={minDate}
+                value={startDate}
+                onSelectDate={(date) => setStartDatefunction(date)}
+                hidden={showRecurrenceSeriesInfo}
+                disabled={IsDisableField}
+              />
+
+            </div>
+          )}
+          {/* {!disableTime ? (
           <div className="col-md-6  mt-4">
             <label htmlFor="1" className="w-100">
               Start Time:
@@ -1653,10 +1682,10 @@ const Apps = (props: any) => {
         ) : (
           ""
         )} */}
-        {showRecurrenceSeriesInfo != true && (
-          <div className="col-md-6">
-           
-             <DatePicker
+          {showRecurrenceSeriesInfo != true && (
+            <div className="col-md-6">
+
+              <DatePicker
                 label="End Date"
                 value={endDate}
                 minDate={startDate}
@@ -1664,9 +1693,9 @@ const Apps = (props: any) => {
                 onSelectDate={(date) => setEndDate(date)}
                 disabled={IsDisableField}
               />
-          </div>
-        )}
-        {/* {!disableTime ? (
+            </div>
+          )}
+          {/* {!disableTime ? (
           <div className="col-md-6  mt-4">
             <label htmlFor="2" className="w-100">
               End Time:
@@ -1682,116 +1711,116 @@ const Apps = (props: any) => {
         ) : (
           ""
         )} */}
-        <div>
-          <label className="SpfxCheckRadio alignCenter">
-            <input
-              type="checkbox"
-              className="me-1 mt-0 form-check-input"
-              checked={isChecked}
-              onChange={handleCheckboxChange}
+          <div>
+            <label className="SpfxCheckRadio alignCenter">
+              <input
+                type="checkbox"
+                className="me-1 mt-0 form-check-input"
+                checked={isChecked}
+                onChange={handleCheckboxChange}
+                disabled={IsDisableField}
+              />
+              All Day Event
+            </label>
+          </div>
+          <div>
+            <label className="ms-Label root-251">
+              Select Half Day Event
+            </label>
+            <div className="alignCenter">
+              <label className="SpfxCheckRadio">
+                <input
+                  type="checkbox"
+                  className="me-1 form-check-input"
+                  checked={isFirstHalfDChecked}
+                  onChange={handleHalfDayCheckboxChange}
+                  disabled={IsDisableField}
+                /> First HalfDay
+              </label>
+              <label className="SpfxCheckRadio">
+                <input
+                  type="checkbox"
+                  className="me-1 form-check-input"
+                  checked={isSecondtHalfDChecked}
+                  onChange={handleHalfDayCheckboxChangeSecond}
+                  disabled={IsDisableField}
+                /> Second HalfDay
+              </label>
+
+
+            </div>
+          </div>
+          {
+            <div>
+              {showRecurrence && (
+                <div
+                  className="bdr-radius"
+                  style={{
+                    display: "inline-block",
+                    verticalAlign: "top",
+                    width: "200px"
+                  }}
+                >
+                  <Toggle
+                    className="rounded-pill"
+                    defaultChecked={false}
+                    checked={showRecurrenceSeriesInfo}
+                    inlineLabel
+                    label="Recurrence ?"
+                    onChange={handleRecurrenceCheck}
+                    disabled={IsDisableField}
+                  />
+                </div>
+              )}
+              {showRecurrenceSeriesInfo && (
+                <EventRecurrenceInfo
+                  context={props.props.context}
+                  display={true}
+                  recurrenceData={recurrenceData}
+                  startDate={startDate}
+                  siteUrl={props.props.siteUrl}
+                  returnRecurrenceData={returnRecurrenceInfo} selectedKey={undefined} selectedRecurrenceRule={undefined}                // selectedKey={selectedKey}
+                // selectedRecurrenceRule={selectedKey}
+                ></EventRecurrenceInfo>
+              )}
+            </div>
+          }
+          <div>
+            <TextField
+              label="Location"
+              value={location}
+              onChange={handleInputChangeLocation}
               disabled={IsDisableField}
             />
-            All Day Event
-          </label>
-        </div>
-        <div>
-          <label className="ms-Label root-251">
-            Select Half Day Event
-          </label>
-          <div className="alignCenter">
-            <label className="SpfxCheckRadio">
-              <input
-                type="checkbox"
-                className="me-1 form-check-input"
-                checked={isFirstHalfDChecked}
-                onChange={handleHalfDayCheckboxChange}
-                disabled={IsDisableField}
-              /> First HalfDay
-            </label>
-            <label className="SpfxCheckRadio">
-              <input
-                type="checkbox"
-                className="me-1 form-check-input"
-                checked={isSecondtHalfDChecked}
-                onChange={handleHalfDayCheckboxChangeSecond}
-                disabled={IsDisableField}
-              /> Second HalfDay
-            </label>
-
-
-          </div>
-        </div>
-        {
-          <div>
-            {showRecurrence && (
-              <div
-                className="bdr-radius"
-                style={{
-                  display: "inline-block",
-                  verticalAlign: "top",
-                  width: "200px"
-                }}
-              >
-                <Toggle
-                  className="rounded-pill"
-                  defaultChecked={false}
-                  checked={showRecurrenceSeriesInfo}
-                  inlineLabel
-                  label="Recurrence ?"
-                  onChange={handleRecurrenceCheck}
-                  disabled={IsDisableField}
-                />
-              </div>
-            )}
-            {showRecurrenceSeriesInfo && (
-              <EventRecurrenceInfo
-                context={props.props.context}
-                display={true}
-                recurrenceData={recurrenceData}
-                startDate={startDate}
-                siteUrl={props.props.siteUrl}
-                returnRecurrenceData={returnRecurrenceInfo} selectedKey={undefined} selectedRecurrenceRule={undefined}                // selectedKey={selectedKey}
-              // selectedRecurrenceRule={selectedKey}
-              ></EventRecurrenceInfo>
-            )}
-          </div>
-        }
-        <div>
-          <TextField
-            label="Location"
-            value={location}
-            onChange={handleInputChangeLocation}
+          </div>{" "}
+          <Dropdown
+            label="Leave Type"
+            options={leaveTypes}
+            selectedKey={type}
+            // defaultSelectedKey="Un-Planned" // Set the defaultSelectedKey to the key of "Planned Leave"
+            onChange={(e, option) => HandledLeaveType(option.key)}
+            required // Add the "required" attribute
+            errorMessage={type ? "" : "Please select a leave type"} // Display an error message if no type is selected
+          />
+          <Dropdown
+            label="Team"
+            options={Designation}
+            selectedKey={dType}
+            onChange={(e, option) => sedType(option.key)}
             disabled={IsDisableField}
+            required
           />
-        </div>{" "}
-        <Dropdown
-          label="Leave Type"
-          options={leaveTypes}
-          selectedKey={type}
-          // defaultSelectedKey="Un-Planned" // Set the defaultSelectedKey to the key of "Planned Leave"
-          onChange={(e, option) => HandledLeaveType(option.key)}
-          required // Add the "required" attribute
-          errorMessage={type ? "" : "Please select a leave type"} // Display an error message if no type is selected
-        />
-        <Dropdown
-          label="Team"
-          options={Designation}
-          selectedKey={dType}
-          onChange={(e, option) => sedType(option.key)}
-          disabled={IsDisableField}
-          required
-        />
-        <div className="col-md-12">
-          <ReactQuill
-            value={inputValueReason}
-            onChange={handleInputChangeReason}
-            readOnly={IsDisableField}
-          />
-        </div>
-      </form>
+          <div className="col-md-12">
+            <ReactQuill
+              value={inputValueReason}
+              onChange={handleInputChangeReason}
+              readOnly={IsDisableField}
+            />
+          </div>
+        </form>
 
-      <br />
-      {/* {!disabl ? (
+        <br />
+        {/* {!disabl ? (
         <PrimaryButton
           disabled={disabl}
           text="Delete"
@@ -1800,7 +1829,7 @@ const Apps = (props: any) => {
       ) : (
         ""
       )} */}
-      {/* 
+        {/* 
       {!disabl ? <><PrimaryButton text="Save" onClick={updateElement} />
       <PrimaryButton text="Cancel" onClick={closem}/>
       </>: ""}
@@ -1820,88 +1849,88 @@ const Apps = (props: any) => {
         ""
       )} */}
 
-      {/* {!disabl ? (
+        {/* {!disabl ? (
         
       ) : (
         ""
       )} */}
-      {/* <br />
+        {/* <br />
       {!disab ? <><PrimaryButton text="Submit" onClick={saveEvent} />
       <PrimaryButton text="Cancel" onClick={closem}/>
       </> : ""} */}
 
-      {!disabl ? (
-        <footer>
-          <div className="align-items-center d-flex justify-content-between">
-            <div>
-              <div className="">
-                Created {CDate} {CTime} by {createdBY}
-              </div>
+        {!disabl ? (
+          <footer>
+            <div className="align-items-center d-flex justify-content-between">
               <div>
-                Last Modified {MDate} {MTime} by {modofiedBy}
+                <div className="">
+                  Created {CDate} {CTime} by {createdBY}
+                </div>
+                <div>
+                  Last Modified {MDate} {MTime} by {modofiedBy}
+                </div>
+                <div>
+                  <a href="#" onClick={() => deleteElement(vId)}>
+                    <span className="svg__iconbox svg__icon--trash"></span>{" "}
+                    Delete this Item
+                  </a>
+                  <VersionHistoryPopup
+                    taskId={vId}
+                    listId={props.props.SmalsusLeaveCalendar}
+                    siteUrls={props.props.siteUrl}
+                  />
+                </div>
               </div>
+              <a
+                target="_blank"
+                data-interception="off"
+                href={`${props.props.siteUrl}/Lists/Events/EditForm.aspx?ID=${vId}`}
+              >
+                Open out-of-the-box form
+              </a>
               <div>
-                <a href="#" onClick={() => deleteElement(vId)}>
-                  <span className="svg__iconbox svg__icon--trash"></span>{" "}
-                  Delete this Item
-                </a>
-                <VersionHistoryPopup
-                  taskId={vId}
-                  listId={props.props.SmalsusLeaveCalendar}
-                  siteUrls={props.props.siteUrl}
-                />
+                <button
+                  type="button"
+                  className="btn btn-default  px-3"
+                  onClick={closem}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="btn btn-primary ms-1 px-3"
+                  onClick={updateElement}
+                >
+                  Save
+                </button>
               </div>
             </div>
-            <a
-              target="_blank"
-              data-interception="off"
-              href={`${props.props.siteUrl}/Lists/Events/EditForm.aspx?ID=${vId}`}
+          </footer>
+        ) : (
+          ""
+        )}
+
+        {!disab ? (
+          <div className="modal-footer">
+            <button
+              type="button"
+              className="btn btn-default  px-3"
+              onClick={closem}
+
             >
-              Open out-of-the-box form
-            </a>
-            <div>
-              <button
-                type="button"
-                className="btn btn-default  px-3"
-                onClick={closem}
-              >
-                Cancel
-              </button>
-              <button
-                className="btn btn-primary ms-1 px-3"
-                onClick={updateElement}
-              >
-                Save
-              </button>
-            </div>
+              Cancel
+            </button>
+            <button className="btn btn-primary ms-1 px-3" onClick={saveEvent}>
+              Save
+            </button>
           </div>
-        </footer>
-      ) : (
-        ""
-      )}
+        ) : (
+          ""
+        )}
 
-      {!disab ? (
-        <div className="modal-footer">
-          <button
-            type="button"
-            className="btn btn-default  px-3"
-            onClick={closem}
+      </Panel>
 
-          >
-            Cancel
-          </button>
-          <button className="btn btn-primary ms-1 px-3" onClick={saveEvent}>
-            Save
-          </button>
-        </div>
-      ) : (
-        ""
-      )}
-
-    </Panel>
-
-    {leaveReport ? <MonthlyLeaveReport props={props.props} Context={props.props.context} callback={() => setleaveReport(false)} /> : ""}
-  </div>);
+      {leaveReport ? <MonthlyLeaveReport props={props.props} Context={props.props.context} callback={() => setleaveReport(false)} /> : ""}
+    </div>);
 }
 
 export default Apps;
