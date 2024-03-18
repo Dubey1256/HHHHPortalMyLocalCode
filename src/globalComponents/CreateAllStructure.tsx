@@ -3,7 +3,7 @@ import * as $ from "jquery";
 import * as Moment from "moment";
 import { Panel, PanelType } from "office-ui-fabric-react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Web, sp } from "sp-pnp-js";
+import { sp } from "sp-pnp-js";
 import PageLoader from "./pageLoader";
 let defaultPortfolioType = 'Component'
 let PortfoliotypeData: any = '';
@@ -107,7 +107,9 @@ const CreateAllStructureComponent = (props: any) => {
         }
         if (type === 'subcomponent') {
             const newSubComponents = [...components];
+            //newSubComponents[index].SubComponent.splice(subIndex, 1)
             newSubComponents[index].SubComponent.splice(subIndex, 1)
+            newSubComponents[index].isCheckedSub = false;
             setSubComponents(newSubComponents);
         }
         if (type === 'feature') {
@@ -274,21 +276,21 @@ const CreateAllStructureComponent = (props: any) => {
                         // Create feature item in SharePoint list
 
 
-                        const featureData = await createListItem('Master Tasks', featureItem);
+                        await createListItem('Master Tasks', featureItem);
 
 
                         // Add feature to the features array
                         if (featureItem.Title != "") {
                             features.push({
-                                Id: featureData?.Id,
-                                ID: featureData?.Id,
+                                Id: featureItem?.Id,
+                                ID: featureItem?.Id,
                                 Title: featureItem?.Title,
                                 siteType: "Master Tasks",
                                 SiteIconTitle: featureItem?.Item_x0020_Type?.charAt(0),
                                 TaskID: featureItem?.PortfolioStructureID,
                                 Created: Moment(featureItem?.Created).format("DD/MM/YYYY"),
                                 DisplayCreateDate: Moment(featureItem?.Created).format("DD/MM/YYYY"),
-                                Author: { "Id": CurrentUserId, 'Title': CurrentUserData?.Title, 'autherImage': CurrentUserData?.Item_x0020_Cover?.Url },
+                                Author: { "Id": featureItem?.AuthorId, 'Title': CurrentUserData?.Title, 'autherImage': CurrentUserData?.Item_x0020_Cover?.Url },
                                 PortfolioType: PortfoliotypeData,
                                 PortfolioStructureID:featureItem?.PortfolioStructureID,
                                 Item_x0020_Type :'Feature'
@@ -367,8 +369,7 @@ const CreateAllStructureComponent = (props: any) => {
     const createListItem = async (listName: string, item: any) => {
         if (item.Title != "") {
             try {
-                let web = new Web(props?.PropsValue?.siteUrl);
-                const result = await web.lists.getByTitle(listName).items.add(item);
+                const result = await sp.web.lists.getByTitle(listName).items.add(item);
                 return result.data;
             } catch (error) {
                 throw new Error(`Failed to create item in the list. Error: ${error}`);
@@ -389,8 +390,8 @@ const CreateAllStructureComponent = (props: any) => {
             //filter = "Parent/Id eq '" + item.Id
         }
 
-        let web = new Web(props?.PropsValue?.siteUrl);
-        let results = await web.lists
+
+        let results = await sp.web.lists
             .getByTitle('Master Tasks')
             .items
             .select("Id", "Title", "PortfolioLevel",'Item_x0020_Type', "PortfolioStructureID", "Parent/Id", "PortfolioType/Id", "PortfolioType/Title")
@@ -429,12 +430,12 @@ const CreateAllStructureComponent = (props: any) => {
     }
     const handleSubComponentChange = (index: any, component: any) => {
         if (index == 0) {
-            component.SubComponent[0].isCheckedSub = true;
+            component.SubComponent.push({ id: component.SubComponent.length + 1, isCheckedSub: true, value: '', Feature: [{ id: 1, value: '' }] })
             component.isCheckedSub = true;
             setCount(count + 1)
         }
         else {
-            component.SubComponent[0].isCheckedSub = true;
+            component.SubComponent.push({ id: component.SubComponent.length + 1, isCheckedSub: true, value: '', Feature: [{ id: 1, value: '' }] })
             component.isCheckedSub = true;
             setCount(count + 1)
         };
@@ -458,12 +459,13 @@ const CreateAllStructureComponent = (props: any) => {
                 <div className='modal-body '>
 
                     {props?.SelectedItem == undefined && <>
-                        <label><b>Select Portfolio Type</b></label>
-                        <div className="my-2 alignCenter SpfxCheckRadio">
+                        <label><b>Select Portfolio type</b></label>
+                        <div className="d-flex">
                             {props?.portfolioTypeData.map((item: any) => {
                                 return (
-                                        <label className='label--radio alignCenter'><input className='radio' defaultChecked={defaultPortfolioType.toLowerCase() === item.Title.toLowerCase()} name='PortfolioType' type='radio' onClick={() => CheckPortfolioType(item)} ></input>{item.Title}</label>
-                                    )
+                                    <div className="mx-2 mb-2 mt-2">
+                                        <label className='label--radio'><input className='radio' defaultChecked={defaultPortfolioType.toLowerCase() === item.Title.toLowerCase()} name='PortfolioType' type='radio' onClick={() => CheckPortfolioType(item)} ></input>{item.Title}</label>
+                                    </div>)
                             })}
                         </div> </>}
 
@@ -596,14 +598,16 @@ const CreateAllStructureComponent = (props: any) => {
                                 {(props.SelectedItem == undefined)
                                 &&
                                 <div>
-                                {(component.value || component?.SubComponent?.length) &&
+                               
                                     <label className="form-label full-width" htmlFor={`exampleFormControlInput${component.id}`}>
                                         {isDisable == false &&
-                                            <b>
+                                            <>
                                                 <span>{index + 1} - </span>
                                                 <span>Component</span>
-                                            </b>
+                                                
+                                            </>
                                         }
+                                       
                                         <span className={isDisable ? '' : "pull-right"}>
                                             <label className='SpfxCheckRadio'>
                                                 <input
@@ -627,7 +631,7 @@ const CreateAllStructureComponent = (props: any) => {
                                             </label>
                                         </span>
                                     </label>
-                                }
+                                
                                 {isDisable == false &&
                                     <div className="input-group">
                                         <input
@@ -659,7 +663,7 @@ const CreateAllStructureComponent = (props: any) => {
         {(Subcomponent.isCheckedSub  || (props?.SelectedItem?.Item_x0020_Type != 'SubComponent' && props?.SelectedItem != undefined)) &&
             <div>
                 <label className="form-label full-width" htmlFor={`exampleFormControlInput${Subcomponent.id}`}>
-                <b> <span>{indexSub + 1} - </span> SubComponent</b>
+                    <span>{indexSub + 1} - </span> SubComponent
                     <span className="pull-right">
                         <label className='SpfxCheckRadio me-0'>
                             <input 
@@ -698,8 +702,8 @@ const CreateAllStructureComponent = (props: any) => {
             <div className="mt-2 ps-4">
                 {Subcomponent?.Feature?.map((Features: any, indexFea: any) => (
                     <div key={Features.id} className="form-group">
-                        <b><span>{indexFea + 1} - </span>
-                        <label htmlFor={`exampleFormControlInput${Features.id}`}>Feature</label></b>
+                        <span>{indexFea + 1} - </span>
+                        <label htmlFor={`exampleFormControlInput${Features.id}`}>Feature</label>
                         <div className="input-group">
                             <input
                                 type="text"
@@ -732,9 +736,11 @@ const CreateAllStructureComponent = (props: any) => {
                     </div>
 
                     <footer className="modal-footer mt-2">
-                        <button className="btn btn-primary" onClick={handleSave}>
+                        {components[0].value != '' || props.SelectedItem != undefined ?<button className="btn btn-primary" onClick={handleSave}>
                             Save
-                        </button>
+                        </button>:<button className="btn btn-primary"  disabled={true} onClick={handleSave}>
+                            Save
+                        </button>}
                     </footer>
 
                 </div>
