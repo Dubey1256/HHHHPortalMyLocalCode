@@ -902,7 +902,7 @@ const TaskStatusTbl = (Tile: any) => {
                       {<span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
                     </span>
                   </div>
-                  <div className="Alltable bg-Ff maXh-300" style={{ height: "300px" }} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
+                  <div className="Alltable bg-Ff boxshadow maXh-300" style={{ height: "300px" }} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
                       <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id + "Dashboard"} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
                     )}
@@ -992,7 +992,7 @@ const TaskStatusTbl = (Tile: any) => {
                                 Date.IsShowTask == true && (
                                   <>
                                     <h3 className="f-15">{user?.Title} {Date?.DisplayDate} Task</h3>
-                                    <div key={index} className="Alltable bg-Ff maXh-300 mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} style={{ height: "300px" }}>
+                                    <div key={index} className="Alltable bg-Ff boxshadow maXh-300 mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} style={{ height: "300px" }}>
                                       <GlobalCommanTable columnSettingIcon={true} tableId={config?.Id + index + "Dashboard"} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
                                         callBackData={callBackData} />
                                     </div>
@@ -1008,7 +1008,7 @@ const TaskStatusTbl = (Tile: any) => {
                 }
                 {config?.DataSource == 'TimeSheet' &&
                   <>
-                    <div className="Alltable bg-Ff maXh-300" style={{ height: "300px" }} >
+                    <div className="Alltable bg-Ff boxshadow maXh-300" style={{ height: "300px" }} >
                       {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
                         <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id + "Dashboard"} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
                       )}

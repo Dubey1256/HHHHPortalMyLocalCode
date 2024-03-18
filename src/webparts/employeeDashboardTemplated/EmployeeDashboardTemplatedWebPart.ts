@@ -13,7 +13,18 @@ import EmployeeDashboardTemplated from './components/EmployeeDashboardTemplated'
 import { IEmployeeDashboardTemplatedProps } from './components/IEmployeeDashboardTemplatedProps';
 
 export interface IEmployeeDashboardTemplatedWebPartProps {
+  Announcements: 'F3CAD36C-EEF6-492D-B81F-9B441FDF218E';
   description: string;
+  siteUrl: any;
+  Context: any;
+  TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
+  SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
+  MasterTaskListID: 'EC34B38F-0669-480A-910C-F84E92E58ADF';
+  TaskTimeSheetListID: '11D52F95-4231-4852-AFDE-884D548C7F1B';
+  UpComingBirthdayId: 'a7b80424-e5e1-47c6-80a1-0ee44a70f92c';
+  MyNotesId: '2163fbd9-b6f0-48b8-bc1b-bb48e43f188d',
+  UpComingBdaySiteName: 'HR';
+  AdminConfigurationListId:'e968902a-3021-4af2-a30a-174ea95cf8fa'
 }
 
 export default class EmployeeDashboardTemplatedWebPart extends BaseClientSideWebPart<IEmployeeDashboardTemplatedWebPartProps> {
@@ -29,7 +40,19 @@ export default class EmployeeDashboardTemplatedWebPart extends BaseClientSideWeb
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        pageContext: this.context.pageContext,
+        Context: this.context,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        TaskUsertListID: this.properties.TaskUsertListID,
+        SmartMetadataListID: this.properties.SmartMetadataListID,
+        MasterTaskListID: this.properties.MasterTaskListID,
+        TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
+        Announcements: this.properties.Announcements,
+        UpComingBirthdayId: this.properties.UpComingBirthdayId,
+        MyNotesId: this.properties.MyNotesId,
+        UpComingBdaySiteName: 'HR',
+        AdminConfigurationListId:this.properties.AdminConfigurationListId,
       }
     );
 
@@ -57,9 +80,7 @@ export default class EmployeeDashboardTemplatedWebPart extends BaseClientSideWeb
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
-            case 'TeamsModern':
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
-              break;
+         
             default:
               environmentMessage = strings.UnknownEnvironment;
           }
@@ -110,7 +131,50 @@ export default class EmployeeDashboardTemplatedWebPart extends BaseClientSideWeb
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
-                })
+                }),
+                PropertyPaneTextField('SmartMetadataListID', {
+                  label: "SmartMetadataListID"
+                }),
+                PropertyPaneTextField("TaskUsertListID", {
+                  label: "Task User List"
+                }),
+                PropertyPaneTextField("Announcements", {
+                  label: "Announcements"
+                }),
+                PropertyPaneTextField("MasterTaskListID", {
+                  label: "MasterTaskListID"
+                }),
+                PropertyPaneTextField("TaskTimeSheetListID", {
+                  label: "TaskTimeSheetListID"
+                }),
+                PropertyPaneTextField("UpComingBirthdayId", {
+                  label: "UpComingBirthdayId"
+                }),
+                PropertyPaneTextField("MyNotesId", {
+                  label: "MyNotesId"
+                }),
+                PropertyPaneTextField("AdminConfigurationListId", {
+                  label: "AdminConfigurationListId"
+                }),
+
+                // PropertyPaneTextField('MasterTaskListID', {
+                //   label: "MasterTaskListID"
+                // }),
+                // PropertyPaneTextField('SmartInformationListID', {
+                //   label: 'SmartInformationListID'
+                // }),
+                // PropertyPaneTextField('DocumentsListID', {
+                //   label: "DocumentsListID"
+                // }),
+                // PropertyPaneTextField('TaskTimeSheetListID', {
+                //   label: "TaskTimeSheetListID"
+                // }),
+                // PropertyPaneTextField('TimeEntry', {
+                //   label: "TimeEntry"
+                // }),
+                // PropertyPaneTextField('SiteCompostion', {
+                //   label: "SiteCompostion"
+                // }),
               ]
             }
           ]
