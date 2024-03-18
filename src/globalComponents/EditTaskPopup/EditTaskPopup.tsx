@@ -1575,12 +1575,12 @@ const EditTaskPopup = (Items: any) => {
     const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         setIsComponentPicker(false);
         let uniqueIds: any = {};
-        let checkForOnHoldAndBottleneck: any = tempShareWebTypeData?.some((category: any) => category.Title === "On-Hold" && category.Title === "Bottleneck");
+        let checkForOnHoldAndBottleneck: any = tempShareWebTypeData?.some((category: any) => category.Title === "On-Hold");
         let checkForDesign: any = tempShareWebTypeData?.some((category: any) => category.Title === "Design");
         if (usedFor == "For-Panel") {
             let TempArrya: any = [];
             selectCategoryData?.map((selectedData: any) => {
-                if ((selectedData.Title == "On-Hold" || selectedData.Title == "Bottleneck") && !checkForOnHoldAndBottleneck) {
+                if ((selectedData.Title == "On-Hold") && !checkForOnHoldAndBottleneck) {
                     onHoldCategory.push(selectedData);
                     setOnHoldPanel(true);
                     setSendCategoryName(selectedData.Title)
@@ -1610,7 +1610,7 @@ const EditTaskPopup = (Items: any) => {
             tempShareWebTypeData = TempArrya;
         } else {
             selectCategoryData.forEach((existingData: any) => {
-                if ((existingData.Title == "On-Hold" || existingData.Title == "Bottleneck") && !checkForOnHoldAndBottleneck) {
+                if ((existingData.Title == "On-Hold") && !checkForOnHoldAndBottleneck) {
                     onHoldCategory.push(existingData);
                     setOnHoldPanel(true);
                     setSendCategoryName(existingData.Title)
