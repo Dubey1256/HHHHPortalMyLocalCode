@@ -736,9 +736,11 @@ const CreateAllStructureComponent = (props: any) => {
                     </div>
 
                     <footer className="modal-footer mt-2">
-                        <button className="btn btn-primary" onClick={handleSave}>
+                        {components[0].value != '' || props.SelectedItem != undefined ?<button className="btn btn-primary" onClick={handleSave}>
                             Save
-                        </button>
+                        </button>:<button className="btn btn-primary"  disabled={true} onClick={handleSave}>
+                            Save
+                        </button>}
                     </footer>
 
                 </div>
