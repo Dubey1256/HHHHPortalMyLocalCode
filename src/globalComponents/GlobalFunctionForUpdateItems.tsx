@@ -1369,10 +1369,10 @@ export const SendMSTeamsNotificationForWorkingActions = (RequiredData: any) => {
         let finalTaskInfo: any = containerDiv.innerHTML;
         let TeamsMessage = `<b>Hi ${ReceiverName},</b> 
         <p></p>
-        You have been tagged as <b> ${ActionType}</b> in the below task.
+        You have been tagged as <b> </b> in the below task.
         <p>
         <br/>
-         <span>${ReasonStatement ? ReasonStatement + " <p></p>" : ''}</span>
+         <span>${ReasonStatement ? "<b>" + ActionType + " Point : </b>" + ReasonStatement + " <p></p>" : ''}</span>
         <b>Task Details : </b> <span>${finalTaskInfo}</span>
         </br>
         <p>
@@ -1436,7 +1436,7 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
         This is a gentle reminder to address the below task promptly, as you've been marked as ${ActionType}:
         <p>
         <br/>
-         <span>${ActionType} Point: ${ReasonStatement?ReasonStatement:''}</span>
+         <span>${ActionType} Point: ${ReasonStatement ? ReasonStatement : ''}</span>
         </br>
         <p>
         Task Link:  
