@@ -7,6 +7,7 @@ import { Web } from 'sp-pnp-js';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { Col, Container, Row } from "react-bootstrap";
 import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
+import "./style.css";
 import Slider from "react-slick";
 let DashboardConfig: any = [];
 const Header = () => {
@@ -127,7 +128,7 @@ const Header = () => {
   }, [ContextData?.ActiveTile]);
 
   return (
-    <div>
+    <div className='emptopheader'>
       <section className="NameTopSec">
         <div className='row'><div><h6 className="pull-right">
           <span className="mt--5" title='Manage Config'>
