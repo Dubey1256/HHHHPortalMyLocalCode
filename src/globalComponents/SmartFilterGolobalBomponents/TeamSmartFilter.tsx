@@ -2173,14 +2173,48 @@ const TeamSmartFilter = (item: any) => {
                                                                                             <div className="fw-semibold ms-8 f-16 text-dark">{Group.Title}</div>
                                                                                         </div>
                                                                                         <div className='dataSecChild'>
-                                                                                            {Group?.values?.map((insideCheckBox: any) => {
-                                                                                                return (
-                                                                                                    <label className='alignCenter f-16 dataSecChildSec'>
-                                                                                                        <input type="checkbox" className={"form-check-input cursor-pointer mt-0"} checked={MainGroup?.checked?.some((datachecked: any) => datachecked == insideCheckBox?.Id)} onChange={() => selectChild(insideCheckBox)} />
-                                                                                                        <div className='ms-8'>{insideCheckBox?.Title}</div>
-                                                                                                    </label>
-                                                                                                )
-                                                                                            })}
+                                                                                        {Group?.values
+                                                      ?.sort(
+                                                        (a: any, b: any) =>
+                                                          a.SortOrder -
+                                                          b.SortOrder
+                                                      )
+                                                      .map(
+                                                        (
+                                                          insideCheckBox: any
+                                                        ) => {
+                                                          return (
+                                                            <label
+                                                              className="alignCenter f-16 dataSecChildSec"
+                                                              key={
+                                                                insideCheckBox.Id
+                                                              }
+                                                            >
+                                                              <input
+                                                                type="checkbox"
+                                                                className="form-check-input cursor-pointer mt-0"
+                                                                checked={MainGroup?.checked?.some(
+                                                                  (
+                                                                    datachecked: any
+                                                                  ) =>
+                                                                    datachecked ===
+                                                                    insideCheckBox.Id
+                                                                )}
+                                                                onChange={() =>
+                                                                  selectChild(
+                                                                    insideCheckBox
+                                                                  )
+                                                                }
+                                                              />
+                                                              <div className="ms-8">
+                                                                {
+                                                                  insideCheckBox.Title
+                                                                }
+                                                              </div>
+                                                            </label>
+                                                          );
+                                                        }
+                                                      )}
                                                                                         </div>
                                                                                     </div>
                                                                                 )
