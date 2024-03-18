@@ -431,7 +431,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
           setLinkedComponentData(newArray);
         } else {
           if (item1 != undefined) {
-            setLinkedComponentData([item1]);
+            setLinkedComponentData(item1);
           }
         }
       }
