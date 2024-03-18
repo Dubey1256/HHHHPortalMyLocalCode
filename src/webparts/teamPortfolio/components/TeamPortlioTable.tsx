@@ -3704,7 +3704,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     <button
                         type="button"
                         className="btn btn-primary mx-2"
-                        onClick={() => Createbutton()}
+                        onClick={() => Createbutton()} disabled={activeTile===""?true:false}
                     >
                         Create
                     </button>
