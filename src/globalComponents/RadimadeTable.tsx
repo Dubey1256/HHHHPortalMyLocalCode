@@ -2512,7 +2512,7 @@ function ReadyMadeTable(SelectedProp: any) {
             }
             {
                 trueRestructuring == true ?
-                    <RestructuringCom AllSitesTaskData={allTaskDataFlatLoadeViewBackup} AllMasterTasksData={AllMasterTasksData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllUsers} contextValue={SelectedProp?.AllListId} allData={data} restructureCallBack={callBackData1} restructureItem={TableProperty} />
+                    <RestructuringCom AllSitesTaskData={allTaskDataFlatLoadeViewBackup} AllMasterTasksData={AllMasterTasksData}queryItems={SelectedProp?.SelectedItem} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllUsers} contextValue={SelectedProp?.AllListId} allData={data} restructureCallBack={callBackData1} restructureItem={TableProperty} />
                     : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
             }
 
@@ -2528,7 +2528,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 <button type="button" className="btn btn-primary" disabled={true} >{checkedList?.TaskType?.Title == "Workstream" || SelectedProp?.SelectedItem?.TaskType?.Title == "Workstream" ? "Add Task" : "Add Workstream-Task"}</button>}
             {
                 trueRestructuring == true ?
-                    <RestructuringCom AllSitesTaskData={allTaskDataFlatLoadeViewBackup} AllMasterTasksData={AllMasterTasksData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllUsers} contextValue={SelectedProp?.AllListId} allData={data} restructureCallBack={callBackData1} restructureItem={TableProperty} />
+                    <RestructuringCom AllSitesTaskData={allTaskDataFlatLoadeViewBackup} AllMasterTasksData={AllMasterTasksData}queryItems={SelectedProp?.SelectedItem} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllUsers} contextValue={SelectedProp?.AllListId} allData={data} restructureCallBack={callBackData1} restructureItem={TableProperty} />
                     : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
             }
 
