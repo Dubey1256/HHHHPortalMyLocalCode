@@ -470,7 +470,7 @@ const App = (props: any) => {
         compareData.map((item: any) => {
           let eventeEnddate = new Date(item.EndDate)
           //  eventeEnddate.setDate(eventeEnddate.getDate()-1)
-          eventeEnddate.setHours(eventeEnddate.getHours() - 12);
+          eventeEnddate.setHours(eventeEnddate.getHours() - 13);
           eventeEnddate.setMinutes(eventeEnddate.getMinutes() - 30);
           let eventEnd = eventeEnddate.getTime()
           item.clickable = true;
@@ -480,7 +480,7 @@ const App = (props: any) => {
           if (item.fAllDayEvent === false && new Date(item.EventDate).toLocaleDateString() === new Date(eventEnd).toLocaleDateString()) {
 
             startdate = new Date(item.EventDate);
-            startdate.setHours(startdate.getHours() - 12);
+            startdate.setHours(startdate.getHours() - 13);
             startdate.setMinutes(startdate.getMinutes() - 30);
             createdAt = new Date(item.Created);
             modifyAt = new Date(item.Modified);
@@ -508,17 +508,17 @@ const App = (props: any) => {
           }
           if (item.HalfDay == true) {
             startdate = new Date(item.EventDate);
-            startdate.setHours(startdate.getHours() - 12);
+            startdate.setHours(startdate.getHours() - 13);
             startdate.setMinutes(startdate.getMinutes() - 30);
             enddate = new Date(item.EndDate);
-            enddate.setHours(enddate.getHours() - 12);
+            enddate.setHours(enddate.getHours() - 13);
             enddate.setMinutes(enddate.getMinutes() - 30);
           } else if (item.HalfDayTwo == true) {
             startdate = new Date(item.EventDate);
-            startdate.setHours(startdate.getHours() - 12);
+            startdate.setHours(startdate.getHours() - 13);
             startdate.setMinutes(startdate.getMinutes() - 30);
             enddate = new Date(item.EndDate);
-            enddate.setHours(enddate.getHours() - 12);
+            enddate.setHours(enddate.getHours() - 13);
             enddate.setMinutes(enddate.getMinutes() - 30);
           }
           let a = item.Title;
