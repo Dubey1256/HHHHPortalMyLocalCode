@@ -26,7 +26,7 @@ let tasktypecopy: any = ''
 let generatedLocalPath = '';
 let TaskTypesItem: any = [];
 let temptasktype: any = '';
-let AllTagUploadDoc: any = [];
+let AllTaggedUploadDoc: any = [];
 let AllDragItem: any = [];
 const itemRanks: any[] = [
     { rankTitle: 'Select Item Rank', rank: null },
@@ -602,10 +602,10 @@ const AncTool = (props: any) => {
                                                         myResolve()
                                                         pathGenerator();
                                                         taggedDocument.tagged = true;
-                                                        AllTagUploadDoc.push(taggedDocument)
-                                                        if (AllDragItem?.length == AllTagUploadDoc?.length) {
+                                                        AllTaggedUploadDoc.push(taggedDocument)
+                                                        if (AllDragItem?.length == AllTaggedUploadDoc?.length) {
                                                             setPageLoader(false)
-                                                            setUploadedDocDetails(AllTagUploadDoc);
+                                                            setUploadedDocDetails(AllTaggedUploadDoc);
                                                             setRenamedFileName('')
                                                             setSelectedFile(null);
                                                         }
@@ -631,7 +631,7 @@ const AncTool = (props: any) => {
                                         })
                                     }, 2000);
                                 });
-                            setUploadedDocDetails(AllTagUploadDoc);
+                            setUploadedDocDetails(AllTaggedUploadDoc);
                             setShowConfirmation(true)
                             setUploadEmailModal(false)
                             // setModalIsOpenToFalse()
@@ -873,8 +873,8 @@ const AncTool = (props: any) => {
                         }, 2000);
 
                     });
-                AllTagUploadDoc.push(taggedDocument)
-                setUploadedDocDetails(AllTagUploadDoc);
+                AllTaggedUploadDoc.push(taggedDocument)
+                setUploadedDocDetails(AllTaggedUploadDoc);
                 setShowConfirmation(true)
                 setUploadEmailModal(false)
                 //setModalIsOpenToFalse()
@@ -1118,7 +1118,7 @@ const AncTool = (props: any) => {
         setUploadEmailModal(false)
         setShowConfirmationInside(false)
         setUploadedDocDetails([]);
-        AllTagUploadDoc = [];
+        AllTaggedUploadDoc = [];
         AllDragItem = [];
     }
     const smartnotecall = () => {
@@ -1308,8 +1308,8 @@ const AncTool = (props: any) => {
                         }, 2000);
 
                     });
-                AllTagUploadDoc.push(taggedDocument)
-                setUploadedDocDetails(AllTagUploadDoc);
+                AllTaggedUploadDoc.push(taggedDocument)
+                setUploadedDocDetails(AllTaggedUploadDoc);
                 setShowConfirmation(true)
                 setUploadEmailModal(false)
                 // setModalIsOpenToFalse()
@@ -1368,13 +1368,13 @@ const AncTool = (props: any) => {
     }
     const callbackeditpopup = (taggedDocument: any) => {
         if (typeof taggedDocument === 'object' && taggedDocument !== null) {
-            AllTagUploadDoc?.map((File: any, index: any) => {
+            AllTaggedUploadDoc?.map((File: any, index: any) => {
                 if (taggedDocument != undefined && taggedDocument != '' && File.Id == taggedDocument.Id) {
                     taggedDocument.docType = File?.docType;
                     taggedDocument.uploaded = File?.uploaded;
                     taggedDocument.fileName = taggedDocument?.Title;
                     taggedDocument.size = File?.size;
-                    AllTagUploadDoc[index] = taggedDocument;
+                    AllTaggedUploadDoc[index] = taggedDocument;
                     File = taggedDocument;
 
                 }
@@ -1392,7 +1392,7 @@ const AncTool = (props: any) => {
         }
         if (taggedDocument != undefined && taggedDocument != '') {
             setAllReadytagged(updatedArray);
-            setUploadedDocDetails(AllTagUploadDoc);
+            setUploadedDocDetails(AllTaggedUploadDoc);
         }
         setEditdocpanel(false);
     }

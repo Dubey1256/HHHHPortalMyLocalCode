@@ -395,7 +395,11 @@ const TaskStatusTbl = (Tile: any) => {
     RejectedItem.RejectedDetails.RejectedComment = e.target.value
     setisRejectItem(RejectedItem)
   }
-  const SaveRejectPopup = async (Type: any, Item: any) => {
+
+
+
+
+  const SaveApprovalRejectPopup = async (Type: any, Item: any) => {
     if (Type != 'ApprovedAll') {
       let RejectedItem: any;
       if (Item != undefined && Item != '')
@@ -926,7 +930,7 @@ const TaskStatusTbl = (Tile: any) => {
           isColumnVisible: true,
           cell: ({ row, index }: any) => (
             <div className="alignCenter gap-1 pull-right approvelicon position-relative" >
-              <span title="Approve" onClick={() => SaveRejectPopup('Approved', row?.original,)} ><MdOutlineGppGood style={{ color: "#008f47", fontSize: "22px" }} /> </span>
+              <span title="Approve" onClick={() => SaveApprovalRejectPopup('Approved', row?.original,)} ><MdOutlineGppGood style={{ color: "#008f47", fontSize: "22px" }} /> </span>
               <span title="Reject" data-toggle="tooltip" data-placement="bottom" id={`Reply-${row?.index}`} onClick={() => openRejectPopup(row?.original)}><MdGppBad style={{ color: "#dc3545", fontSize: "22px" }} /></span>
             </div>
           )
@@ -1200,7 +1204,7 @@ const TaskStatusTbl = (Tile: any) => {
                       </span>
                       <span className="alignCenter">
                         {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
-                        {RefSelectedItem?.length > 0 ? <span className="empCol me-1 mt-2 hreflink" onClick={() => SaveRejectPopup('ApprovedAll', undefined)}>Approve All</span>
+                        {RefSelectedItem?.length > 0 ? <span className="empCol me-1 mt-2 hreflink" onClick={() => SaveApprovalRejectPopup('ApprovedAll', undefined)}>Approve All</span>
                           : <span className="me-1 mt-2 hreflink" style={{ color: "#646464" }}>Approve All</span>}
                       </span>
                     </div>
@@ -1274,7 +1278,7 @@ const TaskStatusTbl = (Tile: any) => {
               <textarea className="form-control" style={{ height: '140px' }} onChange={(e) => updateRejectComment(e)}  ></textarea>
             </div>
             <footer className='modal-footer mt-2'>
-              <button className='btn btn-primary me-2 mb-2' onClick={() => SaveRejectPopup('Rejected', undefined)} disabled={isRejectItem?.RejectedDetails == undefined || isRejectItem?.RejectedDetails.RejectedComment == '' || isRejectItem?.RejectedDetails.RejectedComment == undefined} >Save</button>
+              <button className='btn btn-primary me-2 mb-2' onClick={() => SaveApprovalRejectPopup('Rejected', undefined)} disabled={isRejectItem?.RejectedDetails == undefined || isRejectItem?.RejectedDetails.RejectedComment == '' || isRejectItem?.RejectedDetails.RejectedComment == undefined} >Save</button>
               <button className='btn btn-default mb-2' onClick={CancelRejectPopup}  >Cancel</button>
             </footer>
           </Panel>
