@@ -754,7 +754,7 @@ function ReadyMadeTable(SelectedProp: any) {
             setData([]);
             portfolioTypeData?.map((port: any, index: any) => {
                 if (SelectedProp?.SelectedItem != undefined) {
-                    if (port.Title === SelectedProp?.SelectedItem?.Item_x0020_Type) {
+                    if (port.Title === SelectedProp?.SelectedItem?.PortfolioType?.Title) {
                         componentData = []
                         componentGrouping(port?.Id, port?.Id);
                     }
@@ -1099,6 +1099,7 @@ function ReadyMadeTable(SelectedProp: any) {
             AllComponents = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === 0 || comp?.Parent?.Id === undefined);
         }
         AllComponents?.map((masterTask: any) => {
+
             countAllComposubData = countAllComposubData.concat(masterTask);
             masterTask.subRows = [];
 
@@ -2294,6 +2295,7 @@ function ReadyMadeTable(SelectedProp: any) {
             setIsOpenWorkstream(false)
             setActivityPopup(false)
         } else if (res?.data && res?.data?.ItmesDelete != true && !UpdatedData) {
+            
             childRef?.current?.setRowSelection({});
             setIsComponent(false);
             setIsTask(false);
