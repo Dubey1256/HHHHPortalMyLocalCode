@@ -3200,11 +3200,7 @@ function TeamPortlioTable(SelectedProp: any) {
                             if (child.subRows != undefined && child.subRows.length > 0) {
                                 child.subRows?.map((Subchild: any) => {
                                     if (item[0].SelectedItem == Subchild.Id) {
-<<<<<<< HEAD
-                                        Subchild?.subRows?.unshift(childs)
-=======
                                         Subchild?.subRows.unshift(childs)
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
                                     }
                                 })
                             }
