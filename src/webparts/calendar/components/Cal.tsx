@@ -109,6 +109,7 @@ const App = (props: any) => {
     } catch (e) {
       console.log(e);
     }
+
   }, []);
 
   const [m, setm]: any = React.useState(false);
@@ -154,6 +155,7 @@ const App = (props: any) => {
   const [view, setview] = React.useState('month');
 
   const [selectedUsers, setSelectedUsers] = React.useState([]);
+  const [AllTaskuser, setAllTaskuser] = React.useState([]);
 
 
   const handlePeoplePickerChange = (items: any[]): void => {
@@ -202,6 +204,8 @@ const App = (props: any) => {
       </>
     );
   };
+
+
 
   const getEvents = async (): Promise<IEventData[]> => {
     let events: IEventData[] = [];
@@ -375,9 +379,9 @@ const App = (props: any) => {
     sedType("");
     setInputValueReason("");
     setIsDisableField(false);
-    allDay = "false";
-    HalfDaye = "false";
-    HalfDayT = "false";
+    allDay = false;
+    HalfDaye = false;
+    HalfDayT = false;
 
   };
   const handleInputChangeName = (
@@ -464,30 +468,58 @@ const App = (props: any) => {
           localcomp.push(comp);
         });
         compareData.map((item: any) => {
+          let eventeEnddate = new Date(item.EndDate)
+          //  eventeEnddate.setDate(eventeEnddate.getDate()-1)
+          eventeEnddate.setHours(eventeEnddate.getHours() - 13);
+          eventeEnddate.setMinutes(eventeEnddate.getMinutes() - 30);
+          let eventEnd = eventeEnddate.getTime()
           item.clickable = true;
-          if (item?.Event_x002d_Type == 'Company Holiday' || item?.Event_x002d_Type == 'National Holiday')
+          if (item?.Event_x002d_Type == 'Company Holiday' || item?.Event_x002d_Type == 'National Holiday') {
             item.clickable = false;
-          if (item.fAllDayEvent === false) {
+          }
+          if (item.fAllDayEvent === false && new Date(item.EventDate).toLocaleDateString() === new Date(eventEnd).toLocaleDateString()) {
+
             startdate = new Date(item.EventDate);
-            startdate.setHours(startdate.getHours());
-            startdate.setMinutes(startdate.getMinutes());
+            startdate.setHours(startdate.getHours() - 13);
+            startdate.setMinutes(startdate.getMinutes() - 30);
+            createdAt = new Date(item.Created);
+            modifyAt = new Date(item.Modified);
+            enddate = new Date(eventEnd);
+            // enddate.setHours(enddate.getHours());
+          } else if (item.fAllDayEvent === false && new Date(item.EventDate).toLocaleDateString() !== new Date(eventEnd).toLocaleDateString()) {
+
+            startdate = new Date(item.EventDate);
+            startdate.setHours(0, 0, 0, 0);
             createdAt = new Date(item.Created);
             modifyAt = new Date(item.Modified);
             enddate = new Date(item.EndDate);
-            enddate.setHours(enddate.getHours());
-            enddate.setMinutes(enddate.getMinutes());
-            //console.log("start", startdate, item.ID);
-            //console.log("end", enddate, item.iD);
+            enddate.setHours(enddate.getHours() - 13);
+            enddate.setMinutes(enddate.getMinutes()); 
           } else if (item.fAllDayEvent == true) {
             startdate = new Date(item.EventDate);
-            startdate.setHours(startdate.getHours() - 5);
-            startdate.setMinutes(startdate.getMinutes() - 30);
+            startdate.setHours(startdate.getHours() + 4);
+            startdate.setMinutes(startdate.getMinutes() + 30);
 
             enddate = new Date(item.EndDate);
             // enddate.setHours(0, 0, 0, 0)
-            enddate.setHours(enddate.getHours() - 5);
-            enddate.setMinutes(enddate.getMinutes() - 30);
+            enddate.setHours(enddate.getHours() - 10);
+            enddate.setMinutes(enddate.getMinutes() - 29);
 
+          }
+          if (item.HalfDay == true) {
+            startdate = new Date(item.EventDate);
+            startdate.setHours(startdate.getHours() - 13);
+            startdate.setMinutes(startdate.getMinutes() - 30);
+            enddate = new Date(item.EndDate);
+            enddate.setHours(enddate.getHours() - 13);
+            enddate.setMinutes(enddate.getMinutes() - 30);
+          } else if (item.HalfDayTwo == true) {
+            startdate = new Date(item.EventDate);
+            startdate.setHours(startdate.getHours() - 13);
+            startdate.setMinutes(startdate.getMinutes() - 30);
+            enddate = new Date(item.EndDate);
+            enddate.setHours(enddate.getHours() - 13);
+            enddate.setMinutes(enddate.getMinutes() - 30);
           }
           let a = item.Title;
           const dataEvent = {
@@ -532,7 +564,7 @@ const App = (props: any) => {
       await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
         .items.getById(eventids)
-        .recycle()
+        .delete()
 
         .then((i: any) => {
           //console.log(i);
@@ -546,9 +578,13 @@ const App = (props: any) => {
   const [details, setDetails]: any = React.useState([]);
   const saveEvent = async () => {
     try {
-      if (inputValueName?.length > 0 && (dType?.length > 0 || type == "National Holiday" || type == "Company Holiday")) {
-        const chkstartDate = new Date(startDate);
-        const chkendDate = new Date(endDate);
+      const chkstartDate = new Date(startDate);
+      const chkendDate = new Date(endDate);
+      if (
+        // (isChecked || isFirstHalfDChecked || isSecondtHalfDChecked) ||
+        (type !== undefined && type !== null) &&
+        (inputValueName?.length > 0 && (dType?.length > 0 || type == "National Holiday" || type == "Company Holiday"))
+      ) {
         if (chkstartDate > chkendDate) {
           alert("End Date cannot be before start date");
         } else {
@@ -577,7 +613,7 @@ const App = (props: any) => {
             start: startDate,
             end: endDate,
             reason: inputValueReason,
-            type: HalfDaye == true ? "Half Day" : HalfDayT == true ? "Half Day" : type,
+            type: (HalfDaye || HalfDayT) ? "Half Day" : type,
             loc: location,
             Designation: dType,
           };
@@ -619,13 +655,14 @@ const App = (props: any) => {
           setisSecondtHalfDChecked(false);
           setSelectedTime(selectedTime);
           setSelectedTimeEnd(selectedTimeEnd);
-          allDay = "false";
-          HalfDaye = "false";
-          HalfDayT = "false";
+          allDay = false;
+          HalfDaye = false;
+          HalfDayT = false;
         }
       } else {
-        alert("Please fill in the short description and Team and Leave Type");
+        alert("Please fill in the short description and Team and Leave Type, and select at least one checkbox.");
       }
+
     } catch (error) {
       console.error(error);
       alert("An error occurred while saving the event. Please try again.");
@@ -1184,7 +1221,8 @@ const App = (props: any) => {
       setLocation(event.location);
       createdBY = event.created;
       modofiedBy = event.modify;
-      setType(event.eventType);
+
+
       sedType(event.Designation);
       setInputValueReason(event.desc);
 
@@ -1233,7 +1271,11 @@ const App = (props: any) => {
         CTime = moment(item.cTime).tz("Asia/Kolkata").format("HH:mm");
         setSelectedTime(moment(item.start).tz("Asia/Kolkata").format("HH:mm"));
         setSelectedTimeEnd(moment(item.end).tz("Asia/Kolkata").format("HH:mm"));
-        setType(item.eventType);
+        if (item.alldayevent && (!item.HalfDay && !item.HalfDayTwo)) {
+          setType(item.eventType);
+        } else if (!item.alldayevent && (item.HalfDay || item.HalfDayTwo)) {
+          setType('Half Day');
+        }
         sedType(item.Designation);
         setInputValueReason(item.desc);
         setRecurrenceData(item.RecurrenceData);
@@ -1322,6 +1364,7 @@ const App = (props: any) => {
       allDay = true;
       HalfDaye = false;
       HalfDayT = false;
+      // setType("Un-Planned")
       setIsFirstHalfDChecked(false);
       setisSecondtHalfDChecked(false);
       //console.log("allDay", allDay);
@@ -1329,7 +1372,7 @@ const App = (props: any) => {
       maxD = new Date(8640000000000000);
       setDisableTime(false);
       allDay = false;
-      console.log("allDay", allDay);
+      console.log("fAllDayEvent", allDay);
     }
   };
 
@@ -1349,6 +1392,7 @@ const App = (props: any) => {
       allDay = false;
       HalfDayT = false;
       HalfDaye = true;
+      setType("Half Day")
       setisSecondtHalfDChecked(false)
       setIsChecked(false);
       //console.log("allDay", allDay);
@@ -1375,7 +1419,7 @@ const App = (props: any) => {
       HalfDaye = false;
       HalfDayT = true;
       setIsFirstHalfDChecked(false)
-
+      setType('Half Day')
       setIsChecked(false);
       //console.log("allDay", allDay);
     } else {
@@ -1909,8 +1953,10 @@ const App = (props: any) => {
               <a
                 target="_blank"
                 data-interception="off"
-                href={`${props.props.siteUrl}/Lists/SmalsusLeaveCalendar/EditForm.aspx?ID=${vId}`}
+                href={`${props?.props?.siteUrl}/Lists/${props?.props?.siteUrl?.includes('HHHHQA') ? 'Events' : 'SmalsusLeaveCalendar'}/EditForm.aspx?ID=${vId}`}
+
               >
+
                 Open out-of-the-box form
               </a>
               <div>

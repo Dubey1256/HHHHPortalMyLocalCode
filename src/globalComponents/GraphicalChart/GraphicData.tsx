@@ -68,17 +68,25 @@ const GraphData = (data: any) => {
     // Extract the first and last dates from the array
     // Moment(data[0].Day).format("DD/MM/YYYY")
     let lastdateLength =(data.length - 1);
-    const startDate: any = new Date(Moment(data[0].Day).format("DD/MM/YYYY"));
+    
+
+    const datePartsStart = data[0].Day?.split('/');
+    const yearStart = parseInt(datePartsStart[2], 10);
+    const monthStart = parseInt(datePartsStart[1], 10) - 1; // Months are 0 indexed
+    const dayStart = parseInt(datePartsStart[0], 10);
+
+    //const startDate: any = new Date(Moment(data[0].Day).format("DD/MM/YYYY"));
+    const currentDate =new Date(yearStart, monthStart, dayStart);
     const dateParts = data[lastdateLength].Day?.split('/');
     const year = parseInt(dateParts[2], 10);
-    const month = parseInt(dateParts[0], 10) - 1; // Months are 0 indexed
-    const day = parseInt(dateParts[1], 10);
+    const month = parseInt(dateParts[1], 10) - 1; // Months are 0 indexed
+    const day = parseInt(dateParts[0], 10);
 
     const endDate = new Date(year, month, day)
     // const endDate:any = new Date(Moment().format("DD/MM/YYYY"));
 
     // Iterate over the dates from the start date to the end date
-    let currentDate = new Date(startDate);
+    //let currentDate = new Date(startDate);
     while (currentDate <= endDate) {
       const formattedDate = currentDate.toLocaleDateString('en-GB'); // Format the date as 'dd/mm/yyyy'
 
@@ -175,8 +183,8 @@ const GraphData = (data: any) => {
       tooltip: {
         custom: function ({ series, seriesIndex, dataPointIndex, w }: any) {
           const dayData = formattedTotalTimeByDay[dataPointIndex];
-          const siteData = dayData.SiteData.map(site => ` ${site.Time} h - ${site.Site}`).join('<br>');
-          return '<div class="custom-tooltip" style="border: 1px solid #aeabab;padding: 4px; width:200px">' +
+          const siteData = dayData.SiteData.map(site => ` ${site.Time.toFixed(2)} h - ${site.Site}`).join('<br>');
+          return '<div class="custom-tooltip" style="border: 1px solid #aeabab;padding: 4px; min-width:200px">' +
             '<div>' + siteData + '</div>' +
             '</div>';
         }

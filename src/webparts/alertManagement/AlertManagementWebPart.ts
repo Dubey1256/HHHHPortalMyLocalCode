@@ -15,6 +15,8 @@ import { IAlertManagementProps } from './components/IAlertManagementProps';
 export interface IAlertManagementWebPartProps {
   description: string;
   ContextValue:any;
+  ColumnManagementListID:string;
+  
 }
 
 export default class AlertManagementWebPart extends BaseClientSideWebPart<IAlertManagementWebPartProps> {
@@ -31,7 +33,9 @@ export default class AlertManagementWebPart extends BaseClientSideWebPart<IAlert
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        ContextValue:this.context
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        ContextValue:this.context,
+        ColumnManagementListID:this.properties.ColumnManagementListID
       }
     );
 
@@ -111,6 +115,9 @@ export default class AlertManagementWebPart extends BaseClientSideWebPart<IAlert
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneTextField('ColumnManagementListID',{
+                  label:'ColumnManagementListID'
                 })
               ]
             }

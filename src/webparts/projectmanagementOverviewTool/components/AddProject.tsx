@@ -121,7 +121,7 @@ const AddProject = (props: any) => {
                            }
                             
                             if (props?.PageName == "ProjectOverview") {
-                                window.open(`${props?.AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${newProjectId}`, "_blank");
+                                window.open(`${props?.AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${newProjectId}`, "_blank");
                                 props?.CallBack(result,"Save")
                             }else{
                                 props?.CallBack(result,"Save")
@@ -157,7 +157,7 @@ const AddProject = (props: any) => {
                             const newProjectId = res.data.Id;
                             closePopup()
                             props?.CallBack(res.data,"Save")
-                            window.open(`${props?.AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${newProjectId}`, "_blank");
+                            window.open(`${props?.AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${newProjectId}`, "_blank");
                         })
                     })
             }
@@ -272,7 +272,7 @@ const AddProject = (props: any) => {
                             <li><a>Project Management</a></li>
                             <li>
                                 {" "}
-                                <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${props?.items[0]?.Id}`}>{props?.items[0]?.Title}</a>{" "}
+                                <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${props?.items[0]?.Id}`}>{props?.items[0]?.Title}</a>{" "}
                             </li>
                         </ul>
                     </div>
@@ -308,7 +308,7 @@ const AddProject = (props: any) => {
                                                     <li
                                                         className="hreflink list-group-item rounded-0 list-group-item-action"
                                                         key={Item.id}
-                                                        onClick={() => window.open(`${Item?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${Item?.Id}`, '_blank')}
+                                                        onClick={() => window.open(`${Item?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${Item?.Id}`, '_blank')}
                                                     >
                                                         <a>{Item.Title}</a>
                                                     </li>

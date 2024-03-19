@@ -464,7 +464,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
             <footer className="text-end me-4">
                 <button type="button" className="btn btn-primary">
                     <a target="_blank" className="text-light" data-interception="off"
-                        href={`${ContextValue?.siteUrl}/SitePages/Project-Management-Overview.aspx`}>
+                        href={`${ContextValue?.siteUrl}/SitePages/PX-Overview.aspx`}>
                         <span className="text-light">Create New One</span>
                     </a>
                 </button>
@@ -554,7 +554,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row }) => (
                     <span>
-                        <a style={{ textDecoration: "none", color: "#000066" }} href={`${ContextValue?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
+                        <a style={{ textDecoration: "none", color: "#000066" }} href={`${ContextValue?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
                     </span>
                 ),
                 placeholder: "Title",
@@ -864,7 +864,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                                             {selectedProject.map((ProjectData: any, index: any) => {
                                                                 return (
                                                                     <div className="block w-100">
-                                                                        <a className="hreflink wid90" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}>
+                                                                        <a className="hreflink wid90" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/PX-Profile.aspx?ProjectId=${ProjectData.Id}`}>
                                                                             {ProjectData.Title}
                                                                         </a>
                                                                         <span onClick={() => RemoveSelectedProject(index)} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>

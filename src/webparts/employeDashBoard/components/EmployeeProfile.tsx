@@ -34,6 +34,7 @@ const EmployeProfile = (props: any) => {
   const [timesheetListConfig, setTimesheetListConfig] = React.useState<any>()
   const [smartmetaDataDetails, setSmartmetaDataDetails] = React.useState([])
   const [IsCallContext, setIsCallContext] = React.useState(false)
+  const [IsLoadHeader, setIsLoadHeader] = React.useState(false)
   try {
     $("#spPageCanvasContent").removeClass();
     $("#spPageCanvasContent").addClass("hundred");
@@ -51,7 +52,7 @@ const EmployeProfile = (props: any) => {
     getAllData(true)
     generateDateRange()
   }, []);
-  const generateDateRange = () => {
+  const generateDateRange = () => {   
     let Count = 0;
     // You can adjust the number of days displayed in the carousel
     const daysToDisplay = 60;
@@ -220,6 +221,7 @@ const EmployeProfile = (props: any) => {
     var timesheetListConfig = await globalCommon?.loadSmartMetadata(props?.props, 'timesheetListConfigrations')
     setTimesheetListConfig(timesheetListConfig)
     AllsiteData = await globalCommon?.loadSmartMetadata(props?.props, 'Sites')
+    setIsLoadHeader(true)
     AllsiteData = AllsiteData?.filter((item: any) => item.Title != "" && item.Title != "Master Tasks" && item.Title != "SDC Sites" && item.Title != "Offshore Tasks" && item.Configurations != null)
     setAllSite(AllsiteData)
   };
@@ -235,7 +237,7 @@ const EmployeProfile = (props: any) => {
   }
   const loadTaskUsers = async () => {
     try {
-      taskUsers = await globalCommon.loadAllTaskUsers(props?.props);
+      taskUsers = await globalCommon.loadAllTaskUsers(props?.props);      
       let mailApprover: any;
       let currentUserId: any = props?.props?.Context?.pageContext?.legacyPageContext?.userId
       taskUsers?.map((item: any) => {
@@ -370,7 +372,8 @@ const EmployeProfile = (props: any) => {
     var time = today.getHours() + ":" + today.getMinutes();
     var dateTime = time;
     setCurrentTime(dateTime)
-    const array: any = allData
+    const array: any = allData;
+    const filteredConfig = DashboardConfig.filter((item: any) => item.DataSource === 'TimeSheet')[0];
     DashboardConfig?.forEach((config: any) => {
       if (config?.Tasks == undefined)
         config.Tasks = [];
@@ -395,7 +398,8 @@ const EmployeProfile = (props: any) => {
             });
           }
         }
-        setIsCallContext(true);
+        if (filteredConfig == undefined || filteredConfig == '')
+          setIsCallContext(true);
       }
       else if (config?.DataSource == 'TaskUsers') {
         if (config?.selectFilterType != 'custom') {
@@ -462,7 +466,8 @@ const EmployeProfile = (props: any) => {
             })
           }
         }
-        setIsCallContext(true);
+        if (filteredConfig == undefined || filteredConfig == '')
+          setIsCallContext(true);
       }
       else if (config?.DataSource == 'TimeSheet') {
         config.LoadDefaultFilter = false;
@@ -506,6 +511,13 @@ const EmployeProfile = (props: any) => {
                         }
                         entry.listId = site?.listId;
                         entry.siteUrl = site?.siteUrl
+                        if (site?.taskSites != undefined && site?.taskSites?.length > 0) {
+                          site?.taskSites?.forEach((Site: any) => {
+                            if (entry['Task' + Site] != undefined && entry['Task' + Site]?.Id != undefined) {
+                              entry.TaskListType = Site;
+                            }
+                          })
+                        }
                         if (TimeEntry?.sortTaskDate != undefined && CurrentDate != undefined && CurrentDate.getTime() == TimeEntry?.sortTaskDate.getTime() && TimeEntry?.Status == 'For Approval') {
                           TempArray.push(TimeEntry)
                           if (!isItemExists(AllTimeEntry, entry.Id))
@@ -1039,7 +1051,7 @@ const EmployeProfile = (props: any) => {
     <>
       {progressBar && <PageLoader />}
       <myContextValue.Provider value={{ ...myContextValue, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
-        <div> <Header /></div>
+        {IsLoadHeader == true && <div> <Header /></div>}
         {IsCallContext == true && <TaskStatusTbl />}
       </myContextValue.Provider >
     </>
