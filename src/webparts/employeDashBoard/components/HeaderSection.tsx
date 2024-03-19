@@ -5,8 +5,7 @@ import TaskStatusTbl from './TaskStausTable';
 import EmployeePieChart from './EmployeePieChart';
 import { Web } from 'sp-pnp-js';
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import { Col, Container, Row } from "react-bootstrap";
-import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
+import { GrNext, GrPrevious } from "react-icons/gr";
 import Slider from "react-slick";
 let DashboardConfig: any = [];
 const Header = () => {
@@ -28,36 +27,23 @@ const Header = () => {
     DashboardConfig = JSON.parse(JSON.stringify(ContextData?.DashboardConfig));
     DashboardConfig.sort((a: any, b: any) => a.Id - b.Id);
   }
-  function SamplePrevArrow(props: any) {
-    const { className, style, onClick } = props;
-    return (
-      <div
-        className={className}
-        style={{ ...style, display: "block" }}
-        onClick={onClick}>
-        <HiArrowCircleRight></HiArrowCircleRight>
-      </div>
-    );
-  }
-  function SamplnextvArrow(props: any) {
-    const { className, style, onClick } = props;
-    return (
-      <div className={className} style={{ ...style, display: "block" }} onClick={onClick}>
-        <HiArrowCircleLeft></HiArrowCircleLeft></div>
-    );
-  }
   const settings = {
-    dots: false,
-    infinite: true,
-    speed: 1000,
-    slidesToShow: 12,
-    slidesToScroll: 1,
-    //autoplay: true, // Enable autoplay
-    // autoplaySpeed: 500
-    nextArrow: <SamplePrevArrow />,
-    prevArrow: <SamplnextvArrow />
-
+    dots: false, infinite: true, speed: 500, slidesToShow: 10, slidesToScroll: 1, nextArrow: <SamplePrevNextArrow type="next" />, prevArrow: <SamplePrevNextArrow type="prev" />,
+    beforeChange: handleBeforeChange,
   };
+  const [currentSlide, setCurrentSlide] = React.useState(0);
+  function handleBeforeChange(current: any, next: any) {
+    setCurrentSlide(next);
+  }
+  function SamplePrevNextArrow(props: any) {
+    const { type, className, style, onClick } = props;
+    // Decide whether to display the arrow based on the current slide
+    const shouldDisplay = (type === 'next' && currentSlide < DashboardConfig?.length - 1) || (type === 'prev' && currentSlide > 0);
+    return shouldDisplay ? (
+      <div className={className} style={{ ...style, display: "block" }} onClick={onClick}>
+        {type === 'next' ? <GrNext /> : <GrPrevious />}
+      </div>) : null;
+  }
   const handleTileClick = (tileName: any) => {
     if (tileName == 'TimeSheet')
       setIsOpenTimeSheetPopup(true)
@@ -179,7 +165,7 @@ const Header = () => {
 
       <section className="tabSec">
         <div className="d-flex justify-content-center">
-          {DashboardId == '4' ? <Slider className='DashBoardslider' {...settings}>
+          {DashboardId == '4' ? <Slider className='DashBoardslider ' {...settings}>
             {DashboardConfig.map((items: any, index: any) => (
               items?.TileName && (
                 <>
