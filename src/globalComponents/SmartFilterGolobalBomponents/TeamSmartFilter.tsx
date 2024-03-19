@@ -483,6 +483,7 @@ const TeamSmartFilter = (item: any) => {
                 getChildsSites(element, portfolioTypeHeadingData);
             }
         })
+        PrecentComplete = PrecentComplete?.sort((elem1: any, elem2: any) => elem1.SortOrder - elem2.SortOrder);
         PrecentComplete?.forEach((element: any) => {
             if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
                 element.value = element.Id;
@@ -2173,48 +2174,14 @@ const TeamSmartFilter = (item: any) => {
                                                                                             <div className="fw-semibold ms-8 f-16 text-dark">{Group.Title}</div>
                                                                                         </div>
                                                                                         <div className='dataSecChild'>
-                                                                                        {Group?.values
-                                                      ?.sort(
-                                                        (a: any, b: any) =>
-                                                          a.SortOrder -
-                                                          b.SortOrder
-                                                      )
-                                                      .map(
-                                                        (
-                                                          insideCheckBox: any
-                                                        ) => {
-                                                          return (
-                                                            <label
-                                                              className="alignCenter f-16 dataSecChildSec"
-                                                              key={
-                                                                insideCheckBox.Id
-                                                              }
-                                                            >
-                                                              <input
-                                                                type="checkbox"
-                                                                className="form-check-input cursor-pointer mt-0"
-                                                                checked={MainGroup?.checked?.some(
-                                                                  (
-                                                                    datachecked: any
-                                                                  ) =>
-                                                                    datachecked ===
-                                                                    insideCheckBox.Id
-                                                                )}
-                                                                onChange={() =>
-                                                                  selectChild(
-                                                                    insideCheckBox
-                                                                  )
-                                                                }
-                                                              />
-                                                              <div className="ms-8">
-                                                                {
-                                                                  insideCheckBox.Title
-                                                                }
-                                                              </div>
-                                                            </label>
-                                                          );
-                                                        }
-                                                      )}
+                                                                                            {Group?.values?.sort((a:any,b:any)=>a.SortOrder-b.SortOrder)?.map((insideCheckBox: any) => {
+                                                                                                return (
+                                                                                                    <label className='alignCenter f-16 dataSecChildSec'>
+                                                                                                        <input type="checkbox" className={"form-check-input cursor-pointer mt-0"} checked={MainGroup?.checked?.some((datachecked: any) => datachecked == insideCheckBox?.Id)} onChange={() => selectChild(insideCheckBox)} />
+                                                                                                        <div className='ms-8'>{insideCheckBox?.Title}</div>
+                                                                                                    </label>
+                                                                                                )
+                                                                                            })}
                                                                                         </div>
                                                                                     </div>
                                                                                 )

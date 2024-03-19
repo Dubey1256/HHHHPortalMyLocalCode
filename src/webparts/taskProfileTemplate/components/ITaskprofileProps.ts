@@ -1,4 +1,4 @@
-export interface ITaskProfileTemplateProps {
+export interface ITaskprofileProps {
   description: string;
   isDarkTheme: boolean;
   environmentMessage: string;
