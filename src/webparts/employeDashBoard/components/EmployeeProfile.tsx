@@ -34,6 +34,7 @@ const EmployeProfile = (props: any) => {
   const [timesheetListConfig, setTimesheetListConfig] = React.useState<any>()
   const [smartmetaDataDetails, setSmartmetaDataDetails] = React.useState([])
   const [IsCallContext, setIsCallContext] = React.useState(false)
+  const [IsLoadHeader, setIsLoadHeader] = React.useState(false)
   try {
     $("#spPageCanvasContent").removeClass();
     $("#spPageCanvasContent").addClass("hundred");
@@ -236,6 +237,7 @@ const EmployeProfile = (props: any) => {
   const loadTaskUsers = async () => {
     try {
       taskUsers = await globalCommon.loadAllTaskUsers(props?.props);
+      setIsLoadHeader(true)
       let mailApprover: any;
       let currentUserId: any = props?.props?.Context?.pageContext?.legacyPageContext?.userId
       taskUsers?.map((item: any) => {
@@ -1049,7 +1051,7 @@ const EmployeProfile = (props: any) => {
     <>
       {progressBar && <PageLoader />}
       <myContextValue.Provider value={{ ...myContextValue, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
-        <div> <Header /></div>
+        {IsLoadHeader == true && <div> <Header /></div>}
         {IsCallContext == true && <TaskStatusTbl />}
       </myContextValue.Provider >
     </>
