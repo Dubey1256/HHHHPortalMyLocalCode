@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, View, Views, momentLocalizer } from "react-big-calendar";
-// import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Web } from "sp-pnp-js";
 import { parseString } from 'xml2js';
@@ -30,7 +29,6 @@ let createdBY: any,
   localArr: any = [],
   vHistory: any = [];
 let startTime: any,
-  //   startDateTime: any,
   eventPass: any = {},
   endTime: any,
   allDay: any = false,
@@ -44,7 +42,6 @@ const today: Date = new Date();
 const minDate: Date = today;
 const leaveTypes = [
   { key: "Sick", text: "Sick" },
-  // { key: "Training", text: "Training " },
   { key: "Planned Leave", text: "Planned" },
   { key: "Un-Planned", text: "Un-Planned" },
   { key: "Restricted Holiday", text: "Restricted Holiday" },
@@ -71,8 +68,6 @@ const Apps = (props: any) => {
   const [leaveReport, setleaveReport] = React.useState(false);
   const [recurringEvents, setRecurringEvents] = useState([]);
   const [m, setm]: any = React.useState(false);
-  const [MyDate, setMyDate] = useState([]);
-  const [ShowMore, setShowMore] = useState([]);
   const [isOpen, setIsOpen] = React.useState(false);
   const [showM, setShowM] = React.useState([]);
   const [startDate, setStartDate]: any = React.useState(null);
@@ -451,18 +446,7 @@ const Apps = (props: any) => {
     };
     return event;
   }
-  // function getDayOfCurrentWeek(dayAbbreviation: any) {
-  //   let daysOfWeek = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'];
-  //   let currentDayOfWeek = (new Date()).getDay();
-  //   let targetDayIndex = daysOfWeek.indexOf(dayAbbreviation);
-  //   let daysToAdd = targetDayIndex - currentDayOfWeek;
-  //   if (daysToAdd < 0) {
-  //     daysToAdd += 7;
-  //   }
-  //   let targetDate = new Date();
-  //   targetDate.setDate(targetDate.getDate() + daysToAdd);
-  //   return targetDate
-  // }
+ 
   function handleDailyRecurrence(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any, repeatInstance: any) {
     const dayFrequency = parseInt(frequency.dayFrequency);
     let count = 0;
@@ -1064,7 +1048,7 @@ const Apps = (props: any) => {
           ((editedEvent.Event_x002d_Type === "Company Holiday") || (editedEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
 
       const editedEventItem = {
-        Title: mytitle,
+        Title: editedEvent.Title,
         Description: editedEvent.Description,
         Event_x002d_Type: editedEvent.Event_x002d_Type,
         EventDate: await getUtcTime(editedEvent.EventDate),
@@ -1416,7 +1400,6 @@ const Apps = (props: any) => {
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const checked = event.target.checked;
     setIsChecked(checked);
-    // console.log("check", isChecked);
     if (checked) {
       startTime = "10:00";
       endTime = "19:00";
@@ -1424,14 +1407,12 @@ const Apps = (props: any) => {
       setSelectedTime("10:00");
       setEndDate(startDate);
       maxD = startDate;
-      //console.log(maxD);
       setDisableTime(true);
       allDay = true;
       HalfDaye = false;
       HalfDayT = false;
       setIsFirstHalfDChecked(false);
       setisSecondtHalfDChecked(false);
-      //console.log("allDay", allDay);
     } else {
       maxD = new Date(8640000000000000);
       setDisableTime(false);
@@ -1443,7 +1424,6 @@ const Apps = (props: any) => {
   const handleHalfDayCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const checked = event.target.checked;
     setIsFirstHalfDChecked(checked);
-    // console.log("check", isChecked);
     if (checked) {
       startTime = "10:00";
       endTime = "19:00";
@@ -1451,14 +1431,12 @@ const Apps = (props: any) => {
       setSelectedTime("10:00");
       setEndDate(startDate);
       maxD = startDate;
-      //console.log(maxD);
       setDisableTime(true);
       allDay = false;
       HalfDayT = false;
       HalfDaye = true;
       setisSecondtHalfDChecked(false)
       setIsChecked(false);
-      //console.log("allDay", allDay);
     } else {
       maxD = new Date(8640000000000000);
       setDisableTime(false);
@@ -1476,7 +1454,6 @@ const Apps = (props: any) => {
       setSelectedTime("14:30");
       setEndDate(startDate);
       maxD = startDate;
-      //console.log(maxD);
       setDisableTime(true);
       allDay = false;
       HalfDaye = false;
@@ -1576,49 +1553,48 @@ const Apps = (props: any) => {
         />
       ) : null}
       {isOpen && (
-        <Panel
-          headerText={`Leaves of ${dt}`}
-          isOpen={isOpen}
-          onDismiss={closeModal}
-          /// isFooterAtBottom={true}
-          type={PanelType.medium}
-          closeButtonAriaLabel="Close"
-        >
-          <table className="styled-table">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>EndDate</th>
-                <th>Edit</th>
-                <th>Delete</th>
-              </tr>
-            </thead>
-            <tbody>
-              {showM?.map((item: any) => {
-                return (
-                  <tr>
-                    <td>{item.title}</td>
+     <Panel
+     headerText={`Leaves of ${dt}`}
+     isOpen={isOpen}
+     onDismiss={closeModal}
+     type={PanelType.medium}
+     closeButtonAriaLabel="Close"
+   >
+     <table className="styled-table">
+       <thead>
+         <tr>
+           <th>Title</th>
+           <th>EndDate</th>
+           <th>Edit</th>
+           <th>Delete</th>
+         </tr>
+       </thead>
+       <tbody>
+         {showM?.map((item: any) => {
+           return (
+             <tr>
+               <td>{item.title}</td>
 
-                    <td>{moment(item.end).format("DD/MM/YYYY")}</td>
-                    <td>
-                      <a href="#" onClick={() => handleDateClick(item)}>
-                        <span
-                          title="Edit"
-                          className="svg__iconbox svg__icon--edit"
-                        ></span>
-                      </a>
-                    </td>
-                    <td>
-                      <a href="#" onClick={() => deleteElement(item?.Id)}>
-                        <span className="svg__iconbox svg__icon--trash"></span>
-                      </a>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </Panel>
+               <td>{moment(item.end).format("DD/MM/YYYY")}</td>
+               <td>
+                 <a href="#" onClick={() => handleDateClick(item)}>
+                   <span
+                     title="Edit"
+                     className="svg__iconbox svg__icon--edit"
+                   ></span>
+                 </a>
+               </td>
+               <td> 
+                 <a href="#" onClick={() => deleteElement(item?.Id)}>
+                   <span className="svg__iconbox svg__icon--trash"></span>
+                 </a>
+               </td>
+             </tr>
+           );
+         })}
+       </tbody>
+     </table>
+   </Panel>
       )}
       <Panel
         onRenderHeader={onRenderCustomHeader}
@@ -1666,22 +1642,7 @@ const Apps = (props: any) => {
 
             </div>
           )}
-          {/* {!disableTime ? (
-          <div className="col-md-6  mt-4">
-            <label htmlFor="1" className="w-100">
-              Start Time:
-            </label>
-            <input
-              id="1"
-              type="time"
-              name="Start-time"
-              value={selectedTime}
-              onChange={handleTimeChange}
-            />
-          </div>
-        ) : (
-          ""
-        )} */}
+        
           {showRecurrenceSeriesInfo != true && (
             <div className="col-md-6">
 
@@ -1695,22 +1656,7 @@ const Apps = (props: any) => {
               />
             </div>
           )}
-          {/* {!disableTime ? (
-          <div className="col-md-6  mt-4">
-            <label htmlFor="2" className="w-100">
-              End Time:
-            </label>
-            <input
-              id="2"
-              type="time"
-              name="End-time"
-              value={selectedTimeEnd}
-              onChange={handleTimeChangeEnd}
-            />
-          </div>
-        ) : (
-          ""
-        )} */}
+        
           <div>
             <label className="SpfxCheckRadio alignCenter">
               <input
@@ -1779,29 +1725,22 @@ const Apps = (props: any) => {
                   recurrenceData={recurrenceData}
                   startDate={startDate}
                   siteUrl={props.props.siteUrl}
-                  returnRecurrenceData={returnRecurrenceInfo} selectedKey={undefined} selectedRecurrenceRule={undefined}                // selectedKey={selectedKey}
-                // selectedRecurrenceRule={selectedKey}
+                  returnRecurrenceData={returnRecurrenceInfo} selectedKey={undefined} selectedRecurrenceRule={undefined}  
                 ></EventRecurrenceInfo>
               )}
             </div>
           }
-          <div>
-            <TextField
-              label="Location"
-              value={location}
-              onChange={handleInputChangeLocation}
-              disabled={IsDisableField}
-            />
-          </div>{" "}
+        
           <Dropdown
             label="Leave Type"
             options={leaveTypes}
             selectedKey={type}
-            // defaultSelectedKey="Un-Planned" // Set the defaultSelectedKey to the key of "Planned Leave"
             onChange={(e, option) => HandledLeaveType(option.key)}
-            required // Add the "required" attribute
-            errorMessage={type ? "" : "Please select a leave type"} // Display an error message if no type is selected
+            required
+            errorMessage={type ? "" : "Please select a leave type"} 
           />
+          
+         
           <Dropdown
             label="Team"
             options={Designation}
@@ -1820,45 +1759,9 @@ const Apps = (props: any) => {
         </form>
 
         <br />
-        {/* {!disabl ? (
-        <PrimaryButton
-          disabled={disabl}
-          text="Delete"
-          onClick={deleteElement}
-        />
-      ) : (
-        ""
-      )} */}
-        {/* 
-      {!disabl ? <><PrimaryButton text="Save" onClick={updateElement} />
-      <PrimaryButton text="Cancel" onClick={closem}/>
-      </>: ""}
       
-      {!disabl ? (<>
-        <div>
-          Created {CDate} {CTime} by {createdBY}
-        </div>
-        <div>
-          Last Modified {MDate} {MTime} by {modofiedBy}
-        </div>
-       
-        <a href="#" onClick={deleteElement}>
-        <span className="svg__iconbox svg__icon--trash"></span> Delete this Item
-      </a>
-        </>) : (
-        ""
-      )} */}
 
-        {/* {!disabl ? (
-        
-      ) : (
-        ""
-      )} */}
-        {/* <br />
-      {!disab ? <><PrimaryButton text="Submit" onClick={saveEvent} />
-      <PrimaryButton text="Cancel" onClick={closem}/>
-      </> : ""} */}
-
+     
         {!disabl ? (
           <footer>
             <div className="align-items-center d-flex justify-content-between">

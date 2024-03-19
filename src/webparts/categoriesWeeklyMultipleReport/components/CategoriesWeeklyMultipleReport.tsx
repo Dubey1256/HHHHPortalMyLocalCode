@@ -1841,28 +1841,28 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     for (let index = 0; index < filterCheckedItem.length; index++) {
       let id = filterCheckedItem[index];
       filterItems.forEach(function (filterItem: any) {
-        if(filterItem?.IsParent ===true){
-        if (filterItem.value == id)
-          selectedFilters.push(filterItem);
-        if (filterItem.children != undefined && filterItem.children.length > 0) {
-          filterItem.children.forEach(function (child: any) {
-            if (child.value == id)
-              selectedFilters.push(child);
-            if (child.children != undefined && child.children.length > 0) {
-              child.children.forEach(function (subchild: any) {
-                if (subchild.value == id)
-                  selectedFilters.push(subchild);
-                if (subchild.children != undefined && subchild.children.length > 0) {
-                  subchild.children.forEach(function (newsubchild: any) {
-                    if (newsubchild.value == id)
-                      selectedFilters.push(newsubchild);
-                  });
-                }
-              });
-            }
-          });
+        if (filterItem?.IsParent === true) {
+          if (filterItem.value == id)
+            selectedFilters.push(filterItem);
+          if (filterItem.children != undefined && filterItem.children.length > 0) {
+            filterItem.children.forEach(function (child: any) {
+              if (child.value == id)
+                selectedFilters.push(child);
+              if (child.children != undefined && child.children.length > 0) {
+                child.children.forEach(function (subchild: any) {
+                  if (subchild.value == id)
+                    selectedFilters.push(subchild);
+                  if (subchild.children != undefined && subchild.children.length > 0) {
+                    subchild.children.forEach(function (newsubchild: any) {
+                      if (newsubchild.value == id)
+                        selectedFilters.push(newsubchild);
+                    });
+                  }
+                });
+              }
+            });
+          }
         }
-      }
       });
     }
 
@@ -1876,6 +1876,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       let isSitesSelected = false;
       for (let index = 0; index < filterTask.length; index++) {
         let item = filterTask[index];
+        item.ClientCategorySearchNew = "";
+        item.ClientCategoryNew = [];
         if (item.TaskItemID == 2880)
           console.log(item);
         if (item.TaskItemID == 441)
@@ -1899,37 +1901,51 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   if (type == selectedFilters[i].ID) {
                     item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
                     flag = true;
+                    item.ClientCategorySearchNew = item.ClientCategorySearchNew === "" ? selectedFilters[i].Title + ';' : item.ClientCategorySearchNew + selectedFilters[i].Title + ';';
                     item.Secondlevel = item.ParentTitle;
+                    item.ClientCategoryNew.push(selectedFilters[i]);
                   }
                   else if (selectedFilters[i].ID == '132' && item.siteType == "Shareweb") {
                     item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
                     flag = true;
                     item.Secondlevel = item.ParentTitle;
+                    item.ClientCategoryNew.push(selectedFilters[i]);
+                  //  item.ClientCategorySearchNew = item.ClientCategorySearchNew === "" ? selectedFilters[i].Title + ';' : item.ClientCategorySearchNew + selectedFilters[i].Title + ';';
                   }
                   else if (selectedFilters[i].ID == '569' && item.siteType == "Migration") {
                     item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
                     flag = true;
                     item.Secondlevel = item.ParentTitle;
+                    item.ClientCategoryNew.push(selectedFilters[i]);
+                    //item.ClientCategorySearchNew = item.ClientCategorySearchNew === "" ? selectedFilters[i].Title + ';' : item.ClientCategorySearchNew + selectedFilters[i].Title + ';';
                   }
                   else if (selectedFilters[i].ID == '572' && item.siteType == "ALAKDigital") {
                     item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
                     flag = true;
                     item.Secondlevel = item.ParentTitle;
+                    item.ClientCategoryNew.push(selectedFilters[i]);
+                  //  item.ClientCategorySearchNew = item.ClientCategorySearchNew === "" ? selectedFilters[i].Title + ';' : item.ClientCategorySearchNew + selectedFilters[i].Title + ';';
                   }
                   else if (selectedFilters[i].ID == '573' && item.siteType == "KathaBeck") {
                     item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
                     flag = true;
                     item.Secondlevel = item.ParentTitle;
+                    item.ClientCategoryNew.push(selectedFilters[i]);
+                  //  item.ClientCategorySearchNew = item.ClientCategorySearchNew === "" ? selectedFilters[i].Title + ';' : item.ClientCategorySearchNew + selectedFilters[i].Title + ';';
                   }
                   else if (selectedFilters[i].ID == '575' && item.siteType == "HHHH") {
                     item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
                     flag = true;
                     item.Secondlevel = item.ParentTitle;
+                    item.ClientCategoryNew.push(selectedFilters[i]);
+                   // item.ClientCategorySearchNew = item.ClientCategorySearchNew === "" ? selectedFilters[i].Title + ';' : item.ClientCategorySearchNew + selectedFilters[i].Title + ';';
                   }
                   else if (selectedFilters[i].ID == '574' && item.siteType == "Gruene") {
                     item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
                     flag = true;
                     item.Secondlevel = item.ParentTitle;
+                    item.ClientCategoryNew.push(selectedFilters[i]);
+                   // item.ClientCategorySearchNew = item.ClientCategorySearchNew === "" ? selectedFilters[i].Title + ';' : item.ClientCategorySearchNew + selectedFilters[i].Title + ';';
                   }
 
                 }
@@ -1952,6 +1968,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                     item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
                     flag = true;
                     item.Secondlevel = item.ParentTitle;
+                    item.ClientCategorySearchNew = item.ClientCategorySearchNew === "" ? selectedFilters[i].Title + ';' : item.ClientCategorySearchNew + selectedFilters[i].Title + ';';
                     CategoryItems.push(item);
                   } else if ((item.siteType != undefined && title === undefined)) {
                     item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
@@ -1968,11 +1985,15 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                     item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
                     flag = true;
                     item.Secondlevel = item.ParentTitle;
+                    item.ClientCategoryNew.push(selectedFilters[i]);
+                    item.ClientCategorySearchNew = item.ClientCategorySearchNew === "" ? selectedFilters[i].Title + ';' : item.ClientCategorySearchNew + selectedFilters[i].Title + ';';
                     CategoryItems.push(item);
                   } else if ((item.siteType != undefined && title === undefined)) {
                     item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
                     flag = true;
                     item.Secondlevel = item.ParentTitle;
+                    item.ClientCategoryNew.push(selectedFilters[i]);
+                    item.ClientCategorySearchNew = item.ClientCategorySearchNew === "" ? selectedFilters[i].Title + ';' : item.ClientCategorySearchNew + selectedFilters[i].Title + ';';
                     CategoryItems.push(item);
                   }
                 }
@@ -1981,20 +2002,26 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
                   flag = true;
                   item.Secondlevel = item.ParentTitle;
+                  item.ClientCategoryNew.push(selectedFilters[i]);
+                  item.ClientCategorySearchNew = item.ClientCategorySearchNew === "" ? selectedFilters[i].Title + ';' : item.ClientCategorySearchNew + selectedFilters[i].Title + ';';
                   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
                     CategoryItems.push(item);
                 }
                 else if (selectedFilters[i].ID == '569' && item.siteType == "Migration") {
                   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
                   flag = true;
+                //  item.ClientCategorySearchNew = item.ClientCategorySearchNew === "" ? selectedFilters[i].Title + ';' : item.ClientCategorySearchNew + selectedFilters[i].Title + ';';
                   item.Secondlevel = item.ParentTitle;
+                  item.ClientCategoryNew.push(selectedFilters[i]);
                   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
                     CategoryItems.push(item);
                 }
                 else if (selectedFilters[i].ID == '572' && item.siteType == "ALAKDigital") {
                   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
                   flag = true;
+                 // item.ClientCategorySearchNew = item.ClientCategorySearchNew === "" ? selectedFilters[i].Title + ';' : item.ClientCategorySearchNew + selectedFilters[i].Title + ';';
                   item.Secondlevel = item.ParentTitle;
+                  item.ClientCategoryNew.push(selectedFilters[i]);
                   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
                     CategoryItems.push(item);
                 }
@@ -2002,6 +2029,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
                   flag = true;
                   item.Secondlevel = item.ParentTitle;
+                  item.ClientCategoryNew.push(selectedFilters[i]);
+               //   item.ClientCategorySearchNew = item.ClientCategorySearchNew === "" ? selectedFilters[i].Title + ';' : item.ClientCategorySearchNew + selectedFilters[i].Title + ';';
                   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
                     CategoryItems.push(item);
                 }
@@ -2009,6 +2038,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
                   flag = true;
                   item.Secondlevel = item.ParentTitle;
+                  item.ClientCategoryNew.push(selectedFilters[i]);
+               //   item.ClientCategorySearchNew = item.ClientCategorySearchNew === "" ? selectedFilters[i].Title + ';' : item.ClientCategorySearchNew + selectedFilters[i].Title + ';';
                   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
                     CategoryItems.push(item);
                 }
@@ -2016,6 +2047,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
                   flag = true;
                   item.Secondlevel = item.ParentTitle;
+                  item.ClientCategoryNew.push(selectedFilters[i]);
+               //   item.ClientCategorySearchNew = item.ClientCategorySearchNew === "" ? selectedFilters[i].Title + ';' : item.ClientCategorySearchNew + selectedFilters[i].Title + ';';
                   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
                     CategoryItems.push(item);
                 }
@@ -2529,8 +2562,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             let First = ''; let Secondlevel = ''; let Thirdlevel = '';
             let ChildItem: any = {};
             result.forEach(function (obj: any) {
-              if (obj.clientCategory != undefined) {
-                let Category = obj.clientCategory.split(';');
+              if (obj.ClientCategorySearchNew != undefined) {
+                let Category = obj.ClientCategorySearchNew.split(';');
                 Category.forEach(function (type: any) {
                   if (type != undefined && cate.indexOf(type) == -1)
                     cate += type + '; ';
@@ -3264,10 +3297,15 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             if (objnew.subRows != undefined && objnew.subRows.length > 0) {
               objnew.subRows.forEach((objchild: any) => {
                 if (objchild.Firstlevel) {
-                  if (Firstlevel == "")
-                    Firstlevel = objchild.Firstlevel;
-                  else if (Firstlevel.indexOf(objchild.Firstlevel) == -1)
-                    Firstlevel += objchild.Firstlevel;
+                  const sitearray: any = objchild.Firstlevel.split(';');
+                  sitearray?.forEach((obj: any) => {
+                    if (Firstlevel.indexOf(obj) == -1)
+                      Firstlevel += Firstlevel === "" ? obj + ';' : Firstlevel + obj + ';';
+                  })
+                  // if (Firstlevel == "")
+                  //   Firstlevel = objchild.Firstlevel;
+                  // else if (Firstlevel.indexOf(objchild.Firstlevel) == -1)
+                  //   Firstlevel += objchild.Firstlevel;
                 }
               })
             }
