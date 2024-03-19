@@ -2147,10 +2147,8 @@ export const GetTaskId = (Item: any) => {
     if (TaskType?.Title === 'Activities' || TaskType?.Title === 'Workstream') {
         taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
     }
-    if (ParentTask?.TaskID != undefined && TaskType?.Title === 'Task' && ParentTask?.Item_x0020_Type === "Task") {
+    if (ParentTask?.TaskID != undefined && TaskType?.Title === 'Task') {
         taskIds += taskIds.length > 0 ? `-${ParentTask?.TaskID}-T${Id}` : `${ParentTask?.TaskID}-T${Id}`;
-    } else if (ParentTask?.TaskID !== undefined && TaskType?.Title === 'Task'&& ParentTask?.Item_x0020_Type === "SubComponent") {
-        taskIds += taskIds.length > 0 ? `-T${Id}` : `T${Id}`;
     }
     else if (ParentTask?.TaskID == undefined && TaskType?.Title === 'Task') {
         taskIds += taskIds.length > 0 ? `-T${Id}` : `T${Id}`;
