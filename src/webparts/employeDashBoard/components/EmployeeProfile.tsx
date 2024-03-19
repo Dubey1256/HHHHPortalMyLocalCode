@@ -52,7 +52,7 @@ const EmployeProfile = (props: any) => {
     getAllData(true)
     generateDateRange()
   }, []);
-  const generateDateRange = () => {
+  const generateDateRange = () => {   
     let Count = 0;
     // You can adjust the number of days displayed in the carousel
     const daysToDisplay = 60;
@@ -221,6 +221,7 @@ const EmployeProfile = (props: any) => {
     var timesheetListConfig = await globalCommon?.loadSmartMetadata(props?.props, 'timesheetListConfigrations')
     setTimesheetListConfig(timesheetListConfig)
     AllsiteData = await globalCommon?.loadSmartMetadata(props?.props, 'Sites')
+    setIsLoadHeader(true)
     AllsiteData = AllsiteData?.filter((item: any) => item.Title != "" && item.Title != "Master Tasks" && item.Title != "SDC Sites" && item.Title != "Offshore Tasks" && item.Configurations != null)
     setAllSite(AllsiteData)
   };
@@ -236,8 +237,7 @@ const EmployeProfile = (props: any) => {
   }
   const loadTaskUsers = async () => {
     try {
-      taskUsers = await globalCommon.loadAllTaskUsers(props?.props);
-      setIsLoadHeader(true)
+      taskUsers = await globalCommon.loadAllTaskUsers(props?.props);      
       let mailApprover: any;
       let currentUserId: any = props?.props?.Context?.pageContext?.legacyPageContext?.userId
       taskUsers?.map((item: any) => {
