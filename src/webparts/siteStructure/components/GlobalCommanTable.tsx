@@ -941,7 +941,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                 </tbody>
             </table>
-            {showPagination === true && table?.getFilteredRowModel()?.rows?.length > table.getState().pagination.pageSize ? <div className="d-flex gap-2 items-center mb-3 mx-2">
+            {showPagination === true && table?.getFilteredRowModel()?.rows?.length > table.getState().pagination.pageSize ? <div className="d-flex gap-2 items-center mb-3 mx-2 pagnationpanel">
                 <button
                     className="border "
                     onClick={() => table.setPageIndex(0)}
@@ -956,7 +956,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 >
                     <FaChevronLeft />
                 </button>
-                <span className="flex items-center gap-1">
+                <span className="flex items-center gap-1 textpannel">
                     <div>Page</div>
                     <strong>
                         {table.getState().pagination.pageIndex + 1} of{' '}
