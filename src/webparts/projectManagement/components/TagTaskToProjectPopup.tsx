@@ -74,7 +74,7 @@ const TagTaskToProjectPopup = (props: any) => {
       try {
         var AllTask: any = []
         setPageLoader(true)
-        AllTask = await globalCommon?.loadAllSiteTasks(props?.AllListId)
+        AllTask = await globalCommon?.loadAllSiteTasks(props?.AllListId, `Status ne 'Completed'&$orderby=Created desc`)
         AllTask.map((items: any) => {
             items.TitleNew = items.Title;
             items.AllTeamMember = [];

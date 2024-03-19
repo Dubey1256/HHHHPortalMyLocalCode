@@ -66,25 +66,6 @@ const ColumnsSetting = (props: any) => {
                 setColumnOrderValue(colOrder);
             }
             try {
-                if (props?.columns?.length > 0 && props?.columns != undefined) {
-                    let preSetColumnSettingVisibility: any = {};
-                    props.columns = props?.columns.map((updatedSortDec: any) => {
-                        try {
-                            if (props?.columnVisibilityData) {
-                                preSetColumnSettingVisibility = props?.columnVisibilityData;
-                                if (Object.keys(preSetColumnSettingVisibility)?.length) {
-                                    const columnId = updatedSortDec.id;
-                                    if (preSetColumnSettingVisibility[columnId] !== undefined) {
-                                        updatedSortDec.isColumnVisible = preSetColumnSettingVisibility[columnId];
-                                    }
-                                }
-                            }
-                            return updatedSortDec;
-                        } catch (error) {
-                            console.log(error);
-                        }
-                    });
-                }
                 const sortedColumns = JSON.parse(JSON.stringify(props?.columns)).sort((a: any, b: any) => {
                     const indexA = props?.columnOrder?.indexOf(a.id);
                     const indexB = props?.columnOrder?.indexOf(b.id);
@@ -208,7 +189,7 @@ const ColumnsSetting = (props: any) => {
                 }
                 return col;
             });
-            // props?.columnSettingCallBack(columnsVisibllityDataAll)
+            props?.columnSettingCallBack(columnsVisibllityDataAll)
         };
         props?.columnSettingCallBack(columnsVisibllityDataAll)
     };

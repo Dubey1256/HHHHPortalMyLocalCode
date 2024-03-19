@@ -682,10 +682,8 @@ const TaskDashboard = (props: any) => {
             {
                 accessorKey: "",
                 placeholder: "",
-                hasCheckbox: true,
-                hasCustomExpanded: false,
-                hasExpanded: false,
-                isHeaderNotAvlable: true,
+                hasCustomExpanded: true,
+                hasExpanded: true,
                 size: 10,
                 id: 'Id',
             },
@@ -1945,7 +1943,7 @@ const TaskDashboard = (props: any) => {
                 '<span style="font-size: 18px;margin-bottom: 10px;">'
                 + 'Hi there, <br><br>'
                 + "Below is the today's working task of all the team members :"
-                + '<p>' + '<a href =' + `${AllListId?.siteUrl}/SitePages/PX-Overview.aspx?SelectedView=TodaysTask` + ">Click here for flat overview of the today's tasks: " + '</a>' + '</p>'
+                + '<p>' + '<a href =' + `${AllListId?.siteUrl}/SitePages/Project-Management-Overview.aspx?SelectedView=TodaysTask` + ">Click here for flat overview of the today's tasks: " + '</a>' + '</p>'
                 + '</span>'
                 + finalBody
                 + '<h3>'

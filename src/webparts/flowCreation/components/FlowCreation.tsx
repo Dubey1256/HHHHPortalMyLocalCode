@@ -9,23 +9,11 @@ export default class FlowCreation extends React.Component<IFlowCreationProps, {}
       isDarkTheme,
       environmentMessage,
       hasTeamsContext,
-      userDisplayName,
-      Context,
-      siteUrl,
-      MasterTaskListID,
-      TaskUsertListID,
-      SmartMetadataListID,
-      SmartInformationListID,
-      DocumentsListID,
-      TaskTimeSheetListID,
-      TimeEntry,
-      SiteCompostion,
-      PortFolioTypeID,
-      TaskTypeID
+      userDisplayName
     } = this.props;
 
     return (
-      <FlowCreationCanvas props={this.props}/>
+      <FlowCreationCanvas />
     );
   }
 }

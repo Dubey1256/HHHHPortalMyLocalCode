@@ -1016,13 +1016,14 @@ const inlineEditingcolumns = (props: any) => {
   const closeTaskStatusUpdatePopup = () => {
     setTaskStatusPopup(false);
   };
-  const handleCategoryChange = (event: any, CategoryId: any, Category: any) => {
+  const handleCategoryChange = (event: any, CategoryId: any) => {
     if (event.target.checked) {
-        setSelectedCatId((prevSelectedCatId: any) => [...prevSelectedCatId, CategoryId]);
-        setCategoriesData((prevCategoriesData: any) => [...prevCategoriesData, Category]);
+        setSelectedCatId([...selectedCatId, CategoryId]);
     } else {
-        setSelectedCatId((prevSelectedCatId: any) => prevSelectedCatId.filter((val: any) => val !== CategoryId));
-        setCategoriesData((prevCategoriesData: any) => prevCategoriesData.filter((itm: any) => itm?.Id !== CategoryId));
+        const filteredID = selectedCatId.filter((val: any) => val !== CategoryId);
+        setSelectedCatId(filteredID);
+        const filteredCategory = CategoriesData.filter((itm: any) => itm?.Id !== CategoryId)
+        setCategoriesData(filteredCategory)
     }
   };
   const closeTaskDueDate = () => {
@@ -1261,7 +1262,7 @@ const inlineEditingcolumns = (props: any) => {
               if (category?.Title == "Immediate") {
                 return (
                   <a title="Immediate">
-                    <span className=" svg__iconbox svg__icon--alert alignIcon "></span>
+                    <span className=" svg__iconbox svg__icon--alert alignIcon  "></span>
                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/urgent.svg")} />  */}
                   </a>
                 );
@@ -1716,7 +1717,7 @@ const inlineEditingcolumns = (props: any) => {
                     id={option.Id}
                     value={option.Id}
                     checked={selectedCatId?.includes(option.Id)}
-                    onChange={(event) => handleCategoryChange(event, option.Id, option)}
+                    onChange={(event) => handleCategoryChange(event, option.Id)}
                   />
                   <a className="alignCenter" title={option.Title}>
                     {option.Title == "Immediate" ? (
@@ -1850,17 +1851,18 @@ const inlineEditingcolumns = (props: any) => {
                 <span
                   onClick={() => EditComponentPicker(props?.item)}
                   title="Edit Categories"
-                  className="hreflink svg__iconbox svg__icon--editBox"
+                  className="hreflink svg__iconbox svg__icon--editBox alignIcon"
                 ></span>
               </span>
-              <div className="col-sm-12 p-0">
+            </div>
+            <div className="col-sm-12 padding-0 input-group">
               {SearchedCategoryData?.length > 0 ? (
-                <div className="SmartTableOnTaskPopup">
+                <div className="SmartTableOnTaskPopup col-sm-12">
                   <ul className="list-group">
                     {SearchedCategoryData.map((item: any) => {
                       return (
                         <li
-                          className="hreflink list-group-item p-0 rounded-0 list-group-item-action"
+                          className="hreflink list-group-item rounded-0 list-group-item-action"
                           key={item.id}
                           onClick={
                             () =>
@@ -1876,8 +1878,6 @@ const inlineEditingcolumns = (props: any) => {
                 </div>
               ) : null}
             </div>
-            </div>
-            
 
             {instantCategories?.map((item: any) => {
               return (

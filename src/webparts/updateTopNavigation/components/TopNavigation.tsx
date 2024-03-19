@@ -622,7 +622,7 @@ const TopNavigation = (dynamicData: any) => {
           </h2>
    
       </div>
-      <div className=" newupdatenav p-0 row"  id="TopNavRound">
+      <div className="container  newupdatenav p-0"  id="TopNavRound">
         <ul className="top-navigate  p-0">
        
           {root.map((item) => {

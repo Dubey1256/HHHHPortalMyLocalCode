@@ -11,9 +11,8 @@ let globalCount = 1;
 let CreateTaskIndex: any;
 let currentUserData: any;
 
-  let UpdatedFeedBackParentArray:any=[]
+
 export default function FroalaCommnetBoxes(textItems: any) {
-    console.log(textItems?.copyAlldescription)
     const Context = textItems.Context;
     const TextItems = textItems.textItems;
     const callBack = textItems.callBack;
@@ -31,8 +30,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
     const [ApprovalPointHistoryStatus, setApprovalPointHistoryStatus] = useState<any>(false);
     const [IsOpenCreateTaskPanel, setIsOpenCreateTaskPanel] = useState<any>(false);
     const [CreateTaskForThis, setCreateTaskForThis] = useState<any>();
-    
-
+    let [UpdatedFeedBackParentArray, setUpdatedFeedBackParentArray] = useState<any>([]);
     let [IndexCount, setIndexCount] = useState<any>(1);
     let ApprovalStatus: any = textItems.ApprovalStatus;
     let SmartLightPercentStatus: any = textItems.SmartLightPercentStatus;
@@ -123,7 +121,6 @@ export default function FroalaCommnetBoxes(textItems: any) {
         };
         State.push(object);
         UpdatedFeedBackParentArray.push(object)
-   
         setTexts(!Texts);
         setBtnStatus(true);
     }
@@ -141,10 +138,9 @@ export default function FroalaCommnetBoxes(textItems: any) {
             isShowLight: '',
             TaskCreatedForThis: false
         };
-    
-     UpdatedFeedBackParentArray.push(object);
-     setState(UpdatedFeedBackParentArray)
-      
+        State.push(object);
+        UpdatedFeedBackParentArray = State;
+        // UpdatedFeedBackParentArray.push(object)
         setTexts(!Texts);
         setBtnStatus(true);
     }
@@ -206,8 +202,6 @@ export default function FroalaCommnetBoxes(textItems: any) {
         callBack(UpdatedFeedBackParentArray);
     }
     const subTextCallBack = useCallback((subTextData: any, subTextIndex: any) => {
-      
-        console.log(textItems?.copyAlldescription)
         UpdatedFeedBackParentArray[subTextIndex].Subtext = subTextData
         callBack(UpdatedFeedBackParentArray);
     }, [])

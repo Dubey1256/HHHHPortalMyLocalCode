@@ -26,8 +26,7 @@ let tasktypecopy: any = ''
 let generatedLocalPath = '';
 let TaskTypesItem: any = [];
 let temptasktype: any = '';
-let AllTaggedUploadDoc: any = [];
-let AllDragItem: any = [];
+
 const itemRanks: any[] = [
     { rankTitle: 'Select Item Rank', rank: null },
     { rankTitle: '(8) Top Highlights', rank: 8 },
@@ -68,7 +67,7 @@ const AncTool = (props: any) => {
     const [selectedFile, setSelectedFile] = React.useState(null);
     const [ShowConfirmation, setShowConfirmation]: any = React.useState(false);
     const [ShowConfirmationInside, setShowConfirmationInside]: any = React.useState(false);
-    const [UploadedDocDetails, setUploadedDocDetails] = React.useState([]);
+    const [UploadedDocDetails, setUploadedDocDetails] = React.useState(null);
     const [newlyCreatedFile, setNewlyCreatedFile]: any = React.useState(null);
     const [itemRank, setItemRank] = React.useState(5);
     const [LinkDocitemRank, setLinkDocitemRank] = React.useState(5);
@@ -84,7 +83,6 @@ const AncTool = (props: any) => {
     const [AllReadytagged, setAllReadytagged]: any = React.useState([]);
     const [editdocpanel, setEditdocpanel] = React.useState(false);
     const [EditdocData, setEditdocData] = React.useState<any>({});
-    const [Doctab, setDoctab] = React.useState('');
     React.useEffect(() => {
         GetSmartMetadata();
         siteUrl = props?.Context?.pageContext?.web?.absoluteUrl;
@@ -407,21 +405,12 @@ const AncTool = (props: any) => {
     // File Drag And Drop And Upload
     const handleFileDrop = (event: any) => {
         event.preventDefault();
-        const files = event.dataTransfer.files;
-        console.log('Dropped file:', files); // Log the dropped file for debugging
-        // setSelectedFile(file);
-        // setTimeout(() => {
-        //     handleUpload(file);
-        // }, 2000)
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            setSelectedFile(file);
-
-            // Optionally, you can perform an upload operation for each dropped file
-            setTimeout(() => {
-                handleUpload(file);
-            }, 2000 * i); // Delay the upload for each file
-        }
+        const file = event.dataTransfer.files[0];
+        console.log('Dropped file:', file); // Log the dropped file for debugging
+        setSelectedFile(file);
+        setTimeout(() => {
+            handleUpload(file);
+        }, 2000)
     };
     const handleFileInputChange = (event: any) => {
         const file = event.target.files[0];
@@ -431,11 +420,9 @@ const AncTool = (props: any) => {
         // const rank =parseInt(event.target.value);  
         if (from == 'Upload') {
             setItemRank(event);
-            setDoctab('');
         }
-        if (from == 'linkDoc' || from == 'DRAGDROP') {
+        if (from == 'linkDoc') {
             setLinkDocitemRank(event);
-            setDoctab(from);
         }
     };
     function base64ToArrayBuffer(base64String: string) {
@@ -465,7 +452,6 @@ const AncTool = (props: any) => {
         fileInputRef.current.form.reset();
     };
     const handleUpload = async (uploadselectedFile: any) => {
-        AllDragItem.push(uploadselectedFile);
         let emailDoc: any = [];
         let attachmentFile = false;
         let uploadedAttachmentFile: any = []
@@ -519,7 +505,7 @@ const AncTool = (props: any) => {
                     let msgfile: any = {};
                     reader.onloadend = async () => {
                         const fileContent = reader.result as ArrayBuffer;
-                        //setCreateNewDocType(getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name));
+                        setCreateNewDocType(getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name));
                         if (getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == 'msg') {
 
                             const reader = new FileReader();
@@ -570,7 +556,7 @@ const AncTool = (props: any) => {
                                                 // Update the document file here
                                                 let postData = {
                                                     [siteColName]: { "results": resultArray },
-                                                    ItemRank: Doctab === 'DRAGDROP' ? LinkDocitemRank : itemRank,
+                                                    ItemRank: itemRank,
                                                     Title: getUploadedFileName(fileName)
                                                 }
                                                 if (getFileType(selectedFile != undefined ? selectedFile.name : uploadselectedFile.name) == 'msg') {
@@ -585,10 +571,10 @@ const AncTool = (props: any) => {
                                                 if (props?.item?.Portfolio?.Id != undefined && siteColName != 'Portfolios') {
                                                     postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
                                                 }
-                                                if (props?.item?.Project?.Id != undefined && siteColName != 'Portfolios') {
-                                                    if (postData?.PortfoliosId?.results?.length > 0) {
+                                                 if(props?.item?.Project?.Id != undefined && siteColName != 'Portfolios'){
+                                                    if(postData?.PortfoliosId?.results?.length>0){
                                                         postData?.PortfoliosId?.results?.push(props?.item?.Project?.Id);
-                                                    } else {
+                                                    }else{
                                                         postData.PortfoliosId = { "results": [props?.item?.Project?.Id] };
                                                     }
                                                 }
@@ -602,14 +588,10 @@ const AncTool = (props: any) => {
                                                         myResolve()
                                                         pathGenerator();
                                                         taggedDocument.tagged = true;
-                                                        AllTaggedUploadDoc.push(taggedDocument)
-                                                        if (AllDragItem?.length == AllTaggedUploadDoc?.length) {
-                                                            setPageLoader(false)
-                                                            setUploadedDocDetails(AllTaggedUploadDoc);
-                                                            setRenamedFileName('')
-                                                            setSelectedFile(null);
-                                                        }
-
+                                                        setPageLoader(false)
+                                                        setUploadedDocDetails(taggedDocument);
+                                                        setRenamedFileName('')
+                                                        setSelectedFile(null);
                                                         try {
                                                             resetForm()
                                                         } catch (e) {
@@ -631,7 +613,7 @@ const AncTool = (props: any) => {
                                         })
                                     }, 2000);
                                 });
-                            setUploadedDocDetails(AllTaggedUploadDoc);
+                            setUploadedDocDetails(taggedDocument);
                             setShowConfirmation(true)
                             setUploadEmailModal(false)
                             // setModalIsOpenToFalse()
@@ -642,7 +624,7 @@ const AncTool = (props: any) => {
                     console.log("File upload failed:", error);
                 }
             }
-        }, 1000);
+        }, 1500);
         setSelectedFile(null);
         cancelNewCreateFile()
         setItemRank(5);
@@ -651,7 +633,7 @@ const AncTool = (props: any) => {
     // Tag and Untag Existing Documents//
     const tagSelectedDoc = async (file: any) => {
         let resultArray: any = [];
-
+     
         if (file[siteName] != undefined && file[siteName].length > 0) {
             file[siteName].map((task: any) => {
                 if (task?.Id != undefined) {
@@ -839,10 +821,10 @@ const AncTool = (props: any) => {
                                     if (props?.item?.Portfolio?.Id != undefined && siteColName != 'Portfolios') {
                                         postData.PortfoliosId = { "results": [props?.item?.Portfolio?.Id] };
                                     }
-                                    if (props?.item?.Project?.Id != undefined && siteColName != 'Portfolios') {
-                                        if (postData?.PortfoliosId?.results?.length > 0) {
+                                    if(props?.item?.Project?.Id != undefined && siteColName != 'Portfolios'){
+                                        if(postData?.PortfoliosId?.results?.length>0){
                                             postData?.PortfoliosId?.results?.push(props?.item?.Project?.Id);
-                                        } else {
+                                        }else{
                                             postData.PortfoliosId = { "results": [props?.item?.Project?.Id] };
                                         }
                                     }
@@ -873,8 +855,7 @@ const AncTool = (props: any) => {
                         }, 2000);
 
                     });
-                AllTaggedUploadDoc.push(taggedDocument)
-                setUploadedDocDetails(AllTaggedUploadDoc);
+                setUploadedDocDetails(taggedDocument);
                 setShowConfirmation(true)
                 setUploadEmailModal(false)
                 //setModalIsOpenToFalse()
@@ -1117,9 +1098,7 @@ const AncTool = (props: any) => {
         setShowConfirmation(false)
         setUploadEmailModal(false)
         setShowConfirmationInside(false)
-        setUploadedDocDetails([]);
-        AllTaggedUploadDoc = [];
-        AllDragItem = [];
+        setUploadedDocDetails(undefined);
     }
     const smartnotecall = () => {
         setRemark(false)
@@ -1308,15 +1287,14 @@ const AncTool = (props: any) => {
                         }, 2000);
 
                     });
-                AllTaggedUploadDoc.push(taggedDocument)
-                setUploadedDocDetails(AllTaggedUploadDoc);
+                setUploadedDocDetails(taggedDocument);
                 setShowConfirmation(true)
                 setUploadEmailModal(false)
                 // setModalIsOpenToFalse()
             } catch (error) {
                 console.log("File upload failed:", error);
             }
-        }
+        } cancelNewCreateFile
     }
     const OpenDefaultContentFolder = () => {
         setOpenDefaultContent(true)
@@ -1368,17 +1346,10 @@ const AncTool = (props: any) => {
     }
     const callbackeditpopup = (taggedDocument: any) => {
         if (typeof taggedDocument === 'object' && taggedDocument !== null) {
-            AllTaggedUploadDoc?.map((File: any, index: any) => {
-                if (taggedDocument != undefined && taggedDocument != '' && File.Id == taggedDocument.Id) {
-                    taggedDocument.docType = File?.docType;
-                    taggedDocument.uploaded = File?.uploaded;
-                    taggedDocument.fileName = taggedDocument?.Title;
-                    taggedDocument.size = File?.size;
-                    AllTaggedUploadDoc[index] = taggedDocument;
-                    File = taggedDocument;
-
-                }
-            })
+            taggedDocument.docType = UploadedDocDetails?.docType;
+            taggedDocument.uploaded = UploadedDocDetails?.uploaded;
+            taggedDocument.fileName = taggedDocument?.Title;
+            taggedDocument.size = UploadedDocDetails?.size;
         }
         let updatedArray = [...AllReadytagged]
         updatedArray.map((item: any, index) => {
@@ -1392,7 +1363,7 @@ const AncTool = (props: any) => {
         }
         if (taggedDocument != undefined && taggedDocument != '') {
             setAllReadytagged(updatedArray);
-            setUploadedDocDetails(AllTaggedUploadDoc);
+            setUploadedDocDetails(taggedDocument);
         }
         setEditdocpanel(false);
     }
@@ -1633,7 +1604,7 @@ const AncTool = (props: any) => {
                                                                 id="ItemRankLinkDoc"
                                                                 options={itemRanks.map((rank) => ({ key: rank?.rank, text: rank?.rankTitle }))}
                                                                 selectedKey={LinkDocitemRank}
-                                                                onChange={(e, option) => handleRankChange(option?.key, 'DRAGDROP')}
+                                                                onChange={(e, option) => handleRankChange(option?.key, 'linkDoc')}
                                                                 styles={{ dropdown: { width: '100%' } }}
                                                             />
                                                         </div>
@@ -1865,7 +1836,7 @@ const AncTool = (props: any) => {
             <Modal titleAriaId={`UploadConfirmation`} isOpen={ShowConfirmation} onDismiss={cancelConfirmationPopup} dragOptions={undefined}>
                 <div className='alignCenter pt-2'>
                     <div className='ms-2 subheading'>
-                        {UploadedDocDetails?.length === 1 ? `${UploadedDocDetails[0]?.fileName} - Upload Confirmation` : 'Upload Confirmation'}
+                        {`${UploadedDocDetails?.fileName} - Upload Confirmation`}
                     </div>
                     <span className='me-1' onClick={() => cancelConfirmationPopup()}><i className="svg__iconbox svg__icon--cross dark crossBtn"></i></span>
                 </div>
@@ -1890,24 +1861,19 @@ const AncTool = (props: any) => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {UploadedDocDetails?.map((file: any) => {
-                                                return (
-                                                    <tr>
-                                                        <td><div className='alignCenter'>
-                                                            <span className={`svg__iconbox svg__icon--${file?.docType}`}></span><a href={file?.link} target="_blank" data-interception="off" className='hreflink me-1'>{file?.fileName}</a>{`(${file?.size})`}</div></td>
-                                                        {/* <td>{file?.uploaded == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross' ></span>}</td>
-                                                                <td>{file?.tagged == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross'></span>}</td> */}
-                                                        <td className='text-center'>{file?.uploaded == true ? <>
-                                                            <span className='me-3 alignIcon  svg__iconbox svg__icon--link hreflink' title='Copy Link' data-bs-toggle="popover" data-bs-content="Link Copied" onClick={() => { navigator.clipboard.writeText(file?.link); }}></span>
-                                                        </> : <></>}</td>
-                                                        <td className='text-center'>{file?.uploaded == true ? <>
-                                                            <span className='alignIcon  svg__iconbox svg__icon--mail hreflink' title='Share In Mail' onClick={() => { window.open(`mailto:?&subject=${props?.item?.Title}&body=${file?.link}`) }}></span>
-                                                        </> : <></>}</td>
-                                                        <td> <span title="Edit" className="svg__iconbox svg__icon--edit hreflink alignIcon" onClick={() => editDocumentsLink(file)}></span></td>
-                                                    </tr>
-                                                )
-                                            })}
-
+                                            <tr>
+                                                <td><div className='alignCenter'>
+                                                    <span className={`svg__iconbox svg__icon--${UploadedDocDetails?.docType}`}></span><a href={UploadedDocDetails?.link} target="_blank" data-interception="off" className='hreflink me-1'>{UploadedDocDetails?.fileName}</a>{`(${UploadedDocDetails?.size})`}</div></td>
+                                                {/* <td>{UploadedDocDetails?.uploaded == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross' ></span>}</td>
+                                                                <td>{UploadedDocDetails?.tagged == true ? <span className='alignIcon  svg__iconbox svg__icon--Completed' style={{ width: "15px" }}></span> : <span className='alignIcon  svg__iconbox svg__icon--cross'></span>}</td> */}
+                                                <td className='text-center'>{UploadedDocDetails?.uploaded == true ? <>
+                                                    <span className='me-3 alignIcon  svg__iconbox svg__icon--link hreflink' title='Copy Link' data-bs-toggle="popover" data-bs-content="Link Copied" onClick={() => { navigator.clipboard.writeText(UploadedDocDetails?.link); }}></span>
+                                                </> : <></>}</td>
+                                                <td className='text-center'>{UploadedDocDetails?.uploaded == true ? <>
+                                                    <span className='alignIcon  svg__iconbox svg__icon--mail hreflink' title='Share In Mail' onClick={() => { window.open(`mailto:?&subject=${props?.item?.Title}&body=${UploadedDocDetails?.link}`) }}></span>
+                                                </> : <></>}</td>
+                                                <td> <span title="Edit" className="svg__iconbox svg__icon--edit hreflink alignIcon" onClick={() => editDocumentsLink(UploadedDocDetails)}></span></td>
+                                            </tr>
                                         </tbody>
                                     </Table>
                                 </div>

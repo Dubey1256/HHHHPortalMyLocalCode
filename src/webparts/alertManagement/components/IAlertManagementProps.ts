@@ -5,7 +5,4 @@ export interface IAlertManagementProps {
   hasTeamsContext: boolean;
   userDisplayName: string;
   ContextValue:any;
-  siteUrl : any;
-  ColumnManagementListID: string;
-
 }

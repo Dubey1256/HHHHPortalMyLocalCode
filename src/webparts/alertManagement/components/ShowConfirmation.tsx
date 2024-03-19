@@ -22,8 +22,7 @@ const ShowConfirmation = (props:any)=>{
     }, [confirmation]); 
 
     const LoadcolumnsItem = ()=>{
-        // web.lists.getById(GlobalConstants.COLUMNS_LISTID).items.getAll() 
-        web.lists.getById(props?.SelectedProp?.ColumnManagementListID).items.getAll()       
+        web.lists.getById(GlobalConstants.COLUMNS_LISTID).items.getAll()       
         .then((responses:any)=>{
             console.log(responses); 
             const item = responses?.filter((x:any)=>x.InternalName === confirmation);
@@ -35,7 +34,7 @@ const ShowConfirmation = (props:any)=>{
     }
     const sendmsg = (value:any) =>{
         if(value === true){
-            globalCommon.deleteItemById(parenturl,props?.SelectedProp?.ColumnManagementListID,Item,Item.Id)
+            globalCommon.deleteItemById(parenturl,GlobalConstants.COLUMNS_LISTID,Item,Item.Id)
             .then((response:any)=>{
                 props.callBack(response);
                 setisdelete(false);                 

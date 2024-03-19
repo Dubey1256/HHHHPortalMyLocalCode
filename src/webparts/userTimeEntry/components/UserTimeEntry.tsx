@@ -1299,7 +1299,6 @@ export default class UserTimeEntry extends React.Component<
 
       case "Last3Month":
         DateType = "Last3Month";
-        this.setState({ showShareTimesheet: true });
         startdt = new Date();
         startdt.setMonth(startdt.getMonth() - 3);
         startdt.setDate(1);
@@ -1310,21 +1309,18 @@ export default class UserTimeEntry extends React.Component<
 
       case "EntrieYear":
         DateType = "This Year";
-        this.setState({ showShareTimesheet: true });
         startdt = new Date(new Date().getFullYear(), 0, 1);
         enddt = new Date(new Date().getFullYear(), 11, 31);
         break;
 
       case "LastYear":
         DateType = "LastYear";
-        this.setState({ showShareTimesheet: true });
         startdt = new Date(new Date().getFullYear() - 1, 0, 1);
         enddt = new Date(new Date().getFullYear() - 1, 11, 31);
         break;
 
       case "AllTime":
         DateType = "AllTime";
-        this.setState({ showShareTimesheet: true });
         startdt = new Date("2017/01/01");
         enddt = new Date();
         break;
@@ -1386,7 +1382,7 @@ export default class UserTimeEntry extends React.Component<
         lastMonth.getMonth(),
         1
       );
-      var change = Moment(startingDateOfLastMonth).add(18, "days").format();
+      var change = Moment(startingDateOfLastMonth).add(10, "days").format();
       var b = new Date(change);
       formattedDate = b;
     } else if (startDateOf == "Last Week") {
@@ -3295,13 +3291,13 @@ export default class UserTimeEntry extends React.Component<
                 <a>All Timesheets</a>{" "}
               </span>
               <span className="text-end fs-6">
-                {/* <a
+                <a
                   target="_blank"
                   data-interception="off"
                   href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}
                 >
                   Old UserTimeEntry
-                </a> */}
+                </a>
               </span>
             </h2>
           </div>

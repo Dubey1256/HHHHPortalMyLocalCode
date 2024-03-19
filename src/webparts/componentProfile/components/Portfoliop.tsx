@@ -1584,7 +1584,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                   <a
                                     href={
                                       SelectedProp.siteUrl +
-                                      "/SitePages/PX-Profile.aspx?ProjectId=" +
+                                      "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                                       item?.Id
                                     }
                                     data-interception="off"
@@ -1783,7 +1783,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                   <a
                                     href={
                                       SelectedProp.siteUrl +
-                                      "/SitePages/PX-Profile.aspx?ProjectId=" +
+                                      "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
                                       item?.Id
                                     }
                                     data-interception="off"

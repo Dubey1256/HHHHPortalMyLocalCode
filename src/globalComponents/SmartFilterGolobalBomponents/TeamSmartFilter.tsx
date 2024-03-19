@@ -483,7 +483,6 @@ const TeamSmartFilter = (item: any) => {
                 getChildsSites(element, portfolioTypeHeadingData);
             }
         })
-        PrecentComplete = PrecentComplete?.sort((elem1: any, elem2: any) => elem1.SortOrder - elem2.SortOrder);
         PrecentComplete?.forEach((element: any) => {
             if (element.ParentID == 0 || (element.Parent != undefined && element.Parent.Id == undefined)) {
                 element.value = element.Id;
@@ -1705,7 +1704,7 @@ const TeamSmartFilter = (item: any) => {
             <footer className="text-end me-4">
                 <button type="button" className="btn btn-primary">
                     <a target="_blank" className="text-light" data-interception="off"
-                        href={`${ContextValue?.siteUrl}/SitePages/PX-Overview.aspx`}>
+                        href={`${ContextValue?.siteUrl}/SitePages/Project-Management-Overview.aspx`}>
                         <span className="text-light">Create New One</span>
                     </a>
                 </button>
@@ -1795,7 +1794,7 @@ const TeamSmartFilter = (item: any) => {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row }) => (
                     <span>
-                        <a style={{ textDecoration: "none", color: "#000066" }} href={`${ContextValue?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
+                        <a style={{ textDecoration: "none", color: "#000066" }} href={`${ContextValue?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
                     </span>
                 ),
                 placeholder: "Title",
@@ -2174,7 +2173,7 @@ const TeamSmartFilter = (item: any) => {
                                                                                             <div className="fw-semibold ms-8 f-16 text-dark">{Group.Title}</div>
                                                                                         </div>
                                                                                         <div className='dataSecChild'>
-                                                                                            {Group?.values?.sort((a:any,b:any)=>a.SortOrder-b.SortOrder)?.map((insideCheckBox: any) => {
+                                                                                            {Group?.values?.map((insideCheckBox: any) => {
                                                                                                 return (
                                                                                                     <label className='alignCenter f-16 dataSecChildSec'>
                                                                                                         <input type="checkbox" className={"form-check-input cursor-pointer mt-0"} checked={MainGroup?.checked?.some((datachecked: any) => datachecked == insideCheckBox?.Id)} onChange={() => selectChild(insideCheckBox)} />
@@ -2306,7 +2305,7 @@ const TeamSmartFilter = (item: any) => {
                                                     {selectedProject.map((ProjectData: any, index: any) => {
                                                         return (
                                                             <div className="block w-100">
-                                                                <a className="hreflink wid90" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/PX-Profile.aspx?ProjectId=${ProjectData.Id}`}>
+                                                                <a className="hreflink wid90" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}>
                                                                     {ProjectData.Title}
                                                                 </a>
                                                                 <span onClick={() => RemoveSelectedProject(index)} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>

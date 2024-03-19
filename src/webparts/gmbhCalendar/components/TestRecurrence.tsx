@@ -419,8 +419,8 @@ const Apps = (props: any) => {
       EndDate: new Date(currentDate).toISOString(),
       EventDate: new Date(currentDate).toISOString(),
       title: eventDetails.Title,
-      start: new Date(currentDate),
-      end: new Date(currentDate)
+      start: new Date(currentDate).toISOString(),
+      end: new Date(currentDate).toISOString()
     };
     return event;
   }
@@ -461,11 +461,11 @@ const Apps = (props: any) => {
         
         let targetDate :any= new Date(currentDate.getTime());
         targetDate.setDate(currentDate.getDate() + daysToAdd);
-        // currentDate = targetDate
-        const event = eventDataForBinding(eventDetails, targetDate);
+        currentDate = targetDate
+        const event = eventDataForBinding(eventDetails, currentDate);
         AllEvents.push(event);
-        dates.push(new Date(targetDate));
-        // currentDate.setDate(currentDate.getDate() + (weekFrequency * 7));
+        dates.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + (weekFrequency * 7));
     });
 }
 
@@ -478,7 +478,7 @@ const Apps = (props: any) => {
       switch (repeatType) {
         case 'daily':
           const { dayFrequency } = frequency;
-          const repeatInstance = rule.repeatInstances ? parseInt(rule.repeatInstances[0]) : 1000;
+          const repeatInstance = rule.repeatInstances ? parseInt(rule.repeatInstances[0]) : Infinity;
           handleDailyRecurrence(frequency, currentDate, dates, AllEvents, eventDetails, endDate, repeatInstance);
           break;
         case 'yearly':
@@ -516,39 +516,31 @@ const Apps = (props: any) => {
   }
 
   // this prepare the property 
- 
-
-  function processDataArray(array: any[]) {
-    return array.map((item: any) => {
-        const dataEvent = {
-            shortD: item.Title,
-            iD: item.ID,
-            NameId: item?.Employee?.Id,
-            title: item.Title,
-            start: item.start,
-            end: item.end,
-            location: item.Location,
-            desc: item.Description,
-            alldayevent: item.fAllDayEvent,
-            eventType: item.Event_x002d_Type,
-            created: item.Author.Title,
-            modify: item.Editor.Title,
-            cTime: item.Created,
-            mTime: item.Modified,
-            Name: item.Employee?.Title,
-            Designation: item.Designation,
-            HalfDay: item.HalfDay,
-            HalfDayTwo: item.HalfDayTwo,
-            clickable: item.clickable,
-            Color: item.Color
-        };
-
-        return dataEvent;
-    });
-}
-
-
-
+  function processDataArray(array:any) {
+    return array.map((item:any) => ({
+      shortD: item.Title,
+      iD: item.ID,
+      NameId: item?.Employee?.Id,
+      title: item.Title,
+      start: item.EventDate,
+      end: item.EndDate,
+      location: item.Location,
+      desc: item.Description,
+      alldayevent: item.fAllDayEvent,
+      eventType: item.Event_x002d_Type,
+      created: item.Author.Title,
+      modify: item.Editor.Title,
+      cTime: item.Created,
+      mTime: item.Modified,
+      Name: item.Employee?.Title,
+      Designation: item.Designation,
+      HalfDay: item.HalfDay,
+      HalfDayTwo: item.HalfDayTwo,
+      clickable: item?.clickable,
+      Color: item.Color
+    }));
+  }
+  
   const getEvents = async () => {
     const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/GmBH");
     const query =
@@ -564,30 +556,13 @@ const Apps = (props: any) => {
         const NonRecurrenceData = results.filter((item) => item?.RecurrenceData == null);
         const Recurrencedatas = results.filter((item) => item?.RecurrenceData != null && item?.RecurrenceData != 'Every 1 day(s)');
         events = []
-        
-        const eventsNonRecurrence = NonRecurrenceData.map(eventDetails => {
-          let startdate, enddate;
-          if (!eventDetails.fAllDayEvent) {
-              startdate = new Date(eventDetails.EventDate);
-              enddate = new Date(eventDetails.EndDate);
-          } else {
-              startdate = new Date(eventDetails.EventDate);
-              startdate.setHours(startdate.getHours() - 5);
-              startdate.setMinutes(startdate.getMinutes() - 30);
-              enddate = new Date(eventDetails.EndDate);
-              enddate.setHours(enddate.getHours() - 5);
-              enddate.setMinutes(enddate.getMinutes() - 30);
-          }
-          return {
-              ...eventDetails,
-              title: eventDetails.Title,
-              start: startdate,
-              end: enddate
-          };
-      });
-      
-        
-        events = events.concat(eventsNonRecurrence);
+        const eventsNonRecurrece = NonRecurrenceData.map(eventDetails => ({
+          ...eventDetails,
+          title: eventDetails.Title,
+          start: new Date(eventDetails?.EventDate).toISOString(), // Convert currentDate to ISO string
+          end: new Date(eventDetails?.EndDate).toISOString() // Convert currentDate to ISO string
+        }));
+        events = events.concat(eventsNonRecurrece);
         for (const event of Recurrencedatas) {
           let allDates = parseRecurrence(event)
           if (allDates.length > 0) {
@@ -724,12 +699,11 @@ const Apps = (props: any) => {
       day: "numeric",
       year: "numeric"
     });
-    setDt(formattedDate);
-    // handleSelectSlot(slotinfo2);
+    setMyDate(formattedDate);
 
     console.log("clicked", event, date);
-    setShowM(event);
-    openModal();
+    setShowMore(event);
+    // openModal();
   };
   // Handle Select Slot
   const handleSelectSlot = (slotInfo: any) => {
@@ -1484,11 +1458,6 @@ const Apps = (props: any) => {
     }
     setType(option)
   }
-
-
-  const openModal = () => {
-    setIsOpen(true);
-  };
   return (
    
     <div>
