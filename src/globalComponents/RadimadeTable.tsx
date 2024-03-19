@@ -2593,7 +2593,7 @@ function ReadyMadeTable(SelectedProp: any) {
 
             </Panel>
 
-            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.SelectedProp} />}
+            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={SelectedProp?.AllListId} />}
 
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}

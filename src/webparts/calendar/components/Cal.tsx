@@ -480,8 +480,8 @@ const App = (props: any) => {
           if (item.fAllDayEvent === false && new Date(item.EventDate).toLocaleDateString() === new Date(eventEnd).toLocaleDateString()) {
 
             startdate = new Date(item.EventDate);
-            startdate.setHours(startdate.getHours() - 13);
-            startdate.setMinutes(startdate.getMinutes() - 30);
+            // startdate.setHours(startdate.getHours() - 13);
+            // startdate.setMinutes(startdate.getMinutes() - 30);
             createdAt = new Date(item.Created);
             modifyAt = new Date(item.Modified);
             enddate = new Date(eventEnd);
@@ -508,18 +508,18 @@ const App = (props: any) => {
           }
           if (item.HalfDay == true) {
             startdate = new Date(item.EventDate);
-            startdate.setHours(startdate.getHours() - 13);
-            startdate.setMinutes(startdate.getMinutes() - 30);
+            // startdate.setHours(startdate.getHours() - 12);
+            // startdate.setMinutes(startdate.getMinutes() - 30);
             enddate = new Date(item.EndDate);
-            enddate.setHours(enddate.getHours() - 13);
-            enddate.setMinutes(enddate.getMinutes() - 30);
+            // enddate.setHours(enddate.getHours() - 12);
+            // enddate.setMinutes(enddate.getMinutes() - 30);
           } else if (item.HalfDayTwo == true) {
             startdate = new Date(item.EventDate);
-            startdate.setHours(startdate.getHours() - 13);
-            startdate.setMinutes(startdate.getMinutes() - 30);
+            // startdate.setHours(startdate.getHours() - 12);
+            // startdate.setMinutes(startdate.getMinutes() - 30);
             enddate = new Date(item.EndDate);
-            enddate.setHours(enddate.getHours() - 13);
-            enddate.setMinutes(enddate.getMinutes() - 30);
+            // enddate.setHours(enddate.getHours() - 12);
+            // enddate.setMinutes(enddate.getMinutes() - 30);
           }
           let a = item.Title;
           const dataEvent = {

@@ -1841,7 +1841,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     for (let index = 0; index < filterCheckedItem.length; index++) {
       let id = filterCheckedItem[index];
       filterItems.forEach(function (filterItem: any) {
-        if (filterItem?.IsParent === true) {
+       // if (filterItem?.IsParent === true || filterItem?.checked ===true) {
           if (filterItem.value == id)
             selectedFilters.push(filterItem);
           if (filterItem.children != undefined && filterItem.children.length > 0) {
@@ -1862,7 +1862,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               }
             });
           }
-        }
+       // }
       });
     }
 
@@ -2968,13 +2968,13 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         filte.subRows.forEach((child: any) => {
           if (child.AdjustedTime != undefined && child.AdjustedTime.toString().indexOf('.') > -1) {
             var Rountfiguretime = child.AdjustedTime.toString().split('.')[1];
-            var Rountfiguretime = (Rountfiguretime.charAt(0));
+            var Rountfiguretime = Rountfiguretime.slice(0, 2);
             var Rountfiguretimenew = child.AdjustedTime.toString().split('.')[0];
-            if (Rountfiguretime == 0 || Rountfiguretime == 5)
+            if (Rountfiguretime == "00")
               child.Rountfiguretime = parseFloat(child.AdjustedTime)
-            else if ((Rountfiguretime != undefined && Rountfiguretime != '' && Rountfiguretime < 5))
+           else if ((Rountfiguretime != undefined && Rountfiguretime != '' && Rountfiguretime < 50))
               child.Rountfiguretime = parseFloat(Rountfiguretimenew) + 0.5//Rountfiguretime !=undefined ?(Rountfiguretime <6 ?5: (Rountfiguretimenew +1)) :Rountfiguretimenew;
-            else if (Rountfiguretime != undefined && Rountfiguretime != '' && Rountfiguretime > 5)
+            else if (Rountfiguretime != undefined && Rountfiguretime != '' && Rountfiguretime > 50)
               child.Rountfiguretime = parseFloat(Rountfiguretimenew) + 1//Rountfiguretime !=undefined ?(Rountfiguretime <6 ?5: (Rountfiguretimenew +1)) :Rountfiguretimenew;
           }
           Roundfigurtotal += parseFloat(child.Rountfiguretime); RoundfigurtotalNew += parseFloat(child.Rountfiguretime);
@@ -2982,14 +2982,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             let adjusteddaycolumn: any = (child.AdjustedTime / 8);
             if (adjusteddaycolumn != undefined && adjusteddaycolumn.toString().indexOf('.') > -1) {
               var adjusteddaycolumn1 = adjusteddaycolumn.toString().split('.')[1];
-              var adjusteddaycolumn1 = (adjusteddaycolumn1.charAt(0));
+              var adjusteddaycolumn1 = adjusteddaycolumn1.slice(0, 2);
               let adjusteddayDay: any = (child.AdjustedTime / 8);
               var RadjusteddayDaynew = adjusteddayDay.toString().split('.')[0];
-              if (adjusteddaycolumn1 == 0 || adjusteddaycolumn1 == 5)
+              if (adjusteddaycolumn1 == "00")
                 child['Adjusted Day (Roundup)'] = (child.AdjustedTime / 8)
-              else if ((adjusteddaycolumn1 != undefined && adjusteddaycolumn1 != '' && adjusteddaycolumn1 < 5))
+              else if ((adjusteddaycolumn1 != undefined && adjusteddaycolumn1 != '' && adjusteddaycolumn1 < 50))
                 child['Adjusted Day (Roundup)'] = parseInt(RadjusteddayDaynew) + 0.5//Rountfiguretime !=undefined ?(Rountfiguretime <6 ?5: (Rountfiguretimenew +1)) :Rountfiguretimenew;
-              else if (adjusteddaycolumn1 != undefined && adjusteddaycolumn1 != '' && adjusteddaycolumn1 > 5)
+              else if (adjusteddaycolumn1 != undefined && adjusteddaycolumn1 != '' && adjusteddaycolumn1 > 50)
                 child['Adjusted Day (Roundup)'] = parseInt(RadjusteddayDaynew) + 1//Rountfiguretime !=undefined ?(Rountfiguretime <6 ?5: (Rountfiguretimenew +1)) :Rountfiguretimenew;
             }
             DayRoundof += parseFloat(child['Adjusted Day (Roundup)']); DaysAdjusted += parseFloat(child['Adjusted Day (Roundup)']);
@@ -3083,16 +3083,17 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         filte.subRows.forEach((child: any) => {
           if (child.AdjustedTime != undefined && child.AdjustedTime.toString().indexOf('.') > -1) {
             var Rountfiguretime = child.AdjustedTime.toString().split('.')[1];
+             Rountfiguretime = Rountfiguretime.slice(0, 2);
             var RoundAdvalue = child.AdjustedTime.toString().split('.')[0];
             var Rountfiguretimenew = child.AdjustedTime.toString().split('.')[0];
-            if (Rountfiguretime < 25) {
+            if (Rountfiguretime ==="00") {
               child.Rountfiguretime = parseInt(RoundAdvalue);
 
             }
-            if (Rountfiguretime >= 25 && Rountfiguretime < 75)
+            else if (Rountfiguretime < 50)
               child.Rountfiguretime = parseInt(RoundAdvalue) + 0.5
 
-            if (Rountfiguretime >= 75)
+           else if (Rountfiguretime >= 50)
               child.Rountfiguretime = parseInt(RoundAdvalue) + 1//Rountfiguretime !=undefined ?(Rountfiguretime <6 ?5: (Rountfiguretimenew +1)) :Rountfiguretimenew;
 
             Roundfigurtotal += (child.Rountfiguretime); RoundfigurtotalNew += (child.Rountfiguretime);
@@ -3104,13 +3105,17 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             if (adjusteddaycolumn != undefined && adjusteddaycolumn.toString().indexOf('.') > -1) {
               var adjusteddaycolumn1 = adjusteddaycolumn.toString().split('.')[1];
               var adjusteddaycol = adjusteddaycolumn.toString().split('.')[0];
-              if (adjusteddaycolumn1 < 25) {
+              if (adjusteddaycolumn1 ==="00") {
                 child['Adjusted Day (Roundup)'] = parseInt(adjusteddaycol);
                 //child['Adjusted Day (Roundup)'] = parseFloat(child['Adjusted Day (Roundup)']);
               }
-              if (adjusteddaycolumn1 >= 25 && adjusteddaycolumn1 < 75)
+             else if (adjusteddaycolumn1 < 50) {
                 child['Adjusted Day (Roundup)'] = parseInt(adjusteddaycol) + 0.5;
-              if (adjusteddaycolumn1 >= 75)
+                //child['Adjusted Day (Roundup)'] = parseFloat(child['Adjusted Day (Roundup)']);
+              }
+              // if (adjusteddaycolumn1 >= 25 && adjusteddaycolumn1 < 75)
+              //   child['Adjusted Day (Roundup)'] = parseInt(adjusteddaycol) + 0.5;
+              if (adjusteddaycolumn1 >= 50)
                 child['Adjusted Day (Roundup)'] = parseInt(adjusteddaycol) + 1;
 
               DayRoundof += (child['Adjusted Day (Roundup)']); DaysAdjusted += (child['Adjusted Day (Roundup)']);
@@ -3182,7 +3187,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             contentItem['Smart Hours'] = '';
           }
           if (childItem.TotalValue != undefined) {
-            contentItem['Smart Days'] = parseFloat((childItem.AdjustedTime / 8).toFixed(2));
+            contentItem['Smart Days'] = parseFloat((childItem.TotalSmartTime / 8).toFixed(2));
             // contentItem['Smart Days'] = parseFloat(contentItem['Smart Days']);
           } else {
             contentItem['Smart Days'] = 0;
@@ -3284,10 +3289,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         if (AllItems != undefined && AllItems.length > 0) {
           AllItems.forEach((objnew: any) => {
             totalDays += parseFloat(objnew.RoundAdjustedTime);
-            RoundAdjustedTimeAll += (objnew.RoundAdjustedTime);
-            RoundAdjustedTime += (objnew.RoundAdjustedTime);
-            TotalValue += (objnew.TimeInExcel);
-            TotalValueAll += (objnew.TimeInExcel);
+            RoundAdjustedTimeAll += parseFloat(objnew.RoundAdjustedTime);
+            RoundAdjustedTime += parseFloat(objnew.RoundAdjustedTime);
+            TotalValue += parseFloat(objnew.TimeInExcel);
+            TotalValueAll += parseFloat(objnew.TimeInExcel);
             if (objnew['Adjusted Day (Roundup)'] != undefined) {
               DayRoundof += parseFloat(objnew['Adjusted Day (Roundup)']);
               dayroundeup += parseFloat(objnew['Adjusted Day (Roundup)']);
@@ -3300,7 +3305,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   const sitearray: any = objchild.Firstlevel.split(';');
                   sitearray?.forEach((obj: any) => {
                     if (Firstlevel.indexOf(obj) == -1)
-                      Firstlevel += Firstlevel === "" ? obj + ';' : Firstlevel + obj + ';';
+                      Firstlevel += Firstlevel === "" ? obj + ';' :  obj + ';';
                   })
                   // if (Firstlevel == "")
                   //   Firstlevel = objchild.Firstlevel;
@@ -3567,7 +3572,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       if (item.TotalValue != undefined) {
         // let days: any = item.TimeInExcel / 8;
         // contentItem['Smart Days'] = (days);
-        contentItem['Smart Days'] = parseFloat((item.AdjustedTime / 8).toFixed(2));
+        contentItem['Smart Days'] = parseFloat((item.TotalValue / 8).toFixed(2));
       }
       else {
         contentItem['Smart Days'] = 0;
@@ -3687,6 +3692,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       filterItem.forEach((child: any) => {
         child.isExpand = false;
         child.checked = select;
+        //child.IsParent = select;
         if (select) {
           checkedItems.push(child);
         }
@@ -4338,7 +4344,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
                 <div className="col-sm-6">
                   <div className='input-group' key={this?.state?.bindrowValue?.original?.Rountfiguretime}>
-                    <input type="search" defaultValue={this?.state?.bindrowValue?.original?.Rountfiguretime}
+                    <input type="text" defaultValue={this?.state?.bindrowValue?.original?.Rountfiguretime}
                       placeholder="Adjusted Hours (Roundup)" className="form-control" onChange={(e) => this.updateRountfiguretime(e.target.value, "")} autoComplete="off"></input>
                   </div>
                 </div>
