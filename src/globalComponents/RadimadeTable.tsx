@@ -750,23 +750,72 @@ function ReadyMadeTable(SelectedProp: any) {
             localStorage.setItem('timeEntryIndex', dataString);
         }
         console.log("timeEntryIndex", timeEntryIndex)
-        if (AllSiteTasksData?.length > 0) {
-            setData([]);
-            portfolioTypeData?.map((port: any, index: any) => {
-                if (SelectedProp?.SelectedItem != undefined) {
-                    if (port.Title === SelectedProp?.SelectedItem?.PortfolioType?.Title) {
-                        componentData = []
-                        componentGrouping(port?.Id, port?.Id);
+        // if (SelectedProp?.configration == "AllAwt" && SelectedProp?.SelectedItem != undefined) {
+        //     if ('Parent' in SelectedProp?.SelectedItem) {
+        //         taskTypeData?.map((levelType: any) => {
+        //             if (levelType.Level === 1)
+        //                 componentActivity(levelType, SelectedProp?.SelectedItem);
+        //         })
+        //     }
+        //     if ('ParentTask' in SelectedProp?.SelectedItem) {
+        //         let data: any = [SelectedProp?.SelectedItem]
+        //         data?.map((wTdata: any) => {
+        //             wTdata.subRows = [];
+        //             componentWsT(wTdata);
+        //         })
+        //         executeOnce()
+        //         setLoaded(true)
+        //         setData(data[0]?.subRows);
+
+
+        //     }
+        //     console.log(data)
+
+        // }
+      
+            if (AllSiteTasksData?.length > 0) {
+                setData([]);
+                if (SelectedProp?.configration == "AllAwt" && SelectedProp?.SelectedItem != undefined) {
+                    if ('Parent' in SelectedProp?.SelectedItem) {
+                        taskTypeData?.map((levelType: any) => {
+                            if (levelType.Level === 1)
+                                componentActivity(levelType, SelectedProp?.SelectedItem);
+                        })
                     }
-                } else {
-                    componentData = []
-                    componentGrouping(port?.Id, index);
+                    if ('ParentTask' in SelectedProp?.SelectedItem) {
+                        let data: any = [SelectedProp?.SelectedItem]
+                        data?.map((wTdata: any) => {
+                            wTdata.subRows = [];
+                            componentWsT(wTdata);
+                        })
+                       
+                        setLoaded(true)
+                        setData(data[0]?.subRows);
+        
+        
+                    }
+                    console.log(data)
+        
+                }else{
+                    portfolioTypeData?.map((port: any, index: any) => {
+                        if (SelectedProp?.SelectedItem != undefined) {
+                            if (port.Title === SelectedProp?.SelectedItem?.PortfolioType?.Title) {
+                                componentData = []
+                                componentGrouping(port?.Id, port?.Id);
+                            }
+                        } else {
+                            componentData = []
+                            componentGrouping(port?.Id, index);
+                        }
+        
+                    })
                 }
-
-            })
-            countsrun++;
-
-        }
+              
+                countsrun++;
+    
+            }
+      
+      
 
         setLoaded(true)
         return AllSiteTasksData;
