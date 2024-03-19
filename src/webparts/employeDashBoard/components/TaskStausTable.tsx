@@ -78,6 +78,7 @@ const TaskStatusTbl = (Tile: any) => {
   const [sendMail, setsendMail]: any = React.useState(false);
   const [IsManageConfigPopup, setIsManageConfigPopup] = React.useState(false);
   const [SelectedItem, setSelectedItem]: any = React.useState({});
+
   if (ContextData != undefined && ContextData != '') {
     ContextData.ShowHideSettingIcon = (Value: any) => {
       IsShowConfigBtn = Value;
@@ -97,7 +98,6 @@ const TaskStatusTbl = (Tile: any) => {
     flagApproval = true
     setapprovalTask(AllapprovalTask)
   }
-
   useEffect(() => {
     Count += 1
     if (ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
@@ -649,7 +649,7 @@ const TaskStatusTbl = (Tile: any) => {
         cell: ({ row, column, getValue }: any) => (
           <>
             {row?.original?.ProjectTitle != (null || undefined) &&
-              <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextData?.propsValue?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
+              <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextData?.propsValue?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextData?.propsValue} /></a></span>
             }
           </>
@@ -932,7 +932,7 @@ const TaskStatusTbl = (Tile: any) => {
         },]
     }
   }
-  // useEffect(() => {
+
   if (Tile.activeTile != undefined && DashboardConfigCopy != undefined && DashboardConfigCopy?.length > 0)
     DashboardConfig = DashboardConfigCopy.filter((config: any) => config?.TileName == '' || config?.TileName == Tile.activeTile);
   const updatedDashboardConfig = DashboardConfig?.map((item: any, index: any) => {
@@ -941,7 +941,7 @@ const TaskStatusTbl = (Tile: any) => {
     return { ...item, column: columnss };
   });
   DashboardConfig = updatedDashboardConfig;
-  // }, [DashboardConfigCopy]);
+
 
   const editPopFunc = (item: any) => {
     setEditPopup(true);
@@ -959,7 +959,6 @@ const TaskStatusTbl = (Tile: any) => {
       setRefSelectedItem(elem)
       approveItem = undefined
     }
-    //setActiveTile(Tile?.activeTile)
     rerender();
   }, []);
   const sendEmail = () => {
@@ -1026,7 +1025,7 @@ const TaskStatusTbl = (Tile: any) => {
       let sendAllTasks = `<span style="font-size: 18px;margin-bottom: 10px;">
             Hi there, <br><br>
             Below is the working today task of all the team members <strong>(Project Wise):</strong>
-            <p><a href =${ContextData?.siteUrl}/SitePages/PX-Overview.aspx>Click here for flat overview of the today's tasks</a></p>
+            <p><a href =${ContextData?.siteUrl}/SitePages/Project-Management-Overview.aspx>Click here for flat overview of the today's tasks</a></p>
             </span>
             ${body}
             <h3>
@@ -1059,6 +1058,8 @@ const TaskStatusTbl = (Tile: any) => {
     setIsManageConfigPopup(false);
     setSelectedItem('')
   }
+
+
   const generateDashboard = () => {
     const rows: any = [];
     let currentRow: any = [];
