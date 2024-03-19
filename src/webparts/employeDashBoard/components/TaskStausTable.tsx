@@ -389,16 +389,12 @@ const TaskStatusTbl = (Tile: any) => {
     }
     setisRejectItem(RejectedItem)
   }
-  const updateRejectComment = (e: any) => {
+  const updateRejectedComment = (e: any) => {
     console.log(e.target.value)
     let RejectedItem: any = { ...isRejectItem }
     RejectedItem.RejectedDetails.RejectedComment = e.target.value
     setisRejectItem(RejectedItem)
   }
-
-
-
-
   const SaveApprovalRejectPopup = async (Type: any, Item: any) => {
     if (Type != 'ApprovedAll') {
       let RejectedItem: any;
@@ -1275,7 +1271,7 @@ const TaskStatusTbl = (Tile: any) => {
             onDismiss={CancelRejectPopup}
             isBlocking={false}>
             <div className="modal-body">
-              <textarea className="form-control" style={{ height: '140px' }} onChange={(e) => updateRejectComment(e)}  ></textarea>
+              <textarea className="form-control" style={{ height: '140px' }} onChange={(e) => updateRejectedComment(e)}  ></textarea>
             </div>
             <footer className='modal-footer mt-2'>
               <button className='btn btn-primary me-2 mb-2' onClick={() => SaveApprovalRejectPopup('Rejected', undefined)} disabled={isRejectItem?.RejectedDetails == undefined || isRejectItem?.RejectedDetails.RejectedComment == '' || isRejectItem?.RejectedDetails.RejectedComment == undefined} >Save</button>
