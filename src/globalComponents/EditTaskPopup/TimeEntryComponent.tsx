@@ -2409,6 +2409,7 @@ const TimeEntryPopup = (item: any) => {
   //--------------------------------------Change time by custom button-----------------------------------------------------------------------------
   const changeTimeFunction = (e: any, type: any,Use:any) => {
    if(Use == 'remove'){
+    changeTime=0;
     setsaveEditTaskTimeChild({});
     setTimeInMinutes(0)
     setTimeInHours(0)
