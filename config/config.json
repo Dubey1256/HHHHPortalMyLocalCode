@@ -426,6 +426,7 @@
         }
       ]
     },
+<<<<<<< HEAD
     "smart-dynamic-table-web-part": {
       "components": [
         {
@@ -434,6 +435,8 @@
         }
       ]
     },
+=======
+>>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
     "root-team-portfolio-table-web-part": {
       "components": [
         {
@@ -441,6 +444,7 @@
           "manifest": "./src/webparts/rootTeamPortfolioTable/RootTeamPortfolioTableWebPart.manifest.json"
         }
       ]
+<<<<<<< HEAD
     },
     "task-profile-template-web-part": {
       "components": [
@@ -457,6 +461,8 @@
           "manifest": "./src/webparts/employeeDashboardTemplated/EmployeeDashboardTemplatedWebPart.manifest.json"
         }
       ]
+=======
+>>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
     }
   },
   "externals": {
@@ -529,7 +535,6 @@
     "LastModifiedViewsWebPartStrings": "lib/webparts/lastModifiedViews/loc/{locale}.js",
     "HrContractProfileWebPartStrings": "lib/webparts/hrContractProfile/loc/{locale}.js",
     "ManagedashboardconfigWebPartStrings": "lib/webparts/managedashboardconfig/loc/{locale}.js",
-    "FlowCreationWebPartStrings": "lib/webparts/flowCreation/loc/{locale}.js",
     "SMarttaskWebPartStrings": "lib/webparts/sMarttask/loc/{locale}.js",
     "GmbhCalendarWebPartStrings": "lib/webparts/gmbhCalendar/loc/{locale}.js",
     "GroupByComponentsDashboardWebPartStrings": "lib/webparts/groupByComponentsDashboard/loc/{locale}.js",
