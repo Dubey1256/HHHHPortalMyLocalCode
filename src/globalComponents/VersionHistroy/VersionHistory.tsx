@@ -342,13 +342,25 @@ export default function VersionHistory(props: any) {
                             }
                         } else if (key === 'Body') {
                             newKey = 'Body';
-                            const Bodyvalue = currentObj.Body.replace(/<[^>]*>/g, '');
-                            differingPairs[newKey] = Bodyvalue;
+                            try {
+                                const Bodyvalue = currentObj.Body.replace(/<[^>]*>/g, '');
+                                differingPairs[newKey] = Bodyvalue;
+                            }
+                            catch (e) {
+                                console.log(e);
+                            }  
+                           
                         }
                         else if (key === 'Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On') {
                             newKey = 'ShortDescriptionOnline';
-                            const shortvalue = currentObj.Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On.replace(/<[^>]*>/g, '');
-                            differingPairs[newKey] = shortvalue;
+                            try {
+                                 const shortvalue = currentObj.Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On.replace(/<[^>]*>/g, '');
+                                 differingPairs[newKey] = shortvalue;
+                            }
+                            catch (e) {
+                                console.log(e);
+                            }  
+                           
                         }
                         else if (key === 'TechnicalExplanations') {
                             newKey = 'TechnicalExplanations';
@@ -491,13 +503,27 @@ export default function VersionHistory(props: any) {
 
                             } else if (key === 'Body') {
                                 newKey = 'Body';
-                                const Bodyvalue = currentObj.Body.replace(/<[^>]*>/g, '');
-                                differingPairs[newKey] = Bodyvalue;
+                                
+                                try {
+                                     const Bodyvalue = currentObj.Body.replace(/<[^>]*>/g, '');
+                                     differingPairs[newKey] = Bodyvalue;
+                                }
+                                catch (e) {
+                                    console.log(e);
+                                }  
+                                
                             }
                             else if (key === 'Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On') {
                                 newKey = 'ShortDescriptionOnline';
-                                const shortvalue = currentObj.Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On.replace(/<[^>]*>/g, '');
-                                differingPairs[newKey] = shortvalue;
+                                
+                                try {
+                                    const shortvalue = currentObj.Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On.replace(/<[^>]*>/g, '');
+                                    differingPairs[newKey] = shortvalue;
+                                }
+                                catch (e) {
+                                    console.log(e);
+                                }  
+                                
                             }
                             else if (key === 'TechnicalExplanations') {
                                 newKey = 'TechnicalExplanations';
@@ -541,8 +567,14 @@ export default function VersionHistory(props: any) {
                             }
                             else if (key === 'DraftCategory') {
                                 newKey = 'DraftCategory';
-                                const Deliverablesvalue: any = JSON.parse(currentObj.DraftCategory)[0];
-                                differingPairs[newKey] = Deliverablesvalue;
+                                try {
+                                     const Deliverablesvalue: any = JSON.parse(currentObj.DraftCategory)[0];
+                                     differingPairs[newKey] = Deliverablesvalue;
+                                }
+                                catch(e){
+                                    console.log(e);
+                                }
+                               
                             }
                             else {
                                 differingPairs[newKey] = currentObj[key];
