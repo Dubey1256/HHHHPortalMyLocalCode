@@ -80,7 +80,7 @@ export interface ITaskprofileState {
   sendMail: boolean,
   showPopup: any;
   emailcomponentopen: boolean,
-  OpenEODReportPopup: boolean,
+ 
   showhideCommentBoxIndex: any
   ApprovalCommentcheckbox: boolean;
   CommenttoPost: string;
@@ -127,7 +127,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   count: number = 0;
 
   countemailbutton: number = 0;
-  backGroundComment = false;
+  backGroundComment = true;
   this: any;
   public constructor(props: ITaskprofileProps, state: ITaskprofileState) {
     super(props);
@@ -157,7 +157,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       ApprovalPointCurrentParentIndex: null,
       ApprovalHistoryPopup: false,
       emailcomponentopen: false,
-      OpenEODReportPopup: false,
+     
       emailComponentstatus: null,
       subchildParentIndex: null,
       showcomment_subtext: 'none',
@@ -531,10 +531,11 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .expand('AssingedToUser,UserGroup,Approver')
       .get();
 
-    taskUsers?.map((item: any, index: any) => {
-      if (this.props?.Context?.pageContext?._legacyPageContext?.userId === (item?.AssingedToUser?.Id) && item?.Company == "Smalsus") {
-        this.backGroundComment = true;
+    taskUsers?.map((item: any) => {
+      if (this.props?.Context?.pageContext?._legacyPageContext?.userId === (item?.AssingedToUser?.Id) && item?.Company === "HHHH") {
+        this.backGroundComment = false;
       }
+  
 
 
     })
@@ -783,12 +784,6 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     this.setState({
       sendMail: false,
       emailStatus: ""
-    })
-    this.GetResult();
-  }
-  private async EODReportComponentCallback() {
-    this.setState({
-      OpenEODReportPopup: false,
     })
     this.GetResult();
   }
@@ -1561,21 +1556,24 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
   //****** remove extra space in folora editor  */
 
   private cleanHTML = (html: any, folora: any, index: any) => {
-    html = globalCommon?.replaceURLsWithAnchorTags(html)
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    const paragraphs = div.querySelectorAll('p');
-    // Filter out empty <p> tags
-    paragraphs.forEach((p) => {
-      if (p.innerText.trim() === '') {
-        p.parentNode.removeChild(p); // Remove empty <p> tags
-      }
-    });
-    div.innerHTML = div.innerHTML.replace(/\n/g, '<br>')  // Convert newlines to <br> tags first
-    div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
+    if(html!=undefined){
+      html = globalCommon?.replaceURLsWithAnchorTags(html)
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      const paragraphs = div.querySelectorAll('p');
+      // Filter out empty <p> tags
+      paragraphs.forEach((p) => {
+        if (p.innerText.trim() === '') {
+          p.parentNode.removeChild(p); // Remove empty <p> tags
+        }
+      });
+      div.innerHTML = div.innerHTML.replace(/\n/g, '<br>')  // Convert newlines to <br> tags first
+      div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
+  
+  
+      return div.innerHTML;
+    }
 
-
-    return div.innerHTML;
   };
 
   //******* End ****************************/
@@ -2186,7 +2184,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dt className='bg-Fa'>Project</dt>
                         <dd className='bg-Ff full-width'>
                           <div>
-                            {ProjectData?.Title != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
+                            {ProjectData?.Title != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
                               <ReactPopperTooltipSingleLevel ShareWebId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
                             <span className="pull-right svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
                           </div>
@@ -2229,17 +2227,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           </div>
                         }
                       </dl>}
-                      <div className="Sitecomposition my-2">
-                        <a className="sitebutton bg-fxdark alignCenter justify-content-between">
-                          <span className="alignCenter">
-                            <span className="svg__iconbox svg__icon--docx"></span>
-                            <span className="mx-2">Submit EOD Report</span>
-                          </span>
-                          <span className="svg__iconbox svg__icon--editBox hreflink" title="Submit EOD Report Popup"
-                            onClick={() => this.setState({ OpenEODReportPopup: true })}>
-                          </span>
-                        </a>
-                      </div>
+                    
                       {this.state.Result?.EstimatedTimeDescriptionArray?.length > 0 &&
                         <dl className="Sitecomposition my-2">
                           <div className='dropdown'>
@@ -2416,22 +2404,22 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                   <li>
                                                     {fbData['Completed'] != null && fbData['Completed'] &&
 
-                                                      <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Completed.png'></img></span>
+                                                    <span className="svg__iconbox svg__icon--tick"></span>
                                                     }
                                                   </li>
                                                   <li>
                                                     {fbData['HighImportance'] != null && fbData['HighImportance'] &&
-                                                      <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/highPriorty.png'></img></span>
+                                                     <span className="svg__iconbox svg__icon--taskHighPriority"></span>
                                                     }
                                                   </li>
                                                   <li>
                                                     {fbData['LowImportance'] != null && fbData['LowImportance'] &&
-                                                      <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/lowPriority.png'></img></span>
+                                                      <span className="svg__iconbox svg__icon--lowPriority"></span>
                                                     }
                                                   </li>
                                                   <li>
                                                     {fbData['Phone'] != null && fbData['Phone'] &&
-                                                      <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Phone.png'></img></span>
+                                                      <span className="svg__iconbox svg__icon--phone"></span>
                                                     }
                                                   </li>
                                                 </ul>
@@ -2581,22 +2569,22 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                   <ul className="list-none">
                                                     <li>
                                                       {fbSubData?.Completed != null && fbSubData?.Completed &&
-                                                        <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Completed.png'></img></span>
+                                                       <span className="svg__iconbox svg__icon--tick"></span>
                                                       }
                                                     </li>
                                                     <li>
                                                       {fbSubData?.HighImportance != null && fbSubData?.HighImportance &&
-                                                        <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/highPriorty.png'></img></span>
+                                                       <span className="svg__iconbox svg__icon--taskHighPriority"></span>
                                                       }
                                                     </li>
                                                     <li>
                                                       {fbSubData?.LowImportance != null && fbSubData?.LowImportance &&
-                                                        <span><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/lowPriority.png'></img></span>
+                                                        <span className="svg__iconbox svg__icon--lowPriority"></span>
                                                       }
                                                     </li>
                                                     <li>
                                                       {fbSubData?.Phone != null && fbSubData?.Phone &&
-                                                        <span ><img className="wid10" style={{ width: '10px' }} src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/siteIcons/Phone.png'></img></span>
+                                                       <span className="svg__iconbox svg__icon--phone"></span>
                                                       }
                                                     </li>
                                                   </ul>
