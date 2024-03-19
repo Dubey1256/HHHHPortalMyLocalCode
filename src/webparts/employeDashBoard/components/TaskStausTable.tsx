@@ -22,6 +22,9 @@ import * as Moment from "moment";
 import Slider from "react-slick";
 import { ColumnDef } from "@tanstack/react-table";
 import HighlightableCell from "../../../globalComponents/highlight";
+import { MdOutlineGppGood, MdGppBad } from "react-icons/Md";
+import { FocusTrapCallout, FocusZone, FocusZoneTabbableElements, Panel, PanelType, Stack, Text, } from '@fluentui/react';
+import { color } from "@mui/system";
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -36,6 +39,7 @@ let StatusOptions = [{ value: 0, taskStatusComment: "Not Started" }, { value: 1,
 { value: 10, taskStatusComment: "working on it" }, { value: 70, taskStatusComment: "Re-Open" }, { value: 75, taskStatusComment: "Deployment Pending" }, { value: 80, taskStatusComment: "In QA Review" },
 { value: 90, taskStatusComment: "Task completed" }, { value: 100, taskStatusComment: "Closed" },]
 const TaskStatusTbl = (Tile: any) => {
+  const childRef = React.useRef<any>();
   const ContextData: any = React.useContext(myContextValue);
   const [state, rerender] = React.useReducer(() => ({}), {});
   const AllTaskUser: any = ContextData?.AlltaskData?.AllTaskUser;
@@ -44,6 +48,8 @@ const TaskStatusTbl = (Tile: any) => {
   const [result, setResult]: any = React.useState(false);
   const [ActiveTile, setActiveTile] = React.useState(Tile?.activeTile);
   const [dateRange, setDateRange] = React.useState<any>([]);
+  const [isRejectItem, setisRejectItem] = React.useState<any>(undefined);
+  const [RefSelectedItem, setRefSelectedItem] = React.useState<any>([]);
   const settings = {
     dots: false, infinite: true, speed: 500, slidesToShow: 6, slidesToScroll: 1, nextArrow: <SamplePrevNextArrow type="next" />, prevArrow: <SamplePrevNextArrow type="prev" />,
     beforeChange: handleBeforeChange,
@@ -72,6 +78,7 @@ const TaskStatusTbl = (Tile: any) => {
   const [sendMail, setsendMail]: any = React.useState(false);
   const [IsManageConfigPopup, setIsManageConfigPopup] = React.useState(false);
   const [SelectedItem, setSelectedItem]: any = React.useState({});
+
   if (ContextData != undefined && ContextData != '') {
     ContextData.ShowHideSettingIcon = (Value: any) => {
       IsShowConfigBtn = Value;
@@ -91,7 +98,6 @@ const TaskStatusTbl = (Tile: any) => {
     flagApproval = true
     setapprovalTask(AllapprovalTask)
   }
-
   useEffect(() => {
     Count += 1
     if (ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
@@ -372,10 +378,177 @@ const TaskStatusTbl = (Tile: any) => {
     }
     return isExists;
   }
+  const openRejectPopup = (RejectedItem: any) => {
+    RejectedItem.PreviousComment = ''
+    if (RejectedItem?.RejectedDetails == undefined) {
+      RejectedItem.RejectedDetails = { "RejectedComment": "", "AuthorName": ContextData?.currentUserData?.Title, "AuthorId": ContextData?.currentUserData?.AssingedToUserId, "AuthorImage": ContextData?.currentUserData?.ItemCover != undefined ? ContextData?.currentUserData?.ItemCover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg" }
+    }
+    else {
+      RejectedItem.PreviousComment = RejectedItem.RejectedDetails?.RejectedComment;
+    }
+    setisRejectItem(RejectedItem)
+  }
+  const updateRejectedComment = (e: any) => {
+    console.log(e.target.value)
+    let RejectedItem: any = { ...isRejectItem }
+    RejectedItem.RejectedDetails.RejectedComment = e.target.value
+    setisRejectItem(RejectedItem)
+  }
+  const SaveApprovalRejectPopup = async (Type: any, Item: any) => {
+    if (Type != 'ApprovedAll') {
+      let RejectedItem: any;
+      if (Item != undefined && Item != '')
+        RejectedItem = { ...Item }
+      else
+        RejectedItem = { ...isRejectItem }
+      RejectedItem.Status = Type;
+      if (ContextData?.AllTimeEntry != undefined && ContextData?.AllTimeEntry?.length > 0 && RejectedItem != undefined) {
+        let UpdatedItem = ContextData?.AllTimeEntry.filter((item: any) => item.Id != undefined && item.Id == RejectedItem?.UpdatedId)[0]
+        if (UpdatedItem?.AdditionalTimeEntry != undefined && UpdatedItem?.AdditionalTimeEntry?.length > 0) {
+          UpdatedItem?.AdditionalTimeEntry.forEach((TimeEntry: any) => {
+            if (TimeEntry?.ID != undefined && RejectedItem?.ID != undefined && TimeEntry?.ID == RejectedItem?.ID) {
+              TimeEntry.Status = RejectedItem.Status
+              if (RejectedItem?.RejectedDetails != undefined && RejectedItem.RejectedDetails?.RejectedComment != undefined && RejectedItem.RejectedDetails?.RejectedComment != '')
+                TimeEntry.RejectedDetails = RejectedItem?.RejectedDetails
+            }
+            delete TimeEntry?.TaskDates;
+            delete TimeEntry?.sortTaskDate;
+            delete TimeEntry?.PreviousComment;
+            delete TimeEntry?.UpdatedId;
+          })
+          //setisRejectItem(undefined)
+          let web = new Web(UpdatedItem?.siteUrl);
+          await web.lists.getById(UpdatedItem?.listId).items.getById(UpdatedItem.Id).update({ AdditionalTimeEntry: JSON.stringify(UpdatedItem?.AdditionalTimeEntry), })
+            .then(async (res: any) => {
+              alert("Time Entry " + Type + " Successfully.")
+              DashboardConfig?.map((Config: any) => {
+                if (Config?.DataSource == 'TimeSheet' && Config.Tasks != undefined && Config.Tasks?.length > 0) {
+                  Config.Tasks?.forEach((Time: any, index: any) => {
+                    if (Time?.ID == RejectedItem?.ID && (Time?.UpdatedId == undefined || Time?.UpdatedId == RejectedItem?.UpdatedId)) {
+                      Config.Tasks?.splice(index, 1)
+                    }
+                  });
+                }
+              })
+              console.log('Updated Succesfully')
+              if (Type == "Rejected") {
+                let sendUserEmail: any = [];
+                let FilterItem = AllTaskUser?.filter((User: any) => User?.AssingedToUserId == RejectedItem?.AuthorId)[0];
+                sendUserEmail.push(FilterItem?.AssingedToUser?.EMail)
+                let TeamMsg = ` <p>Hi ${RejectedItem?.AuthorName},</p>
+                </br>
+                <p>Your timesheet on the task: <a href=${UpdatedItem?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${UpdatedItem['Task' + UpdatedItem?.TaskListType].Id}&Site=${UpdatedItem?.TaskListType}>T${UpdatedItem['Task' + UpdatedItem?.TaskListType].Id}-${UpdatedItem['Task' + UpdatedItem?.TaskListType].Title}</a> has been rejected by your lead. Please have a look and take the necessary action.</p>
+                <p>Reason for rejection:</p>
+                <p>${RejectedItem?.RejectedDetails?.RejectedComment}</p>
+                </br>
+                <p>Thanks,</p>`
+                await globalCommon.SendTeamMessage(sendUserEmail, TeamMsg, ContextData?.propsValue?.Context);
+              }
+              DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+              DashboardConfigCopy?.map((Config: any) => {
+                if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
+                  Config?.Tasks?.map((Date: any) => {
+                    if (Date?.dates != undefined && Date?.dates?.length > 0) {
+                      Date?.dates?.map((Time: any) => {
+                        Time.ServerDate = Moment(Time?.ServerDate)
+                        Time.ServerDate = Time.ServerDate?._d;
+                        Time.ServerDate.setHours(0, 0, 0, 0)
+                      })
+                    }
+                  });
+                }
+              });
+              setisRejectItem(undefined)
+              setActiveTile(Tile?.activeTile)
+              rerender();
+            }).catch((err: any) => {
+              console.log(err);
+            })
+        }
+      }
+    }
+    else if (Type == 'ApprovedAll') {
+      let Count = 0;
+      if (ContextData?.AllTimeEntry != undefined && ContextData?.AllTimeEntry?.length > 0) {
+        ContextData?.AllTimeEntry.forEach((Item: any) => {
+          if (RefSelectedItem != undefined && RefSelectedItem?.length > 0) {
+            RefSelectedItem?.forEach((SelectedItem: any) => {
+              if (SelectedItem?.original?.UpdatedId == Item.Id) {
+                Item.IsUpdateJSONEntry = true;
+              }
+            })
+          }
+          //Update TimeEntry-----------------------
+          if (Item?.IsUpdateJSONEntry == true) {
+            if (Item?.AdditionalTimeEntry != undefined && Item?.AdditionalTimeEntry?.length > 0) {
+              Item?.AdditionalTimeEntry.forEach((TimeEntry: any) => {
+                RefSelectedItem?.forEach((SelectedItem: any) => {
+                  if (SelectedItem?.original?.Id == TimeEntry.Id) {
+                    TimeEntry.Status = 'Approved';
+                    delete TimeEntry?.TaskDates;
+                    delete TimeEntry?.sortTaskDate;
+                    delete TimeEntry?.PreviousComment;
+                    delete TimeEntry?.UpdatedId;
+                  }
+                })
+              })
+            }
+            let web = new Web(Item?.siteUrl);
+            web.lists.getById(Item?.listId).items.getById(Item.Id).update({ AdditionalTimeEntry: JSON.stringify(Item?.AdditionalTimeEntry), })
+              .then((res: any) => {
+                setisRejectItem(undefined)
+                Count++;
+                if (Count == RefSelectedItem?.length) {
+                  const arrayOfIDs = RefSelectedItem?.map((item: any) => item?.original?.UpdatedId);
+                  DashboardConfig?.map((Config: any) => {
+                    if (Config?.DataSource == 'TimeSheet') {
+                      Config.Tasks = Config.Tasks.filter((item: any) => !arrayOfIDs.includes(item.UpdatedId));
+                    }
+                  })
+                  childRef?.current?.setRowSelection({});
+                  console.log('Updated Succesfully')
+                  alert("All Time Entry Approved Successfully.")
+                  DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
+                  DashboardConfigCopy?.map((Config: any) => {
+                    if (Config?.Tasks != undefined && Config?.Tasks?.length > 0) {
+                      Config?.Tasks?.map((Date: any) => {
+                        if (Date?.dates != undefined && Date?.dates?.length > 0) {
+                          Date?.dates?.map((Time: any) => {
+                            Time.ServerDate = Moment(Time?.ServerDate)
+                            Time.ServerDate = Time.ServerDate?._d;
+                            Time.ServerDate.setHours(0, 0, 0, 0)
+                          })
+                        }
+                      });
+                    }
+                  });
+                  setActiveTile(Tile?.activeTile)
+                  rerender();
+                }
+              }).catch((err: any) => {
+                Count++;
+                console.log(err);
+              })
+          }
+          //End Here-------------------------------------
+        })
+      }
+    }
+  }
+  const CancelRejectPopup = () => {
+    let RejectedItem: any = { ...isRejectItem }
+    if (RejectedItem.PreviousComment != undefined && RejectedItem.RejectedDetails != undefined)
+      RejectedItem.RejectedDetails.RejectedComment = RejectedItem.PreviousComment;
+    childRef?.current?.setRowSelection({});
+    rerender();
+    setisRejectItem(RejectedItem)
+    setisRejectItem(undefined)
+  }
   const LoadTimeSheet = () => {
     ContextData?.callbackFunction()
   }
-  const generateDynamicColumns = (item: any) => {
+
+  const generateDynamicColumns = (item: any, index: any) => {
     if (item?.DataSource != 'TimeSheet') {
       return [{
         accessorKey: "",
@@ -383,7 +556,7 @@ const TaskStatusTbl = (Tile: any) => {
         hasCheckbox: true,
         hasCustomExpanded: item?.GroupByView,
         hasExpanded: item?.GroupByView,
-        size: 50,
+        size: 10,
         id: "Id"
       },
       {
@@ -396,14 +569,14 @@ const TaskStatusTbl = (Tile: any) => {
         id: "SiteIcon",
         canSort: false,
         placeholder: "",
-        size: 80,
+        size: 25,
         isColumnVisible: true
       },
       {
         accessorKey: "TaskID",
         placeholder: "ID",
         id: 'TaskID',
-        size: 180,
+        size: 110,
         isColumnVisible: true,
         cell: ({ row, getValue }: any) => (
           <span className="d-flex">
@@ -427,7 +600,7 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "Title",
         resetColumnFilters: false,
         header: "",
-        size: 460,
+        size: 350,
         isColumnVisible: true
       },
       {
@@ -449,7 +622,7 @@ const TaskStatusTbl = (Tile: any) => {
         resetSorting: false,
         isColumnDefultSortingDesc: true,
         header: "",
-        size: 190,
+        size: 45,
         isColumnVisible: true
       },
       {
@@ -476,7 +649,7 @@ const TaskStatusTbl = (Tile: any) => {
         cell: ({ row, column, getValue }: any) => (
           <>
             {row?.original?.ProjectTitle != (null || undefined) &&
-              <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextData?.propsValue?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
+              <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextData?.propsValue?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextData?.propsValue} /></a></span>
             }
           </>
@@ -493,7 +666,7 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "% Complete",
         header: "",
         resetColumnFilters: false,
-        size: 140,
+        size: 45,
         id: "percentage",
         isColumnVisible: true
       },
@@ -636,7 +809,7 @@ const TaskStatusTbl = (Tile: any) => {
           }
         },
         header: "",
-        size: 115
+        size: 100
       },
       {
         accessorKey: "TotalTaskTime",
@@ -644,7 +817,7 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "Smart Time",
         header: "",
         resetColumnFilters: false,
-        size: 49,
+        size: 45,
         isColumnVisible: false
       },
       {
@@ -667,6 +840,7 @@ const TaskStatusTbl = (Tile: any) => {
         {
           accessorKey: "",
           placeholder: "",
+          hasCheckbox: true,
           hasCustomExpanded: false,
           hasExpanded: false,
           size: 20,
@@ -678,7 +852,7 @@ const TaskStatusTbl = (Tile: any) => {
           id: "AuthorName",
           placeholder: "AuthorName",
           header: "",
-          size: 340,
+          size: 155,
           isColumnVisible: true,
           cell: ({ row }: any) => (
             <>
@@ -706,7 +880,7 @@ const TaskStatusTbl = (Tile: any) => {
           accessorFn: (row: any) => row?.sortTaskDate,
           cell: ({ row, column }: any) => (
             <div className="alignCenter">
-              {row?.original?.Created == null ? ("") : (
+              {row?.original?.TaskDate == null ? ("") : (
                 <>
                   <HighlightableCell value={row?.original?.TaskDates} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : null} />
                 </>
@@ -725,44 +899,50 @@ const TaskStatusTbl = (Tile: any) => {
             }
           },
           header: "",
-          size: 125,
+          size: 121,
           isColumnVisible: true
         },
         {
           accessorKey: "TaskTime",
           placeholder: "TaskTime",
           header: "",
-          size: 95,
+          size: 40,
           isColumnVisible: true
         },
         {
           accessorKey: "Description",
           placeholder: "Description",
           header: "",
-          isColumnVisible: true
+          isColumnVisible: true,
+          size: 425,
         },
         {
           id: "ff",
           accessorKey: "",
-          size: 75,
+          size: 50,
           canSort: false,
           placeholder: "",
           isColumnVisible: true,
-          cell: ({ row }: any) => (
-            <div className="alignCenter gap-1 pull-right">
+          cell: ({ row, index }: any) => (
+            <div className="alignCenter gap-1 pull-right approvelicon position-relative" >
+              <span title="Approve" onClick={() => SaveApprovalRejectPopup('Approved', row?.original,)} ><MdOutlineGppGood style={{ color: "#008f47", fontSize: "22px" }} /> </span>
+              <span title="Reject" data-toggle="tooltip" data-placement="bottom" id={`Reply-${row?.index}`} onClick={() => openRejectPopup(row?.original)}><MdGppBad style={{ color: "#dc3545", fontSize: "22px" }} /></span>
             </div>
           )
         },]
     }
   }
+
   if (Tile.activeTile != undefined && DashboardConfigCopy != undefined && DashboardConfigCopy?.length > 0)
     DashboardConfig = DashboardConfigCopy.filter((config: any) => config?.TileName == '' || config?.TileName == Tile.activeTile);
-  const updatedDashboardConfig = DashboardConfig?.map((item: any) => {
+  const updatedDashboardConfig = DashboardConfig?.map((item: any, index: any) => {
     let columnss: any = [];
-    columnss = generateDynamicColumns(item);
+    columnss = generateDynamicColumns(item, index);
     return { ...item, column: columnss };
   });
   DashboardConfig = updatedDashboardConfig;
+
+
   const editPopFunc = (item: any) => {
     setEditPopup(true);
     setResult(item)
@@ -771,10 +951,15 @@ const TaskStatusTbl = (Tile: any) => {
     setEditPopup(false);
   }
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
-    if (elem != undefined)
+    if (elem != undefined) {
+      setRefSelectedItem(elem)
       approveItem = elem;
-    else
+    }
+    else {
+      setRefSelectedItem(elem)
       approveItem = undefined
+    }
+    rerender();
   }, []);
   const sendEmail = () => {
     approveItem.PercentComplete = 3
@@ -840,7 +1025,7 @@ const TaskStatusTbl = (Tile: any) => {
       let sendAllTasks = `<span style="font-size: 18px;margin-bottom: 10px;">
             Hi there, <br><br>
             Below is the working today task of all the team members <strong>(Project Wise):</strong>
-            <p><a href =${ContextData?.siteUrl}/SitePages/PX-Overview.aspx>Click here for flat overview of the today's tasks</a></p>
+            <p><a href =${ContextData?.siteUrl}/SitePages/Project-Management-Overview.aspx>Click here for flat overview of the today's tasks</a></p>
             </span>
             ${body}
             <h3>
@@ -873,6 +1058,8 @@ const TaskStatusTbl = (Tile: any) => {
     setIsManageConfigPopup(false);
     setSelectedItem('')
   }
+
+
   const generateDashboard = () => {
     const rows: any = [];
     let currentRow: any = [];
@@ -902,9 +1089,9 @@ const TaskStatusTbl = (Tile: any) => {
                       {<span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
                     </span>
                   </div>
-                  <div className="Alltable bg-Ff maXh-300" style={{ height: "300px" }} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
+                  <div className="Alltable maXh-300" style={{ height: "300px" }} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
-                      <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id + "Dashboard"} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                      <GlobalCommanTable wrapperHeight="87% " tableId={config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
                     )}
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
                       {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={AllListId} emailStatus={"Approved"} items={approveItem} />}
@@ -992,8 +1179,8 @@ const TaskStatusTbl = (Tile: any) => {
                                 Date.IsShowTask == true && (
                                   <>
                                     <h3 className="f-15">{user?.Title} {Date?.DisplayDate} Task</h3>
-                                    <div key={index} className="Alltable bg-Ff maXh-300 mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} style={{ height: "300px" }}>
-                                      <GlobalCommanTable columnSettingIcon={true} tableId={config?.Id + index + "Dashboard"} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
+                                    <div key={index} className="Alltable maXh-300 mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} style={{ height: "300px" }}>
+                                      <GlobalCommanTable columnSettingIcon={true} multiSelect={true} tableId={config?.Id + index + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
                                         callBackData={callBackData} />
                                     </div>
                                   </>
@@ -1008,9 +1195,21 @@ const TaskStatusTbl = (Tile: any) => {
                 }
                 {config?.DataSource == 'TimeSheet' &&
                   <>
-                    <div className="Alltable bg-Ff maXh-300" style={{ height: "300px" }} >
+                    <div className="alignCenter empAllSec justify-content-between">
+                      <span className="fw-bold">
+                      </span>
+                      <span className="alignCenter">
+                        {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
+                        {RefSelectedItem?.length > 0 ? <span className="empCol me-1 mt-2 hreflink" onClick={() => SaveApprovalRejectPopup('ApprovedAll', undefined)}>Approve All</span>
+                          : <span className="me-1 mt-2 hreflink" style={{ color: "#646464" }}>Approve All</span>}
+                      </span>
+                    </div>
+                    <div className="Alltable maXh-300" style={{ height: "300px" }} >
                       {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
-                        <GlobalCommanTable wrapperHeight="87%" tableId={config?.Id + "Dashboard"} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                        <GlobalCommanTable wrapperHeight="87%" multiSelect={true} tableId={config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                      )}
+                      {config?.Tasks != undefined && config?.Tasks?.length == 0 && (
+                        <GlobalCommanTable wrapperHeight="87%" multiSelect={true} tableId={config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
                       )}
                     </div>
                   </>}
@@ -1044,6 +1243,15 @@ const TaskStatusTbl = (Tile: any) => {
     });
     return rows;
   };
+  const onRenderCustomHeadereditcomment = () => {
+    return (
+      <>
+        <div className='subheading' >
+          Rejected Comment
+        </div>
+      </>
+    );
+  };
   return (
     <>
       <div>
@@ -1056,6 +1264,22 @@ const TaskStatusTbl = (Tile: any) => {
           {IsManageConfigPopup && <AddConfiguration DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} SingleWebpart={true} props={ContextData?.propsValue} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseConfigPopup} />}
         </span>
       </div>
+      {
+        isRejectItem != undefined && isRejectItem != '' ? (
+          <Panel onRenderHeader={onRenderCustomHeadereditcomment}
+            isOpen={isRejectItem}
+            onDismiss={CancelRejectPopup}
+            isBlocking={false}>
+            <div className="modal-body">
+              <textarea className="form-control" style={{ height: '140px' }} onChange={(e) => updateRejectedComment(e)}  ></textarea>
+            </div>
+            <footer className='modal-footer mt-2'>
+              <button className='btn btn-primary me-2 mb-2' onClick={() => SaveApprovalRejectPopup('Rejected', undefined)} disabled={isRejectItem?.RejectedDetails == undefined || isRejectItem?.RejectedDetails.RejectedComment == '' || isRejectItem?.RejectedDetails.RejectedComment == undefined} >Save</button>
+              <button className='btn btn-default mb-2' onClick={CancelRejectPopup}  >Cancel</button>
+            </footer>
+          </Panel>
+        ) : null
+      }
     </>
   );
 };

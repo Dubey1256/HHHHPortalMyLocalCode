@@ -213,9 +213,10 @@ const EditTaskPopup = (Items: any) => {
     const [SendMsgToAuthor, setSendMsgToAuthor] = useState(false);
     const [SendDesignEmailStatus, setSendDesignEmailStatus] = useState(false);
     const [CurrentImageIndex, setCurrentImageIndex] = useState("");
-    const [loaded, setLoaded] = React.useState(true);
-    const [IsImageUploaded, setIsImageUploaded] = React.useState(true);
-    const [WorkingAction, setWorkingAction] = React.useState([]);
+    const [loaded, setLoaded] = useState(true);
+    const [IsImageUploaded, setIsImageUploaded] = useState(true);
+    const [WorkingAction, setWorkingAction] = useState([]);
+    const [AddDescriptionModelName, setAddDescriptionModelName] = useState("");
 
     let [StatusOptions, setStatusOptions] = useState([
         { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
@@ -2307,6 +2308,8 @@ const EditTaskPopup = (Items: any) => {
                     EditData.TeamMembers?.length > 0
                 ) {
                     setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
+                } else if (EditData.ResponsibleTeam?.length > 0) {
+                    setWorkingMemberFromTeam(EditData.ResponsibleTeam, "Development", 0);
                 } else {
                     setWorkingMember(0);
                 }
@@ -2602,15 +2605,7 @@ const EditTaskPopup = (Items: any) => {
                             })
                         })
                         if (WorkingAction?.length > 0) {
-                            try {
-                                let web = new Web(siteUrls);
-                                await web.lists
-                                    .getById(Items.Items.listId)
-                                    .items.getById(Items.Items.Id)
-                                    .update({ WorkingAction: WorkingAction?.length > 0 ? JSON.stringify(WorkingAction) : null })
-                            } catch (error) {
-                                console.log("Error", error.message)
-                            }
+                            UpdateWorkinActionJSON();
                         }
                         const uniqueIds: any = {};
                         const result = tempShareWebTypeData.filter((item: any) => {
@@ -4147,17 +4142,18 @@ const EditTaskPopup = (Items: any) => {
 
     // *************** this is used for adding description for images functions ******************
 
-    const openAddImageDescriptionFunction = (
-        Index: any,
-        Data: any,
-        type: any
-    ) => {
+    const openAddImageDescriptionFunction = (Index: any, Data: any, type: any) => {
         setAddImageDescriptions(true);
-        // setAddImageDescriptionsIndex(Index);
-        setAddImageDescriptionsDetails(
-            Data.Description != undefined ? Data.Description : ""
-        );
+        setAddDescriptionModelName(type);
         AddImageDescriptionsIndex = Index;
+        if (type == "Bottleneck" || type == "Attention") {
+            setAddImageDescriptionsDetails(Data.Comment != undefined ? Data.Comment : "")
+        }
+        if (type == "Image") {
+            setAddImageDescriptionsDetails(
+                Data.Description != undefined ? Data.Description : ""
+            );
+        }
     };
     const closeAddImageDescriptionFunction = () => {
         setAddImageDescriptions(false);
@@ -4165,13 +4161,33 @@ const EditTaskPopup = (Items: any) => {
         AddImageDescriptionsIndex = undefined;
     };
 
-    const UpdateImageDescription = (e: any) => {
-        TaskImages[AddImageDescriptionsIndex].Description = e.target.value;
+    const UpdateImageDescription = (e: any, UsedFor: string) => {
+        if (UsedFor == "Image") {
+            TaskImages[AddImageDescriptionsIndex].Description = e.target.value;
+        }
+        if (UsedFor == "Bottleneck" || UsedFor == "Attention") {
+            let copyWorkAction: any = [...WorkingAction];
+            if (copyWorkAction?.length > 0) {
+                copyWorkAction?.map((DataItem: any) => {
+                    if (DataItem.Title == UsedFor) {
+                        DataItem.InformationData?.map((InfoData: any, Index: number) => {
+                            if (Index == AddImageDescriptionsIndex) {
+                                InfoData.Comment = e.target.value;
+                            }
+                        })
+                    }
+                })
+            }
+            console.log("Comment Added in working aaray", copyWorkAction)
+            setWorkingAction([...copyWorkAction])
+        }
         setAddImageDescriptionsDetails(e.target.value);
     };
 
-    const SaveImageDescription = () => {
-        UpdateBasicImageInfoJSON(TaskImages, "Upload", 0);
+    const SaveImageDescription = (usedFor: string) => {
+        if (usedFor == "Image") {
+            UpdateBasicImageInfoJSON(TaskImages, "Upload", 0);
+        }
         closeAddImageDescriptionFunction();
     };
 
@@ -4597,17 +4613,7 @@ const EditTaskPopup = (Items: any) => {
         selectedData.Id = selectedData.AssingedToUserId;
         setApproverData([...ApproverData, selectedData]);
     };
-    // const removeApproverFunction = (Title: any, Id: any) => {
-    //     let tempArray: any = [];
-    //     if (ApproverBackupArray != null && ApproverBackupArray.length > 0) {
-    //         ApproverBackupArray?.map((item: any) => {
-    //             if (item.Id == Id) {
-    //                 tempArray.push(item);
-    //             }
-    //         })
-    //     }
-    //     setApproverData(tempArray);
-    // }
+
 
 
     const autoSuggestionsForApprover = (e: any, type: any) => {
@@ -4681,7 +4687,7 @@ const EditTaskPopup = (Items: any) => {
                     userImage: ApproverData.Item_x0020_Cover?.Url,
                 },
                 NotificationSend: false,
-                Comments: '',
+                Comment: '',
                 CreatedOn: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY"),
             }
             if (copyWorkAction?.length > 0) {
@@ -4844,6 +4850,65 @@ const EditTaskPopup = (Items: any) => {
     };
 
 
+    const removeAssignedMember = (value: any) => {
+        const afterItemDelete: any = ApproverData.filter((item: any) => item.Title != value.Title)
+        setApproverData(afterItemDelete)
+    }
+
+    // this is used for updating workingAction JSON Data on Backedn Side 
+
+    const UpdateWorkinActionJSON = async () => {
+        try {
+            let web = new Web(siteUrls);
+            await web.lists
+                .getById(Items.Items.listId)
+                .items.getById(Items.Items.Id)
+                .update({ WorkingAction: WorkingAction?.length > 0 ? JSON.stringify(WorkingAction) : null })
+        } catch (error) {
+            console.log("Error", error.message)
+        }
+    }
+
+
+
+    // this is used for bottleneck and Attehntion category task functionality
+
+    const BottleneckAndAttentionFunction = (InfoData: any, Index: number, usedFor: string, ActionType: string) => {
+        if (usedFor == "Reminder") {
+            if (InfoData?.NotificationSend == true) {
+                let RequiredData: any = {
+                    ReceiverName: InfoData.TaggedUsers?.Title,
+                    sendUserEmail: [InfoData.TaggedUsers?.Email],
+                    Context: Context,
+                    ActionType: ActionType,
+                    ReasonStatement: InfoData.Comment,
+                    UpdatedDataObject: EditDataBackup,
+                }
+                GlobalFunctionForUpdateItems.MSTeamsReminderMessage(RequiredData);
+                alert("The reminder has been sent to the user.");
+            } else {
+                alert(`This user has not been tagged as a ${ActionType} yet, so you cannot send a reminder now.`);
+            }
+        }
+        if (usedFor == "Remove") {
+            let CopyWorkingActionData: any = [...WorkingAction];
+            let TempWorkingActionData: any = removeDataFromInformationData(CopyWorkingActionData, ActionType, Index);
+            console.log("Updated Data after removing User:", TempWorkingActionData);
+            setWorkingAction([...TempWorkingActionData])
+        }
+    }
+
+    //    This is used to remove the Tagged User Data form Bottleneck and attention
+
+    function removeDataFromInformationData(dataArray: any, titleToRemove: any, indexToRemove: any) {
+        return dataArray.map((item: any) => {
+            if (item.Title === titleToRemove && Array.isArray(item.InformationData)) {
+                item.InformationData.splice(indexToRemove, 1);
+            }
+            return item;
+        });
+    }
+    //  This is the end of the function 
 
     const onRenderCustomHeaderMain = () => {
         return (
@@ -4920,7 +4985,7 @@ const EditTaskPopup = (Items: any) => {
                         : "d-flex full-width pb-1"
                 }
             >
-                <div className="subheading">Add Image Descriptions</div>
+                <div className="subheading">Add {AddDescriptionModelName} Descriptions</div>
                 <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
             </div>
         );
@@ -5226,51 +5291,6 @@ const EditTaskPopup = (Items: any) => {
         );
     };
 
-    const removeAssignedMember = (value: any) => {
-        const afterItemDelete: any = ApproverData.filter((item: any) => item.Title != value.Title)
-        setApproverData(afterItemDelete)
-    }
-
-
-    // this is used for bottleneck and Attehntion category task functionality
-
-    const BottleneckAndAttentionFunction = (InfoData: any, Index: number, usedFor: string, ActionType: string) => {
-        if (usedFor == "Reminder") {
-            if (InfoData?.NotificationSend == true) {
-                let RequiredData: any = {
-                    ReceiverName: InfoData.TaggedUsers?.Title,
-                    sendUserEmail: [InfoData.TaggedUsers?.Email],
-                    Context: Context,
-                    ActionType: ActionType,
-                    ReasonStatement: InfoData.Comment,
-                    UpdatedDataObject: EditDataBackup,
-                }
-                GlobalFunctionForUpdateItems.MSTeamsReminderMessage(RequiredData);
-                alert("The reminder has been sent to the user.");
-            } else {
-                alert(`This user has not been tagged as a ${ActionType} yet, so you cannot send a reminder now.`);
-            }
-        }
-        if (usedFor == "Remove") {
-            let CopyWorkingActionData: any = [...WorkingAction];
-            let TempWorkingActionData: any = removeDataFromInformationData(CopyWorkingActionData, Index);
-            console.log("Updated Data after removing User:", TempWorkingActionData);
-            setWorkingAction([...TempWorkingActionData])
-        }
-    }
-
-    const removeDataFromInformationData = (dataArray: any, indexToRemove: any) => {
-        return dataArray.map((item: any) => {
-            if (item.InformationData && indexToRemove >= 0 && indexToRemove < item.InformationData.length) {
-                const updatedInformationData = item.InformationData.filter((_: any, index: any) => index !== indexToRemove);
-                return {
-                    ...item,
-                    InformationData: updatedInformationData
-                };
-            }
-            return item;
-        });
-    }
 
     return (
         <div
@@ -6400,7 +6420,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                         title={ProjectData.Title}
                                                                                         data-interception="off"
                                                                                         className="textDotted hreflink"
-                                                                                        href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                        href={`${siteUrls}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData.Id}`}
                                                                                     >
                                                                                         {ProjectData.Title}
                                                                                     </a>
@@ -6932,7 +6952,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <span
                                                     className="input-group-text"
                                                     // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
-                                                    onClick={() => setSmartMedaDataUsedPanel("Status")}
+                                                    onClick={() => alert("We are working on it. This feature will be live soon")}
                                                 >
                                                     <span
                                                         title="Add Comment"
@@ -6998,17 +7018,17 @@ const EditTaskPopup = (Items: any) => {
                                                                                 className="m-0 img-info hover-text"
                                                                                 onClick={() =>
                                                                                     openAddImageDescriptionFunction(
-                                                                                        ItemIndex,
-                                                                                        WAItemData,
-                                                                                        "Opne-Model"
+                                                                                        InfoIndex,
+                                                                                        InfoData,
+                                                                                        "Bottleneck"
                                                                                     )
                                                                                 }
                                                                             >
                                                                                 <span className="svg__iconbox svg__icon--comment"></span>
                                                                                 <span className="tooltip-text pop-left">
-                                                                                    {WAItemData.Comment != undefined &&
-                                                                                        WAItemData.Comment?.length > 1
-                                                                                        ? WAItemData.Comment
+                                                                                    {InfoData.Comment != undefined &&
+                                                                                        InfoData.Comment?.length > 1
+                                                                                        ? InfoData.Comment
                                                                                         : "Add Comment"}
                                                                                 </span>
                                                                             </span>
@@ -7046,7 +7066,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <span
                                                     className="input-group-text"
                                                     // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
-                                                    onClick={() => setSmartMedaDataUsedPanel("Status")}
+                                                    onClick={() => alert("We are working on it. This feature will be live soon")}
                                                 >
                                                     <span
                                                         title="Add Comment"
@@ -7112,17 +7132,17 @@ const EditTaskPopup = (Items: any) => {
                                                                                 className="m-0 img-info hover-text"
                                                                                 onClick={() =>
                                                                                     openAddImageDescriptionFunction(
-                                                                                        ItemIndex,
-                                                                                        WAItemData,
-                                                                                        "Opne-Model"
+                                                                                        InfoIndex,
+                                                                                        InfoData,
+                                                                                        "Attention"
                                                                                     )
                                                                                 }
                                                                             >
                                                                                 <span className="svg__iconbox svg__icon--comment"></span>
                                                                                 <span className="tooltip-text pop-left">
-                                                                                    {WAItemData.Comment != undefined &&
-                                                                                        WAItemData.Comment?.length > 1
-                                                                                        ? WAItemData.Comment
+                                                                                    {InfoData.Comment != undefined &&
+                                                                                        InfoData.Comment?.length > 1
+                                                                                        ? InfoData.Comment
                                                                                         : "Add Comment"}
                                                                                 </span>
                                                                             </span>
@@ -7298,7 +7318,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                     openAddImageDescriptionFunction(
                                                                                         index,
                                                                                         ImageDtl,
-                                                                                        "Opne-Model"
+                                                                                        "Image"
                                                                                     )
                                                                                 }
                                                                             >
@@ -8726,7 +8746,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                     target="_blank"
                                                                                                     title={ProjectData.Title}
                                                                                                     data-interception="off"
-                                                                                                    href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                                    href={`${siteUrls}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData.Id}`}
                                                                                                 >
                                                                                                     {ProjectData.Title}
                                                                                                 </a>
@@ -9364,7 +9384,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         openAddImageDescriptionFunction(
                                                                             index,
                                                                             imgData,
-                                                                            "Opne-Model"
+                                                                            "Image"
                                                                         )
                                                                     }
                                                                 >
@@ -9577,7 +9597,7 @@ const EditTaskPopup = (Items: any) => {
                 </div>
             </div>
 
-            {/* ********************** This in Add Image Description Model ****************** */}
+            {/* ********************** This in Add Image Description, Bottleneck and Attention Model ****************** */}
             <Panel
                 isOpen={AddImageDescriptions}
                 onRenderHeader={onRenderCustomHeaderAddImageDescription}
@@ -9598,14 +9618,14 @@ const EditTaskPopup = (Items: any) => {
                                         : ""
                                 }
                                 className="full-width"
-                                onChange={(e) => UpdateImageDescription(e)}
+                                onChange={(e) => UpdateImageDescription(e, AddDescriptionModelName)}
                             ></textarea>
                         </div>
                     </div>
                     <footer className="text-end mt-2">
                         <button
                             className="btn btnPrimary mx-1 "
-                            onClick={SaveImageDescription}
+                            onClick={() => SaveImageDescription(AddDescriptionModelName)}
                         >
                             Save
                         </button>

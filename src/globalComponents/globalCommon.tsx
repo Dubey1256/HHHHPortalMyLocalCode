@@ -2140,15 +2140,19 @@ export const GetCompleteTaskId = (Item: any) => {
     }
     return taskIds;
 };
+
 export const GetTaskId = (Item: any) => {
-    const { TaskID, ParentTask, Id, TaskType } = Item;
+    const { TaskID, ParentTask, Id, TaskType, Item_x0020_Type } = Item;
     let taskIds = "";
     if (TaskType?.Title === 'Activities' || TaskType?.Title === 'Workstream') {
         taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
     }
-    if (ParentTask?.TaskID != undefined && TaskType?.Title === 'Task') {
+    if (ParentTask?.TaskID != undefined && TaskType?.Title === 'Task' && ParentTask?.Item_x0020_Type === "Task") {
         taskIds += taskIds.length > 0 ? `-${ParentTask?.TaskID}-T${Id}` : `${ParentTask?.TaskID}-T${Id}`;
-    } else if (ParentTask?.TaskID == undefined && TaskType?.Title === 'Task') {
+    } else if (ParentTask?.TaskID !== undefined && TaskType?.Title === 'Task'&& ParentTask?.Item_x0020_Type === "SubComponent") {
+        taskIds += taskIds.length > 0 ? `-T${Id}` : `T${Id}`;
+    }
+    else if (ParentTask?.TaskID == undefined && TaskType?.Title === 'Task') {
         taskIds += taskIds.length > 0 ? `-T${Id}` : `T${Id}`;
     } else if (taskIds?.length <= 0) {
         taskIds += `T${Id}`;
@@ -2578,19 +2582,29 @@ export const AwtGroupingAndUpdatePrarticularColumn = async (findGrouping: any, A
                 });
         }
     }
-    return { findGrouping, flatdata };
+    return { findGrouping, flatdata }; 
 }
-export const replaceURLsWithAnchorTags = (text: any) => {
-    if(text!=undefined){
-   // Regular expression to match URLs
-   var urlRegex = /(https?:\/\/[^\s]+)/g;
-   // Replace URLs with anchor tags
-   var replacedText = text.replace(urlRegex, function (url: any) {
-       return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
-   });
-   return replacedText;
-    }
- 
+export const replaceURLsWithAnchorTags = (text:any) => {
+    // Regular expression to match URLs
+    var urlRegex = /(https?:\/\/[^\s<>"]+)(?=["'\s.,]|$)/g;
+    // Replace URLs with anchor tags
+    let textToIgnore :any= ''
+    var replacedText = text.replace(urlRegex, function (url:any) {
+        if (!isURLInsideAnchorTag(url, text) && !textToIgnore.includes(url)) {
+            console.log(url,'in if')
+            return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
+        } else{
+            textToIgnore += `${url} `
+            return url;
+        }
+    });
+    return replacedText;
+}
+
+function isURLInsideAnchorTag(url:any, text:any) {
+    // Regular expression to match anchor tags
+    var anchorRegex = /<a\s+(?:[^>]*?\s+)?href=(["'])(.*?)\1/i;
+    return anchorRegex.test(text) && anchorRegex.exec(text)[2] === url;
 }
 //--------------------------------------Share TimeSheet Report-----------------------------------------------------------------------
 
