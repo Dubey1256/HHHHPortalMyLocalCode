@@ -68,17 +68,25 @@ const GraphData = (data: any) => {
     // Extract the first and last dates from the array
     // Moment(data[0].Day).format("DD/MM/YYYY")
     let lastdateLength =(data.length - 1);
-    const startDate: any = new Date(Moment(data[0].Day).format("DD/MM/YYYY"));
+    
+
+    const datePartsStart = data[0].Day?.split('/');
+    const yearStart = parseInt(datePartsStart[2], 10);
+    const monthStart = parseInt(datePartsStart[1], 10) - 1; // Months are 0 indexed
+    const dayStart = parseInt(datePartsStart[0], 10);
+
+    //const startDate: any = new Date(Moment(data[0].Day).format("DD/MM/YYYY"));
+    const currentDate =new Date(yearStart, monthStart, dayStart);
     const dateParts = data[lastdateLength].Day?.split('/');
     const year = parseInt(dateParts[2], 10);
-    const month = parseInt(dateParts[0], 10) - 1; // Months are 0 indexed
-    const day = parseInt(dateParts[1], 10);
+    const month = parseInt(dateParts[1], 10) - 1; // Months are 0 indexed
+    const day = parseInt(dateParts[0], 10);
 
     const endDate = new Date(year, month, day)
     // const endDate:any = new Date(Moment().format("DD/MM/YYYY"));
 
     // Iterate over the dates from the start date to the end date
-    let currentDate = new Date(startDate);
+    //let currentDate = new Date(startDate);
     while (currentDate <= endDate) {
       const formattedDate = currentDate.toLocaleDateString('en-GB'); // Format the date as 'dd/mm/yyyy'
 

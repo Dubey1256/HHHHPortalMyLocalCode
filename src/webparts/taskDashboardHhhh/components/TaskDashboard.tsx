@@ -682,10 +682,15 @@ const TaskDashboard = (props: any) => {
             {
                 accessorKey: "",
                 placeholder: "",
+<<<<<<< HEAD
                 hasCheckbox: true,
                 hasCustomExpanded: false,
                 hasExpanded: false,
                 isHeaderNotAvlable: true,
+=======
+                hasCustomExpanded: false,
+                hasExpanded: false,
+>>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
                 size: 10,
                 id: 'Id',
             },
