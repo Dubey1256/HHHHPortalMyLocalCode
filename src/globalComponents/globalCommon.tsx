@@ -2582,7 +2582,7 @@ export const AwtGroupingAndUpdatePrarticularColumn = async (findGrouping: any, A
                 });
         }
     }
-    return { findGrouping, flatdata };
+    return { findGrouping, flatdata }; 
 }
 export const replaceURLsWithAnchorTags = (text:any) => {
     // Regular expression to match URLs
