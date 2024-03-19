@@ -333,7 +333,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                   {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === true && <span>
                     <input type="text" className="width-75" defaultValue={row?.original?.Rountfiguretime} ></input>
                   </span>}
-                </span><span  onClick={(e) => this.OpenPopupQuick(e, row)} className="svg__iconbox svg__icon--editBox"></span></>
+                </span><span onClick={(e) => this.OpenPopupQuick(e, row)} className="svg__iconbox svg__icon--editBox"></span></>
               )}
             </span>
           </div>
@@ -535,7 +535,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.GetAllSiteTaskData = this.GetAllSiteTaskData.bind(this);
     this.callBackData = this.callBackData.bind(this);
     this.callBackDatapoup = this.callBackDatapoup.bind(this);
-   // this.showGraph = this.showGraph.bind(this);
+    this.showGraph = this.showGraph.bind(this);
     this.customTableHeaderButtons;
 
   }
@@ -1586,6 +1586,21 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         filterItemTimeTab.push(objgre);
       }
     }
+
+    // let filterarray: any = [];
+    // if (this?.state?.filterItems?.length > 0) {
+    //   let roesItem = this.state?.filterItems?.filter((obj: any) => obj?.IsParent === true);
+    //   if (roesItem?.length > 0) {
+    //     filterItemTimeTab?.forEach((filter: any) => {
+    //       roesItem.forEach((smart: any) => {
+    //         if (smart?.Title === filter?.ListName)
+    //           filterarray.push(filter);
+    //       })
+    //     })
+    //   }
+    // }
+
+
     console.log(filterItemTimeTab);
     this.GetAllSiteTaskData(filterItemTimeTab, getAllTimeEntry);
   }
@@ -1826,6 +1841,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     for (let index = 0; index < filterCheckedItem.length; index++) {
       let id = filterCheckedItem[index];
       filterItems.forEach(function (filterItem: any) {
+        if(filterItem?.IsParent ===true){
         if (filterItem.value == id)
           selectedFilters.push(filterItem);
         if (filterItem.children != undefined && filterItem.children.length > 0) {
@@ -1846,6 +1862,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             }
           });
         }
+      }
       });
     }
 
@@ -1943,51 +1960,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                     CategoryItems.push(item);
                   }
                 }
-
-                // else if (selectedFilters[i].ID == '132' && item.siteType == "Shareweb") {
-                //   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                //   flag = true;
-                //   item.Secondlevel = item.ParentTitle;
-                //   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
-                //     CategoryItems.push(item);
-                // }
-                // else if (selectedFilters[i].ID == '569' && item.siteType == "Migration") {
-                //   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                //   flag = true;
-                //   item.Secondlevel = item.ParentTitle;
-                //   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
-                //     CategoryItems.push(item);
-                // }
-                // else if (selectedFilters[i].ID == '572' && item.siteType == "ALAKDigital") {
-                //   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                //   flag = true;
-                //   item.Secondlevel = item.ParentTitle;
-                //   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
-                //     CategoryItems.push(item);
-                // }
-                // else if (selectedFilters[i].ID == '574' && item.siteType == "Gruene") {
-                //   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                //   flag = true;
-                //   item.Secondlevel = item.ParentTitle;
-                //   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
-                //     CategoryItems.push(item);
-                // }
-                // else if (selectedFilters[i].ID == '575' && item.siteType == "HHHH") {
-                //   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                //   flag = true;
-                //   item.Secondlevel = item.ParentTitle;
-                //   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
-                //     CategoryItems.push(item);
-                // }
-                // else if (selectedFilters[i].ID == '573' && item.siteType == "KathaBeck") {
-                //   item.ParentTitle = this.getParentTitle(item, selectedFilters[i]);
-                //   flag = true;
-                //   item.Secondlevel = item.ParentTitle;
-                //   if (!this.isItemExistsTimeEntry(CategoryItems, item.TimeEntryIDunique, item.siteType))
-                //     CategoryItems.push(item);
-                // }
-                // isCategorySelected = true;
-                // break;
               }
               if (selectedFilters[i].Title == "Other" && (item?.ClientCategory?.length === 0) && (item.clientCategoryIds == undefined || item.clientCategoryIds == '')) {
                 let title = selectedFilters[i].ParentTitle == 'PSE' ? 'EPS' : (selectedFilters[i].ParentTitle == 'e+i' ? 'EI' : selectedFilters[i].ParentTitle);
@@ -2122,13 +2094,13 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                     console.log(time);
                   if (time.Id == 3250)
                     console.log(time);
-                  if (time.ClientTime != undefined && time.ClientTime.length > 0 && time.Title == 'Shareweb') {
+                  if (time.ClientTime != undefined && time.ClientTime?.length > 0 && time.siteType == 'Shareweb') {
                     time.ClientTime.forEach(function (client: any) {
                       let sitesrray = child?.Firstlevel?.split(';');
                       if (sitesrray != undefined && sitesrray.length > 0) {
                         sitesrray.forEach((obj: any) => {
                           let title1 = (obj?.indexOf('PSE') > -1 ? 'EPS' : (obj?.indexOf('e+i') > -1 ? 'EI' : obj)); {
-                            if (client.SiteName != undefined && title1?.toLowerCase() === client.SiteName?.toLowerCase())
+                            if (client.Title != undefined && title1?.toLowerCase() === client.Title?.toLowerCase())
                               totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
                           }
                         })
@@ -2781,44 +2753,21 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       if (NewItem?.value === item?.value) {
         filterGroups[item.index].checked = item.checked;
         filterGroups[index].checkedObj = this.GetCheckedObject(filterGroups[item.index]?.children, checked, item.checked)
-        // if (filterGroups[item.index]?.children?.length > 0) {
-        //   const childrenLength = filterGroups[item.index]?.children?.reduce((total: any, obj: any) => total + (obj?.children?.length || 0), 0) + (filterGroups[item.index]?.children?.length ? filterGroups[item.index]?.children?.length : 0);
-        //   filterGroups[item.index].selectAllChecked = childrenLength === checked?.length;
-        // }
-        // NewItem?.children?.forEach((ObjItem: any, newIndex: any) => {
-        //   ObjItem.checked = item.checked;
-        //   ObjItem?.children?.forEach((newObjItem: any, new1Index: any) => {
-        //     newObjItem.checked = item.checked;
-        //   })
-
-        // })
       }
       NewItem?.children?.forEach((ObjItem: any, newIndex: any) => {
         if (ObjItem?.value === item?.value) {
           NewItem.children[newIndex].checked = item.checked;
           filterGroups[index].checkedObj = this.GetCheckedObject(filterGroups[index]?.children, checked, item.checked)
-          // if (NewItem.children[newIndex]?.children?.length > 0) {
-          //   const childrenLength = NewItem.children[newIndex]?.children?.reduce((total: any, obj: any) => total + (obj?.children?.length || 0), 0) + (NewItem.children[newIndex]?.children?.length ? NewItem.children[newIndex]?.children?.length : 0);
-          //   NewItem.children[newIndex].selectAllChecked = childrenLength === checked?.length;
-          // }
         }
         ObjItem?.children?.forEach((LastItem: any, lastindex: any) => {
           if (LastItem?.value === item?.value) {
             ObjItem.children[lastindex].checked = item.checked;
             filterGroups[index].checkedObj = this.GetCheckedObject(filterGroups[index]?.children, checked, item.checked)
-            // if (ObjItem.children[lastindex]?.children?.length > 0) {
-            //   const childrenLength = ObjItem.children[lastindex]?.children?.reduce((total: any, obj: any) => total + (obj?.children?.length || 0), 0) + (ObjItem.children[lastindex]?.children?.length ? ObjItem.children[lastindex]?.children?.length : 0);
-            //   ObjItem.children[lastindex].selectAllChecked = childrenLength === checked?.length;
-            // }
           }
           LastItem?.children?.forEach((newLastItem: any, newlastindex: any) => {
             if (newLastItem?.value === item?.value) {
               LastItem.children[newlastindex].checked = item.checked;
               filterGroups[index].checkedObj = this.GetCheckedObject(LastItem.children[newlastindex]?.children, checked, item.checked)
-              // if (LastItem.children[newlastindex]?.children?.length > 0) {
-              //   const childrenLength = LastItem.children[newlastindex]?.children?.reduce((total: any, obj: any) => total + (obj?.children?.length || 0), 0) + (LastItem.children[newlastindex]?.children?.length ? LastItem.children[newlastindex]?.children?.length : 0);
-              //   LastItem.children[newlastindex].selectAllChecked = childrenLength === checked?.length;
-              // }
             }
 
           })
@@ -2831,6 +2780,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         if (obj.children?.length > 0) {
           let isAll = this.GetCheckedAll(obj.children);
           obj.checked = isAll;
+          obj.IsParent = true;
         }
         IsUpdatedbutton = true;
         checkedItems.push(obj);
@@ -2842,9 +2792,11 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             let isAll = this.GetCheckedAll(obj2.children);
             obj2.checked = isAll;
             obj.checked = isAll;
+            obj.IsParent = true;
           } else if (obj2.children === undefined) {
             let isAll = this.GetCheckedAll(obj.children);
             obj.checked = isAll;
+            obj.IsParent = true;
           }
           IsUpdatedbutton = true;
           checkedItems.push(obj);
@@ -2855,9 +2807,11 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             if (obj3.children?.length > 0) {
               let isAll = this.GetCheckedAll(obj3.children);
               obj3.checked = isAll;
+              obj.IsParent = true;
             } else if (obj3.children === undefined) {
               let isAll = this.GetCheckedAll(obj2.children);
               obj2.checked = isAll;
+              obj.IsParent = true;
             }
             IsUpdatedbutton = true;
             checkedItems.push(obj);
@@ -2869,6 +2823,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               if (obj4.children?.length > 0) {
                 let isAll = this.GetCheckedAll(obj4.children);
                 obj4.checked = isAll;
+                obj.IsParent = true;
               }
               checkedItems.push(obj);
             }
@@ -4224,7 +4179,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                     {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
                       <div id="contact" className="col-sm-12 p-0">
                         <div className='table-responsive fortablee'>
-                          <GlobalCommanTable  customHeaderButtonAvailable={true} ref={this.childRef} customTableHeaderButtons={this.customTableHeaderButtons} showCatIcon={true} catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this?.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
+                          <GlobalCommanTable bulkUpdateWeeklyReport={this.bulkUpdateWeeklyReport} customHeaderButtonAvailable={true} ref={this.childRef} customTableHeaderButtons={this.customTableHeaderButtons} showCatIcon={true} catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this?.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
                       </div>
                     }
                   </div>
