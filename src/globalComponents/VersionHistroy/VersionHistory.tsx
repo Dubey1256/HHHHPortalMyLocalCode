@@ -571,7 +571,7 @@ export default function VersionHistory(props: any) {
                                      const Deliverablesvalue: any = JSON.parse(currentObj.DraftCategory)[0];
                                      differingPairs[newKey] = Deliverablesvalue;
                                 }
-                                catch(e){
+                                catch(e) {
                                     console.log(e);
                                 }
                                
