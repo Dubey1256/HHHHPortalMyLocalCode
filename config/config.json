@@ -386,7 +386,6 @@
         }
       ]
     },
-    
     "hello-spfx-web-part": {
       "components": [
         {
@@ -426,10 +425,7 @@
           "manifest": "./src/webparts/flowCreation/FlowCreationWebPart.manifest.json"
         }
       ]
-<<<<<<< HEAD
-=======
     },
-<<<<<<< HEAD
     "smart-dynamic-table-web-part": {
       "components": [
         {
@@ -438,8 +434,6 @@
         }
       ]
     },
-=======
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
     "root-team-portfolio-table-web-part": {
       "components": [
         {
@@ -447,7 +441,6 @@
           "manifest": "./src/webparts/rootTeamPortfolioTable/RootTeamPortfolioTableWebPart.manifest.json"
         }
       ]
-<<<<<<< HEAD
     },
     "task-profile-template-web-part": {
       "components": [
@@ -464,9 +457,6 @@
           "manifest": "./src/webparts/employeeDashboardTemplated/EmployeeDashboardTemplatedWebPart.manifest.json"
         }
       ]
-=======
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
->>>>>>> 1302ef085a77cfb36b3a59eb3b5793200c25d119
     }
   },
   "externals": {
@@ -488,6 +478,7 @@
     }
   },
   "localizedResources": {
+    "RootTeamPortfolioTableWebPartStrings": "lib/webparts/rootTeamPortfolioTable/loc/{locale}.js",
     "HelloSpfxWebPartStrings": "lib/webparts/helloSpfx/loc/{locale}.js",
     "EmployeProfileWebPartStrings": "lib/webparts/employeProfile/loc/{locale}.js",
     "ProfilcandidateWebPartStrings": "lib/webparts/profilcandidate/loc/{locale}.js",
@@ -500,7 +491,6 @@
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
     "DatacleanuptoolWebPartStrings": "lib/webparts/datacleanuptool/loc/{locale}.js",
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
-    "FlowCreationWebPartStrings": "lib/webparts/flowCreation/loc/{locale}.js",
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
     "TaskUserManagementWebPartStrings": "lib/webparts/taskUserManagement/loc/{locale}.js",
     "SiteStructureWebPartStrings": "lib/webparts/SiteStructure/loc/{locale}.js",
@@ -524,7 +514,7 @@
     "UpdateTopNavigationWebPartStrings": "lib/webparts/updateTopNavigation/loc/{locale}.js",
     "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js",
     "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js",
-     "LoadMastertaskWebPartStrings":"lib/webparts/loadMastertask/loc/{locale}.js",
+    "LoadMastertaskWebPartStrings": "lib/webparts/loadMastertask/loc/{locale}.js",
     "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js",
     "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js",
     "TestWebPartWebPartStrings": "lib/webparts/ClientCategoryVerification/loc/{locale}.js",
@@ -539,8 +529,12 @@
     "LastModifiedViewsWebPartStrings": "lib/webparts/lastModifiedViews/loc/{locale}.js",
     "HrContractProfileWebPartStrings": "lib/webparts/hrContractProfile/loc/{locale}.js",
     "ManagedashboardconfigWebPartStrings": "lib/webparts/managedashboardconfig/loc/{locale}.js",
+    "FlowCreationWebPartStrings": "lib/webparts/flowCreation/loc/{locale}.js",
     "SMarttaskWebPartStrings": "lib/webparts/sMarttask/loc/{locale}.js",
     "GmbhCalendarWebPartStrings": "lib/webparts/gmbhCalendar/loc/{locale}.js",
-    "GroupByComponentsDashboardWebPartStrings": "lib/webparts/groupByComponentsDashboard/loc/{locale}.js"
+    "GroupByComponentsDashboardWebPartStrings": "lib/webparts/groupByComponentsDashboard/loc/{locale}.js",
+    "SmartDynamicTableWebPartStrings": "lib/webparts/smartDynamicTable/loc/{locale}.js",
+    "TaskProfileTemplateWebPartStrings": "lib/webparts/taskProfileTemplate/loc/{locale}.js",
+    "EmployeeDashboardTemplatedWebPartStrings": "lib/webparts/employeeDashboardTemplated/loc/{locale}.js"
   }
 }
