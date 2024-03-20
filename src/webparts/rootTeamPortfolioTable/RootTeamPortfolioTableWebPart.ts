@@ -62,11 +62,7 @@ export default class RootTeamPortfolioTableWebPart extends BaseClientSideWebPart
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
-<<<<<<< HEAD
-           
-=======
             
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
             default:
               environmentMessage = strings.UnknownEnvironment;
           }

@@ -1520,9 +1520,9 @@ function ReadyMadeTable(SelectedProp: any) {
             {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
-                    <>
+                    <div className="hreflink">
                         <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
-                    </>
+                    </div>
                 ),
                 id: "TaskID",
                 placeholder: "ID",
@@ -1577,7 +1577,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) &&
-                            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                            <span><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.PortfolioType?.Color}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
                                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
                         }
                     </>
@@ -1991,7 +1991,7 @@ function ReadyMadeTable(SelectedProp: any) {
                     <>
                         {row?.original?.siteType != "Master Tasks" && row?.original?.Title != "Others" && (
                             <a className="alignCenter" onClick={(e) => EditDataTimeEntryData(e, row.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
-                                <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
+                                <span className="svg__iconbox svg__icon--clock hreflink dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
                             </a>
                         )}
                     </>
@@ -2042,7 +2042,7 @@ function ReadyMadeTable(SelectedProp: any) {
                                 >
                                     {" "}
                                     <span
-                                        className="svg__iconbox svg__icon--edit"
+                                        className="svg__iconbox hreflink svg__icon--edit"
                                         onClick={(e) => EditComponentPopup(row?.original)}
                                     ></span>
                                 </a>
@@ -2057,7 +2057,7 @@ function ReadyMadeTable(SelectedProp: any) {
                                 >
                                     {" "}
                                     <span
-                                        className="svg__iconbox svg__icon--edit"
+                                        className="svg__iconbox hreflink svg__icon--edit"
                                         onClick={(e) => EditItemTaskPopup(row?.original)}
                                     ></span>
                                 </a>

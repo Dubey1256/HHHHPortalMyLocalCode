@@ -394,7 +394,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 accessorKey: "PortfolioStructureID",
                 placeholder: "ID",
                 size: 136,
-
+                id: 'PortfolioStructureID',
                 cell: ({ row, getValue }) => (
                     <div className="alignCenter">
                         {row?.original?.SiteIcon != undefined ? (
@@ -472,6 +472,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 accessorKey: "PercentComplete",
                 placeholder: "Status",
                 header: "",
+                id: 'PercentComplete',
                 size: 42,
             },
             {
@@ -495,11 +496,13 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 placeholder: "Item Rank",
                 header: "",
                 size: 42,
+                id: "ItemRank",
             },
             {
                 accessorKey: "DueDate",
                 placeholder: "Due Date",
                 header: "",
+                id: "DueDate",
                 size: 100,
             },
             {
