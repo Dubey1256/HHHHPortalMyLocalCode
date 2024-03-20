@@ -1855,12 +1855,12 @@ const inlineEditingcolumns = (props: any) => {
               </span>
               <div className="col-sm-12 p-0">
               {SearchedCategoryData?.length > 0 ? (
-                <div className="SmartTableOnTaskPopup">
+                <div className="SmartTableOnTaskPopup p-0 position-static">
                   <ul className="list-group">
                     {SearchedCategoryData.map((item: any) => {
                       return (
                         <li
-                          className="hreflink list-group-item p-0 rounded-0 list-group-item-action"
+                          className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
                           key={item.id}
                           onClick={
                             () =>

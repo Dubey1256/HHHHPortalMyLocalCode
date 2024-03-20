@@ -82,17 +82,23 @@ export interface ICategoriesWeeklyMultipleReportState {
   AllTaskEntry: any;
   IsRoundUpValues: boolean;
   bindrowValue: any;
+  scrollPosition: any;
+  selectedAllData: any,
+  loadbarchart: boolean,
 }
 
 export default class CategoriesWeeklyMultipleReport extends React.Component<ICategoriesWeeklyMultipleReportProps, ICategoriesWeeklyMultipleReportState> {
-  private scrollPosition = 0
+
   // columns: ({ accessorKey: any; placeholder: string; hasCheckbox: boolean; hasCustomExpanded: boolean; hasExpanded: boolean; size: number; id: string; header?: undefined; resetColumnFilters?: undefined; } | { accessorKey: string; placeholder: string; header: string; resetColumnFilters: boolean; size: number; id: string; hasCheckbox?: undefined; hasCustomExpanded?: undefined; hasExpanded?: undefined; })[];
   columns: any;
   timePopup: any;
+  childRef: any = React.createRef();
+  //scrollPosition:any =0;
   // private childRef:any
   public constructor(props: ICategoriesWeeklyMultipleReportProps, state: ICategoriesWeeklyMultipleReportState) {
     super(props);
-    // this.childRef = React.createRef();
+    this.childRef = React.createRef();
+    // this.scrollPosition = 0
     this.state = {
       Result: {},
       taskUsers: [],
@@ -144,6 +150,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       AllTaskEntry: [],
       IsRoundUpValues: false,
       bindrowValue: {},
+      scrollPosition: 0,
+      selectedAllData: [],
+      loadbarchart: false,
     }
     //this.GetResult();   
     this.columns = [
@@ -314,17 +323,17 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
               ) : (
                 <> <span>
-                  {/* {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === false && <span className={row?.original?.IsColor === true ? "NumberchangeGreen boldClable" : ""} onDoubleClick={(e) => this.InlineUpdate(e, row?.original, row)}>{row?.original?.Rountfiguretime}</span>}
+                  {/* {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === false && <span className={row?.original?.IsColor === true ? "text-danger  boldClable" : ""} onDoubleClick={(e) => this.InlineUpdate(e, row?.original, row)}>{row?.original?.Rountfiguretime}</span>}
                   {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === true && <span>
                     <input type="text" className="width-75" defaultValue={row?.original?.Rountfiguretime} onMouseOut={(e) => this.hideItems(e, row)} onChange={(e) => { this.changeRoutfigureTime(e, row?.original) }}></input>
                   </span>}
                 </span><span onClick={(e) => this.OpenPopupQuick(e, row)} className="svg__iconbox svg__icon--editBox"></span></>
               )} */}
-                  {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === false && <span className={row?.original?.IsColor === true ? "NumberchangeGreen boldClable" : ""} >{row?.original?.Rountfiguretime}</span>}
+                  {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === false && <span className={row?.original?.IsColor === true ? "text-danger  boldClable" : ""} >{row?.original?.Rountfiguretime}</span>}
                   {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === true && <span>
                     <input type="text" className="width-75" defaultValue={row?.original?.Rountfiguretime} ></input>
                   </span>}
-                </span><span onClick={(e) => this.OpenPopupQuick(e, row)} className="svg__iconbox svg__icon--editBox"></span></>
+                </span><span  onClick={(e) => this.OpenPopupQuick(e, row)} className="svg__iconbox svg__icon--editBox"></span></>
               )}
             </span>
           </div>
@@ -525,25 +534,30 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.SelectedPortfolioItem = this.SelectedPortfolioItem.bind(this);
     this.GetAllSiteTaskData = this.GetAllSiteTaskData.bind(this);
     this.callBackData = this.callBackData.bind(this);
+    this.callBackDatapoup = this.callBackDatapoup.bind(this);
+   // this.showGraph = this.showGraph.bind(this);
+    this.customTableHeaderButtons;
 
   }
   rerender = () => {
     this.setState({});
   };
   private renderData: any = [];
-  // private inputClassName = this?.state?.isFocused ? 'NumberchangeGreen boldClable' : '';
+  // private inputClassName = this?.state?.isFocused ? 'text-danger  boldClable' : '';
   private changeRoutfigureTime = (e: any, item: any) => {
     this.setState({ defaultValuequick: item.Rountfiguretime });
     item.Rountfiguretime = e.target.value;
     this.rerender();
   }
+  callBackDatapoup(checkData: any) {
+  }
   callBackData(checkData: any) {
-    // You can now use this.setState to update your component's state
-    // if (checkData !== undefined) {
-    //   this.setState({ checkedList: checkData });
-    // } else {
-    //   this.setState({ checkedList: {} });
-    // }
+    if (this.childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length > 0) {
+
+      this.setState({ selectedAllData: this.childRef?.current?.table?.getSelectedRowModel()?.flatRows })
+    } else {
+      this.setState({ selectedAllData: [] })
+    }
   }
   private EditItemTaskPopup = (item: any) => {
     this.setState({ IsTask: true, EditTaskItem: item });
@@ -563,13 +577,13 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   }
   private OpenPopupQuick = function (e: any, item: any) {
     this.setState({ QuickEditItem: JSON.stringify(item) })
-    this.setState({ IsRoundUpValues: true, bindrowValue: item })
-    this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+    this.setState({ IsRoundUpValues: true, bindrowValue: item, scrollPosition: window.pageYOffset })
+    // this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
   }
   private cancelIsRoundUpValues = (type: any) => {
-    this.setState({ IsRoundUpValues: false }, () => {
+    this.setState({ IsRoundUpValues: false, scrollPosition: window.pageYOffset }, () => {
       // Restore the scroll position after the popup has been closed
-      window.scrollTo(0, this.scrollPosition);
+      window.scrollTo(0, this.state.scrollPosition || 0);
     });
     // this.setState({ IsRoundUpValues: false });
   }
@@ -621,11 +635,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           <label className="mx-1">|</label>
           <label>
             <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
-            <div className={this?.state?.isFocused === true ? 'NumberchangeGreen boldClable' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
+            <div className={this?.state?.isFocused === true ? 'text-danger  boldClable' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
           </label>
         </span>
       ),
     });
+    window.scrollTo(0, this.state.scrollPosition || 0);
     this.renderData = [];
     this.renderData = this.renderData.concat(this.state.showDateTime)
     this.refreshData();
@@ -659,7 +674,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           <label className="mx-1">|</label>
           <label>
             <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
-            <div className={this?.state?.isFocused === true ? 'NumberchangeGreen boldClable' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
+            <div className={this?.state?.isFocused === true ? 'text-danger  boldClable' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
           </label>
         </span>
       ),
@@ -1632,7 +1647,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             // .getByTitle(itemtype.ListName)
             .getById(itemtype.listId)
             .items
-            .select('ParentTask/Title', 'ParentTask/Id', 'TaskID', 'Portfolio/ItemType', 'Portfolio/PortfolioStructureID', 'ClientTime', 'Portfolio/Id', 'Portfolio/Title', 'ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'Priority_x0020_Rank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'TeamMembers/Id', 'Item_x002d_Image', 'component_x0020_link', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
+            .select('ParentTask/Title', 'ParentTask/Id', 'TaskID', 'Portfolio/ItemType', 'Portfolio/PortfolioStructureID', 'Sitestagging', 'Portfolio/Id', 'Portfolio/Title', 'ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'ResponsibleTeam/Id', 'ResponsibleTeam/Title', 'ClientCategory/Id', 'ClientCategory/Title', 'TaskCategories/Id', 'TaskCategories/Title', 'ParentTask/TaskID', 'TaskType/Id', 'TaskType/Title', 'TaskType/Level', 'TaskType/Prefix', 'Priority_x0020_Rank', 'Reference_x0020_Item_x0020_Json', 'TeamMembers/Title', 'TeamMembers/Name', 'TeamMembers/Id', 'Item_x002d_Image', 'component_x0020_link', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'Company', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'WebpartId', 'Body', 'Mileage', 'PercentComplete', 'Attachments', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title')
             .filter(queryType.replace('filter=', '').trim())
             .expand('ParentTask', 'Portfolio', 'TaskType', 'AssignedTo', 'AttachmentFiles', 'Author', 'Editor', 'TeamMembers', 'ResponsibleTeam', 'ClientCategory', 'TaskCategories')
             .orderBy('Id', false)
@@ -1760,10 +1775,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             // }
 
             filterItem.flag = true;
-            if (getItem.ClientTime != undefined && getItem.ClientTime.length > 0) {
-              let Client = JSON.parse(getItem.ClientTime);
+            if (getItem.Sitestagging != undefined && getItem.Sitestagging.length > 0) {
+              let Client = JSON.parse(getItem.Sitestagging);
               filterItem.ClientTime = Client;
             }
+            // if (getItem.ClientTime != undefined && getItem.ClientTime.length > 0) {
+            //   let Client = JSON.parse(getItem.ClientTime);
+            //   filterItem.ClientTime = Client;
+            // }
             filterItem.ClientCategory = getItem.ClientCategory;
             // filterItem.clientCategory ='';
             filterItem.ClientCategorySearch = getItem.ClientCategorySearch;
@@ -2103,7 +2122,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                     console.log(time);
                   if (time.Id == 3250)
                     console.log(time);
-                  if (time.ClientTime != undefined && time.ClientTime.length > 0 && time.siteType == 'Shareweb') {
+                  if (time.ClientTime != undefined && time.ClientTime.length > 0 && time.Title == 'Shareweb') {
                     time.ClientTime.forEach(function (client: any) {
                       let sitesrray = child?.Firstlevel?.split(';');
                       if (sitesrray != undefined && sitesrray.length > 0) {
@@ -2277,7 +2296,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             <label className="mx-1">|</label>
             <label>
               <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
-              <div className={this?.state?.isFocused === true ? 'NumberchangeGreen boldClable' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
+              <div className={this?.state?.isFocused === true ? 'text-danger  boldClable' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
             </label>
           </span>
         ),
@@ -3017,7 +3036,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           <label className="mx-1">|</label>
           <label>
             <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
-            <div className={this?.state?.isFocused === true ? 'NumberchangeGreen boldClable' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
+            <div className={this?.state?.isFocused === true ? 'text-danger  boldClable' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
           </label>
         </span>
       ),
@@ -3843,25 +3862,15 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({ IsTimeEntry: false });
   }
   private showGraph = (tileName: any) => {
-    if (DateType == 'Custom') {
-      let start = Moment(this.state.startdate).format("DD/MM/YYYY");
-      let end = Moment(this.state.enddate).format("DD/MM/YYYY");
-      DateType = `${start} - ${end}`
-    }
+    // if (DateType == 'Custom') {
+    //   let start = Moment(this.state.startdate).format("DD/MM/YYYY");
+    //   let end = Moment(this.state.enddate).format("DD/MM/YYYY");
+    //   DateType = `${start} - ${end}`
+    // }
     this.setState({
       IsOpenTimeSheetPopup: true
     })
   }
-  private customTableHeaderButtons = (
-    <>
-      <a className='barChart' title='Open Bar Graph' onClick={this.showGraph}><BsBarChartLine /></a>
-      {/* <button
-        type='button'
-        disabled={!!(this.childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length > 0)}>
-        MultiUpdate
-      </button> */}
-    </>
-  )
   private CallBack = () => {
     //setIsOpenTimeSheetPopup(false)
     this.setState({
@@ -3882,7 +3891,45 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       }
     }));
   }
+  // customTableHeaderButtons=() => {
+  //   const  portfolioColor :any = this.props; // Assuming portfolioColor comes from props
+  //   // Now `this` correctly refers to the component instance
+  //   return (
+  //     <>
+  //       <a className='barChart' title='Open Bar Graph' onClick={(e) => this.showGraph(e)}><BsBarChartLine /></a>
+  //       {this.state?.selectedAllData?.length > 0 ? (
+  //         <button type="button" className="btn btn-primary" title='Compare' 
+  //                 style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }}>
+  //           Multi Update
+  //         </button>
+  //       ) : (
+  //         <>
 
+  //           <button type="button" className="btn btn-primary" 
+  //                   style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} 
+  //                   disabled={true}>
+  //             Multi Update
+  //           </button>
+  //         </>
+  //       )}
+  //     </>
+  //   );
+  // }
+  customTableHeaderButtons = (
+    <>
+      <a className='barChart' title='Open Bar Graph' onClick={(e) => this.showGraph(e)}><BsBarChartLine /></a>
+      {/* {this.state?.selectedAllData?.length > 0 ? (
+        
+      ) : (
+        <>
+          <a className='barChart' title='Open Bar Graph' onClick={(e) => this.showGraph(e)}><BsBarChartLine /></a>
+          <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true}>Multi Update</button>
+        </>)} */}
+    </>
+  );
+  private bulkUpdateWeeklyReport = () => {
+
+  }
   public render(): React.ReactElement<ICategoriesWeeklyMultipleReportProps> {
     //   const { AllTimeEntry } = this?.state;
 
@@ -3904,26 +3951,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
         <div className="smartFilter bg-light border mb-3">
           <div className="report-taskuser ps-0 pe-1" id="TimeSheet-Section">
-            {/* <details className='pt-1 m-0 allfilter' open> */}
-            {/* <summary>
-                <a className="fw-semibold hreflink mr-5 pe-2 pull-left">All filters 
-                  <span className='fw-normal me-1'>
-                  {this.state.SelectGroupName}
-                </span> </a>
-                {this.state.ImageSelectedUsers.length <= 3 ? (
-                  this.state.ImageSelectedUsers.map(function (obj: any) {
-                    return (<span className="marginR41">
-                      <img onClick={(e) => this.SelectUserImage(e, obj)} title={obj?.AssingedToUserTitle}
-                        className="AssignUserPhoto"
-                        src={obj.Item_x0020_Cover.Url}
-                      ></img>
-                    </span>
-                    )
-                  })) : (
-                  this.state.ImageSelectedUsers.length > 3 && <span>({this.state.ImageSelectedUsers.length})</span>)
-
-                }
-              </summary> */}
             <div className="subfilters BdrBoxBlue mb-3">
               <div className="taskTeamBox mt-10">
                 <details className='p-0 m-0' open>
@@ -4196,7 +4223,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                     {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
                       <div id="contact" className="col-sm-12 p-0">
                         <div className='table-responsive fortablee'>
-                          <GlobalCommanTable customHeaderButtonAvailable={true} customTableHeaderButtons={this.customTableHeaderButtons} showCatIcon={true} catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this?.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
+                          <GlobalCommanTable  customHeaderButtonAvailable={true} ref={this.childRef} customTableHeaderButtons={this.customTableHeaderButtons} showCatIcon={true} catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this?.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
                       </div>
                     }
                   </div>
@@ -4232,13 +4259,15 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             </div>
           </div>
         </Panel>
-        {this?.state?.IsTimeEntry && (
-          <TimeEntryPopup
-            props={this?.state?.SharewebTimeComponent}
-            CallBackTimeEntry={this?.TimeEntryCallBack}
-            Context={AllListId.Context}
-          ></TimeEntryPopup>
-        )}
+        {
+          this?.state?.IsTimeEntry && (
+            <TimeEntryPopup
+              props={this?.state?.SharewebTimeComponent}
+              CallBackTimeEntry={this?.TimeEntryCallBack}
+              Context={AllListId.Context}
+            ></TimeEntryPopup>
+          )
+        }
         <Panel onRenderHeader={this.onRenderCustomHeaderMains}
           type={PanelType.custom}
           customWidth="600px"
@@ -4342,23 +4371,19 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           this.state.Preset2Popup &&
           (<PreSetDatePikerPannel2 isOpen={this.state.Preset2Popup} PreSetPikerCallBack={this.PreSetPikerCallBack2} portfolioColor={portfolioColor} ></PreSetDatePikerPannel2>)
         }
-        {this?.state?.IsTask && (
-          <EditTaskPopup
-            Items={this.state.EditTaskItem}
-            Call={this.Call}
-            AllListId={AllListId}
-            context={this?.props?.Context}
-          ></EditTaskPopup>
-        )}
+        {
+          this?.state?.IsTask && (
+            <EditTaskPopup
+              Items={this.state.EditTaskItem}
+              Call={this.Call}
+              AllListId={AllListId}
+              context={this?.props?.Context}
+            ></EditTaskPopup>
+          )
+        }
         {this.state.IsOpenTimeSheetPopup == true && <GraphData data={this.state.AllTimeEntry} IsOpenTimeSheetPopup={this.state.IsOpenTimeSheetPopup} DateType={DateType} Call={() => { this.CallBack() }} selected />}
-
-
-
-
-      </div>
+      </div >
 
     );
   }
 }
-
-

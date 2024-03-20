@@ -866,7 +866,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                             <option value="QA">QA</option>
                                             <option value="Design">Design</option>
                                             <option value="HR">HR</option>
-                                            <option value="Junior Task Management">Junior Task Management</option>
+                                            <option value="Junior Task Manager">Junior Task Manager</option>
                                             
                                         </select>
                                     </div>

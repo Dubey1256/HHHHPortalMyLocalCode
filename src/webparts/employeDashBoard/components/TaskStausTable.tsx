@@ -50,7 +50,6 @@ const TaskStatusTbl = (Tile: any) => {
   const [dateRange, setDateRange] = React.useState<any>([]);
   const [isRejectItem, setisRejectItem] = React.useState<any>(undefined);
   const [RefSelectedItem, setRefSelectedItem] = React.useState<any>([]);
-
   const settings = {
     dots: false, infinite: true, speed: 500, slidesToShow: 6, slidesToScroll: 1, nextArrow: <SamplePrevNextArrow type="next" />, prevArrow: <SamplePrevNextArrow type="prev" />,
     beforeChange: handleBeforeChange,
@@ -79,6 +78,7 @@ const TaskStatusTbl = (Tile: any) => {
   const [sendMail, setsendMail]: any = React.useState(false);
   const [IsManageConfigPopup, setIsManageConfigPopup] = React.useState(false);
   const [SelectedItem, setSelectedItem]: any = React.useState({});
+
   if (ContextData != undefined && ContextData != '') {
     ContextData.ShowHideSettingIcon = (Value: any) => {
       IsShowConfigBtn = Value;
@@ -98,7 +98,6 @@ const TaskStatusTbl = (Tile: any) => {
     flagApproval = true
     setapprovalTask(AllapprovalTask)
   }
-
   useEffect(() => {
     Count += 1
     if (ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
@@ -933,7 +932,7 @@ const TaskStatusTbl = (Tile: any) => {
         },]
     }
   }
-  // useEffect(() => {
+
   if (Tile.activeTile != undefined && DashboardConfigCopy != undefined && DashboardConfigCopy?.length > 0)
     DashboardConfig = DashboardConfigCopy.filter((config: any) => config?.TileName == '' || config?.TileName == Tile.activeTile);
   const updatedDashboardConfig = DashboardConfig?.map((item: any, index: any) => {
@@ -942,7 +941,7 @@ const TaskStatusTbl = (Tile: any) => {
     return { ...item, column: columnss };
   });
   DashboardConfig = updatedDashboardConfig;
-  // }, [DashboardConfigCopy]);
+
 
   const editPopFunc = (item: any) => {
     setEditPopup(true);
@@ -960,8 +959,6 @@ const TaskStatusTbl = (Tile: any) => {
       setRefSelectedItem(elem)
       approveItem = undefined
     }
-    //setActiveTile(Tile?.activeTile)
-    rerender();
   }, []);
   const sendEmail = () => {
     approveItem.PercentComplete = 3
@@ -1060,6 +1057,8 @@ const TaskStatusTbl = (Tile: any) => {
     setIsManageConfigPopup(false);
     setSelectedItem('')
   }
+
+
   const generateDashboard = () => {
     const rows: any = [];
     let currentRow: any = [];

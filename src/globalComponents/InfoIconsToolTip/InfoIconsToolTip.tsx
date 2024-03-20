@@ -71,7 +71,7 @@ export default function InfoIconsToolTip(props:any) {
                         setshowHoverTitle(hovertitle)
                         const obj = {
                             Title: hovertitle,
-                            heading :props?.SingleColumnData,
+                            heading :props?.SingleColumnData=="Short_x0020_Description_x0020_On"?"Short Description":props?.SingleColumnData?.replace("_x0020_", " "),
                         };
                         feedback.push(obj);
                         setfeedbackArray(feedback);

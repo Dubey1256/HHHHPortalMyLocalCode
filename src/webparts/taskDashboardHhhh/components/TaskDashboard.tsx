@@ -185,7 +185,7 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Last Month') {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-            var change = (Moment(startingDateOfLastMonth).add(17, 'days').format())
+            var change = (Moment(startingDateOfLastMonth).add(24, 'days').format())
             var b = new Date(change)
             formattedDate = b;
         } else if (startDateOf == 'Last Week') {
@@ -682,10 +682,8 @@ const TaskDashboard = (props: any) => {
             {
                 accessorKey: "",
                 placeholder: "",
-                hasCheckbox: true,
                 hasCustomExpanded: false,
                 hasExpanded: false,
-                isHeaderNotAvlable: true,
                 size: 10,
                 id: 'Id',
             },
