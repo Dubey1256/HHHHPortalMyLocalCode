@@ -957,11 +957,11 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     <FaChevronLeft />
                 </button>
                 <span className="flex items-center gap-1 textpannel">
-                    <div>Page</div>
-                    <strong>
+                    <div className='titleblock'>Page <strong>
                         {table.getState().pagination.pageIndex + 1} of{' '}
                         {table.getPageCount()}
-                    </strong>
+                    </strong></div>
+                
                 </span>
                 <button
                     className="border"
