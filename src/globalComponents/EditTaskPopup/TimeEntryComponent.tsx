@@ -893,20 +893,15 @@ const TimeEntryPopup = (item: any) => {
       TaskTimeSheetCategoriesGrouping
     );
 
-
-
+    backupEdit = mergedFinalData;
+    setData(mergedFinalData);
+    console.log("finalData", finalData);
     if(Flatview == true){
+
       flatviewOpen(Flatview,mergedFinalData)
     }
-    else{
-      backupEdit = mergedFinalData;
-      setData(mergedFinalData);
-      setBackupData(mergedFinalData);
-      setTimeSheet(TaskTimeSheetCategoriesGrouping);
-      console.log("finalData", finalData);
-     
-    }
-
+    setBackupData(mergedFinalData);
+    setTimeSheet(TaskTimeSheetCategoriesGrouping);
 
     if (TaskStatuspopup == true) {
       setupdateData(updateData + 1);
@@ -2583,7 +2578,6 @@ const TimeEntryPopup = (item: any) => {
     }
     else{
       Flatview = e.target.checked;
-      checkedFlat = e.target.checked;
     }
    
     if (Flatview == false) {
