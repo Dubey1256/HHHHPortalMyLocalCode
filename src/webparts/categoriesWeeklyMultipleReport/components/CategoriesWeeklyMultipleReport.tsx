@@ -82,19 +82,6 @@ export interface ICategoriesWeeklyMultipleReportState {
   AllTaskEntry: any;
   IsRoundUpValues: boolean;
   bindrowValue: any;
-<<<<<<< HEAD
-}
-
-export default class CategoriesWeeklyMultipleReport extends React.Component<ICategoriesWeeklyMultipleReportProps, ICategoriesWeeklyMultipleReportState> {
-  private scrollPosition = 0
-  // columns: ({ accessorKey: any; placeholder: string; hasCheckbox: boolean; hasCustomExpanded: boolean; hasExpanded: boolean; size: number; id: string; header?: undefined; resetColumnFilters?: undefined; } | { accessorKey: string; placeholder: string; header: string; resetColumnFilters: boolean; size: number; id: string; hasCheckbox?: undefined; hasCustomExpanded?: undefined; hasExpanded?: undefined; })[];
-  columns: any;
-  timePopup: any;
-  // private childRef:any
-  public constructor(props: ICategoriesWeeklyMultipleReportProps, state: ICategoriesWeeklyMultipleReportState) {
-    super(props);
-    // this.childRef = React.createRef();
-=======
   scrollPosition: any;
   selectedAllData: any,
   loadbarchart: boolean,
@@ -112,7 +99,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     super(props);
     this.childRef = React.createRef();
     // this.scrollPosition = 0
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
     this.state = {
       Result: {},
       taskUsers: [],
@@ -164,12 +150,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       AllTaskEntry: [],
       IsRoundUpValues: false,
       bindrowValue: {},
-<<<<<<< HEAD
-=======
       scrollPosition: 0,
       selectedAllData: [],
       loadbarchart: false,
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
     }
     //this.GetResult();   
     this.columns = [
@@ -340,29 +323,17 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
               ) : (
                 <> <span>
-<<<<<<< HEAD
-                  {/* {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === false && <span className={row?.original?.IsColor === true ? "NumberchangeGreen boldClable" : ""} onDoubleClick={(e) => this.InlineUpdate(e, row?.original, row)}>{row?.original?.Rountfiguretime}</span>}
-=======
                   {/* {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === false && <span className={row?.original?.IsColor === true ? "text-danger  boldClable" : ""} onDoubleClick={(e) => this.InlineUpdate(e, row?.original, row)}>{row?.original?.Rountfiguretime}</span>}
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
                   {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === true && <span>
                     <input type="text" className="width-75" defaultValue={row?.original?.Rountfiguretime} onMouseOut={(e) => this.hideItems(e, row)} onChange={(e) => { this.changeRoutfigureTime(e, row?.original) }}></input>
                   </span>}
                 </span><span onClick={(e) => this.OpenPopupQuick(e, row)} className="svg__iconbox svg__icon--editBox"></span></>
               )} */}
-<<<<<<< HEAD
-                  {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === false && <span className={row?.original?.IsColor === true ? "NumberchangeGreen boldClable" : ""} >{row?.original?.Rountfiguretime}</span>}
-                  {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === true && <span>
-                    <input type="text" className="width-75" defaultValue={row?.original?.Rountfiguretime} ></input>
-                  </span>}
-                </span><span onClick={(e) => this.OpenPopupQuick(e, row)} className="svg__iconbox svg__icon--editBox"></span></>
-=======
                   {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === false && <span className={row?.original?.IsColor === true ? "text-danger  boldClable" : ""} >{row?.original?.Rountfiguretime}</span>}
                   {row?.original?.QuickEditItem != undefined && row?.original?.QuickEditItem === true && <span>
                     <input type="text" className="width-75" defaultValue={row?.original?.Rountfiguretime} ></input>
                   </span>}
                 </span><span  onClick={(e) => this.OpenPopupQuick(e, row)} className="svg__iconbox svg__icon--editBox"></span></>
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
               )}
             </span>
           </div>
@@ -572,11 +543,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({});
   };
   private renderData: any = [];
-<<<<<<< HEAD
-  // private inputClassName = this?.state?.isFocused ? 'NumberchangeGreen boldClable' : '';
-=======
   // private inputClassName = this?.state?.isFocused ? 'text-danger  boldClable' : '';
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
   private changeRoutfigureTime = (e: any, item: any) => {
     this.setState({ defaultValuequick: item.Rountfiguretime });
     item.Rountfiguretime = e.target.value;
@@ -610,15 +577,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   }
   private OpenPopupQuick = function (e: any, item: any) {
     this.setState({ QuickEditItem: JSON.stringify(item) })
-<<<<<<< HEAD
-    this.setState({ IsRoundUpValues: true, bindrowValue: item })
-    this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-  }
-  private cancelIsRoundUpValues = (type: any) => {
-    this.setState({ IsRoundUpValues: false }, () => {
-      // Restore the scroll position after the popup has been closed
-      window.scrollTo(0, this.scrollPosition);
-=======
     this.setState({ IsRoundUpValues: true, bindrowValue: item, scrollPosition: window.pageYOffset })
     // this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
   }
@@ -626,7 +584,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({ IsRoundUpValues: false, scrollPosition: window.pageYOffset }, () => {
       // Restore the scroll position after the popup has been closed
       window.scrollTo(0, this.state.scrollPosition || 0);
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
     });
     // this.setState({ IsRoundUpValues: false });
   }
@@ -678,19 +635,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           <label className="mx-1">|</label>
           <label>
             <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
-<<<<<<< HEAD
-            <div className={this?.state?.isFocused === true ? 'NumberchangeGreen boldClable' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
-=======
             <div className={this?.state?.isFocused === true ? 'text-danger  boldClable' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
           </label>
         </span>
       ),
     });
-<<<<<<< HEAD
-=======
     window.scrollTo(0, this.state.scrollPosition || 0);
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
     this.renderData = [];
     this.renderData = this.renderData.concat(this.state.showDateTime)
     this.refreshData();
@@ -724,11 +674,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           <label className="mx-1">|</label>
           <label>
             <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
-<<<<<<< HEAD
-            <div className={this?.state?.isFocused === true ? 'NumberchangeGreen boldClable' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
-=======
             <div className={this?.state?.isFocused === true ? 'text-danger  boldClable' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
           </label>
         </span>
       ),
@@ -2350,11 +2296,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             <label className="mx-1">|</label>
             <label>
               <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
-<<<<<<< HEAD
-              <div className={this?.state?.isFocused === true ? 'NumberchangeGreen boldClable' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
-=======
               <div className={this?.state?.isFocused === true ? 'text-danger  boldClable' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
             </label>
           </span>
         ),
@@ -3094,11 +3036,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           <label className="mx-1">|</label>
           <label>
             <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
-<<<<<<< HEAD
-            <div className={this?.state?.isFocused === true ? 'NumberchangeGreen boldClable' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
-=======
             <div className={this?.state?.isFocused === true ? 'text-danger  boldClable' : ''}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
           </label>
         </span>
       ),
@@ -3933,20 +3871,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       IsOpenTimeSheetPopup: true
     })
   }
-<<<<<<< HEAD
-  private customTableHeaderButtons = (
-    <>
-      <a className='barChart' title='Open Bar Graph' onClick={this.showGraph}><BsBarChartLine /></a>
-      {/* <button
-        type='button'
-        disabled={!!(this.childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length > 0)}>
-        MultiUpdate
-      </button> */}
-    </>
-  )
-=======
-
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
   private CallBack = () => {
     //setIsOpenTimeSheetPopup(false)
     this.setState({
@@ -3967,9 +3891,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       }
     }));
   }
-<<<<<<< HEAD
-
-=======
   // customTableHeaderButtons=() => {
   //   const  portfolioColor :any = this.props; // Assuming portfolioColor comes from props
   //   // Now `this` correctly refers to the component instance
@@ -4009,7 +3930,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   private bulkUpdateWeeklyReport = () => {
 
   }
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
   public render(): React.ReactElement<ICategoriesWeeklyMultipleReportProps> {
     //   const { AllTimeEntry } = this?.state;
 
@@ -4462,15 +4382,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           )
         }
         {this.state.IsOpenTimeSheetPopup == true && <GraphData data={this.state.AllTimeEntry} IsOpenTimeSheetPopup={this.state.IsOpenTimeSheetPopup} DateType={DateType} Call={() => { this.CallBack() }} selected />}
-<<<<<<< HEAD
-
-
-
-
-      </div>
-=======
       </div >
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
 
     );
   }
