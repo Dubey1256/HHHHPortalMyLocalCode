@@ -1411,7 +1411,7 @@ const CreateActivity = (props: any) => {
                   DiscriptionSearchData =
                     globalCommon.descriptionSearchData(feedbackdata);
                 }
-                item.TaskID = globalCommon?.GetTaskId(item);
+                // item.TaskID = globalCommon?.GetTaskId(item);
                 onUploadImageFunction(item);
                 if (
                   categoriesItem?.indexOf("Immediate") > -1 ||
