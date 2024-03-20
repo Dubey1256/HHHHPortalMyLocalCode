@@ -17,6 +17,7 @@ import CustomAlert from "../TimeEntry/CustomAlert";
 import Tooltip from "../Tooltip";
 import * as globalCommon from "../globalCommon";
 import HighlightableCell from "../highlight";
+import { useContext,createContext } from "react";
 import {
   MdKeyboardArrowLeft,
   MdKeyboardArrowRight,
@@ -58,15 +59,11 @@ var PopupType: any = "";
 var PopupTypeCat: any = false;
 const SP = spfi();
 let AllMetadata: [] = [];
-
+let checkedFlat = false;
 const TimeEntryPopup = (item: any) => {
   if (item?.props?.siteUrl != undefined) {
-    //var Url = item?.props?.siteUrl.split("https://hhhhteams.sharepoint.com");
     let index = item?.props?.siteUrl.indexOf('/', 'https://'.length);
-
-    // Extract the substring after the domain
     RelativeUrl = item?.props?.siteUrl.substring(index);
-    //RelativeUrl = extractedUrl[1];
     CurrentSiteUrl = item?.props?.siteUrl;
     PortfolioType = item?.props?.Portfolio_x0020_Type;
     CurntUserId = item?.Context?.pageContext?._legacyPageContext.userId;
@@ -896,15 +893,20 @@ const TimeEntryPopup = (item: any) => {
       TaskTimeSheetCategoriesGrouping
     );
 
-    backupEdit = mergedFinalData;
-    setData(mergedFinalData);
-    console.log("finalData", finalData);
-    if(Flatview == true){
 
+
+    if(Flatview == true){
       flatviewOpen(Flatview,mergedFinalData)
     }
-    setBackupData(mergedFinalData);
-    setTimeSheet(TaskTimeSheetCategoriesGrouping);
+    else{
+      backupEdit = mergedFinalData;
+      setData(mergedFinalData);
+      setBackupData(mergedFinalData);
+      setTimeSheet(TaskTimeSheetCategoriesGrouping);
+      console.log("finalData", finalData);
+     
+    }
+
 
     if (TaskStatuspopup == true) {
       setupdateData(updateData + 1);
@@ -1081,7 +1083,6 @@ const TimeEntryPopup = (item: any) => {
   //------------------------------------------------------Load Timesheet Data-----------------------------------------------------------------------------
   const EditData = async (items: any) => {
     AllTimeSpentDetails = [];
-
     TaskTimeSheetCategories = getSmartMetadataItemsByTaxType(
       AllMetadata,
       "TimesheetCategories"
@@ -1785,6 +1786,7 @@ const TimeEntryPopup = (item: any) => {
 
   //-----------------------------------------------Create Add Timesheet--------------------------------------------------------------------------------------
   const AddTaskTime = async (child: any, Type: any) => {
+
     setbuttonDisable(true);
 
     if (Type == "EditTime") {
@@ -2409,6 +2411,7 @@ const TimeEntryPopup = (item: any) => {
   //--------------------------------------Change time by custom button-----------------------------------------------------------------------------
   const changeTimeFunction = (e: any, type: any,Use:any) => {
    if(Use == 'remove'){
+    changeTime=0;
     setsaveEditTaskTimeChild({});
     setTimeInMinutes(0)
     setTimeInHours(0)
@@ -2416,7 +2419,6 @@ const TimeEntryPopup = (item: any) => {
    else{
     changeTime = Number(e.target.value);
     if (type === "AddTime" || type == "AddTime Category") {
-      
         if (changeTime !== undefined) {
           const timeInHour: any = changeTime / 60;
           setTimeInHours(timeInHour.toFixed(2));
@@ -2581,6 +2583,7 @@ const TimeEntryPopup = (item: any) => {
     }
     else{
       Flatview = e.target.checked;
+      checkedFlat = e.target.checked;
     }
    
     if (Flatview == false) {
@@ -2588,6 +2591,7 @@ const TimeEntryPopup = (item: any) => {
     } else {
       data?.forEach((item: any) => {
         item.subRows?.forEach((val: any) => {
+          val.Category = item.Category?.Title;
           newArray.push(val);
         });
       });
@@ -2748,7 +2752,17 @@ const TimeEntryPopup = (item: any) => {
         header: "",
         size: 95,
       },
-
+      Flatview ? {
+        accessorFn: (row) => row?.Category,
+        id: "Category",
+        resetColumnFilters: false,
+        placeholder: "Category",
+        header: "",
+        size: 95,
+        cell: ({ row }) => (
+          <div className="text-center">{row?.original?.Category}</div>
+        ),
+      } : { header: '', id: 'CategoryHidden' },  
       {
         accessorKey: "Description",
         placeholder: "Description",
@@ -2839,6 +2853,7 @@ const TimeEntryPopup = (item: any) => {
   );
 
   return (
+  
     <div className={PortfolioType == "Service" ? "serviepannelgreena" : ""}>
       <div>
         <div className="col-sm-12 p-0">
@@ -3551,8 +3566,7 @@ const TimeEntryPopup = (item: any) => {
                   {PopupTypeCat == true ? (
                     <button
                       disabled={
-                        (PopupType == "AddTime" ||
-                          PopupType == "AddTime Category") &&
+                        (PopupType == "AddTime" || PopupType == "AddTime Category") &&
                           TimeInMinutes <= 0
                           ? true
                           : false
@@ -3566,8 +3580,7 @@ const TimeEntryPopup = (item: any) => {
                   ) : (
                     <button
                       disabled={
-                        (PopupType == "AddTime" ||
-                          PopupType == "AddTime Category") &&
+                        (PopupType == "AddTime" || PopupType == "AddTime Category") &&
                           TimeInMinutes <= 0
                           ? true
                           : false || buttonDisable == true
