@@ -116,9 +116,10 @@ function ReadyMadeTable(SelectedProp: any) {
     const [flatViewDataAll, setFlatViewDataAll] = React.useState([]);
     const [openCompareToolPopup, setOpenCompareToolPopup] = React.useState(false);
     const rerender = React.useReducer(() => ({}), {})[1];
+    const [taskCatagory, setTaskCatagory] = React.useState([]);
     const [ActiveCompareToolButton, setActiveCompareToolButton] = React.useState(false);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Component', Suffix: 'C', Level: 1 }, { Title: 'SubComponent', Suffix: 'S', Level: 2 }, { Title: 'Feature', Suffix: 'F', Level: 3 }]);
-
+    const [timeEntryDataLocalStorage, setTimeEntryDataLocalStorage] = React.useState<any>(localStorage.getItem('timeEntryIndex'));
     let Response: any = [];
     let props = undefined;
     let AllTasks: any = [];
@@ -292,7 +293,7 @@ function ReadyMadeTable(SelectedProp: any) {
         let siteConfigSites: any = []
         var Priority: any = []
         // let PrecentComplete: any = [];
-        // let Categories: any = [];
+        let Categories: any = [];
         // let FeatureType: any = []
         let web = new Web(ContextValue.siteUrl);
         let smartmetaDetails: any = [];
@@ -311,6 +312,9 @@ function ReadyMadeTable(SelectedProp: any) {
             if (newtest?.TaxType == 'Priority Rank') {
                 Priority?.push(newtest)
             }
+            if (newtest.TaxType == 'Categories') {
+                Categories.push(newtest);
+            }
             if (newtest?.TaxType == 'timesheetListConfigrations') {
                 timeSheetConfig = newtest;
             }
@@ -324,6 +328,7 @@ function ReadyMadeTable(SelectedProp: any) {
             }
 
         }
+        setTaskCatagory(Categories);
         setMetadata(smartmetaDetails);
     };
     const findPortFolioIconsAndPortfolio = async () => {
@@ -672,6 +677,8 @@ function ReadyMadeTable(SelectedProp: any) {
                                     result.joinedData.push(`Project ${result?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                                 }
                             }
+                            result = globalCommon.findTaskCategoryParent(taskCatagory, result)
+                         
                             result.SmartPriority = globalCommon.calculateSmartPriority(result);
                             // result = globalCommon.findTaskCategoryParent(taskCatagory, result)
                             result["Item_x0020_Type"] = "Task";
@@ -681,12 +688,14 @@ function ReadyMadeTable(SelectedProp: any) {
                         if(filterTaskType){
                             console.log(AllSiteTasksData)
                              AlltaskfilterData=[...AllSiteTasksData,...AllTasksData]
-                          
-                            DataPrepareForCSFAWT()
-
+                             await smartTimeUseLocalStorage(AlltaskfilterData)
+                           
+                             setAllSiteTasksData(AlltaskfilterData);
+                             DataPrepareForCSFAWT()
                         }
                         
                         else{
+                            await smartTimeUseLocalStorage(AllTasksData)
                             setAllSiteTasksData(AllTasksData);
                         }
                        
@@ -705,8 +714,23 @@ function ReadyMadeTable(SelectedProp: any) {
             // GetComponents();
         }
     };
+    const smartTimeUseLocalStorage = (AllTasksData:any) => {
+        if (timeEntryDataLocalStorage?.length > 0) {
+            const timeEntryIndexLocalStorage = JSON.parse(timeEntryDataLocalStorage)
+            AllTasksData?.map((task: any) => {
+                task.TotalTaskTime = 0;
+                task.timeSheetsDescriptionSearch = "";
+                const key = `Task${task?.siteType + task.Id}`;
+                if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
+                    // task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                    task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndexLocalStorage[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                    task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
+                }
+            });
+            return AllTasksData;
+        }
+    };
     const timeEntryIndex: any = {};
-
     const smartTimeTotal = async () => {
         setLoaded(false)
         count++;
@@ -750,28 +774,7 @@ function ReadyMadeTable(SelectedProp: any) {
             localStorage.setItem('timeEntryIndex', dataString);
         }
         console.log("timeEntryIndex", timeEntryIndex)
-        // if (SelectedProp?.configration == "AllAwt" && SelectedProp?.SelectedItem != undefined) {
-        //     if ('Parent' in SelectedProp?.SelectedItem) {
-        //         taskTypeData?.map((levelType: any) => {
-        //             if (levelType.Level === 1)
-        //                 componentActivity(levelType, SelectedProp?.SelectedItem);
-        //         })
-        //     }
-        //     if ('ParentTask' in SelectedProp?.SelectedItem) {
-        //         let data: any = [SelectedProp?.SelectedItem]
-        //         data?.map((wTdata: any) => {
-        //             wTdata.subRows = [];
-        //             componentWsT(wTdata);
-        //         })
-        //         executeOnce()
-        //         setLoaded(true)
-        //         setData(data[0]?.subRows);
-
-
-        //     }
-        //     console.log(data)
-
-        // }
+      
       
             if (AllSiteTasksData?.length > 0) {
                 setData([]);
@@ -1520,9 +1523,9 @@ function ReadyMadeTable(SelectedProp: any) {
             {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
-                    <>
+                    <div className="hreflink">
                         <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
-                    </>
+                    </div>
                 ),
                 id: "TaskID",
                 placeholder: "ID",
@@ -1577,7 +1580,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) &&
-                            <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+                            <span><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.PortfolioType?.Color}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
                                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
                         }
                     </>
@@ -1589,20 +1592,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 size: 70,
                 isColumnVisible: true
             },
-            {
-                accessorFn: (row) => row?.TaskTypeValue,
-                cell: ({ row, column, getValue }) => (
-                    <>
-                        <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
-                    </>
-                ),
-                placeholder: "Task Type",
-                header: "",
-                resetColumnFilters: false,
-                size: 130,
-                id: "TaskTypeValue",
-                isColumnVisible: true
-            },
+           
             {
                 accessorFn: (row) => row?.ClientCategorySearch,
                 cell: ({ row }) => (
@@ -1641,6 +1631,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 header: "",
                 size: 42,
+                fixedColumnWidth:true,
                 isColumnVisible: true
             },
             {
@@ -1653,7 +1644,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 header: "",
                 size: 42,
-                isColumnVisible: true
+                isColumnVisible: true,
+                fixedColumnWidth:true
             },
             {
                 accessorFn: (row) => row?.SmartPriority,
@@ -1672,7 +1664,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 header: "",
                 size: 42,
-                isColumnVisible: true
+                isColumnVisible: true,
+                fixedColumnWidth:true
             },
             {
                 accessorFn: (row) => row?.PriorityRank,
@@ -1691,7 +1684,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 header: "",
                 size: 42,
-                isColumnVisible: false
+                isColumnVisible: false,
+                fixedColumnWidth:true
             },
             {
                 accessorFn: (row) => row?.descriptionsDeliverablesSearch,
@@ -1859,6 +1853,76 @@ function ReadyMadeTable(SelectedProp: any) {
                 isColumnVisible: false
             },
             {
+                accessorFn: (row) => row?.TaskTypeValue,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+                    </>
+                ),
+                placeholder: "Task Type",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "TaskTypeValue",
+                isColumnVisible: true
+            },
+            {
+                accessorFn: (row) => row?.Type,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+                    </>
+                ),
+                placeholder: "Type",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "Type",
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.Attention,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+                    </>
+                ),
+                placeholder: "Attention",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "Attention",
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.Admin,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+                    </>
+                ),
+                placeholder: "Admin",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "Admin",
+                isColumnVisible: false
+            },
+            {
+                accessorFn: (row) => row?.Actions,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        <span className="columnFixedTaskCate"><span title={row?.original?.TaskTypeValue} className="text-content"><HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /></span></span>
+                    </>
+                ),
+                placeholder: "Actions",
+                header: "",
+                resetColumnFilters: false,
+                size: 130,
+                id: "Actions",
+                isColumnVisible: false
+            },
+            {
                 accessorFn: (row) => row?.DueDate,
                 cell: ({ row, column, getValue }) => (
                     <HighlightableCell value={row?.original?.DisplayDueDate} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} />
@@ -1876,7 +1940,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 placeholder: "DueDate",
                 header: "",
                 size: 91,
-                isColumnVisible: true
+                isColumnVisible: true,
+                fixedColumnWidth:true
             },
             {
                 accessorFn: (row) => row?.Created,
@@ -1908,6 +1973,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 placeholder: "Created",
+                fixedColumnWidth:true,
                 filterFn: (row: any, columnName: any, filterValue: any) => {
                     if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
                         return true
@@ -1942,6 +2008,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 placeholder: "Modified",
+                fixedColumnWidth:true,
                 isColumnVisible: false,
                 filterFn: (row: any, columnName: any, filterValue: any) => {
                     if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
@@ -1984,14 +2051,15 @@ function ReadyMadeTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 49,
-                isColumnVisible: true
+                isColumnVisible: true,
+                fixedColumnWidth:true
             },
             {
                 cell: ({ row }) => (
                     <>
                         {row?.original?.siteType != "Master Tasks" && row?.original?.Title != "Others" && (
                             <a className="alignCenter" onClick={(e) => EditDataTimeEntryData(e, row.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
-                                <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
+                                <span className="svg__iconbox svg__icon--clock hreflink dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
                             </a>
                         )}
                     </>
@@ -2000,7 +2068,8 @@ function ReadyMadeTable(SelectedProp: any) {
                 canSort: false,
                 placeholder: "",
                 size: 1,
-                isColumnVisible: true
+                isColumnVisible: true,
+                fixedColumnWidth:true
             },
             {
                 header: ({ table }: any) => (
@@ -2042,7 +2111,7 @@ function ReadyMadeTable(SelectedProp: any) {
                                 >
                                     {" "}
                                     <span
-                                        className="svg__iconbox svg__icon--edit"
+                                        className="svg__iconbox hreflink svg__icon--edit"
                                         onClick={(e) => EditComponentPopup(row?.original)}
                                     ></span>
                                 </a>
@@ -2057,7 +2126,7 @@ function ReadyMadeTable(SelectedProp: any) {
                                 >
                                     {" "}
                                     <span
-                                        className="svg__iconbox svg__icon--edit"
+                                        className="svg__iconbox hreflink svg__icon--edit"
                                         onClick={(e) => EditItemTaskPopup(row?.original)}
                                     ></span>
                                 </a>

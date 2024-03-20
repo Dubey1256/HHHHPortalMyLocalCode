@@ -4,7 +4,7 @@ import { FaCompressArrowsAlt, FaFilter, } from "react-icons/fa";
 import pnp, { Web } from "sp-pnp-js";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
-import { PortfolioStructureCreationCard } from "../../../globalComponents/tableControls/PortfolioStructureCreation";
+import  CreateAllStructureComponent  from "../../../globalComponents/CreateAllStructure";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Tooltip from "../../../globalComponents/Tooltip";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
@@ -232,6 +232,8 @@ const GroupByDashboard = (SelectedProp: any) => {
         componentDetails = await globalCommon.GetServiceAndComponentAllData(SelectedProp?.SelectedProp);
         console.log(componentDetails);
         componentDetails?.AllData?.forEach((result: any) => {
+            if(result.HelpInformationVerified == null || result.HelpInformationVerified == undefined)
+                result.HelpInformationVerified = false;
             portfolioTypeDataItem?.map((type: any) => {
                 if (result?.Item_x0020_Type === type.Title && result.PortfolioType != undefined) {
                     type[type.Title + 'number'] += 1;
@@ -639,7 +641,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                     {
                         topCompoIcon ?
                             <span style={{ backgroundColor: `${portfolioColor}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
-                                <span className="alignIcon  svg__iconbox svg__icon--re-structure"></span>
+                                <span className="svg__iconbox svg__icon--re-structure"></span>
                             </span>
                             : ''
                     }
@@ -649,7 +651,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                     <>
                         {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
                             <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
-                                <span className="alignIcon  svg__iconbox svg__icon--re-structure"> </span>
+                                <span className="svg__iconbox svg__icon--re-structure"> </span>
                             </span>
                         )}
                         {/* {getValue()} */}
@@ -990,7 +992,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 </section>
             </div>
             <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={AddStructureCallBackCall} >
-                <PortfolioStructureCreationCard
+                {/* <CreateAllStructureComponent
                     CreatOpen={CreateOpenCall}
                     Close={AddStructureCallBackCall}
                     PortfolioType={IsUpdated}
@@ -999,6 +1001,17 @@ const GroupByDashboard = (SelectedProp: any) => {
                         checkedList != null && checkedList?.Id != undefined
                             ? checkedList
                             : props
+                    }
+                /> */}
+                   <CreateAllStructureComponent
+                    Close={AddStructureCallBackCall}
+                    taskUser={AllUsers}
+                    portfolioTypeData={portfolioTypeData}
+                    PropsValue={ContextValue}
+                    SelectedItem={
+                        checkedList != null && checkedList?.Id != undefined
+                            ? checkedList
+                            : SelectedProp?.SelectedItem
                     }
                 />
             </Panel>
