@@ -893,15 +893,18 @@ const TimeEntryPopup = (item: any) => {
       TaskTimeSheetCategoriesGrouping
     );
 
-    backupEdit = mergedFinalData;
-    setData(mergedFinalData);
-    console.log("finalData", finalData);
     if(Flatview == true){
-
       flatviewOpen(Flatview,mergedFinalData)
     }
-    setBackupData(mergedFinalData);
-    setTimeSheet(TaskTimeSheetCategoriesGrouping);
+    else{
+      backupEdit = mergedFinalData;
+      setData(mergedFinalData);
+      setBackupData(mergedFinalData);
+      setTimeSheet(TaskTimeSheetCategoriesGrouping);
+      console.log("finalData", finalData);
+     
+    }
+   
 
     if (TaskStatuspopup == true) {
       setupdateData(updateData + 1);
