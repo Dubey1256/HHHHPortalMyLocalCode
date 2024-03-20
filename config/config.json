@@ -426,17 +426,6 @@
         }
       ]
     },
-<<<<<<< HEAD
-    "smart-dynamic-table-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/smartDynamicTable/SmartDynamicTableWebPart.js",
-          "manifest": "./src/webparts/smartDynamicTable/SmartDynamicTableWebPart.manifest.json"
-        }
-      ]
-    },
-=======
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
     "root-team-portfolio-table-web-part": {
       "components": [
         {
@@ -444,25 +433,6 @@
           "manifest": "./src/webparts/rootTeamPortfolioTable/RootTeamPortfolioTableWebPart.manifest.json"
         }
       ]
-<<<<<<< HEAD
-    },
-    "task-profile-template-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/taskProfileTemplate/TaskProfileTemplateWebPart.js",
-          "manifest": "./src/webparts/taskProfileTemplate/TaskProfileTemplateWebPart.manifest.json"
-        }
-      ]
-    },
-    "employee-dashboard-templated-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/employeeDashboardTemplated/EmployeeDashboardTemplatedWebPart.js",
-          "manifest": "./src/webparts/employeeDashboardTemplated/EmployeeDashboardTemplatedWebPart.manifest.json"
-        }
-      ]
-=======
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
     }
   },
   "externals": {
