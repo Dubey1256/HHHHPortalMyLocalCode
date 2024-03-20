@@ -959,7 +959,6 @@ const TaskStatusTbl = (Tile: any) => {
       setRefSelectedItem(elem)
       approveItem = undefined
     }
-    rerender();
   }, []);
   const sendEmail = () => {
     approveItem.PercentComplete = 3
