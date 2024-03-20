@@ -2680,7 +2680,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 header: "",
                 size: 55,
-                isColumnVisible: true
+                isColumnVisible: true,
+                fixedColumnWidth:true
             },
             {
                 accessorFn: (row) => row?.ItemRank,
@@ -2692,7 +2693,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 header: "",
                 size: 55,
-                isColumnVisible: true
+                isColumnVisible: true,
+                fixedColumnWidth:true
             },
             {
                 accessorFn: (row) => row?.SmartPriority,
@@ -2711,7 +2713,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 header: "",
                 size: 55,
-                isColumnVisible: true
+                isColumnVisible: true,
+                fixedColumnWidth:true
             },
             {
                 accessorFn: (row) => row?.PriorityRank,
@@ -2730,7 +2733,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 resetColumnFilters: false,
                 header: "",
                 size: 55,
-                isColumnVisible: false
+                isColumnVisible: false,
+                fixedColumnWidth:true
             },
             {
                 accessorFn: (row) => row?.descriptionsDeliverablesSearch,
@@ -2915,7 +2919,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 placeholder: "DueDate",
                 header: "",
                 size: 91,
-                isColumnVisible: true
+                isColumnVisible: true,
+                fixedColumnWidth:true
             },
             {
                 accessorFn: (row) => row?.Created,
@@ -2949,7 +2954,8 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 },
                 header: "",
-                size: 105
+                size: 105,
+                fixedColumnWidth:true
             },
             {
                 accessorFn: (row) => row?.Modified,
@@ -2983,7 +2989,8 @@ function TeamPortlioTable(SelectedProp: any) {
                     }
                 },
                 header: "",
-                size: 105
+                size: 105,
+                fixedColumnWidth:true
             },
             {
                 accessorKey: "descriptionsSearch",
@@ -3016,7 +3023,8 @@ function TeamPortlioTable(SelectedProp: any) {
                 header: "",
                 resetColumnFilters: false,
                 size: 49,
-                isColumnVisible: true
+                isColumnVisible: true,
+                fixedColumnWidth:true
             },
             {
                 cell: ({ row }) => (

@@ -6,6 +6,7 @@ import { usePopperTooltip } from "react-popper-tooltip";
 import "react-popper-tooltip/dist/styles.css";
 import ColumnSettingSortingToolTip from "./ColumnSettingSortingToolTip";
 import { Web } from "sp-pnp-js";
+import CoustomInfoIcon from "./CoustomInfoIcon";
 // let propColumns: any = [];
 const ColumnsSetting = (props: any) => {
     const [columnSettingVisibility, setColumnSettingVisibility] = React.useState<any>({});
@@ -293,11 +294,18 @@ const ColumnsSetting = (props: any) => {
     const handleSortClick = (columnId: string, currentSorting: any) => {
         let newSorting: any;
         setColumnSorting({})
-        if (!currentSorting || currentSorting.id !== columnId) {
+        // if (!currentSorting || currentSorting.id !== columnId) {
+        //     newSorting = { id: columnId, asc: true, desc: false, };
+        // } else if (currentSorting.asc) {
+        //     newSorting = { id: columnId, asc: false, desc: true, };
+        // } else { newSorting = null; }
+        if (currentSorting.asc === true) {
             newSorting = { id: columnId, asc: true, desc: false, };
-        } else if (currentSorting.asc) {
+        } else if (currentSorting.desc === true) {
             newSorting = { id: columnId, asc: false, desc: true, };
-        } else { newSorting = null; }
+        } else if (currentSorting === null) {
+            { newSorting = null; }
+        }
         setColumnSorting((prevSorting: any) => ({ ...prevSorting, [columnId]: newSorting, }));
     };
 
@@ -363,7 +371,7 @@ const ColumnsSetting = (props: any) => {
                     <table className="w-100">
                         <thead>
                             <tr>
-                                <th className="f-16 border-0" style={{ width: "28%" }}>Columns</th>
+                                <th className="f-16 border-0" style={{ width: "28%" }}> <div className="alignCenter"><span>Columns</span> <span className="mt-1"><CoustomInfoIcon Discription="Default settings are stored in centralized database the changes done here will be only for current user on this table it will not impact anyone else. For centralized changes suggestions contact admin." /></span></div></th>
                                 <th className="f-16 border-0" style={{ width: "21%" }}>Column Width</th>
                                 {/* <th className="f-16 border-0" style={{ width: "21%" }}>Column Sorting</th> */}
                                 <th className="f-16 border-0" style={{ width: "30%" }}>Column Ordering</th>
@@ -384,12 +392,12 @@ const ColumnsSetting = (props: any) => {
                                                                         onChange={(e: any) => coustomColumnsSetting(column, event)} name={column.id}
                                                                     />
                                                                     <ColumnSettingSortingToolTip columnSorting={columnSorting} column={column} placeholder={column?.placeholder} handleSortClick={handleSortClick} />
-                                                                    {/* {column?.placeholder} */}
                                                                 </div>}
                                                             </td>
                                                             <td style={{ width: "30%" }}>
                                                                 {column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && <div className="alignCenter">
-                                                                    <div title={column?.placeholder} className="columnSettingWidth" style={{ width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" }}>{column?.size}</div>  {!editing[column?.id] && <div className="pancil-icons" onClick={() => handleEdit(column.id)}><span className="svg__iconbox svg__icon--editBox"></span></div>}
+                                                                    <div title={column?.placeholder} className="columnSettingWidth" style={(column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" } : { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px", background: "gray", color: "white" }}>{column?.size}</div>
+                                                                    {!editing[column?.id] && ((column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? (<div className="pencil-icons" onClick={() => handleEdit(column.id)}> <span className="svg__iconbox svg__icon--editBox"></span></div>) : (!editing[column?.id] && (<div className="pencil-icons"> <span style={{ background: "gray" }} className="svg__iconbox svg__icon--editBox"></span></div>)))}
                                                                     {editing[column?.id] && (
                                                                         <div className="alignCenter">
                                                                             <input style={{ width: "36%", height: "27px" }} value={widthCol?.size} type="number" className="ms-1" placeholder={`${column?.placeholder}`} title={column?.placeholder} onChange={(e: any) => handleChangeWidth(e, column)} />
@@ -399,21 +407,6 @@ const ColumnsSetting = (props: any) => {
                                                                     )}
                                                                 </div>}
                                                             </td>
-                                                            {/* <td style={{ width: "30%" }}>
-                                                                {column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && <div className="editcolumn alignCenter">
-                                                                    <div title={column?.placeholder} className="columnSettingWidth" style={{ width: "50px", padding: "1px", border: "1px solid #ccc", height: "27px" }}></div>
-                                                                    <div style={{ position: "relative", right: '19px', border: "2px solid gray", padding: '1px' }}>
-                                                                        {columnSorting[column.id] ? (
-                                                                            <div onClick={() => handleSortClick(column.id, columnSorting[column.id])}>
-                                                                                {columnSorting[column.id].asc === true && (<div><FaSortDown /></div>)}
-                                                                                {columnSorting[column.id].desc === true && (<div><FaSortUp /></div>)}
-                                                                            </div>
-                                                                        ) : (
-                                                                            <div onClick={() => handleSortClick(column.id, null)}> <FaSort style={{ color: "gray" }} /></div>
-                                                                        )}
-                                                                    </div>
-                                                                </div>}
-                                                            </td> */}
                                                         </tr>}
                                                     </>
                                                 )
@@ -458,7 +451,7 @@ const ColumnsSetting = (props: any) => {
                     </div>
 
                     <div className="col-sm-3">
-                        <div style={{ fontWeight: 300, fontSize: "21px", display: 'contents' }} className="siteColor">Clear Preset Value</div>
+                        <div className="alignCenter"><div style={{ fontWeight: 300, fontSize: "21px", display: 'contents' }} className="siteColor">Clear Preset Value</div>  <CoustomInfoIcon Discription="Restore the Column Settings to their Default Value." /></div>
                         <div>
                             <button className="width30" type="button" onClick={handleClearLocalStorage}>
                                 Clear
