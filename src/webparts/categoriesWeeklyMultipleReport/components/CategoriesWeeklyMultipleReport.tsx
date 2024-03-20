@@ -180,7 +180,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       {
         accessorKey: "",
         placeholder: "",
-        hasCheckbox: false,
+        hasCheckbox: true,
         hasCustomExpanded: true,
         hasExpanded: true,
         size: 25,
@@ -3871,7 +3871,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       IsOpenTimeSheetPopup: true
     })
   }
-
   private CallBack = () => {
     //setIsOpenTimeSheetPopup(false)
     this.setState({
@@ -3932,18 +3931,18 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
   }
   public render(): React.ReactElement<ICategoriesWeeklyMultipleReportProps> {
-    const { AllTimeEntry } = this?.state;
+    //   const { AllTimeEntry } = this?.state;
 
-    SPComponentLoader.loadCss("https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
+    //  // SPComponentLoader.loadCss("https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
 
-    const {
-      description,
-      isDarkTheme,
-      environmentMessage,
-      hasTeamsContext,
-      userDisplayName
-    } = this.props;
-    console.log('Checked === ', this.state.checked);
+    //   const {
+    //     description,
+    //     isDarkTheme,
+    //     environmentMessage,
+    //     hasTeamsContext,
+    //     userDisplayName
+    //   } = this.props;
+    //  console.log('Checked === ', this.state.checked);
     return (
       <div>
         <div className="col-sm-12 padL-0">
@@ -4388,4 +4387,3 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     );
   }
 }
-
