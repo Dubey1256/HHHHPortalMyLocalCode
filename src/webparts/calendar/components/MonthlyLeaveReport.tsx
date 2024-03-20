@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Web } from 'sp-pnp-js';
+import DatePicker from "react-datepicker";
+import CheckboxTree from 'react-checkbox-tree';
+import "react-datepicker/dist/react-datepicker.css";
+import Tooltip from '../../../globalComponents/Tooltip';
 // @ts-ignore
 import * as html2pdf from 'html2pdf.js';
 import * as XLSX from 'xlsx';
-import { Modal, Button, Form, Row } from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import { setMonth } from 'office-ui-fabric-react';
+import { end } from '@popperjs/core';
+import moment from 'moment';
 
 let allReportData: any = [];
+let filteredData: any = [];
 let index: any = [];
 export const MonthlyLeaveReport = (props: any) => {
   const [selectedDate, setSelectedDate] = useState('');
@@ -20,6 +27,10 @@ export const MonthlyLeaveReport = (props: any) => {
   const [leaveset, setleaveset] = useState(false);
   const [disabled, setdisabled] = useState(false);
   const [disabl, setdisabl] = useState(false);
+  const [ImageSelectedUsers, setImageSelectedUsers] = useState([])
+  const [startDate, setstartDate] = useState(new Date())
+  const [endDate, setendDate] = useState(new Date())
+  const [selectgroupName, setSelectGroupName] = useState("")
   useEffect(() => {
     if (selectedDate || selectendDate) {
       setdisabled(true)
@@ -33,19 +44,32 @@ export const MonthlyLeaveReport = (props: any) => {
 
   const getTaskUser = async () => {
     let web = new Web(props.props.siteUrl);
+    // let taskUsers = [];
     try {
-      const Data: any[] = await web.lists
-        .getById(props.props.TaskUsertListID)
-        .items.orderBy("Created", true)
-        .filter("UserGroupId ne 295")
-        .get();
+      const Data: any[] = await web.lists.getById(props.props.TaskUsertListID).items.select("Id,Title,TimeCategory,Team,CategoriesItemsJson,Suffix,SortOrder,IsApprovalMail,Item_x0020_Cover,ItemType,Created,Company,Role,Modified,IsActive,IsTaskNotifications,DraftCategory,UserGroup/Title,UserGroup/Id,AssingedToUser/Title,AssingedToUser/Name,AssingedToUser/Id,Author/Name,Author/Title,Editor/Name,Approver/Id,Approver/Title,Approver/Name,Editor/Title,Email")
+        .expand("Author,Editor,AssingedToUser,UserGroup,Approver").orderBy("Title", true).get();
 
-      const mydata = Data.filter((item) => item.UserGroupId != null && item.UserGroupId !== 131 && item.UserGroupId !== 147 && item.UserGroupId !== 7 && item.AssingedToUserId !== 9);
-      setAllTaskuser(mydata);
+      let filteredData = Data.filter((item: any) =>
+        item.Title != 'HHHH Team' && item.Title != 'External Staff' && item.Title != 'Ex Staff'
+      )
+      // const mydata = Data.filter((item) => item.UserGroupId != null && item.UserGroupId !== 131 && item.UserGroupId !== 147 && item.UserGroupId !== 7 && item.AssingedToUserId !== 9);
+      for (let index = 0; index < filteredData?.length; index++) {
+        let element = filteredData[index];
+        if (element?.ItemType == 'Group') {
+          getChilds(element, filteredData);
+          // taskUsers.push(element);
+        }
+      }
+      let currentUser = filteredData.filter((itm: any) =>
+        itm.Title == props?.props?.context?.pageContext?.user?.displayName
+      )
+      setImageSelectedUsers(currentUser);
+      setAllTaskuser(filteredData);
     } catch (err) {
       console.log(err.message);
     }
   };
+
 
   const loadleave = async () => {
     const web = new Web(props.props.siteUrl);
@@ -54,14 +78,16 @@ export const MonthlyLeaveReport = (props: any) => {
         "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,Created,EventType,UID,fRecurrence,HalfDay,HalfDayTwo,Event_x002d_Type"
       ).expand("Author,Editor,Employee").getAll();
       setLeaveData(results);
-      getTaskUser();
     } catch (err) {
       console.log(err);
     }
+
   };
 
   useEffect(() => {
     loadleave();
+
+    getTaskUser();
   }, []);
   const downloadExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(allReportData);
@@ -87,6 +113,276 @@ export const MonthlyLeaveReport = (props: any) => {
     });
   };
 
+  const SelectAllGroupMember = (ev: any) => {
+    let SelectGroupName = '';
+    let select = ev.currentTarget.checked;
+    let ImageSelectedUser = ImageSelectedUsers;
+    if (select == true) {
+      AllTaskuser.forEach((item: any) => {
+        if (item?.childs != undefined && item?.childs?.length > 0) {
+          item.SelectedGroup = select;
+          for (let index = 0; index < item.childs.length; index++) {
+            let child = item.childs[index];
+            child.IsSelected = true;
+            try {
+              document.getElementById('UserImg' + child.Id).classList.add('seclected-Image');
+              if (child.Id != undefined && !isItemExists(ImageSelectedUser, child.Id))
+                ImageSelectedUsers.push(child)
+            } catch (error) { }
+          }
+        }
+      })
+    }
+
+    else if (select == false) {
+      AllTaskuser.forEach((item: any) => {
+        if (item?.childs != undefined && item?.childs?.length > 0) {
+          item.SelectedGroup = select;
+          item?.childs.forEach((child: any) => {
+            child.IsSelected = false;
+            try {
+              document.getElementById('UserImg' + child.Id).classList.remove('seclected-Image');
+              for (let k = 0; k < ImageSelectedUser.length; k++) {
+                let el = ImageSelectedUser[k];
+                if (el.Id == child.Id)
+                  ImageSelectedUser.splice(k, 1);
+              }
+
+            } catch (error) {
+
+            }
+
+          })
+        }
+      })
+    }
+
+    AllTaskuser.forEach((item: any) => {
+      if (item.SelectedGroup == true)
+        SelectGroupName = SelectGroupName + item.Title + ' ,';
+    })
+    SelectGroupName = SelectGroupName.replace(/.$/, "");
+
+    if (ImageSelectedUser?.length > 0) {
+      ImageSelectedUser = ImageSelectedUser.reduce(function (
+        previous: any,
+        current: any
+      ) {
+        var alredyExists =
+          previous.filter(function (item: any) {
+            return item.Title === current.Title;
+          }).length > 0;
+        if (!alredyExists) {
+          previous.push(current);
+        }
+        return previous;
+      },
+        []);
+    }
+    setImageSelectedUsers(ImageSelectedUser)
+    setSelectGroupName(SelectGroupName)
+    console.log(ImageSelectedUsers);
+
+  }
+
+  const SelectUserImage = (ev: any, item: any) => {
+    let SelectGroupName = '';
+    console.log(`The option ${ev.currentTarget.title}.`);
+    console.log(item);
+    //console.log(Parent);
+    let ImageSelectedUser = ImageSelectedUsers;
+
+    const collection = document.getElementsByClassName("AssignUserPhoto mr-5");
+    for (let i = 0; i < collection.length; i++) {
+      collection[i].classList.remove('seclected-Image');
+    }
+    if (ev.currentTarget.className.indexOf('seclected-Image') > -1) {
+      ev.currentTarget.classList.remove('seclected-Image');
+      item.IsSelected = false;
+      for (let index = 0; index < ImageSelectedUser.length; index++) {
+        let sel = ImageSelectedUser[index];
+        if (sel.Id != undefined && item.Id != undefined && sel.Id == item.Id) {
+          item.IsSelected = false;
+          ImageSelectedUser.splice(index, 1);
+          break;
+        }
+      }
+    }
+    else {
+      ev.currentTarget.classList.add('seclected-Image'); //add element
+      item.IsSelected = true;
+      ImageSelectedUser = [];
+      ImageSelectedUser.push(item);
+    }
+
+    AllTaskuser.forEach((item: any) => {
+      if (item.SelectedGroup == true)
+        SelectGroupName = SelectGroupName + item.Title + ' ,'
+    })
+    SelectGroupName = SelectGroupName.replace(/.$/, "")
+    setSelectGroupName(SelectGroupName)
+    setImageSelectedUsers(ImageSelectedUser)
+
+    console.log(ImageSelectedUsers);
+  }
+
+  const SelectedGroup = (ev: any, user: any) => {
+    let SelectGroupName = '';
+    console.log(ev.currentTarget.checked)
+    let ImageSelectedUser = ImageSelectedUsers;
+    let selected = ev.currentTarget.checked;
+    if (selected) {
+      for (let index = 0; index < AllTaskuser.length; index++) {
+        let item = AllTaskuser[index];
+        if (item.Title == user.Title && item?.childs != undefined && item?.childs?.length > 0) {
+          item.SelectedGroup = selected;
+          for (let j = 0; j < item.childs.length; j++) {
+            let child = item.childs[j];
+            child.IsSelected = true;
+            document.getElementById('UserImg' + child.Id).classList.add('seclected-Image');
+            if (child.Id != undefined && !isItemExists(ImageSelectedUser, child.Id))
+              ImageSelectedUser.push(child)
+          }
+        }
+      }
+    } else {
+      for (let index = 0; index < AllTaskuser.length; index++) {
+        let item = AllTaskuser[index];
+        if (item.Title == user.Title && item?.childs != undefined && item?.childs.length > 0) {
+          item.SelectedGroup = selected;
+          item?.childs.forEach((child: any) => {
+            child.IsSelected = false;
+            document.getElementById('UserImg' + child.Id).classList.remove('seclected-Image');
+            for (let k = 0; k < ImageSelectedUser.length; k++) {
+              let el = ImageSelectedUser[k];
+              if (el.Id == child.Id)
+                ImageSelectedUser.splice(k, 1);
+            }
+          })
+        }
+      }
+    }
+
+    AllTaskuser.forEach((item: any) => {
+      if (item.SelectedGroup == true)
+        SelectGroupName = SelectGroupName + item.Title + ' ,'
+    })
+    SelectGroupName = SelectGroupName.replace(/.$/, "")
+    setSelectGroupName(SelectGroupName)
+    setImageSelectedUsers(ImageSelectedUser)
+    console.log(ImageSelectedUsers)
+
+  }
+  const setStartDate = (dt: any) => {
+    setstartDate(dt)
+  }
+
+  const setEndDate = (dt: any) => {
+    setendDate(dt)
+  }
+
+  const selectDate = (type: string) => {
+    let startdt = new Date(), enddt = new Date(), tempdt = new Date();
+    let diff: number, lastday: number;
+    switch (type) {
+      case 'Custom':
+        break;
+
+      case 'today':
+        break;
+
+      case 'yesterday':
+        startdt.setDate(startdt.getDate() - 1);
+        enddt.setDate(enddt.getDate() - 1);
+        break;
+
+      case 'ThisWeek':
+        diff = startdt.getDate() - startdt.getDay() + (startdt.getDay() === 0 ? -6 : 1);
+        startdt = new Date(startdt.setDate(diff));
+
+        lastday = enddt.getDate() - (enddt.getDay() - 1) + 6;
+        enddt = new Date(enddt.setDate(lastday));;
+        break;
+
+      case 'LastWeek':
+        tempdt = new Date();
+        tempdt = new Date(tempdt.getFullYear(), tempdt.getMonth(), tempdt.getDate() - 7);
+
+        diff = tempdt.getDate() - tempdt.getDay() + (tempdt.getDay() === 0 ? -6 : 1);
+        startdt = new Date(tempdt.setDate(diff));
+
+        lastday = tempdt.getDate() - (tempdt.getDay() - 1) + 6;
+        enddt = new Date(tempdt.setDate(lastday));
+        break;
+
+      case 'EntrieMonth':
+        startdt = new Date(startdt.getFullYear(), startdt.getMonth(), 1);
+        enddt = new Date(enddt.getFullYear(), enddt.getMonth() + 1, 0);
+        break;
+
+      case 'LastMonth':
+        startdt = new Date(startdt.getFullYear(), startdt.getMonth() - 1);
+        enddt = new Date(enddt.getFullYear(), enddt.getMonth(), 0);
+        break;
+
+      case 'Last3Month':
+        startdt = new Date(startdt.getFullYear(), startdt.getMonth() - 3);
+        enddt = new Date(enddt.getFullYear(), enddt.getMonth(), 0);
+        break;
+
+      case 'EntrieYear':
+        startdt = new Date(new Date().getFullYear(), 0, 1);
+        enddt = new Date(new Date().getFullYear(), 11, 31);
+        break;
+
+      case 'LastYear':
+        startdt = new Date(new Date().getFullYear() - 1, 0, 1);
+        enddt = new Date(new Date().getFullYear() - 1, 11, 31);
+        break;
+
+      case 'AllTime':
+        startdt = new Date('2017/01/01');
+        enddt = new Date();
+        break;
+
+      case 'Presettime':
+      case 'Presettime1':
+        break;
+    }
+
+    startdt.setHours(0, 0, 0, 0);
+    enddt.setHours(0, 0, 0, 0);
+
+    setstartDate(startdt)
+    setendDate(enddt)
+  }
+  const getChilds = (item: any, items: any) => {
+    item.childs = [];
+    for (let index = 0; index < items.length; index++) {
+      let childItem = items[index];
+      if (childItem.UserGroup?.Id != undefined && parseInt(childItem.UserGroup?.Id) == item.ID) {
+        childItem.IsSelected = false
+        //if (this.props.Context.pageContext.user. == childItem.AssingedToUserId)
+        //childItem.IsSelected = true
+        item.childs.push(childItem);
+        getChilds(childItem, items);
+      }
+    }
+
+  }
+  const isItemExists = (array: any, items: any) => {
+    let isExists = false;
+    for (let index = 0; index < array.length; index++) {
+      let item = array[index];
+      if (item.TaskItemID == items.TaskItemID) {
+        if ((item.Effort != undefined && items.Effort != undefined) && (item.Effort == items.Effort)) {
+          isExists = true;
+          return false;
+        }
+      }
+    }
+    return isExists;
+  }
   const calculateTotalHalfday = (matchedData: any, leaveType: string) => {
     const today = new Date();
 
@@ -202,81 +498,24 @@ export const MonthlyLeaveReport = (props: any) => {
     return isWeekend && isMatchingMonth && isMatchingYear;
   };
   let Year = new Date().getFullYear();
-  let month = new Date(selectedDate).getMonth() + 1; // Actual month
-  let formattedMonth = month < 10 ? `0${month}` : `${month}`;
+  // let month = new Date(startDate).getMonth() + 1; // Actual month
+  // let formattedMonth = month < 10 ? `0${month}` : `${month}`;
   let CurrentMonthData = leaveData.filter((item: any) => {
     let itemDate = new Date(item?.EventDate);
+    let selectedstartdate = startDate.toISOString().substring(0, 19).replace('T', ' ');
+    let selectedenddate = endDate.toISOString().substring(0, 19).replace('T', ' ');
     itemDate.setHours(0, 0, 0, 0);
-    let startDate = new Date(selectedDate);
-    startDate.setHours(0, 0, 0, 0);
-    let endDate = new Date(selectendDate);
-    endDate.setHours(0, 0, 0, 0);
+    let startdate = new Date(selectedstartdate);
+    startdate.setHours(0, 0, 0, 0);
+    let enddate = new Date(selectedenddate);
+    enddate.setHours(0, 0, 0, 0);
     console.log('Item Date:', itemDate);
-    console.log('Start Date:', startDate);
-    console.log('End Date:', endDate);
+    console.log('Start Date:', startdate);
+    console.log('End Date:', enddate);
 
     return (
-    itemDate >= startDate && itemDate <= endDate
+      itemDate >= startdate && itemDate <= enddate
     );
-  });
-  let selectedmonthdata = leaveData.filter((item: any) => {
-    let itemDate = item?.EventDate
-    let yearName = selectedYear
-    let monthName = selectedMonth
-    var isoDateString = itemDate;
-    var dateObject = new Date(isoDateString);
-    var year = '' + dateObject.getFullYear();
-
-    var month = '' + (dateObject.getMonth() + 1);
-
-    return (
-      yearName == year && monthName == month
-    );
-
-  });
-  const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
-  const currentYear = new Date().getFullYear();
-  const years: number[] = [];
-
-  for (let year = 2020; year <= currentYear; year++) {
-    years.push(year);
-  }
-  console.log(years);
-  const filteredData: any = selectedmonthdata.filter((member) => member.Employee?.Id === parseInt(selectedUserId, 10));
-  //const filteredData = CurrentMonthData.filter((member) => member.Employee?.Id === selectedUserId);
-  AllTaskuser.forEach((users: any, Index: any) => {
-    let user: any = {};
-
-    const matchedData: any = CurrentMonthData.filter((member) => member.Employee?.Id === users.AssingedToUserId);
-    user.Number = Index + 1;
-    user.Title = users.Title;
-    user.Id = users.Id;
-    user.Plannedleave = calculatePlannedLeave(matchedData, "Planned Leave");
-    user.unplannedleave = calculatePlannedLeave(matchedData, "Un-Planned");
-    user.Halfdayleave = calculateTotalHalfday(matchedData, "HalfDay" || "HalfDayTwo");
-    user.TotalLeave = calculateTotalWorkingDays(matchedData);
-    if (selectedDate && selectendDate) {
-      allReportData.push(user)
-    }
-  });
-
-  let filtereduser = AllTaskuser.filter((item: any) => {
-    return item.AssingedToUserId == parseInt(selectedUserId, 10)
-  })
-
-  filtereduser.forEach((users: any, Index: any) => {
-    let user: any = {};
-    user.Number = Index + 1;
-    user.Title = users.Title;
-    user.Id = users.Id;
-    user.Plannedleave = calculatePlannedLeave(filteredData, "Planned Leave");
-    user.unplannedleave = calculatePlannedLeave(filteredData, "Un-Planned");
-    user.Halfdayleave = calculateTotalHalfday(filteredData, "HalfDay" || "HalfDayTwo");
-    user.TotalLeave = calculateTotalWorkingDays(filteredData);
-    allReportData.push(user)
   });
   const handleDateChange = (event: any) => {
     setSelectedDate(event.target.value);
@@ -298,11 +537,69 @@ export const MonthlyLeaveReport = (props: any) => {
     allReportData = []
   };
 
-  const handleSubmit = (event: any) => {
-    event.preventDefault();
-    console.log('Selected Date:', selectedDate, 'Selected End Date:', selectendDate);
-    allReportData = []
-    // setopendate(false);
+  const handleSubmit = () => {
+    if (ImageSelectedUsers != null && ImageSelectedUsers != undefined) {
+      ImageSelectedUsers.forEach((users: any, Index: any) => {
+        let user: any = {};
+        let EventDateForLeave: any = {};
+
+        const matchedData: any = CurrentMonthData.filter((member) => member.Employee?.Id === users?.AssingedToUser?.Id);
+        user.Number = Index + 1;
+        user.Title = users.Title;
+        user.Id = users.Id;
+        const PlanedEventDates = matchedData.map((item: any) => {
+          if (item.Event_x002d_Type === "Planned Leave") {
+            let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+            let endDate = moment(item.EndDate, 'YYYY-MM-DD').startOf('day').format('DD/MM/YYYY');
+            if (startDate !== endDate) {
+              return `${startDate} - ${endDate}`;
+            } else {
+              return startDate;
+            }
+          }
+        }).filter((date: any) => date);
+        let plannedLeaveString = `${PlanedEventDates.join(', ')}`;
+        const UnPlanedEventDates = matchedData.map((item: any) => {
+          if (item.Event_x002d_Type === "Un-Planned") {
+            let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+            let endDate = moment(item.EndDate, 'YYYY-MM-DD').startOf('day').format('DD/MM/YYYY');
+            if (startDate !== endDate) {
+              return `${startDate}-${endDate}`;
+            } else {
+              return startDate;
+            }
+          }
+        }).filter((date: any) => date);
+        let UnplannedLeaveString = `${UnPlanedEventDates.join(', ')}`;
+        const HalfdayEventDates = matchedData.map((item: any) => {
+          if (item.HalfDay === true || item.HalfDayTwo === true) {
+            return moment(item.EventDate).format('DD/MM/YYYY');
+          }
+
+        }).filter((date: any) => date);
+        let HalfplannedLeaveString = `${HalfdayEventDates.join(', ')}`;
+        const RHEventDates = matchedData.map((item: any) => {
+          if (item.Event_x002d_Type === "Restricted Holiday") {
+            return moment(item.EventDate).format('DD/MM/YYYY');
+          }
+        }).filter((date: any) => date);
+        let RhplannedLeaveString = `${RHEventDates.join(', ')}`;
+
+        user.Plannedleave = calculatePlannedLeave(matchedData, "Planned Leave");
+        user.Plannedleave = `${user.Plannedleave} ${plannedLeaveString.length != 0 ? `[ ${plannedLeaveString} ]` : ''} `
+        user.unplannedleave = calculatePlannedLeave(matchedData, "Un-Planned");
+        user.unplannedleave = `${user.unplannedleave}${UnplannedLeaveString.length != 0 ? `[ ${UnplannedLeaveString} ]` : ''} `
+        user.Halfdayleave = calculateTotalHalfday(matchedData, "HalfDay" || "HalfDayTwo");
+        user.Halfdayleave = `${user.Halfdayleave}${HalfplannedLeaveString.length != 0 ? `[ ${HalfplannedLeaveString} ]` : ''} `
+        user.RestrictedHoliday = calculatePlannedLeave(matchedData, "Restricted Holiday");
+        user.RestrictedHoliday = `${user.RestrictedHoliday}${RhplannedLeaveString.length != 0 ? `[ ${RhplannedLeaveString} ]` : ''} `
+        user.TotalLeave = calculateTotalWorkingDays(matchedData);
+        if (startDate && endDate) {
+          allReportData.push(user)
+        }
+      });
+    }
+    //setImageSelectedUsers([])
     setleaveset(true)
   };
   const handleclose = () => {
@@ -324,66 +621,158 @@ export const MonthlyLeaveReport = (props: any) => {
       <Modal className='rounded-0 monthlyLeaveReport' show={opendate} onHide={() => handleclose()} >
         <Modal.Header closeButton>
           <Modal.Title>Select a Date</Modal.Title>
+          <Tooltip ComponentId='9802' />
         </Modal.Header>
         <Modal.Body className="p-2">
-          <Form onSubmit={handleSubmit}>
+          <div className='smartFilter bg-light border mb-3 col'>
+            <details className='p-0 m-0' open>
+              <summary className='hyperlink'><a className="hreflink pull-left mr-5">All Filters - <span>Task User :</span> </a>
+                {ImageSelectedUsers != null && ImageSelectedUsers.length > 0 && ImageSelectedUsers.map((user: any, i: number) => {
+                  return <span className="ng-scope">
+                    <img className="AssignUserPhoto me-1" title={user?.AssingedToUser?.Title} src={user?.Item_x0020_Cover?.Url} />
+                  </span>
+                })
+                }
+                {/* <span className="pull-right"><a href="#">Add smart favorite</a></span> */}
+                <span className="">
+                  <input type="checkbox" className="form-check-input mx-1" onClick={(e) => SelectAllGroupMember(e)} />
+                  <label>Select All </label>
+                </span>
+              </summary>
 
-            <Row>
-              <Form.Group className='col-sm-4' controlId="formMonth">
-                <Form.Label className='fw-semibold'>Select a month:</Form.Label>
-                <Form.Control disabled={disabled} as="select" onChange={handleMonthChange} value={selectedMonth}>
-                  {months.map((month, index) => (
-                    <option key={index} value={index + 1}>{month}</option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
+              <Col>
+                <details open className='p-0'>
+                  <summary className='hyperlink'>
+                    Team members
+                    <hr></hr>
+                  </summary>
 
-              <Form.Group className='col-sm-4' controlId="formYear">
-                <Form.Label className='fw-semibold'>Select a year:</Form.Label>
-                <Form.Control disabled={disabled} as="select" onChange={handleYearChange} value={selectedYear}>
-                  {years.map((year: any) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
+                  <div style={{ display: "block" }}>
+                    <div className="taskTeamBox ps-40 ">
+                      {(AllTaskuser != null && AllTaskuser.length > 0) && AllTaskuser.map((users: any, i: number) => {
+                        return (users?.childs?.length > 0 && (<div className="top-assign">
+                          <div className="team ">
+                            <label className="BdrBtm">
+                              <input style={{ display: 'none' }} className="" type="checkbox" onClick={(e) => SelectedGroup(e, users)} />
+                              {users?.ItemType == "Group" &&
+                                <>
+                                  {users.Title}
+                                </>
+                              }
 
-              <Form.Group className='col-sm-4' controlId="formEmployee">
-                <Form.Label className='fw-semibold'>Select an employee:</Form.Label>
-                <Form.Control disabled={disabled} as="select" onChange={handleUserChange} value={selectedUserId}>
-                  <option value={null}>Select an employee</option>
-                  {AllTaskuser.map((user, index) => (
-                    <option key={index} value={user.AssingedToUserId}>
-                      {user.Title}
-                    </option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
-              <Form.Group controlId="formDate" className='col-sm-6' >
-                <Form.Label className='my-2 fw-semibold' > Start Date:</Form.Label>
-                <Form.Control disabled={disabl}
-                  type="date"
-                  // placeholder="Select Start date"
-                  value={selectedDate}
-                  onChange={handleDateChange}
-                />
-              </Form.Group>
-              <Form.Group className='col-sm-6'>
-                <Form.Label className='my-2 fw-semibold'> End Date:</Form.Label>
-                <Form.Control disabled={disabl}
-                  type="date"
-                  value={selectendDate}
-                  onChange={handleEndDateChange}
-                />
-              </Form.Group>
-            </Row>
-            <div className="mt-2 text-end modal-footer">
-              <Button onSubmit={handleSubmit} variant="primary" className="btn btn-primary" type="submit">
-                Submit
-              </Button>
-            </div>
-          </Form>
+                            </label>
+                            <div className='d-flex'>
+                              {users?.childs?.length > 0 && users?.childs.map((item: any, i: number) => {
+                                return <div className="alignCenter">
+                                  {item.Item_x0020_Cover != undefined ?
+                                    <span>
+                                      <img id={"UserImg" + item?.Id} className={item?.AssingedToUserId == users?.Id ? 'activeimg ProirityAssignedUserPhoto' : 'ProirityAssignedUserPhoto'} onClick={(e) => SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                        title={item?.Title}
+                                        src={item?.Item_x0020_Cover?.Url} />
+                                    </span> :
+                                    <span className={item?.AssingedToUserId == users?.Id ? 'activeimg suffix_Usericon' : 'suffix_Usericon'} onClick={(e) => SelectUserImage(e, item)} ui-draggable="true" on-drop-success="dropSuccessHandler($event, $index, user.childs)"
+                                      title={item?.Title}
+                                    >{item?.Suffix}</span>
+                                  }
+                                </div>
+                              })}
+                            </div>
+
+                          </div>
+                        </div>
+                        )
+                        )
+                      })
+
+                      }
+
+
+                    </div>
+
+                  </div>
+                </details>
+                <details open>
+                  <summary className='hyperlink'>
+                    Date
+                    <hr></hr>
+                  </summary>
+                  <Row className="ps-30">
+                    <div>
+                      <div className="col TimeReportDays">
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" className="radio" name="dateSelection" id="rdCustom" value="Custom" ng-checked="unSelectToday=='Custom'" onClick={() => selectDate('Custom')} ng-model="radio" />
+                          <label>Custom</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" id="rdToday" value="Today" onClick={() => selectDate('today')} ng-model="unSelectToday" className="radio" />
+                          <label>Today</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" id="rdYesterday" value="Yesterday" onClick={() => selectDate('yesterday')} ng-model="unSelectYesterday" className="radio" />
+                          <label> Yesterday </label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" defaultChecked={true} id="rdThisWeek" value="ThisWeek" onClick={() => selectDate('ThisWeek')} ng-model="unThisWeek" className="radio" />
+                          <label> This Week</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" id="rdLastWeek" value="LastWeek" onClick={() => selectDate('LastWeek')} ng-model="unLastWeek" className="radio" />
+                          <label> Last Week</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" id="rdThisMonth" value="EntrieMonth" onClick={() => selectDate('EntrieMonth')} ng-model="unEntrieMonth" className="radio" />
+                          <label>This Month</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" id="rdLastMonth" value="LastMonth" onClick={() => selectDate('LastMonth')} ng-model="unLastMonth" className="radio" />
+                          <label>Last Month</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" value="rdLast3Month" onClick={() => selectDate('Last3Month')} ng-model="unLast3Month" className="radio" />
+                          <label>Last 3 Months</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" value="rdEntrieYear" onClick={() => selectDate('EntrieYear')} ng-model="unEntrieYear" className="radio" />
+                          <label>This Year</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" value="rdLastYear" onClick={() => selectDate('LastYear')} ng-model="unLastYear" className="radio" />
+                          <label>Last Year</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" value="rdAllTime" onClick={() => selectDate('AllTime')} ng-model="unAllTime" className="radio" />
+                          <label>All Time</label>
+                        </span>
+                        <span className='SpfxCheckRadio me-2'>
+                          <input type="radio" name="dateSelection" value="Presettime" onClick={() => selectDate('Presettime')} ng-model="unAllTime" className="radio" />
+                          <label>Pre-set</label>
+                          <img className="hreflink " title="open" ng-click="OpenPresetDatePopup('Presettime')" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />
+                        </span>
+
+                      </div>
+                    </div>
+
+                  </Row>
+                  <Row className='ps-30 mt-2'>
+                    <div className="col">
+                      <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('StartDate') | trustedHTML">Start Date</label>
+                      <DatePicker selected={startDate} dateFormat="dd/MM/yyyy" onChange={(date: any) => setStartDate(date)} className=" full-width searchbox_height ng-pristine ng-valid ng-touched ng-not-empty" />
+                    </div>
+                    <div className="col">
+                      <label ng-required="true" className="full_width ng-binding" ng-bind-html="GetColumnDetails('EndDate') | trustedHTML" >End Date</label>
+                      <DatePicker selected={endDate} dateFormat="dd/MM/yyyy" onChange={(date: any) => setEndDate(date)} className=" full-width searchbox_height  ng-pristine ng-valid ng-touched ng-not-empty" />
+                    </div>
+                  </Row>
+                </details>
+              </Col>
+            </details>
+          </div>
+          <div className="mt-2 text-end modal-footer">
+            <Button onClick={() => handleSubmit()} variant="primary" className="btn btn-primary" type="submit">
+              Submit
+            </Button>
+
+          </div>
           {(allReportData?.length > 0 && leaveset) &&
             <div id="contentToConvert">
               <div className='alignCenter'>
@@ -397,22 +786,24 @@ export const MonthlyLeaveReport = (props: any) => {
                 <table className="w-100">
                   <thead>
                     <tr>
-                      <th className='py-2 border-bottom'>No.</th>
-                      <th className='py-2 border-bottom'>Name</th>
-                      <th className='py-2 border-bottom'>Planned</th>
-                      <th className='py-2 border-bottom'>Unplanned</th>
-                      <th className='py-2 border-bottom'>Half-Day</th>
-                      <th className='py-2 border-bottom'>TotalLeave</th>
+                      <th className='py-2 border-bottom' style={{width:"12%"}}>No.</th>
+                      <th className='py-2 border-bottom' style={{width:"20%"}}>Name</th>
+                      <th className='py-2 border-bottom' style={{width:"15%"}}>Planned</th>
+                      <th className='py-2 border-bottom' style={{width:"15%"}}>Unplanned</th>
+                      <th className='py-2 border-bottom' style={{width:"13%"}}>RH</th>
+                      <th className='py-2 border-bottom' style={{width:"15%"}}>Half-Day</th>
+                      <th className='py-2 border-bottom' style={{width:"10%"}}>Total Leave</th>
                     </tr>
                   </thead>
                   <tbody>
                     {allReportData.map((entry: any, index: any) => (
                       <tr key={index}>
-                        <td className='py-2'>{index + 1}</td>
-                        <td className='py-2'>{entry.Title}</td>
-                        <td className='py-2'>{entry.Plannedleave}</td>
-                        <td className='py-2'>{entry.unplannedleave}</td>
-                        <td className='py-2'>{entry.Halfdayleave}</td>
+                        <td className='py-2 text-break'>{index + 1}</td>
+                        <td className='py-2 text-break'>{entry.Title}</td>
+                        <td className='py-2 text-break'>{entry.Plannedleave}</td>
+                        <td className='py-2 text-break'>{entry.unplannedleave}</td>
+                        <td className='py-2 text-break'>{entry.RestrictedHoliday}</td>
+                        <td className='py-2 text-break'>{entry.Halfdayleave}</td>
                         <td className='py-2'>{entry.TotalLeave}</td>
                       </tr>
                     ))}

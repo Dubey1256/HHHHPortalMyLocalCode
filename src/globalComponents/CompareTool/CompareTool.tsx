@@ -32,6 +32,7 @@ let AutoCompleteItemsArray: any = [];
 let catItem: any = {};
 let color: any = false;
 let PutComment: any = "";
+let timesheetListConfigrations: any = {};
 
 let TempTimeSheetCategoryArray: any = [];
 const CompareTool = (props: any) => {
@@ -246,6 +247,7 @@ const CompareTool = (props: any) => {
                         val.isShifted = true;
                         val?.AdditionalTime.forEach((value: any) => {
                             value.ParentID = val.Id;
+                            item.ParentID = val.Id;
                             value.MainParentId = item.Id;
                             item.AdditionalTime.push(value);
                         })
@@ -285,8 +287,10 @@ const CompareTool = (props: any) => {
                         child.values = child.AdditionalTime;
                         child.TaskDate = undefined;
                     }
-                    if (!IsExistsData(finalData, child))
+                    if (!IsExistsDataTime(finalData, child)) {
+                        finalData.expand = true;
                         finalData.push(child);
+                    }
 
                 });
             }
@@ -294,18 +298,29 @@ const CompareTool = (props: any) => {
         Item.finalData = finalData;
     }
     const GetTaskTime = async (Item: any) => {
+        var site = Item.siteType.replace(' ', '');
+        var listID = "";//"464FB776-E4B3-404C-8261-7D3C50FF343F";
+        // if (site != undefined && site == 'Migration' || site == 'ALAKDigital')
+        //     listID = "9ed5c649-3b4e-42db-a186-778ba43c5c93";
+        timesheetListConfigrations?.forEach((time: any) => {
+            if (time?.taskSites?.length > 0) {
+                time?.taskSites?.forEach((obj: any) => {
+                    if (obj === site)
+                        listID = time.listId;
+                })
+            }
+        })
         Item.AllTimeSpentDetails = [];
         Item.CopyAllTimeSpentDetails = [];
-        var site = Item.siteType.replace(' ', '');
+
         if (site != undefined && site.toLowerCase() == 'shareweb')
             site = site.toLowerCase().replace(/\b[a-z]/g, function (letter: string) { return letter.toUpperCase(); });
         if (site != undefined && site.toLowerCase() == 'sharewebqa')
             site = 'OffshoreTasks';
         var filteres = "Task" + site + "/Id eq " + Item.Id;
-        var select = "Id,Title,TaskDate,TaskTime,Description,AdditionalTimeEntry,AuthorId,Author/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Author,Category,TimesheetTitle&$filter=" + filteres + "";
-        var listID = "464FB776-E4B3-404C-8261-7D3C50FF343F";
-        if (site != undefined && site == 'Migration' || site == 'ALAKDigital')
-            listID = "9ed5c649-3b4e-42db-a186-778ba43c5c93";
+        var columns = "Task" + site + "/Id," + "Task" + site + "/Title&$expand=Author,Category,TimesheetTitle," + "Task" + site;
+        var select = "Id,Title,TaskDate,TaskTime,Description,AdditionalTimeEntry,AuthorId,Author/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title," + columns + "&$filter=" + filteres + "";
+
         const web = new Web(props?.contextValue?.siteUrl);
         await web.lists.getById(listID).items.select(select)
             .getAll().then((data: any) => {
@@ -631,6 +646,9 @@ const CompareTool = (props: any) => {
                     }
                     datas[0].SiteComposition = SiteCompositionTemp;
                     datas[0].Synonyms = globalCommon.parseJSON(datas[0]?.Synonyms);
+                    datas[0].FeedBackDescription = globalCommon.parseJSON(datas[0]?.FeedBack);
+                    if (datas[0].FeedBackDescription === null || datas[0].FeedBackDescription === "")
+                        datas[0].FeedBackDescription = [];
                     datas[0].AssignToUsers = [];
                     datas[0].TeamMembersUsers = [];
                     datas[0]["SiteIcon"] = SmartMetaDataAllItems?.Sites.map((site: any) => {
@@ -860,6 +878,17 @@ const CompareTool = (props: any) => {
         updatedItems[1] = temp;
         setData(updatedItems);
     }
+    const IsExistsDataTime = (array: any, taggedItem: any) => {
+        let isExists = false;
+        for (let index = 0; index < array.length; index++) {
+            let item = array[index];
+            if (item.Id == taggedItem?.Id) {
+                isExists = true;
+                //return false;
+            }
+        }
+        return isExists;
+    }
     const IsExistsData = (array: any, taggedItem: any) => {
         let isExists = false;
         for (let index = 0; index < array.length; index++) {
@@ -968,22 +997,30 @@ const CompareTool = (props: any) => {
         if (property === 'finalData') {
             const updatedItems = _.cloneDeep(data);
             const indexValue = index == 1 ? 0 : 1
-            const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked === true);
-            const UnselectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.checked != true);
+            // updatedItems[indexValue][property]?.forEach((obj:any) =>{
+            //     if(obj.selected){
+            //         updatedItems[index][property] =  updatedItems[index][property]?.length >0  ?updatedItems[index][property] : updatedItems[index][property]=[] 
+            //         updatedItems[index][property].push(obj);
+            //     }
+
+            //     })
+
+            const selectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.selected === true);
+            const UnselectedItems = updatedItems[indexValue][property].filter((obj: any) => obj.selected != true);
             updatedItems[indexValue][property] = UnselectedItems;
             if (updatedItems[index][property]?.length > 0 && selectedItems?.length > 0) {
                 if (!IsExistsData(updatedItems[index][property], selectedItems[0])) {
                     updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
                     updatedItems[index][property].map((elem: any) => {
-                        if (elem.checked)
-                            elem.checked = false
+                        if (elem.selected)
+                            elem.ItemMoved = 'Moved'
                     })
                 }
             } else if (selectedItems?.length > 0) {
                 updatedItems[index][property] = selectedItems;
                 updatedItems[index][property]?.map((elem: any) => {
-                    if (elem.checked)
-                        elem.checked = false
+                    if (elem.selected)
+                        elem.ItemMoved = 'Moved'
                 })
             }
 
@@ -1218,6 +1255,8 @@ const CompareTool = (props: any) => {
                     } else {
                         SmartItemData.newTitle = SmartItemData.Title;
                     }
+                    if (SmartItemData?.TaxType === 'timesheetListConfigrations')
+                        timesheetListConfigrations = globalCommon.parseJSON(SmartItemData.Configurations);
                 });
             }
             AllSitesData = getSmartMetadataItemsByTaxType(AllSmartDataListData, "Sites");
@@ -1771,11 +1810,9 @@ const CompareTool = (props: any) => {
                 'ItemRank': Item.ItemRank,
                 'Mileage': Item.Mileage,
                 'PriorityRank': Item.PriorityRank,
-                // 'ComponentId': { "results": $scope.smartComponentsIds },
                 'PortfoliosId': { "results": portfolioIds },
                 'TaskCategoriesId': { "results": taskCategoryIds },
                 'Package': Item.Package,
-                // 'SiteCompositionSettings': angular.toJson(Item.SiteCompositionSettingsValue),
                 'Sitestagging': JSON.stringify(Item.SiteCompositionSettingsValue),
                 'Deliverables': Item.Deliverables,
                 'ClientActivity': Item.ClientActivity,
@@ -1999,7 +2036,7 @@ const CompareTool = (props: any) => {
             let postData: any = {
                 'Title': Item.Title,
                 'Background': Item.Background,
-                'Body': Item.Body,
+                //'Body': Item.Body,
                 'PercentComplete': PercentComplete,
                 'Priority': Item.Priority,
                 'DeliverableSynonyms': Item.DeliverableSynonyms,
@@ -2034,8 +2071,12 @@ const CompareTool = (props: any) => {
             }
             if (portfolioIds != "")
                 postData.PortfolioId = portfolioIds;
+            else postData.PortfolioId = 0;
             if (projectIds != "")
                 postData.ProjectId = projectIds;
+            else postData.ProjectId = 0;
+            if (Item?.FeedBackDescription != undefined && Item.FeedBackDescription.length > 0)
+                postData.FeedBack = JSON.stringify(Item.FeedBackDescription)
 
             globalCommon.updateItemById(props?.contextValue?.siteUrl, Item.listId, postData, Item.Id)
                 .then((returnresult) => {
@@ -2058,11 +2099,61 @@ const CompareTool = (props: any) => {
             console.error('Error in the first block:', error);
         }
     }
+    const UpdateParentTimeEntry = async (lookupId: any, Item: any, updateColumn: any, listID: any) => {
+        let web = new Web(Item.siteUrl);
+        var Data = await web.lists
+            .getById(listID)
+            .items.getById(lookupId)
+            .update({
+                [updateColumn]: Item.Id,
+            })
+            .then((res) => {
+
+            });
+    }
+    const SaveTimeEntry = async (Item: any, type: any) => {
+        Item?.finalData?.forEach(async (val: any) => {
+            var siteType: any = "Task" + Item.siteType + "Id";
+            var SiteId = "Task" + Item?.siteType;
+            if (val[SiteId]?.Id != Item.Id) {
+                let count = 0;
+                var listID = "";//"464FB776-E4B3-404C-8261-7D3C50FF343F";
+                // if (site != undefined && site == 'Migration' || site == 'ALAKDigital')
+                //     listID = "9ed5c649-3b4e-42db-a186-778ba43c5c93";
+                timesheetListConfigrations?.forEach((time: any) => {
+                    if (time?.taskSites?.length > 0) {
+                        time?.taskSites?.forEach((obj: any) => {
+                            if (obj === Item?.siteType)
+                                listID = time.listId;
+                        })
+                    }
+                })
+                // var listID = "464FB776-E4B3-404C-8261-7D3C50FF343F";
+                // if (Item?.siteType != undefined && Item?.siteType  == 'Migration' || Item?.siteType  == 'ALAKDigital')
+                //     listID = "9ed5c649-3b4e-42db-a186-778ba43c5c93";
+                //  const web = new Web(props?.contextValue?.siteUrl);
+                let web = new Web(Item.siteUrl);
+                var Data = await web.lists
+                    .getById(listID)
+                    .items.getById(val.Id)
+                    .update({
+                        [siteType]: Item.Id,
+                    })
+                    .then((res) => {
+                        val?.values?.forEach(async (child: any) => {
+                            UpdateParentTimeEntry(child.ParentID, Item, siteType, listID)
+                        })
+                    });
+            }
+        });
+    }
 
     const SaveComponent = async (Item: any, type: any) => {
         try {
-            if (Item?.TaskType?.Id != undefined)
+            if (Item?.TaskType?.Id != undefined) {
                 TaskPost(Item, type);
+                SaveTimeEntry(Item, type);
+            }
             else componentPost(Item, type);
 
 
@@ -2245,18 +2336,19 @@ const CompareTool = (props: any) => {
     );
     const loadMorefilter = (filteritem: any, property: any, index: any) => {
         const updatedItems = _.cloneDeep(data);
-        if (filteritem.values.length > 0) {
-            filteritem.values.forEach((childitem: any) => {
-                if (filteritem?.Id === childitem?.MainParentId) {
-                    if (filteritem.expand === true) {
-                        filteritem.expand = false;
-                    }
-                    else {
-                        filteritem.expand = true;
-                    }
-                }
-            })
-        }
+        filteritem.expand = !filteritem.expand;
+        // if (filteritem.values.length > 0) {
+        //     filteritem.values.forEach((childitem: any) => {
+        //         if (filteritem?.Id === childitem?.MainParentId) {
+        //             if (filteritem.expand === true) {
+        //                 filteritem.expand = false;
+        //             }
+        //             else {
+        //                 filteritem.expand = true;
+        //             }
+        //         }
+        //     })
+        // }
         updatedItems[index][property].forEach((obj: any) => {
             if (filteritem.Id == obj.Id)
                 obj.expand = filteritem.expand;
@@ -2283,12 +2375,31 @@ const CompareTool = (props: any) => {
             if (groupitem.Id == obj.Id)
                 obj.selected = groupitem.selected;
             obj?.values?.forEach((child: any) => {
-                if (child.Id === child?.MainParentId)
+                if (groupitem.Id === child?.MainParentId && groupitem?.values?.length > 0)
+                    child.selected = groupitem.selected;
+                if (groupitem.Id === child?.Id && groupitem?.values === undefined)
                     child.selected = groupitem.selected;
             })
         })
         setData(updatedItems);
     }
+    const cleanHTML = (html: any, folora: any, index: any) => {
+        html = globalCommon?.replaceURLsWithAnchorTags(html)
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        const paragraphs = div.querySelectorAll('p');
+        // Filter out empty <p> tags
+        paragraphs.forEach((p) => {
+            if (p.innerText.trim() === '') {
+                p.parentNode.removeChild(p); // Remove empty <p> tags
+            }
+        });
+        div.innerHTML = div.innerHTML.replace(/\n/g, '<br>')  // Convert newlines to <br> tags first
+        div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
+
+
+        return div.innerHTML;
+    };
 
     return (
         <>
@@ -3054,23 +3165,21 @@ const CompareTool = (props: any) => {
                         </Row> */}
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
-                                <div className="input-group">
+                                <div className="input-group mb-2">
                                     <label className="fw-semibold full-width form-label">Portfolio Item</label>
-                                    <input type="text" defaultValue={data[1]?.TaskCategories} className="form-control" placeholder="Search Portfolio Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'PortfolioItem0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'PortfolioItem', 0, AllMasterTasksItems?.AllData)} />
-                                    {data[0]?.PortfolioItem != undefined && data[0]?.PortfolioItem?.map((type: any, index: number) => {
-                                        return (
-                                            <div className="block w-100">
-                                                <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
-                                                <span onClick={() => removeItem(type, 0, 'PortfolioItem')} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox" >
-                                                </span>
-                                            </div>
-                                        );
-                                    }
-                                    )}
-                                    <span className="input-group-text">
-                                        <span title="Edit Categories" onClick={() => OpenComponentPicker(data[0], true, 'PortfolioItem')} className="svg__iconbox svg__icon--editBox"></span>
-                                    </span>
-                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'PortfolioItem' && SearchedCategoryData?.length > 0 ? (
+                                    {
+                                        data[0]?.PortfolioItem?.length === 0 ?
+                                            <input type="text" defaultValue={data[1]?.TaskCategories} className="form-control" placeholder="Search Portfolio Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'PortfolioItem0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'PortfolioItem', 0, AllMasterTasksItems?.AllData)} />
+                                            : <>
+                                                <div className="full-width">
+                                                    <div className="full-width replaceInput alignCenter">
+                                                        <a style={{ color: "#fff !important" }} className="textDotted" > {data[0]?.PortfolioItem[0].Title}</a>
+                                                    </div>
+                                                </div>
+                                                <span className="input-group-text">
+                                                    <span title="Edit Portfolio Item" onClick={() => OpenComponentPicker(data[0], true, 'PortfolioItem')} className="svg__iconbox svg__icon--editBox"></span></span>
+                                            </>}
+                                    {data[0]?.PortfolioItem?.length === 0 && autoSearch?.itemIndex === 0 && autoSearch?.property === 'PortfolioItem' && SearchedCategoryData?.length > 0 ? (
                                         <div className="SmartTableOnTaskPopup">
                                             <ul className="list-group hreflink scrollbar maXh-200">
                                                 {SearchedCategoryData?.map((item: any) => {
@@ -3095,9 +3204,20 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Portfolio Item</label>
-                                    <input type="text" className="form-control" placeholder="Search Portfolio Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'PortfolioItem1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'PortfolioItem', 1, AllMasterTasksItems?.AllData)} />
 
-                                    {data[1]?.PortfolioItem != undefined && data[1]?.PortfolioItem?.map((type: any, index: number) => {
+                                    {
+                                        data[1]?.PortfolioItem?.length === 0 ?
+                                            <input type="text" className="form-control" placeholder="Search Portfolio Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'PortfolioItem1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'PortfolioItem', 1, AllMasterTasksItems?.AllData)} />
+                                            : <>
+                                                <div className="full-width">
+                                                    <div className="full-width replaceInput alignCenter">
+                                                        <a style={{ color: "#fff !important" }} className="textDotted" > {data[1]?.PortfolioItem[0].Title}</a>
+                                                    </div>
+                                                </div>
+                                                <span className="input-group-text">
+                                                    <span title="Edit Portfolio Item" onClick={() => OpenComponentPicker(data[1], true, 'PortfolioItem')} className="svg__iconbox svg__icon--editBox"></span></span>
+                                            </>}
+                                    {/* {data[1]?.PortfolioItem != undefined && data[1]?.PortfolioItem?.map((type: any, index: number) => {
                                         return (
                                             <div className="block w-100">
                                                 <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
@@ -3106,11 +3226,11 @@ const CompareTool = (props: any) => {
                                             </div>
                                         );
                                     }
-                                    )}
+                                    )} */}
                                     <span className="input-group-text">
                                         <span title="Edit Categories" onClick={() => OpenComponentPicker(data[1], true, 'PortfolioItem')} className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
-                                    {autoSearch?.itemIndex === 1 && autoSearch?.property === 'PortfolioItem' && SearchedCategoryData?.length > 0 ? (
+                                    {data[1]?.PortfolioItem?.length === 0 && autoSearch?.itemIndex === 1 && autoSearch?.property === 'PortfolioItem' && SearchedCategoryData?.length > 0 ? (
                                         <div className="SmartTableOnTaskPopup">
                                             <ul className="list-group hreflink scrollbar maXh-200">
                                                 {SearchedCategoryData?.map((item: any) => {
@@ -3135,21 +3255,21 @@ const CompareTool = (props: any) => {
                                 <Col sm="5" md="5" lg="5" className="contentSec">
                                     <div className="input-group">
                                         <label className="fw-semibold full-width form-label">Feature Type</label>
-                                        <input type="text" defaultValue={data[1]?.TaskCategories} className="form-control" placeholder="Search Feature Type Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'FeatureType0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'FeatureType', 0, AllMasterTasksItems?.AllData)} />
-                                        {data[0]?.FeatureType != undefined && data[0]?.FeatureType?.map((type: any, index: number) => {
-                                            return (
-                                                <div className="block w-100">
-                                                    <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
-                                                    <span onClick={() => removeItem(type, 0, 'FeatureType')} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox" >
-                                                    </span>
+                                        {data[0]?.FeatureType?.length === 0 ?
+                                            <input type="text" defaultValue={data[1]?.TaskCategories} className="form-control" placeholder="Search Feature Type Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'FeatureType0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'FeatureType', 0, AllMasterTasksItems?.AllData)} />
+                                            : <>
+                                                <div className="full-width">
+                                                    <div className="full-width replaceInput alignCenter">
+                                                        <a style={{ color: "#fff !important" }} className="textDotted" > {data[0]?.FeatureType[0].Title}</a>
+                                                    </div>
                                                 </div>
-                                            );
-                                        }
-                                        )}
-                                        <span className="input-group-text">
-                                            <span title="Edit Categories" onClick={() => OpenComponentPicker(data[0], true, 'FeatureType')} className="svg__iconbox svg__icon--editBox"></span>
-                                        </span>
-                                        {autoSearch?.itemIndex === 0 && autoSearch?.property === 'FeatureType' && SearchedCategoryData?.length > 0 ? (
+                                                <span className="input-group-text">
+                                                    <span title="Edit FeatureType" onClick={() => OpenComponentPicker(data[0], true, 'FeatureType')} className="svg__iconbox svg__icon--editBox"></span>
+                                                </span>
+                                            </>}
+
+
+                                        {data[0]?.FeatureType?.length === 0 && autoSearch?.itemIndex === 0 && autoSearch?.property === 'FeatureType' && SearchedCategoryData?.length > 0 ? (
                                             <div className="SmartTableOnTaskPopup">
                                                 <ul className="list-group hreflink scrollbar maXh-200">
                                                     {SearchedCategoryData?.map((item: any) => {
@@ -3174,9 +3294,20 @@ const CompareTool = (props: any) => {
                                 <Col sm="5" md="5" lg="5" className="contentSec">
                                     <div className="input-group">
                                         <label className="fw-semibold full-width form-label">Feature Type</label>
-                                        <input type="text" className="form-control" placeholder="Search Feature Type Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'FeatureType1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'FeatureType', 1, AllMasterTasksItems?.AllData)} />
 
-                                        {data[1]?.FeatureType != undefined && data[1]?.FeatureType?.map((type: any, index: number) => {
+                                        {data[1]?.FeatureType?.length === 0 ?
+                                            <input type="text" className="form-control" placeholder="Search Feature Type Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'FeatureType1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'FeatureType', 1, AllMasterTasksItems?.AllData)} />
+                                            : <>
+                                                <div className="full-width">
+                                                    <div className="full-width replaceInput alignCenter">
+                                                        <a style={{ color: "#fff !important" }} className="textDotted" > {data[1]?.FeatureType[0].Title}</a>
+                                                    </div>
+                                                </div>
+                                                <span className="input-group-text">
+                                                    <span title="Edit FeatureType" onClick={() => OpenComponentPicker(data[1], true, 'FeatureType')} className="svg__iconbox svg__icon--editBox"></span>
+                                                </span>
+                                            </>}
+                                        {/* {data[1]?.FeatureType != undefined && data[1]?.FeatureType?.map((type: any, index: number) => {
                                             return (
                                                 <div className="block w-100">
                                                     <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
@@ -3188,8 +3319,8 @@ const CompareTool = (props: any) => {
                                         )}
                                         <span className="input-group-text">
                                             <span title="Edit Categories" onClick={() => OpenComponentPicker(data[1], true, 'FeatureType')} className="svg__iconbox svg__icon--editBox"></span>
-                                        </span>
-                                        {autoSearch?.itemIndex === 1 && autoSearch?.property === 'FeatureType' && SearchedCategoryData?.length > 0 ? (
+                                        </span> */}
+                                        {data[1]?.FeatureType?.length === 0 && autoSearch?.itemIndex === 1 && autoSearch?.property === 'FeatureType' && SearchedCategoryData?.length > 0 ? (
                                             <div className="SmartTableOnTaskPopup">
                                                 <ul className="list-group hreflink scrollbar maXh-200">
                                                     {SearchedCategoryData?.map((item: any) => {
@@ -3214,8 +3345,20 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Project</label>
-                                    <input type="text" className="form-control" placeholder="Search Project Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ProjectItem0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 0, AllMasterTasksItems?.ProjectData)} />
-                                    {data[0]?.ProjectItem != undefined && data[0]?.ProjectItem?.map((type: any, index: number) => {
+
+                                    {data[0]?.ProjectItem?.length === 0 ?
+                                        <input type="text" className="form-control" placeholder="Search Project Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ProjectItem0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 0, AllMasterTasksItems?.ProjectData)} />
+                                        : <>
+                                            <div className="full-width">
+                                                <div className="full-width replaceInput alignCenter">
+                                                    <a style={{ color: "#fff !important" }} className="textDotted" > {data[0]?.ProjectItem[0].Title}</a>
+                                                </div>
+                                            </div>
+                                            <span className="input-group-text">
+                                                <span title="Edit Project" onClick={() => OpenComponentPicker(data[0], true, 'ProjectItem')} className="svg__iconbox svg__icon--editBox"></span>
+                                            </span>
+                                        </>}
+                                    {/* {data[0]?.ProjectItem != undefined && data[0]?.ProjectItem?.map((type: any, index: number) => {
                                         return (
                                             <div className="block w-100">
                                                 <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
@@ -3227,8 +3370,8 @@ const CompareTool = (props: any) => {
                                     )}
                                     <span className="input-group-text">
                                         <span title="Edit Project" onClick={() => OpenComponentPicker(data[0], true, 'ProjectItem')} className="svg__iconbox svg__icon--editBox"></span>
-                                    </span>
-                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'ProjectItem' && SearchedCategoryData?.length > 0 ? (
+                                    </span> */}
+                                    {data[0]?.ProjectItem?.length === 0 && autoSearch?.itemIndex === 0 && autoSearch?.property === 'ProjectItem' && SearchedCategoryData?.length > 0 ? (
                                         <div className="SmartTableOnTaskPopup">
                                             <ul className="list-group hreflink scrollbar maXh-200">
                                                 {SearchedCategoryData?.map((item: any) => {
@@ -3253,8 +3396,20 @@ const CompareTool = (props: any) => {
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
                                     <label className="fw-semibold full-width form-label">Project</label>
-                                    <input type="text" className="form-control" placeholder="Search Project Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ProjectItem1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 1, AllMasterTasksItems?.ProjectData)} />
-                                    {data[1]?.ProjectItem != undefined && data[1]?.ProjectItem?.map((type: any, index: number) => {
+
+                                    {data[1]?.ProjectItem?.length === 0 ?
+                                        <input type="text" className="form-control" placeholder="Search Project Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ProjectItem1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 1, AllMasterTasksItems?.ProjectData)} />
+                                        : <>
+                                            <div className="full-width">
+                                                <div className="full-width replaceInput alignCenter">
+                                                    <a style={{ color: "#fff !important" }} className="textDotted" > {data[1]?.ProjectItem[0].Title}</a>
+                                                </div>
+                                            </div>
+                                            <span className="input-group-text">
+                                                <span title="Edit Project" onClick={() => OpenComponentPicker(data[1], true, 'ProjectItem')} className="svg__iconbox svg__icon--editBox"></span>
+                                            </span>
+                                        </>}
+                                    {/* {data[1]?.ProjectItem != undefined && data[1]?.ProjectItem?.map((type: any, index: number) => {
                                         return (
                                             <div className="block w-100">
                                                 <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
@@ -3266,8 +3421,8 @@ const CompareTool = (props: any) => {
                                     )}
                                     <span className="input-group-text">
                                         <span title="Edit Project" onClick={() => OpenComponentPicker(data[1], true, 'ProjectItem')} className="svg__iconbox svg__icon--editBox"></span>
-                                    </span>
-                                    {autoSearch?.itemIndex === 1 && autoSearch?.property === 'ProjectItem' && SearchedCategoryData?.length > 0 ? (
+                                    </span> */}
+                                    {data[1]?.ProjectItem?.length === 0 && autoSearch?.itemIndex === 1 && autoSearch?.property === 'ProjectItem' && SearchedCategoryData?.length > 0 ? (
                                         <div className="SmartTableOnTaskPopup">
                                             <ul className="list-group hreflink scrollbar maXh-200">
                                                 {SearchedCategoryData?.map((item: any) => {
@@ -3703,36 +3858,88 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('Comments')} />
                             </Col>
                         </Row>
+                        {data[0]?.TaskType === undefined ?
+                            (<Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Description
+                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Body", true) }}></span>
+                                        </label>
+                                        <textarea rows={3} className="form-control" value={data[0]?.Body != undefined && data[0]?.Body != null ? data[0]?.Body?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}>
 
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Description
-                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Body", true) }}></span>
-                                    </label>
-                                    <textarea rows={3} className="form-control" value={data[0]?.Body != undefined && data[0]?.Body != null ? data[0]?.Body?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}>
+                                        </textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="iconSec">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'Body', data[1]?.Body)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'Body', data[0]?.Body)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Description
+                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Body", true) }}></span>
+                                        </label>
+                                        <textarea className="form-control" rows={3} value={data[1]?.Body != undefined && data[1]?.Body != null ? data[1]?.Body?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('Body')} />
+                                </Col>
+                            </Row>)
+                            : (<Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Description
 
-                                    </textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="iconSec">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'Body', data[1]?.Body)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'Body', data[0]?.Body)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Description
-                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Body", true) }}></span>
-                                    </label>
-                                    <textarea className="form-control" rows={3} value={data[1]?.Body != undefined && data[1]?.Body != null ? data[1]?.Body?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('Body')} />
-                            </Col>
-                        </Row>
+                                        </label>
+                                        {data[0]?.FeedBackDescription[0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
+                                            return (
+                                                <div className="w-100">
+                                                    <div className="justify-content-between d-flex">
+                                                        <div className="alignCenter m-0"></div>
+                                                    </div>
+                                                    <div className="d-flex p-0 FeedBack-comment "><div className="border p-1 me-1">
+                                                        <span>{i + 1}</span><ul className="list-none">
+                                                        </ul></div>
+                                                        <div className="border p-2 full-width text-break"><span>
+                                                            <div><span dangerouslySetInnerHTML={{ __html: cleanHTML(fbData?.Title, null, i) }}></span></div>
+                                                        </span></div></div></div>
+                                            )
+                                        })}
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="iconSec">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'FeedBackDescription', data[1]?.FeedBackDescription)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'FeedBackDescription', data[0]?.FeedBackDescription)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Description
+                                        </label>
+                                        {data[1]?.FeedBackDescription[0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
+                                            return (
+                                                <div className="w-100">
+                                                    <div className="justify-content-between d-flex">
+                                                        <div className="alignCenter m-0"></div>
+                                                    </div>
+                                                    <div className="d-flex p-0 FeedBack-comment "><div className="border p-1 me-1">
+                                                        <span>{i + 1}</span><ul className="list-none">
+                                                        </ul></div>
+                                                        <div className="border p-2 full-width text-break"><span>
+                                                            <div><span dangerouslySetInnerHTML={{ __html: cleanHTML(fbData?.Title, null, i) }}></span></div>
+                                                        </span></div></div></div>
+                                            )
+                                        })}
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('FeedBackDescription')} />
+                                </Col>
+                            </Row>)}
 
                         {data[0]?.TaskType === undefined && <span>
                             <Row className="Metadatapannel">
@@ -4005,7 +4212,7 @@ const CompareTool = (props: any) => {
                                                 <tr>
                                                     {data[0]?.finalData?.length > 0 && data[0]?.finalData?.map((filteritem: any, index: any) => {
                                                         return (
-                                                            <div>
+                                                            <>{filteritem?.values?.length > 0 && <>
                                                                 <span id="filterexpand">
                                                                     {filteritem.expand && filteritem?.values?.length > 0 && <SlArrowDown onClick={() => loadMorefilter(filteritem, 'finalData', 0)}></SlArrowDown>}
                                                                     {!filteritem.expand && filteritem?.values?.length > 0 && <SlArrowRight onClick={() => loadMorefilter(filteritem, 'finalData', 0)}></SlArrowRight>}
@@ -4017,51 +4224,26 @@ const CompareTool = (props: any) => {
                                                                     {filteritem.expand === true && filteritem?.values?.length > 0 && filteritem.values?.map((child: any) => {
                                                                         return (<>
                                                                             <li style={{ listStyle: 'none' }} className="alignCenter">
-                                                                                <div style={{ width: "10%" }}>
+                                                                                {/* <div style={{ width: "5%" }}>
                                                                                     <input className='form-check-input' type="checkbox" id={child.Title} value={child.Title} checked={child.selected} onChange={(event) => handleGroupCheckboxChanged(event, child, 'finalData', 0)} /> {child.Title}
+                                                                                </div> */}
+                                                                                <div style={{ width: "30%" }}>
+                                                                                    <span className='round  pe-1'>  <img className="ProirityAssignedUserPhoto" src={child?.AuthorImage != undefined && child?.AuthorImage != '' ?
+                                                                                        child.AuthorImage :
+                                                                                        "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                                                                    /></span>{child?.AuthorName}
                                                                                 </div>
-                                                                                <div style={{ width: "25%" }}>
+                                                                                <div style={{ width: "20%" }}>
                                                                                     {child.TaskDate}
                                                                                 </div>
-                                                                                <div style={{ width: "10%" }}>{child.TaskTime}</div>
-                                                                                <div style={{ width: "50%" }}>{child.Description}</div>
+                                                                                <div style={{ width: "8%" }}>{child.TaskTime}</div>
+                                                                                <div style={{ width: "40%" }}>{child.Description}</div>
                                                                             </li></>)
                                                                     })}
                                                                 </ul>
-                                                            </div>)
+                                                            </>}</>)
                                                     })}
 
-
-
-                                                    {/* {data[0]?.finalData?.length > 0 ? (
-                                                        data[0]?.finalData.map((Group: any, index: any) => {
-                                                            return (
-                                                          <>  <td>
-                                                                <fieldset>
-                                                                    <legend ng-if="item!='teamSites'" className="ng-scope">
-                                                                    <input type='checkbox' checked={Group.checked} value={Group.Title}  onChange={(e) => onCheck((e), index ,data[0]?.finalData)} ></input>   <span className="ng-binding">{Group.Title}</span>
-                                                                    </legend>
-                                                                </fieldset>
-                                                                <CheckboxTree
-                                                                    nodes={Group.values}
-                                                                    checked={Group.checked}
-                                                                    expanded={Group.expanded}
-                                                                    onCheck={checked => onCheck(checked, index ,data[0]?.finalData)}
-                                                                    onExpand={expanded => onExpanded(expanded, index ,data[0]?.finalData)}
-                                                                    nativeCheckboxes={true}
-                                                                    showNodeIcon={false}
-                                                                    checkModel={'all'}
-                                                                />
-                                                            </td>
-                                                            <td>{Group.TaskDate}</td><td>{Group.TaskTime}</td><td>{Group.TaskTime}</td>
-                                                            
-                                                            </>
-                                                            )
-
-                                                        }
-                                                        )): <div className="d-flex justify-content-center">No Timesheet Available</div>
-
-                                                    } */}
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -4081,21 +4263,13 @@ const CompareTool = (props: any) => {
 
                                     <div className="input-group">
                                         <label className="fw-semibold full-width form-label">Time Entries</label>
-                                        {/* {data[1]?.finalData?.length > 0 ? (
-                                            <GlobalCommanTable
-                                                columns={TimeEntryColumnsSecond}
-                                                data={data[1]?.finalData}
-                                                callBackData={callBackDataSecond}
-                                                expendedTrue={true}
 
-                                            />
-                                        ) : <div className="d-flex justify-content-center">No Timesheet Available</div>} */}
                                         <table width="100%" className="indicator_search">
                                             <tbody>
                                                 <tr>
                                                     {data[1]?.finalData?.length > 0 && data[1]?.finalData?.map((filteritem: any, index: any) => {
                                                         return (
-                                                            <div>
+                                                            <>  {filteritem?.values?.length > 0 && <>
                                                                 <span id="filterexpand">
                                                                     {filteritem.expand && filteritem?.values?.length > 0 && <SlArrowDown onClick={() => loadMorefilter(filteritem, 'finalData', 1)}></SlArrowDown>}
                                                                     {!filteritem.expand && filteritem?.values?.length > 0 && <SlArrowRight onClick={() => loadMorefilter(filteritem, 'finalData', 1)}></SlArrowRight>}
@@ -4106,19 +4280,25 @@ const CompareTool = (props: any) => {
                                                                 <ul>
                                                                     {filteritem.expand === true && filteritem?.values?.length > 0 && filteritem.values?.map((child: any) => {
                                                                         return (<>
-                                                                            <li style={{ listStyle: 'none' }}>
-                                                                                <div style={{ width: "10%" }}>
-                                                                                    <input className='form-check-input' type="checkbox" id={child.Title} value={child.Title} checked={child.selected} onChange={(event) => handleGroupCheckboxChanged(event, child, 'finalData', 1)} /> {child.Title}
+                                                                            <li style={{ listStyle: 'none' }} className="alignCenter">
+                                                                                {/* <div style={{ width: "5%" }}>
+                                                                                    <input className='form-check-input' type="checkbox" id={child.Title} value={child.Title} checked={child.selected} onChange={(event) => handleGroupCheckboxChanged(event, child, 'finalData', 0)} /> {child.Title}
+                                                                                </div> */}
+                                                                                <div style={{ width: "30%" }}>
+                                                                                    <span className='round  pe-1'>  <img className="ProirityAssignedUserPhoto" src={child?.AuthorImage != undefined && child?.AuthorImage != '' ?
+                                                                                        child.AuthorImage :
+                                                                                        "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                                                                    /></span>{child?.AuthorName}
                                                                                 </div>
-                                                                                <div style={{ width: "25%" }}>
+                                                                                <div style={{ width: "20%" }}>
                                                                                     {child.TaskDate}
                                                                                 </div>
-                                                                                <div style={{ width: "10%" }}>{child.TaskTime}</div>
-                                                                                <div style={{ width: "50%" }}>{child.Description}</div>
+                                                                                <div style={{ width: "8%" }}>{child.TaskTime}</div>
+                                                                                <div style={{ width: "40%" }}>{child.Description}</div>
                                                                             </li></>)
                                                                     })}
                                                                 </ul>
-                                                            </div>)
+                                                            </>}</>)
                                                     })}
                                                 </tr>
                                             </tbody>

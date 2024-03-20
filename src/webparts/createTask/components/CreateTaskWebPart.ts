@@ -24,6 +24,7 @@ export interface ICreateTaskWebPartProps {
   DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08';
   TaskTimeSheetListID: '464fb776-e4b3-404c-8261-7d3c50ff343f';
   AdminConfigrationListID:'e968902a-3021-4af2-a30a-174ea95cf8fa';
+  PortFolioTypeID: "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
   TimeEntry: any;
   SiteCompostion: any;
 }
@@ -52,6 +53,7 @@ export default class CreateTaskWebPart extends BaseClientSideWebPart<ICreateTask
         DocumentsListID: this.properties.DocumentsListID,
         TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
         AdminConfigrationListID: this.properties.AdminConfigrationListID,
+        PortFolioTypeID:this.properties.PortFolioTypeID,
         TimeEntry: this.properties.TimeEntry,
         SiteCompostion: this.properties.SiteCompostion
       }
@@ -148,6 +150,9 @@ export default class CreateTaskWebPart extends BaseClientSideWebPart<ICreateTask
                 }),
                 PropertyPaneTextField('DocumentsListID', {
                   label: "DocumentsListID"
+                }),
+                PropertyPaneTextField("PortFolioTypeID", {
+                  label: "Portfolio Type List",
                 }),
                 PropertyPaneTextField('TaskTimeSheetListID', {
                   label: "TaskTimeSheetListID"

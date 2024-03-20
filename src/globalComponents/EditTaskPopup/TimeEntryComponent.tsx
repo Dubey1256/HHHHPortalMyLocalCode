@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable no-prototype-builtins */
+
 import * as React from "react";
 import { sp, Web } from "sp-pnp-js";
 import * as $ from "jquery";
@@ -14,15 +13,17 @@ import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import GlobalCommanTable from "../GroupByReactTableComponents/GlobalCommanTable";
 import "bootstrap/dist/css/bootstrap.min.css";
+import CustomAlert from "../TimeEntry/CustomAlert";
 import Tooltip from "../Tooltip";
 import * as globalCommon from "../globalCommon";
 import HighlightableCell from "../highlight";
+import { useContext,createContext } from "react";
 import {
   MdKeyboardArrowLeft,
   MdKeyboardArrowRight,
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
-} from "react-icons/Md";
+} from "react-icons/md";
 
 let AllTimeSpentDetails: any = [];
 let CurntUserId = "";
@@ -58,11 +59,11 @@ var PopupType: any = "";
 var PopupTypeCat: any = false;
 const SP = spfi();
 let AllMetadata: [] = [];
-
+let checkedFlat = false;
 const TimeEntryPopup = (item: any) => {
   if (item?.props?.siteUrl != undefined) {
-    var Url = item?.props?.siteUrl.split("https://hhhhteams.sharepoint.com");
-    RelativeUrl = Url[1];
+    let index = item?.props?.siteUrl.indexOf('/', 'https://'.length);
+    RelativeUrl = item?.props?.siteUrl.substring(index);
     CurrentSiteUrl = item?.props?.siteUrl;
     PortfolioType = item?.props?.Portfolio_x0020_Type;
     CurntUserId = item?.Context?.pageContext?._legacyPageContext.userId;
@@ -77,6 +78,8 @@ const TimeEntryPopup = (item: any) => {
     CurrentSiteUrl = item?.Context?.pageContext?.web?.absoluteUrl;
   }
 
+
+  const [isAlertVisible, setIsAlertVisible] = React.useState(false);
   const [AllTimeSheetDataNew, setTimeSheet] = React.useState([]);
   const [date, setDate] = React.useState(undefined);
   const [showCat, setshowCat] = React.useState([]);
@@ -123,6 +126,7 @@ const TimeEntryPopup = (item: any) => {
   );
   const [AllUser, setAllUser] = React.useState([]);
   const [checkCategories, setcheckCategories] = React.useState();
+  const [checkCategoriesTitle, setcheckCategoriesTitle] = React.useState('');
   const [updateData, setupdateData] = React.useState(0);
   const [updateData2, setupdateData2] = React.useState(0);
   const [editeddata, setediteddata] = React.useState<any>("");
@@ -132,7 +136,7 @@ const TimeEntryPopup = (item: any) => {
   const [TimeInHours, setTimeInHours] = React.useState(0);
   const [TimeInMinutes, setTimeInMinutes] = React.useState<any>(0);
   const [categoryData, setCategoryData] = React.useState([]);
-
+  const toggleDialog = () => setIsAlertVisible(false);
   let smartTermName = "Task" + item.props.siteType;
 
   // -------------------Load TaskUse------------------------------------------------------------------------------------------
@@ -484,8 +488,8 @@ const TimeEntryPopup = (item: any) => {
             isShowCate = val.TimeCategory;
             if (val.TimeCategory == time.Title) {
               setshowCat(time.Title);
-
               setcheckCategories(time.Title);
+              setcheckCategoriesTitle(time.Title);
             }
           }
         });
@@ -516,6 +520,7 @@ const TimeEntryPopup = (item: any) => {
     setediteddata(undefined);
     setCount(1);
     change = Moment().format();
+    setNewData(undefined)
     setMyDatee(new Date());
     setsaveEditTaskTimeChild({});
   };
@@ -645,6 +650,7 @@ const TimeEntryPopup = (item: any) => {
     const target = e.target;
     if (target.checked) {
       setcheckCategories(Title);
+      setcheckCategoriesTitle(Title)
       setshowCat(Title);
     }
   };
@@ -724,6 +730,27 @@ const TimeEntryPopup = (item: any) => {
 
   const getStructureData = function () {
     TaskCate = AllTimeSpentDetails;
+
+    AllTimeSpentDetails?.map((item: any) => {
+      if (item?.subRows != undefined && item?.subRows?.length > 0) {
+        item?.subRows.map((value: any) => {
+          if (value?.Status != undefined) {
+            if (value?.Status == "Draft") {
+              value.lableColor = "yellowForTimeSheet"
+            }
+            else if (value?.Status == "Rejected") {
+              value.lableColor = "redForTimeSheet"
+            }
+            else if (value?.Status == "Approved") {
+              value.lableColor = 'greenForTimeSheet'
+            }
+            else if (value?.Status == "For Approval") {
+              value.lableColor = "blueForTimeSheet"
+            }
+          }
+        })
+      }
+    })
 
     AllTimeSpentDetails.forEach((items: any) => {
       if (items.TimesheetTitle.Id === undefined) {
@@ -810,7 +837,7 @@ const TimeEntryPopup = (item: any) => {
             }
             try {
               getDateForTimeEntry(NewDate, val);
-            } catch (e) {}
+            } catch (e) { }
           }
         });
       }
@@ -833,7 +860,6 @@ const TimeEntryPopup = (item: any) => {
       if (items.subRows != undefined && items.subRows.length > 0) {
         $.each(items.subRows, function (index: any, child: any) {
           const title = child.Title;
-
           if (!finalData[title]) {
             finalData[title] = [child];
           } else {
@@ -867,11 +893,20 @@ const TimeEntryPopup = (item: any) => {
       TaskTimeSheetCategoriesGrouping
     );
 
-    backupEdit = mergedFinalData;
-    setData(mergedFinalData);
-    console.log("finalData", finalData);
-    setBackupData(mergedFinalData);
-    setTimeSheet(TaskTimeSheetCategoriesGrouping);
+
+
+    if(Flatview == true){
+      flatviewOpen(Flatview,mergedFinalData)
+    }
+    else{
+      backupEdit = mergedFinalData;
+      setData(mergedFinalData);
+      setBackupData(mergedFinalData);
+      setTimeSheet(TaskTimeSheetCategoriesGrouping);
+      console.log("finalData", finalData);
+     
+    }
+
 
     if (TaskStatuspopup == true) {
       setupdateData(updateData + 1);
@@ -898,8 +933,8 @@ const TimeEntryPopup = (item: any) => {
     }
   }
 
-  const callBackData = React.useCallback((elem: any, ShowingData: any) => {},
-  []);
+  const callBackData = React.useCallback((elem: any, ShowingData: any) => { },
+    []);
   function getDateForTimeEntry(newDate: any, items: any) {
     var LatestDate = [];
     var getMonth = "";
@@ -974,10 +1009,80 @@ const TimeEntryPopup = (item: any) => {
     return Items;
   };
 
+  // ---------------------------------------------------- Changing Task Status------------------------------------------------------------------------------
+
+
+  const sendForApproval = async (child: any) => {
+    var UpdatedData: any = [];
+    if (child.AuthorId == CurntUserId) {
+
+
+      $.each(TaskCate, function (index: any, update: any) {
+        if (update.Id === child.ParentID && update.AuthorId == CurntUserId) {
+          $.each(update.AdditionalTime, function (index: any, updateitem: any) {
+            isTimes = true;
+            if (updateitem.ID === child.ID) {
+              updateitem.Id = child.ID;
+              updateitem.TaskTime = child.TaskTime;
+              updateitem.TaskTimeInMin = child.TaskTimeInMin;
+              updateitem.TaskDate = child.TaskDate;
+              updateitem.Description = child?.Description;
+              updateitem.Status = 'For Approval';
+              UpdatedData.push(updateitem);
+            } else {
+              UpdatedData.push(updateitem);
+            }
+          });
+        }
+      });
+      UpdatedData?.forEach((val: any) => {
+        delete val.TaskDates;
+      });
+      setTaskStatuspopup2(false);
+      if (
+        item.props.siteType == "Migration" ||
+        item.props.siteType == "ALAKDigital"
+      ) {
+        var ListId = TimeSheetlistId;
+      } else {
+        var ListId = TimeSheetlistId;
+      }
+      let web = new Web(`${siteUrl}`);
+
+      await web.lists
+        .getById(ListId)
+        .items.getById(child.ParentID)
+        .update({
+          AdditionalTimeEntry: JSON.stringify(UpdatedData),
+        })
+        .then((res: any) => {
+          console.log(res);
+
+          closeAddTaskTimepopup();
+          setupdateData(updateData + 1);
+        });
+    }
+    else {
+      alert('You are only permitted to submit your own timesheet for approval. Please ensure to send your timesheet for approval')
+    }
+
+  }
+  // -------------------------------------------------------CHANGE STATUS COLOR FUNCTION ------------------------------------------------------------
+  const getStatusClassName = (status: any) => {
+    switch (status) {
+      case "Draft":
+        return "svg__iconbox svg__icon--forApproval hreflink";
+      case "Rejected":
+        return "svg__iconbox svg__icon--forApproval hreflink";
+      default:
+        return "svg__iconbox svg__icon--forApproval Disabled-Link";
+    }
+  };
+
+
   //------------------------------------------------------Load Timesheet Data-----------------------------------------------------------------------------
   const EditData = async (items: any) => {
     AllTimeSpentDetails = [];
-
     TaskTimeSheetCategories = getSmartMetadataItemsByTaxType(
       AllMetadata,
       "TimesheetCategories"
@@ -1033,7 +1138,7 @@ const TimeEntryPopup = (item: any) => {
     getStructurefTimesheetCategories();
     setEditItem(items.Title);
 
-    if (items.siteType == "Offshore Tasks") {
+    if (items.siteType == "Offshore Tasks" || items.siteType == "SharewebQA") {
       var siteType = "OffshoreTasks";
       var filteres = "Task" + siteType + "/Id eq " + items.Id;
       var linkedSite = "Task" + siteType;
@@ -1105,11 +1210,16 @@ const TimeEntryPopup = (item: any) => {
                 var UpdatedData: any = {};
                 AllUsers.forEach((taskUser: any) => {
                   if (taskUser.AssingedToUserId == CurntUserId) {
+                    if (taskUser?.ApproverId?.length > 0) {
+                      UpdatedData["IsApprover"] = true;
+                    } else {
+                      UpdatedData["IsApprover"] = false;
+                    }
                     UpdatedData["AuthorName"] = taskUser.Title;
                     UpdatedData["Company"] = taskUser.Company;
                     UpdatedData["AuthorImage"] =
                       taskUser.Item_x0020_Cover != undefined &&
-                      taskUser.Item_x0020_Cover.Url != undefined
+                        taskUser.Item_x0020_Cover.Url != undefined
                         ? taskUser.Item_x0020_Cover.Url
                         : "";
                   }
@@ -1117,6 +1227,12 @@ const TimeEntryPopup = (item: any) => {
                 var Datee: any = new Date(myDatee);
                 if (Datee == "Invalid Date") {
                   Datee = Moment().format();
+                }
+                let TimeSheetStatus: string = '';
+                if (UpdatedData.IsApprover) {
+                  TimeSheetStatus = "Draft"
+                } else {
+                  TimeSheetStatus = ""
                 }
                 var TimeInH: any = TimeInMinutes / 60;
                 TimeInH = TimeInH.toFixed(2);
@@ -1127,6 +1243,7 @@ const TimeEntryPopup = (item: any) => {
                 update["AuthorName"] = UpdatedData.AuthorName;
                 update["AuthorId"] = CurntUserId;
                 update["AuthorImage"] = UpdatedData.AuthorImage;
+                update["Status"] = TimeSheetStatus;
                 update["ID"] = 0;
                 update["MainParentId"] = mainParentId;
                 update["ParentID"] = NewParentId;
@@ -1189,7 +1306,7 @@ const TimeEntryPopup = (item: any) => {
                     item.AuthorName = taskUser.Title;
                     item.AuthorImage =
                       taskUser.Item_x0020_Cover != undefined &&
-                      taskUser.Item_x0020_Cover.Url != undefined
+                        taskUser.Item_x0020_Cover.Url != undefined
                         ? taskUser.Item_x0020_Cover.Url
                         : "";
                   }
@@ -1227,6 +1344,18 @@ const TimeEntryPopup = (item: any) => {
   const collapseTime = () => {
     setcollapseItem(false);
   };
+  const handleChangeTime = (e: any) => {
+    setTimeout(() => {
+      let changeTimes = Number(e.target.value);
+      if (changeTimes != undefined) {
+        var TimeInHour: any = changeTimes / 60;
+
+        setTimeInHours(TimeInHour.toFixed(2));
+      }
+
+      setTimeInMinutes(changeTimes);
+    }, 1000)
+  }
   let handleChange = (e: { target: { value: string } }, titleName: any) => {
     if (titleName == "Date" || titleName == "Time") {
       setSearch(e.target.value);
@@ -1379,8 +1508,8 @@ const TimeEntryPopup = (item: any) => {
     let itemMetadataAdded = {
       Title:
         newData != undefined &&
-        newData.Title != undefined &&
-        newData.Title != ""
+          newData.Title != undefined &&
+          newData.Title != ""
           ? newData.Title
           : checkCategories,
       [smartTermId]: item.props.Id,
@@ -1460,10 +1589,11 @@ const TimeEntryPopup = (item: any) => {
             let itemMetadataAdded = {
               Title:
                 newData != undefined &&
-                newData.Title != undefined &&
-                newData.Title != ""
+                  newData.Title != undefined &&
+                  newData.Title != ""
                   ? newData.Title
                   : checkCategories,
+
               [smartTermId]: item.props.Id,
               CategoryId: Category,
               // 'Path': `${RelativeUrl}/Lists/${listName}/${UpdatedData.Company}`
@@ -1527,7 +1657,7 @@ const TimeEntryPopup = (item: any) => {
           UpdatedData["Company"] = taskUser.Company;
           UpdatedData["UserImage"] =
             taskUser.Item_x0020_Cover != undefined &&
-            taskUser.Item_x0020_Cover.Url != undefined
+              taskUser.Item_x0020_Cover.Url != undefined
               ? taskUser.Item_x0020_Cover.Url
               : "";
           await saveOldUserTask(UpdatedData);
@@ -1537,7 +1667,7 @@ const TimeEntryPopup = (item: any) => {
         UpdatedData.AuthorName == undefined &&
         UpdatedData.AuthorName == null
       ) {
-        alert("Please Add user on Task User Management");
+        setIsAlertVisible(true);
       }
     }
 
@@ -1553,7 +1683,7 @@ const TimeEntryPopup = (item: any) => {
         UpdatedData["Company"] = taskUser.Company;
         UpdatedData["UserImage"] =
           taskUser.Item_x0020_Cover != undefined &&
-          taskUser.Item_x0020_Cover.Url != undefined
+            taskUser.Item_x0020_Cover.Url != undefined
             ? taskUser.Item_x0020_Cover.Url
             : "";
       }
@@ -1573,8 +1703,8 @@ const TimeEntryPopup = (item: any) => {
     let itemMetadataAdded = {
       Title:
         newData != undefined &&
-        newData.Title != undefined &&
-        newData.Title != ""
+          newData.Title != undefined &&
+          newData.Title != ""
           ? newData.Title
           : checkCategories,
       [smartTermId]: item.props.Id,
@@ -1612,7 +1742,7 @@ const TimeEntryPopup = (item: any) => {
         UpdatedData["Company"] = taskUser.Company;
         UpdatedData["UserImage"] =
           taskUser.Item_x0020_Cover != undefined &&
-          taskUser.Item_x0020_Cover.Url != undefined
+            taskUser.Item_x0020_Cover.Url != undefined
             ? taskUser.Item_x0020_Cover.Url
             : "";
       }
@@ -1632,8 +1762,8 @@ const TimeEntryPopup = (item: any) => {
     let itemMetadataAdded = {
       Title:
         newData != undefined &&
-        newData.Title != undefined &&
-        newData.Title != ""
+          newData.Title != undefined &&
+          newData.Title != ""
           ? newData.Title
           : checkCategories,
       [smartTermId]: item.props.Id,
@@ -1656,6 +1786,7 @@ const TimeEntryPopup = (item: any) => {
 
   //-----------------------------------------------Create Add Timesheet--------------------------------------------------------------------------------------
   const AddTaskTime = async (child: any, Type: any) => {
+
     setbuttonDisable(true);
 
     if (Type == "EditTime") {
@@ -1737,11 +1868,16 @@ const TimeEntryPopup = (item: any) => {
       var AddMainParent: any = "";
       $.each(AllUsers, function (index: any, taskUser: any) {
         if (taskUser.AssingedToUserId === CurntUserId) {
+          if (taskUser?.ApproverId?.length > 0) {
+            CurrentUser["IsApprover"] = true;
+          } else {
+            CurrentUser["IsApprover"] = false;
+          }
           CurrentUser["AuthorName"] = taskUser.Title;
           CurrentUser["Company"] = taskUser.Company;
           CurrentUser["AuthorImage"] =
             taskUser.Item_x0020_Cover != undefined &&
-            taskUser.Item_x0020_Cover.Url != undefined
+              taskUser.Item_x0020_Cover.Url != undefined
               ? taskUser.Item_x0020_Cover.Url
               : "";
         }
@@ -1777,13 +1913,19 @@ const TimeEntryPopup = (item: any) => {
                 }
               }
             );
-
+            let TimeSheetStatus: string = '';
+            if (CurrentUser?.IsApprover) {
+              TimeSheetStatus = "Draft"
+            } else {
+              TimeSheetStatus = "";
+            }
             update["AuthorName"] = CurrentUser.AuthorName;
             update["AuthorImage"] = CurrentUser.AuthorImage;
             update["ID"] = timeSpentId.ID + 1;
             update["AuthorId"] = CurntUserId;
             update["MainParentId"] = AddMainParent;
             update["ParentID"] = AddParent;
+            update["Status"] = TimeSheetStatus;
             update["TaskTime"] =
               TimeInHours != undefined && TimeInHours != 0
                 ? TimeInHours
@@ -1854,11 +1996,16 @@ const TimeEntryPopup = (item: any) => {
       var TimeInMinute: any = changeTime / 60;
       $.each(AllUsers, function (index: any, taskUser: any) {
         if (taskUser.AssingedToUserId === CurntUserId) {
+          if (taskUser?.ApproverId?.length > 0) {
+            CurrentUser["IsApprover"] = true;
+          } else {
+            CurrentUser["IsApprover"] = false;
+          }
           CurrentUser["AuthorName"] = taskUser.Title;
           CurrentUser["Company"] = taskUser.Company;
           CurrentUser["AuthorImage"] =
             taskUser.Item_x0020_Cover != undefined &&
-            taskUser.Item_x0020_Cover.Url != undefined
+              taskUser.Item_x0020_Cover.Url != undefined
               ? taskUser.Item_x0020_Cover.Url
               : "";
         }
@@ -1879,7 +2026,7 @@ const TimeEntryPopup = (item: any) => {
         .expand(`Editor,Author,Category,TimesheetTitle,${linkedSite}`)
         .filter(
           `AuthorId eq '${CurntUserId}'` &&
-            `TimesheetTitle/Id eq '${ParentId.Id}'`
+          `TimesheetTitle/Id eq '${ParentId.Id}'`
         )
         .getAll();
       CurrentUserData = CurrentAddData;
@@ -1911,8 +2058,15 @@ const TimeEntryPopup = (item: any) => {
         });
 
         if (MyData != undefined && MyData.length > 0) {
+          let TimeSheetStatus: string = '';
+          if (CurrentUser?.IsApprover) {
+            TimeSheetStatus = "Draft"
+          } else {
+            TimeSheetStatus = "";
+          }
           update["AuthorName"] = CurrentUser.AuthorName;
           update["AuthorId"] = CurntUserId;
+          update["Status"] = TimeSheetStatus;
           update["AuthorImage"] = CurrentUser.AuthorImage;
           update["ID"] = timeSpentId.ID + 1;
           update["Id"] = timeSpentId.ID + 1;
@@ -1925,7 +2079,14 @@ const TimeEntryPopup = (item: any) => {
           MyData.push(update);
           UpdatedData = MyData;
         } else {
+          let TimeSheetStatus: string = '';
+          if (CurrentUser?.IsApprover) {
+            TimeSheetStatus = "Draft"
+          } else {
+            TimeSheetStatus = "";
+          }
           update["AuthorName"] = CurrentUser.AuthorName;
+          update["Status"] = TimeSheetStatus;
           update["AuthorImage"] = CurrentUser.AuthorImage;
           update["AuthorId"] = CurntUserId;
           update["ID"] = 0;
@@ -2023,6 +2184,7 @@ const TimeEntryPopup = (item: any) => {
     update["AuthorName"] = CurrentUser.AuthorName;
     update["AuthorImage"] = CurrentUser.AuthorImage;
     update["AuthorId"] = CurntUserId;
+    update["Status"] = "Draft";
     update["ID"] = 0;
     update["Id"] = 0;
     update["MainParentId"] = items.Id;
@@ -2138,8 +2300,8 @@ const TimeEntryPopup = (item: any) => {
         : Moment(DateFormate).format("DD/MM/YYYY");
     child.Description =
       postData != undefined &&
-      postData.Description != undefined &&
-      postData.Description != ""
+        postData.Description != undefined &&
+        postData.Description != ""
         ? postData.Description
         : child.Description;
 
@@ -2219,7 +2381,11 @@ const TimeEntryPopup = (item: any) => {
         setupdateData(updateData + 1);
       });
   };
-
+  const clearInput = () => {
+    setNewData(undefined)
+    setcheckCategoriesTitle('');
+   
+  }
   //-----------------------------header of Main popup-----------------------------------------------------------------------------------------------------
   const onRenderCustomHeaderAddTaskTime = () => {
     return (
@@ -2243,30 +2409,44 @@ const TimeEntryPopup = (item: any) => {
   };
 
   //--------------------------------------Change time by custom button-----------------------------------------------------------------------------
-  const changeTimeFunction = (e: any, type: any) => {
-    let changeTime: any = e.target.value;
-
-    if (type === "Add") {
-      if (changeTime !== undefined) {
-        const timeInHour: any = changeTime / 60;
-        setTimeInHours(timeInHour.toFixed(2));
-      }
-
-      setTimeInMinutes(changeTime);
-    }
-
-    if (type === "Edit") {
-      if (changeTime > 0) {
+  const changeTimeFunction = (e: any, type: any,Use:any) => {
+   if(Use == 'remove'){
+    changeTime=0;
+    setsaveEditTaskTimeChild({});
+    setTimeInMinutes(0)
+    setTimeInHours(0)
+   }
+   else{
+    changeTime = Number(e.target.value);
+    if (type === "AddTime" || type == "AddTime Category") {
         if (changeTime !== undefined) {
           const timeInHour: any = changeTime / 60;
           setTimeInHours(timeInHour.toFixed(2));
         }
         setTimeInMinutes(changeTime);
-      } else {
-        setTimeInMinutes(undefined);
-        setTimeInHours(0);
-      }
+
+      
     }
+
+    if (type == "EditTime" || type == "CopyTime") {
+        if (changeTime > 0) {
+          if (changeTime !== undefined) {
+            const timeInHour: any = changeTime / 60;
+            setTimeInHours(timeInHour.toFixed(2));
+          }
+          setTimeInMinutes(changeTime);
+        } else {
+          saveEditTaskTimeChild.TaskTimeInMin = ''
+          saveEditTaskTimeChild.TaskTime = 0;
+          setTimeInMinutes(0);
+          setTimeInHours(0);
+          setupdateData(updateData + 1);
+        }
+      
+     
+    }
+   }
+     
   };
 
   //--------------------------------------------Change Date by custom button--------------------------------------------------------------------------------
@@ -2395,15 +2575,23 @@ const TimeEntryPopup = (item: any) => {
     setediteddata(NewDate);
   };
 
-  const flatviewOpen = (e: any) => {
+  const flatviewOpen = (e: any,data:any) => {
     var newArray: any = [];
     var sortedData: any = [];
-    Flatview = e.target.checked;
+    if(e == true){
+      Flatview = true;
+    }
+    else{
+      Flatview = e.target.checked;
+      checkedFlat = e.target.checked;
+    }
+   
     if (Flatview == false) {
       setData(backupData);
     } else {
       data?.forEach((item: any) => {
         item.subRows?.forEach((val: any) => {
+          val.Category = item.Category?.Title;
           newArray.push(val);
         });
       });
@@ -2413,6 +2601,17 @@ const TimeEntryPopup = (item: any) => {
 
     // setFlatview((flatview: any) => ([...flatview]))
   };
+  // -------------------------------------------------------CHANGE STATUS COLOR FUNCTION ------------------------------------------------------------
+  // const getStatusClassName = (status:any) => {
+  //   switch (status) {
+  //     case "Draft":
+  //       return "svg__iconbox svg__icon--forApproval hreflink"; 
+  //     case "Rejected":
+  //       return "svg__iconbox svg__icon--forApproval hreflink"; 
+  //     default:
+  //       return "svg__iconbox svg__icon--forApproval Disabled-Link"; 
+  //   }
+  // };
 
   //------------------------------------------------------------Define columns-----------------------------------------------------------------------------
   const column = React.useMemo<ColumnDef<any, unknown>[]>(
@@ -2435,13 +2634,13 @@ const TimeEntryPopup = (item: any) => {
         size: 340,
         cell: ({ row }) => (
           <>
-            <span>
-              <div className="d-flex">
+            <span  >
+              <div className="d-flex" >
                 <>
                   {row?.original?.show === true ? (
                     <span>
                       {row?.original?.AuthorImage != "" &&
-                      row?.original.AuthorImage != null ? (
+                        row?.original.AuthorImage != null ? (
                         <span>
                           <a
                             href={`${CurrentSiteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.AuthorId}&Name=${row?.original?.AuthorTitle}`}
@@ -2509,7 +2708,7 @@ const TimeEntryPopup = (item: any) => {
       {
         accessorFn: (row) => row?.sortTaskDate,
         cell: ({ row, column }) => (
-          <div className="alignCenter">
+          <div className="alignCenter"  >
             {row?.original?.Created == null ? (
               ""
             ) : (
@@ -2553,11 +2752,22 @@ const TimeEntryPopup = (item: any) => {
         header: "",
         size: 95,
       },
-
+      Flatview ? {
+        accessorFn: (row) => row?.Category,
+        id: "Category",
+        resetColumnFilters: false,
+        placeholder: "Category",
+        header: "",
+        size: 95,
+        cell: ({ row }) => (
+          <div className="text-center">{row?.original?.Category}</div>
+        ),
+      } : { header: '', id: 'CategoryHidden' },  
       {
         accessorKey: "Description",
         placeholder: "Description",
         header: "",
+
       },
       {
         id: "ff",
@@ -2579,26 +2789,60 @@ const TimeEntryPopup = (item: any) => {
                 </button>
               </span>
             ) : (
+
               <>
-                {" "}
-                <img
-                  title="Copy"
-                  className="hreflink"
-                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png"
-                  onClick={() => openAddTasktimepopup(row.original, "CopyTime")}
-                ></img>{" "}
-                <span
-                  title="Edit"
-                  className="svg__iconbox svg__icon--edit hreflink"
-                  onClick={() =>
-                    openAddTasktimepopup(row?.original, "EditTime")
-                  }
-                ></span>{" "}
-                <span
-                  title="Delete"
-                  className="svg__icon--trash hreflink  svg__iconbox"
-                  onClick={() => deleteTaskTime(row.original)}
-                ></span>
+                {row?.original?.Status == undefined || row?.original?.Status == '' ?
+                  <>
+                    <span title="Copy"
+                      className="svg__iconbox svg__icon--copy"
+                      onClick={() => openAddTasktimepopup(row.original, "CopyTime")}
+                    ></span>
+                    <span
+                      title="Edit"
+                      className="svg__iconbox svg__icon--edit hreflink"
+                      onClick={() =>
+                        openAddTasktimepopup(row?.original, "EditTime")
+                      }
+                    ></span>
+                    <span
+                      title="Delete"
+                      className="svg__icon--trash hreflink  svg__iconbox"
+                      onClick={() => deleteTaskTime(row.original)}
+                    ></span>
+                  </>
+                  :
+                  <>
+                    {row?.original?.Status === "Draft" ||
+                      row?.original?.Status === "Rejected" ?
+                      <>
+                        <span
+                          title="Send For Approval"
+                          className="svg__iconbox svg__icon--forApproval hreflink"
+                          onClick={() =>
+                            sendForApproval(row?.original)
+                          }
+                        ></span>
+                        <span title="Copy"
+                          className="svg__iconbox svg__icon--copy"
+                          onClick={() => openAddTasktimepopup(row.original, "CopyTime")}
+                        ></span>
+                        <span
+                          title="Edit"
+                          className="svg__iconbox svg__icon--edit hreflink"
+                          onClick={() =>
+                            openAddTasktimepopup(row?.original, "EditTime")
+                          }
+                        ></span>
+                        <span
+                          title="Delete"
+                          className="svg__icon--trash hreflink  svg__iconbox"
+                          onClick={() => deleteTaskTime(row.original)}
+                        ></span>
+                      </>
+                      : null}
+                    {" "}
+                  </>
+                }
               </>
             )}
           </div>
@@ -2609,6 +2853,7 @@ const TimeEntryPopup = (item: any) => {
   );
 
   return (
+  
     <div className={PortfolioType == "Service" ? "serviepannelgreena" : ""}>
       <div>
         <div className="col-sm-12 p-0">
@@ -2620,7 +2865,7 @@ const TimeEntryPopup = (item: any) => {
                   <input
                     type="checkbox"
                     className="form-check-input me-1"
-                    onClick={(e: any) => flatviewOpen(e)}
+                    onClick={(e: any) => flatviewOpen(e,data)}
                   />
                   FlatView
                 </div>
@@ -2706,17 +2951,21 @@ const TimeEntryPopup = (item: any) => {
                       </div>
                     </div>
                     <div className="mb-1">
-                      <div className="input-group" key={checkCategories}>
+                      <div className="input-group" key={checkCategoriesTitle}>
                         <label className="form-label full-width">Title</label>
                         <input
                           type="text"
                           className="form-control"
                           name="TimeTitle"
-                          defaultValue={checkCategories}
+                          value={newData != undefined ? newData?.Title:checkCategoriesTitle}
                           onChange={(e) =>
                             setNewData({ ...newData, Title: e.target.value })
                           }
                         />
+                         <span className="input-group-text" style={{zIndex:'9'}} onClick={() =>clearInput()}>
+                      <span className="svg__iconbox svg__icon--cross"></span>
+                    </span>
+
                       </div>
                     </div>
                   </>
@@ -2729,7 +2978,9 @@ const TimeEntryPopup = (item: any) => {
                       placeholder="Add Title"
                       disabled={true}
                       defaultValue={CategryTitle}
+
                     />
+
                   </div>
                 )}
 
@@ -2739,104 +2990,108 @@ const TimeEntryPopup = (item: any) => {
                       <div className="row">
                         <div className="col-sm-12">
                           <div className="date-div">
-                            <label className="form-label full-width mb-2">
+                            <label className="form-label full-width mb-1">
                               Select date
                             </label>
-                            <div className="Date-Div-BAR d-flex mb-2">
-                              <span
-                                className="href"
-                                id="selectedToday"
-                                onClick={() =>
-                                  changeDatetodayQuickly(
-                                    PopupType == "EditTime" ||
-                                      PopupType == "CopyTime"
-                                      ? editeddata != undefined
-                                        ? editeddata
-                                        : myDatee
-                                      : myDatee,
-                                    "1Jul",
-                                    PopupType
-                                  )
-                                }
-                              >
-                                1 Jul
-                              </span>
-                              |
-                              <span
-                                className="href"
-                                id="selectedYear"
-                                onClick={() =>
-                                  changeDatetodayQuickly(
-                                    PopupType == "EditTime" ||
-                                      PopupType == "CopyTime"
-                                      ? editeddata != undefined
-                                        ? editeddata
-                                        : myDatee
-                                      : myDatee,
-                                    "firstdate",
-                                    PopupType
-                                  )
-                                }
-                              >
-                                1st
-                              </span>
-                              |{" "}
-                              <span
-                                className="href"
-                                id="selectedYear"
-                                onClick={() =>
-                                  changeDatetodayQuickly(
-                                    PopupType == "EditTime" ||
-                                      PopupType == "CopyTime"
-                                      ? editeddata != undefined
-                                        ? editeddata
-                                        : myDatee
-                                      : myDatee,
-                                    "15thdate",
-                                    PopupType
-                                  )
-                                }
-                              >
-                                15th
-                              </span>
-                              |{" "}
-                              <span
-                                className="href"
-                                id="selectedYear"
-                                onClick={() =>
-                                  changeDatetodayQuickly(
-                                    PopupType == "EditTime" ||
-                                      PopupType == "CopyTime"
-                                      ? editeddata != undefined
-                                        ? editeddata
-                                        : myDatee
-                                      : myDatee,
-                                    "1Jandate",
-                                    PopupType
-                                  )
-                                }
-                              >
-                                1 Jan
-                              </span>
-                              |
-                              <span
-                                className="href"
-                                id="selectedToday"
-                                onClick={() =>
-                                  changeDatetodayQuickly(
-                                    PopupType == "EditTime" ||
-                                      PopupType == "CopyTime"
-                                      ? editeddata != undefined
-                                        ? editeddata
-                                        : myDatee
-                                      : myDatee,
-                                    "Today",
-                                    PopupType
-                                  )
-                                }
-                              >
-                                Today
-                              </span>
+                            <div className="alignCenter justify-content-between">
+                              <div className="Date-Div-BAR d-flex mb-2">
+                                <span
+                                  className="href"
+                                  id="selectedToday"
+                                  onClick={() =>
+                                    changeDatetodayQuickly(
+                                      PopupType == "EditTime" ||
+                                        PopupType == "CopyTime"
+                                        ? editeddata != undefined
+                                          ? editeddata
+                                          : myDatee
+                                        : myDatee,
+                                      "Today",
+                                      PopupType
+                                    )
+                                  }
+                                >
+                                  Today
+                                </span>
+                                |{" "}
+                                <span
+                                  className="href"
+                                  id="selectedYear"
+                                  onClick={() =>
+                                    changeDatetodayQuickly(
+                                      PopupType == "EditTime" ||
+                                        PopupType == "CopyTime"
+                                        ? editeddata != undefined
+                                          ? editeddata
+                                          : myDatee
+                                        : myDatee,
+                                      "firstdate",
+                                      PopupType
+                                    )
+                                  }
+                                >
+                                  1st
+                                </span>
+                                |{" "}
+
+                                <span
+                                  className="href"
+                                  id="selectedYear"
+                                  onClick={() =>
+                                    changeDatetodayQuickly(
+                                      PopupType == "EditTime" ||
+                                        PopupType == "CopyTime"
+                                        ? editeddata != undefined
+                                          ? editeddata
+                                          : myDatee
+                                        : myDatee,
+                                      "15thdate",
+                                      PopupType
+                                    )
+                                  }
+                                >
+                                  15th
+                                </span>
+                              </div>
+                              <div className="Date-Div-BAR d-flex mb-2">
+                                <span
+                                  className="href"
+                                  id="selectedYear"
+                                  onClick={() =>
+                                    changeDatetodayQuickly(
+                                      PopupType == "EditTime" ||
+                                        PopupType == "CopyTime"
+                                        ? editeddata != undefined
+                                          ? editeddata
+                                          : myDatee
+                                        : myDatee,
+                                      "1Jandate",
+                                      PopupType
+                                    )
+                                  }
+                                >
+                                  1 Jan
+                                </span>
+                                |
+                                <span
+                                  className="href"
+                                  id="selectedToday"
+                                  onClick={() =>
+                                    changeDatetodayQuickly(
+                                      PopupType == "EditTime" ||
+                                        PopupType == "CopyTime"
+                                        ? editeddata != undefined
+                                          ? editeddata
+                                          : myDatee
+                                        : myDatee,
+                                      "1Jul",
+                                      PopupType
+                                    )
+                                  }
+                                >
+                                  1 Jul
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -2903,84 +3158,94 @@ const TimeEntryPopup = (item: any) => {
                       </div>
                       <div className="input-group">
                         <div className="d-flex w-100 mb-1">
-                          <button
-                            className="btnCol btn-primary px-2"
-                            title="Minus one month"
-                            onClick={() => changeDateDec("month", PopupType)}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="58"
-                              height="32"
-                              viewBox="0 0 65 37"
-                              fill="#fff"
+                          <div>
+                            <button
+                              className="btnCol btn-primary px-3 me-1"
+                              title="Minus one month"
+                              onClick={() => changeDateDec("month", PopupType)}
                             >
-                              <line
-                                x1="35.0975"
-                                y1="19.9826"
-                                x2="52.7924"
-                                y2="2.29386"
-                                stroke="#fff"
-                                stroke-width="5"
-                              />
-                              <line
-                                x1="52.9436"
-                                y1="34.5654"
-                                x2="35.2546"
-                                y2="16.8708"
-                                stroke="#fff"
-                                stroke-width="5"
-                              />
-                              <line
-                                x1="18.7682"
-                                y1="19.9826"
-                                x2="36.4631"
-                                y2="2.29386"
-                                stroke="#fff"
-                                stroke-width="5"
-                              />
-                              <line
-                                x1="36.6143"
-                                y1="34.5654"
-                                x2="18.9252"
-                                y2="16.8708"
-                                stroke="#fff"
-                                stroke-width="5"
-                              />
-                              <line
-                                x1="2.43884"
-                                y1="19.9826"
-                                x2="20.1337"
-                                y2="2.29386"
-                                stroke="#fff"
-                                stroke-width="5"
-                              />
-                              <line
-                                x1="20.2849"
-                                y1="34.5654"
-                                x2="2.5959"
-                                y2="16.8708"
-                                stroke="#fff"
-                                stroke-width="5"
-                              />
-                            </svg>
-                          </button>
-                          <button
-                            className="btnCol btn-primary mx-1"
-                            title="Minus one week"
-                            onClick={() => changeDateDec("week", PopupType)}
-                          >
-                            <MdKeyboardDoubleArrowLeft></MdKeyboardDoubleArrowLeft>
-                          </button>
-                          <button
-                            className="btnCol btn-primary mx-1"
-                            title="Minus one day"
-                            onClick={() => changeDateDec("Date", PopupType)}
-                          >
-                            <MdKeyboardArrowLeft></MdKeyboardArrowLeft>
-                          </button>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="58"
+                                height="32"
+                                viewBox="0 0 65 37"
+                                fill="#fff"
+                              >
+                                <line
+                                  x1="35.0975"
+                                  y1="19.9826"
+                                  x2="52.7924"
+                                  y2="2.29386"
+                                  stroke="#fff"
+                                  stroke-width="5"
+                                />
+                                <line
+                                  x1="52.9436"
+                                  y1="34.5654"
+                                  x2="35.2546"
+                                  y2="16.8708"
+                                  stroke="#fff"
+                                  stroke-width="5"
+                                />
+                                <line
+                                  x1="18.7682"
+                                  y1="19.9826"
+                                  x2="36.4631"
+                                  y2="2.29386"
+                                  stroke="#fff"
+                                  stroke-width="5"
+                                />
+                                <line
+                                  x1="36.6143"
+                                  y1="34.5654"
+                                  x2="18.9252"
+                                  y2="16.8708"
+                                  stroke="#fff"
+                                  stroke-width="5"
+                                />
+                                <line
+                                  x1="2.43884"
+                                  y1="19.9826"
+                                  x2="20.1337"
+                                  y2="2.29386"
+                                  stroke="#fff"
+                                  stroke-width="5"
+                                />
+                                <line
+                                  x1="20.2849"
+                                  y1="34.5654"
+                                  x2="2.5959"
+                                  y2="16.8708"
+                                  stroke="#fff"
+                                  stroke-width="5"
+                                />
+                              </svg>
+                            </button>
+                            <div> - Month </div>
+                          </div>
+                          <div className="text-center">
+                            <button
+                              className="btnCol btn-primary mx-1 px-3"
+                              title="Minus one week"
+                              onClick={() => changeDateDec("week", PopupType)}
+                            >
+                              <MdKeyboardDoubleArrowLeft></MdKeyboardDoubleArrowLeft>
+                            </button>
+                            <div> - Week </div>
+                          </div>
+                          <div className="text-center">
+                            <button
+                              className="btnCol btn-primary mx-1 px-2"
+                              title="Minus one day"
+                              onClick={() => changeDateDec("Date", PopupType)}
+                            >
+                              <MdKeyboardArrowLeft></MdKeyboardArrowLeft>
+                            </button>
+                            <div> - Day </div>
+                          </div>
+
                           <DatePicker
-                            className="form-control"
+                            className="form-control fw-bold text-center p-1"
                             selected={
                               PopupType == "EditTime" || PopupType == "CopyTime"
                                 ? editeddata != undefined
@@ -2991,121 +3256,149 @@ const TimeEntryPopup = (item: any) => {
                             onChange={handleDatedue}
                             dateFormat="EEE, dd MMM yyyy"
                           />
-                          <button
-                            onClick={() => changeDate("Date", PopupType)}
-                            title="Plus one day"
-                            className="btnCol btn-primary mx-1"
-                          >
-                            <MdKeyboardArrowRight></MdKeyboardArrowRight>
-                          </button>
-                          <button
-                            className="btnCol btn-primary mx-1"
-                            title="Plus one week"
-                            onClick={() => changeDate("week", PopupType)}
-                          >
-                            <MdKeyboardDoubleArrowRight></MdKeyboardDoubleArrowRight>
-                          </button>
-                          <button
-                            className="btnCol btn-primary px-2"
-                            title="Plus one month"
-                            onClick={() => changeDate("month", PopupType)}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="58"
-                              height="32"
-                              viewBox="0 0 65 37"
-                              fill="#fff"
+                          <div className="text-center">
+                            <button
+                              onClick={() => changeDate("Date", PopupType)}
+                              title="Plus one day"
+                              className="btnCol btn-primary mx-1 px-2"
                             >
-                              <line
-                                x1="23.0121"
-                                y1="16.6118"
-                                x2="5.31719"
-                                y2="34.3006"
-                                stroke="#fff"
-                                stroke-width="5"
-                              />
-                              <line
-                                x1="5.16599"
-                                y1="2.02901"
-                                x2="22.855"
-                                y2="19.7236"
-                                stroke="#fff"
-                                stroke-width="5"
-                              />
-                              <line
-                                x1="39.3414"
-                                y1="16.6118"
-                                x2="21.6465"
-                                y2="34.3006"
-                                stroke="#fff"
-                                stroke-width="5"
-                              />
-                              <line
-                                x1="21.4953"
-                                y1="2.02901"
-                                x2="39.1844"
-                                y2="19.7236"
-                                stroke="#fff"
-                                stroke-width="5"
-                              />
-                              <line
-                                x1="55.6708"
-                                y1="16.6118"
-                                x2="37.9759"
-                                y2="34.3006"
-                                stroke="#fff"
-                                stroke-width="5"
-                              />
-                              <line
-                                x1="37.8247"
-                                y1="2.02901"
-                                x2="55.5137"
-                                y2="19.7236"
-                                stroke="#fff"
-                                stroke-width="5"
-                              />
-                            </svg>
-                          </button>
+                              <MdKeyboardArrowRight></MdKeyboardArrowRight>
+                            </button>
+                            <div> + Day </div>
+                          </div>
+                          <div className="text-center">
+                            <button
+                              className="btnCol btn-primary mx-1 px-3"
+                              title="Plus one week"
+                              onClick={() => changeDate("week", PopupType)}
+                            >
+                              <MdKeyboardDoubleArrowRight></MdKeyboardDoubleArrowRight>
+                            </button>
+                            <div> + Week </div>
+                          </div>
+                          <div className="text-center">
+                            <button
+                              className="btnCol btn-primary px-3 ms-1"
+                              title="Plus one month"
+                              onClick={() => changeDate("month", PopupType)}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="58"
+                                height="32"
+                                viewBox="0 0 65 37"
+                                fill="#fff"
+                              >
+                                <line
+                                  x1="23.0121"
+                                  y1="16.6118"
+                                  x2="5.31719"
+                                  y2="34.3006"
+                                  stroke="#fff"
+                                  stroke-width="5"
+                                />
+                                <line
+                                  x1="5.16599"
+                                  y1="2.02901"
+                                  x2="22.855"
+                                  y2="19.7236"
+                                  stroke="#fff"
+                                  stroke-width="5"
+                                />
+                                <line
+                                  x1="39.3414"
+                                  y1="16.6118"
+                                  x2="21.6465"
+                                  y2="34.3006"
+                                  stroke="#fff"
+                                  stroke-width="5"
+                                />
+                                <line
+                                  x1="21.4953"
+                                  y1="2.02901"
+                                  x2="39.1844"
+                                  y2="19.7236"
+                                  stroke="#fff"
+                                  stroke-width="5"
+                                />
+                                <line
+                                  x1="55.6708"
+                                  y1="16.6118"
+                                  x2="37.9759"
+                                  y2="34.3006"
+                                  stroke="#fff"
+                                  stroke-width="5"
+                                />
+                                <line
+                                  x1="37.8247"
+                                  y1="2.02901"
+                                  x2="55.5137"
+                                  y2="19.7236"
+                                  stroke="#fff"
+                                  stroke-width="5"
+                                />
+                              </svg>
+                            </button>
+                            <div> + Month </div>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="row mb-2">
-                  <div className="col-sm-3">
+                  <div className="col-sm-3" key="timespent">
+                    <div className="input-group">
                     <label className="form-label full-width">
-                      Add task time
+                      Add Time (min)
                     </label>
-                    <input
+                    {/* <input
                       type="text"
                       autoComplete="off"
-                      className="form-control"
+                      name='timespent'
+                      className="form-control fw-bold"
                       value={
                         TimeInMinutes > 0
                           ? TimeInMinutes
                           : saveEditTaskTimeChild?.TaskTimeInMin != undefined
-                          ? saveEditTaskTimeChild.TaskTimeInMin
-                          : 0
+                            ? saveEditTaskTimeChild.TaskTimeInMin
+                            : ''
                       }
                       onChange={(e) => changeTimeFunction(e, PopupType)}
-                    />
+                    /> */}
+                    <input
+    type="text"
+    autoComplete="off"
+    name='timespent'
+    className="form-control fw-bold" style={{height:"32px"}}
+    value={
+        TimeInMinutes > 0
+        ? TimeInMinutes
+        : saveEditTaskTimeChild?.TaskTimeInMin != undefined
+            ? saveEditTaskTimeChild.TaskTimeInMin
+            : ''
+    }
+    onChange={(e) => changeTimeFunction(e, PopupType,'Add')}
+/>
+{((TimeInMinutes > 0 || saveEditTaskTimeChild?.TaskTimeInMin != undefined) && (
+    <span className="input-group-text" style={{zIndex:'9'}}><span className="dark mini svg__icon--cross mt-1 svg__iconbox" onClick={(e)=>changeTimeFunction(e, PopupType,'remove')}></span></span>
+))}
+</div>
                   </div>
                   <div className="col-sm-3">
                     <label className="form-label full-width"></label>
                     <input
                       className="form-control bg-e9"
                       type="text"
-                      value={`${
-                        TimeInHours > 0
-                          ? TimeInHours
-                          : saveEditTaskTimeChild?.TaskTime != undefined
+                      value={`${TimeInHours > 0
+                        ? TimeInHours
+                        : saveEditTaskTimeChild?.TaskTime != undefined
                           ? saveEditTaskTimeChild?.TaskTime
                           : 0
-                      } Hours`}
+                        } hours`}
                     />
                   </div>
-                  <div className="col-sm-6 Time-control-buttons">
+                  <div className="col-sm-6 ps-0 Time-control-buttons">
                     <div className="pe-0 Quaterly-Time">
                       <label className="full_width"></label>
                       <button
@@ -3181,9 +3474,9 @@ const TimeEntryPopup = (item: any) => {
                       PopupType == "EditTime" || PopupType == "CopyTime"
                         ? (saveEditTaskTimeChild.Description = e.target.value)
                         : setPostData({
-                            ...postData,
-                            Description: e.target.value,
-                          })
+                          ...postData,
+                          Description: e.target.value,
+                        })
                     }
                   ></textarea>
                 </div>
@@ -3260,7 +3553,9 @@ const TimeEntryPopup = (item: any) => {
                     <>
                       <a
                         target="_blank"
-                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=${saveEditTaskTimeChild?.ParentID}`}
+                        className="hreflink"
+                        data-interception="off"
+                        href={`${CurrentSiteUrl}/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=${saveEditTaskTimeChild?.ParentID}`}
                       >
                         Open out-of-the-box form
                       </a>
@@ -3271,9 +3566,8 @@ const TimeEntryPopup = (item: any) => {
                   {PopupTypeCat == true ? (
                     <button
                       disabled={
-                        (PopupType == "AddTime" ||
-                          PopupType == "AddTime Category") &&
-                        TimeInMinutes <= 0
+                        (PopupType == "AddTime" || PopupType == "AddTime Category") &&
+                          TimeInMinutes <= 0
                           ? true
                           : false
                       }
@@ -3286,9 +3580,8 @@ const TimeEntryPopup = (item: any) => {
                   ) : (
                     <button
                       disabled={
-                        (PopupType == "AddTime" ||
-                          PopupType == "AddTime Category") &&
-                        TimeInMinutes <= 0
+                        (PopupType == "AddTime" || PopupType == "AddTime Category") &&
+                          TimeInMinutes <= 0
                           ? true
                           : false || buttonDisable == true
                       }
@@ -3415,6 +3708,15 @@ const TimeEntryPopup = (item: any) => {
           </button>
         </div>
       </Panel>
+      {isAlertVisible ?
+        <CustomAlert
+          hidden={!isAlertVisible}
+          toggleDialog={toggleDialog}
+          message="You are not part of Team members of this site. Please click here to add yourself or contact the site administrator."
+          linkText="Please Click Here!"
+          linkUrl="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskUser-Management.aspx"
+        /> : null
+      }
     </div>
   );
 };

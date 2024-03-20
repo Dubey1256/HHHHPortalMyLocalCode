@@ -342,36 +342,66 @@ export default function VersionHistory(props: any) {
                             }
                         } else if (key === 'Body') {
                             newKey = 'Body';
-                            const Bodyvalue = currentObj.Body.replace(/<[^>]*>/g, '');
-                            differingPairs[newKey] = Bodyvalue;
+                            try {
+                                const Bodyvalue = currentObj.Body.replace(/<[^>]*>/g, '');
+                                differingPairs[newKey] = Bodyvalue;
+                            }
+                            catch (e) {
+                                console.log(e);
+                            }  
+                           
                         }
                         else if (key === 'Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On') {
                             newKey = 'ShortDescriptionOnline';
-                            const shortvalue = currentObj.Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On.replace(/<[^>]*>/g, '');
-                            differingPairs[newKey] = shortvalue;
+                            try {
+                                 const shortvalue = currentObj.Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On.replace(/<[^>]*>/g, '');
+                                 differingPairs[newKey] = shortvalue;
+                            }
+                            catch (e) {
+                                console.log(e);
+                            }  
+                           
                         }
                         else if (key === 'TechnicalExplanations') {
                             newKey = 'TechnicalExplanations';
-                            const shortvalue = $.parseHTML(currentObj.TechnicalExplanations)[0].textContent;
-                            differingPairs[newKey] = shortvalue;
+                            try {
+                                const shortvalue = $.parseHTML(currentObj.TechnicalExplanations)[0].textContent;
+                                differingPairs[newKey] = shortvalue;
+                            }
+                            catch (e) {
+                                console.log(e);
+                            }
+
                         }
                         else if (key === 'Deliverables') {
                             newKey = 'Deliverables';
-                            const Deliverablesvalue = $.parseHTML(currentObj.Deliverables)[0].textContent;
-                            differingPairs[newKey] = Deliverablesvalue;
+                            try {
+                                const Deliverablesvalue = $.parseHTML(currentObj.Deliverables)[0].textContent;
+                                differingPairs[newKey] = Deliverablesvalue;
+                            }
+                            catch (e) {
+                                console.log(e);
+                            }
+
                         }
                         else if (key === 'CategoriesItemsJson' && currentObj.CategoriesItemsJson != undefined && currentObj.CategoriesItemsJson != '[]') {
                             const newKey = 'CategoriesItems';
                             let Deliverablesvalue = '';
-                            const parsedItems = JSON.parse(currentObj.CategoriesItemsJson);
-
-                            if (parsedItems.length >= 2) {
-                                parsedItems.forEach((item: any) => {
-                                    Deliverablesvalue += ';' + item.Title;
-                                });
-                            } else if (parsedItems.length === 1) {
-                                Deliverablesvalue = parsedItems[0].Title + ';';
+                            try {
+                                if (currentObj?.CategoriesItemsJson != undefined && currentObj?.CategoriesItemsJson != null && currentObj?.CategoriesItemsJson != '[]')
+                                    var parsedItems = JSON.parse(currentObj?.CategoriesItemsJson);
+                                if (parsedItems.length >= 2) {
+                                    parsedItems.forEach((item: any) => {
+                                        Deliverablesvalue += ';' + item.Title;
+                                    });
+                                } else if (parsedItems.length === 1) {
+                                    Deliverablesvalue = parsedItems[0].Title + ';';
+                                }
                             }
+                            catch (e) {
+                                console.log(e);
+                            }
+
                             differingPairs[newKey] = Deliverablesvalue;
                         }
                         else {
@@ -473,42 +503,78 @@ export default function VersionHistory(props: any) {
 
                             } else if (key === 'Body') {
                                 newKey = 'Body';
-                                const Bodyvalue = currentObj.Body.replace(/<[^>]*>/g, '');
-                                differingPairs[newKey] = Bodyvalue;
+                                
+                                try {
+                                     const Bodyvalue = currentObj.Body.replace(/<[^>]*>/g, '');
+                                     differingPairs[newKey] = Bodyvalue;
+                                }
+                                catch (e) {
+                                    console.log(e);
+                                }  
+                                
                             }
                             else if (key === 'Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On') {
                                 newKey = 'ShortDescriptionOnline';
-                                const shortvalue = currentObj.Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On.replace(/<[^>]*>/g, '');
-                                differingPairs[newKey] = shortvalue;
+                                
+                                try {
+                                    const shortvalue = currentObj.Short_x005f_x0020_x005f_Description_x005f_x0020_x005f_On.replace(/<[^>]*>/g, '');
+                                    differingPairs[newKey] = shortvalue;
+                                }
+                                catch (e) {
+                                    console.log(e);
+                                }  
+                                
                             }
                             else if (key === 'TechnicalExplanations') {
                                 newKey = 'TechnicalExplanations';
-                                const shortvalue = $.parseHTML(currentObj.TechnicalExplanations)[0].textContent;
-                                differingPairs[newKey] = shortvalue;
+                                try {
+                                    const shortvalue = $.parseHTML(currentObj.TechnicalExplanations)[0].textContent;
+                                    differingPairs[newKey] = shortvalue;
+                                }
+                                catch (e) {
+                                    console.log(e);
+                                }
+
                             }
                             else if (key === 'Deliverables') {
                                 newKey = 'Deliverables';
-                                const Deliverablesvalue = $.parseHTML(currentObj.Deliverables)[0].textContent;
-                                differingPairs[newKey] = Deliverablesvalue;
+                                try {
+                                    const Deliverablesvalue = $.parseHTML(currentObj.Deliverables)[0].textContent;
+                                    differingPairs[newKey] = Deliverablesvalue;
+                                }
+                                catch (e) {
+                                    console.log(e);
+                                }
                             }
                             else if (key === 'CategoriesItemsJson' && currentObj.CategoriesItemsJson != undefined && currentObj.CategoriesItemsJson != '[]') {
                                 const newKey = 'CategoriesItems';
                                 let Deliverablesvalue = '';
-                                const parsedItems = JSON.parse(currentObj.CategoriesItemsJson);
-
-                                if (parsedItems.length >= 2) {
-                                    parsedItems.forEach((item: any) => {
-                                        Deliverablesvalue += ';' + item.Title;
-                                    });
-                                } else if (parsedItems.length === 1) {
-                                    Deliverablesvalue = parsedItems[0].Title + ';';
+                                try {
+                                    if (currentObj?.CategoriesItemsJson != undefined && currentObj?.CategoriesItemsJson != null && currentObj?.CategoriesItemsJson != '[]')
+                                        var parsedItems = JSON.parse(currentObj?.CategoriesItemsJson);
+                                    if (parsedItems.length >= 2) {
+                                        parsedItems.forEach((item: any) => {
+                                            Deliverablesvalue += ';' + item.Title;
+                                        });
+                                    } else if (parsedItems.length === 1) {
+                                        Deliverablesvalue = parsedItems[0].Title + ';';
+                                    }
+                                }
+                                catch (e) {
+                                    console.log(e);
                                 }
                                 differingPairs[newKey] = Deliverablesvalue;
                             }
                             else if (key === 'DraftCategory') {
                                 newKey = 'DraftCategory';
-                                const Deliverablesvalue: any = JSON.parse(currentObj.DraftCategory)[0];
-                                differingPairs[newKey] = Deliverablesvalue;
+                                try {
+                                     const Deliverablesvalue: any = JSON.parse(currentObj.DraftCategory)[0];
+                                     differingPairs[newKey] = Deliverablesvalue;
+                                }
+                                catch(e) {
+                                    console.log(e);
+                                }
+                               
                             }
                             else {
                                 differingPairs[newKey] = currentObj[key];
@@ -524,7 +590,6 @@ export default function VersionHistory(props: any) {
             }
 
         }
-
         return differingValues;
     }
     // Function to compare arrays and objects recursively based on their IDs
@@ -754,7 +819,7 @@ export default function VersionHistory(props: any) {
             }
             return (
                 <div>
-                    {key === 'Project' ? <a href={`${siteTypeUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${obj.LookupId}`} target='_blank' data-interception="off">{obj.LookupValue}</a> :
+                    {key === 'Project' ? <a href={`${siteTypeUrl}/SitePages/PX-Profile.aspx?ProjectId=${obj.LookupId}`} target='_blank' data-interception="off">{obj.LookupValue}</a> :
                         key === 'Portfolio' ? <a href={`${siteTypeUrl}/SitePages/Portfolio-Profile.aspx?taskId=${obj.LookupId}`} target='_blank' data-interception="off">{obj.LookupValue}</a> :
                             obj?.LookupValue}
                 </div>)

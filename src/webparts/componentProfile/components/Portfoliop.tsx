@@ -28,6 +28,7 @@ import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPo
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
 import CentralizedSiteComposition from "../../../globalComponents/SiteCompositionComponents/CentralizedSiteComposition";
 import KeyDocuments from "../../taskprofile/components/KeyDocument";
+import RadimadeTable from "../../../globalComponents/RadimadeTable";
 const sp = spfi();
 let AllClientCategoryDataBackup: any = [];
 // Work the Inline Editing
@@ -778,7 +779,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         "Portfolios/Title"
       )
       .expand("Portfolios")
-      .filter("Item_x0020_Type eq 'Project' and Portfolios/Id eq " + ID)
+      .filter("(Item_x0020_Type eq 'Project' or Item_x0020_Type eq 'Sprint') and Portfolios/Id eq " + ID)
       .top(4000)
       .get();
 
@@ -1583,7 +1584,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                   <a
                                     href={
                                       SelectedProp.siteUrl +
-                                      "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
+                                      "/SitePages/PX-Profile.aspx?ProjectId=" +
                                       item?.Id
                                     }
                                     data-interception="off"
@@ -1782,7 +1783,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                   <a
                                     href={
                                       SelectedProp.siteUrl +
-                                      "/SitePages/Project-Management-Profile.aspx?ProjectId=" +
+                                      "/SitePages/PX-Profile.aspx?ProjectId=" +
                                       item?.Id
                                     }
                                     data-interception="off"
@@ -2227,14 +2228,14 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         </section>
 
         {/* table secation artical */}
-
-        {data.map((item: any) => (
+        {data?.length>0 && <RadimadeTable   tableId="PortfolioProfile"  AllListId={ContextValue} configration={"CSFAWT"} SelectedItem={data[0]}  ComponentFilter={data[0]?.PortfolioType?.Title} TaskFilter={ "PercentComplete lt '0.90' or PercentComplete eq null "}></RadimadeTable>}
+        {/* {data.map((item: any) => (
           <ComponentTable
             props={item}
             NextProp={ContextValue}
             Iconssc={Iconpps}
           />
-        ))}
+        ))} */}
 
         <footer className="float-start full_width mt-2 ">
           <div className="d-flex justify-content-between me-3 p-2">

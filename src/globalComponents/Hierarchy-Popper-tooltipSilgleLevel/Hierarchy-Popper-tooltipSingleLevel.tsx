@@ -127,7 +127,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
 
         if (Object != undefined) {
             if (Object?.Id === item?.ParentTask?.Id) {
-                Object.subRows = [item];
+                Object.subRowsFirst = [item];
                 Object.listId = item?.listId;
                 Object.SiteIcon = item?.SiteIcon;
                 Object.siteType = item?.siteType;
@@ -136,12 +136,12 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
             } else if (Object?.Id === item?.Parent?.Id) {
                 Object.listId = item?.listId;
                 Object.siteUrl = item?.siteUrl;
-                Object.subRows = [item];
+                Object.subRowsFirst = [item];
                 return getTooltiphierarchyAllData(Object);
             } else if (item?.Portfolio != undefined && Object?.Id === item?.Portfolio?.Id && (item?.ParentTask?.TaskID == null || item?.ParentTask?.TaskID == undefined)) {
                 Object.listId = item?.listId;
                 Object.siteUrl = item?.siteUrl;
-                Object.subRows = [item];
+                Object.subRowsFirst = [item];
                 return getTooltiphierarchyAllData(Object);
             }
 
@@ -167,10 +167,8 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
         }
         if (newAction === "click" && newAction === "hover") return;
         getTooltiphierarchyAllData(rowOrg).then((response: any) => {
-            if(AllSitesTaskData!=undefined){
-                checkAllChilds(response)
-            }
-            
+
+            checkAllChilds(response)
             setAction(newAction);
             setControlledVisible(true);
             setallValue(response);
@@ -241,18 +239,18 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
 
     
     const checkAllChilds=(data:any)=>{
-         const haveSubrows=data?.subRows?.length>0;
-         data.childsValues=[]
+         const haveSubrows=data?.subRowsFirst?.length>0;
+         data.subRows=[]
          data.openAllChilds = false;
-        data.childsValues=masterTaskData.filter((AllData:any)=> {
-            AllData.siteUrl=data.siteUrl;  
+        data.subRows=masterTaskData?.filter((AllData:any)=> {
+            AllData.siteUrl=data?.siteUrl;  
          return((data?.SiteIcon==undefined && AllData?.Parent?.Id==data?.Id)||
-         (( (data?.ParentTask?.Id==undefined || data?.ParentTask?.Id==null) &&(data?.Item_x0020_Type!=undefined && AllData?.Portfolio?.Id==data?.Id)))
+         (( (data?.ParentTask?.Id==undefined || data?.ParentTask?.Id==null) &&(data?.Item_x0020_Type!=undefined && data?.Item_x0020_Type?.toLowerCase()!="tasks" && AllData?.Portfolio?.Id==data?.Id)))
          ||(data?.SiteIcon!=undefined && AllData?.siteType==data?.siteType && AllData?.ParentTask?.Id ==data.Id) 
          )
         })
         if(haveSubrows==true){
-            checkAllChilds(data?.subRows[0])
+            checkAllChilds(data?.subRowsFirst[0])
         }
     }
     const onToggle = (data: any, type: any) => {
@@ -267,13 +265,12 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
 
     }
     const childsAllHirearchy=(data:any)=>{
-        if(data?.childsValues?.length>0){
-            data?.childsValues.map((item:any)=>{
+        if(data?.subRows?.length>0){
+            data?.subRows.map((item:any)=>{
                 item.openAllChilds = false;
-                item.childsValues=[];
                 item.subRows=[];
-               item.childsValues=masterTaskData.filter((AllData:any)=>(item?.SiteIcon==undefined && AllData?.Parent?.Id==item?.Id)||
-               ((AllData?.ParentTask?.Id==undefined || AllData?.ParentTask?.Id==null) && (item?.Item_x0020_Type!=undefined && AllData?.Portfolio?.Id==item?.Id)) ||
+               item.subRows=masterTaskData.filter((AllData:any)=>(item?.SiteIcon==undefined && AllData?.Parent?.Id==item?.Id)||
+               ((AllData?.ParentTask?.Id==undefined || AllData?.ParentTask?.Id==null) && (item?.Item_x0020_Type!=undefined && item?.Item_x0020_Type?.toLowerCase()!="tasks" && AllData?.Portfolio?.Id==item?.Id)) ||
                (item?.SiteIcon!=undefined && AllData?.siteType==item?.siteType
                 && AllData?.ParentTask?.Id ==item.Id))
                 
@@ -286,8 +283,8 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
     
 
     const expandData = (itemData: any) => {
-        const hasChildren = itemData?.subRows?.length > 0;
-        const haveAllChildren = itemData?.childsValues?.length > 0;
+        const hasChildren = itemData?.subRowsFirst?.length > 0;
+        const haveAllChildren = itemData?.subRows?.length > 0;
         let lastChild = false;
         // let firstChild = false;
         // if (paddingCount >= 0) {
@@ -367,7 +364,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                                 </>
                                  :itemData?.Item_x0020_Type == "Sprint" || itemData.Item_x0020_Type == "Project" ?
                                  <a className="fw-normal hreflink" title={`${itemData?.Title}`} data-interception="off" target="blank"
-                                     href={`${itemData?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${itemData?.Id}`}>
+                                     href={`${itemData?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${itemData?.Id}`}>
                                          {itemData?.Title}
                                  </a>   : ""}</>}
                         </div>
@@ -387,13 +384,13 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
 
                 {hasChildren && itemData?.isExpanded && itemData?.openAllChilds!=true &&  (
 
-                    itemData?.subRows.map((items: any) => (
+                    itemData?.subRowsFirst.map((items: any) => (
                         expandData(items)
 
                     ))
                 )}
                 {haveAllChildren && itemData?.openAllChilds && (
-                    itemData?.childsValues?.map((items: any) => (
+                    itemData?.subRows?.map((items: any) => (
                         expandData(items)
                     ))
                 )}

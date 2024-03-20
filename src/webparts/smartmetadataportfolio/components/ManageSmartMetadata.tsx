@@ -38,9 +38,10 @@ export default function ManageSmartMetadata(selectedProps: any) {
     const [smartMetadataCount, setSmartMetadataCount] = useState<any>()
     const [Tabs, setTabs] = useState([]);
     var [TabsFilter]: any = useState([]);
-    const childRef = useRef<any>();
+    const childRef = React.useRef<any>();
     if (childRef != null) {
         childRefdata = { ...childRef };
+
     }
     //...........................................................Start Filter SmartMetadata Items counts....................................................
 
@@ -337,63 +338,67 @@ export default function ManageSmartMetadata(selectedProps: any) {
     //-------------------------------------------------- RESTRUCTURING FUNCTION start---------------------------------------------------------------
 
     const callBackSmartMetaData = useCallback((Array: any, unSelectTrue: any, Taxtype: any, checkData: any) => {
-        if (Array !== undefined) {
-            if (!isItemExists(SelectedMetadataItem, Array.Id)) {
-                SelectedMetadataItem.push(Array);
-                if (SelectedMetadataItem.length === 1) {
-                    setSmartmetadataRestructureButton(true)
-                    setSmartmetadataCompareButton(false);
-                } else if (SelectedMetadataItem.length === 2) {
-                    setSmartmetadataRestructureButton(false)
-                    setSmartmetadataCompareButton(true);
-                } else {
-                    setSmartmetadataCompareButton(false);
-                    setSmartmetadataRestructureButton(false);
+        if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length > 0) {
+            childRef?.current?.table?.getSelectedRowModel()?.flatRows.filter((item: any) => {
+                if (item.original !== undefined) {
+                    if (!isItemExists(SelectedMetadataItem, item.original.Id))
+                        SelectedMetadataItem.push(item.original);
                 }
+            })
+            if (SelectedMetadataItem.length === 1) {
+                setSmartmetadataRestructureButton(true)
+                setSmartmetadataCompareButton(false);
+            } else if (SelectedMetadataItem.length === 2) {
+                setSmartmetadataRestructureButton(false)
+                setSmartmetadataCompareButton(true);
+            } else {
+                if (SelectedMetadataItem.length > 0)
+                    SelectedMetadataItem = [];
+                setSmartmetadataCompareButton(false);
+                setSmartmetadataRestructureButton(false);
             }
-        } else {
-            if (unSelectTrue !== undefined && !unSelectTrue) {
-                setRestructureIcon(false)
-                if (Array && CopySmartmetadata.length !== 0) {
-                    let array = CopySmartmetadata;
-                    array?.map((obj: any) => {
-                        obj.isRestructureActive = false;
-                        if (obj?.subRows?.length > 0 && obj?.subRows != undefined) {
-                            obj?.subRows?.map((Item: any) => {
-                                Item.isRestructureActive = false;
-                                if (Item?.subRows?.length > 0 && Item?.subRows != undefined) {
-                                    Item?.subRows?.map((Item1: any) => {
-                                        Item1.isRestructureActive = false;
-                                        if (Item1?.subRows?.length > 0 && Item1?.subRows != undefined) {
-                                            Item1?.subRows?.map((Item2: any) => {
-                                                Item2.isRestructureActive = false;
-                                                if (Item2?.subRows?.length > 0 && Item2?.subRows != undefined) {
-                                                    Item2?.subRows?.map((Item3: any) => {
-                                                        Item3.isRestructureActive = false;
-                                                        if (Item3?.subRows?.length > 0 && Item3?.subRows != undefined) {
-                                                            Item3?.subRows?.map((Item4: any) => {
-                                                                Item4.isRestructureActive = false;
-                                                            })
-                                                        }
-                                                    })
-                                                }
-                                            })
-                                        }
-                                    })
-                                }
-                            })
-                        }
-                    })
-                    if (array.length !== 0)
-                        setSmartmetadata(array);
-                    SelectedMetadataItem = Array;
-                    setSmartmetadataCompareButton(false);
-                    setSmartmetadataRestructureButton(false);
 
-                }
+        } else {
+            SelectedMetadataItem = [];
+            setRestructureIcon(false)
+            if (CopySmartmetadata !== undefined && CopySmartmetadata.length !== 0) {
+                let array = CopySmartmetadata;
+                array?.map((obj: any) => {
+                    obj.isRestructureActive = false;
+                    if (obj?.subRows?.length > 0 && obj?.subRows != undefined) {
+                        obj?.subRows?.map((Item: any) => {
+                            Item.isRestructureActive = false;
+                            if (Item?.subRows?.length > 0 && Item?.subRows != undefined) {
+                                Item?.subRows?.map((Item1: any) => {
+                                    Item1.isRestructureActive = false;
+                                    if (Item1?.subRows?.length > 0 && Item1?.subRows != undefined) {
+                                        Item1?.subRows?.map((Item2: any) => {
+                                            Item2.isRestructureActive = false;
+                                            if (Item2?.subRows?.length > 0 && Item2?.subRows != undefined) {
+                                                Item2?.subRows?.map((Item3: any) => {
+                                                    Item3.isRestructureActive = false;
+                                                    if (Item3?.subRows?.length > 0 && Item3?.subRows != undefined) {
+                                                        Item3?.subRows?.map((Item4: any) => {
+                                                            Item4.isRestructureActive = false;
+                                                        })
+                                                    }
+                                                })
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+                if (array.length !== 0)
+                    setSmartmetadata(array);
+                setSmartmetadataCompareButton(false);
+                setSmartmetadataRestructureButton(false);
+
             }
         }
-        if (unSelectTrue) {
+        if (unSelectTrue === true) {
             setRestructureIcon(true);
         }
         if (Taxtype) {
@@ -406,12 +411,12 @@ export default function ManageSmartMetadata(selectedProps: any) {
     }, []);
     const callChildFunction = (items: any) => {
         if (MyContextValue) {
-            MyContextValue?.OpenModal(items);
+            MyContextValue?.OpenModal(items, false);
         }
     };
     const OpenTopRestructureIcon = () => {
         if (MyContextValue) {
-            MyContextValue?.OpenModal();
+            MyContextValue?.OpenModal(categoriesTabName, true);
         }
     }
     const SmartrestructureFunct = (restr: any) => {
@@ -516,7 +521,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                             {
                                 SmartmetadataRestructure === true ?
                                     <RestructureSmartMetaData
-                                        RestructureButton={SmartmetadataRestructure} childRefdata={childRefdata} AllList={selectedProps.AllList} ref={childRef} AllMetaData={Smartmetadata} restructureItemCallBack={callBackSmartMetaData} restructureItem={SelectedMetadataItem} SmartrestructureFunct={SmartrestructureFunct} />
+                                        RestructureButton={SmartmetadataRestructure} childRefdata={childRefdata} AllList={selectedProps.AllList} ref={childRef} AllMetaData={Smartmetadata} restructureItemCallBack={callBackSmartMetaData} restructureItem={SelectedMetadataItem} SmartrestructureFunct={SmartrestructureFunct} TabSelected={TabSelected} />
                                     : ''
                             }
                         </span>
@@ -557,7 +562,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                                     <div className='wrapper'>
                                         {
                                             Smartmetadata &&
-                                            <GlobalCommanTable customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRefdata} childRefdata={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} categoriesTabName={categoriesTabName} />
+                                            <GlobalCommanTable customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRef} childRefdata={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} categoriesTabName={categoriesTabName} />
                                         }
                                     </div>
                                 </div>

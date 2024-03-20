@@ -370,8 +370,14 @@ const CreateWS = (props: any) => {
             console.log(componentDetails)
             if (componentDetails?.length == 0) {
                 WorstreamLatestId = 1;
-            } else {
-                WorstreamLatestId = componentDetails?.length + 1;
+            } 
+            else {
+                if( componentDetails[componentDetails?.length-1]?.TaskLevel){
+                    WorstreamLatestId = componentDetails[componentDetails?.length-1]?.TaskLevel + 1;
+                }else{
+                    WorstreamLatestId = componentDetails?.length + 1;
+                }
+              
             }
         }
         inputFields?.map((inputValue: any, index: any) => {

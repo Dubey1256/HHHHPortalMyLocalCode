@@ -1427,14 +1427,14 @@ export const sendImmediateEmailNotifications = async (
                             }
                         } else if (
                             UpdateItem?.PercentComplete == 0 &&
-                            UpdateItem?.Category?.toLowerCase()?.indexOf("design") > -1
+                            UpdateItem?.Category?.toLowerCase()?.indexOf("user experience - ux") > -1
                         ) {
                             if (isLoadNotification == "DesignMail") {
                                 Subject =
                                     "[" +
                                     siteType +
                                     " - " +
-                                    "Design" +
+                                    "User Experience - UX" +
                                     "]" +
                                     UpdateItem?.Title +
                                     "";
@@ -2140,15 +2140,17 @@ export const GetCompleteTaskId = (Item: any) => {
     }
     return taskIds;
 };
+
 export const GetTaskId = (Item: any) => {
-    const { TaskID, ParentTask, Id, TaskType } = Item;
+    const { TaskID, ParentTask, Id, TaskType, Item_x0020_Type } = Item;
     let taskIds = "";
     if (TaskType?.Title === 'Activities' || TaskType?.Title === 'Workstream') {
         taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
     }
     if (ParentTask?.TaskID != undefined && TaskType?.Title === 'Task') {
         taskIds += taskIds.length > 0 ? `-${ParentTask?.TaskID}-T${Id}` : `${ParentTask?.TaskID}-T${Id}`;
-    } else if (ParentTask?.TaskID == undefined && TaskType?.Title === 'Task') {
+    }
+    else if (ParentTask?.TaskID == undefined && TaskType?.Title === 'Task') {
         taskIds += taskIds.length > 0 ? `-T${Id}` : `T${Id}`;
     } else if (taskIds?.length <= 0) {
         taskIds += `T${Id}`;
@@ -2210,17 +2212,17 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
     }
 }
 export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | null, pertiCularSites?: any | null, showOffShore?: any | undefined) => {
-    let query = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,EstimatedTimeDescription,ClientActivityJson,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+    let query = "Id,Title,Comments,FeedBack,WorkingAction,PriorityRank,Remark,Project/PriorityRank,EstimatedTimeDescription,ClientActivityJson,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
     if (filter != undefined) {
         query += `&$filter=${filter}`
     }
     let siteConfig: any = await loadSmartMetadata(allListId, "Sites")
     let filteredSiteConfig = [];
-    if (pertiCularSites != null && pertiCularSites != undefined ) {
+    if (pertiCularSites != null && pertiCularSites != undefined) {
         filteredSiteConfig = siteConfig.filter((site: any) => pertiCularSites?.find((item: any) => site?.Title?.toLowerCase() == item?.toLowerCase()))
     } else if (showOffShore == true) {
-        filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites" )
-    } else   {
+        filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites")
+    } else {
         filteredSiteConfig = siteConfig.filter((site: any) => site?.Title != "Master Tasks" && site?.Title != "SDC Sites" && site?.Title != "Offshore Tasks")
     }
     let AllSiteTasks: any = []
@@ -2578,16 +2580,29 @@ export const AwtGroupingAndUpdatePrarticularColumn = async (findGrouping: any, A
                 });
         }
     }
-    return { findGrouping, flatdata };
+    return { findGrouping, flatdata }; 
 }
-export const replaceURLsWithAnchorTags = (text: any) => {
+export const replaceURLsWithAnchorTags = (text:any) => {
     // Regular expression to match URLs
-    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    var urlRegex = /(https?:\/\/[^\s<>"]+)(?=["'\s.,]|$)/g;
     // Replace URLs with anchor tags
-    var replacedText = text.replace(urlRegex, function (url: any) {
-        return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
+    let textToIgnore :any= ''
+    var replacedText = text.replace(urlRegex, function (url:any) {
+        if (!isURLInsideAnchorTag(url, text) && !textToIgnore.includes(url)) {
+            console.log(url,'in if')
+            return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
+        } else{
+            textToIgnore += `${url} `
+            return url;
+        }
     });
     return replacedText;
+}
+
+function isURLInsideAnchorTag(url:any, text:any) {
+    // Regular expression to match anchor tags
+    var anchorRegex = /<a\s+(?:[^>]*?\s+)?href=(["'])(.*?)\1/i;
+    return anchorRegex.test(text) && anchorRegex.exec(text)[2] === url;
 }
 //--------------------------------------Share TimeSheet Report-----------------------------------------------------------------------
 
@@ -2685,9 +2700,9 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
         }
     });
 
-   
-        body = body.replaceAll('>,<', '><').replaceAll(',', '')
-    
+
+    body = body.replaceAll('>,<', '><').replaceAll(',', '')
+
 
     // var subject = currentLoginUser + `- ${selectedTimeReport} Time Entries`;
     let timeSheetData: any = await currentUserTimeEntryCalculation(AllTaskTimeEntries, currentLoginUserId);
@@ -2705,13 +2720,43 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
             updatedCategoryTime[newKey] = timeSheetData[key];
         }
     }
-
-    if (day == 'Today') {
-        var subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + currentDate + ' - ' + (updatedCategoryTime.today) + ' hours '
+    var subject: any;
+    // if (day == 'Today') {
+    //     subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + currentDate + ' - ' + (updatedCategoryTime.today) + ' hours '
+    // }
+    // if (day == 'Yesterday') {
+    //     subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + yesterday + ' - ' + (updatedCategoryTime.yesterday) + ' hours '
+    // }
+    function padWithZero(num: number): string {
+        return num < 10 ? '0' + num : num.toString();
     }
-    if (day == 'Yesterday') {
-        var subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + yesterday + ' - ' + (updatedCategoryTime.yesterday) + ' hours '
+    
+    function formatDate(date: Date): string {
+        const day = padWithZero(date.getDate());
+        const month = padWithZero(date.getMonth() + 1); 
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
     }
+      if (day == "Today") {
+        subject = "Daily Timesheet - " + CurrentUserTitle + " - " + currentDate + " - " + updatedCategoryTime.today +  " hours ";
+      } else if (day == "Yesterday") {
+        subject =
+          "Daily Timesheet - " +
+          CurrentUserTitle +
+          " - " +
+          yesterday +
+          " - " +
+          updatedCategoryTime.yesterday +
+          " hours ";
+      } else {
+        const formattedStartDate = formatDate(startDate);
+        const formattedEndDate = formatDate(endDate);
+        subject =
+          "Daily Timesheet - " +
+          CurrentUserTitle +
+          " - " +
+          `${formattedStartDate} - ${formattedEndDate}`;
+      }
     AllData.map((item: any) => {
         item.ClientCategories = ''
         item.ClientCategory.forEach((val: any, index: number) => {
@@ -2727,7 +2772,7 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
         text =
             '<tr>' +
             '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.siteType + '</td>'
-            + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Project-Management-Profile.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px">' + (item?.Project == undefined ? '' : item?.Project.Title) + '</span></a>' + '</p>' + '</td>'
+            + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/PX-Profile.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px">' + (item?.Project == undefined ? '' : item?.Project.Title) + '</span></a>' + '</p>' + '</td>'
             + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:135px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Portfolio-Profile.aspx?taskId=' + item?.Portfolio?.Id + '><span style="font-size:13px">' + (item.Portfolio == undefined ? '' : item.Portfolio.Title) + '</span></a>' + '</p>' + '</td>'
             + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px">' + item.Title + '</span></a>' + '</p>' + '</td>'
             + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.TaskTime + '</td>'
@@ -2769,6 +2814,7 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
         + '</table>'
 
     body = body.replaceAll('>,<', '><').replaceAll(',', '')
+    let EmailSubject: string = `TimeSheet : ${currentDate}`;
 
     let confirmation = confirm('Your' + ' ' + input + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + userApprover + ')' + '.' + '\n' + 'Do you want to continue?')
     if (confirmation) {
@@ -2789,8 +2835,6 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
             }).then(() => {
                 console.log("Email Sent!");
                 alert('Email sent sucessfully');
-    
-    
             }).catch((err) => {
                 console.log(err.message);
             });
@@ -2798,7 +2842,7 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
             alert("No entries available");
         }
     }
-    
+
 }
 
 const currentUserTimeEntryCalculation = async (AllTaskTimeEntries: any, currentLoginUserId: any) => {
@@ -3130,12 +3174,12 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
         '</tbody>' +
         '</table>'
     var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/UserTimeEntry.aspx";
-
+    var ReportDatetime: any;
     if (DateType == 'Yesterday' || DateType == 'Today') {
-        var ReportDatetime = startDate;
+        ReportDatetime = startDate;
     }
     else {
-        var ReportDatetime: any = `${startDate} - ${endDate}`
+        ReportDatetime = `${startDate} - ${endDate}`
     }
 
     var body: any =
@@ -3261,4 +3305,17 @@ const GetleaveUser = async (TaskUser: any, Context: any) => {
     })
     console.log(finalData)
     return finalData
+}
+export const findTaskCategoryParent = (taskCategories: any, result: any) => {
+    if (taskCategories?.length > 0 && result.TaskCategories?.length > 0) {
+        let newTaskCat = taskCategories?.filter((val: any) => result?.TaskCategories?.some((elem: any) => val.Id === elem.Id));
+        newTaskCat.map((elemVal: any) => {
+            if (result[elemVal?.Parent?.Title]) {
+                result[elemVal?.Parent?.Title] += ` ${elemVal?.Title}`
+            } else {
+                result[elemVal?.Parent?.Title] = elemVal?.Title;
+            }
+        })
+    }
+    return result;
 }

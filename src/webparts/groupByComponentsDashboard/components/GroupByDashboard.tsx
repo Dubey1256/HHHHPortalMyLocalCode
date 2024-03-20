@@ -639,7 +639,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                     {
                         topCompoIcon ?
                             <span style={{ backgroundColor: `${portfolioColor}` }} title="Restructure" className="Dyicons mb-1 mx-1 p-1" onClick={() => trueTopIcon(true)}>
-                                <span className="alignIcon  svg__iconbox svg__icon--re-structure"></span>
+                                <span className="svg__iconbox svg__icon--re-structure"></span>
                             </span>
                             : ''
                     }
@@ -649,7 +649,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                     <>
                         {row?.original?.isRestructureActive && row?.original?.Title != "Others" && (
                             <span className="Dyicons p-1" title="Restructure" style={{ backgroundColor: `${row?.original?.PortfolioType?.Color}` }} onClick={() => callChildFunction(row?.original)}>
-                                <span className="alignIcon  svg__iconbox svg__icon--re-structure"> </span>
+                                <span className="svg__iconbox svg__icon--re-structure"> </span>
                             </span>
                         )}
                         {/* {getValue()} */}
