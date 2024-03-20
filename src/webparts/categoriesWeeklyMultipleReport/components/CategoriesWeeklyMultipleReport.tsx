@@ -4387,5 +4387,3 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     );
   }
 }
-
-

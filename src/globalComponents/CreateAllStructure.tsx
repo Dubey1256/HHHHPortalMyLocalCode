@@ -276,23 +276,23 @@ const CreateAllStructureComponent = (props: any) => {
                         // Create feature item in SharePoint list
 
 
-                        await createListItem('Master Tasks', featureItem);
+                        const featuredata = await createListItem('Master Tasks', featureItem);
 
 
                         // Add feature to the features array
                         if (featureItem.Title != "") {
                             features.push({
-                                Id: featureItem?.Id,
-                                ID: featureItem?.Id,
+                                Id: featuredata?.Id,
+                                ID: featuredata?.Id,
                                 Title: featureItem?.Title,
                                 siteType: "Master Tasks",
-                                SiteIconTitle: featureItem?.Item_x0020_Type?.charAt(0),
-                                TaskID: featureItem?.PortfolioStructureID,
+                                SiteIconTitle: featuredata?.Item_x0020_Type?.charAt(0),
+                                TaskID: featuredata?.PortfolioStructureID,
                                 Created: Moment(featureItem?.Created).format("DD/MM/YYYY"),
                                 DisplayCreateDate: Moment(featureItem?.Created).format("DD/MM/YYYY"),
                                 Author: { "Id": featureItem?.AuthorId, 'Title': CurrentUserData?.Title, 'autherImage': CurrentUserData?.Item_x0020_Cover?.Url },
                                 PortfolioType: PortfoliotypeData,
-                                PortfolioStructureID:featureItem?.PortfolioStructureID,
+                                PortfolioStructureID:featuredata?.PortfolioStructureID,
                                 Item_x0020_Type :'Feature'
                             });
                         }
