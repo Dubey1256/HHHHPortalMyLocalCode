@@ -2640,11 +2640,6 @@ const EditTaskPopup = (Items: any) => {
                                 };
 
                                 if (SendMsgToAuthor) {
-<<<<<<< HEAD
-
-=======
-                                    
->>>>>>> d9d6449292a979b9f4827744c92b08eaae4435de
                                     taskUsers?.forEach((allUserItem: any) => {
                                         if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                             addEmailAndUserName(allUserItem);

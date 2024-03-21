@@ -774,15 +774,6 @@ function ReadyMadeTable(SelectedProp: any) {
             localStorage.setItem('timeEntryIndex', dataString);
         }
         console.log("timeEntryIndex", timeEntryIndex)
-<<<<<<< HEAD
-        if (AllSiteTasksData?.length > 0) {
-            setData([]);
-            portfolioTypeData?.map((port: any, index: any) => {
-                if (SelectedProp?.SelectedItem != undefined) {
-                    if (port.Title === SelectedProp?.SelectedItem?.Item_x0020_Type) {
-                        componentData = []
-                        componentGrouping(port?.Id, port?.Id);
-=======
       
       
             if (AllSiteTasksData?.length > 0) {
@@ -793,17 +784,41 @@ function ReadyMadeTable(SelectedProp: any) {
                             if (levelType.Level === 1)
                                 componentActivity(levelType, SelectedProp?.SelectedItem);
                         })
->>>>>>> d9d6449292a979b9f4827744c92b08eaae4435de
                     }
-                } else {
-                    componentData = []
-                    componentGrouping(port?.Id, index);
+                    if ('ParentTask' in SelectedProp?.SelectedItem) {
+                        let data: any = [SelectedProp?.SelectedItem]
+                        data?.map((wTdata: any) => {
+                            wTdata.subRows = [];
+                            componentWsT(wTdata);
+                        })
+                       
+                        setLoaded(true)
+                        setData(data[0]?.subRows);
+        
+        
+                    }
+                    console.log(data)
+        
+                }else{
+                    portfolioTypeData?.map((port: any, index: any) => {
+                        if (SelectedProp?.SelectedItem != undefined) {
+                            if (port.Title === SelectedProp?.SelectedItem?.PortfolioType?.Title) {
+                                componentData = []
+                                componentGrouping(port?.Id, port?.Id);
+                            }
+                        } else {
+                            componentData = []
+                            componentGrouping(port?.Id, index);
+                        }
+        
+                    })
                 }
-
-            })
-            countsrun++;
-
-        }
+              
+                countsrun++;
+    
+            }
+      
+      
 
         setLoaded(true)
         return AllSiteTasksData;
