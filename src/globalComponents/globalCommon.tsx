@@ -3318,4 +3318,25 @@ export const findTaskCategoryParent = (taskCategories: any, result: any) => {
         })
     }
     return result;
+<<<<<<< HEAD
 }
+=======
+}
+
+export const smartTimeUseLocalStorage = (AllTasksData:any,timeEntryDataLocalStorage:any) => {
+    if (timeEntryDataLocalStorage?.length > 0) {
+        const timeEntryIndexLocalStorage = JSON.parse(timeEntryDataLocalStorage)
+        AllTasksData?.map((task: any) => {
+            task.TotalTaskTime = 0;
+            task.timeSheetsDescriptionSearch = "";
+            const key = `Task${task?.siteType + task.Id}`;
+            if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
+                // task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndexLocalStorage[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndexLocalStorage[key]?.TotalTaskTime;
+                task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
+            }
+        });
+        return AllTasksData;
+    }
+};
+>>>>>>> d9d6449292a979b9f4827744c92b08eaae4435de
