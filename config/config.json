@@ -426,6 +426,14 @@
         }
       ]
     },
+    "smart-dynamic-table-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/smartDynamicTable/SmartDynamicTableWebPart.js",
+          "manifest": "./src/webparts/smartDynamicTable/SmartDynamicTableWebPart.manifest.json"
+        }
+      ]
+    },
     "root-team-portfolio-table-web-part": {
       "components": [
         {

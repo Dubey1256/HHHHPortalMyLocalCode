@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
+import * as GlobalFunctionForUpdateItem from '../GlobalFunctionForUpdateItems';
 
 const ShowSiteComposition = (Props: any) => {
     const SitesTaggingData: any = Props.SitesTaggingData;
@@ -7,22 +8,26 @@ const ShowSiteComposition = (Props: any) => {
     const [SiteTaggingData, setSiteTaggingData] = useState([]);
 
     useEffect(() => {
-        if (SitesTaggingData?.length > 0) {
-            let Data: any = JSON.parse(SitesTaggingData);
-            if (Data?.length > 0) {
-                if (AllSitesData?.length > 0) {
-                    AllSitesData?.map((AllSiteDataItem: any) => {
-                        Data?.map((SCItem: any) => {
-                            if (SCItem.Title == AllSiteDataItem.Title) {
-                                SCItem.ColorTag = AllSiteDataItem.Color_x0020_Tag;
-
-                            }
+        if (SitesTaggingData?.length > 5) {
+            try {
+                let Data: any = JSON.parse(SitesTaggingData);
+                Data = GlobalFunctionForUpdateItem.PrepareDataAccordingToSortOrder(AllSitesData, Data);
+                if (Data?.length > 0) {
+                    if (AllSitesData?.length > 0) {
+                        AllSitesData?.map((AllSiteDataItem: any) => {
+                            Data?.map((SCItem: any) => {
+                                if (SCItem.Title == AllSiteDataItem.Title) {
+                                    SCItem.ColorTag = AllSiteDataItem.Color_x0020_Tag;
+                                }
+                            })
                         })
-                    })
+                    }
+                    setSiteTaggingData(Data)
+                } else {
+                    setSiteTaggingData([]);
                 }
-                setSiteTaggingData(Data)
-            } else {
-                setSiteTaggingData([]);
+            } catch (error) {
+                console.log("Error:", error.message)
             }
         }
     }, [])
