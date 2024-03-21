@@ -1212,11 +1212,24 @@ function ReadyMadeTable(SelectedProp: any) {
 
         if (portfolioTypeData?.length - 1 === index || index === '') {
             if (SelectedProp?.SelectedItem != undefined) {
-                let Actatcomponent = AllSiteTasksData?.filter(
-                    (elem1: any) =>
-                        elem1?.TaskType?.Id === 1 &&
-                        elem1?.Portfolio?.Id === SelectedProp?.SelectedItem?.Id
-                );
+                let  Actatcomponent:any;
+                if(filterTaskType){
+                      Actatcomponent = AlltaskfilterData?.filter(
+                        (elem1: any) =>
+                            elem1?.TaskType?.Id === 1 &&
+                            elem1?.Portfolio?.Id === SelectedProp?.SelectedItem?.Id
+                    );
+                }else{
+                    Actatcomponent = AllSiteTasksData?.filter(
+                        (elem1: any) =>
+                            elem1?.TaskType?.Id === 1 &&
+                            elem1?.Portfolio?.Id === SelectedProp?.SelectedItem?.Id
+                    );
+                }
+
+
+
+              
                 countAllTasksData = countAllTasksData.concat(Actatcomponent);
                 Actatcomponent?.map((masterTask1: any) => {
                     masterTask1.subRows = [];
@@ -1243,8 +1256,10 @@ function ReadyMadeTable(SelectedProp: any) {
             temp.ClientCategorySearch = '';
             temp.Created = null;
             temp.Author = "";
-            temp.subRows =
-                AllSiteTasksData?.filter((elem1: any) =>
+            if(filterTaskType){
+                temp.subRows =
+            
+                AlltaskfilterData?.filter((elem1: any) =>
                     elem1?.TaskType?.Id != undefined &&
                     elem1?.TaskType?.Level != 1 &&
                     elem1?.TaskType?.Level != 2 &&
@@ -1256,6 +1271,23 @@ function ReadyMadeTable(SelectedProp: any) {
                 if (task.TaskID === undefined || task.TaskID === '')
                     task.TaskID = 'T' + task.Id;
             })
+            }else{
+                temp.subRows =
+            
+                AllSiteTasksData?.filter((elem1: any) =>
+                    elem1?.TaskType?.Id != undefined &&
+                    elem1?.TaskType?.Level != 1 &&
+                    elem1?.TaskType?.Level != 2 &&
+                    (elem1?.ParentTask === undefined ||
+                        elem1?.ParentTask?.TaskID === null) &&
+                    elem1?.Portfolio?.Id === SelectedProp?.SelectedItem?.Id);
+            countAllTasksData = countAllTasksData.concat(temp.subRows);
+            temp.subRows.forEach((task: any) => {
+                if (task.TaskID === undefined || task.TaskID === '')
+                    task.TaskID = 'T' + task.Id;
+            }) 
+            }
+           
             componentData.push(temp)
         }
         setLoaded(true);
@@ -2221,7 +2253,7 @@ function ReadyMadeTable(SelectedProp: any) {
                         {checkedList != null && checkedList != undefined && checkedList?.SiteIconTitle != undefined && checkedList?.SiteIconTitle != null ? <span className="Dyicons me-2" >{checkedList?.SiteIconTitle}</span> : ''} {`${checkedList != null && checkedList != undefined && checkedList?.Title != undefined && checkedList?.Title != null ? checkedList?.Title
                             + '- Create Child Component' : 'Create Component'}`}</>
                 </div>
-                <Tooltip ComponentId={checkedList?.Id} />
+                <Tooltip ComponentId="444" />
             </>
         );
     };
