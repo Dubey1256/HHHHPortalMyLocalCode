@@ -28,7 +28,7 @@ import ShowTeamMembers from '../ShowTeamMember';
 import SelectFilterPanel from './selectFilterPannel';
 import ExpndTable from '../ExpandTable/Expandtable';
 import RestructuringCom from '../Restructuring/RestructuringCom';
-import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
+import { SlArrowDown, SlArrowRight, SlArrowUp } from 'react-icons/sl';
 import { BsClockHistory, BsList, BsSearch } from 'react-icons/bs';
 import Tooltip from "../../globalComponents/Tooltip";
 import { Alert } from 'react-bootstrap';
@@ -40,6 +40,7 @@ import BulkEditingConfrigation from './BulkEditingConfrigation';
 import ColumnsSetting from './ColumnsSetting';
 import HeaderButtonMenuPopup from './HeaderButtonMenuPopup';
 import { Web } from 'sp-pnp-js';
+import { TbChevronDown, TbChevronUp, TbSelector } from 'react-icons/tb';
 // import TileBasedTasks from './TileBasedTasks';
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -862,9 +863,37 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     // Print ANd Xls Parts//////
     const downloadPdf = () => {
-        const doc = new jsPDF({ orientation: 'landscape' });
+        let defaultFountsize = 20;
+        let headerColoumns: any = [];
+        let notVisbleColumns: any = Object.keys(columnVisibility);
+        let allHeaderColoumns = columns.filter((column: any) => {
+            return (!notVisbleColumns.includes(column.id) &&
+                column.placeholder !== undefined &&
+                column.placeholder !== '');
+        });
+        allHeaderColoumns.map((column: any) => {
+            headerColoumns.push(column.placeholder)
+        })
+        let columnLength = headerColoumns?.length;
+        defaultFountsize = defaultFountsize - columnLength;
+        let rowDataShow: any = []
+        table.getRowModel().rows.map((elt: any) => {
+            var value: any = [];
+            allHeaderColoumns.map((itemHeader: any) => {
+                value.push(elt?.original?.[itemHeader?.id])
+            })
+            rowDataShow.push(value)
+        })
+        const doc: any = new jsPDF({ orientation: 'landscape' });
+        const styles: any = {
+            fontStyle: 'normal',
+            fontSize: defaultFountsize,
+        };
         autoTable(doc, {
-            html: '#my-table'
+            head: [headerColoumns],
+            body: rowDataShow,
+            styles: styles,
+
         })
         doc.save('Data PrintOut');
     }
@@ -1035,9 +1064,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
         }
     }, [, wrapperHeight]);
     //Virtual rows
-
-
-
     /**************************************** Drag And Drop Functionality ***************************************/
     const startDrag = (task: any, taskId: any) => {
         if (items?.bulkEditIcon === true) {
@@ -1385,16 +1411,16 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                                         {header.column.getCanSort() ? <div style={items?.clickFlatView === true && header?.column?.columnDef?.placeholder === 'DueDate' ? { position: 'absolute', top: '8px', right: '16px' } : {}}
                                                             {...{
                                                                 className: header.column.getCanSort()
-                                                                    ? "cursor-pointer select-none shorticon"
+                                                                    ? "select-none defultSortingIcons"
                                                                     : "",
                                                                 onClick: header.column.getToggleSortingHandler(),
                                                             }}
                                                         >
                                                             {header.column.getIsSorted()
-                                                                ? { asc: <FaSortDown style={{ color: `${portfolioColor}` }} />, desc: <FaSortUp style={{ color: `${portfolioColor}` }} /> }[
+                                                                ? { asc: <div className='upArrow'><SlArrowDown style={{ color: `${portfolioColor}` }} /></div>, desc: <div className='downArrow'><SlArrowUp style={{ color: `${portfolioColor}` }} /></div> }[
                                                                 header.column.getIsSorted() as string
                                                                 ] ?? null
-                                                                : <FaSort style={{ color: "gray" }} />}
+                                                                : <><div className='downArrow'><SlArrowUp style={{ color: "#818181" }} /></div><div className='upArrow'><SlArrowDown style={{ color: "#818181" }} /></div></>}
                                                         </div> : ""}
                                                         {items?.clickFlatView === true && header?.column?.columnDef?.placeholder === 'DueDate' && <div className='dotFilterIcon' style={{ position: "absolute", top: "8px", right: "5px" }} ><BiDotsVertical style={Object?.keys(dateColumnFilterData)?.length ? { color: `${portfolioColor}`, height: '15px', width: '15px' } : { color: 'gray', height: '15px', width: '15px' }} onClick={(event) => coustomFilterColumns('DueDate', event)} /></div>}
 
