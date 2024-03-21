@@ -1369,7 +1369,11 @@ export const SendMSTeamsNotificationForWorkingActions = (RequiredData: any) => {
         let finalTaskInfo: any = containerDiv.innerHTML;
         let TeamsMessage = `<b>Hi ${ReceiverName},</b> 
         <p></p>
+<<<<<<< HEAD
         You have been tagged as <b> </b> in the below task.
+=======
+        You have been tagged as <b>${ActionType}</b> in the below task.
+>>>>>>> fe343ff75c7294920034f06b4d99c5066d428a37
         <p>
         <br/>
          <span>${ReasonStatement ? "<b>" + ActionType + " Point : </b>" + ReasonStatement + " <p></p>" : ''}</span>
@@ -1724,6 +1728,27 @@ export const SendEmailNotificationForIRCTasks = (RequiredData: any) => {
         }
     })
 }
+<<<<<<< HEAD
+=======
+
+// This is used for Prepare Data on The basis of sort order 
+
+export const PrepareDataAccordingToSortOrder = (SourceArray: any, currentArray: any) => {
+    try {
+        currentArray?.forEach((currentArrayObject: any) => {
+            let correspondingSourceArrayObject: any = SourceArray?.find((objA: any) => objA.Title === currentArrayObject.Title);
+            if (correspondingSourceArrayObject) {
+                currentArrayObject.SortOrder = correspondingSourceArrayObject?.SortOrder;
+            }
+        });
+        console.log(currentArray);
+        currentArray?.sort((a: any, b: any) => a.SortOrder - b.SortOrder);
+        return currentArray;
+    } catch (error) {
+        console.log("Error in PrepareDataAccordingToSortOrder function:", error.message)
+    }
+}
+>>>>>>> fe343ff75c7294920034f06b4d99c5066d428a37
 
 
 // Instructions for Using this Global Common Functions 

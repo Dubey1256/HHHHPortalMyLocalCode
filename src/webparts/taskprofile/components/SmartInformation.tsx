@@ -118,7 +118,7 @@ const SmartInformation = (props: any, ref: any) => {
      
       
       setEditSmartinfoValue(item);      
-      setallSetValue({ ...allValue, Title: item.Title, URL: item?.URL?.Url, Description: item?.Description, InfoType: item?.InfoType?.Title, Acronym: item?.Acronym, SelectedFolder: item.SelectedFolder });
+      setallSetValue({ ...allValue, Title: item.Title,Id: item?.InfoType?.Id, URL: item?.URL?.Url, Description: item?.Description, InfoType: item?.InfoType?.Title, Acronym: item?.Acronym, SelectedFolder: item.SelectedFolder });
       setShow(true);
      
     } else {

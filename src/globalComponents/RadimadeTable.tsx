@@ -2225,7 +2225,7 @@ function ReadyMadeTable(SelectedProp: any) {
                         {checkedList != null && checkedList != undefined && checkedList?.SiteIconTitle != undefined && checkedList?.SiteIconTitle != null ? <span className="Dyicons me-2" >{checkedList?.SiteIconTitle}</span> : ''} {`${checkedList != null && checkedList != undefined && checkedList?.Title != undefined && checkedList?.Title != null ? checkedList?.Title
                             + '- Create Child Component' : 'Create Component'}`}</>
                 </div>
-                <Tooltip ComponentId={checkedList?.Id} />
+                <Tooltip ComponentId="444" />
             </>
         );
     };

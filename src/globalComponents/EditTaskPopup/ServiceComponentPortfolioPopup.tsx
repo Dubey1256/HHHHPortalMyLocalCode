@@ -797,7 +797,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                                 </div>
                             </td>
                             <td>
-                                <a className="hreflink serviceColor_Active" data-interception="off" target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/PX-Profile.aspx?ProjectId=${item.PortfolioStructureID}`}>
+                                <a className="hreflink serviceColor_Active" data-interception="off" target="_blank" href={showProject == true?`${Dynamic?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${item.Id}`:`${Dynamic?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item.Id}`}>
                                     <span>{item.Title}</span>
                                 </a>
                                
