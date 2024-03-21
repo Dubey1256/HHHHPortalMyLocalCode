@@ -1580,10 +1580,68 @@ const TimeEntryPopup = (item: any) => {
             var listUri: string = `${RelativeUrl}/Lists/${listNames}`;
           }
           if (foundCategory) {
+            let isAvailble = false;
+            let count = 0
             mainParentId = foundCategory;
             mainParentTitle = checkCategories;
-            createItemMainList();
-          } else {
+            data?.forEach((val:any)=>{
+              val?.subRows.forEach(async (items:any)=>{
+                count++
+                if(items.AuthorId == CurntUserId){
+                  isAvailble = true;
+                  var NewparentId = items.ParentID;
+                  var NewMainparentId = items.MainParentId;
+                  var Datee: any = new Date(myDatee);
+                  if (Datee == "Invalid Date") {
+                    Datee = Moment().format();
+                  }
+                  let TimeSheetStatus: string = '';
+                 
+                  var TimeInH: any = TimeInMinutes / 60;
+                  TimeInH = TimeInH.toFixed(2);
+                  var update: any = {};
+                  update["AuthorName"] = items.AuthorName;
+                  update["AuthorId"] = CurntUserId;
+                  update["AuthorImage"] = items.AuthorImage;
+                  update["Status"] = 'Draft';
+                  update["ID"] = items.ID + 1;
+                  update["MainParentId"] = items.MainParentId;
+                  update["ParentID"] = items.ParentID;
+                  update["TaskTime"] = TimeInH;
+                  update["TaskTimeInMin"] = TimeInMinutes;
+                  update["TaskDate"] = Moment(Datee).format("DD/MM/YYYY");
+                  update["Description"] = postData?.Description;
+                  val.AdditionalTime.push(update);
+                  if (items.siteType == "Migration" || items.siteType == "ALAKDigital") {
+                    var ListId = TimeSheetlistId;
+                  } else {
+                    var ListId = TimeSheetlistId;
+                  }
+  
+                  await web.lists
+                    .getById(ListId)
+                    .items.getById(NewparentId)
+                    .update({
+                      AdditionalTimeEntry: JSON.stringify(val.AdditionalTime),
+                      TimesheetTitleId: NewMainparentId,
+                    })
+                    .then((res: any) => {
+                      console.log(res);
+                      setupdateData(updateData+2)
+                    });
+                
+                
+                 } 
+            })
+             })
+         
+           
+             if (!isAvailble) {
+              createItemMainList(); 
+          }
+          }
+          
+          else {
             let itemMetadataAdded = {
               Title:
                 newData != undefined &&
