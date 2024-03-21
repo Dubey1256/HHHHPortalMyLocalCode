@@ -1343,6 +1343,7 @@ const inlineEditingcolumns = (props: any) => {
               gap: "1px"
             }}
           >
+            
             {UpdateFeatureType != true ? <span style={{overflow:'hidden',display:'inline-block', width:`${selectedFeatureTypeData?.Title != undefined ? '168px':'185px'}`,textOverflow:'ellipsis',whiteSpace:"nowrap"}} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span> : <span style={{overflow:'hidden',display:'inline-block', width:`${selectedFeatureTypeData?.Title != undefined ? '168px':'185px'}`,textOverflow:'ellipsis',whiteSpace:"nowrap"}} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span> }&nbsp;
             {selectedFeatureTypeData?.Title != undefined ? <a className="pancil-icons hreflink" onClick={() => removeFeatureType()}>
               <span className="alignIcon svg__iconbox svg__icon--cross"></span>
