@@ -10,7 +10,6 @@ import GlobalCommonTable from "../GroupByReactTableComponents/GlobalCommanTable"
 import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../GroupByReactTableComponents/highlight";
-// import Loader from "react-loader";
 import ShowClintCategory from "../ShowClintCatogory";
 import ReactPopperTooltip from "../Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import { FaCompressArrowsAlt } from "react-icons/fa";
@@ -22,6 +21,7 @@ import ShowSiteComposition from "./ShowSiteComposition";
 import VersionHistory from "../VersionHistroy/VersionHistory";
 import PageLoader from "../pageLoader";
 import moment from "moment";
+
 let AllSiteDataBackup: any = [];
 let AllClientCategoryDataBackup: any = [];
 let ComponentChildData: any = [];
@@ -34,6 +34,7 @@ let FlatViewTableData: any = [];
 let GroupByTableData: any = [];
 let taskTypeData: any = [];
 let PortfolioItemColor: any = "";
+
 const CentralizedSiteComposition = (Props: any) => {
     const PropsData: any = Props;
     const usedFor: string = PropsData?.usedFor;
@@ -759,7 +760,7 @@ const CentralizedSiteComposition = (Props: any) => {
     }
 
     const findSelectedComponentChildInMasterList = (groupByData: any, itemId: any) => {
-        console.log("Get findSelectedComponentChildInMasterList   Call");
+        console.log("Get findSelectedComponentChildInMasterList Call");
         const findChild = (items: any) => {
             for (const item of items) {
                 if (item.Id === itemId && item.subRows?.length > 0) {
@@ -804,7 +805,19 @@ const CentralizedSiteComposition = (Props: any) => {
         return (
             <div className="alignCenter full-width" >
                 <div className="subheading siteColor">
-                    Update Site Composition For - [ {SelectedItemName} ]
+                    <span>Update Site Composition -</span>
+                    <span>
+                        <ReactPopperTooltip
+                            ShareWebId={ItemDetails?.TaskID}
+                            row={ItemDetails}
+                            singleLevel={true}
+                            masterTaskData={GlobalAllMasterListData}
+                            AllSitesTaskData={GlobalAllSiteData}
+                            AllListId={RequiredListIds}
+                        />
+                    </span>
+                    <span>- {SelectedItemName}</span>
+
                 </div>
                 <div className="alignCenter mb-3 me-1">
                     <div className="alignCenter">
@@ -1339,6 +1352,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 if (ItemData.ClientCategories?.length > 0) {
                     ItemData.ClientCategories = addObjectToArrayIfNotExists(ItemData.ClientCategories, SelectedCC)
                 } else {
+                    SelectedCC.checked = true;
                     ItemData.ClientCategories = [SelectedCC];
                 }
             }
@@ -1485,7 +1499,8 @@ const CentralizedSiteComposition = (Props: any) => {
         AllSiteDataBackup?.map((AllSiteItem: any) => {
             if (AllSiteItem.Title == siteName) {
                 if (AllSiteItem.BtnStatus == true) {
-                    AllSiteItem.BtnStatus = false
+                    AllSiteItem.BtnStatus = false;
+                    AllSiteItem.ClienTimeDescription = 0;
                     GlobalCount--;
                     setTaggedSiteCompositionCount(TaggedSiteCompositionCount - 1)
                 } else {
@@ -1834,14 +1849,14 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                                         style={{ cursor: "not-allowed", width: "100%" }}
                                                                                         defaultValue={siteData.BtnStatus ? (100 / TaggedSiteCompositionCount).toFixed(1) : ""}
                                                                                         value={siteData.BtnStatus ? (100 / TaggedSiteCompositionCount).toFixed(1) : ""}
-                                                                                        className="form-control p-1" readOnly={true}
+                                                                                        className="form-control boldClable p-1" readOnly={true}
                                                                                     />
                                                                                     : ''
                                                                                 }
                                                                                 {IsSCProtected == true ?
                                                                                     <input
                                                                                         type="number" min="1" max="100"
-                                                                                        className="form-control p-1"
+                                                                                        className="boldClable form-control p-1"
                                                                                         readOnly={IsSCProtected}
                                                                                         style={IsSCProtected ? { cursor: "not-allowed", width: '100%' } : {}}
                                                                                         value={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(1) : null}
@@ -1853,7 +1868,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                                     <input
                                                                                         type="number" min="1" max="100"
                                                                                         // value={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(1) : null}
-                                                                                        className="form-control p-1"
+                                                                                        className="form-control p-1 boldClable"
                                                                                         defaultValue={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(1) : null}
                                                                                         onChange={(e) => ChangeClientTimeDescriptionManually(e, siteData.Title)}
                                                                                     />

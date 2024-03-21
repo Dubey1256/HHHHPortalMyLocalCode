@@ -5,7 +5,6 @@ import * as Moment from "moment";
 import { Web, sp } from "sp-pnp-js";
 import Picker from "./SmartMetaDataPicker";
 import Example from "./FroalaCommnetBoxes";
-import ReactDOM from "react-dom";
 import * as globalCommon from "../globalCommon";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -39,7 +38,6 @@ import EmailNotificationMail from "./EmailNotificationMail";
 import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
-import { MdOutlineCommentBank } from "react-icons/md";
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -1004,6 +1002,8 @@ const EditTaskPopup = (Items: any) => {
                     }
                 }
                 item.TaskId = globalCommon.GetTaskId(item);
+                item.TaskID = globalCommon.GetTaskId(item);
+
                 item.siteUrl = siteUrls;
                 item.siteType = Items?.Items?.siteType;
                 item.SiteIcon = Items?.Items?.SiteIcon;
@@ -1575,12 +1575,12 @@ const EditTaskPopup = (Items: any) => {
     const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         setIsComponentPicker(false);
         let uniqueIds: any = {};
-        let checkForOnHoldAndBottleneck: any = tempShareWebTypeData?.some((category: any) => category.Title === "On-Hold");
+        let checkForOnHoldAndBottleneck: any = tempShareWebTypeData?.some((category: any) => category.Title === "On-Hold" && category.Title === "Bottleneck");
         let checkForDesign: any = tempShareWebTypeData?.some((category: any) => category.Title === "Design");
         if (usedFor == "For-Panel") {
             let TempArrya: any = [];
             selectCategoryData?.map((selectedData: any) => {
-                if ((selectedData.Title == "On-Hold") && !checkForOnHoldAndBottleneck) {
+                if ((selectedData.Title == "On-Hold" || selectedData.Title == "Bottleneck") && !checkForOnHoldAndBottleneck) {
                     onHoldCategory.push(selectedData);
                     setOnHoldPanel(true);
                     setSendCategoryName(selectedData.Title)
@@ -1610,7 +1610,7 @@ const EditTaskPopup = (Items: any) => {
             tempShareWebTypeData = TempArrya;
         } else {
             selectCategoryData.forEach((existingData: any) => {
-                if ((existingData.Title == "On-Hold") && !checkForOnHoldAndBottleneck) {
+                if ((existingData.Title == "On-Hold" || existingData.Title == "Bottleneck") && !checkForOnHoldAndBottleneck) {
                     onHoldCategory.push(existingData);
                     setOnHoldPanel(true);
                     setSendCategoryName(existingData.Title)
@@ -2161,6 +2161,14 @@ const EditTaskPopup = (Items: any) => {
                         }
                     });
                 }
+                if (StatusInput == 8) {
+                    let CheckForTaskCategories: any = EditDataBackup.TaskCategories?.some((category: any) => category.Title === "Development" || category.Title === "Improvement")
+                    if (CheckForTaskCategories) {
+                        let AuthorId: any = EditDataBackup?.Author?.Id;
+                        setWorkingMember(AuthorId);
+                        setSendMsgToAuthor(true);
+                    }
+                }
                 if (StatusInput == 10) {
                     EditData.CompletedDate = undefined;
                     if (EditData.StartDate == undefined) {
@@ -2308,8 +2316,6 @@ const EditTaskPopup = (Items: any) => {
                     EditData.TeamMembers?.length > 0
                 ) {
                     setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
-                } else if (EditData.ResponsibleTeam?.length > 0) {
-                    setWorkingMemberFromTeam(EditData.ResponsibleTeam, "Development", 0);
                 } else {
                     setWorkingMember(0);
                 }
@@ -2566,6 +2572,10 @@ const EditTaskPopup = (Items: any) => {
                         TaskDetailsFromCall[0].TaskId = globalCommon.GetTaskId(
                             TaskDetailsFromCall[0]
                         );
+                        TaskDetailsFromCall[0].TaskID = globalCommon.GetTaskId(
+                            TaskDetailsFromCall[0]
+                        );
+
                         if (
                             TaskDetailsFromCall != undefined &&
                             TaskDetailsFromCall.length > 0
@@ -2629,6 +2639,7 @@ const EditTaskPopup = (Items: any) => {
                                 };
 
                                 if (SendMsgToAuthor) {
+
                                     taskUsers?.forEach((allUserItem: any) => {
                                         if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                             addEmailAndUserName(allUserItem);
@@ -2647,8 +2658,6 @@ const EditTaskPopup = (Items: any) => {
                                         });
                                     });
                                 }
-
-
                                 let CommonMsg = '';
                                 let checkStatusUpdate = Number(taskPercentageValue) * 100;
                                 if (SendMsgToAuthor) {
@@ -3976,12 +3985,9 @@ const EditTaskPopup = (Items: any) => {
     const MouseHoverImageFunction = (e: any, HoverImageData: any) => {
         e.preventDefault();
         setHoverImageModal("Block");
-        // let tempArray:any =[];
-        // tempArray.push(HoverImageData)
         setHoverImageData([HoverImageData]);
     };
 
-    //  This is used for closing the Image Hover Model 
 
     const MouseOutImageFunction = (e: any) => {
         e.preventDefault();
@@ -4026,76 +4032,7 @@ const EditTaskPopup = (Items: any) => {
         setImageCustomizePopup(false);
         setModalIsOpen(true);
         UpdateTaskInfoFunction("Image-Tab");
-        // GetExtraLookupColumnData();
-        // if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
-        //     if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
-        //         let message = JSON.parse(EditData.FeedBack);
-        //         let feedbackArray: any = [];
-        //         if (message != null) {
-        //             feedbackArray = message[0]?.FeedBackDescriptions
-        //         }
-        //         let tempArray: any = [];
-        //         if (feedbackArray[0] != undefined) {
-        //             tempArray.push(feedbackArray[0])
-        //         } else {
-        //             let tempObject: any =
-        //             {
-        //                 "Title": '<p> </p>',
-        //                 "Completed": false,
-        //                 "isAddComment": false,
-        //                 "isShowComment": false,
-        //                 "isPageType": '',
-        //             }
-        //             tempArray.push(tempObject);
-        //         }
-
-        //         CommentBoxData = tempArray;
-        //         let result: any = [];
-        //         if (SubCommentBoxData == "delete") {
-        //             result = tempArray
-        //         } else {
-        //             result = tempArray.concat(SubCommentBoxData);
-        //         }
-        //         updateFeedbackArray[0].FeedBackDescriptions = result;
-        //     }
-        //     if (CommentBoxData?.length > 0 && SubCommentBoxData?.length == 0) {
-        //         let result: any = [];
-        //         if (SubCommentBoxData == "delete") {
-        //             result = CommentBoxData;
-        //         } else {
-        //             let message = JSON.parse(EditData.FeedBack);
-        //             if (message != null) {
-        //                 let feedbackArray = message[0]?.FeedBackDescriptions;
-        //                 feedbackArray?.map((array: any, index: number) => {
-        //                     if (index > 0) {
-        //                         SubCommentBoxData.push(array);
-        //                     }
-        //                 })
-        //                 result = CommentBoxData.concat(SubCommentBoxData);
-        //             } else {
-        //                 result = CommentBoxData;
-        //             }
-        //         }
-        //         updateFeedbackArray[0].FeedBackDescriptions = result;
-        //     }
-        //     if (CommentBoxData?.length > 0 && SubCommentBoxData?.length > 0) {
-        //         let result: any = [];
-        //         if (SubCommentBoxData == "delete") {
-        //             result = CommentBoxData
-        //         } else {
-        //             result = CommentBoxData.concat(SubCommentBoxData)
-        //         }
-        //         updateFeedbackArray[0].FeedBackDescriptions = result;
-        //     }
-        // } else {
-        //     updateFeedbackArray = JSON.parse(EditData.FeedBack);
-        // }
-        // let AllEditData: any = updateFeedbackArray[0].FeedBackDescriptions
-        // AllEditData.FeedBackArray = updateFeedbackArray;
         FeedBackCount++;
-        // console.log(updateFeedbackArray)
-        // setEditData((prev: any) => ({ ...prev, FeedBackArray: AllEditData }))
-        // console.log(EditData)
     };
 
     const CommonClosePopupFunction = () => {
@@ -4242,14 +4179,7 @@ const EditTaskPopup = (Items: any) => {
 
     const copyAndMoveTaskFunctionOnBackendSide = async (FunctionsType: any) => {
         loadTime();
-        //   var SiteId = "Task" + Items.Items.siteType;
-        //   let web = new Web(siteUrls);
-        //   const TimeEntry = await web.lists.getByTitle('TimesheetListNewId').items.select(`${SiteId}/Id`).expand(`${SiteId}`)
-        //   .filter(`${SiteId}/Id eq '${Items?.Items?.Id}'`)
-        //  .get();
-
         let SelectedSiteImage: any = '';
-
         let TaskDataJSON: any = await MakeUpdateDataJSON();
         if (SiteTypes != undefined && SiteTypes.length > 0) {
             SiteTypes.map((dataItem: any) => {
@@ -4259,10 +4189,8 @@ const EditTaskPopup = (Items: any) => {
                 }
             });
         }
-
         let TempSitesTaggingData: any = [];
         let TempCCDataIds: any = [];
-
         if (SelectedSite?.toLowerCase() !== "shareweb") {
             let TempObject: any = {
                 Title: SelectedSite,
@@ -4303,6 +4231,7 @@ const EditTaskPopup = (Items: any) => {
                         ? TempCCDataIds
                         : [],
             },
+            TaskTypeId: EditData.TaskType?.Id ? EditData.TaskType?.Id : null
         };
 
         TaskDataJSON = { ...TaskDataJSON, ...UpdatedJSON };
@@ -4387,7 +4316,6 @@ const EditTaskPopup = (Items: any) => {
         let tempArrayJsonData: any = [];
         let arrangedArray: any = []
         let currentUserDataObject: any;
-        // Iterate over attachment files sequentially
         for (let index = 0; index < response?.AttachmentFiles?.length; index++) {
             const value = response.AttachmentFiles[index];
             const sourceEndpoint = `${siteUrls}/_api/web/lists/getbytitle('${Items?.Items?.siteType}')/items(${Items?.Items?.Id})/AttachmentFiles/getByFileName('${value.FileName}')/$value`;
@@ -6420,7 +6348,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                         title={ProjectData.Title}
                                                                                         data-interception="off"
                                                                                         className="textDotted hreflink"
-                                                                                        href={`${siteUrls}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                        href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
                                                                                     >
                                                                                         {ProjectData.Title}
                                                                                     </a>
@@ -8746,7 +8674,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                     target="_blank"
                                                                                                     title={ProjectData.Title}
                                                                                                     data-interception="off"
-                                                                                                    href={`${siteUrls}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                                    href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
                                                                                                 >
                                                                                                     {ProjectData.Title}
                                                                                                 </a>
