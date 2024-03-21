@@ -236,6 +236,7 @@ const getFirstColCell = ({ setExpanded, hasCheckbox, hasCustomExpanded, hasExpan
 
 // ReactTable Part end/////
 let isShowingDataAll: any = false;
+let settingConfrigrationData: any = [];
 const GlobalCommanTable = (items: any, ref: any) => {
     let childRefdata: any;
     const childRef = React.useRef<any>();
@@ -301,7 +302,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [showPagination, setShowPagination] = React.useState(items?.showPagination ? items?.showPagination : false);
     const [showPaginationSetting, setShowPaginationSetting] = React.useState(false);
     const [tableSettingPageSize, setTableSettingPageSize] = React.useState(0);
-    const [settingConfrigrationData, setSettingConfrigrationData] = React.useState([]);
+    // const [settingConfrigrationData, setSettingConfrigrationData] = React.useState([]);
     React.useEffect(() => {
         if (fixedWidth === true) {
             try {
@@ -426,25 +427,43 @@ const GlobalCommanTable = (items: any, ref: any) => {
         setBulkEditingSettingPopup(true);
     }
 
-    const fetchSettingConfrigrationData = () => {
-        return new Promise(async (resolve, reject) => {
-            try {
-                let configurationData: any = [];
-                const web = new Web(items?.AllListId?.siteUrl);
-                const resultsArray = await web.lists.getByTitle('AdminConfigurations').items.select('Id', 'Title', 'Value', 'Key', 'Description', 'DisplayTitle', 'Configurations', "Author/Id", "Author/Title").expand("Author").filter(`Title eq '${tableId}' and Author/Id eq ${items?.AllListId?.Context?.pageContext?.legacyPageContext?.userId}`).get();
-                configurationData = resultsArray?.map((smart: any) => JSON.parse(smart?.Configurations));
-                if (configurationData?.length > 0) {
-                    configurationData[0].ConfrigId = resultsArray[0]?.Id;
-                }
-                console.log(resultsArray);
-                setSettingConfrigrationData(configurationData);
-                resolve(configurationData);
-            } catch (error) { console.error(error); reject(error); }
-        });
-    };
-    React.useEffect(() => { const fetchData = async () => { try { await fetchSettingConfrigrationData(); } catch (error) { console.error('Error:', error); } }; fetchData(); }, [columns]);
+
     ///******************** Bulk Editing Setting End************* */
-    React.useEffect(() => {
+    const fetchSettingConfrigrationData = async (event: any) => {
+        try {
+            let configurationData: any = [];
+            settingConfrigrationData = [];
+            const web = new Web(items?.AllListId?.siteUrl);
+            const resultsArray = await web.lists.getByTitle('AdminConfigurations').items.select('Id', 'Title', 'Value', 'Key', 'Description', 'DisplayTitle', 'Configurations', "Author/Id", "Author/Title").expand("Author").filter(`Title eq '${tableId}' and Author/Id eq ${items?.AllListId?.Context?.pageContext?.legacyPageContext?.userId}`).get();
+            configurationData = resultsArray?.map((smart: any) => JSON.parse(smart?.Configurations));
+            if (configurationData?.length > 0) {
+                configurationData[0].ConfrigId = resultsArray[0]?.Id;
+            }
+            console.log(resultsArray);
+            // setSettingConfrigrationData(configurationData);
+            // rerender();
+            settingConfrigrationData = settingConfrigrationData.concat(configurationData);
+            if (event != true) {
+                defultColumnPrepare();
+            }
+        } catch (error) {
+            if (event != true) {
+                defultColumnPrepare();
+            }
+            console.error(error)
+        }
+    };
+    React.useLayoutEffect(() => {
+        const fetchData = async () => {
+            try {
+                await fetchSettingConfrigrationData('');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }; fetchData();
+    }, [columns]);
+
+    const defultColumnPrepare = () => {
         if (columns?.length > 0 && columns != undefined) {
             let sortingDescData: any = [];
             let columnVisibilityResult: any = {};
@@ -526,7 +545,91 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 console.log(error)
             }
         }
-    }, [columns]);
+    }
+
+    // React.useEffect(() => {
+    //     if (columns?.length > 0 && columns != undefined) {
+    //         let sortingDescData: any = [];
+    //         let columnVisibilityResult: any = {};
+    //         let preSetColumnSettingVisibility: any = {};
+    //         let preSetColumnOrdring: any = [];
+    //         console.log(settingConfrigrationData);
+    //         columns = columns.map((updatedSortDec: any) => {
+    //             try {
+    //                 // if ((localStorage.getItem(tableId) != undefined && localStorage.getItem(tableId)) && Object.keys(JSON.parse(localStorage.getItem(tableId)))?.length > 0 && (items?.columnSettingIcon === true)) {
+    //                 if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableId && (items?.columnSettingIcon === true)) {
+    //                     // const preSetColumnsValue = JSON.parse(localStorage.getItem(tableId));
+    //                     const preSetColumnsValue = settingConfrigrationData[0]
+    //                     if (preSetColumnsValue?.tableId === items?.tableId) {
+    //                         preSetColumnSettingVisibility = preSetColumnsValue?.columnSettingVisibility;
+    //                         preSetColumnOrdring = preSetColumnsValue
+    //                         setShowHeaderLocalStored(preSetColumnsValue?.showHeader)
+    //                         if (Object.keys(preSetColumnSettingVisibility)?.length) {
+    //                             const columnId = updatedSortDec.id;
+    //                             if (preSetColumnSettingVisibility[columnId] !== undefined) {
+    //                                 updatedSortDec.isColumnVisible = preSetColumnSettingVisibility[columnId];
+    //                             }
+    //                         }
+    //                     } else if (updatedSortDec?.isColumnVisible === false && items?.columnSettingIcon === true) {
+    //                         columnVisibilityResult[updatedSortDec.id] = updatedSortDec.isColumnVisible;
+    //                     }
+    //                 } else if (updatedSortDec?.isColumnVisible === false && items?.columnSettingIcon === true) {
+    //                     columnVisibilityResult[updatedSortDec.id] = updatedSortDec.isColumnVisible;
+    //                 }
+    //                 if (updatedSortDec.isColumnDefultSortingDesc === true) {
+    //                     let obj = { 'id': updatedSortDec.id, desc: true }
+    //                     sortingDescData.push(obj);
+    //                 } else if (updatedSortDec.isColumnDefultSortingAsc === true) {
+    //                     let obj = { 'id': updatedSortDec.id, desc: false }
+    //                     sortingDescData.push(obj);
+    //                 }
+    //                 return updatedSortDec;
+    //             } catch (error) {
+    //                 console.log(error);
+    //                 localStorage.removeItem(tableId);
+    //                 location.reload();
+    //             }
+    //         });
+    //         if (preSetColumnOrdring?.columnOrderValue?.length > 0 && preSetColumnOrdring?.tableId === items?.tableId) {
+    //             const colValue = preSetColumnOrdring?.columnOrderValue?.map((elem: any) => elem.id);
+    //             setColumnOrder(colValue);
+    //         } else if (items?.columnSettingIcon === true && tableId) {
+    //             const colValue = columns?.map((elem: any) => elem.id);
+    //             setColumnOrder(colValue);
+    //         }
+    //         if (preSetColumnOrdring?.tableHeightValue?.length > 0 && preSetColumnOrdring?.tableHeightValue != "") {
+    //             setWrapperHeight(preSetColumnOrdring?.tableHeightValue);
+    //         }
+    //         try {
+    //             if ((Object.keys(preSetColumnSettingVisibility) != null && Object.keys(preSetColumnSettingVisibility) != undefined) && Object.keys(preSetColumnSettingVisibility)?.length > 0 && preSetColumnOrdring?.tableId === items?.tableId) {
+    //                 setColumnVisibility(preSetColumnSettingVisibility);
+    //             } else if (Object.keys(columnVisibilityResult)?.length > 0) {
+    //                 setColumnVisibility(columnVisibilityResult);
+    //                 columnVisibilityDataValue = { ...columnVisibilityResult };
+    //             }
+    //         } catch (error) {
+    //             console.log(error)
+    //         }
+
+    //         if (sortingDescData.length > 0) {
+    //             setSorting(sortingDescData);
+    //         } else {
+    //             setSorting([]);
+    //         }
+    //         try {
+    //             // if (localStorage.getItem(tableId) && Object.keys(JSON.parse(localStorage.getItem(tableId)))?.length > 0 && (items?.columnSettingIcon === true)) {
+    //             if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableId && (items?.columnSettingIcon === true)) {
+    //                 // const preSetColumnsValue = JSON.parse(localStorage.getItem(tableId));
+    //                 const preSetColumnsValue = settingConfrigrationData[0]
+    //                 if (preSetColumnsValue?.tableId === items?.tableId) {
+    //                     makeConfrigrationColumnsDefult()
+    //                 }
+    //             }
+    //         } catch (error) {
+    //             console.log(error)
+    //         }
+    //     }
+    // }, [columns]);
 
 
     const makeConfrigrationColumnsDefult = () => {
@@ -1118,6 +1221,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     const columnSettingCallBack = React.useCallback(async (eventSetting: any) => {
         if (eventSetting != 'close') {
+            const callBack = true;
             setColumnSettingPopup(false)
             columnVisibilityDataValue = { ...eventSetting?.columnSettingVisibility }
             if (eventSetting?.columanSize?.length > 0) {
@@ -1156,7 +1260,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             setColumnVisibility((prevCheckboxes: any) => ({ ...prevCheckboxes, ...eventSetting?.columnSettingVisibility }));
             setShowHeaderLocalStored(eventSetting?.showHeader);
             setShowTilesView(eventSetting?.showTilesView);
-            await fetchSettingConfrigrationData();
+            await fetchSettingConfrigrationData(callBack);
         } else {
             setColumnSettingPopup(false)
         }
@@ -1552,10 +1656,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             {table.getState().pagination.pageIndex + 1} of{' '}
                             {table.getPageCount()}
                         </strong>
-                        
-                        
                         </div>
-                        
                     </span>
                     <button
                         className="border"
