@@ -651,6 +651,7 @@ const TimeEntryPopup = (item: any) => {
     if (target.checked) {
       setcheckCategories(Title);
       setcheckCategoriesTitle(Title)
+setNewData({...newData,Title:Title})
       setshowCat(Title);
     }
   };
@@ -2407,16 +2408,21 @@ const TimeEntryPopup = (item: any) => {
   };
 
   //--------------------------------------Change time by custom button-----------------------------------------------------------------------------
-  const changeTimeFunction = (e: any, type: any,Use:any) => {
-   if(Use == 'remove'){
-    changeTime=0;
+  const changeTimeFunction = (e: any, type: any, Use: any) => {
+   let inputValue = Number(e);
+    if (isNaN(inputValue)&& Use!=="remove") {
+        return;
+    }
+
+    if (Use === 'remove') {
+    changeTime = 0;
     setsaveEditTaskTimeChild({});
-    setTimeInMinutes(0)
-    setTimeInHours(0)
-   }
-   else{
-    changeTime = Number(e.target.value);
-    if (type === "AddTime" || type == "AddTime Category") {
+    setTimeInMinutes(0);
+    setTimeInHours(0);
+    } else {
+    changeTime = inputValue;
+
+        if (type === "AddTime" || type === "AddTime Category") {
         if (changeTime !== undefined) {
           const timeInHour: any = changeTime / 60;
           setTimeInHours(timeInHour.toFixed(2));
@@ -2434,7 +2440,7 @@ const TimeEntryPopup = (item: any) => {
           }
           setTimeInMinutes(changeTime);
         } else {
-          saveEditTaskTimeChild.TaskTimeInMin = ''
+          saveEditTaskTimeChild.TaskTimeInMin = '';
           saveEditTaskTimeChild.TaskTime = 0;
           setTimeInMinutes(0);
           setTimeInHours(0);
@@ -2954,7 +2960,7 @@ const TimeEntryPopup = (item: any) => {
                           type="text"
                           className="form-control"
                           name="TimeTitle"
-                          value={newData != undefined ? newData?.Title:checkCategoriesTitle}
+                          value={newData?.Title === '' ? checkCategories: newData?.Title }
                           onChange={(e) =>
                             setNewData({ ...newData, Title: e.target.value })
                           }
@@ -2974,7 +2980,7 @@ const TimeEntryPopup = (item: any) => {
                       type="title"
                       placeholder="Add Title"
                       disabled={true}
-                      defaultValue={CategryTitle}
+                      defaultValue={checkCategories}
 
                     />
 
@@ -3375,10 +3381,10 @@ const TimeEntryPopup = (item: any) => {
             ? saveEditTaskTimeChild.TaskTimeInMin
             : ''
     }
-    onChange={(e) => changeTimeFunction(e, PopupType,'Add')}
+    onChange={(e) => changeTimeFunction(Number(e.target.value), PopupType,'Add')}
 />
 {((TimeInMinutes > 0 || saveEditTaskTimeChild?.TaskTimeInMin != undefined) && (
-    <span className="input-group-text" style={{zIndex:'9'}}><span className="dark mini svg__icon--cross mt-1 svg__iconbox" onClick={(e)=>changeTimeFunction(e, PopupType,'remove')}></span></span>
+    <span className="input-group-text" style={{zIndex:'9'}}><span className="dark mini svg__icon--cross mt-1 svg__iconbox" onClick={(e)=>changeTimeFunction(Number(e), PopupType,'remove')}></span></span>
 ))}
 </div>
                   </div>
@@ -3497,6 +3503,7 @@ const TimeEntryPopup = (item: any) => {
                           <div
                             className="SpfxCheckRadio "
                             id="subcategorytasksPriority{{item.Id}}"
+
                           >
                             <input
                               type="radio"
@@ -3646,7 +3653,7 @@ const TimeEntryPopup = (item: any) => {
                         defaultValue={
                           checkCategories != undefined
                             ? checkCategories
-                            : item.Title
+                            : item.Category.Title
                         }
                         onChange={(e) =>
                           setNewData({ ...newData, Title: e.target.value })
