@@ -1636,7 +1636,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 </div>
             </div>
             {
-                showPagination === true && showPaginationSetting === false && (table?.getFilteredRowModel()?.rows?.length > table.getState().pagination.pageSize) ? <div className="d-flex gap-2 items-center mb-3 mx-2">
+                showPagination === true && showPaginationSetting === false && (table?.getFilteredRowModel()?.rows?.length > table.getState().pagination.pageSize) ? <div className="d-flex gap-2 pagnationpanel mb-3 mx-2">
                     <button
                         className="border"
                         onClick={() => table.setPageIndex(0)}

@@ -858,7 +858,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                                     {uniqueCategories.map((elem: any) => <option value={elem.Title}>{elem.Title}</option>)}
                                                 </select>
                                             </div></Col>
-                                        <Col md={5} sm={5} className='ps-1'>
+                                        <Col md={5} sm={5} className='ps-1 pe-1'>
                                             <div className='input-group'>
                                                 <label className='form-label full-width fw-semibold'>Team: </label>
                                                 <select className='full-width' id="sites" defaultValue={memberToUpdate?.Team} onChange={(e: any) => setUserTeam(e.target.value)}
