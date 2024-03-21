@@ -3318,6 +3318,9 @@ export const findTaskCategoryParent = (taskCategories: any, result: any) => {
         })
     }
     return result;
+<<<<<<< HEAD
+}
+=======
 }
 
 export const smartTimeUseLocalStorage = (AllTasksData:any,timeEntryDataLocalStorage:any) => {
@@ -3336,3 +3339,4 @@ export const smartTimeUseLocalStorage = (AllTasksData:any,timeEntryDataLocalStor
         return AllTasksData;
     }
 };
+>>>>>>> d9d6449292a979b9f4827744c92b08eaae4435de

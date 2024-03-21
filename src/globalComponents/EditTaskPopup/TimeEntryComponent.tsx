@@ -2466,6 +2466,12 @@ setNewData({...newData,Title:Title})
   };
 
   //--------------------------------------Change time by custom button-----------------------------------------------------------------------------
+<<<<<<< HEAD
+  const changeTimeFunction = (e: any, type: any) => {
+      changeTime = Number(e.target.value);
+    if (type === "AddTime" || type == "AddTime Category") {
+      
+=======
   const changeTimeFunction = (e: any, type: any, Use: any) => {
    let inputValue = Number(e);
     if (isNaN(inputValue)&& Use!=="remove") {
@@ -2481,6 +2487,7 @@ setNewData({...newData,Title:Title})
     changeTime = inputValue;
 
         if (type === "AddTime" || type === "AddTime Category") {
+>>>>>>> d9d6449292a979b9f4827744c92b08eaae4435de
         if (changeTime !== undefined) {
           const timeInHour: any = changeTime / 60;
           setTimeInHours(timeInHour.toFixed(2));
