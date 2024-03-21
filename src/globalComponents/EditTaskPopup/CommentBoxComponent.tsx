@@ -6,7 +6,7 @@ import Example from "./SubCommentComponent";
 import pnp from 'sp-pnp-js';
 import * as Moment from 'moment';
 import ApprovalHistoryPopup from "./ApprovalHistoryPopup";
-import FroalaEditorComponent from '../FlorarComponents/FroalaEditorComponent';
+import FroalaEditorComponentJodIt from '../FlorarComponents/FroalaEditorComponentJodIt';
 
 const CommentBoxComponent = (commentData: any) => {
     const Context = commentData.Context;
@@ -327,11 +327,11 @@ const CommentBoxComponent = (commentData: any) => {
                                             HtmlEditorStateChange={HtmlEditorCallBack}
                                         >
                                         </HtmlEditorCard> */}
-                                        <FroalaEditorComponent
+                                        <FroalaEditorComponentJodIt
                                             EditorValue={obj.Title != undefined ? obj.Title : ''}
                                             callBack={HtmlEditorCallBack}
                                         >
-                                        </FroalaEditorComponent>
+                                        </FroalaEditorComponentJodIt>
                                     </div>
                                 </div>
                                 <div>
