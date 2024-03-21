@@ -275,10 +275,6 @@ const CreateAllStructureComponent = (props: any) => {
 
                         // Create feature item in SharePoint list
 
-<<<<<<< HEAD
-
-=======
->>>>>>> fe343ff75c7294920034f06b4d99c5066d428a37
                         const featuredata = await createListItem('Master Tasks', featureItem);
 
 
