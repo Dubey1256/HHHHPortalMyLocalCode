@@ -2595,8 +2595,8 @@ const EditTaskPopup = (Items: any) => {
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
                         UpdatedDataObject.SmartPriority = NewSmartPriority;
                         UpdatedDataObject.siteUrl = siteUrls;
-                        let WorkingAction = UpdatedDataObject?.WorkingAction?.length > 0 ? JSON.parse(UpdatedDataObject?.WorkingAction) : [];
-                        WorkingAction?.map((ItemData: any) => {
+                        let WorkingActionData = UpdatedDataObject?.WorkingAction?.length > 0 ? JSON.parse(UpdatedDataObject?.WorkingAction) : [];
+                        WorkingActionData?.map((ItemData: any) => {
                             ItemData.InformationData?.map((InfoItem: any) => {
                                 if (InfoItem.NotificationSend == false) {
                                     InfoItem.NotificationSend = true;
@@ -2614,8 +2614,9 @@ const EditTaskPopup = (Items: any) => {
                                 }
                             })
                         })
-                        if (WorkingAction?.length > 0) {
-                            UpdateWorkinActionJSON();
+                        if (WorkingActionData?.length > 0) {
+                            setWorkingAction([...WorkingActionData])
+                            UpdateWorkinActionJSON(WorkingActionData);
                         }
                         const uniqueIds: any = {};
                         const result = tempShareWebTypeData.filter((item: any) => {
@@ -2639,7 +2640,6 @@ const EditTaskPopup = (Items: any) => {
                                 };
 
                                 if (SendMsgToAuthor) {
-
                                     taskUsers?.forEach((allUserItem: any) => {
                                         if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                             addEmailAndUserName(allUserItem);
@@ -4785,19 +4785,18 @@ const EditTaskPopup = (Items: any) => {
 
     // this is used for updating workingAction JSON Data on Backedn Side 
 
-    const UpdateWorkinActionJSON = async () => {
+    const UpdateWorkinActionJSON = async (DataForUpdate: any) => {
+
         try {
             let web = new Web(siteUrls);
             await web.lists
                 .getById(Items.Items.listId)
                 .items.getById(Items.Items.Id)
-                .update({ WorkingAction: WorkingAction?.length > 0 ? JSON.stringify(WorkingAction) : null })
+                .update({ WorkingAction: DataForUpdate?.length > 0 ? JSON.stringify(DataForUpdate) : null })
         } catch (error) {
             console.log("Error", error.message)
         }
     }
-
-
 
     // this is used for bottleneck and Attehntion category task functionality
 
