@@ -72,7 +72,7 @@ function DataCleancupTool(SelectedProp: any) {
         var count = 0;
         await Promise.all(siteConfig.map(async (item: Item) => {
             try {
-                let web = new Web('https://hhhhteams.sharepoint.com' + item.SiteUrl);
+                let web = new Web(SelectedProp?.SelectedProp?.Context._pageContext._web.absoluteUrl.split('/sites/')[0] + '/' + item.SiteUrl);
 
                 const items = await web.lists.getById(item.List_x0020_Id).items.select(item.Query).getAll();
                 items?.map((ListItem: any) => {
@@ -93,8 +93,9 @@ function DataCleancupTool(SelectedProp: any) {
             console.log(AllDataItems)
 
         AllDataItems?.map((Item: any) => { 
-    
-        if(Item.DoNotAllow==false) { 
+           if(Item.DoNotAllow==null || Item.DoNotAllow==undefined)
+               Item.DoNotAllow=false;
+           if(Item.DoNotAllow==false) { 
             Item.CreatedDate = moment(Item?.Created).format('DD/MM/YYYY');      
             Item.ModifiedDate = moment(Item?.Modified).format('DD/MM/YYYY HH:mm')
             if (Item?.Created != null && Item?.Created != undefined)
@@ -148,14 +149,7 @@ function DataCleancupTool(SelectedProp: any) {
                             ItemUser.authorSuffix = "JT";
                             ItemUser.authorName = "Jayom Thakur";
                             ItemUser.authorId =38;
-                            } 
-                            else if(ItemUser.Author?.Id == 53){
-                        
-                                ItemUser.authorImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
-                                ItemUser.authorSuffix = "Hochhuth Consulting (Support)";
-                                ItemUser.authorName = "Hochhuth Consulting (Support)";
-                                ItemUser.authorId =53;
-                                }   
+                            }                             
                         else if(ItemUser.Author?.Id == 155){
                         
                             ItemUser.authorImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
@@ -202,13 +196,7 @@ function DataCleancupTool(SelectedProp: any) {
                                     ItemUser.editorName = "Robin Singh";
                                     ItemUser.editorId =170;
                                     }
-                                    else if(ItemUser.Editor?.Id == 53){
-                        
-                                        ItemUser.editorImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
-                                        ItemUser.editorSuffix = "Hochhuth Consulting (Support)";
-                                        ItemUser.editorName = "Hochhuth Consulting (Support)";
-                                        ItemUser.editorId =53;
-                                        }
+                                   
                                     else if(ItemUser.Editor?.Id == 38){
                         
                                         ItemUser.editorImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
@@ -450,7 +438,7 @@ const SaveItem = async (SelectedItem: any) => {
                 <div className="TableContentSection">
                     <div className='Alltable mt-2 mb-2'>
                         <div className='col-md-12 p-0 '>
-                            <GlobalCommanTable columns={columns} multiSelect={true} data={data} showHeader={true} callBackData={callBackData} expandIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} ref={deleteRef} customHeaderButtonAvailable={true}
+                            <GlobalCommanTable columns={columns} multiSelect={true} AllListId={SelectedProp?.SelectedProp} data={data} showHeader={true} callBackData={callBackData} expandIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} ref={deleteRef} customHeaderButtonAvailable={true}
                             customTableHeaderButtons={customTableHeaderButtons}/>
                             
                         </div>

@@ -426,19 +426,42 @@
         }
       ]
     },
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<<<< Temporary merge branch 1
+=======
+>>>>>>> fe343ff75c7294920034f06b4d99c5066d428a37
+=======
+>>>>>>> d9d6449292a979b9f4827744c92b08eaae4435de
     "smart-dynamic-table-web-part": {
       "components": [
         {
           "entrypoint": "./lib/webparts/smartDynamicTable/SmartDynamicTableWebPart.js",
           "manifest": "./src/webparts/smartDynamicTable/SmartDynamicTableWebPart.manifest.json"
+<<<<<<< HEAD
+<<<<<<< HEAD
+=========
+=======
         }
       ]
     },
+>>>>>>> fe343ff75c7294920034f06b4d99c5066d428a37
+=======
+        }
+      ]
+    },
+>>>>>>> d9d6449292a979b9f4827744c92b08eaae4435de
     "root-team-portfolio-table-web-part": {
       "components": [
         {
           "entrypoint": "./lib/webparts/rootTeamPortfolioTable/RootTeamPortfolioTableWebPart.js",
           "manifest": "./src/webparts/rootTeamPortfolioTable/RootTeamPortfolioTableWebPart.manifest.json"
+<<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>>>> Temporary merge branch 2
+=======
+>>>>>>> fe343ff75c7294920034f06b4d99c5066d428a37
+=======
         }
       ]
     },
@@ -455,6 +478,7 @@
         {
           "entrypoint": "./lib/webparts/employeeDashboardTemplated/EmployeeDashboardTemplatedWebPart.js",
           "manifest": "./src/webparts/employeeDashboardTemplated/EmployeeDashboardTemplatedWebPart.manifest.json"
+>>>>>>> d9d6449292a979b9f4827744c92b08eaae4435de
         }
       ]
     }
