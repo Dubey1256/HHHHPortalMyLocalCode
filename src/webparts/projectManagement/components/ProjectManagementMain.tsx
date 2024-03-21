@@ -1549,7 +1549,7 @@ const ProjectManagementMain = (props: any) => {
               <>
                 <span
                   onClick={(e) => EditDataTimeEntry(e, row.original)}
-                  className="svg__iconbox svg__icon--clock"
+                  className=" alignIcon svg__iconbox svg__icon--clock"
                   title="Click To Edit Timesheet"
                 ></span>
                 <span
