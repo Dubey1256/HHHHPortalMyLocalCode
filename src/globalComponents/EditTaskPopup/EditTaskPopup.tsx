@@ -2161,6 +2161,14 @@ const EditTaskPopup = (Items: any) => {
                         }
                     });
                 }
+                if (StatusInput == 8) {
+                    let CheckForTaskCategories: any = EditDataBackup.TaskCategories?.some((category: any) => category.Title === "Development" || category.Title === "Improvement")
+                    if (CheckForTaskCategories) {
+                        let AuthorId: any = EditDataBackup?.Author?.Id;
+                        setWorkingMember(AuthorId);
+                        setSendMsgToAuthor(true);
+                    }
+                }
                 if (StatusInput == 10) {
                     EditData.CompletedDate = undefined;
                     if (EditData.StartDate == undefined) {
@@ -2308,8 +2316,6 @@ const EditTaskPopup = (Items: any) => {
                     EditData.TeamMembers?.length > 0
                 ) {
                     setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
-                } else if (EditData.ResponsibleTeam?.length > 0) {
-                    setWorkingMemberFromTeam(EditData.ResponsibleTeam, "Development", 0);
                 } else {
                     setWorkingMember(0);
                 }
@@ -2629,6 +2635,7 @@ const EditTaskPopup = (Items: any) => {
                                 };
 
                                 if (SendMsgToAuthor) {
+                                    
                                     taskUsers?.forEach((allUserItem: any) => {
                                         if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                             addEmailAndUserName(allUserItem);
@@ -2647,8 +2654,6 @@ const EditTaskPopup = (Items: any) => {
                                         });
                                     });
                                 }
-
-
                                 let CommonMsg = '';
                                 let checkStatusUpdate = Number(taskPercentageValue) * 100;
                                 if (SendMsgToAuthor) {
@@ -6420,7 +6425,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                         title={ProjectData.Title}
                                                                                         data-interception="off"
                                                                                         className="textDotted hreflink"
-                                                                                        href={`${siteUrls}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                        href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
                                                                                     >
                                                                                         {ProjectData.Title}
                                                                                     </a>
@@ -8746,7 +8751,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                     target="_blank"
                                                                                                     title={ProjectData.Title}
                                                                                                     data-interception="off"
-                                                                                                    href={`${siteUrls}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                                    href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
                                                                                                 >
                                                                                                     {ProjectData.Title}
                                                                                                 </a>
