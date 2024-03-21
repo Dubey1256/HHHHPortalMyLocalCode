@@ -85,6 +85,8 @@ export interface ICategoriesWeeklyMultipleReportState {
   scrollPosition: any;
   selectedAllData: any,
   loadbarchart: boolean,
+  IsOpenbulkUpdate: boolean,
+  bulkupdatetext: any,
 }
 
 export default class CategoriesWeeklyMultipleReport extends React.Component<ICategoriesWeeklyMultipleReportProps, ICategoriesWeeklyMultipleReportState> {
@@ -153,6 +155,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       scrollPosition: 0,
       selectedAllData: [],
       loadbarchart: false,
+      IsOpenbulkUpdate: false,
+      bulkupdatetext: 0,
     }
     //this.GetResult();   
     this.columns = [
@@ -180,7 +184,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       {
         accessorKey: "",
         placeholder: "",
-        hasCheckbox: false,
+        hasCheckbox: true,
         hasCustomExpanded: true,
         hasExpanded: true,
         size: 25,
@@ -536,7 +540,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.callBackData = this.callBackData.bind(this);
     this.callBackDatapoup = this.callBackDatapoup.bind(this);
     this.showGraph = this.showGraph.bind(this);
-    this.customTableHeaderButtons;
+    this.ClickBulkUpdate = this.ClickBulkUpdate.bind(this);
+    this.OpenPopupQuick =this.OpenPopupQuick.bind(this);
+    // this.customTableHeaderButtons;
 
   }
   rerender = () => {
@@ -576,8 +582,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
   }
   private OpenPopupQuick = function (e: any, item: any) {
-    this.setState({ QuickEditItem: JSON.stringify(item) })
-    this.setState({ IsRoundUpValues: true, bindrowValue: item, scrollPosition: window.pageYOffset })
+    this.setState({ QuickEditItem: item })
+    // this.setState({ IsRoundUpValues: true, bindrowValue: item, scrollPosition: window.pageYOffset })
+    this.setState({ IsRoundUpValues: true, bindrowValue: item})
     // this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
   }
   private cancelIsRoundUpValues = (type: any) => {
@@ -587,9 +594,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     });
     // this.setState({ IsRoundUpValues: false });
   }
+  private IsCancelbulkUpdate = (type: any) => {
+    this.setState({ IsOpenbulkUpdate: false });
+  }
   private saveIsRoundUpValues = (type: any) => {
 
-    let QuickEditItem = JSON.parse(this?.state?.QuickEditItem);
+    let QuickEditItem = (this?.state?.QuickEditItem);
     this?.state?.AllTimeEntry?.forEach((pare: any) => {
       if (pare.getUserName === this.state.bindrowValue?.getParentRows()[0]?.original?.getUserName) {
         pare?.subRows?.forEach((child: any, indexitem: any) => {
@@ -634,7 +644,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
 
   }
-
+ 
   private hideItems = function (e: any, item: any) {
     let falg: any = false;
     let QuickEditItem = JSON.parse(this?.state?.QuickEditItem);
@@ -2167,21 +2177,21 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                 // if (Rountfiguretime < 25) {
                 //   child.Rountfiguretime = parseInt(RoundAdvalue);
                 // }
-               else if (Rountfiguretime < 50)
+                else if (Rountfiguretime < 50)
                   child.Rountfiguretime = parseInt(RoundAdvalue) + 0.5
 
-               else if (Rountfiguretime > 50)
+                else if (Rountfiguretime > 50)
                   child.Rountfiguretime = parseInt(RoundAdvalue) + 1;
               }
               if (child.SmartHoursTime != undefined && child.SmartHoursTime.toString().indexOf('.') > -1) {
                 let Rountfiguretime = child.SmartHoursTime.toString().split('.')[1];
-                   Rountfiguretime = Rountfiguretime.slice(0, 2);
+                Rountfiguretime = Rountfiguretime.slice(0, 2);
                 let Rountfiguretime1 = child.SmartHoursTime.toString().split('.')[0];
-                if (Rountfiguretime ==="00" || Rountfiguretime ==="50")
+                if (Rountfiguretime === "00" || Rountfiguretime === "50")
                   child.SmartHoursTime = parseFloat(child.SmartHoursTime);
-               else if ( Rountfiguretime < 50)
+                else if (Rountfiguretime < 50)
                   child.SmartHoursTime = parseInt(Rountfiguretime1) + 0.5;
-               else if (Rountfiguretime > 50)
+                else if (Rountfiguretime > 50)
                   child.SmartHoursTime = parseInt(Rountfiguretime1) + 1;
               }
               if (child.TotalSmartTime != 0 && child.TotalSmartTime != undefined) {
@@ -3839,6 +3849,15 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         <Tooltip ComponentId={2170} /></>
     );
   };
+  private onRenderCustomHeaderBulkUpdate = () => {
+    return (
+      <>
+        <div className="subheading siteColor">
+          Bulk update Adjusted hours (Roundup)
+        </div>
+        <Tooltip ComponentId={2170} /></>
+    );
+  };
   private onRenderCustomHeaderMains = () => {
     return (
       <>
@@ -3864,7 +3883,11 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       IsOpenTimeSheetPopup: true
     })
   }
-
+  private ClickBulkUpdate = (tileName: any) => {
+    this.setState({
+      IsOpenbulkUpdate: true
+    })
+  }
   private CallBack = () => {
     //setIsOpenTimeSheetPopup(false)
     this.setState({
@@ -3885,57 +3908,81 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       }
     }));
   }
-  // customTableHeaderButtons=() => {
-  //   const  portfolioColor :any = this.props; // Assuming portfolioColor comes from props
-  //   // Now `this` correctly refers to the component instance
-  //   return (
-  //     <>
-  //       <a className='barChart' title='Open Bar Graph' onClick={(e) => this.showGraph(e)}><BsBarChartLine /></a>
-  //       {this.state?.selectedAllData?.length > 0 ? (
-  //         <button type="button" className="btn btn-primary" title='Compare' 
-  //                 style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }}>
-  //           Multi Update
-  //         </button>
-  //       ) : (
-  //         <>
-
-  //           <button type="button" className="btn btn-primary" 
-  //                   style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} 
-  //                   disabled={true}>
-  //             Multi Update
-  //           </button>
-  //         </>
-  //       )}
-  //     </>
-  //   );
+ 
+  // private bulkUpdateWeeklyReport = () => {
+  //   this.state?.selectedAllData?.forEach((obj: any) => {
+  //     console.log(obj);
+  //   })
+  //   this.setState({
+  //     IsOpenbulkUpdate: true
+  //   })
   // }
-  customTableHeaderButtons = (
-    <>
-      <a className='barChart' title='Open Bar Graph' onClick={(e) => this.showGraph(e)}><BsBarChartLine /></a>
-      {/* {this.state?.selectedAllData?.length > 0 ? (
-        
-      ) : (
-        <>
-          <a className='barChart' title='Open Bar Graph' onClick={(e) => this.showGraph(e)}><BsBarChartLine /></a>
-          <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true}>Multi Update</button>
-        </>)} */}
-    </>
-  );
-  private bulkUpdateWeeklyReport = () => {
+  private saveBulkupdateData = (type: any) => {
+
+   // let QuickEditItem = JSON.parse(this?.state?.QuickEditItem);
+    this?.state?.selectedAllData?.forEach((QuickEditItem:any) =>{
+    this?.state?.AllTimeEntry?.forEach((pare: any ) => {
+      if (pare.getUserName === QuickEditItem?.getParentRows()[0]?.original?.getUserName) {
+        pare?.subRows?.forEach((child: any, indexitem: any) => {
+          if (QuickEditItem?.index === indexitem) {
+            child.Rountfiguretime = child.Rountfiguretime + this?.state?.bulkupdatetext;
+            child.IsColor = true;
+            console.log(child.Rountfiguretime);
+            pare.RoundAdjustedTime = ((parseFloat(pare?.RoundAdjustedTime || 0) + parseFloat(this?.state?.bulkupdatetext || 0)))
+            this.RoundAdjustedTimeTimeEntry = (parseFloat(this.RoundAdjustedTimeTimeEntry || 0) + parseFloat(this?.state?.bulkupdatetext || 0))
+            this.RoundAdjustedTimeTimeEntry = this.RoundAdjustedTimeTimeEntry.toFixed(2);
+
+          }
+        })
+      }
+
+    })
+    })
+    this.setState({
+      showDateTime: (
+        <span className='alignCenter'>
+          <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({(this?.TotalTimeEntry / 8).toFixed(2)} days)</label>
+          <label className="mx-1">|</label>
+          <label>
+            <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({(this?.SmartTotalTimeEntry / 8).toFixed(2)} days)</div>
+            <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({(this?.RoundSmartTotalTimeEntry / 8).toFixed(2)} days)</div>
+          </label>
+          <label className="mx-1">|</label>
+          <label>
+            <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
+            <div className={'text-danger  boldClable'}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
+          </label>
+        </span>
+      ),
+    });
+    this.setState({ IsOpenbulkUpdate: false ,bulkupdatetext:0});
+    this.setState({ isFocused: true });
+    this.renderData = [];
+    this.renderData = this.renderData.concat(this.state.showDateTime)
+    this.refreshData();
+    window.scrollTo(0, this.state.scrollPosition || 0);
+
 
   }
   public render(): React.ReactElement<ICategoriesWeeklyMultipleReportProps> {
-    const { AllTimeEntry } = this?.state;
-
-    SPComponentLoader.loadCss("https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
-
-    const {
-      description,
-      isDarkTheme,
-      environmentMessage,
-      hasTeamsContext,
-      userDisplayName
-    } = this.props;
+   const customTableHeaderButtons = (
+      <>
+        <a className='barChart' title='Open Bar Graph' onClick={(e) => this.showGraph(e)}><BsBarChartLine /></a>
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={(e) => this.ClickBulkUpdate(e)}
+          style={{
+            backgroundColor: `${portfolioColor}`,
+            borderColor: `${portfolioColor}`,
+            color: '#fff'
+          }}
+          disabled={!(this.state?.selectedAllData && this.state?.selectedAllData?.length > 0)} // Conditional disable
+        >
+          Bulk Update
+        </button>
+      </>
+    );
     console.log('Checked === ', this.state.checked);
     return (
       <div>
@@ -4217,7 +4264,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                     {this.state.AllTimeEntry != undefined && this.state.AllTimeEntry.length > 0 &&
                       <div id="contact" className="col-sm-12 p-0">
                         <div className='table-responsive fortablee'>
-                          <GlobalCommanTable bulkUpdateWeeklyReport={this.bulkUpdateWeeklyReport} customHeaderButtonAvailable={true} ref={this.childRef} customTableHeaderButtons={this.customTableHeaderButtons} showCatIcon={true} catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this?.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
+                          {/* <GlobalCommanTable bulkUpdateWeeklyReport={this.bulkUpdateWeeklyReport} customHeaderButtonAvailable={true} ref={this.childRef} customTableHeaderButtons={this.customTableHeaderButtons} showCatIcon={true} catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this?.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div> */}
+                          <GlobalCommanTable customHeaderButtonAvailable={true}  ref={this.childRef} customTableHeaderButtons={customTableHeaderButtons} showCatIcon={true} catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this?.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
                       </div>
                     }
                   </div>
@@ -4356,7 +4404,38 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           </div>
 
         </Panel>
+        <Panel onRenderHeader={this.onRenderCustomHeaderBulkUpdate}
+          type={PanelType.custom}
+          customWidth="500px"
+          isOpen={this.state?.IsOpenbulkUpdate}
+          onDismiss={this.IsCancelbulkUpdate}
+          isBlocking={false}
+        >
 
+          <div className="modal-body  clearfix">
+            <div className="">
+              <div className="row" >
+
+                <div className="col-sm-6">
+                  <div className='input-group' key={this?.state?.bulkupdatetext}>
+                    <input type="text" defaultValue={this?.state?.bulkupdatetext ==="" ? 0 :this?.state?.bulkupdatetext}
+                      placeholder="Adjusted Hours (Roundup)" className="form-control" autoComplete="off"></input>
+                  </div>
+                </div>
+                <div className="col-sm-3">
+                  <div className='mt--5'><i onClick={(e) => this.setState({ bulkupdatetext: this?.state?.bulkupdatetext + .5 })} className="fa fa-plus"></i></div>
+                  <div><i onClick={(e) => this.setState({ bulkupdatetext: (this?.state?.bulkupdatetext < .5 ? 0 : (this?.state?.bulkupdatetext - .5)) })} className="fa fa-minus"></i></div>
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-primary mx-1" onClick={this.saveBulkupdateData}>Update</button>
+              <button type="button" className="btn btn-default" onClick={this.IsCancelbulkUpdate}>Cancel</button>
+            </div>
+
+          </div>
+
+        </Panel>
         {
           this.state.PresetPopup &&
           (<PreSetDatePikerPannel isOpen={this.state.PresetPopup} PreSetPikerCallBack={this.PreSetPikerCallBack} portfolioColor={portfolioColor} ></PreSetDatePikerPannel>)
