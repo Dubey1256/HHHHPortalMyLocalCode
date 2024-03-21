@@ -5,7 +5,6 @@ import * as Moment from "moment";
 import { Web, sp } from "sp-pnp-js";
 import Picker from "./SmartMetaDataPicker";
 import Example from "./FroalaCommnetBoxes";
-import ReactDOM from "react-dom";
 import * as globalCommon from "../globalCommon";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -21,7 +20,7 @@ import {
 
 import { FaExpandAlt } from "react-icons/fa";
 import { RiDeleteBin6Line, RiH6 } from "react-icons/ri";
-import { SlArrowDown, SlArrowRight } from "react-icons/sl";
+import { SlArrowDown, SlArrowRight, SlUserUnfollow } from "react-icons/sl";
 import { TbReplace } from "react-icons/tb";
 import NewTameSheetComponent from "./NewTimeSheet";
 import CommentBoxComponent from "./CommentBoxComponent";
@@ -166,7 +165,11 @@ const EditTaskPopup = (Items: any) => {
     const [ProjectSearchKey, setProjectSearchKey] = useState("");
     const [ApproverPopupStatus, setApproverPopupStatus] = useState(false);
     const [ApproverSearchKey, setApproverSearchKey] = useState("");
+    const [BottleneckSearchKey, setBottleneckSearchKey] = useState("");
+    const [AttentionSearchKey, setAttentionSearchKey] = useState("");
     const [ApproverSearchedData, setApproverSearchedData] = useState([]);
+    const [BottleneckSearchedData, setBottleneckSearchedData] = useState([]);
+    const [AttentionSearchedData, setAttentionSearchedData] = useState([]);
     const [ApproverSearchedDataForPopup, setApproverSearchedDataForPopup] =
         useState([]);
     const [sendEmailStatus, setSendEmailStatus] = useState(false);
@@ -208,8 +211,10 @@ const EditTaskPopup = (Items: any) => {
     const [SendMsgToAuthor, setSendMsgToAuthor] = useState(false);
     const [SendDesignEmailStatus, setSendDesignEmailStatus] = useState(false);
     const [CurrentImageIndex, setCurrentImageIndex] = useState("");
-    const [loaded, setLoaded] = React.useState(true);
-    const [IsImageUploaded, setIsImageUploaded] = React.useState(true);
+    const [loaded, setLoaded] = useState(true);
+    const [IsImageUploaded, setIsImageUploaded] = useState(true);
+    const [WorkingAction, setWorkingAction] = useState([]);
+    const [AddDescriptionModelName, setAddDescriptionModelName] = useState("");
 
     let [StatusOptions, setStatusOptions] = useState([
         { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
@@ -865,7 +870,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items.select(
-                        "Id,Title,PriorityRank,Comments,workingThisWeek,Approvee/Id,Approvee/Title,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,Sitestagging,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,Portfolio/PortfolioStructureID,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title, ParentTask/TaskID,ParentTask/Id,TaskID"
+                        "Id,Title,PriorityRank,Comments,workingThisWeek,WorkingAction,Approvee/Id,Approvee/Title,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,Sitestagging,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,Portfolio/PortfolioStructureID,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title, ParentTask/TaskID,ParentTask/Id,TaskID"
                     )
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
@@ -877,7 +882,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items.select(
-                        "Id,Title,PriorityRank,Comments,workingThisWeek,Approvee/Id,Approvee/Title,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,Sitestagging,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,Portfolio/PortfolioStructureID,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title, ParentTask/TaskID,ParentTask/Id,TaskID"
+                        "Id,Title,PriorityRank,Comments,workingThisWeek,WorkingAction,Approvee/Id,Approvee/Title,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,Sitestagging,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,RelevantPortfolio/Title,RelevantPortfolio/Id,Portfolio/Title,Portfolio/Id,Portfolio/PortfolioStructureID,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title, ParentTask/TaskID,ParentTask/Id,TaskID"
                     )
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
@@ -889,6 +894,10 @@ const EditTaskPopup = (Items: any) => {
             let statusValue: any;
             smartMeta?.map((item: any) => {
                 let saveImage = [];
+                if (item?.WorkingAction?.length > 0) {
+                    let WorkingActionData: any = JSON.parse(item.WorkingAction);
+                    setWorkingAction(WorkingActionData);
+                }
                 if (item.Categories != null) {
                     setCategoriesData(item.Categories);
                 }
@@ -993,6 +1002,8 @@ const EditTaskPopup = (Items: any) => {
                     }
                 }
                 item.TaskId = globalCommon.GetTaskId(item);
+                item.TaskID = globalCommon.GetTaskId(item);
+
                 item.siteUrl = siteUrls;
                 item.siteType = Items?.Items?.siteType;
                 item.SiteIcon = Items?.Items?.SiteIcon;
@@ -1895,7 +1906,11 @@ const EditTaskPopup = (Items: any) => {
                 let temp: any = [];
                 temp.push(user);
                 setCurrentUserData(temp);
-                currentUserBackupArray.push(user);
+                user.UserImage =
+                    user.Item_x0020_Cover?.Url?.length > 0
+                        ? user.Item_x0020_Cover?.Url
+                        : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                    currentUserBackupArray.push(user);
                 if (user.UserGroupId == 7) {
                     setIsUserFromHHHHTeam(true);
                 }
@@ -2146,6 +2161,14 @@ const EditTaskPopup = (Items: any) => {
                         }
                     });
                 }
+                if (StatusInput == 8) {
+                    let CheckForTaskCategories: any = EditDataBackup.TaskCategories?.some((category: any) => category.Title === "Development" || category.Title === "Improvement")
+                    if (CheckForTaskCategories) {
+                        let AuthorId: any = EditDataBackup?.Author?.Id;
+                        setWorkingMember(AuthorId);
+                        setSendMsgToAuthor(true);
+                    }
+                }
                 if (StatusInput == 10) {
                     EditData.CompletedDate = undefined;
                     if (EditData.StartDate == undefined) {
@@ -2293,8 +2316,6 @@ const EditTaskPopup = (Items: any) => {
                     EditData.TeamMembers?.length > 0
                 ) {
                     setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
-                } else if (EditData.ResponsibleTeam?.length > 0) {
-                    setWorkingMemberFromTeam(EditData.ResponsibleTeam, "Development", 0);
                 } else {
                     setWorkingMember(0);
                 }
@@ -2526,7 +2547,7 @@ const EditTaskPopup = (Items: any) => {
                             TaskDetailsFromCall = await web.lists
                                 .getById(Items.Items.listId)
                                 .items.select(
-                                    "Id,Title,PriorityRank,Comments,workingThisWeek,Project/Id,Project/Title,Project/PriorityRank,Approvee/Id,Approvee/Title,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,Sitestagging,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,Portfolio/Title,Portfolio/Id,Portfolio/PortfolioStructureID,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title, ParentTask/TaskID,ParentTask/Id,TaskID"
+                                    "Id,Title,PriorityRank,Comments,workingThisWeek,WorkingAction,Project/Id,Project/Title,Project/PriorityRank,Approvee/Id,Approvee/Title,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,Sitestagging,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,Portfolio/Title,Portfolio/Id,Portfolio/PortfolioStructureID,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title, ParentTask/TaskID,ParentTask/Id,TaskID"
                                 )
                                 .top(5000)
                                 .filter(`Id eq ${Items.Items.Id}`)
@@ -2538,7 +2559,7 @@ const EditTaskPopup = (Items: any) => {
                             TaskDetailsFromCall = await web.lists
                                 .getById(Items.Items.listName)
                                 .items.select(
-                                    "Id,Title,PriorityRank,Comments,Project/Id,Project/Title,Project/PriorityRank,workingThisWeek,Approvee/Id,Approvee/Title,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,Sitestagging,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,Portfolio/Title,Portfolio/Id,Portfolio/PortfolioStructureID,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title, ParentTask/TaskID,ParentTask/Id,TaskID"
+                                    "Id,Title,PriorityRank,Comments,Project/Id,WorkingAction,Project/Title,Project/PriorityRank,workingThisWeek,Approvee/Id,Approvee/Title,EstimatedTime,EstimatedTimeDescription,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,Sitestagging,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,ComponentLink,Portfolio/Title,Portfolio/Id,Portfolio/PortfolioStructureID,PercentComplete,Categories,TaskLevel,TaskLevel,ClientActivity,ClientActivityJson,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title, ParentTask/TaskID,ParentTask/Id,TaskID"
                                 )
                                 .top(5000)
                                 .filter(`Id eq ${Items.Items.Id}`)
@@ -2551,6 +2572,10 @@ const EditTaskPopup = (Items: any) => {
                         TaskDetailsFromCall[0].TaskId = globalCommon.GetTaskId(
                             TaskDetailsFromCall[0]
                         );
+                        TaskDetailsFromCall[0].TaskID = globalCommon.GetTaskId(
+                            TaskDetailsFromCall[0]
+                        );
+
                         if (
                             TaskDetailsFromCall != undefined &&
                             TaskDetailsFromCall.length > 0
@@ -2569,18 +2594,28 @@ const EditTaskPopup = (Items: any) => {
                         let UpdatedDataObject: any = TaskDetailsFromCall[0]
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
                         UpdatedDataObject.SmartPriority = NewSmartPriority;
-                        UpdatedDataObject.siteType = EditData.siteType;
-                        let CommentArrayData: any = UpdatedDataObject?.Comments?.length > 5 ? JSON.parse(UpdatedDataObject?.Comments) : '';
-                        UpdatedDataObject.CommentsArray = [];
-                        let ReasonStatement: string;
-                        if (CommentArrayData?.length > 0) {
-                            CommentArrayData?.map((CommentData: any) => {
-                                if (CommentData?.CommentFor?.length > 3) {
-                                    ReasonStatement = CommentData?.Description;
-                                } else {
-                                    UpdatedDataObject.CommentsArray?.push(CommentData);
+                        UpdatedDataObject.siteUrl = siteUrls;
+                        let WorkingAction = UpdatedDataObject?.WorkingAction?.length > 0 ? JSON.parse(UpdatedDataObject?.WorkingAction) : [];
+                        WorkingAction?.map((ItemData: any) => {
+                            ItemData.InformationData?.map((InfoItem: any) => {
+                                if (InfoItem.NotificationSend == false) {
+                                    InfoItem.NotificationSend = true;
+                                    let DataForNotification: any = {
+                                        ReceiverName: InfoItem.TaggedUsers?.Title,
+                                        sendUserEmail: [InfoItem.TaggedUsers?.Email],
+                                        Context: Items.context,
+                                        ActionType: ItemData.Title,
+                                        ReasonStatement: InfoItem.Comment,
+                                        UpdatedDataObject: UpdatedDataObject
+                                    }
+                                    GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                        console.log("Ms Teams Notifications send")
+                                    })
                                 }
                             })
+                        })
+                        if (WorkingAction?.length > 0) {
+                            UpdateWorkinActionJSON();
                         }
                         const uniqueIds: any = {};
                         const result = tempShareWebTypeData.filter((item: any) => {
@@ -2591,63 +2626,6 @@ const EditTaskPopup = (Items: any) => {
                             return false;
                         });
                         const TaskCategories = result.map((item: any) => item.Title).join(', ');
-                        // This is used for Bottleneck and Attention task category Teams Notification 
-                        let GetPreparedHTML: any = GlobalFunctionForUpdateItems.GenerateMSTeamsNotification(UpdatedDataObject);
-                        const containerDiv = document.createElement('div');
-                        const reactElement = React.createElement(GetPreparedHTML?.type, GetPreparedHTML?.props);
-                        ReactDOM.render(reactElement, containerDiv);
-                        let finalTaskInfo: any = containerDiv.innerHTML
-                        if (IsSendAttentionMsgStatus) {
-                            let sendUserEmail: any = [];
-                            let RecieverName: string = '';
-                            TaskAssignedTo?.map((userDtl: any) => {
-                                taskUsers?.map((allUserItem: any) => {
-                                    if (userDtl.Id == allUserItem.AssingedToUserId) {
-                                        sendUserEmail.push(allUserItem.Email);
-                                        if (RecieverName?.length > 3) {
-                                            RecieverName = "Team"
-                                        } else {
-                                            RecieverName = allUserItem.Title;
-                                        }
-                                    }
-                                });
-                            });
-                            let txtComment = `<b>Hi ${RecieverName},</b> 
-                            <p></p>
-                            You have been tagged as <b> ${SendCategoryName == "Bottleneck" ? SendCategoryName : "Attention"}</b> in the below task.`;
-                            let TeamMsg = `${txtComment} 
-                            <p>
-                            <br/>
-                            <b>Reason : </b> <span>${ReasonStatement}</span>
-                            <p></p>
-                            <b>Task Details : </b> <span>${finalTaskInfo}</span>
-                            </br>
-                            <p>
-                            Task Link:  
-                            <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
-                             Click-Here
-                            </a>
-                            <p></p>
-                            <b>
-                            Thanks, </br>
-                            Task Management Team
-                            </b>`;
-                            if (SendCategoryName == "Bottleneck") {
-                                if (sendUserEmail?.length > 0) {
-                                    globalCommon.SendTeamMessage(
-                                        sendUserEmail,
-                                        TeamMsg,
-                                        Items.context
-                                    );
-                                }
-                            } else {
-                                globalCommon.SendTeamMessage(
-                                    userSendAttentionEmails,
-                                    TeamMsg,
-                                    Items.context
-                                );
-                            }
-                        }
                         // This is used for send MS Teams Notification 
                         if (!IsUserFromHHHHTeam && SendCategoryName !== "Bottleneck") {
                             try {
@@ -2661,6 +2639,7 @@ const EditTaskPopup = (Items: any) => {
                                 };
 
                                 if (SendMsgToAuthor) {
+
                                     taskUsers?.forEach((allUserItem: any) => {
                                         if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                             addEmailAndUserName(allUserItem);
@@ -2679,8 +2658,6 @@ const EditTaskPopup = (Items: any) => {
                                         });
                                     });
                                 }
-
-
                                 let CommonMsg = '';
                                 let checkStatusUpdate = Number(taskPercentageValue) * 100;
                                 if (SendMsgToAuthor) {
@@ -3255,6 +3232,7 @@ const EditTaskPopup = (Items: any) => {
             EstimatedTimeDescription: EditData.EstimatedTimeDescriptionArray
                 ? JSON.stringify(EditData.EstimatedTimeDescriptionArray)
                 : null,
+            WorkingAction: WorkingAction?.length > 0 ? JSON.stringify(WorkingAction) : null
         };
         return UpdateDataObject;
     };
@@ -4007,12 +3985,9 @@ const EditTaskPopup = (Items: any) => {
     const MouseHoverImageFunction = (e: any, HoverImageData: any) => {
         e.preventDefault();
         setHoverImageModal("Block");
-        // let tempArray:any =[];
-        // tempArray.push(HoverImageData)
         setHoverImageData([HoverImageData]);
     };
 
-    //  This is used for closing the Image Hover Model 
 
     const MouseOutImageFunction = (e: any) => {
         e.preventDefault();
@@ -4057,76 +4032,7 @@ const EditTaskPopup = (Items: any) => {
         setImageCustomizePopup(false);
         setModalIsOpen(true);
         UpdateTaskInfoFunction("Image-Tab");
-        // GetExtraLookupColumnData();
-        // if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
-        //     if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
-        //         let message = JSON.parse(EditData.FeedBack);
-        //         let feedbackArray: any = [];
-        //         if (message != null) {
-        //             feedbackArray = message[0]?.FeedBackDescriptions
-        //         }
-        //         let tempArray: any = [];
-        //         if (feedbackArray[0] != undefined) {
-        //             tempArray.push(feedbackArray[0])
-        //         } else {
-        //             let tempObject: any =
-        //             {
-        //                 "Title": '<p> </p>',
-        //                 "Completed": false,
-        //                 "isAddComment": false,
-        //                 "isShowComment": false,
-        //                 "isPageType": '',
-        //             }
-        //             tempArray.push(tempObject);
-        //         }
-
-        //         CommentBoxData = tempArray;
-        //         let result: any = [];
-        //         if (SubCommentBoxData == "delete") {
-        //             result = tempArray
-        //         } else {
-        //             result = tempArray.concat(SubCommentBoxData);
-        //         }
-        //         updateFeedbackArray[0].FeedBackDescriptions = result;
-        //     }
-        //     if (CommentBoxData?.length > 0 && SubCommentBoxData?.length == 0) {
-        //         let result: any = [];
-        //         if (SubCommentBoxData == "delete") {
-        //             result = CommentBoxData;
-        //         } else {
-        //             let message = JSON.parse(EditData.FeedBack);
-        //             if (message != null) {
-        //                 let feedbackArray = message[0]?.FeedBackDescriptions;
-        //                 feedbackArray?.map((array: any, index: number) => {
-        //                     if (index > 0) {
-        //                         SubCommentBoxData.push(array);
-        //                     }
-        //                 })
-        //                 result = CommentBoxData.concat(SubCommentBoxData);
-        //             } else {
-        //                 result = CommentBoxData;
-        //             }
-        //         }
-        //         updateFeedbackArray[0].FeedBackDescriptions = result;
-        //     }
-        //     if (CommentBoxData?.length > 0 && SubCommentBoxData?.length > 0) {
-        //         let result: any = [];
-        //         if (SubCommentBoxData == "delete") {
-        //             result = CommentBoxData
-        //         } else {
-        //             result = CommentBoxData.concat(SubCommentBoxData)
-        //         }
-        //         updateFeedbackArray[0].FeedBackDescriptions = result;
-        //     }
-        // } else {
-        //     updateFeedbackArray = JSON.parse(EditData.FeedBack);
-        // }
-        // let AllEditData: any = updateFeedbackArray[0].FeedBackDescriptions
-        // AllEditData.FeedBackArray = updateFeedbackArray;
         FeedBackCount++;
-        // console.log(updateFeedbackArray)
-        // setEditData((prev: any) => ({ ...prev, FeedBackArray: AllEditData }))
-        // console.log(EditData)
     };
 
     const CommonClosePopupFunction = () => {
@@ -4173,17 +4079,18 @@ const EditTaskPopup = (Items: any) => {
 
     // *************** this is used for adding description for images functions ******************
 
-    const openAddImageDescriptionFunction = (
-        Index: any,
-        Data: any,
-        type: any
-    ) => {
+    const openAddImageDescriptionFunction = (Index: any, Data: any, type: any) => {
         setAddImageDescriptions(true);
-        // setAddImageDescriptionsIndex(Index);
-        setAddImageDescriptionsDetails(
-            Data.Description != undefined ? Data.Description : ""
-        );
+        setAddDescriptionModelName(type);
         AddImageDescriptionsIndex = Index;
+        if (type == "Bottleneck" || type == "Attention") {
+            setAddImageDescriptionsDetails(Data.Comment != undefined ? Data.Comment : "")
+        }
+        if (type == "Image") {
+            setAddImageDescriptionsDetails(
+                Data.Description != undefined ? Data.Description : ""
+            );
+        }
     };
     const closeAddImageDescriptionFunction = () => {
         setAddImageDescriptions(false);
@@ -4191,13 +4098,33 @@ const EditTaskPopup = (Items: any) => {
         AddImageDescriptionsIndex = undefined;
     };
 
-    const UpdateImageDescription = (e: any) => {
-        TaskImages[AddImageDescriptionsIndex].Description = e.target.value;
+    const UpdateImageDescription = (e: any, UsedFor: string) => {
+        if (UsedFor == "Image") {
+            TaskImages[AddImageDescriptionsIndex].Description = e.target.value;
+        }
+        if (UsedFor == "Bottleneck" || UsedFor == "Attention") {
+            let copyWorkAction: any = [...WorkingAction];
+            if (copyWorkAction?.length > 0) {
+                copyWorkAction?.map((DataItem: any) => {
+                    if (DataItem.Title == UsedFor) {
+                        DataItem.InformationData?.map((InfoData: any, Index: number) => {
+                            if (Index == AddImageDescriptionsIndex) {
+                                InfoData.Comment = e.target.value;
+                            }
+                        })
+                    }
+                })
+            }
+            console.log("Comment Added in working aaray", copyWorkAction)
+            setWorkingAction([...copyWorkAction])
+        }
         setAddImageDescriptionsDetails(e.target.value);
     };
 
-    const SaveImageDescription = () => {
-        UpdateBasicImageInfoJSON(TaskImages, "Upload", 0);
+    const SaveImageDescription = (usedFor: string) => {
+        if (usedFor == "Image") {
+            UpdateBasicImageInfoJSON(TaskImages, "Upload", 0);
+        }
         closeAddImageDescriptionFunction();
     };
 
@@ -4252,14 +4179,7 @@ const EditTaskPopup = (Items: any) => {
 
     const copyAndMoveTaskFunctionOnBackendSide = async (FunctionsType: any) => {
         loadTime();
-        //   var SiteId = "Task" + Items.Items.siteType;
-        //   let web = new Web(siteUrls);
-        //   const TimeEntry = await web.lists.getByTitle('TimesheetListNewId').items.select(`${SiteId}/Id`).expand(`${SiteId}`)
-        //   .filter(`${SiteId}/Id eq '${Items?.Items?.Id}'`)
-        //  .get();
-
         let SelectedSiteImage: any = '';
-
         let TaskDataJSON: any = await MakeUpdateDataJSON();
         if (SiteTypes != undefined && SiteTypes.length > 0) {
             SiteTypes.map((dataItem: any) => {
@@ -4269,10 +4189,8 @@ const EditTaskPopup = (Items: any) => {
                 }
             });
         }
-
         let TempSitesTaggingData: any = [];
         let TempCCDataIds: any = [];
-
         if (SelectedSite?.toLowerCase() !== "shareweb") {
             let TempObject: any = {
                 Title: SelectedSite,
@@ -4313,6 +4231,7 @@ const EditTaskPopup = (Items: any) => {
                         ? TempCCDataIds
                         : [],
             },
+            TaskTypeId: EditData.TaskType?.Id ? EditData.TaskType?.Id : null
         };
 
         TaskDataJSON = { ...TaskDataJSON, ...UpdatedJSON };
@@ -4397,7 +4316,6 @@ const EditTaskPopup = (Items: any) => {
         let tempArrayJsonData: any = [];
         let arrangedArray: any = []
         let currentUserDataObject: any;
-        // Iterate over attachment files sequentially
         for (let index = 0; index < response?.AttachmentFiles?.length; index++) {
             const value = response.AttachmentFiles[index];
             const sourceEndpoint = `${siteUrls}/_api/web/lists/getbytitle('${Items?.Items?.siteType}')/items(${Items?.Items?.Id})/AttachmentFiles/getByFileName('${value.FileName}')/$value`;
@@ -4623,21 +4541,21 @@ const EditTaskPopup = (Items: any) => {
         selectedData.Id = selectedData.AssingedToUserId;
         setApproverData([...ApproverData, selectedData]);
     };
-    // const removeApproverFunction = (Title: any, Id: any) => {
-    //     let tempArray: any = [];
-    //     if (ApproverBackupArray != null && ApproverBackupArray.length > 0) {
-    //         ApproverBackupArray?.map((item: any) => {
-    //             if (item.Id == Id) {
-    //                 tempArray.push(item);
-    //             }
-    //         })
-    //     }
-    //     setApproverData(tempArray);
-    // }
+
+
 
     const autoSuggestionsForApprover = (e: any, type: any) => {
         let searchedKey: any = e.target.value;
-        setApproverSearchKey(e.target.value);
+        if (type == "Bottleneck") {
+            setBottleneckSearchKey(e.target.value)
+        }
+        if (type == "Attention") {
+            setAttentionSearchKey(e.target.value)
+        }
+        if (type == "OnTaskPopup") {
+            setApproverSearchKey(e.target.value);
+        }
+        BottleneckSearchKey
         let tempArray: any = [];
         if (searchedKey?.length > 0) {
             AllEmployeeData?.map((itemData: any) => {
@@ -4653,48 +4571,110 @@ const EditTaskPopup = (Items: any) => {
                     });
                 }
             });
+
             if (type == "OnTaskPopup") {
                 setApproverSearchedData(tempArray);
-            } else {
+            }
+            if (type == "Bottleneck") {
+                setBottleneckSearchedData(tempArray);
+            }
+            if (type == "Attention") {
+                setAttentionSearchedData(tempArray);
+            }
+            if (type == "OnPanel") {
                 setApproverSearchedDataForPopup(tempArray);
             }
         } else {
             setApproverSearchedData([]);
+            setBottleneckSearchedData([]);
+            setAttentionSearchedData([]);
             setApproverSearchedDataForPopup([]);
         }
     };
 
-    const SelectApproverFromAutoSuggestion = (ApproverData: any) => {
-        selectApproverFunction(ApproverData);
+
+    const SelectApproverFromAutoSuggestion = (ApproverData: any, usedFor: string) => {
         setApproverSearchedData([]);
         setApproverSearchedDataForPopup([]);
+        setAttentionSearchedData([]);
         setApproverSearchKey("");
-        setTaskAssignedTo([ApproverData]);
-        setTaskTeamMembers([ApproverData]);
-        TaskApproverBackupArray = [ApproverData];
-        StatusOptions?.map((item: any) => {
-            if (item.value == 1) {
-                Items.sendApproverMail = true;
-                setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: "1" });
-                setPercentCompleteStatus(item.status);
-                setTaskStatus(item.taskStatusComment);
+        setBottleneckSearchKey("");
+        setAttentionSearchKey("");
+        setBottleneckSearchedData([]);
+        if (usedFor == "Bottleneck" || usedFor == "Attention") {
+            let CreatorData: any = currentUserBackupArray[0];
+            let copyWorkAction: any = [...WorkingAction]
+            let CreateObject: any = {
+                CreatorName: CreatorData?.Title,
+                CreatorImage: CreatorData.UserImage,
+                CreatorID: CreatorData.Id,
+                TaggedUsers: {
+                    Title: ApproverData.Title,
+                    Email: ApproverData.Email,
+                    AssingedToUserId: ApproverData.AssingedToUserId,
+                    userImage: ApproverData.Item_x0020_Cover?.Url,
+                },
+                NotificationSend: false,
+                Comment: '',
+                CreatedOn: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY"),
             }
-        });
-        let ApproverHistoryObject: any = {
-            ApproverName: ApproverData.Title,
-            ApprovedDate: Moment(new Date())
-                .tz("Europe/Berlin")
-                .format("DD MMM YYYY HH:mm"),
-            ApproverId: ApproverData.AssingedToUserId,
-            ApproverImage:
-                ApproverData.Item_x0020_Cover != undefined ||
-                    ApproverData.Item_x0020_Cover != null
-                    ? ApproverData.Item_x0020_Cover.Url
-                    : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-            ApproverSuffix: ApproverData.Suffix,
-            ApproverEmail: ApproverData.Email,
-        };
-        ApproverHistoryData.push(ApproverHistoryObject);
+            if (copyWorkAction?.length > 0) {
+                copyWorkAction?.map((DataItem: any) => {
+                    if (DataItem.Title == usedFor) {
+                        CreateObject.Id = DataItem.InformationData?.length;
+                        DataItem.InformationData.push(CreateObject);
+                    }
+                })
+            } else {
+                let TempArrya: any = [
+                    {
+                        Title: "Bottleneck",
+                        InformationData: []
+                    },
+                    {
+                        Title: "Attention",
+                        InformationData: []
+                    }
+                ]
+                TempArrya?.map((TempItem: any) => {
+                    if (TempItem.Title == usedFor) {
+                        CreateObject.Id = TempItem.InformationData?.length;
+                        TempItem.InformationData.push(CreateObject);
+                    }
+                })
+                copyWorkAction = TempArrya;
+            }
+            setWorkingAction([...copyWorkAction]);
+            console.log("Bottleneck All Details:", copyWorkAction)
+        } else {
+            selectApproverFunction(ApproverData);
+            setTaskAssignedTo([ApproverData]);
+            setTaskTeamMembers([ApproverData]);
+            TaskApproverBackupArray = [ApproverData];
+            StatusOptions?.map((item: any) => {
+                if (item.value == 1) {
+                    Items.sendApproverMail = true;
+                    setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: "1" });
+                    setPercentCompleteStatus(item.status);
+                    setTaskStatus(item.taskStatusComment);
+                }
+            });
+            let ApproverHistoryObject: any = {
+                ApproverName: ApproverData.Title,
+                ApprovedDate: Moment(new Date())
+                    .tz("Europe/Berlin")
+                    .format("DD MMM YYYY HH:mm"),
+                ApproverId: ApproverData.AssingedToUserId,
+                ApproverImage:
+                    ApproverData.Item_x0020_Cover != undefined ||
+                        ApproverData.Item_x0020_Cover != null
+                        ? ApproverData.Item_x0020_Cover.Url
+                        : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                ApproverSuffix: ApproverData.Suffix,
+                ApproverEmail: ApproverData.Email,
+            };
+            ApproverHistoryData.push(ApproverHistoryObject);
+        }
     };
 
     // *********** this is for Send Email Notification for Approval Category Task Functions ****************************
@@ -4704,6 +4684,7 @@ const EditTaskPopup = (Items: any) => {
         setSendEmailNotification(false);
         Items.Call(items);
     }, []);
+
     // ************************ this is for Site Composition Component Section Functions ***************************
 
     const SmartTotalTimeCallBack = useCallback((TotalTime: any) => {
@@ -4797,6 +4778,65 @@ const EditTaskPopup = (Items: any) => {
     };
 
 
+    const removeAssignedMember = (value: any) => {
+        const afterItemDelete: any = ApproverData.filter((item: any) => item.Title != value.Title)
+        setApproverData(afterItemDelete)
+    }
+
+    // this is used for updating workingAction JSON Data on Backedn Side 
+
+    const UpdateWorkinActionJSON = async () => {
+        try {
+            let web = new Web(siteUrls);
+            await web.lists
+                .getById(Items.Items.listId)
+                .items.getById(Items.Items.Id)
+                .update({ WorkingAction: WorkingAction?.length > 0 ? JSON.stringify(WorkingAction) : null })
+        } catch (error) {
+            console.log("Error", error.message)
+        }
+    }
+
+
+
+    // this is used for bottleneck and Attehntion category task functionality
+
+    const BottleneckAndAttentionFunction = (InfoData: any, Index: number, usedFor: string, ActionType: string) => {
+        if (usedFor == "Reminder") {
+            if (InfoData?.NotificationSend == true) {
+                let RequiredData: any = {
+                    ReceiverName: InfoData.TaggedUsers?.Title,
+                    sendUserEmail: [InfoData.TaggedUsers?.Email],
+                    Context: Context,
+                    ActionType: ActionType,
+                    ReasonStatement: InfoData.Comment,
+                    UpdatedDataObject: EditDataBackup,
+                }
+                GlobalFunctionForUpdateItems.MSTeamsReminderMessage(RequiredData);
+                alert("The reminder has been sent to the user.");
+            } else {
+                alert(`This user has not been tagged as a ${ActionType} yet, so you cannot send a reminder now.`);
+            }
+        }
+        if (usedFor == "Remove") {
+            let CopyWorkingActionData: any = [...WorkingAction];
+            let TempWorkingActionData: any = removeDataFromInformationData(CopyWorkingActionData, ActionType, Index);
+            console.log("Updated Data after removing User:", TempWorkingActionData);
+            setWorkingAction([...TempWorkingActionData])
+        }
+    }
+
+    //    This is used to remove the Tagged User Data form Bottleneck and attention
+
+    function removeDataFromInformationData(dataArray: any, titleToRemove: any, indexToRemove: any) {
+        return dataArray.map((item: any) => {
+            if (item.Title === titleToRemove && Array.isArray(item.InformationData)) {
+                item.InformationData.splice(indexToRemove, 1);
+            }
+            return item;
+        });
+    }
+    //  This is the end of the function 
 
     const onRenderCustomHeaderMain = () => {
         return (
@@ -4873,7 +4913,7 @@ const EditTaskPopup = (Items: any) => {
                         : "d-flex full-width pb-1"
                 }
             >
-                <div className="subheading">Add Image Descriptions</div>
+                <div className="subheading">Add {AddDescriptionModelName} Descriptions</div>
                 <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
             </div>
         );
@@ -5179,10 +5219,6 @@ const EditTaskPopup = (Items: any) => {
         );
     };
 
-    const removeAssignedMember = (value: any) => {
-        const afterItemDelete: any = ApproverData.filter((item: any) => item.Title != value.Title)
-        setApproverData(afterItemDelete)
-    }
 
     return (
         <div
@@ -5922,7 +5958,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                             key={item.id}
                                                                                             onClick={() =>
                                                                                                 SelectApproverFromAutoSuggestion(
-                                                                                                    item
+                                                                                                    item, "Approver"
                                                                                                 )
                                                                                             }
                                                                                         >
@@ -5993,7 +6029,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                     <li
                                                                                                         className="hreflink list-group-item rounded-0 list-group-item-action"
                                                                                                         key={item.id}
-                                                                                                        onClick={() => SelectApproverFromAutoSuggestion(item)}
+                                                                                                        onClick={() => SelectApproverFromAutoSuggestion(item, "Approver")}
                                                                                                     >
                                                                                                         <a>{item.NewLabel}</a>
                                                                                                     </li>
@@ -6312,7 +6348,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                         title={ProjectData.Title}
                                                                                         data-interception="off"
                                                                                         className="textDotted hreflink"
-                                                                                        href={`${siteUrls}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                        href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
                                                                                     >
                                                                                         {ProjectData.Title}
                                                                                     </a>
@@ -6531,6 +6567,7 @@ const EditTaskPopup = (Items: any) => {
                                                     </span> : null} */}
                                             </div>
                                         </div>
+
                                         <div className="row">
                                             <div className="col mt-2 time-status">
                                                 <div>
@@ -6653,7 +6690,7 @@ const EditTaskPopup = (Items: any) => {
                                                     </ul>
                                                 </div>
                                             </div>
-                                            <div className="col mt-2 ps-0">
+                                            <div className="col mt-2">
                                                 <div className="input-group">
                                                     <label className="form-label full-width">
                                                         {EditData.TaskAssignedUsers?.length > 0
@@ -6827,7 +6864,235 @@ const EditTaskPopup = (Items: any) => {
                                         </div> */}
                                     </div>
                                     <div className="col-md-4">
-                                        <div className="full_width ">
+                                        {/* This is used for bottleneck  */}
+                                        <div className="col ps-0">
+                                            <div className="input-group">
+                                                <label className="form-label full-width ">
+                                                    Bottleneck
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={BottleneckSearchKey}
+                                                    className="form-control"
+                                                    placeholder="Tag user for Bottleneck"
+                                                    onChange={(e) => autoSuggestionsForApprover(e, "Bottleneck")}
+                                                />
+                                                <span
+                                                    className="input-group-text"
+                                                    // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
+                                                    onClick={() => alert("We are working on it. This feature will be live soon")}
+                                                >
+                                                    <span
+                                                        title="Add Comment"
+                                                        className="svg__iconbox svg__icon--editBox"
+                                                    ></span>
+                                                </span>
+                                                {BottleneckSearchedData?.length > 0 ? (
+                                                    <div className="SmartTableOnTaskPopup">
+                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                            {BottleneckSearchedData.map((item: any) => {
+                                                                return (
+                                                                    <li
+                                                                        className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                                                        key={item.id}
+                                                                        onClick={() =>
+                                                                            SelectApproverFromAutoSuggestion(
+                                                                                item, "Bottleneck"
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        <a>{item.NewLabel}</a>
+                                                                    </li>
+                                                                );
+                                                            })}
+                                                        </ul>
+                                                    </div>
+                                                ) : null}
+                                            </div>
+                                            {WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
+                                                if (WAItemData.Title == "Bottleneck" && WAItemData?.InformationData?.length > 0) {
+                                                    return (
+                                                        <div className="border p-1 mt-1">
+                                                            {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: number) => {
+                                                                return (
+                                                                    <div className="align-content-center alignCenter justify-content-between py-1">
+                                                                        <div className="alignCenter">
+                                                                            <img
+                                                                                className="ProirityAssignedUserPhoto m-0"
+                                                                                title={InfoData.TaggedUsers?.Title}
+                                                                                src={
+                                                                                    InfoData.TaggedUsers.userImage !=
+                                                                                        undefined &&
+                                                                                        InfoData.TaggedUsers.userImage.length >
+                                                                                        0
+                                                                                        ? InfoData.TaggedUsers.userImage
+                                                                                        : ""
+                                                                                }
+                                                                            />
+                                                                            <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
+                                                                        </div>
+
+                                                                        <div className="alignCenter">
+                                                                            <span
+                                                                                className="hover-text m-0 alignIcon"
+                                                                                onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
+                                                                            >
+                                                                                <span className="svg__iconbox svg__icon--clock dark"></span>
+                                                                                <span className="tooltip-text pop-left">
+                                                                                    Send reminder notifications
+                                                                                </span>
+                                                                            </span>
+                                                                            <span
+                                                                                className="m-0 img-info hover-text"
+                                                                                onClick={() =>
+                                                                                    openAddImageDescriptionFunction(
+                                                                                        InfoIndex,
+                                                                                        InfoData,
+                                                                                        "Bottleneck"
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <span className="svg__iconbox svg__icon--comment"></span>
+                                                                                <span className="tooltip-text pop-left">
+                                                                                    {InfoData.Comment != undefined &&
+                                                                                        InfoData.Comment?.length > 1
+                                                                                        ? InfoData.Comment
+                                                                                        : "Add Comment"}
+                                                                                </span>
+                                                                            </span>
+                                                                            <span
+                                                                                className="hover-text m-0 alignIcon"
+                                                                                onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Remove", WAItemData.Title)}
+                                                                            >
+                                                                                <span className="svg__iconbox svg__icon--cross"></span>
+                                                                                <span className="tooltip-text pop-left">
+                                                                                    Remove user from bottleneck
+                                                                                </span>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                )
+                                                            })}
+                                                        </div>
+                                                    )
+                                                }
+                                            })}
+                                        </div>
+                                        {/* This is used for Attentions  */}
+                                        <div className="col mt-2 ps-0">
+                                            <div className="input-group">
+                                                <label className="form-label full-width ">
+                                                    Attention
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={AttentionSearchKey}
+                                                    className="form-control"
+                                                    placeholder="Tag user for attention"
+                                                    onChange={(e) => autoSuggestionsForApprover(e, "Attention")}
+                                                />
+                                                <span
+                                                    className="input-group-text"
+                                                    // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
+                                                    onClick={() => alert("We are working on it. This feature will be live soon")}
+                                                >
+                                                    <span
+                                                        title="Add Comment"
+                                                        className="svg__iconbox svg__icon--editBox"
+                                                    ></span>
+                                                </span>
+                                                {AttentionSearchedData?.length > 0 ? (
+                                                    <div className="SmartTableOnTaskPopup">
+                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                            {AttentionSearchedData.map((item: any) => {
+                                                                return (
+                                                                    <li
+                                                                        className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                                                        key={item.id}
+                                                                        onClick={() =>
+                                                                            SelectApproverFromAutoSuggestion(
+                                                                                item, "Attention"
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        <a>{item.NewLabel}</a>
+                                                                    </li>
+                                                                );
+                                                            })}
+                                                        </ul>
+                                                    </div>
+                                                ) : null}
+                                            </div>
+                                            {WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
+                                                if (WAItemData.Title == "Attention" && WAItemData?.InformationData?.length > 0) {
+                                                    return (
+                                                        <div className="border p-1 mt-1">
+                                                            {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: number) => {
+                                                                return (
+                                                                    <div className="align-content-center alignCenter justify-content-between py-1">
+                                                                        <div className="alignCenter">
+                                                                            <img
+                                                                                className="ProirityAssignedUserPhoto m-0"
+                                                                                title={InfoData.TaggedUsers?.Title}
+                                                                                src={
+                                                                                    InfoData.TaggedUsers.userImage !=
+                                                                                        undefined &&
+                                                                                        InfoData.TaggedUsers.userImage?.length >
+                                                                                        0
+                                                                                        ? InfoData.TaggedUsers.userImage
+                                                                                        : ""
+                                                                                }
+                                                                            />
+                                                                            <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
+                                                                        </div>
+
+                                                                        <div className="alignCenter">
+                                                                            <span
+                                                                                onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
+                                                                                className="hover-text m-0 alignIcon"
+                                                                            >
+                                                                                <span className="svg__iconbox svg__icon--clock dark"></span>
+                                                                                <span className="tooltip-text pop-left">
+                                                                                    Send reminder notifications
+                                                                                </span>
+                                                                            </span>
+                                                                            <span
+                                                                                className="m-0 img-info hover-text"
+                                                                                onClick={() =>
+                                                                                    openAddImageDescriptionFunction(
+                                                                                        InfoIndex,
+                                                                                        InfoData,
+                                                                                        "Attention"
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <span className="svg__iconbox svg__icon--comment"></span>
+                                                                                <span className="tooltip-text pop-left">
+                                                                                    {InfoData.Comment != undefined &&
+                                                                                        InfoData.Comment?.length > 1
+                                                                                        ? InfoData.Comment
+                                                                                        : "Add Comment"}
+                                                                                </span>
+                                                                            </span>
+                                                                            <span
+                                                                                className="hover-text m-0 alignIcon"
+                                                                                onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Remove", WAItemData.Title)}
+                                                                            >
+                                                                                <span className="svg__iconbox svg__icon--cross"></span>
+                                                                                <span className="tooltip-text pop-left">
+                                                                                    Remove user from bottleneck
+                                                                                </span>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                )
+                                                            })}
+                                                        </div>
+                                                    )
+                                                }
+                                            })}
+                                        </div>
+                                        <div className="full_width mt-2">
                                             <CommentCard
                                                 siteUrl={siteUrls}
                                                 listName={Items?.Items?.siteType}
@@ -6981,7 +7246,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                     openAddImageDescriptionFunction(
                                                                                         index,
                                                                                         ImageDtl,
-                                                                                        "Opne-Model"
+                                                                                        "Image"
                                                                                     )
                                                                                 }
                                                                             >
@@ -8113,7 +8378,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                             key={item.id}
                                                                                                             onClick={() =>
                                                                                                                 SelectApproverFromAutoSuggestion(
-                                                                                                                    item
+                                                                                                                    item, "Approver"
                                                                                                                 )
                                                                                                             }
                                                                                                         >
@@ -8409,7 +8674,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                     target="_blank"
                                                                                                     title={ProjectData.Title}
                                                                                                     data-interception="off"
-                                                                                                    href={`${siteUrls}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                                    href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
                                                                                                 >
                                                                                                     {ProjectData.Title}
                                                                                                 </a>
@@ -9047,7 +9312,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         openAddImageDescriptionFunction(
                                                                             index,
                                                                             imgData,
-                                                                            "Opne-Model"
+                                                                            "Image"
                                                                         )
                                                                     }
                                                                 >
@@ -9260,7 +9525,7 @@ const EditTaskPopup = (Items: any) => {
                 </div>
             </div>
 
-            {/* ********************** This in Add Image Description Model ****************** */}
+            {/* ********************** This in Add Image Description, Bottleneck and Attention Model ****************** */}
             <Panel
                 isOpen={AddImageDescriptions}
                 onRenderHeader={onRenderCustomHeaderAddImageDescription}
@@ -9281,14 +9546,14 @@ const EditTaskPopup = (Items: any) => {
                                         : ""
                                 }
                                 className="full-width"
-                                onChange={(e) => UpdateImageDescription(e)}
+                                onChange={(e) => UpdateImageDescription(e, AddDescriptionModelName)}
                             ></textarea>
                         </div>
                     </div>
                     <footer className="text-end mt-2">
                         <button
                             className="btn btnPrimary mx-1 "
-                            onClick={SaveImageDescription}
+                            onClick={() => SaveImageDescription(AddDescriptionModelName)}
                         >
                             Save
                         </button>
@@ -9435,7 +9700,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <li
                                                     className="hreflink list-group-item rounded-0 list-group-item-action"
                                                     key={item.id}
-                                                    onClick={() => SelectApproverFromAutoSuggestion(item)}
+                                                    onClick={() => SelectApproverFromAutoSuggestion(item, "Approver")}
                                                 >
                                                     <a>{item.NewLabel}</a>
                                                 </li>

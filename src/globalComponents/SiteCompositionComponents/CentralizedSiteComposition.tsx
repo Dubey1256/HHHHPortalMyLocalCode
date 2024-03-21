@@ -34,6 +34,7 @@ let FlatViewTableData: any = [];
 let GroupByTableData: any = [];
 let taskTypeData: any = [];
 let PortfolioItemColor: any = "";
+
 const CentralizedSiteComposition = (Props: any) => {
     const PropsData: any = Props;
     const usedFor: string = PropsData?.usedFor;
