@@ -896,15 +896,18 @@ const TimeEntryPopup = (item: any) => {
       TaskTimeSheetCategoriesGrouping
     );
 
-    backupEdit = mergedFinalData;
-    setData(mergedFinalData);
-    console.log("finalData", finalData);
     if(Flatview == true){
-
       flatviewOpen(Flatview,mergedFinalData)
     }
-    setBackupData(mergedFinalData);
-    setTimeSheet(TaskTimeSheetCategoriesGrouping);
+    else{
+      backupEdit = mergedFinalData;
+      setData(mergedFinalData);
+      setBackupData(mergedFinalData);
+      setTimeSheet(TaskTimeSheetCategoriesGrouping);
+      console.log("finalData", finalData);
+     
+    }
+
 
     if (TaskStatuspopup == true) {
       setupdateData(updateData + 1);
@@ -913,7 +916,6 @@ const TimeEntryPopup = (item: any) => {
 
     setModalIsTimeOpenToTrue();
   };
-
   const setModalIsTimeOpenToTrue = () => {
     setTimeModalIsOpen(true);
   };
@@ -2589,6 +2591,7 @@ const TimeEntryPopup = (item: any) => {
     } else {
       data?.forEach((item: any) => {
         item.subRows?.forEach((val: any) => {
+          val.Category = item.Category?.Title;
           newArray.push(val);
         });
       });
@@ -2749,7 +2752,17 @@ const TimeEntryPopup = (item: any) => {
         header: "",
         size: 95,
       },
-
+      Flatview ? {
+        accessorFn: (row) => row?.Category,
+        id: "Category",
+        resetColumnFilters: false,
+        placeholder: "Category",
+        header: "",
+        size: 95,
+        cell: ({ row }) => (
+          <div className="text-center">{row?.original?.Category}</div>
+        ),
+      } : { header: '', id: 'CategoryHidden' },  
       {
         accessorKey: "Description",
         placeholder: "Description",
