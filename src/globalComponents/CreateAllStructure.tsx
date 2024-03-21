@@ -3,7 +3,7 @@ import * as $ from "jquery";
 import * as Moment from "moment";
 import { Panel, PanelType } from "office-ui-fabric-react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { sp } from "sp-pnp-js";
+import { Web, sp } from "sp-pnp-js";
 import PageLoader from "./pageLoader";
 let defaultPortfolioType = 'Component'
 let PortfoliotypeData: any = '';
@@ -276,23 +276,23 @@ const CreateAllStructureComponent = (props: any) => {
                         // Create feature item in SharePoint list
 
 
-                        const featuredata = await createListItem('Master Tasks', featureItem);
+                        await createListItem('Master Tasks', featureItem);
 
 
                         // Add feature to the features array
                         if (featureItem.Title != "") {
                             features.push({
-                                Id: featuredata?.Id,
-                                ID: featuredata?.Id,
+                                Id: featureItem?.Id,
+                                ID: featureItem?.Id,
                                 Title: featureItem?.Title,
                                 siteType: "Master Tasks",
-                                SiteIconTitle: featuredata?.Item_x0020_Type?.charAt(0),
-                                TaskID: featuredata?.PortfolioStructureID,
+                                SiteIconTitle: featureItem?.Item_x0020_Type?.charAt(0),
+                                TaskID: featureItem?.PortfolioStructureID,
                                 Created: Moment(featureItem?.Created).format("DD/MM/YYYY"),
                                 DisplayCreateDate: Moment(featureItem?.Created).format("DD/MM/YYYY"),
                                 Author: { "Id": featureItem?.AuthorId, 'Title': CurrentUserData?.Title, 'autherImage': CurrentUserData?.Item_x0020_Cover?.Url },
                                 PortfolioType: PortfoliotypeData,
-                                PortfolioStructureID:featuredata?.PortfolioStructureID,
+                                PortfolioStructureID:featureItem?.PortfolioStructureID,
                                 Item_x0020_Type :'Feature'
                             });
                         }
@@ -369,7 +369,8 @@ const CreateAllStructureComponent = (props: any) => {
     const createListItem = async (listName: string, item: any) => {
         if (item.Title != "") {
             try {
-                const result = await sp.web.lists.getByTitle(listName).items.add(item);
+                let web = new Web(props?.PropsValue?.siteUrl);
+                const result = await web.lists.getByTitle(listName).items.add(item);
                 return result.data;
             } catch (error) {
                 throw new Error(`Failed to create item in the list. Error: ${error}`);
@@ -390,8 +391,8 @@ const CreateAllStructureComponent = (props: any) => {
             //filter = "Parent/Id eq '" + item.Id
         }
 
-
-        let results = await sp.web.lists
+        let web = new Web(props?.PropsValue?.siteUrl);
+        let results = await web.lists
             .getByTitle('Master Tasks')
             .items
             .select("Id", "Title", "PortfolioLevel",'Item_x0020_Type', "PortfolioStructureID", "Parent/Id", "PortfolioType/Id", "PortfolioType/Title")
