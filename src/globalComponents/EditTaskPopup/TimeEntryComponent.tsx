@@ -491,7 +491,6 @@ const TimeEntryPopup = (item: any) => {
             isShowCate = val.TimeCategory;
             if (val.TimeCategory == time.Title) {
               setshowCat(time.Title);
-
               setcheckCategories(time.Title);
               setcheckCategoriesTitle(time.Title);
             }
@@ -524,6 +523,7 @@ const TimeEntryPopup = (item: any) => {
     setediteddata(undefined);
     setCount(1);
     change = Moment().format();
+    setNewData(undefined)
     setMyDatee(new Date());
     setsaveEditTaskTimeChild({});
   };
@@ -899,6 +899,10 @@ const TimeEntryPopup = (item: any) => {
     backupEdit = mergedFinalData;
     setData(mergedFinalData);
     console.log("finalData", finalData);
+    if(Flatview == true){
+
+      flatviewOpen(Flatview,mergedFinalData)
+    }
     setBackupData(mergedFinalData);
     setTimeSheet(TaskTimeSheetCategoriesGrouping);
 
@@ -2376,6 +2380,7 @@ const TimeEntryPopup = (item: any) => {
       });
   };
   const clearInput = () => {
+    setNewData(undefined)
     setcheckCategoriesTitle('');
    
   }
@@ -2402,8 +2407,15 @@ const TimeEntryPopup = (item: any) => {
   };
 
   //--------------------------------------Change time by custom button-----------------------------------------------------------------------------
-  const changeTimeFunction = (e: any, type: any) => {
-      changeTime = Number(e.target.value);
+  const changeTimeFunction = (e: any, type: any,Use:any) => {
+   if(Use == 'remove'){
+    changeTime=0;
+    setsaveEditTaskTimeChild({});
+    setTimeInMinutes(0)
+    setTimeInHours(0)
+   }
+   else{
+    changeTime = Number(e.target.value);
     if (type === "AddTime" || type == "AddTime Category") {
       
         if (changeTime !== undefined) {
@@ -2432,6 +2444,8 @@ const TimeEntryPopup = (item: any) => {
       
      
     }
+   }
+     
   };
 
   //--------------------------------------------Change Date by custom button--------------------------------------------------------------------------------
@@ -2560,10 +2574,16 @@ const TimeEntryPopup = (item: any) => {
     setediteddata(NewDate);
   };
 
-  const flatviewOpen = (e: any) => {
+  const flatviewOpen = (e: any,data:any) => {
     var newArray: any = [];
     var sortedData: any = [];
-    Flatview = e.target.checked;
+    if(e == true){
+      Flatview = true;
+    }
+    else{
+      Flatview = e.target.checked;
+    }
+   
     if (Flatview == false) {
       setData(backupData);
     } else {
@@ -2831,7 +2851,7 @@ const TimeEntryPopup = (item: any) => {
                   <input
                     type="checkbox"
                     className="form-check-input me-1"
-                    onClick={(e: any) => flatviewOpen(e)}
+                    onClick={(e: any) => flatviewOpen(e,data)}
                   />
                   FlatView
                 </div>
@@ -2923,12 +2943,12 @@ const TimeEntryPopup = (item: any) => {
                           type="text"
                           className="form-control"
                           name="TimeTitle"
-                          value={newData.Title != ''?newData.Title:checkCategoriesTitle}
+                          value={newData != undefined ? newData?.Title:checkCategoriesTitle}
                           onChange={(e) =>
                             setNewData({ ...newData, Title: e.target.value })
                           }
                         />
-                         <span className="input-group-text" onClick={() =>clearInput()}>
+                         <span className="input-group-text" style={{zIndex:'9'}} onClick={() =>clearInput()}>
                       <span className="svg__iconbox svg__icon--cross"></span>
                     </span>
 
@@ -3189,9 +3209,9 @@ const TimeEntryPopup = (item: any) => {
                             </button>
                             <div> - Month </div>
                           </div>
-                          <div>
+                          <div className="text-center">
                             <button
-                              className="btnCol btn-primary mx-1 px-2"
+                              className="btnCol btn-primary mx-1 px-3"
                               title="Minus one week"
                               onClick={() => changeDateDec("week", PopupType)}
                             >
@@ -3232,9 +3252,9 @@ const TimeEntryPopup = (item: any) => {
                             </button>
                             <div> + Day </div>
                           </div>
-                          <div>
+                          <div className="text-center">
                             <button
-                              className="btnCol btn-primary mx-1 px-2"
+                              className="btnCol btn-primary mx-1 px-3"
                               title="Plus one week"
                               onClick={() => changeDate("week", PopupType)}
                             >
@@ -3314,10 +3334,11 @@ const TimeEntryPopup = (item: any) => {
                 </div>
                 <div className="row mb-2">
                   <div className="col-sm-3" key="timespent">
+                    <div className="input-group">
                     <label className="form-label full-width">
                       Add Time (min)
                     </label>
-                    <input
+                    {/* <input
                       type="text"
                       autoComplete="off"
                       name='timespent'
@@ -3330,7 +3351,25 @@ const TimeEntryPopup = (item: any) => {
                             : ''
                       }
                       onChange={(e) => changeTimeFunction(e, PopupType)}
-                    />
+                    /> */}
+                    <input
+    type="text"
+    autoComplete="off"
+    name='timespent'
+    className="form-control fw-bold" style={{height:"32px"}}
+    value={
+        TimeInMinutes > 0
+        ? TimeInMinutes
+        : saveEditTaskTimeChild?.TaskTimeInMin != undefined
+            ? saveEditTaskTimeChild.TaskTimeInMin
+            : ''
+    }
+    onChange={(e) => changeTimeFunction(e, PopupType,'Add')}
+/>
+{((TimeInMinutes > 0 || saveEditTaskTimeChild?.TaskTimeInMin != undefined) && (
+    <span className="input-group-text" style={{zIndex:'9'}}><span className="dark mini svg__icon--cross mt-1 svg__iconbox" onClick={(e)=>changeTimeFunction(e, PopupType,'remove')}></span></span>
+))}
+</div>
                   </div>
                   <div className="col-sm-3">
                     <label className="form-label full-width"></label>
@@ -3345,7 +3384,7 @@ const TimeEntryPopup = (item: any) => {
                         } hours`}
                     />
                   </div>
-                  <div className="col-sm-6 Time-control-buttons">
+                  <div className="col-sm-6 ps-0 Time-control-buttons">
                     <div className="pe-0 Quaterly-Time">
                       <label className="full_width"></label>
                       <button
