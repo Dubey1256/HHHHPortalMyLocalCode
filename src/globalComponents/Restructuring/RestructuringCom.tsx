@@ -647,6 +647,14 @@ const RestructuringCom = (props: any, ref: any) => {
           array?.map((obj: any) => {
             let actionsPerformed = false;
             restructureItem?.map((items: any) => {
+              if (props?.queryItems?.TaskType?.Title === "Activities" && items?.TaskType?.Id == 2) {
+                topCompo = true;
+                setQuery4TopIcon("Workstream");
+              }
+              if (props?.queryItems?.TaskType?.Title === "Activities" && items?.TaskType?.Id == 3) {
+                topCompo = true;
+                setQuery4TopIcon("Task");
+              }
               let newObj: any;
               if (
                 items?.PortfolioTypeCheck === obj.PortfolioTypeCheck &&
@@ -668,11 +676,7 @@ const RestructuringCom = (props: any, ref: any) => {
                     if (items?.TaskType?.Id == 3 && obj?.TaskType?.Id == 3) {
                       obj.isRestructureActive = false;
                     }
-                    if (
-                      items?.TaskType?.Id == 1 &&
-                      obj?.TaskType?.Id == 3 &&
-                      obj?.TaskType?.Id == 1
-                    ) {
+                    if (items?.TaskType?.Id == 1 && obj?.TaskType?.Id == 3 && obj?.TaskType?.Id == 1) {
                       obj.isRestructureActive = false;
                     }
                   } else {
@@ -704,11 +708,7 @@ const RestructuringCom = (props: any, ref: any) => {
                   }
                 }
 
-                if (
-                  obj?.subRows != undefined &&
-                  obj?.subRows?.length > 0 &&
-                  !actionsPerformed
-                ) {
+                if (obj?.subRows != undefined && obj?.subRows?.length > 0 && !actionsPerformed) {
                   obj?.subRows?.map((sub: any) => {
                     if (items?.Id !== sub.Id && sub?.TaskType?.Id != 2) {
                       sub.isRestructureActive = true;
@@ -767,6 +767,9 @@ const RestructuringCom = (props: any, ref: any) => {
                         newarrays?.push(obj);
                         setRestructuredItemarray(newarrays);
                         setCheckSubChilds(sub);
+                        if(obj?.TaskType?.Id ==3 && sub?.TaskType?.Id == 2){
+                          obj.isRestructureActive=false
+                        }
                         newChildarray?.push(newObj.newSubChild);
                         setRestructureChecked(newChildarray);
                         ArrayTest?.push(newObj);
@@ -1194,6 +1197,9 @@ const RestructuringCom = (props: any, ref: any) => {
               if(sub?.Item_x0020_Type === "Sprint"){
                 sub.isRestructureActive = true;
               }
+              if((restructureItem[0]?.subRows?.length > 0 || restructureItem[0]?.subRows == undefined || restructureItem[0]?.subRows == null) && (sub?.TaskType?.Id == 1 || sub?.TaskType?.Id == 2)){
+                sub.isRestructureActive = true;
+              }
               if (sub?.Title == restructureItem[0]?.Title && sub?.Id == restructureItem[0]?.Id) {
                 newObj = {...obj, newSubChild:{...sub}}
                 newarrays?.push(obj);
@@ -1207,6 +1213,9 @@ const RestructuringCom = (props: any, ref: any) => {
               sub?.subRows != null &&
               sub?.subRows?.length > 0 &&
               sub?.subRows?.map((feature: any) => {
+                if((restructureItem[0]?.subRows?.length > 0 || restructureItem[0]?.subRows == undefined || restructureItem[0]?.subRows == null) && (feature?.TaskType?.Id == 1 || feature?.TaskType?.Id == 2)){
+                  feature.isRestructureActive = true;
+                }
                 if (feature?.Title == restructureItem[0]?.Title && feature?.Id == restructureItem[0]?.Id) {
                   newObj = {...obj, newSubChild:{...sub ,newFeatChild:{...feature}}}
                   newarrays?.push(obj);
@@ -1217,8 +1226,6 @@ const RestructuringCom = (props: any, ref: any) => {
                   ArrayTest?.push(newObj);
                 }
               })
-
-             
             });
         });
       }else if (restructureItem[0]?.TaskType?.Id === 3 && props?.findPage == "ProjectOverView") {
@@ -4012,6 +4019,7 @@ const RestructuringCom = (props: any, ref: any) => {
     
   };
 
+
   React.useImperativeHandle(ref, () => ({
     OpenModal,
     trueTopIcon,
@@ -6677,6 +6685,45 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                 })}
             </table>
             </div>
+            {newItemBackUp?.TaskType?.Id == 1 &&
+                    (RestructureChecked[0]?.TaskType?.Id == 2 || (RestructureChecked[0]?.TaskType?.Id == 1 && (RestructureChecked[0]?.subRows == undefined || RestructureChecked[0]?.subRows?.length == 0 || RestructureChecked[0]?.subRows == null)) || (RestructureChecked[0]?.TaskType?.Id == 3 && (RestructureChecked[0]?.subRows == undefined || RestructureChecked[0]?.subRows?.length == 0 || RestructureChecked[0]?.subRows == null))) ? (
+                      <>
+                       {"Select Task Type :"}
+                        <label className="SpfxCheckRadio ms-3 me-1">
+                          <input
+                            type="radio"
+                            className="radio"
+                            value="Workstream"
+                            checked={
+                              RestructureChecked[0]?.TaskType?.Id == 3
+                                ? true
+                                : RestructureChecked[0]?.TaskType?.Id == 1
+                                ? true
+                                : false
+                            }
+                            onChange={()=>setRestructure(RestructureChecked, 3)}
+                          />
+                        </label>
+                        <label className="ms-1"> {"Workstream"} </label>
+                        <label className="SpfxCheckRadio ms-3 me-1">
+                          <input
+                            type="radio"
+                            className="radio"
+                            name="fav_language"
+                            value="Task"
+                            checked={
+                              RestructureChecked[0]?.TaskType?.Id === 2
+                                ? true
+                                : false
+                            }
+                            onChange={(e) =>setRestructure(RestructureChecked, 2)}
+                          />
+                        </label>
+                        <label className="ms-1"> {"Task"} </label>
+                      </>
+                    ) : (
+                      ""
+                    )}
           </>
           <footer className="mt-2 text-end">
             <button

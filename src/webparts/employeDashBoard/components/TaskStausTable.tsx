@@ -22,7 +22,7 @@ import * as Moment from "moment";
 import Slider from "react-slick";
 import { ColumnDef } from "@tanstack/react-table";
 import HighlightableCell from "../../../globalComponents/highlight";
-import { MdOutlineGppGood, MdGppBad } from "react-icons/Md";
+import { MdOutlineGppGood, MdGppBad } from "react-icons/md";
 import { FocusTrapCallout, FocusZone, FocusZoneTabbableElements, Panel, PanelType, Stack, Text, } from '@fluentui/react';
 import { color } from "@mui/system";
 let Count = 0;
@@ -50,7 +50,6 @@ const TaskStatusTbl = (Tile: any) => {
   const [dateRange, setDateRange] = React.useState<any>([]);
   const [isRejectItem, setisRejectItem] = React.useState<any>(undefined);
   const [RefSelectedItem, setRefSelectedItem] = React.useState<any>([]);
-
   const settings = {
     dots: false, infinite: true, speed: 500, slidesToShow: 6, slidesToScroll: 1, nextArrow: <SamplePrevNextArrow type="next" />, prevArrow: <SamplePrevNextArrow type="prev" />,
     beforeChange: handleBeforeChange,
@@ -79,6 +78,7 @@ const TaskStatusTbl = (Tile: any) => {
   const [sendMail, setsendMail]: any = React.useState(false);
   const [IsManageConfigPopup, setIsManageConfigPopup] = React.useState(false);
   const [SelectedItem, setSelectedItem]: any = React.useState({});
+
   if (ContextData != undefined && ContextData != '') {
     ContextData.ShowHideSettingIcon = (Value: any) => {
       IsShowConfigBtn = Value;
@@ -98,7 +98,6 @@ const TaskStatusTbl = (Tile: any) => {
     flagApproval = true
     setapprovalTask(AllapprovalTask)
   }
-
   useEffect(() => {
     Count += 1
     if (ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
@@ -389,13 +388,13 @@ const TaskStatusTbl = (Tile: any) => {
     }
     setisRejectItem(RejectedItem)
   }
-  const updateRejectComment = (e: any) => {
+  const updateRejectedComment = (e: any) => {
     console.log(e.target.value)
     let RejectedItem: any = { ...isRejectItem }
     RejectedItem.RejectedDetails.RejectedComment = e.target.value
     setisRejectItem(RejectedItem)
   }
-  const SaveRejectPopup = async (Type: any, Item: any) => {
+  const SaveApprovalRejectPopup = async (Type: any, Item: any) => {
     if (Type != 'ApprovedAll') {
       let RejectedItem: any;
       if (Item != undefined && Item != '')
@@ -479,15 +478,19 @@ const TaskStatusTbl = (Tile: any) => {
               }
             })
           }
+          //Update TimeEntry-----------------------
           if (Item?.IsUpdateJSONEntry == true) {
             if (Item?.AdditionalTimeEntry != undefined && Item?.AdditionalTimeEntry?.length > 0) {
               Item?.AdditionalTimeEntry.forEach((TimeEntry: any) => {
-                TimeEntry.Status = 'Approved';
-                delete TimeEntry?.TaskDates;
-                delete TimeEntry?.sortTaskDate;
-                delete TimeEntry?.PreviousComment;
-                delete TimeEntry?.UpdatedId;
-
+                RefSelectedItem?.forEach((SelectedItem: any) => {
+                  if (SelectedItem?.original?.Id == TimeEntry.Id) {
+                    TimeEntry.Status = 'Approved';
+                    delete TimeEntry?.TaskDates;
+                    delete TimeEntry?.sortTaskDate;
+                    delete TimeEntry?.PreviousComment;
+                    delete TimeEntry?.UpdatedId;
+                  }
+                })
               })
             }
             let web = new Web(Item?.siteUrl);
@@ -527,6 +530,7 @@ const TaskStatusTbl = (Tile: any) => {
                 console.log(err);
               })
           }
+          //End Here-------------------------------------
         })
       }
     }
@@ -645,7 +649,7 @@ const TaskStatusTbl = (Tile: any) => {
         cell: ({ row, column, getValue }: any) => (
           <>
             {row?.original?.ProjectTitle != (null || undefined) &&
-              <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextData?.propsValue?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
+              <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextData?.propsValue?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextData?.propsValue} /></a></span>
             }
           </>
@@ -921,13 +925,14 @@ const TaskStatusTbl = (Tile: any) => {
           isColumnVisible: true,
           cell: ({ row, index }: any) => (
             <div className="alignCenter gap-1 pull-right approvelicon position-relative" >
-              <span title="Approve" onClick={() => SaveRejectPopup('Approved', row?.original,)} ><MdOutlineGppGood style={{ color: "#008f47", fontSize: "22px" }} /> </span>
+              <span title="Approve" onClick={() => SaveApprovalRejectPopup('Approved', row?.original,)} ><MdOutlineGppGood style={{ color: "#008f47", fontSize: "22px" }} /> </span>
               <span title="Reject" data-toggle="tooltip" data-placement="bottom" id={`Reply-${row?.index}`} onClick={() => openRejectPopup(row?.original)}><MdGppBad style={{ color: "#dc3545", fontSize: "22px" }} /></span>
             </div>
           )
         },]
     }
   }
+
   if (Tile.activeTile != undefined && DashboardConfigCopy != undefined && DashboardConfigCopy?.length > 0)
     DashboardConfig = DashboardConfigCopy.filter((config: any) => config?.TileName == '' || config?.TileName == Tile.activeTile);
   const updatedDashboardConfig = DashboardConfig?.map((item: any, index: any) => {
@@ -936,6 +941,8 @@ const TaskStatusTbl = (Tile: any) => {
     return { ...item, column: columnss };
   });
   DashboardConfig = updatedDashboardConfig;
+
+
   const editPopFunc = (item: any) => {
     setEditPopup(true);
     setResult(item)
@@ -952,8 +959,6 @@ const TaskStatusTbl = (Tile: any) => {
       setRefSelectedItem(elem)
       approveItem = undefined
     }
-    //setActiveTile(Tile?.activeTile)
-    rerender();
   }, []);
   const sendEmail = () => {
     approveItem.PercentComplete = 3
@@ -1019,7 +1024,7 @@ const TaskStatusTbl = (Tile: any) => {
       let sendAllTasks = `<span style="font-size: 18px;margin-bottom: 10px;">
             Hi there, <br><br>
             Below is the working today task of all the team members <strong>(Project Wise):</strong>
-            <p><a href =${ContextData?.siteUrl}/SitePages/PX-Overview.aspx>Click here for flat overview of the today's tasks</a></p>
+            <p><a href =${ContextData?.siteUrl}/SitePages/Project-Management-Overview.aspx>Click here for flat overview of the today's tasks</a></p>
             </span>
             ${body}
             <h3>
@@ -1052,6 +1057,8 @@ const TaskStatusTbl = (Tile: any) => {
     setIsManageConfigPopup(false);
     setSelectedItem('')
   }
+
+
   const generateDashboard = () => {
     const rows: any = [];
     let currentRow: any = [];
@@ -1192,7 +1199,7 @@ const TaskStatusTbl = (Tile: any) => {
                       </span>
                       <span className="alignCenter">
                         {IsShowConfigBtn && <span className="svg__iconbox svg__icon--setting hreflink" title="Manage Configuration" onClick={(e) => OpenConfigPopup(config)}></span>}
-                        {RefSelectedItem?.length > 0 ? <span className="empCol me-1 mt-2 hreflink" onClick={() => SaveRejectPopup('ApprovedAll', undefined)}>Approve All</span>
+                        {RefSelectedItem?.length > 0 ? <span className="empCol me-1 mt-2 hreflink" onClick={() => SaveApprovalRejectPopup('ApprovedAll', undefined)}>Approve All</span>
                           : <span className="me-1 mt-2 hreflink" style={{ color: "#646464" }}>Approve All</span>}
                       </span>
                     </div>
@@ -1263,10 +1270,10 @@ const TaskStatusTbl = (Tile: any) => {
             onDismiss={CancelRejectPopup}
             isBlocking={false}>
             <div className="modal-body">
-              <textarea className="form-control" style={{ height: '140px' }} onChange={(e) => updateRejectComment(e)}  ></textarea>
+              <textarea className="form-control" style={{ height: '140px' }} onChange={(e) => updateRejectedComment(e)}  ></textarea>
             </div>
             <footer className='modal-footer mt-2'>
-              <button className='btn btn-primary me-2 mb-2' onClick={() => SaveRejectPopup('Rejected', undefined)} disabled={isRejectItem?.RejectedDetails == undefined || isRejectItem?.RejectedDetails.RejectedComment == '' || isRejectItem?.RejectedDetails.RejectedComment == undefined} >Save</button>
+              <button className='btn btn-primary me-2 mb-2' onClick={() => SaveApprovalRejectPopup('Rejected', undefined)} disabled={isRejectItem?.RejectedDetails == undefined || isRejectItem?.RejectedDetails.RejectedComment == '' || isRejectItem?.RejectedDetails.RejectedComment == undefined} >Save</button>
               <button className='btn btn-default mb-2' onClick={CancelRejectPopup}  >Cancel</button>
             </footer>
           </Panel>
@@ -1276,4 +1283,3 @@ const TaskStatusTbl = (Tile: any) => {
   );
 };
 export default TaskStatusTbl;
-
