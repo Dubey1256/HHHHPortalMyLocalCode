@@ -1728,8 +1728,6 @@ export const SendEmailNotificationForIRCTasks = (RequiredData: any) => {
         }
     })
 }
-<<<<<<< HEAD
-=======
 
 // This is used for Prepare Data on The basis of sort order 
 
@@ -1748,7 +1746,6 @@ export const PrepareDataAccordingToSortOrder = (SourceArray: any, currentArray: 
         console.log("Error in PrepareDataAccordingToSortOrder function:", error.message)
     }
 }
->>>>>>> fe343ff75c7294920034f06b4d99c5066d428a37
 
 
 // Instructions for Using this Global Common Functions 
