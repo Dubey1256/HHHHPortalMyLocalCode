@@ -4265,7 +4265,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                       <div id="contact" className="col-sm-12 p-0">
                         <div className='table-responsive fortablee'>
                           {/* <GlobalCommanTable bulkUpdateWeeklyReport={this.bulkUpdateWeeklyReport} customHeaderButtonAvailable={true} ref={this.childRef} customTableHeaderButtons={this.customTableHeaderButtons} showCatIcon={true} catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this?.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div> */}
-                          <GlobalCommanTable customHeaderButtonAvailable={true}  ref={this.childRef} customTableHeaderButtons={customTableHeaderButtons} showCatIcon={true} catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this?.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
+                          <GlobalCommanTable customHeaderButtonAvailable={true} ref={this.childRef} customTableHeaderButtons={customTableHeaderButtons} showCatIcon={true} catogryDataLength={this?.state?.AllTimeEntryItem?.length} columns={this?.columns} expendedTrue={true} data={this.state.AllTimeEntry} showHeader={true} exportToExcelCategoryReport={this.exportToExcel} OpenAdjustedTimePopupCategory={this.OpenAdjustedTimePopup} callBackData={this?.callBackData} showDateTime={this.state.showDateTime} fixedWidth={true} /> </div>
                       </div>
                     }
                   </div>
@@ -4418,8 +4418,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
                 <div className="col-sm-6">
                   <div className='input-group' key={this?.state?.bulkupdatetext}>
-                    <input type="text" defaultValue={this?.state?.bulkupdatetext ==="" ? 0 :this?.state?.bulkupdatetext}
-                      placeholder="Adjusted Hours (Roundup)" className="form-control" autoComplete="off"></input>
+                    <input type="text" defaultValue={this?.state?.bulkupdatetext ==="" ?0 :this?.state?.bulkupdatetext}
+                      placeholder="Adjusted Hours (Roundup)" className="form-control" onChange={(e) => this.setState({ bulkupdatetext: parseFloat(e.target.value) })} autoComplete="off"></input>
                   </div>
                 </div>
                 <div className="col-sm-3">
