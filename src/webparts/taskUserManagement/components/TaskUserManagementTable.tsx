@@ -814,87 +814,96 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                             aria-labelledby="basic-info-tab"
                         >
                             <Row className='mb-2'>
-                                <Col md={2} sm={2}>
-                                    <div className='input-group'>
-                                        <label className='form-label full-width fw-semibold'>Title: </label>
-                                        <input className='form-control' type="text" defaultValue={memberToUpdate?.Title} onChange={(e: any) => setTitle(e.target.value)} />
-                                    </div>
-                                </Col>
+                                <Col md={6} className='ps-3'>
+                                    <Row>
+                                        <Col md={5} sm={5} className='px-1 ps-0'>
+                                            <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Title: </label>
+                                                <input className='form-control' type="text" defaultValue={memberToUpdate?.Title} onChange={(e: any) => setTitle(e.target.value)} />
+                                            </div>
+                                        </Col>
 
-                                <Col md={1} sm={1}>
-                                    <div className='input-group'>
-                                        <label className='form-label full-width fw-semibold'>Suffix: </label>
-                                        <input className='form-control' type="text" defaultValue={memberToUpdate?.Suffix} onChange={(e: any) => setSuffix(e.target.value)} />
-                                    </div>
-                                </Col>
-                        
-                                <Col md={3} className='px-1'>
-                                    <div className='input-group'>
-                                        <label className='form-label full-width fw-semibold'>Group: </label>
-                                        <select className='full-width' id="sites" defaultValue={memberToUpdate?.UserGroup?.Id} onChange={(e: any) => setUserGroup(e.target.value)}>
-                                            <option>Select</option>
-                                            {TaskGroupsListData.map((elem: any) => <option value={elem?.Id}>{elem?.Title}</option>)}
-                                        </select>
-                                    </div>
-                                </Col>
-                                <Col md={1} sm={1}>
-                                    <div className='input-group'>
-                                        <label className='form-label full-width fw-semibold'>Sort Order: </label>
-                                        <input className='form-control' type="text" defaultValue={memberToUpdate?.SortOrder} onChange={(e: any) => setSortOrder(e.target.value)} />
-                                    </div>
-                                </Col>
+                                        <Col md={2} sm={2}>
+                                            <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Suffix: </label>
+                                                <input className='form-control' type="text" defaultValue={memberToUpdate?.Suffix} onChange={(e: any) => setSuffix(e.target.value)} />
+                                            </div>
+                                        </Col>
 
-                                <Col md={3} sm={3} className=' px-1'>
-                                    <div className='input-group'>
-                                        <label className='form-label full-width fw-semibold'>Manage Categories: </label>
-                                        <select className='full-width' id="sites" defaultValue={memberToUpdate?.TimeCategory} onChange={(e: any) => setUserCategory(e.target.value)}>
-                                            <option>Select</option>
-                                            {uniqueCategories.map((elem: any) => <option value={elem.Title}>{elem.Title}</option>)}
-                                        </select>
-                                    </div></Col>
-                                    <Col md={2} sm={2}>
-                                    <div className='input-group'>
-                                        <label className='form-label full-width fw-semibold'>Team: </label>
-                                        <select className='full-width' id="sites" defaultValue={memberToUpdate?.Team} onChange={(e: any) => setUserTeam(e.target.value)}
-                                        >
-
-                                            <option>Select</option>
-                                            <option value="Management">Management</option>
-                                            <option value="SPFX">SPFX</option>
-                                            <option value="Shareweb">Shareweb</option>
-                                            <option value="Mobile">Mobile</option>
-                                            <option value="QA">QA</option>
-                                            <option value="Design">Design</option>
-                                            <option value="HR">HR</option>
-                                            <option value="Junior Task Manager">Junior Task Manager</option>
-                                            
-                                        </select>
-                                    </div>
+                                        <Col md={5} className='px-1'>
+                                            <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Group: </label>
+                                                <select className='full-width' id="sites" defaultValue={memberToUpdate?.UserGroup?.Id} onChange={(e: any) => setUserGroup(e.target.value)}>
+                                                    <option>Select</option>
+                                                    {TaskGroupsListData.map((elem: any) => <option value={elem?.Id}>{elem?.Title}</option>)}
+                                                </select>
+                                            </div>
+                                        </Col>
+                                    </Row>
                                 </Col>
-                                <Row className='mt-2'>
-                                <Col md={3} className='pe-0 ps-1'>
+                                <Col md={6} >
+                                    <Row>
+                                        <Col md={2} sm={2}>
+                                            <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Sort Order: </label>
+                                                <input className='form-control' type="text" defaultValue={memberToUpdate?.SortOrder} onChange={(e: any) => setSortOrder(e.target.value)} />
+                                            </div>
+                                        </Col>
+
+                                        <Col md={5} sm={5} className=' px-1'>
+                                            <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Manage Categories: </label>
+                                                <select className='full-width' id="sites" defaultValue={memberToUpdate?.TimeCategory} onChange={(e: any) => setUserCategory(e.target.value)}>
+                                                    <option>Select</option>
+                                                    {uniqueCategories.map((elem: any) => <option value={elem.Title}>{elem.Title}</option>)}
+                                                </select>
+                                            </div></Col>
+                                        <Col md={5} sm={5} className='ps-1'>
+                                            <div className='input-group'>
+                                                <label className='form-label full-width fw-semibold'>Team: </label>
+                                                <select className='full-width' id="sites" defaultValue={memberToUpdate?.Team} onChange={(e: any) => setUserTeam(e.target.value)}
+                                                >
+
+                                                    <option>Select</option>
+                                                    <option value="Management">Management</option>
+                                                    <option value="SPFX">SPFX</option>
+                                                    <option value="Shareweb">Shareweb</option>
+                                                    <option value="Mobile">Mobile</option>
+                                                    <option value="QA">QA</option>
+                                                    <option value="Design">Design</option>
+                                                    <option value="HR">HR</option>
+                                                    <option value="Junior Task Manager">Junior Task Manager</option>
+
+                                                </select>
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                </Col>
+                            </Row>
+                            <Row className='mt-2'>
+                                <Col className='pe-0 ps-1'>
                                     <div className='input-group class-input'>
                                         <label className='form-label full-width fw-semibold'>User Name:</label>
                                         <div className="w-100">
-                                        <PeoplePicker  context={context} titleText="" personSelectionLimit={1} showHiddenInUI={false}
-                                            principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => AssignedToUser(items)}
-                                            defaultSelectedUsers={email ? [email] : []} />
+                                            <PeoplePicker context={context} titleText="" personSelectionLimit={1} showHiddenInUI={false}
+                                                principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => AssignedToUser(items)}
+                                                defaultSelectedUsers={email ? [email] : []} />
                                         </div>
                                     </div>
                                 </Col>
-                                <Col className='ps-2' style={{width:"40%;"}}>
+                                <Col className='ps-2'>
                                     <div className='input-group class-input'>
                                         <label className='form-label full-width fw-semibold'>Approver:</label>
-                                        <div>
-                                        <PeoplePicker context={context} titleText="" 
-                                            personSelectionLimit={4} showHiddenInUI={false} principalTypes=
-                                            {[PrincipalType.User]} resolveDelay={1000} onChange={(items) => ApproverFunction(items)}
-                                            defaultSelectedUsers={emails.length > 0 ? emails : []} />
-                                            </div>
+                                        <div className="w-100">
+                                            <PeoplePicker context={context} titleText=""
+                                                personSelectionLimit={4} showHiddenInUI={false} principalTypes=
+                                                {[PrincipalType.User]} resolveDelay={1000} onChange={(items) => ApproverFunction(items)}
+                                                defaultSelectedUsers={emails.length > 0 ? emails : []} />
+                                        </div>
                                     </div>
                                 </Col>
-                                </Row>
                             </Row>
+
 
                             <Row className='mb-2'>
                                 <Col md={2}>
