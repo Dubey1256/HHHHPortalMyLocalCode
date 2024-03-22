@@ -113,14 +113,15 @@ const TimeEntryPopup = (item: any) => {
     Description: "",
     TaskTime: "",
   });
-  const [newData, setNewData] = React.useState({
-    Title: "",
-    TaskDate: "",
-    Description: "",
-    TimeSpentInMinute: "",
-    TimeSpentInHours: "",
-    TaskTime: "",
-  });
+  const initialData = {
+    Title: '',
+    TaskDate: '',
+    Description: '',
+    TimeSpentInMinute: '',
+    TimeSpentInHours: '',
+    TaskTime: '',
+};
+  const [newData, setNewData] = React.useState(initialData);
   const [saveEditTaskTimeChild, setsaveEditTaskTimeChild] = React.useState<any>(
     {}
   );
@@ -408,7 +409,7 @@ const TimeEntryPopup = (item: any) => {
   };
 
   const closeEditcategorypopup = (child: any) => {
-    setNewData(undefined);
+    setNewData(initialData);
     setcheckCategories(undefined);
     setEditcategory(false);
   };
@@ -423,7 +424,7 @@ const TimeEntryPopup = (item: any) => {
       setAddTaskTimepopup(true);
       setTimeInMinutes(0);
       setTimeInHours(0);
-      setNewData(undefined);
+      setNewData(initialData);
       SetWeek(1);
       setediteddata(undefined);
       setCount(1);
@@ -443,7 +444,7 @@ const TimeEntryPopup = (item: any) => {
       PopupType = Type;
       CategryTitle = "";
       setediteddata(undefined);
-      setNewData(undefined);
+      setNewData(initialData);
       setTimeInHours(0);
       setMyDatee(undefined);
       change = Moment().format();
@@ -467,7 +468,7 @@ const TimeEntryPopup = (item: any) => {
       var Childitem: any = [];
       setAddTaskTimepopup(true);
       // Array.push(childitem)
-      setNewData(undefined);
+      setNewData(initialData);
       Childitem.push(childitem);
       backupEdit?.forEach((val: any) => {
         if (val.Id == childitem.MainParentId) {
@@ -514,13 +515,12 @@ const TimeEntryPopup = (item: any) => {
     setAddTaskTimepopup(false);
     setcheckCategories(undefined);
     setTimeInHours(0);
-    setNewData(undefined);
+    setNewData(initialData);
     setTimeInMinutes(0);
     SetWeek(1);
     setediteddata(undefined);
     setCount(1);
     change = Moment().format();
-    setNewData(undefined)
     setMyDatee(new Date());
     setsaveEditTaskTimeChild({});
   };
@@ -651,7 +651,6 @@ const TimeEntryPopup = (item: any) => {
     if (target.checked) {
       setcheckCategories(Title);
       setcheckCategoriesTitle(Title)
-setNewData({...newData,Title:Title})
       setshowCat(Title);
     }
   };
@@ -731,6 +730,36 @@ setNewData({...newData,Title:Title})
 
   const getStructureData = function () {
     TaskCate = AllTimeSpentDetails;
+    function reverseArray(arr: any) {
+      const reversed = [];
+      for (let i = arr.length - 1; i >= 0; i--) {
+        reversed.push(arr[i]);
+      }
+      return reversed;
+    }
+    AllTimeSpentDetails.forEach((item: any) => {
+      if (item?.subRows != undefined && item?.subRows?.length > 0){
+      
+          item?.subRows.sort((a: any, b: any) => {
+        const dateA = new Date(reverseArray(a.TaskDate.split("/")).join("-"));
+        const dateB = new Date(reverseArray(b.TaskDate.split("/")).join("-"));
+
+        // compare by year
+        if (dateA.getFullYear() !== dateB.getFullYear()) {
+          return dateA.getFullYear() - dateB.getFullYear();
+        }
+
+        // compare by month
+        if (dateA.getMonth() !== dateB.getMonth()) {
+          return dateA.getMonth() - dateB.getMonth();
+        }
+
+        // compare by day
+        return dateA.getDate() - dateB.getDate();
+      });
+    
+    }
+    });
 
     AllTimeSpentDetails?.map((item: any) => {
       if (item?.subRows != undefined && item?.subRows?.length > 0) {
@@ -1082,6 +1111,7 @@ setNewData({...newData,Title:Title})
   //------------------------------------------------------Load Timesheet Data-----------------------------------------------------------------------------
   const EditData = async (items: any) => {
     AllTimeSpentDetails = [];
+
     TaskTimeSheetCategories = getSmartMetadataItemsByTaxType(
       AllMetadata,
       "TimesheetCategories"
@@ -1843,7 +1873,6 @@ setNewData({...newData,Title:Title})
 
   //-----------------------------------------------Create Add Timesheet--------------------------------------------------------------------------------------
   const AddTaskTime = async (child: any, Type: any) => {
-
     setbuttonDisable(true);
 
     if (Type == "EditTime") {
@@ -2439,8 +2468,9 @@ setNewData({...newData,Title:Title})
       });
   };
   const clearInput = () => {
-    setNewData(undefined)
+    setNewData(initialData )
     setcheckCategoriesTitle('');
+
    
   }
   //-----------------------------header of Main popup-----------------------------------------------------------------------------------------------------
@@ -2486,8 +2516,6 @@ setNewData({...newData,Title:Title})
           setTimeInHours(timeInHour.toFixed(2));
         }
         setTimeInMinutes(changeTime);
-
-      
     }
 
     if (type == "EditTime" || type == "CopyTime") {
@@ -3018,7 +3046,7 @@ setNewData({...newData,Title:Title})
                           type="text"
                           className="form-control"
                           name="TimeTitle"
-                          value={newData?.Title === '' ? checkCategories: newData?.Title }
+                          value={newData?.Title === '' ? (checkCategories|| checkCategoriesTitle): newData?.Title }
                           onChange={(e) =>
                             setNewData({ ...newData, Title: e.target.value })
                           }
