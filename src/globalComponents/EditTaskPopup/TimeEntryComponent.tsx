@@ -896,13 +896,13 @@ const TimeEntryPopup = (item: any) => {
       TaskTimeSheetCategoriesGrouping
     );
 
+    setBackupData(mergedFinalData);
     if(Flatview == true){
       flatviewOpen(Flatview,mergedFinalData)
     }
     else{
       backupEdit = mergedFinalData;
       setData(mergedFinalData);
-      setBackupData(mergedFinalData);
       setTimeSheet(TaskTimeSheetCategoriesGrouping);
       console.log("finalData", finalData);
      
