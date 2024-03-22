@@ -1415,7 +1415,7 @@ function CreateTaskComponent(props: any) {
                 hasCustomExpanded: false,
                 hasExpanded: false,
                 isHeaderNotAvlable: true,
-                size: 1,
+                size:20,
                 id: 'Id',
             },
             , {
