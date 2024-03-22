@@ -731,6 +731,36 @@ setNewData({...newData,Title:Title})
 
   const getStructureData = function () {
     TaskCate = AllTimeSpentDetails;
+    function reverseArray(arr: any) {
+      const reversed = [];
+      for (let i = arr.length - 1; i >= 0; i--) {
+        reversed.push(arr[i]);
+      }
+      return reversed;
+    }
+    AllTimeSpentDetails.forEach((item: any) => {
+      if (item?.subRows != undefined && item?.subRows?.length > 0){
+      
+          item?.subRows.sort((a: any, b: any) => {
+        const dateA = new Date(reverseArray(a.TaskDate.split("/")).join("-"));
+        const dateB = new Date(reverseArray(b.TaskDate.split("/")).join("-"));
+
+        // compare by year
+        if (dateA.getFullYear() !== dateB.getFullYear()) {
+          return dateA.getFullYear() - dateB.getFullYear();
+        }
+
+        // compare by month
+        if (dateA.getMonth() !== dateB.getMonth()) {
+          return dateA.getMonth() - dateB.getMonth();
+        }
+
+        // compare by day
+        return dateA.getDate() - dateB.getDate();
+      });
+    
+    }
+    });
 
     AllTimeSpentDetails?.map((item: any) => {
       if (item?.subRows != undefined && item?.subRows?.length > 0) {
@@ -1585,56 +1615,51 @@ setNewData({...newData,Title:Title})
             let count = 0
             mainParentId = foundCategory;
             mainParentTitle = checkCategories;
-            data?.forEach((val:any)=>{
-              val?.subRows.forEach(async (items:any)=>{
-                count++
-                if(items.AuthorId == CurntUserId){
-                  isAvailble = true;
-                  var NewparentId = items.ParentID;
-                  var NewMainparentId = items.MainParentId;
-                  var Datee: any = new Date(myDatee);
-                  if (Datee == "Invalid Date") {
-                    Datee = Moment().format();
+           data?.forEach((val: any) => {
+              val?.subRows.forEach(async (items: any) => {
+                  if (!isAvailble && items.AuthorId === CurntUserId) {
+                      count++;
+                      isAvailble = true;
+          
+                      var NewparentId = items.ParentID;
+                      var NewMainparentId = items.MainParentId;
+                      var Datee: any = new Date(myDatee);
+                      if (Datee == "Invalid Date") {
+                          Datee = Moment().format();
+                      }
+          
+                      let TimeSheetStatus: string = '';
+                      var TimeInH: any = TimeInMinutes / 60;
+                      TimeInH = TimeInH.toFixed(2);
+          
+                      var update: any = {};
+                      update["AuthorName"] = items.AuthorName;
+                      update["AuthorId"] = CurntUserId;
+                      update["AuthorImage"] = items.AuthorImage;
+                      update["Status"] = 'Draft';
+                      update["ID"] = items.ID + 1;
+                      update["Id"] = items.ID + 1;
+                      update["MainParentId"] = items.MainParentId;
+                      update["ParentID"] = items.ParentID;
+                      update["TaskTime"] = TimeInH;
+                      update["TaskTimeInMin"] = TimeInMinutes;
+                      update["TaskDate"] = Moment(Datee).format("DD/MM/YYYY");
+                      update["Description"] = postData?.Description;
+          
+                      val.AdditionalTime.push(update);
+          
+                      var ListId = items.siteType === "Migration" || items.siteType === "ALAKDigital" ? TimeSheetlistId : TimeSheetlistId;
+          
+                      await web.lists.getById(ListId).items.getById(NewparentId).update({
+                          AdditionalTimeEntry: JSON.stringify(val.AdditionalTime),
+                          TimesheetTitleId: NewMainparentId,
+                      }).then((res: any) => {
+                          console.log(res);
+                          setupdateData(updateData + 2);
+                      });
                   }
-                  let TimeSheetStatus: string = '';
-                 
-                  var TimeInH: any = TimeInMinutes / 60;
-                  TimeInH = TimeInH.toFixed(2);
-                  var update: any = {};
-                  update["AuthorName"] = items.AuthorName;
-                  update["AuthorId"] = CurntUserId;
-                  update["AuthorImage"] = items.AuthorImage;
-                  update["Status"] = 'Draft';
-                  update["ID"] = items.ID + 1;
-                  update["MainParentId"] = items.MainParentId;
-                  update["ParentID"] = items.ParentID;
-                  update["TaskTime"] = TimeInH;
-                  update["TaskTimeInMin"] = TimeInMinutes;
-                  update["TaskDate"] = Moment(Datee).format("DD/MM/YYYY");
-                  update["Description"] = postData?.Description;
-                  val.AdditionalTime.push(update);
-                  if (items.siteType == "Migration" || items.siteType == "ALAKDigital") {
-                    var ListId = TimeSheetlistId;
-                  } else {
-                    var ListId = TimeSheetlistId;
-                  }
-  
-                  await web.lists
-                    .getById(ListId)
-                    .items.getById(NewparentId)
-                    .update({
-                      AdditionalTimeEntry: JSON.stringify(val.AdditionalTime),
-                      TimesheetTitleId: NewMainparentId,
-                    })
-                    .then((res: any) => {
-                      console.log(res);
-                      setupdateData(updateData+2)
-                    });
-                
-                
-                 } 
-            })
-             })
+              });
+          });
          
            
              if (!isAvailble) {
