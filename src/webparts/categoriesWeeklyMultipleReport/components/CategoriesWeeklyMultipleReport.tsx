@@ -2741,6 +2741,44 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     });
     return checkObj;
   }
+  private GetCheckedObjectchild = (arr: any, checked: any, isCheckedValue: any) => {
+    let checkObj: any = [];
+    checked?.forEach((value: any) => {
+      arr?.forEach((element: any) => {
+        if (value == element.Id) {
+          element.checked = isCheckedValue;
+          checkObj.push({
+            Id: element?.Id,
+            Title: element?.Title
+          })
+          if (element?.children != undefined && element?.children?.length > 0) {
+            element?.children?.forEach((chElement: any) => {
+              if (value == chElement?.Id) {
+                chElement.checked = isCheckedValue;
+                checkObj?.push({
+                  Id: chElement?.Id,
+                  Title: chElement?.Title
+                })
+                if (chElement?.children != undefined && chElement?.children?.length > 0) {
+                  chElement?.children?.forEach((chElementlast: any) => {
+                    if (value == chElement?.Id) {
+                      chElementlast.checked = isCheckedValue;
+                      checkObj?.push({
+                        Id: chElementlast?.Id,
+                        Title: chElementlast?.Title
+                      })
+                    }
+                  });
+                }
+              }
+            });
+          }
+        }
+        
+      });
+    });
+    return checkObj;
+  }
   private GetCheckedAll = (arr: any) => {
     let checkObj: any = true
     arr?.forEach((element: any) => {
@@ -2793,17 +2831,17 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       NewItem?.children?.forEach((ObjItem: any, newIndex: any) => {
         if (ObjItem?.value === item?.value) {
           NewItem.children[newIndex].checked = item.checked;
-          filterGroups[index].checkedObj = this.GetCheckedObject(filterGroups[index]?.children, checked, item.checked)
+          filterGroups[index].checkedObj = this.GetCheckedObjectchild(NewItem.children[newIndex]?.children, checked, item.checked)
         }
         ObjItem?.children?.forEach((LastItem: any, lastindex: any) => {
           if (LastItem?.value === item?.value) {
             ObjItem.children[lastindex].checked = item.checked;
-            filterGroups[index].checkedObj = this.GetCheckedObject(filterGroups[index]?.children, checked, item.checked)
+            filterGroups[index].checkedObj = this.GetCheckedObjectchild(ObjItem.children[lastindex]?.children, checked, item.checked)
           }
           LastItem?.children?.forEach((newLastItem: any, newlastindex: any) => {
             if (newLastItem?.value === item?.value) {
               LastItem.children[newlastindex].checked = item.checked;
-              filterGroups[index].checkedObj = this.GetCheckedObject(LastItem.children[newlastindex]?.children, checked, item.checked)
+              filterGroups[index].checkedObj = this.GetCheckedObjectchild(LastItem.children[newlastindex]?.children, checked, item.checked)
             }
 
           })
