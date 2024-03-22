@@ -516,6 +516,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             if (preSetColumnOrdring?.tableHeightValue?.length > 0 && preSetColumnOrdring?.tableHeightValue != "") {
                 setWrapperHeight(preSetColumnOrdring?.tableHeightValue);
             }
+            defultColumnPrepare
             try {
                 if ((Object.keys(preSetColumnSettingVisibility) != null && Object.keys(preSetColumnSettingVisibility) != undefined) && Object.keys(preSetColumnSettingVisibility)?.length > 0 && preSetColumnOrdring?.tableId === items?.tableId) {
                     setColumnVisibility(preSetColumnSettingVisibility);
