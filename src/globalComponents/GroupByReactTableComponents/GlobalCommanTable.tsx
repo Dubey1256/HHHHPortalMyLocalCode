@@ -301,7 +301,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [wrapperHeight, setWrapperHeight] = React.useState(items?.wrapperHeight?.length > 0 ? items?.wrapperHeight : "");
     const [showPagination, setShowPagination] = React.useState(items?.showPagination ? items?.showPagination : false);
     const [showPaginationSetting, setShowPaginationSetting] = React.useState(false);
-    const [tableSettingPageSize, setTableSettingPageSize] = React.useState(0);
+    const [tableSettingPageSize, setTableSettingPageSize] = React.useState(items?.pageSize ? items?.pageSize : 0);
     // const [settingConfrigrationData, setSettingConfrigrationData] = React.useState([]);
     React.useEffect(() => {
         if (fixedWidth === true) {
@@ -493,10 +493,10 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         columnVisibilityResult[updatedSortDec.id] = updatedSortDec.isColumnVisible;
                     }
                     if (updatedSortDec.isColumnDefultSortingDesc === true) {
-                        let obj = { 'id': updatedSortDec.id, desc: true }
+                        let obj = { 'id': updatedSortDec.id, desc: true };
                         sortingDescData.push(obj);
                     } else if (updatedSortDec.isColumnDefultSortingAsc === true) {
-                        let obj = { 'id': updatedSortDec.id, desc: false }
+                        let obj = { 'id': updatedSortDec.id, desc: false };
                         sortingDescData.push(obj);
                     }
                     return updatedSortDec;
@@ -515,7 +515,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             }
             if (preSetColumnOrdring?.tableHeightValue?.length > 0 && preSetColumnOrdring?.tableHeightValue != "") {
                 setWrapperHeight(preSetColumnOrdring?.tableHeightValue);
-            }else {
+            } else {
                 setWrapperHeight(items?.wrapperHeight);
             }
             try {
@@ -686,12 +686,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         if (eventSetting?.showPageSizeSetting?.tablePageSize > 0) {
                             table?.setPageSize(eventSetting?.showPageSizeSetting?.tablePageSize);
                             setShowPagination(true);
-                            setShowPaginationSetting(true);
+                            // setShowPaginationSetting(true);
                             setTableSettingPageSize(eventSetting?.showPageSizeSetting?.tablePageSize)
                         } else {
                             setShowPagination(false);
-                            setShowPaginationSetting(false);
-                            setTableSettingPageSize(0)
+                            // setShowPaginationSetting(false);
+                            setTableSettingPageSize(items?.pageSize ? items?.pageSize : 0);
                         }
                     }
                 } catch (error) {
@@ -1251,12 +1251,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 if (eventSetting?.showPageSizeSetting?.tablePageSize > 0) {
                     table?.setPageSize(eventSetting?.showPageSizeSetting?.tablePageSize);
                     setShowPagination(true);
-                    setShowPaginationSetting(true);
+                    // setShowPaginationSetting(true);
                     setTableSettingPageSize(eventSetting?.showPageSizeSetting?.tablePageSize)
                 } else {
                     setShowPagination(false);
-                    setShowPaginationSetting(false);
-                    setTableSettingPageSize(0)
+                    // setShowPaginationSetting(false);
+                    setTableSettingPageSize(items?.pageSize ? items?.pageSize : 0)
                 }
             }
             setColumnVisibility((prevCheckboxes: any) => ({ ...prevCheckboxes, ...eventSetting?.columnSettingVisibility }));
@@ -1638,7 +1638,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 </div>
             </div>
             {
-                showPagination === true && showPaginationSetting === false && (table?.getFilteredRowModel()?.rows?.length > table.getState().pagination.pageSize) ? <div className="d-flex gap-2 pagnationpanel mb-3 mx-2">
+                showPagination === true && showPaginationSetting === false && (table?.getFilteredRowModel()?.rows?.length > table.getState().pagination.pageSize) ? <div className="d-flex gap-2 items-center mb-3 mx-2">
                     <button
                         className="border"
                         onClick={() => table.setPageIndex(0)}
