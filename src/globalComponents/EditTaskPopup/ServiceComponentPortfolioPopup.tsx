@@ -8,6 +8,7 @@ import {
     ColumnDef,
 } from "@tanstack/react-table";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../GroupByReactTableComponents/GlobalCommanTable";
+import RadimadeTable from "../../globalComponents/RadimadeTable"
 import HighlightableCell from "../GroupByReactTableComponents/highlight";
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 import { Web } from "sp-pnp-js";
@@ -881,7 +882,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                        
                         <div className="col-sm-12 p-0 smart">
                             <div className="">
-                                <GlobalCommanTable columns={columns}  customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons1}  ref={childRef} showHeader={true} data={data} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={IsSelectionsBelow} />
+                                <RadimadeTable configration={"AllCSF"} AllListId={Dynamic} tableId="TaskPopup" setCheckBoxData={setCheckBoxData} showProject={showProject}/>
                             </div>
                         </div>
                     </div>
