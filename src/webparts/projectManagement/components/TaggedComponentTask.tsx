@@ -1,6 +1,6 @@
 import { Panel, PanelType } from "office-ui-fabric-react";
 import * as React from "react";
-import ComponentTable from "../../componentProfile/components/ComponentPortfolioTable";
+import RadimadeTable from "../../../globalComponents/RadimadeTable"
 
 const TaggedComponentTask = (props: any) => {    
     const onRenderCustomHeaderMain = () => {
@@ -27,7 +27,7 @@ const TaggedComponentTask = (props: any) => {
                 onDismiss={() => callBack()}
                 isBlocking={false}>
                 <div >
-                    <ComponentTable props={props?.SelectedItem} UsedFrom={'ProjectManagement'} NextProp={props?.AllListId}/>
+                    <RadimadeTable SelectedItem={props?.SelectedItem} configration={'CSFAWT'} AllListId={props?.AllListId} TaskFilter={ "PercentComplete lt '0.90'"}/>
                   
                 </div>
                 <div className="text-end mt-3">
