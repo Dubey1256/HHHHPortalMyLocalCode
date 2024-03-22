@@ -200,9 +200,12 @@ function ReadyMadeTable(SelectedProp: any) {
             if (SelectedProp?.ComponentFilter != undefined) {
                 setIsUpdated(SelectedProp?.ComponentFilter)
             }
-            if (SelectedProp?.configration == "AllCSF") {
+            if (SelectedProp?.configration == "AllCSF" && SelectedProp?.showProject === false) {
                 GetComponents();
-            } else if (SelectedProp?.configration == "AllAwt") {
+            }
+            else if(SelectedProp?.configration == "AllCSF" && SelectedProp?.showProject === true) {
+            GetProjectData()
+            }else if (SelectedProp?.configration == "AllAwt") {
                 // GetComponents();
                 // setSiteConfig()
                 LoadAllSiteTasks();
@@ -217,6 +220,17 @@ function ReadyMadeTable(SelectedProp: any) {
 
         }
     }, [AllMetadata?.length > 0 && portfolioTypeData?.length > 0])
+ const GetProjectData= async()=>{
+        let results = await globalCommon.GetServiceAndComponentAllData(ContextValue)
+        if (results?.AllData?.length > 0) {
+            let componentDetails: any = results?.AllData;
+            let groupedComponentData: any = results?.GroupByData;
+            let groupedProjectData: any = results?.ProjectData;
+            let AllProjects: any = results?.FlatProjectData
+            setData(groupedProjectData)
+            setLoaded(true)
+          }
+    }
     const getTaskUsers = async () => {
         let web = new Web(ContextValue.siteUrl);
         let taskUsers = [];
@@ -1083,6 +1097,11 @@ function ReadyMadeTable(SelectedProp: any) {
             DataPrepareForCSFAWT()
         }
     }, [(AllMasterTasksData.length > 0 && AllSiteTasksData?.length > 0)]);
+ React.useEffect(() => {
+        if (AllMasterTasksData?.length > 0) {
+            DataPrepareForCSFAWT()
+        }
+    }, [(AllMasterTasksData.length > 0 && SelectedProp?.configration == "AllCSF")]);
 
 
     function DataPrepareForCSFAWT(){
@@ -2195,6 +2214,9 @@ function ReadyMadeTable(SelectedProp: any) {
             array = [];
         }
         checkedList1.current = array;
+     if(childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length>0 && SelectedProp?.setCheckBoxData !== undefined){
+            SelectedProp?.setCheckBoxData([childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original])
+        }
     }, []);
 
 
