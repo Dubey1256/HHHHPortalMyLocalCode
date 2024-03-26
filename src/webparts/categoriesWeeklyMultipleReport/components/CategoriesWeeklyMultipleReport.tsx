@@ -541,7 +541,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.callBackDatapoup = this.callBackDatapoup.bind(this);
     this.showGraph = this.showGraph.bind(this);
     this.ClickBulkUpdate = this.ClickBulkUpdate.bind(this);
-    this.OpenPopupQuick =this.OpenPopupQuick.bind(this);
+    this.OpenPopupQuick = this.OpenPopupQuick.bind(this);
     // this.customTableHeaderButtons;
 
   }
@@ -582,10 +582,15 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
   }
   private OpenPopupQuick = function (e: any, item: any) {
-    this.setState({ QuickEditItem: item })
-    // this.setState({ IsRoundUpValues: true, bindrowValue: item, scrollPosition: window.pageYOffset })
-    this.setState({ IsRoundUpValues: true, bindrowValue: item})
-    // this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+    try {
+      let newValue = globalCommon?.deepCopy(item)
+      this.setState({ QuickEditItem: newValue })
+      // this.setState({ IsRoundUpValues: true, bindrowValue: item, scrollPosition: window.pageYOffset })
+      this.setState({ IsRoundUpValues: true, bindrowValue: newValue })
+      // this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+    } catch (e) {
+      console.log(e);
+    }
   }
   private cancelIsRoundUpValues = (type: any) => {
     this.setState({ IsRoundUpValues: false, scrollPosition: window.pageYOffset }, () => {
@@ -598,53 +603,57 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({ IsOpenbulkUpdate: false });
   }
   private saveIsRoundUpValues = (type: any) => {
+    try {
 
-    let QuickEditItem = (this?.state?.QuickEditItem);
-    this?.state?.AllTimeEntry?.forEach((pare: any) => {
-      if (pare.getUserName === this.state.bindrowValue?.getParentRows()[0]?.original?.getUserName) {
-        pare?.subRows?.forEach((child: any, indexitem: any) => {
-          if (QuickEditItem?.index === indexitem) {
-            child.Rountfiguretime = this.state.bindrowValue?.original?.Rountfiguretime;
-            child.IsColor = true;
-            console.log(child.Rountfiguretime);
-            pare.RoundAdjustedTime = ((parseFloat(pare?.RoundAdjustedTime || 0) + parseFloat(child?.Rountfiguretime || 0)))
-            pare.RoundAdjustedTime = ((parseFloat(pare?.RoundAdjustedTime || 0) - parseFloat(QuickEditItem?.original?.Rountfiguretime || 0)))// + (parseFloat(item?.RoundAdjustedTime) + parseFloat(obj.Rountfiguretime)))
-            this.RoundAdjustedTimeTimeEntry = (parseFloat(this.RoundAdjustedTimeTimeEntry || 0) - parseFloat(QuickEditItem?.original?.Rountfiguretime || 0))
-            this.RoundAdjustedTimeTimeEntry = (parseFloat(this.RoundAdjustedTimeTimeEntry || 0) + parseFloat(child.Rountfiguretime || 0))
-            this.RoundAdjustedTimeTimeEntry = this.RoundAdjustedTimeTimeEntry.toFixed(2);
+      let QuickEditItem = globalCommon?.deepCopy(this?.state?.QuickEditItem);
+      this?.state?.AllTimeEntry?.forEach((pare: any) => {
+        if (pare.getUserName === this.state.bindrowValue?.getParentRows()[0]?.original?.getUserName) {
+          pare?.subRows?.forEach((child: any, indexitem: any) => {
+            if (QuickEditItem?.index === indexitem) {
+              child.Rountfiguretime = this.state.bindrowValue?.original?.Rountfiguretime;
+              child.IsColor = true;
+              console.log(child.Rountfiguretime);
+              pare.RoundAdjustedTime = ((parseFloat(pare?.RoundAdjustedTime || 0) + parseFloat(child?.Rountfiguretime || 0)))
+              pare.RoundAdjustedTime = ((parseFloat(pare?.RoundAdjustedTime || 0) - parseFloat(QuickEditItem?.original?.Rountfiguretime || 0)))// + (parseFloat(item?.RoundAdjustedTime) + parseFloat(obj.Rountfiguretime)))
+              this.RoundAdjustedTimeTimeEntry = (parseFloat(this.RoundAdjustedTimeTimeEntry || 0) - parseFloat(QuickEditItem?.original?.Rountfiguretime || 0))
+              this.RoundAdjustedTimeTimeEntry = (parseFloat(this.RoundAdjustedTimeTimeEntry || 0) + parseFloat(child.Rountfiguretime || 0))
+              this.RoundAdjustedTimeTimeEntry = this.RoundAdjustedTimeTimeEntry.toFixed(2);
 
-          }
-        })
-      }
+            }
+          })
+        }
 
-    })
-    this.setState({
-      showDateTime: (
-        <span className='alignCenter'>
-          <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({(this?.TotalTimeEntry / 8).toFixed(2)} days)</label>
-          <label className="mx-1">|</label>
-          <label>
-            <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({(this?.SmartTotalTimeEntry / 8).toFixed(2)} days)</div>
-            <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({(this?.RoundSmartTotalTimeEntry / 8).toFixed(2)} days)</div>
-          </label>
-          <label className="mx-1">|</label>
-          <label>
-            <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
-            <div className={'text-danger  boldClable'}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
-          </label>
-        </span>
-      ),
-    });
-    this.setState({ IsRoundUpValues: false });
-    this.setState({ isFocused: true });
-    this.renderData = [];
-    this.renderData = this.renderData.concat(this.state.showDateTime)
-    this.refreshData();
-    window.scrollTo(0, this.state.scrollPosition || 0);
+      })
+      this.setState({
+        showDateTime: (
+          <span className='alignCenter'>
+            <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({(this?.TotalTimeEntry / 8).toFixed(2)} days)</label>
+            <label className="mx-1">|</label>
+            <label>
+              <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({(this?.SmartTotalTimeEntry / 8).toFixed(2)} days)</div>
+              <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({(this?.RoundSmartTotalTimeEntry / 8).toFixed(2)} days)</div>
+            </label>
+            <label className="mx-1">|</label>
+            <label>
+              <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
+              <div className={'text-danger  boldClable'}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
+            </label>
+          </span>
+        ),
+      });
+      this.setState({ IsRoundUpValues: false });
+      this.setState({ isFocused: true });
+      this.renderData = [];
+      this.renderData = this.renderData.concat(this.state.showDateTime)
+      this.refreshData();
+      // window.scrollTo(0, this.state.scrollPosition || 0);
 
 
+    } catch (e) {
+      console.log(e)
+    }
   }
- 
+
   private hideItems = function (e: any, item: any) {
     let falg: any = false;
     let QuickEditItem = JSON.parse(this?.state?.QuickEditItem);
@@ -2774,7 +2783,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             });
           }
         }
-        
+
       });
     });
     return checkObj;
@@ -3946,7 +3955,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       }
     }));
   }
- 
+
   // private bulkUpdateWeeklyReport = () => {
   //   this.state?.selectedAllData?.forEach((obj: any) => {
   //     console.log(obj);
@@ -3957,24 +3966,24 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   // }
   private saveBulkupdateData = (type: any) => {
 
-   // let QuickEditItem = JSON.parse(this?.state?.QuickEditItem);
-    this?.state?.selectedAllData?.forEach((QuickEditItem:any) =>{
-    this?.state?.AllTimeEntry?.forEach((pare: any ) => {
-      if (pare.getUserName === QuickEditItem?.getParentRows()[0]?.original?.getUserName) {
-        pare?.subRows?.forEach((child: any, indexitem: any) => {
-          if (QuickEditItem?.index === indexitem) {
-            child.Rountfiguretime = child.Rountfiguretime + this?.state?.bulkupdatetext;
-            child.IsColor = true;
-            console.log(child.Rountfiguretime);
-            pare.RoundAdjustedTime = ((parseFloat(pare?.RoundAdjustedTime || 0) + parseFloat(this?.state?.bulkupdatetext || 0)))
-            this.RoundAdjustedTimeTimeEntry = (parseFloat(this.RoundAdjustedTimeTimeEntry || 0) + parseFloat(this?.state?.bulkupdatetext || 0))
-            this.RoundAdjustedTimeTimeEntry = this.RoundAdjustedTimeTimeEntry.toFixed(2);
+    // let QuickEditItem = JSON.parse(this?.state?.QuickEditItem);
+    this?.state?.selectedAllData?.forEach((QuickEditItem: any) => {
+      this?.state?.AllTimeEntry?.forEach((pare: any) => {
+        if (pare.getUserName === QuickEditItem?.getParentRows()[0]?.original?.getUserName) {
+          pare?.subRows?.forEach((child: any, indexitem: any) => {
+            if (QuickEditItem?.index === indexitem) {
+              child.Rountfiguretime = child.Rountfiguretime + this?.state?.bulkupdatetext;
+              child.IsColor = true;
+              console.log(child.Rountfiguretime);
+              pare.RoundAdjustedTime = ((parseFloat(pare?.RoundAdjustedTime || 0) + parseFloat(this?.state?.bulkupdatetext || 0)))
+              this.RoundAdjustedTimeTimeEntry = (parseFloat(this.RoundAdjustedTimeTimeEntry || 0) + parseFloat(this?.state?.bulkupdatetext || 0))
+              this.RoundAdjustedTimeTimeEntry = this.RoundAdjustedTimeTimeEntry.toFixed(2);
 
-          }
-        })
-      }
+            }
+          })
+        }
 
-    })
+      })
     })
     this.setState({
       showDateTime: (
@@ -3993,7 +4002,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         </span>
       ),
     });
-    this.setState({ IsOpenbulkUpdate: false ,bulkupdatetext:0});
+    this.setState({ IsOpenbulkUpdate: false, bulkupdatetext: 0 });
     this.setState({ isFocused: true });
     this.renderData = [];
     this.renderData = this.renderData.concat(this.state.showDateTime)
@@ -4003,7 +4012,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
   }
   public render(): React.ReactElement<ICategoriesWeeklyMultipleReportProps> {
-   const customTableHeaderButtons = (
+    const customTableHeaderButtons = (
       <>
         <a className='barChart' title='Open Bar Graph' onClick={(e) => this.showGraph(e)}><BsBarChartLine /></a>
         <button
@@ -4456,7 +4465,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
                 <div className="col-sm-6">
                   <div className='input-group' key={this?.state?.bulkupdatetext}>
-                    <input type="text" defaultValue={this?.state?.bulkupdatetext ==="" ?0 :this?.state?.bulkupdatetext}
+                    <input type="text" defaultValue={this?.state?.bulkupdatetext === "" ? 0 : this?.state?.bulkupdatetext}
                       placeholder="Adjusted Hours (Roundup)" className="form-control" onChange={(e) => this.setState({ bulkupdatetext: parseFloat(e.target.value) })} autoComplete="off"></input>
                   </div>
                 </div>
