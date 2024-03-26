@@ -2076,9 +2076,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                 onMouseEnter={this.showOnHoldReason}
                                 onMouseLeave={this.hideOnHoldReason}
                               />
+                              {this.state.showOnHoldComment && (
                               <span className="tooltip-text tooltipboxs  pop-right">
-                                {this.state.showOnHoldComment &&
-                                  comments.map((item: any, index: any) =>
+                                  {comments.map((item: any, index: any) =>
                                     item.CommentFor !== undefined &&
                                       item.CommentFor === "On-Hold" ? (
                                       <div key={index}>
@@ -2105,7 +2105,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                       </div>
                                     ) : null
                                   )}
-                              </span>
+                              </span>)}
                             </div>
                           ) : null}
                           <EditableField

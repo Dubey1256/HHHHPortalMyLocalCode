@@ -17,6 +17,7 @@ import CustomAlert from "../TimeEntry/CustomAlert";
 import Tooltip from "../Tooltip";
 import * as globalCommon from "../globalCommon";
 import HighlightableCell from "../highlight";
+import { useContext,createContext } from "react";
 import {
   MdKeyboardArrowLeft,
   MdKeyboardArrowRight,
@@ -58,15 +59,11 @@ var PopupType: any = "";
 var PopupTypeCat: any = false;
 const SP = spfi();
 let AllMetadata: [] = [];
-
+let checkedFlat = false;
 const TimeEntryPopup = (item: any) => {
   if (item?.props?.siteUrl != undefined) {
-    //var Url = item?.props?.siteUrl.split("https://hhhhteams.sharepoint.com");
     let index = item?.props?.siteUrl.indexOf('/', 'https://'.length);
-
-    // Extract the substring after the domain
     RelativeUrl = item?.props?.siteUrl.substring(index);
-    //RelativeUrl = extractedUrl[1];
     CurrentSiteUrl = item?.props?.siteUrl;
     PortfolioType = item?.props?.Portfolio_x0020_Type;
     CurntUserId = item?.Context?.pageContext?._legacyPageContext.userId;
@@ -669,7 +666,7 @@ const TimeEntryPopup = (item: any) => {
   // };
   React.useEffect(() => {
     GetTimeSheet();
-    GetSmartMetadata();
+     GetSmartMetadata();
   }, [updateData, updateData2]);
 
   //----------------------------------------Load Dynamic Lists----------------------------------------------------------------------------------------
@@ -896,6 +893,7 @@ const TimeEntryPopup = (item: any) => {
       TaskTimeSheetCategoriesGrouping
     );
 
+
     setBackupData(mergedFinalData);
     if(Flatview == true){
       flatviewOpen(Flatview,mergedFinalData)
@@ -903,6 +901,7 @@ const TimeEntryPopup = (item: any) => {
     else{
       backupEdit = mergedFinalData;
       setData(mergedFinalData);
+      setBackupData(mergedFinalData);
       setTimeSheet(TaskTimeSheetCategoriesGrouping);
       console.log("finalData", finalData);
      
@@ -916,6 +915,8 @@ const TimeEntryPopup = (item: any) => {
 
     setModalIsTimeOpenToTrue();
   };
+
+
   const setModalIsTimeOpenToTrue = () => {
     setTimeModalIsOpen(true);
   };
@@ -1083,7 +1084,6 @@ const TimeEntryPopup = (item: any) => {
   //------------------------------------------------------Load Timesheet Data-----------------------------------------------------------------------------
   const EditData = async (items: any) => {
     AllTimeSpentDetails = [];
-
     TaskTimeSheetCategories = getSmartMetadataItemsByTaxType(
       AllMetadata,
       "TimesheetCategories"
@@ -1583,10 +1583,62 @@ const TimeEntryPopup = (item: any) => {
             var listUri: string = `${RelativeUrl}/Lists/${listNames}`;
           }
           if (foundCategory) {
+            let isAvailble = false;
+            let count = 0
             mainParentId = foundCategory;
             mainParentTitle = checkCategories;
-            createItemMainList();
-          } else {
+            data?.forEach((val: any) => {
+              val?.subRows.forEach(async (items: any) => {
+                  if (!isAvailble && items.AuthorId === CurntUserId) {
+                      count++;
+                      isAvailble = true;
+          
+                      var NewparentId = items.ParentID;
+                      var NewMainparentId = items.MainParentId;
+                      var Datee: any = new Date(myDatee);
+                      if (Datee == "Invalid Date") {
+                          Datee = Moment().format();
+                      }
+          
+                      let TimeSheetStatus: string = '';
+                      var TimeInH: any = TimeInMinutes / 60;
+                      TimeInH = TimeInH.toFixed(2);
+          
+                      var update: any = {};
+                      update["AuthorName"] = items.AuthorName;
+                      update["AuthorId"] = CurntUserId;
+                      update["AuthorImage"] = items.AuthorImage;
+                      update["Status"] = 'Draft';
+                      update["ID"] = items.ID + 1;
+                      update["Id"] = items.ID + 1;
+                      update["MainParentId"] = items.MainParentId;
+                      update["ParentID"] = items.ParentID;
+                      update["TaskTime"] = TimeInH;
+                      update["TaskTimeInMin"] = TimeInMinutes;
+                      update["TaskDate"] = Moment(Datee).format("DD/MM/YYYY");
+                      update["Description"] = postData?.Description;
+          
+                      val.AdditionalTime.push(update);
+          
+                      var ListId = items.siteType === "Migration" || items.siteType === "ALAKDigital" ? TimeSheetlistId : TimeSheetlistId;
+          
+                      await web.lists.getById(ListId).items.getById(NewparentId).update({
+                          AdditionalTimeEntry: JSON.stringify(val.AdditionalTime),
+                          TimesheetTitleId: NewMainparentId,
+                      }).then((res: any) => {
+                          console.log(res);
+                          setupdateData(updateData + 2);
+                      });
+                  }
+              });
+          });
+         
+           
+             if (!isAvailble) {
+              createItemMainList(); 
+          }
+          }
+           else {
             let itemMetadataAdded = {
               Title:
                 newData != undefined &&
@@ -1787,6 +1839,7 @@ const TimeEntryPopup = (item: any) => {
 
   //-----------------------------------------------Create Add Timesheet--------------------------------------------------------------------------------------
   const AddTaskTime = async (child: any, Type: any) => {
+
     setbuttonDisable(true);
 
     if (Type == "EditTime") {
@@ -2419,7 +2472,6 @@ const TimeEntryPopup = (item: any) => {
    else{
     changeTime = Number(e.target.value);
     if (type === "AddTime" || type == "AddTime Category") {
-      
         if (changeTime !== undefined) {
           const timeInHour: any = changeTime / 60;
           setTimeInHours(timeInHour.toFixed(2));
@@ -2584,6 +2636,7 @@ const TimeEntryPopup = (item: any) => {
     }
     else{
       Flatview = e.target.checked;
+      checkedFlat = e.target.checked;
     }
    
     if (Flatview == false) {
@@ -2853,6 +2906,7 @@ const TimeEntryPopup = (item: any) => {
   );
 
   return (
+  
     <div className={PortfolioType == "Service" ? "serviepannelgreena" : ""}>
       <div>
         <div className="col-sm-12 p-0">
@@ -3565,8 +3619,7 @@ const TimeEntryPopup = (item: any) => {
                   {PopupTypeCat == true ? (
                     <button
                       disabled={
-                        (PopupType == "AddTime" ||
-                          PopupType == "AddTime Category") &&
+                        (PopupType == "AddTime" || PopupType == "AddTime Category") &&
                           TimeInMinutes <= 0
                           ? true
                           : false
@@ -3580,8 +3633,7 @@ const TimeEntryPopup = (item: any) => {
                   ) : (
                     <button
                       disabled={
-                        (PopupType == "AddTime" ||
-                          PopupType == "AddTime Category") &&
+                        (PopupType == "AddTime" || PopupType == "AddTime Category") &&
                           TimeInMinutes <= 0
                           ? true
                           : false || buttonDisable == true
