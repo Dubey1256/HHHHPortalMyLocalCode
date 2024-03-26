@@ -20,7 +20,7 @@ const ExpndTable = (props: any) => {
     const spPageCanvasContentDiv = document.getElementById('spPageCanvasContent');
 
     if (spPageCanvasContentDiv) {
-      const seventhChild = spPageCanvasContentDiv.querySelector(':scope > div > div > div > div > div > div > div');
+      const seventhChild = spPageCanvasContentDiv.querySelector(':scope > div > div > div > div > div > div > div > div');
 
       if (seventhChild) {
         seventhChild.id = 'increasePageWidth';
