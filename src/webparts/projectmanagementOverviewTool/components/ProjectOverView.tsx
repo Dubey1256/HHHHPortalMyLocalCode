@@ -88,7 +88,7 @@ export default function ProjectOverview(props: any) {
             const params = new URLSearchParams(window.location.search);
             let query = params.get("SelectedView");
             if (query == 'ProjectsTask') {
-                setSelectedView('grouped')
+                setSelectedView('Projects')
             }
             if (query == 'TodaysTask') {
                 changeToggleWorkingToday()
