@@ -1973,7 +1973,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                             <SlArrowRight />
                                         )}
                                     </span>
-                                    Client Category Summarization Tool
+                                    Client Category Identification Tool
                                     <span className="hover-text alignIcon">
                                         <span className="svg__iconbox svg__icon--info dark"></span>
                                         <span className="tooltip-text pop-right">
