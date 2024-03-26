@@ -1359,73 +1359,73 @@ export const getDataByKey = (DataArray: any, keyName: any) => {
 
 // This is used for send MS Teams Notification for Bottleneck and Attention Category Tasks 
 
-export const SendMSTeamsNotificationForWorkingActions = (RequiredData: any) => {
-    return new Promise(async (resolve, reject) => {
-        const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject } = RequiredData || {};
-        let TaskInformation: any = GenerateMSTeamsNotification(UpdatedDataObject);
-        const containerDiv = document.createElement('div');
-        const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
-        ReactDOM.render(reactElement, containerDiv);
-        let finalTaskInfo: any = containerDiv.innerHTML;
-        let TeamsMessage = `<b>Hi ${ReceiverName},</b> 
-        <p></p>
-        You have been tagged as <b>${ActionType}</b> in the below task.
-        <p>
-        <br/>
-         <span>${ReasonStatement ? "<b>" + ActionType + " Point : </b>" + ReasonStatement + " <p></p>" : ''}</span>
-        <b>Task Details : </b> <span>${finalTaskInfo}</span>
-        </br>
-        <p>
-        Task Link:  
-        <a href=${UpdatedDataObject?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
-         Click-Here
-        </a>
-        <p></p>
-        <b>
-        Thanks, </br>
-        Task Management Team
-        </b>`;
-
-        if (sendUserEmail?.length > 0) {
-            await GlobalCommon.SendTeamMessage(
-                sendUserEmail,
-                TeamsMessage,
-                Context
-            );
-        }
-    })
-
-}
-
-// export const SendMSTeamsNotificationForWorkingActions = async (RequiredData:any) => {
-//     try {
+// export const SendMSTeamsNotificationForWorkingActions = (RequiredData: any) => {
+//     return new Promise(async (resolve, reject) => {
 //         const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject } = RequiredData || {};
-//         const TaskInformation = GenerateMSTeamsNotification(UpdatedDataObject);
-//         const finalTaskInfo = `<${TaskInformation.type} {...TaskInformation.props} />`;
-
-//         const TeamsMessage = `
-//             <b>Hi ${ReceiverName},</b> 
-//             <p></p>
-//             You have been tagged as <b>${ActionType}</b> in the below task.
-//             <p><br/></p>
-//             <span>Reason : ${ReasonStatement}</span>
-//             <p></p>
-//             <b>Task Details : </b> <span>${finalTaskInfo}</span>
-//             <p></p>
-//             Task Link: <a href="${UpdatedDataObject?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}">Click here</a>
-//             <p></p>
-//             <b>Thanks,<br/>Task Management Team</b>
-//         `;
+//         let TaskInformation: any = GenerateMSTeamsNotification(UpdatedDataObject);
+//         const containerDiv = document.createElement('div');
+//         const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
+//         ReactDOM.render(reactElement, containerDiv);
+//         let finalTaskInfo: any = containerDiv.innerHTML;
+//         let TeamsMessage = `<b>Hi ${ReceiverName},</b> 
+//         <p></p>
+//         You have been tagged as <b>${ActionType}</b> in the below task.
+//         <p>
+//         <br/>
+//          <span>${ReasonStatement ? "<b>" + ActionType + " Point : </b>" + ReasonStatement + " <p></p>" : ''}</span>
+//         <b>Task Details : </b> <span>${finalTaskInfo}</span>
+//         </br>
+//         <p>
+//         Task Link:  
+//         <a href=${UpdatedDataObject?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
+//          Click-Here
+//         </a>
+//         <p></p>
+//         <b>
+//         Thanks, </br>
+//         Task Management Team
+//         </b>`;
 
 //         if (sendUserEmail?.length > 0) {
-//             await GlobalCommon.SendTeamMessage(sendUserEmail, TeamsMessage, Context);
+//             await GlobalCommon.SendTeamMessage(
+//                 sendUserEmail,
+//                 TeamsMessage,
+//                 Context
+//             );
 //         }
-//         return 'Notification sent successfully';
-//     } catch (error) {
-//         console.error('Error sending notification:', error);
-//         throw error;
-//     }
-// };
+//     })
+
+// }
+
+export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any) => {
+    try {
+        const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject } = RequiredData || {};
+        const TaskInformation = GenerateMSTeamsNotification(UpdatedDataObject);
+        const finalTaskInfo = `<${TaskInformation.type} {...TaskInformation.props} />`;
+
+        const TeamsMessage = `
+            <b>Hi ${ReceiverName},</b> 
+            <p></p>
+            You have been tagged as <b>${ActionType}</b> in the below task.
+            <p><br/></p>
+            <span>Reason : ${ReasonStatement}</span>
+            <p></p>
+            <b>Task Details : </b> <span>${finalTaskInfo}</span>
+            <p></p>
+            Task Link: <a href="${UpdatedDataObject?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}">Click here</a>
+            <p></p>
+            <b>Thanks,<br/>Task Management Team</b>
+        `;
+
+        if (sendUserEmail?.length > 0) {
+            await GlobalCommon.SendTeamMessage(sendUserEmail, TeamsMessage, Context);
+        }
+        return 'Notification sent successfully';
+    } catch (error) {
+        console.error('Error sending notification:', error);
+        throw error;
+    }
+};
 
 
 export const MSTeamsReminderMessage = (RequiredData: any) => {
@@ -1685,45 +1685,62 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
 
 // This is used for Send Email Notification for the Information Request Category Tasks 
 
-export const SendEmailNotificationForIRCTasks = (RequiredData: any) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let EmailMessage: any = '';
-            const { ItemDetails, ReceiverEmail, Context } = RequiredData || {};
-            EmailMessage = GenerateMSTeamsNotification(ItemDetails);
-            const containerDiv = document.createElement('div');
-            const reactElement = React.createElement(EmailMessage?.type, EmailMessage?.props);
-            ReactDOM.render(reactElement, containerDiv);
-            const FinalMSG = "<style>p>br {display: none;}</style>" + containerDiv.innerHTML;
-            const EmailProps = {
-                To: ReceiverEmail,
-                Subject: "[ Information Request -{" + ItemDetails?.siteType + "} - " + ItemDetails.TaskId + " ]" + ItemDetails?.Title + " Request is completed",
-                Body: FinalMSG
-            };
-            if (ReceiverEmail?.length > 0) {
-                const sp = spfi().using(spSPFx(Context));
-                const data = sp.utility.sendEmail({
-                    Body: EmailProps.Body,
-                    Subject: EmailProps.Subject,
-                    To: EmailProps.To,
-                    AdditionalHeaders: {
-                        "content-type": "text/html"
-                    },
-                }).then((res: any) => {
-                    console.log("Email Sent!");
-                    console.log(data);
-                }).catch((error: any) => {
-                    console.log("Error", error.message)
-                })
-                resolve(data);
-            } else {
-                reject("Receiver email not provided");
-            }
-        } catch (error) {
+export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredData:any) => {
+    try {
+        const { ItemDetails, ReceiverEmail, Context, usedFor, ReceiverName } = requiredData || {};
+        const emailMessage = GenerateMSTeamsNotification(ItemDetails);
+        const containerDiv = document.createElement('div');
+        const reactElement = React.createElement(emailMessage?.type, emailMessage?.props);
+        ReactDOM.render(reactElement, containerDiv);
 
+        let emailSubject = '';
+        let messageContent = '';
+
+        if (usedFor === "Information-Request") {
+            emailSubject = `[Information Request - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title}. Request is completed`;
+            messageContent = 'Task created from your end for Information Request has been completed. Please take necessary action';
         }
-    })
-}
+        if (usedFor === "Priority-Check") {
+            emailSubject = `[Task Priority Check - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title}. Please have a look`;
+            messageContent = 'Task created from your end has been set to 8%. Please take necessary action';
+        }
+
+        const emailBodyContent = `<p>Hi ${ReceiverName},</b></p>
+            <p>${messageContent}</p>
+            <b>Task Description:</b> ${containerDiv.innerHTML}
+            <p>Task Link: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
+            ${ItemDetails?.TaskId}-${ItemDetails?.Title}</a></p>
+            <p><b>Thanks,</b></p>
+            <p><b>Task Management Team</b></p>`;
+
+        const emailProps = {
+            To: ReceiverEmail,
+            Subject: emailSubject,
+            Body: emailBodyContent
+        };
+
+        if (ReceiverEmail?.length > 0) {
+            const sp = spfi().using(spSPFx(Context));
+            const data = await sp.utility.sendEmail({
+                Body: emailProps.Body,
+                Subject: emailProps.Subject,
+                To: emailProps.To,
+                AdditionalHeaders: {
+                    "content-type": "text/html"
+                },
+            });
+            console.log("Email Sent!");
+            console.log(data);
+            return data;
+        } else {
+            throw new Error("Receiver email not provided");
+        }
+    } catch (error) {
+        console.error("Error:", error.message);
+        throw error;
+    }
+};
+
 
 // This is used for Prepare Data on The basis of sort order 
 

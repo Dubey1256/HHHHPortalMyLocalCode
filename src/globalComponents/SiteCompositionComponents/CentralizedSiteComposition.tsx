@@ -1352,7 +1352,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 if (ItemData.ClientCategories?.length > 0) {
                     ItemData.ClientCategories = addObjectToArrayIfNotExists(ItemData.ClientCategories, SelectedCC)
                 } else {
-                   SelectedCC.checked = true;
+                    SelectedCC.checked = true;
                     ItemData.ClientCategories = [SelectedCC];
                 }
             }

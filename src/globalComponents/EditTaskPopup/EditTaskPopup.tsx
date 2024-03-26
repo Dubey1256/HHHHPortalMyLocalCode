@@ -319,7 +319,11 @@ const EditTaskPopup = (Items: any) => {
             SmartMetaDataListInformations();
             GetAllComponentAndServiceData("Component");
             AddImageDescriptionsIndex = undefined;
+            if (Items.Items.siteType == "Offshore Tasks") {
+                Items.Items.siteType = "Offshore%20Tasks";
+            }
         }
+
     }, [FeedBackCount]);
 
 
@@ -2196,7 +2200,7 @@ const EditTaskPopup = (Items: any) => {
                 if (StatusInput == 90) {
                     EditData.IsTodaysTask = false;
                     EditData.workingThisWeek = false;
-                    if (EditData.siteType == "Offshore Tasks") {
+                    if (EditData.siteType == "Offshore%20Tasks") {
                         setWorkingMember(36);
                     } else if (DesignStatus) {
                         setWorkingMember(301);
@@ -2359,7 +2363,7 @@ const EditTaskPopup = (Items: any) => {
             if (StatusData.value == 90) {
                 EditData.IsTodaysTask = false;
                 EditData.workingThisWeek = false;
-                if (EditData.siteType == "Offshore Tasks") {
+                if (EditData.siteType == "Offshore%20Tasks") {
                     setWorkingMember(36);
                 } else if (DesignStatus) {
                     setWorkingMember(301);
@@ -2627,8 +2631,10 @@ const EditTaskPopup = (Items: any) => {
                             return false;
                         });
                         const TaskCategories = result.map((item: any) => item.Title).join(', ');
+                        const CheckForInformationRequestCategory: any = TaskCategories.includes("Information Request");
+                        let checkStatusUpdate = Number(taskPercentageValue) * 100;
                         // This is used for send MS Teams Notification 
-                        if (!IsUserFromHHHHTeam && SendCategoryName !== "Bottleneck") {
+                        if (SendCategoryName !== "Bottleneck") {
                             try {
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
@@ -2639,7 +2645,7 @@ const EditTaskPopup = (Items: any) => {
                                     }
                                 };
 
-                                if (SendMsgToAuthor) {
+                                if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
                                     taskUsers?.forEach((allUserItem: any) => {
                                         if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                             addEmailAndUserName(allUserItem);
@@ -2659,9 +2665,24 @@ const EditTaskPopup = (Items: any) => {
                                     });
                                 }
                                 let CommonMsg = '';
-                                let checkStatusUpdate = Number(taskPercentageValue) * 100;
-                                if (SendMsgToAuthor) {
+                                const sendMSGCheck = (checkStatusUpdate === 80 || checkStatusUpdate === 70) && IsTaskStatusUpdated;
+                                const SendUserEmailFinal: any = sendUserEmails.filter((item: any, index: any) => sendUserEmails.indexOf(item) === index);
+                                if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
                                     CommonMsg = ` Task created from your end has been set to 8%. Please take necessary action.`;
+                                    let functionType: any = '';
+                                    if (checkStatusUpdate === 90 && CheckForInformationRequestCategory) {
+                                        functionType = "Information-Request"
+                                    } else {
+                                        functionType = "Priority-Check"
+                                    }
+                                    let RequiredDataForNotification: any = {
+                                        ItemDetails: UpdatedDataObject,
+                                        ReceiverEmail: SendUserEmailFinal,
+                                        Context: Context,
+                                        usedFor: functionType,
+                                        ReceiverName: AssignedUserName
+                                    }
+                                    GlobalFunctionForUpdateItems.SendEmailNotificationForIRCTasksAndPriorityCheck(RequiredDataForNotification);
                                 } else if (TeamMemberChanged && TeamLeaderChanged) {
                                     CommonMsg = `You have been marked as TL/working member in the below task. Please take necessary action.`;
                                 } else if (TeamMemberChanged) {
@@ -2678,6 +2699,7 @@ const EditTaskPopup = (Items: any) => {
                                             break;
                                     }
                                 }
+
                                 const SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> 
                                 </br> 
                                     <p>
@@ -2696,8 +2718,7 @@ const EditTaskPopup = (Items: any) => {
                                     </b>
                                     `;
 
-                                const sendMSGCheck = (checkStatusUpdate === 80 || checkStatusUpdate === 70) && IsTaskStatusUpdated;
-                                const SendUserEmailFinal: any = sendUserEmails.filter((item: any, index: any) => sendUserEmails.indexOf(item) === index);
+
                                 if ((sendMSGCheck || SendMsgToAuthor || TeamMemberChanged || TeamLeaderChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
                                     if (sendUserEmails.length > 0) {
                                         // await sendTeamMessagePromise(SendUserEmailFinal, SendMessage, Items.context)
@@ -3672,9 +3693,11 @@ const EditTaskPopup = (Items: any) => {
         let fileName: any = "";
         let tempArray: any = [];
         let SiteUrl = siteUrls;
-
-        if (Items.Items.siteType == "Offshore Tasks") {
-            Items.Items.siteType = "SharewebQA";
+        let CurrentSiteName: any = '';
+        if (Items.Items.siteType == "Offshore%20Tasks") {
+            CurrentSiteName = "SharewebQA";
+        } else {
+            CurrentSiteName = Items.Items.siteType;
         }
 
         imageList?.map(async (imgItem: any, index: number) => {
@@ -3705,7 +3728,7 @@ const EditTaskPopup = (Items: any) => {
                     imageDataUrl:
                         SiteUrl +
                         "/Lists/" +
-                        Items.Items.siteType +
+                        CurrentSiteName +
                         "/Attachments/" +
                         EditData?.Id +
                         "/" +
@@ -5054,25 +5077,16 @@ const EditTaskPopup = (Items: any) => {
                                 Share This Task
                             </span>{" "}
                             ||
-                            {Items.Items.siteType == "Offshore Tasks" ? (
-                                <a
-                                    target="_blank"
-                                    className="mx-2"
-                                    data-interception="off"
-                                    href={`${siteUrls}/Lists/SharewebQA/EditForm.aspx?ID=${EditData.ID}`}
-                                >
-                                    Open Out-Of-The-Box Form
-                                </a>
-                            ) : (
-                                <a
-                                    target="_blank"
-                                    className="mx-2"
-                                    data-interception="off"
-                                    href={`${siteUrls}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}
-                                >
-                                    Open Out-Of-The-Box Form
-                                </a>
-                            )}
+
+                            <a
+                                target="_blank"
+                                className="mx-2"
+                                data-interception="off"
+                                href={`${siteUrls}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}
+                            >
+                                Open Out-Of-The-Box Form
+                            </a>
+
                             <span>
                                 <button
                                     className={IsImageUploaded ? "btn btn-primary mx-1 px-3" : "btn btn-primary disabled mx-1 px-3"}
