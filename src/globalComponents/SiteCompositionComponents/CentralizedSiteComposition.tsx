@@ -571,7 +571,7 @@ const CentralizedSiteComposition = (Props: any) => {
             })
             return data;
         } catch (error) {
-            console.log("Get Idividual Site All Data Function", error.message);
+            console.log("Get individual Site All Data Function", error.message);
         }
     }
 
