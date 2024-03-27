@@ -230,7 +230,7 @@ const Tabless = (props: any) => {
     console.log(CreatedBy);
     if (TaskUserBackup != undefined && TaskUserBackup.length > 0) {
       TaskUserBackup.map((val: any) => {
-        if (val.Title.indexOf(CreatedByQueryId) !== -1) {
+        if (val.Title.indexOf(CreatedByQueryId) !== -1 && val.AssingedToUser !== undefined) {
           UserId = val.AssingedToUser.Id
         }
       })

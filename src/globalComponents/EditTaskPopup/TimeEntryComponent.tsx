@@ -17,6 +17,7 @@ import CustomAlert from "../TimeEntry/CustomAlert";
 import Tooltip from "../Tooltip";
 import * as globalCommon from "../globalCommon";
 import HighlightableCell from "../highlight";
+import { useContext,createContext } from "react";
 import {
   MdKeyboardArrowLeft,
   MdKeyboardArrowRight,
@@ -58,15 +59,11 @@ var PopupType: any = "";
 var PopupTypeCat: any = false;
 const SP = spfi();
 let AllMetadata: [] = [];
-
+let checkedFlat = false;
 const TimeEntryPopup = (item: any) => {
   if (item?.props?.siteUrl != undefined) {
-    //var Url = item?.props?.siteUrl.split("https://hhhhteams.sharepoint.com");
     let index = item?.props?.siteUrl.indexOf('/', 'https://'.length);
-
-    // Extract the substring after the domain
     RelativeUrl = item?.props?.siteUrl.substring(index);
-    //RelativeUrl = extractedUrl[1];
     CurrentSiteUrl = item?.props?.siteUrl;
     PortfolioType = item?.props?.Portfolio_x0020_Type;
     CurntUserId = item?.Context?.pageContext?._legacyPageContext.userId;
@@ -654,6 +651,7 @@ const TimeEntryPopup = (item: any) => {
     if (target.checked) {
       setcheckCategories(Title);
       setcheckCategoriesTitle(Title)
+setNewData({...newData,Title:Title})
       setshowCat(Title);
     }
   };
@@ -896,15 +894,18 @@ const TimeEntryPopup = (item: any) => {
       TaskTimeSheetCategoriesGrouping
     );
 
-    backupEdit = mergedFinalData;
-    setData(mergedFinalData);
-    console.log("finalData", finalData);
     if(Flatview == true){
-
       flatviewOpen(Flatview,mergedFinalData)
     }
-    setBackupData(mergedFinalData);
-    setTimeSheet(TaskTimeSheetCategoriesGrouping);
+    else{
+      backupEdit = mergedFinalData;
+      setData(mergedFinalData);
+      setBackupData(mergedFinalData);
+      setTimeSheet(TaskTimeSheetCategoriesGrouping);
+      console.log("finalData", finalData);
+     
+    }
+   
 
     if (TaskStatuspopup == true) {
       setupdateData(updateData + 1);
@@ -1081,7 +1082,6 @@ const TimeEntryPopup = (item: any) => {
   //------------------------------------------------------Load Timesheet Data-----------------------------------------------------------------------------
   const EditData = async (items: any) => {
     AllTimeSpentDetails = [];
-
     TaskTimeSheetCategories = getSmartMetadataItemsByTaxType(
       AllMetadata,
       "TimesheetCategories"
@@ -1581,10 +1581,68 @@ const TimeEntryPopup = (item: any) => {
             var listUri: string = `${RelativeUrl}/Lists/${listNames}`;
           }
           if (foundCategory) {
+            let isAvailble = false;
+            let count = 0
             mainParentId = foundCategory;
             mainParentTitle = checkCategories;
-            createItemMainList();
-          } else {
+            data?.forEach((val:any)=>{
+              val?.subRows.forEach(async (items:any)=>{
+                count++
+                if(items.AuthorId == CurntUserId){
+                  isAvailble = true;
+                  var NewparentId = items.ParentID;
+                  var NewMainparentId = items.MainParentId;
+                  var Datee: any = new Date(myDatee);
+                  if (Datee == "Invalid Date") {
+                    Datee = Moment().format();
+                  }
+                  let TimeSheetStatus: string = '';
+                 
+                  var TimeInH: any = TimeInMinutes / 60;
+                  TimeInH = TimeInH.toFixed(2);
+                  var update: any = {};
+                  update["AuthorName"] = items.AuthorName;
+                  update["AuthorId"] = CurntUserId;
+                  update["AuthorImage"] = items.AuthorImage;
+                  update["Status"] = 'Draft';
+                  update["ID"] = items.ID + 1;
+                  update["MainParentId"] = items.MainParentId;
+                  update["ParentID"] = items.ParentID;
+                  update["TaskTime"] = TimeInH;
+                  update["TaskTimeInMin"] = TimeInMinutes;
+                  update["TaskDate"] = Moment(Datee).format("DD/MM/YYYY");
+                  update["Description"] = postData?.Description;
+                  val.AdditionalTime.push(update);
+                  if (items.siteType == "Migration" || items.siteType == "ALAKDigital") {
+                    var ListId = TimeSheetlistId;
+                  } else {
+                    var ListId = TimeSheetlistId;
+                  }
+  
+                  await web.lists
+                    .getById(ListId)
+                    .items.getById(NewparentId)
+                    .update({
+                      AdditionalTimeEntry: JSON.stringify(val.AdditionalTime),
+                      TimesheetTitleId: NewMainparentId,
+                    })
+                    .then((res: any) => {
+                      console.log(res);
+                      setupdateData(updateData+2)
+                    });
+                
+                
+                 } 
+            })
+             })
+         
+           
+             if (!isAvailble) {
+              createItemMainList(); 
+          }
+          }
+          
+          else {
             let itemMetadataAdded = {
               Title:
                 newData != undefined &&
@@ -1785,6 +1843,7 @@ const TimeEntryPopup = (item: any) => {
 
   //-----------------------------------------------Create Add Timesheet--------------------------------------------------------------------------------------
   const AddTaskTime = async (child: any, Type: any) => {
+
     setbuttonDisable(true);
 
     if (Type == "EditTime") {
@@ -2407,16 +2466,21 @@ const TimeEntryPopup = (item: any) => {
   };
 
   //--------------------------------------Change time by custom button-----------------------------------------------------------------------------
-  const changeTimeFunction = (e: any, type: any,Use:any) => {
-   if(Use == 'remove'){
+  const changeTimeFunction = (e: any, type: any, Use: any) => {
+   let inputValue = Number(e);
+    if (isNaN(inputValue)&& Use!=="remove") {
+        return;
+    }
+
+    if (Use === 'remove') {
+    changeTime = 0;
     setsaveEditTaskTimeChild({});
-    setTimeInMinutes(0)
-    setTimeInHours(0)
-   }
-   else{
-    changeTime = Number(e.target.value);
-    if (type === "AddTime" || type == "AddTime Category") {
-      
+    setTimeInMinutes(0);
+    setTimeInHours(0);
+    } else {
+    changeTime = inputValue;
+
+        if (type === "AddTime" || type === "AddTime Category") {
         if (changeTime !== undefined) {
           const timeInHour: any = changeTime / 60;
           setTimeInHours(timeInHour.toFixed(2));
@@ -2434,7 +2498,7 @@ const TimeEntryPopup = (item: any) => {
           }
           setTimeInMinutes(changeTime);
         } else {
-          saveEditTaskTimeChild.TaskTimeInMin = ''
+          saveEditTaskTimeChild.TaskTimeInMin = '';
           saveEditTaskTimeChild.TaskTime = 0;
           setTimeInMinutes(0);
           setTimeInHours(0);
@@ -2588,6 +2652,7 @@ const TimeEntryPopup = (item: any) => {
     } else {
       data?.forEach((item: any) => {
         item.subRows?.forEach((val: any) => {
+          val.Category = item.Category?.Title;
           newArray.push(val);
         });
       });
@@ -2748,7 +2813,17 @@ const TimeEntryPopup = (item: any) => {
         header: "",
         size: 95,
       },
-
+      Flatview ? {
+        accessorFn: (row) => row?.Category,
+        id: "Category",
+        resetColumnFilters: false,
+        placeholder: "Category",
+        header: "",
+        size: 95,
+        cell: ({ row }) => (
+          <div className="text-center">{row?.original?.Category}</div>
+        ),
+      } : { header: '', id: 'CategoryHidden' },  
       {
         accessorKey: "Description",
         placeholder: "Description",
@@ -2839,6 +2914,7 @@ const TimeEntryPopup = (item: any) => {
   );
 
   return (
+  
     <div className={PortfolioType == "Service" ? "serviepannelgreena" : ""}>
       <div>
         <div className="col-sm-12 p-0">
@@ -2942,7 +3018,7 @@ const TimeEntryPopup = (item: any) => {
                           type="text"
                           className="form-control"
                           name="TimeTitle"
-                          value={newData != undefined ? newData?.Title:checkCategoriesTitle}
+                          value={newData?.Title === '' ? checkCategories: newData?.Title }
                           onChange={(e) =>
                             setNewData({ ...newData, Title: e.target.value })
                           }
@@ -2962,7 +3038,7 @@ const TimeEntryPopup = (item: any) => {
                       type="title"
                       placeholder="Add Title"
                       disabled={true}
-                      defaultValue={CategryTitle}
+                      defaultValue={checkCategories}
 
                     />
 
@@ -3363,10 +3439,10 @@ const TimeEntryPopup = (item: any) => {
             ? saveEditTaskTimeChild.TaskTimeInMin
             : ''
     }
-    onChange={(e) => changeTimeFunction(e, PopupType,'Add')}
+    onChange={(e) => changeTimeFunction(Number(e.target.value), PopupType,'Add')}
 />
 {((TimeInMinutes > 0 || saveEditTaskTimeChild?.TaskTimeInMin != undefined) && (
-    <span className="input-group-text" style={{zIndex:'9'}}><span className="dark mini svg__icon--cross mt-1 svg__iconbox" onClick={(e)=>changeTimeFunction(e, PopupType,'remove')}></span></span>
+    <span className="input-group-text" style={{zIndex:'9'}}><span className="dark mini svg__icon--cross mt-1 svg__iconbox" onClick={(e)=>changeTimeFunction(Number(e), PopupType,'remove')}></span></span>
 ))}
 </div>
                   </div>
@@ -3485,6 +3561,7 @@ const TimeEntryPopup = (item: any) => {
                           <div
                             className="SpfxCheckRadio "
                             id="subcategorytasksPriority{{item.Id}}"
+
                           >
                             <input
                               type="radio"
@@ -3551,8 +3628,7 @@ const TimeEntryPopup = (item: any) => {
                   {PopupTypeCat == true ? (
                     <button
                       disabled={
-                        (PopupType == "AddTime" ||
-                          PopupType == "AddTime Category") &&
+                        (PopupType == "AddTime" || PopupType == "AddTime Category") &&
                           TimeInMinutes <= 0
                           ? true
                           : false
@@ -3566,8 +3642,7 @@ const TimeEntryPopup = (item: any) => {
                   ) : (
                     <button
                       disabled={
-                        (PopupType == "AddTime" ||
-                          PopupType == "AddTime Category") &&
+                        (PopupType == "AddTime" || PopupType == "AddTime Category") &&
                           TimeInMinutes <= 0
                           ? true
                           : false || buttonDisable == true
@@ -3636,7 +3711,7 @@ const TimeEntryPopup = (item: any) => {
                         defaultValue={
                           checkCategories != undefined
                             ? checkCategories
-                            : item.Title
+                            : item.Category.Title
                         }
                         onChange={(e) =>
                           setNewData({ ...newData, Title: e.target.value })

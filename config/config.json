@@ -427,24 +427,43 @@
       ]
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<<<< Temporary merge branch 1
+=======
+>>>>>>> fe343ff75c7294920034f06b4d99c5066d428a37
+=======
+>>>>>>> d9d6449292a979b9f4827744c92b08eaae4435de
     "smart-dynamic-table-web-part": {
       "components": [
         {
           "entrypoint": "./lib/webparts/smartDynamicTable/SmartDynamicTableWebPart.js",
           "manifest": "./src/webparts/smartDynamicTable/SmartDynamicTableWebPart.manifest.json"
+<<<<<<< HEAD
+<<<<<<< HEAD
+=========
+=======
         }
       ]
     },
+>>>>>>> fe343ff75c7294920034f06b4d99c5066d428a37
 =======
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
+        }
+      ]
+    },
+>>>>>>> d9d6449292a979b9f4827744c92b08eaae4435de
     "root-team-portfolio-table-web-part": {
       "components": [
         {
           "entrypoint": "./lib/webparts/rootTeamPortfolioTable/RootTeamPortfolioTableWebPart.js",
           "manifest": "./src/webparts/rootTeamPortfolioTable/RootTeamPortfolioTableWebPart.manifest.json"
+<<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>>>> Temporary merge branch 2
+=======
+>>>>>>> fe343ff75c7294920034f06b4d99c5066d428a37
+=======
         }
       ]
-<<<<<<< HEAD
     },
     "task-profile-template-web-part": {
       "components": [
@@ -459,10 +478,9 @@
         {
           "entrypoint": "./lib/webparts/employeeDashboardTemplated/EmployeeDashboardTemplatedWebPart.js",
           "manifest": "./src/webparts/employeeDashboardTemplated/EmployeeDashboardTemplatedWebPart.manifest.json"
+>>>>>>> d9d6449292a979b9f4827744c92b08eaae4435de
         }
       ]
-=======
->>>>>>> 9ee8612424f0f6a5273184ddc491dbc05eb9ac7a
     }
   },
   "externals": {
@@ -535,6 +553,7 @@
     "LastModifiedViewsWebPartStrings": "lib/webparts/lastModifiedViews/loc/{locale}.js",
     "HrContractProfileWebPartStrings": "lib/webparts/hrContractProfile/loc/{locale}.js",
     "ManagedashboardconfigWebPartStrings": "lib/webparts/managedashboardconfig/loc/{locale}.js",
+    "FlowCreationWebPartStrings": "lib/webparts/flowCreation/loc/{locale}.js",
     "SMarttaskWebPartStrings": "lib/webparts/sMarttask/loc/{locale}.js",
     "GmbhCalendarWebPartStrings": "lib/webparts/gmbhCalendar/loc/{locale}.js",
     "GroupByComponentsDashboardWebPartStrings": "lib/webparts/groupByComponentsDashboard/loc/{locale}.js",

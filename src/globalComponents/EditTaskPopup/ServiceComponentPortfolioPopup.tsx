@@ -394,7 +394,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 accessorKey: "PortfolioStructureID",
                 placeholder: "ID",
                 size: 136,
-
+                id: 'PortfolioStructureID',
                 cell: ({ row, getValue }) => (
                     <div className="alignCenter">
                         {row?.original?.SiteIcon != undefined ? (
@@ -472,6 +472,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 accessorKey: "PercentComplete",
                 placeholder: "Status",
                 header: "",
+                id: 'PercentComplete',
                 size: 42,
             },
             {
@@ -495,11 +496,13 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 placeholder: "Item Rank",
                 header: "",
                 size: 42,
+                id: "ItemRank",
             },
             {
                 accessorKey: "DueDate",
                 placeholder: "Due Date",
                 header: "",
+                id: "DueDate",
                 size: 100,
             },
             {
@@ -794,7 +797,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                                 </div>
                             </td>
                             <td>
-                                <a className="hreflink serviceColor_Active" data-interception="off" target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/PX-Profile.aspx?ProjectId=${item.PortfolioStructureID}`}>
+                                <a className="hreflink serviceColor_Active" data-interception="off" target="_blank" href={showProject == true?`${Dynamic?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${item.Id}`:`${Dynamic?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item.Id}`}>
                                     <span>{item.Title}</span>
                                 </a>
                                

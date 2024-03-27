@@ -536,7 +536,7 @@ export default function ProjectOverview(props: any) {
 
                 cell: ({ row }) => (
                     <>
-                        {row?.original?.siteType === "Project" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="alignIcon svg__iconbox svg__icon--edit hreflink" ></span> : ''}
+                        {row?.original?.siteType === "Project" ? <span title={row?.original?.Item_x0020_Type != "Project" ? "Edit Sprint" : "Edit Project"} onClick={(e) => EditComponentPopup(row?.original)} className="alignIcon svg__iconbox svg__icon--edit hreflink" ></span> : ''}
                         {row?.original?.Item_x0020_Type === "tasks" ? <>
                             <span onClick={(e) => EditDataTimeEntry(e, row.original)}
                                 className="svg__iconbox svg__icon--clock"
@@ -1818,7 +1818,7 @@ export default function ProjectOverview(props: any) {
                     <div className="section-event project-overview-Table">
                         <div >
                             <div className='align-items-center d-flex justify-content-between'>
-                                <h2 className='heading'>Project Management Overview</h2>
+                                <h2 className='heading'>PX Management Overview</h2>
 
                                 {/* {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a></span> : ''} */}
 
@@ -1827,7 +1827,7 @@ export default function ProjectOverview(props: any) {
                                 <div className='ProjectOverViewRadioFlat  d-flex justify-content-between SpfxCheckRadio mb-2 mt-1'>
                                     <dl className='alignCenter gap-2 mb-0'>
                                         <dt>
-                                            <input className='radio' type="radio" value="Projects" name="date" checked={selectedView == 'Projects'} onClick={() => setSelectedView('Projects')} /> Projects
+                                            <input className='radio' type="radio" value="Projects" name="date" checked={selectedView == 'Projects'} onClick={() => setSelectedView('Projects')} /> Projects/Sprints
                                         </dt>
                                         <dt>
                                             <input className='radio' type="radio" value="teamWise" name="date" checked={selectedView == 'teamWise'} onClick={() => setSelectedView('teamWise')} /> Team View

@@ -1132,6 +1132,7 @@ const CreateActivity = (props: any) => {
                     SiteIcon: site?.Item_x005F_x0020_Cover?.Url,
                     ResponsibleTeam: TaskResponsibleTeam,
                     TeamMembers: TaskTeamMembers,
+                    TaskType: {"Id":1,"Title":'Activities'},
                     TeamLeader: TaskResponsibleTeam,
                     Author: {
                       Id: props?.context?.pageContext?.legacyPageContext
@@ -1411,7 +1412,7 @@ const CreateActivity = (props: any) => {
                   DiscriptionSearchData =
                     globalCommon.descriptionSearchData(feedbackdata);
                 }
-                item.TaskID = globalCommon?.GetTaskId(item);
+                // item.TaskID = globalCommon?.GetTaskId(item);
                 onUploadImageFunction(item);
                 if (
                   categoriesItem?.indexOf("Immediate") > -1 ||
