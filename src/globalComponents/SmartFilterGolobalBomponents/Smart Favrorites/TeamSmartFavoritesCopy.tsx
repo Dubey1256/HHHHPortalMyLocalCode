@@ -72,7 +72,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
     ///// Year Range Using Piker ////////
     const [years, setYear] = React.useState([])
     const [months, setMonths] = React.useState(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December",])
-const [selectedValue, setSelectedValue] = React.useState("Modified");
+    const [selectedValue, setSelectedValue] = React.useState("Modified");
     const [tablePageSize, setTablePageSize] = React.useState(null);
     React.useEffect(() => {
         const currentYear = new Date().getFullYear();
@@ -121,7 +121,7 @@ const [selectedValue, setSelectedValue] = React.useState("Modified");
             setIsModifiedDateSelected((prev: any) => item?.updatedEditData?.isModifiedDateSelected);
             setIsDueDateSelected((prev: any) => item?.updatedEditData?.isDueDateSelected);
             setTaskUsersData((prev: any) => item?.updatedEditData?.TaskUsersData);
-setSelectedValue((prev: any) => item?.updatedEditData?.showPageSizeSetting?.selectedTopValue);
+            setSelectedValue((prev: any) => item?.updatedEditData?.showPageSizeSetting?.selectedTopValue);
             setTablePageSize((prev: any) => item?.updatedEditData?.showPageSizeSetting?.tablePageSize);
         }
     }, [item])
@@ -717,7 +717,7 @@ setSelectedValue((prev: any) => item?.updatedEditData?.showPageSizeSetting?.sele
                 // Createmodified: props?.Createmodified
             }
         }
-if (tablePageSize > 0) {
+        if (tablePageSize > 0) {
             Favorite.showPageSizeSetting = {
                 tablePageSize: parseInt(tablePageSize),
                 showPagination: true,
@@ -741,16 +741,14 @@ if (tablePageSize > 0) {
                 Key: 'Smartfavorites',
                 Title: 'Smartfavorites',
             };
-            await web.lists.getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID).items.add(postData).then((result: any) => {
+            await web.lists.getByTitle("AdminConfigurations").items.add(postData).then((result: any) => {
                 console.log("Successfully Added SmartFavorite");
                 setModalIsOpenToFalse("", "");
             })
         }
         else if (item?.updatedSmartFilter === true) {
             AddnewItem.push(Favorite);
-            await web.lists
-                .getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID)
-                .items.getById(item?.updatedEditData?.Id)
+            await web.lists.getByTitle("AdminConfigurations").items.getById(item?.updatedEditData?.Id)
                 .update({
                     Configurations: JSON.stringify(AddnewItem),
                     Key: 'Smartfavorites',
@@ -761,7 +759,6 @@ if (tablePageSize > 0) {
                     setModalIsOpenToFalse(res, "updatedData");
                 });
         }
-
     }
     const FavoriteField = (event: any) => {
         const fieldvalue = event.target.value;
@@ -781,7 +778,7 @@ if (tablePageSize > 0) {
         const Url = event.target.value;
         setSmartFavoriteUrl(Url);
     }
-const handleChange = (event: any) => {
+    const handleChange = (event: any) => {
         setSelectedValue(event.target.value);
     };
     return (
@@ -806,11 +803,11 @@ const handleChange = (event: any) => {
                             {FavoriteFieldvalue === "SmartFilterBased" &&
                                 <div className='row'>
                                     <div className='mb-2 col-7'>
-                                <div className='input-group mt-3'>
-                                    <label className='d-flex form-label full-width justify-content-between'>Title <span><input type="checkbox" className='form-check-input' checked={isShowEveryone} onChange={(e) => isShowEveryOneCheck(e)} /> For EveryOne</span></label>
-                                    <input type="text" className='form-control' value={smartTitle} onChange={(e) => ChangeTitle(e)} />
-                                </div>
-</div>
+                                        <div className='input-group mt-3'>
+                                            <label className='d-flex form-label full-width justify-content-between'>Title <span><input type="checkbox" className='form-check-input' checked={isShowEveryone} onChange={(e) => isShowEveryOneCheck(e)} /> For EveryOne</span></label>
+                                            <input type="text" className='form-control' value={smartTitle} onChange={(e) => ChangeTitle(e)} />
+                                        </div>
+                                    </div>
                                     <div className='mb-2 col-3'>
                                         <div className='input-group mt-3'>
                                             <label className='d-flex form-label full-width justify-content-between'>Table Page Size
