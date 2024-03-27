@@ -2788,9 +2788,8 @@ const EditTaskPopup = (Items: any) => {
                         } else {
                             console.log("No last name found");
                         }
-                        let CalculateStatusPercentages: any = TaskDetailsFromCall[0]
-                            .PercentComplete
-                            ? TaskDetailsFromCall[0].PercentComplete * 100
+                        let CalculateStatusPercentages: any = TaskDetailsFromCall[0].PercentComplete
+                            ? TaskDetailsFromCall[0].PercentComplete 
                             : 0;
                         if (CalculateStatusPercentages == 90 && EmailStatus == true) {
                             setLastUpdateTaskData(TaskDetailsFromCall[0]);
@@ -2819,10 +2818,9 @@ const EditTaskPopup = (Items: any) => {
                             TempSmartInformationIds = [];
                             userSendAttentionEmails = [];
                             SiteCompositionPrecentageValue = 0;
-                            let CalculateStatusPercentage: any = TaskDetailsFromCall[0]
-                                .PercentComplete
-                                ? TaskDetailsFromCall[0].PercentComplete * 100
-                                : 0;
+                            let CalculateStatusPercentage: any = TaskDetailsFromCall[0].PercentComplete
+                            ? TaskDetailsFromCall[0].PercentComplete 
+                            : 0;
                             isApprovalByStatus = false;
                             if (Items.sendApproverMail != undefined) {
                                 if (Items.sendApproverMail) {

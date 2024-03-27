@@ -1417,13 +1417,7 @@ export const sendImmediateEmailNotifications = async (
                                 UpdateItem?.Category?.toLowerCase()?.indexOf("immediate") > -1
                             ) {
                                 Subject =
-                                    "[" +
-                                    siteType +
-                                    " - " +
-                                    "Approval,Immediate" +
-                                    "] " +
-                                    UpdateItem?.Title +
-                                    "";
+                                `[Immediate - ${UpdateItem.siteType} - ${UpdateItem.TaskId} ${UpdateItem.Title} New Immediate Task Created]`
                             }
                         } else if (
                             UpdateItem?.PercentComplete == 0 &&

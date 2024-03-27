@@ -3911,6 +3911,7 @@ export default class UserTimeEntry extends React.Component<
                     expandIcon={true}
                     customHeaderButtonAvailable={true}
                     customTableHeaderButtons={this.customTableHeaderButtons}
+                    hideTeamIcon={true}
                     showCatIcon={true}
                     exportToExcelCategoryReport={this.exportToExcel}
                     showHeader={true}
