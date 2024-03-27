@@ -114,7 +114,7 @@ const ExpndTable = (props: any) => {
                 </div>
               </div>
             </div>
-            <div className="modal-footer">
+            <div className="modal-footer text-end">
               <button  type="button" className="btn btn-default"  data-bs-dismiss="modal" >
                 Cancel
               </button>

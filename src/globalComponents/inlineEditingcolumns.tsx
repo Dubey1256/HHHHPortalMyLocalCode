@@ -1193,7 +1193,7 @@ const inlineEditingcolumns = (props: any) => {
             className="hreflink"
           >
             {" "}
-            <span>
+            <span className="alignCenter">
               <ShowTaskTeamMembers
                 props={props?.item}
                 TaskUsers={props?.TaskUsers}
