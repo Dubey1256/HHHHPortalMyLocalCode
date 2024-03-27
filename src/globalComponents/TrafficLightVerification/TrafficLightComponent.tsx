@@ -61,52 +61,57 @@ const TrafficLightComponent = (props: any) => {
     }
 
     const updateJson = async (UpdateData: any) => {
-        let UpdateJsonColumn: any = []
-        if (columnLevelVerificationJson == undefined) {
-            let particularColumnJsonObj = {
-                Id: props?.columnData?.Id,
-                Title: props?.columnName,
-                Value: UpdateData?.trafficValue,
-                Comment: UpdateData?.CommentData
+        try {
+            let UpdateJsonColumn: any = []
+            if (columnLevelVerificationJson == undefined) {
+                let particularColumnJsonObj = {
+                    Id: props?.columnData?.Id,
+                    Title: props?.columnName,
+                    Value: UpdateData?.trafficValue,
+                    Comment: UpdateData?.CommentData
+                }
+                UpdateJsonColumn.push(particularColumnJsonObj)
+            } else {
+                columnLevelVerificationJson?.map((jsonvalue: any) => {
+                    if (jsonvalue?.Title === props?.columnName) {
+                        jsonvalue.Title = props?.columnName,
+                            jsonvalue.Value = UpdateData?.trafficValue,
+                            jsonvalue.Comment = UpdateData?.CommentData
+                    }
+                })
+
+
+                UpdateJsonColumn = columnLevelVerificationJson
             }
-            UpdateJsonColumn.push(particularColumnJsonObj)
-        } else {
-            columnLevelVerificationJson?.map((jsonvalue: any) => {
-                if (jsonvalue?.Title === props?.columnName) {
-                    jsonvalue.Title = props?.columnName,
-                        jsonvalue.Value = UpdateData?.trafficValue,
-                        jsonvalue.Comment = UpdateData?.CommentData
-                }
-            })
+            console.log(JsonColumnCopy.current)
+            let postData: any = {
+                [JsonColumnCopy.current]: JSON.stringify(UpdateJsonColumn)
+            };
 
+            if (props?.columnName !== undefined) {
+                postData[props.columnName] = UpdateData?.columnVerificationStatus === "Yes" ? true : false
+            }
+            const web = new Web(siteUrl);
+            await web.lists.getById(ListId)
+                .items.getById(props?.columnData?.Id).update(postData).then(async (data: any) => {
+                    // let dataNew = await data?.item?.get()
+                    try {
+                        props.columnData[JsonColumnCopy.current] = JSON.stringify(UpdateJsonColumn);
+                        props.columnData[props.columnName] = UpdateData?.columnVerificationStatus === "Yes" ? true : false
+                        console.log(props.columnData)
+                        props?.callBack(props.columnData)
+                    } catch (e) {
 
-            UpdateJsonColumn = columnLevelVerificationJson
+                    }
+
+                    // console.log(dataNew)
+                    setOpenCommentpopup(false)
+                }).catch((error: any) => {
+                    console.log(error)
+                });
+        } catch (e) {
+            console.log(e)
         }
-        console.log(JsonColumnCopy.current)
-        let postData: any = {
-            [JsonColumnCopy.current]: JSON.stringify(UpdateJsonColumn)
-        };
-
-        if (props?.columnName !== undefined) {
-            postData[props.columnName] = UpdateData?.columnVerificationStatus === "Yes" ? true : false
-        }
-        const web = new Web(siteUrl);
-        await web.lists.getById(ListId)
-            .items.getById(props?.columnData?.Id).update(postData).then(async (data: any) => {
-                // let dataNew = await data?.item?.get()
-                try{
-                    props.columnData[JsonColumnCopy.current] = UpdateJsonColumn;
-                    console.log(props.columnData)
-                    props?.callBack(props.columnData)
-                }catch(e){
-                 
-                }
-              
-                // console.log(dataNew)
-                setOpenCommentpopup(false)
-            }).catch((error: any) => {
-                console.log(error)
-            });
     }
 
 

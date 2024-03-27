@@ -1143,7 +1143,7 @@ const SmartInformation = (props: any, ref: any) => {
                         <div className='card-body p-1 bg-ee mt-1'>
                           <ul className='alignCenter list-none'>
                             <li>
-                              <span><a href={item?.EncodedAbsUrl}>
+                              <span><a href={item?.EncodedAbsUrl} target="_blank" data-interception="off">
                                 {item?.File_x0020_Type == "pdf" && <span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
                                 {item?.File_x0020_Type == "docx" && <span className='svg__iconbox svg__icon--docx' title="docx"></span>}
                                 {item?.File_x0020_Type == "csv" || item?.File_x0020_Type == "xlsx" && <span className='svg__iconbox svg__icon--csv' title="csv"></span>}
@@ -1158,7 +1158,7 @@ const SmartInformation = (props: any, ref: any) => {
                               </a></span>
                             </li>
                             <li>
-                              {item.Url == null && <span><a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
+                              {item.Url == null && <span><a className='px-2'  href={`${item?.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
                               {item.Url != null && <span><a className='px-2' href={`${item?.Url?.Url}`} target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
                             </li>
                             <li className='ml-auto'>
@@ -1174,10 +1174,10 @@ const SmartInformation = (props: any, ref: any) => {
                         <div className='card-body p-0 bg-ee mt-1'>
                           <ul className='alignCenter list-none'>
                             <li>
-                              <span><a href={`${props.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`}><span className='bg-secondary svg__iconbox svg__icon--Task'></span></a></span>
+                              <span><a href={`${props.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`} target="_blank" data-interception="off"><span className='bg-secondary svg__iconbox svg__icon--Task'></span></a></span>
                             </li>
                             <li>
-                              <span className='px-2'><a href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`}>{tagtask?.Title}</a></span>
+                              <span className='px-2'><a href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`} target="_blank" data-interception="off">{tagtask?.Title}</a></span>
                             </li>
                             <li className='d-end'>
                               <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={(e) => edittaskpopup(tagtask)}></span>
