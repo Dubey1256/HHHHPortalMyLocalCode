@@ -215,7 +215,7 @@ const EditTaskPopup = (Items: any) => {
     const [IsImageUploaded, setIsImageUploaded] = useState(true);
     const [WorkingAction, setWorkingAction] = useState([]);
     const [AddDescriptionModelName, setAddDescriptionModelName] = useState("");
-
+   const [useFor,setUseFor]=useState("")
     let [StatusOptions, setStatusOptions] = useState([
         { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -2601,7 +2601,7 @@ const EditTaskPopup = (Items: any) => {
                         UpdatedDataObject.siteUrl = siteUrls;
                         let WorkingActionData = UpdatedDataObject?.WorkingAction?.length > 0 ? JSON.parse(UpdatedDataObject?.WorkingAction) : [];
                         WorkingActionData?.map((ItemData: any) => {
-                            ItemData.InformationData?.map((InfoItem: any) => {
+                            ItemData.InformationData?.map(async (InfoItem: any) => {
                                 if (InfoItem.NotificationSend == false) {
                                     InfoItem.NotificationSend = true;
                                     let DataForNotification: any = {
@@ -2612,7 +2612,7 @@ const EditTaskPopup = (Items: any) => {
                                         ReasonStatement: InfoItem.Comment,
                                         UpdatedDataObject: UpdatedDataObject
                                     }
-                                    GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                     await GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
                                         console.log("Ms Teams Notifications send")
                                     })
                                 }
@@ -4545,19 +4545,80 @@ const EditTaskPopup = (Items: any) => {
     };
 
     const UpdateApproverFunction = () => {
-        var data = ApproverData;
-        setApproverPopupStatus(false);
-        setTaskAssignedTo(ApproverData);
-        setApproverData(data);
-        setTaskTeamMembers(ApproverData);
-        StatusOptions?.map((item: any) => {
-            if (item.value == 1) {
-                Items.sendApproverMail = true;
-                setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: "1" });
-                setPercentCompleteStatus(item.status);
-                setTaskStatus(item.taskStatusComment);
+       var data :any= ApproverData;
+        if (useFor == "Bottleneck" || useFor == "Attention") {
+            let CreatorData: any = currentUserBackupArray[0];
+            let copyWorkAction: any = [...WorkingAction]
+            if(data?.length>0){
+                data?.map((selectedData:any)=>{
+                    if(selectedData?.Id!=undefined){
+                        let CreateObject: any = {
+                            CreatorName: CreatorData?.Title,
+                            CreatorImage: CreatorData.UserImage,
+                            CreatorID: CreatorData.Id,
+                            TaggedUsers: {
+                                Title: selectedData.Title,
+                                Email: selectedData.Email,
+                                AssingedToUserId: selectedData.AssingedToUserId,
+                                userImage: selectedData.Item_x0020_Cover?.Url,
+                            },
+                            NotificationSend: false,
+                            Comment: '',
+                            CreatedOn: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY"),
+                        }
+                        if (copyWorkAction?.length > 0) {
+                            copyWorkAction?.map((DataItem: any) => {
+                                if (DataItem.Title == useFor) {
+                                    CreateObject.Id = DataItem.InformationData?.length;
+                                    DataItem.InformationData.push(CreateObject);
+                                }
+                            })
+                        } else {
+                            let TempArrya: any = [
+                                {
+                                    Title: "Bottleneck",
+                                    InformationData: []
+                                },
+                                {
+                                    Title: "Attention",
+                                    InformationData: []
+                                }
+                            ]
+                            TempArrya?.map((TempItem: any) => {
+                                if (TempItem.Title == useFor) {
+                                    CreateObject.Id = TempItem.InformationData?.length;
+                                    TempItem.InformationData.push(CreateObject);
+                                }
+                            })
+    
+                            copyWorkAction = TempArrya;
+                        }
+                    }
+                   
+                })
             }
-        });
+           
+        
+            setWorkingAction([...copyWorkAction]);
+            console.log("Bottleneck All Details:", copyWorkAction)
+            setUseFor("")
+        setApproverPopupStatus(false)
+        }
+   else{
+    setApproverPopupStatus(false);
+    setTaskAssignedTo(ApproverData);
+    setApproverData(data);
+    setTaskTeamMembers(ApproverData);
+    StatusOptions?.map((item: any) => {
+        if (item.value == 1) {
+            Items.sendApproverMail = true;
+            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: "1" });
+            setPercentCompleteStatus(item.status);
+            setTaskStatus(item.taskStatusComment);
+        }
+    });
+   }
+        
     };
 
     const selectApproverFunction = (selectedData: any) => {
@@ -4859,7 +4920,22 @@ const EditTaskPopup = (Items: any) => {
         });
     }
     //  This is the end of the function 
-
+    const openBottleneckPopup=(usefor:any)=>{
+     let selectedtagMember:any=[];
+        setUseFor(usefor)
+        setApproverPopupStatus(true)
+        WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
+            if (WAItemData.Title == usefor && WAItemData?.InformationData?.length > 0) {
+                WAItemData?.InformationData?.map((item:any)=>{
+                    item.Id = item?.AssingedToUserId;
+                    selectedtagMember.push(item?.TaggedUsers)
+                })
+              
+            }
+        
+        })
+            setApproverData(selectedtagMember)
+    }
     const onRenderCustomHeaderMain = () => {
         return (
             <>
@@ -4964,7 +5040,7 @@ const EditTaskPopup = (Items: any) => {
                         : "d-flex full-width pb-1"
                 }
             >
-                <div className="subheading siteColor">Select Approver</div>
+                <div className="subheading siteColor"> {useFor!=""?`Select${useFor}`:`Select Approver`}</div>
                 <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
             </div>
         );
@@ -6893,7 +6969,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <span
                                                     className="input-group-text"
                                                     // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
-                                                    onClick={() => alert("We are working on it. This feature will be live soon")}
+                                                    onClick={() =>openBottleneckPopup("Bottleneck")}
                                                 >
                                                     <span
                                                         title="Add Comment"
@@ -7007,7 +7083,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <span
                                                     className="input-group-text"
                                                     // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
-                                                    onClick={() => alert("We are working on it. This feature will be live soon")}
+                                                    onClick={() => openBottleneckPopup("Attention")}
                                                 >
                                                     <span
                                                         title="Add Comment"

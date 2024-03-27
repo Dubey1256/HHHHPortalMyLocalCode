@@ -1401,14 +1401,17 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
     try {
         const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject } = RequiredData || {};
         const TaskInformation = GenerateMSTeamsNotification(UpdatedDataObject);
-        const finalTaskInfo = `<${TaskInformation.type} {...TaskInformation.props} />`;
-
+        const containerDiv = document.createElement('div');
+        const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
+        ReactDOM.render(reactElement, containerDiv);
+        let finalTaskInfo: any = containerDiv.innerHTML;
+ 
         const TeamsMessage = `
-            <b>Hi ${ReceiverName},</b> 
+            <b>Hi ${ReceiverName},</b>
             <p></p>
             You have been tagged as <b>${ActionType}</b> in the below task.
             <p><br/></p>
-            <span>Reason : ${ReasonStatement}</span>
+            <span>${ActionType} Comment : ${ReasonStatement}</span>
             <p></p>
             <b>Task Details : </b> <span>${finalTaskInfo}</span>
             <p></p>
@@ -1416,7 +1419,7 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
             <p></p>
             <b>Thanks,<br/>Task Management Team</b>
         `;
-
+ 
         if (sendUserEmail?.length > 0) {
             await GlobalCommon.SendTeamMessage(sendUserEmail, TeamsMessage, Context);
         }
