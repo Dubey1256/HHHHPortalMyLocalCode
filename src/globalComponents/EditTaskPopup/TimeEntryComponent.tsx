@@ -3573,7 +3573,7 @@ const TimeEntryPopup = (item: any) => {
                     <div className="mb-1">
                       <a
                         target="_blank"
-                        href="{{pageContext}}/SitePages/SmartMetadata.aspx?TabName=Timesheet"
+                        href={`${CurrentSiteUrl}/SitePages/ManageSmartMetadata.aspx?TabName=TimesheetCategories`}
                       >
                         Manage Categories
                       </a>
