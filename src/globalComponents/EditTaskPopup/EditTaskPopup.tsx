@@ -38,7 +38,6 @@ import EmailNotificationMail from "./EmailNotificationMail";
 import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
-import { MdOutlineCommentBank } from "react-icons/md";
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -216,7 +215,7 @@ const EditTaskPopup = (Items: any) => {
     const [IsImageUploaded, setIsImageUploaded] = useState(true);
     const [WorkingAction, setWorkingAction] = useState([]);
     const [AddDescriptionModelName, setAddDescriptionModelName] = useState("");
-
+   const [useFor,setUseFor]=useState("")
     let [StatusOptions, setStatusOptions] = useState([
         { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -320,7 +319,11 @@ const EditTaskPopup = (Items: any) => {
             SmartMetaDataListInformations();
             GetAllComponentAndServiceData("Component");
             AddImageDescriptionsIndex = undefined;
+            if (Items.Items.siteType == "Offshore Tasks") {
+                Items.Items.siteType = "Offshore%20Tasks";
+            }
         }
+
     }, [FeedBackCount]);
 
 
@@ -2197,7 +2200,7 @@ const EditTaskPopup = (Items: any) => {
                 if (StatusInput == 90) {
                     EditData.IsTodaysTask = false;
                     EditData.workingThisWeek = false;
-                    if (EditData.siteType == "Offshore Tasks") {
+                    if (EditData.siteType == "Offshore%20Tasks") {
                         setWorkingMember(36);
                     } else if (DesignStatus) {
                         setWorkingMember(301);
@@ -2360,7 +2363,7 @@ const EditTaskPopup = (Items: any) => {
             if (StatusData.value == 90) {
                 EditData.IsTodaysTask = false;
                 EditData.workingThisWeek = false;
-                if (EditData.siteType == "Offshore Tasks") {
+                if (EditData.siteType == "Offshore%20Tasks") {
                     setWorkingMember(36);
                 } else if (DesignStatus) {
                     setWorkingMember(301);
@@ -2591,14 +2594,15 @@ const EditTaskPopup = (Items: any) => {
                             TaskDetailsFromCall[0].siteType = EditData.siteType;
                             TaskDetailsFromCall[0].siteUrl = siteUrls;
                             TaskDetailsFromCall[0].siteIcon = Items.Items.SiteIcon;
+                            TaskDetailsFromCall[0].PercentComplete = (TaskDetailsFromCall[0].PercentComplete * 100).toFixed(0);
                         }
                         let UpdatedDataObject: any = TaskDetailsFromCall[0]
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
                         UpdatedDataObject.SmartPriority = NewSmartPriority;
                         UpdatedDataObject.siteUrl = siteUrls;
-                        let WorkingAction = UpdatedDataObject?.WorkingAction?.length > 0 ? JSON.parse(UpdatedDataObject?.WorkingAction) : [];
-                        WorkingAction?.map((ItemData: any) => {
-                            ItemData.InformationData?.map((InfoItem: any) => {
+                        let WorkingActionData = UpdatedDataObject?.WorkingAction?.length > 0 ? JSON.parse(UpdatedDataObject?.WorkingAction) : [];
+                        WorkingActionData?.map((ItemData: any) => {
+                            ItemData.InformationData?.map(async (InfoItem: any) => {
                                 if (InfoItem.NotificationSend == false) {
                                     InfoItem.NotificationSend = true;
                                     let DataForNotification: any = {
@@ -2609,14 +2613,15 @@ const EditTaskPopup = (Items: any) => {
                                         ReasonStatement: InfoItem.Comment,
                                         UpdatedDataObject: UpdatedDataObject
                                     }
-                                    GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                     await GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
                                         console.log("Ms Teams Notifications send")
                                     })
                                 }
                             })
                         })
-                        if (WorkingAction?.length > 0) {
-                            UpdateWorkinActionJSON();
+                        if (WorkingActionData?.length > 0) {
+                            setWorkingAction([...WorkingActionData])
+                            UpdateWorkinActionJSON(WorkingActionData);
                         }
                         const uniqueIds: any = {};
                         const result = tempShareWebTypeData.filter((item: any) => {
@@ -2627,8 +2632,10 @@ const EditTaskPopup = (Items: any) => {
                             return false;
                         });
                         const TaskCategories = result.map((item: any) => item.Title).join(', ');
+                        const CheckForInformationRequestCategory: any = TaskCategories.includes("Information Request");
+                        let checkStatusUpdate = Number(taskPercentageValue) * 100;
                         // This is used for send MS Teams Notification 
-                        if (!IsUserFromHHHHTeam && SendCategoryName !== "Bottleneck") {
+                        if (SendCategoryName !== "Bottleneck") {
                             try {
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
@@ -2639,7 +2646,7 @@ const EditTaskPopup = (Items: any) => {
                                     }
                                 };
 
-                                if (SendMsgToAuthor) {
+                                if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
                                     taskUsers?.forEach((allUserItem: any) => {
                                         if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                             addEmailAndUserName(allUserItem);
@@ -2659,9 +2666,24 @@ const EditTaskPopup = (Items: any) => {
                                     });
                                 }
                                 let CommonMsg = '';
-                                let checkStatusUpdate = Number(taskPercentageValue) * 100;
-                                if (SendMsgToAuthor) {
+                                const sendMSGCheck = (checkStatusUpdate === 80 || checkStatusUpdate === 70) && IsTaskStatusUpdated;
+                                const SendUserEmailFinal: any = sendUserEmails.filter((item: any, index: any) => sendUserEmails.indexOf(item) === index);
+                                if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
                                     CommonMsg = ` Task created from your end has been set to 8%. Please take necessary action.`;
+                                    let functionType: any = '';
+                                    if (checkStatusUpdate === 90 && CheckForInformationRequestCategory) {
+                                        functionType = "Information-Request"
+                                    } else {
+                                        functionType = "Priority-Check"
+                                    }
+                                    let RequiredDataForNotification: any = {
+                                        ItemDetails: UpdatedDataObject,
+                                        ReceiverEmail: SendUserEmailFinal,
+                                        Context: Context,
+                                        usedFor: functionType,
+                                        ReceiverName: AssignedUserName
+                                    }
+                                    GlobalFunctionForUpdateItems.SendEmailNotificationForIRCTasksAndPriorityCheck(RequiredDataForNotification);
                                 } else if (TeamMemberChanged && TeamLeaderChanged) {
                                     CommonMsg = `You have been marked as TL/working member in the below task. Please take necessary action.`;
                                 } else if (TeamMemberChanged) {
@@ -2678,6 +2700,7 @@ const EditTaskPopup = (Items: any) => {
                                             break;
                                     }
                                 }
+
                                 const SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> 
                                 </br> 
                                     <p>
@@ -2696,8 +2719,7 @@ const EditTaskPopup = (Items: any) => {
                                     </b>
                                     `;
 
-                                const sendMSGCheck = (checkStatusUpdate === 80 || checkStatusUpdate === 70) && IsTaskStatusUpdated;
-                                const SendUserEmailFinal: any = sendUserEmails.filter((item: any, index: any) => sendUserEmails.indexOf(item) === index);
+
                                 if ((sendMSGCheck || SendMsgToAuthor || TeamMemberChanged || TeamLeaderChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
                                     if (sendUserEmails.length > 0) {
                                         // await sendTeamMessagePromise(SendUserEmailFinal, SendMessage, Items.context)
@@ -3672,9 +3694,11 @@ const EditTaskPopup = (Items: any) => {
         let fileName: any = "";
         let tempArray: any = [];
         let SiteUrl = siteUrls;
-
-        if (Items.Items.siteType == "Offshore Tasks") {
-            Items.Items.siteType = "SharewebQA";
+        let CurrentSiteName: any = '';
+        if (Items.Items.siteType == "Offshore%20Tasks") {
+            CurrentSiteName = "SharewebQA";
+        } else {
+            CurrentSiteName = Items.Items.siteType;
         }
 
         imageList?.map(async (imgItem: any, index: number) => {
@@ -3705,7 +3729,7 @@ const EditTaskPopup = (Items: any) => {
                     imageDataUrl:
                         SiteUrl +
                         "/Lists/" +
-                        Items.Items.siteType +
+                        CurrentSiteName +
                         "/Attachments/" +
                         EditData?.Id +
                         "/" +
@@ -4522,25 +4546,89 @@ const EditTaskPopup = (Items: any) => {
     };
 
     const UpdateApproverFunction = () => {
-        var data = ApproverData;
-        setApproverPopupStatus(false);
-        setTaskAssignedTo(ApproverData);
-        setApproverData(data);
-        setTaskTeamMembers(ApproverData);
-        StatusOptions?.map((item: any) => {
-            if (item.value == 1) {
-                Items.sendApproverMail = true;
-                setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: "1" });
-                setPercentCompleteStatus(item.status);
-                setTaskStatus(item.taskStatusComment);
+       var data :any= ApproverData;
+        if (useFor == "Bottleneck" || useFor == "Attention") {
+            let CreatorData: any = currentUserBackupArray[0];
+            let copyWorkAction: any = [...WorkingAction]
+            if(data?.length>0){
+                data?.map((selectedData:any)=>{
+                    if(selectedData?.Id!=undefined){
+                        let CreateObject: any = {
+                            CreatorName: CreatorData?.Title,
+                            CreatorImage: CreatorData.UserImage,
+                            CreatorID: CreatorData.Id,
+                            TaggedUsers: {
+                                Title: selectedData.Title,
+                                Email: selectedData.Email,
+                                AssingedToUserId: selectedData.AssingedToUserId,
+                                userImage: selectedData.Item_x0020_Cover?.Url,
+                            },
+                            NotificationSend: false,
+                            Comment: '',
+                            CreatedOn: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY"),
+                        }
+                        if (copyWorkAction?.length > 0) {
+                            copyWorkAction?.map((DataItem: any) => {
+                                if (DataItem.Title == useFor) {
+                                    CreateObject.Id = DataItem.InformationData?.length;
+                                    DataItem.InformationData.push(CreateObject);
+                                }
+                            })
+                        } else {
+                            let TempArrya: any = [
+                                {
+                                    Title: "Bottleneck",
+                                    InformationData: []
+                                },
+                                {
+                                    Title: "Attention",
+                                    InformationData: []
+                                }
+                            ]
+                            TempArrya?.map((TempItem: any) => {
+                                if (TempItem.Title == useFor) {
+                                    CreateObject.Id = TempItem.InformationData?.length;
+                                    TempItem.InformationData.push(CreateObject);
+                                }
+                            })
+    
+                            copyWorkAction = TempArrya;
+                        }
+                    }
+                   
+                })
             }
-        });
+           
+        
+            setWorkingAction([...copyWorkAction]);
+            console.log("Bottleneck All Details:", copyWorkAction)
+            setUseFor("")
+        setApproverPopupStatus(false)
+        setApproverData([])
+        }
+   else{
+    setApproverPopupStatus(false);
+    setTaskAssignedTo(ApproverData);
+    setApproverData(data);
+    setTaskTeamMembers(ApproverData);
+    StatusOptions?.map((item: any) => {
+        if (item.value == 1) {
+            Items.sendApproverMail = true;
+            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: "1" });
+            setPercentCompleteStatus(item.status);
+            setTaskStatus(item.taskStatusComment);
+        }
+    });
+   }
+        
     };
 
     const selectApproverFunction = (selectedData: any) => {
-        selectedData.Id = selectedData.AssingedToUserId;
-        setApproverData([...ApproverData, selectedData]);
-    };
+   let checkduplicateData :any=  ApproverData.filter((data:any)=>data?.AssingedToUserId!=selectedData?.AssingedToUserId)
+        if(checkduplicateData?.length==0){
+            setApproverData([...ApproverData, selectedData]);
+        }
+     };
 
 
 
@@ -4555,8 +4643,13 @@ const EditTaskPopup = (Items: any) => {
         if (type == "OnTaskPopup") {
             setApproverSearchKey(e.target.value);
         }
+        if (type =="OnPanel") {
+            setApproverSearchKey(e.target.value);
+        }
+     
         BottleneckSearchKey
         let tempArray: any = [];
+        
         if (searchedKey?.length > 0) {
             AllEmployeeData?.map((itemData: any) => {
                 if (itemData.Child != undefined && itemData.Child.length > 0) {
@@ -4785,19 +4878,18 @@ const EditTaskPopup = (Items: any) => {
 
     // this is used for updating workingAction JSON Data on Backedn Side 
 
-    const UpdateWorkinActionJSON = async () => {
+    const UpdateWorkinActionJSON = async (DataForUpdate: any) => {
+
         try {
             let web = new Web(siteUrls);
             await web.lists
                 .getById(Items.Items.listId)
                 .items.getById(Items.Items.Id)
-                .update({ WorkingAction: WorkingAction?.length > 0 ? JSON.stringify(WorkingAction) : null })
+                .update({ WorkingAction: DataForUpdate?.length > 0 ? JSON.stringify(DataForUpdate) : null })
         } catch (error) {
             console.log("Error", error.message)
         }
     }
-
-
 
     // this is used for bottleneck and Attehntion category task functionality
 
@@ -4837,7 +4929,22 @@ const EditTaskPopup = (Items: any) => {
         });
     }
     //  This is the end of the function 
-
+    const openBottleneckPopup=(usefor:any)=>{
+     let selectedtagMember:any=[];
+        setUseFor(usefor)
+        setApproverPopupStatus(true)
+        WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
+            if (WAItemData.Title == usefor && WAItemData?.InformationData?.length > 0) {
+                WAItemData?.InformationData?.map((item:any)=>{
+                    item.Id = item?.TaggedUsers?.AssingedToUserId;
+                    selectedtagMember.push(item?.TaggedUsers)
+                })
+              
+            }
+        
+        })
+            setApproverData(selectedtagMember)
+    }
     const onRenderCustomHeaderMain = () => {
         return (
             <>
@@ -4942,7 +5049,7 @@ const EditTaskPopup = (Items: any) => {
                         : "d-flex full-width pb-1"
                 }
             >
-                <div className="subheading siteColor">Select Approver</div>
+                <div className="subheading siteColor"> {useFor!=""?`Select${useFor}`:`Select Approver`}</div>
                 <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
             </div>
         );
@@ -5055,25 +5162,16 @@ const EditTaskPopup = (Items: any) => {
                                 Share This Task
                             </span>{" "}
                             ||
-                            {Items.Items.siteType == "Offshore Tasks" ? (
-                                <a
-                                    target="_blank"
-                                    className="mx-2"
-                                    data-interception="off"
-                                    href={`${siteUrls}/Lists/SharewebQA/EditForm.aspx?ID=${EditData.ID}`}
-                                >
-                                    Open Out-Of-The-Box Form
-                                </a>
-                            ) : (
-                                <a
-                                    target="_blank"
-                                    className="mx-2"
-                                    data-interception="off"
-                                    href={`${siteUrls}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}
-                                >
-                                    Open Out-Of-The-Box Form
-                                </a>
-                            )}
+
+                            <a
+                                target="_blank"
+                                className="mx-2"
+                                data-interception="off"
+                                href={`${siteUrls}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}
+                            >
+                                Open Out-Of-The-Box Form
+                            </a>
+
                             <span>
                                 <button
                                     className={IsImageUploaded ? "btn btn-primary mx-1 px-3" : "btn btn-primary disabled mx-1 px-3"}
@@ -6880,7 +6978,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <span
                                                     className="input-group-text"
                                                     // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
-                                                    onClick={() => alert("We are working on it. This feature will be live soon")}
+                                                    onClick={() =>openBottleneckPopup("Bottleneck")}
                                                 >
                                                     <span
                                                         title="Add Comment"
@@ -6994,7 +7092,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <span
                                                     className="input-group-text"
                                                     // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
-                                                    onClick={() => alert("We are working on it. This feature will be live soon")}
+                                                    onClick={() => openBottleneckPopup("Attention")}
                                                 >
                                                     <span
                                                         title="Add Comment"
