@@ -394,11 +394,11 @@ const Apps = (props: any) => {
         }
         let count = 0;
         const windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(recurrenceData?.EndDate).setHours(0, 0, 0, 0);
-        while ( dates.length < repeatInstance || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) < windowEndDate) {
-          // if (count > repeatInstance && useCount == true) {
-          //   break
-          // }
-          // count++;
+        while (dates.length < repeatInstance || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) < windowEndDate) {
+          if ((repeatInstance != 0 ? count > repeatInstance : new Date(dates[dates.length - 1]).setHours(0, 0, 0, 0) > windowEndDate) && useCount == true) {
+            break
+          }
+          count++;
           if (calculateNextDate(rule, firstDayOfWeek, new Date(dates[dates.length - 1] || startDate), dates, windowEndDate, AllEvents, recurrenceData) === 'break')
             break;
         }
@@ -460,15 +460,19 @@ const Apps = (props: any) => {
   function handleDailyRecurrence(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any, repeatInstance: any) {
     const dayFrequency = parseInt(frequency.dayFrequency);
     let count = 0;
+    let result = '';
     if (frequency?.weekday == 'TRUE') {
       let AllWeekDaysOfWeek = getWeekDays(currentDate)
       AllWeekDaysOfWeek?.map((DayOfWeek: any) => {
-        if (new Date(eventDetails?.EventDate).setHours(0, 0, 0, 0) <= new Date(DayOfWeek).setHours(0, 0, 0, 0)) {
+        if (new Date(eventDetails?.EventDate).setHours(0, 0, 0, 0) <= new Date(DayOfWeek).setHours(0, 0, 0, 0) && new Date(DayOfWeek).setHours(0, 0, 0, 0) < new Date(windowEndDate).setHours(0, 0, 0, 0)) {
           const event = eventDataForBinding(eventDetails, DayOfWeek);
           AllEvents.push(event);
           dates.push(new Date(DayOfWeek));
+        }else if(new Date(DayOfWeek).setHours(0, 0, 0, 0) >= new Date(windowEndDate).setHours(0, 0, 0, 0)){
+          result = 'break';
         }
       })
+      
     } else {
       while (count < repeatInstance && new Date(currentDate).setHours(0, 0, 0, 0) < windowEndDate) {
         currentDate.setDate(currentDate.getDate() + dayFrequency);
@@ -478,6 +482,7 @@ const Apps = (props: any) => {
         count++;
       }
     }
+    return result;
   }
   function getWeekDays(today: any) {
     const currentDay = today.getDay();
@@ -486,21 +491,20 @@ const Apps = (props: any) => {
     let diff;
 
     if (currentDay >= 1 && currentDay <= 4) { // Monday to Thursday
-      diff = today.getDate() - currentDay + (currentDay === 0 ? -6 : 1);
-    } else if (currentDay === 5) { // Friday
-      diff = today.getDate() - currentDay + 8; // Next Monday
-    } else { // Saturday or Sunday
-      diff = today.getDate() - currentDay + (currentDay === 0 ? -6 : 2); // Next Monday
+        diff = today.getDate() - currentDay + 1;
+        monday.setDate(monday.getDate() - (currentDay - 1));
+    } else { // Friday to Sunday
+        diff = 8 - currentDay; // Next Monday
+        monday.setDate(monday.getDate() + diff);
     }
 
-    monday.setDate(diff);
-
     for (let i = 0; i < 5; i++) {
-      dates.push(new Date(monday.getTime() + i * 24 * 60 * 60 * 1000));
+        dates.push(new Date(monday.getTime() + i * 24 * 60 * 60 * 1000));
     }
 
     return dates;
-  }
+}
+
 
   function handleWeeklyRecurrence(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any, repeatInstance: any) {
     let { weekFrequency, days } = frequency;
@@ -535,7 +539,8 @@ const Apps = (props: any) => {
         case 'daily':
           const { dayFrequency } = frequency;
           const repeatInstance = rule.repeatInstances ? parseInt(rule.repeatInstances[0]) : 1000;
-          handleDailyRecurrence(frequency, currentDate, dates, AllEvents, eventDetails, endDate, repeatInstance);
+          if(handleDailyRecurrence(frequency, currentDate, dates, AllEvents, eventDetails, endDate, repeatInstance)=='break')
+          return 'break';
           break;
         case 'yearly':
           const { yearFrequency, month, day } = frequency;
@@ -608,13 +613,13 @@ const Apps = (props: any) => {
 
 
   const getEvents = async () => {
-    const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/GmBH");
+    const web = new Web(props.props.siteUrl);
     const regionalSettings = await web.regionalSettings.get(); console.log(regionalSettings);
     const query =
       "RecurrenceData,Duration,Author/Title,Editor/Title,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo,Color,Created,Modified";
     try {
       const results = await web.lists
-        .getById("860a08d5-9711-4d8e-bd26-93fe09362bd4")
+        .getById(props.props.SmalsusLeaveCalendar)
         .items.select(query)
         .expand("Author,Editor,Employee")
         .top(500)
@@ -683,7 +688,7 @@ const Apps = (props: any) => {
 
   const getLocalDateTime = async (date: string | Date): Promise<string> => {
     try {
-      const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/GmBH");
+      const web = new Web(props.props.siteUrl);
       const localTime = await web.regionalSettings.timeZone.utcToLocalTime(
         date
       );
@@ -695,7 +700,7 @@ const Apps = (props: any) => {
 
   const getEvent = async (eventId: number) => {
     try {
-      const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/GmBH");
+      const web = new Web(props.props.siteUrl);
       const event = await web.lists
         .getById("860a08d5-9711-4d8e-bd26-93fe09362bd4")
         .items.usingCaching()
@@ -969,6 +974,7 @@ const Apps = (props: any) => {
         .then((i: any) => {
           //console.log(i);
           // void getData();
+          getEvents()
           closem(undefined);
           closeModal();
           // void getData();
@@ -1080,6 +1086,8 @@ const Apps = (props: any) => {
       };
 
       const results = await web.lists.getById(props.props.SmalsusLeaveCalendar).items.add(addEventItem);
+      
+      getEvents();
       return results;
     } catch (error) {
       return Promise.reject(error);
@@ -1116,6 +1124,8 @@ const Apps = (props: any) => {
       const results = await web.lists.getById(props.props.SmalsusLeaveCalendar)
         .items.getById(eventPass.Id)
         .update(editedEventItem);
+        
+      getEvents();
       return results;
     } catch (error) {
       return Promise.reject(error);
