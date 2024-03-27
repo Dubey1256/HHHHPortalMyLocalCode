@@ -74,6 +74,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
     const [months, setMonths] = React.useState(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December",])
     const [selectedValue, setSelectedValue] = React.useState("Modified");
     const [tablePageSize, setTablePageSize] = React.useState(null);
+    const [count, setCount] = React.useState(true);
     React.useEffect(() => {
         const currentYear = new Date().getFullYear();
         const year: any = [];
@@ -101,6 +102,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
             setIsModifiedDateSelected(item?.isModifiedDateSelected);
             setIsDueDateSelected(item?.isDueDateSelected);
             setTaskUsersData(item?.TaskUsersData);
+            setCount(false);
         } else if (item?.updatedSmartFilter === true && item?.updatedEditData) {
             setsmartTitle(item?.updatedEditData?.Title)
             setisShowEveryone(item?.updatedEditData?.isShowEveryone)
@@ -123,6 +125,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
             setTaskUsersData((prev: any) => item?.updatedEditData?.TaskUsersData);
             setSelectedValue((prev: any) => item?.updatedEditData?.showPageSizeSetting?.selectedTopValue);
             setTablePageSize((prev: any) => item?.updatedEditData?.showPageSizeSetting?.tablePageSize);
+            setCount(false);
         }
     }, [item])
     ///// Year Range Using Piker end////////
@@ -389,8 +392,16 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 }
                 break;
             default:
-                setStartDate(null);
-                setEndDate(null);
+                if (count === true && item?.updatedSmartFilter === true && item?.updatedEditData) {
+                    setStartDate((prev: any) => item?.updatedEditData?.startDate);
+                    setEndDate((prev: any) => item?.updatedEditData?.endDate);
+                } else if (item?.updatedSmartFilter != true && !item?.updatedEditData && count === true) {
+                    setStartDate(item?.startDate);
+                    setEndDate(item?.endDate);
+                } else {
+                    setStartDate(null);
+                    setEndDate(null);
+                }
                 break;
         }
     }, [selectedFilter]);
