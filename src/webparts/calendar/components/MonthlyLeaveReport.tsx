@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import CheckboxTree from 'react-checkbox-tree';
 import "react-datepicker/dist/react-datepicker.css";
 import Tooltip from '../../../globalComponents/Tooltip';
+import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 // @ts-ignore
 import * as html2pdf from 'html2pdf.js';
 import * as XLSX from 'xlsx';
@@ -12,7 +13,9 @@ import { setMonth } from 'office-ui-fabric-react';
 import { end } from '@popperjs/core';
 import moment from 'moment';
 
+
 let allReportData: any = [];
+let Short_x0020_Description_x0020_On:any = '';
 let filteredData: any = [];
 let index: any = [];
 export const MonthlyLeaveReport = (props: any) => {
@@ -75,7 +78,7 @@ export const MonthlyLeaveReport = (props: any) => {
     const web = new Web(props.props.siteUrl);
     try {
       const results: any = await web.lists.getById(props.props.SmalsusLeaveCalendar).items.select(
-        "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,Created,EventType,UID,fRecurrence,HalfDay,HalfDayTwo,Event_x002d_Type"
+        "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,EventDescription,ID,EndDate,EventDate,Location,Title,fAllDayEvent,Created,EventType,UID,fRecurrence,HalfDay,HalfDayTwo,Event_x002d_Type"
       ).expand("Author,Editor,Employee").getAll();
       setLeaveData(results);
     } catch (err) {
@@ -387,12 +390,10 @@ export const MonthlyLeaveReport = (props: any) => {
     const today = new Date();
 
     return matchedData.reduce((total: any, item: any) => {
-      const endDate = new Date(item.EndDate);
-      const eventDate = new Date(item.EventDate);
-      const timezoneOffset = endDate.getTimezoneOffset();
+      const timezoneOffset = item.EventDate.getTimezoneOffset();
       const timezoneOffsetInHours = timezoneOffset / 60;
-      const adjustedEndDate = new Date(endDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
-      const adjustedEventDate: any = new Date(eventDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
+      const adjustedEndDate = new Date(item.EndDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
+      const adjustedEventDate: any = new Date(item.EventDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
       if (
         adjustedEventDate.getFullYear() === today.getFullYear() &&
         (leaveType === "HalfDay" || leaveType === "HalfDayTwo")
@@ -406,10 +407,10 @@ export const MonthlyLeaveReport = (props: any) => {
           const dayOfWeek = currentDate.getDay();
           if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(currentDate, adjustedEndDateToToday)) {
             if (item?.Event_x002d_Type !== "Work From Home") {
-
               if ((leaveType === "HalfDay" || leaveType === "HalfDayTwo") && (item?.HalfDay === true || item?.HalfDayTwo === true)) {
                 workingDays += 0.5;
               }
+
             }
           }
           currentDate.setDate(currentDate.getDate() + 1);
@@ -549,8 +550,14 @@ export const MonthlyLeaveReport = (props: any) => {
         user.Id = users.Id;
         const PlanedEventDates = matchedData.map((item: any) => {
           if (item.Event_x002d_Type === "Planned Leave") {
+         
             let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
-            let endDate = moment(item.EndDate, 'YYYY-MM-DD').startOf('day').format('DD/MM/YYYY');
+            let endDateFirst = moment(item.EndDate, 'YYYY-MM-DD').startOf('day')
+            // if (item.fAllDayEvent == false) {
+            //   endDateFirst = endDateFirst.subtract(3, 'hours')
+            //   item.EndDate = endDateFirst.utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+            // }
+            let endDate = endDateFirst.format('DD/MM/YYYY')
             if (startDate !== endDate) {
               return `${startDate} - ${endDate}`;
             } else {
@@ -558,11 +565,25 @@ export const MonthlyLeaveReport = (props: any) => {
             }
           }
         }).filter((date: any) => date);
+        let leavediscriptionPlanned:any=[]
+          matchedData.map((item: any) => {
+          if (item.Event_x002d_Type === "Planned Leave" && item.Title != undefined) {
+            let eventDateFormat:any=moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+            leavediscriptionPlanned.push({Short_x0020_Description_x0020_On:item.Title,eventDate:eventDateFormat}) 
+          }
+        })
         let plannedLeaveString = `${PlanedEventDates.join(', ')}`;
+        // let plannedDiscription = leavediscription
         const UnPlanedEventDates = matchedData.map((item: any) => {
           if (item.Event_x002d_Type === "Un-Planned") {
             let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
-            let endDate = moment(item.EndDate, 'YYYY-MM-DD').startOf('day').format('DD/MM/YYYY');
+            let endDateFirst = moment(item.EndDate, 'YYYY-MM-DD').startOf('day')
+           // if (item.fAllDayEvent == false) {
+            //   endDateFirst = endDateFirst.subtract(3, 'hours')
+            //   item.EndDate = endDateFirst.utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+            // }
+            let endDate = endDateFirst.format('DD/MM/YYYY')
+
             if (startDate !== endDate) {
               return `${startDate}-${endDate}`;
             } else {
@@ -570,29 +591,88 @@ export const MonthlyLeaveReport = (props: any) => {
             }
           }
         }).filter((date: any) => date);
+        let leavediscriptionUnPlanned:any=[]
+        matchedData.map((item: any) => {
+        if (item.Event_x002d_Type === "Un-Planned" && item.Title != undefined) {
+          let eventDateFormat:any=moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+          leavediscriptionUnPlanned.push({Short_x0020_Description_x0020_On:item.Title,eventDate:eventDateFormat}) 
+        }
+      })
         let UnplannedLeaveString = `${UnPlanedEventDates.join(', ')}`;
-        const HalfdayEventDates = matchedData.map((item: any) => {
+        //let UnplannedDiscription = Short_x0020_Description_x0020_On
+        const MyHalfdayData = matchedData.filter((item: any) => item?.HalfDay === true || item?.HalfDayTwo === true)
+        MyHalfdayData?.map((item: any) => {
+          
+          const endDate = new Date(item.EndDate);
+          endDate.setHours(endDate.getHours() - 9);
+          endDate.setMinutes(endDate.getMinutes() - 30);
+          item.EndDate = endDate
+          const eventDate = new Date(item.EventDate);
+          eventDate.setHours(eventDate.getHours() - 5);
+          eventDate.setMinutes(eventDate.getMinutes() - 30);
+          item.EventDate = eventDate
+        })
+        const HalfdayEventDates = MyHalfdayData.map((item: any) => {
+          
           if (item.HalfDay === true || item.HalfDayTwo === true) {
             return moment(item.EventDate).format('DD/MM/YYYY');
           }
 
         }).filter((date: any) => date);
+        let leavediscriptionHalfday:any=[]
+        matchedData.map((item: any) => {
+        if ( item?.HalfDay === true || item?.HalfDayTwo === true && item.Title != undefined) {
+          let eventDateFormat:any=moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+          leavediscriptionHalfday.push({Short_x0020_Description_x0020_On:item.Title,eventDate:eventDateFormat}) 
+        }
+      })
         let HalfplannedLeaveString = `${HalfdayEventDates.join(', ')}`;
-        const RHEventDates = matchedData.map((item: any) => {
-          if (item.Event_x002d_Type === "Restricted Holiday") {
-            return moment(item.EventDate).format('DD/MM/YYYY');
-          }
+        const MyRHdayData = matchedData.map((item: any) =>{
+        if(item.Event_x002d_Type === "Restricted Holiday") {
+       
+        let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+        let endDateFirst = moment(item.EndDate, 'YYYY-MM-DD').startOf('day')
+        if (item.fAllDayEvent == false) {
+          endDateFirst = endDateFirst.subtract(3, 'hours')
+          item.EndDate = endDateFirst.utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+        }
+        let endDate = endDateFirst.format('DD/MM/YYYY')
+
+        if (startDate !== endDate) {
+          return `${startDate}-${endDate}`;
+        } else {
+          return startDate;
+        }
+      }
         }).filter((date: any) => date);
-        let RhplannedLeaveString = `${RHEventDates.join(', ')}`;
+        let leavediscriptionRh:any=[]
+        matchedData.map((item: any) => {
+        if (item.Event_x002d_Type === "Restricted Holiday" && item.Title != undefined) {
+          let eventDateFormat:any=moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
+          leavediscriptionRh.push({Short_x0020_Description_x0020_On:item.Title,eventDate:eventDateFormat}) 
+        }
+      })
+        let RhplannedLeaveString = `${MyRHdayData.join(', ')}`;
 
         user.Plannedleave = calculatePlannedLeave(matchedData, "Planned Leave");
-        user.Plannedleave = `${user.Plannedleave} ${plannedLeaveString.length != 0 ? `[ ${plannedLeaveString} ]` : ''} `
+        user.Plannedleave = `${user.Plannedleave} ${plannedLeaveString.length != 0 ? ` ${plannedLeaveString} ` : ''} `
+        
+        user.PlanedEventDates=PlanedEventDates
+        user.leavediscriptionPlanned = leavediscriptionPlanned!=undefined ? leavediscriptionPlanned :''
+  
         user.unplannedleave = calculatePlannedLeave(matchedData, "Un-Planned");
         user.unplannedleave = `${user.unplannedleave}${UnplannedLeaveString.length != 0 ? `[ ${UnplannedLeaveString} ]` : ''} `
-        user.Halfdayleave = calculateTotalHalfday(matchedData, "HalfDay" || "HalfDayTwo");
+        user.UnPlanedEventDates=UnPlanedEventDates
+        user.leavediscriptionUnPlanned=leavediscriptionUnPlanned!=undefined ? leavediscriptionUnPlanned :''
+        // user.Short_x0020_Description_x0020_On = UnplannedDiscription!=undefined ? ` ${UnplannedDiscription} ` : ''
+        user.Halfdayleave = calculateTotalHalfday(MyHalfdayData, "HalfDay" || "HalfDayTwo");
         user.Halfdayleave = `${user.Halfdayleave}${HalfplannedLeaveString.length != 0 ? `[ ${HalfplannedLeaveString} ]` : ''} `
+        user.HalfdayEventDates = HalfdayEventDates
+        user.leavediscriptionHalfday=leavediscriptionHalfday!=undefined ? leavediscriptionHalfday :''
         user.RestrictedHoliday = calculatePlannedLeave(matchedData, "Restricted Holiday");
         user.RestrictedHoliday = `${user.RestrictedHoliday}${RhplannedLeaveString.length != 0 ? `[ ${RhplannedLeaveString} ]` : ''} `
+        user.MyRHdayData = MyRHdayData
+        user.leavediscriptionRh = leavediscriptionRh!=undefined ? leavediscriptionRh :''
         user.TotalLeave = calculateTotalWorkingDays(matchedData);
         if (startDate && endDate) {
           allReportData.push(user)
@@ -620,7 +700,7 @@ export const MonthlyLeaveReport = (props: any) => {
     <div>
       <Modal className='rounded-0 monthlyLeaveReport' show={opendate} onHide={() => handleclose()} >
         <Modal.Header closeButton>
-          <Modal.Title>Select a Date</Modal.Title>
+          <Modal.Title>Employee Leave Report</Modal.Title>
           <Tooltip ComponentId='9802' />
         </Modal.Header>
         <Modal.Body className="p-2">
@@ -633,7 +713,6 @@ export const MonthlyLeaveReport = (props: any) => {
                   </span>
                 })
                 }
-                {/* <span className="pull-right"><a href="#">Add smart favorite</a></span> */}
                 <span className="">
                   <input type="checkbox" className="form-check-input mx-1" onClick={(e) => SelectAllGroupMember(e)} />
                   <label>Select All </label>
@@ -786,13 +865,13 @@ export const MonthlyLeaveReport = (props: any) => {
                 <table className="w-100">
                   <thead>
                     <tr>
-                      <th className='py-2 border-bottom' style={{width:"12%"}}>No.</th>
-                      <th className='py-2 border-bottom' style={{width:"20%"}}>Name</th>
-                      <th className='py-2 border-bottom' style={{width:"15%"}}>Planned</th>
-                      <th className='py-2 border-bottom' style={{width:"15%"}}>Unplanned</th>
-                      <th className='py-2 border-bottom' style={{width:"13%"}}>RH</th>
-                      <th className='py-2 border-bottom' style={{width:"15%"}}>Half-Day</th>
-                      <th className='py-2 border-bottom' style={{width:"10%"}}>Total Leave</th>
+                      <th className='py-2 border-bottom' style={{ width: "12%" }}>No.</th>
+                      <th className='py-2 border-bottom' style={{ width: "20%" }}>Name</th>
+                      <th className='py-2 border-bottom' style={{ width: "15%" }}>Planned</th>
+                      <th className='py-2 border-bottom' style={{ width: "15%" }}>Unplanned</th>
+                      <th className='py-2 border-bottom' style={{ width: "13%" }}>RH</th>
+                      <th className='py-2 border-bottom' style={{ width: "15%" }}>Half-Day</th>
+                      <th className='py-2 border-bottom' style={{ width: "10%" }}>Total Leave</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -800,10 +879,82 @@ export const MonthlyLeaveReport = (props: any) => {
                       <tr key={index}>
                         <td className='py-2 text-break'>{index + 1}</td>
                         <td className='py-2 text-break'>{entry.Title}</td>
-                        <td className='py-2 text-break'>{entry.Plannedleave}</td>
-                        <td className='py-2 text-break'>{entry.unplannedleave}</td>
-                        <td className='py-2 text-break'>{entry.RestrictedHoliday}</td>
-                        <td className='py-2 text-break'>{entry.Halfdayleave}</td>
+                        <td><> { entry?.PlanedEventDates?.map((dateEvent:any)=>{
+                          return(
+                        entry?.leavediscriptionPlanned?.map((item:any)=>{
+                          return(
+                          dateEvent?.includes(item?.eventDate) ? 
+                          <span> {dateEvent} 
+                          <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
+                          
+                          </InfoIconsToolTip> 
+                          </span>:''
+                          )
+                        })
+                        )
+                       })}
+                       </>
+
+                        </td>
+                        {/* <td className='py-2 text-break'>{entry.Plannedleave}
+                          <InfoIconsToolTip description={entry.PlannedDiscription} row={entry}>
+                          
+                          </InfoIconsToolTip>
+                        </td> */}
+                       <td><> { entry?.UnPlanedEventDates?.map((dateEvent:any)=>{
+                          return(
+                        entry?.leavediscriptionUnPlanned?.map((item:any)=>{
+                          return(
+                          dateEvent?.includes(item?.eventDate) ? 
+                          <span> {dateEvent} 
+                          <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
+                          
+                          </InfoIconsToolTip> 
+                          </span>:''
+                          )
+                        })
+                        )
+                       })}
+                       </>
+
+                        </td>
+                        {/* <td className='py-2 text-break'>{entry.RestrictedHoliday}
+                        </td> */}
+                        <td><> { entry?.MyRHdayData?.map((dateEvent:any)=>{
+                          return(
+                        entry?.leavediscriptionRh?.map((item:any)=>{
+                          return(
+                          dateEvent==item?.eventDate ? 
+                          <span> {item?.eventDate} 
+                          <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
+                          
+                          </InfoIconsToolTip> 
+                          </span>:''
+                          )
+                        })
+                        )
+                       })}
+                       </>
+
+                        </td>
+                        {/* <td className='py-2 text-break'>{entry.Halfdayleave}</td> */}
+                        <td><> { entry?.HalfdayEventDates?.map((dateEvent:any)=>{
+                          return(
+                        entry?.leavediscriptionHalfday?.map((item:any)=>{
+                          return(
+                          dateEvent==item?.eventDate ? 
+                          <span> {item?.eventDate} 
+                          <InfoIconsToolTip description={item?.Short_x0020_Description_x0020_On} row={item}>
+                          
+                          </InfoIconsToolTip> 
+                          </span>:''
+                          )
+                        })
+                        )
+                       })}
+                       </>
+
+                        </td>
                         <td className='py-2'>{entry.TotalLeave}</td>
                       </tr>
                     ))}
