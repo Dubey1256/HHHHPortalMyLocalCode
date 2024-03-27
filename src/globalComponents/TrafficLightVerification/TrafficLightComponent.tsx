@@ -97,6 +97,7 @@ const TrafficLightComponent = (props: any) => {
                     // let dataNew = await data?.item?.get()
                     try {
                         props.columnData[JsonColumnCopy.current] = JSON.stringify(UpdateJsonColumn);
+                        props.columnData[props.columnName] = UpdateData?.columnVerificationStatus === "Yes" ? true : false
                         console.log(props.columnData)
                         props?.callBack(props.columnData)
                     } catch (e) {
