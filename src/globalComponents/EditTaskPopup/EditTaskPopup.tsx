@@ -4604,6 +4604,7 @@ const EditTaskPopup = (Items: any) => {
             console.log("Bottleneck All Details:", copyWorkAction)
             setUseFor("")
         setApproverPopupStatus(false)
+        setApproverData([])
         }
    else{
     setApproverPopupStatus(false);
@@ -4623,9 +4624,11 @@ const EditTaskPopup = (Items: any) => {
     };
 
     const selectApproverFunction = (selectedData: any) => {
-        selectedData.Id = selectedData.AssingedToUserId;
-        setApproverData([...ApproverData, selectedData]);
-    };
+   let checkduplicateData :any=  ApproverData.filter((data:any)=>data?.AssingedToUserId!=selectedData?.AssingedToUserId)
+        if(checkduplicateData?.length==0){
+            setApproverData([...ApproverData, selectedData]);
+        }
+     };
 
 
 
@@ -4640,8 +4643,13 @@ const EditTaskPopup = (Items: any) => {
         if (type == "OnTaskPopup") {
             setApproverSearchKey(e.target.value);
         }
+        if (type =="OnPanel") {
+            setApproverSearchKey(e.target.value);
+        }
+     
         BottleneckSearchKey
         let tempArray: any = [];
+        
         if (searchedKey?.length > 0) {
             AllEmployeeData?.map((itemData: any) => {
                 if (itemData.Child != undefined && itemData.Child.length > 0) {
@@ -4928,7 +4936,7 @@ const EditTaskPopup = (Items: any) => {
         WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
             if (WAItemData.Title == usefor && WAItemData?.InformationData?.length > 0) {
                 WAItemData?.InformationData?.map((item:any)=>{
-                    item.Id = item?.AssingedToUserId;
+                    item.Id = item?.TaggedUsers?.AssingedToUserId;
                     selectedtagMember.push(item?.TaggedUsers)
                 })
               
