@@ -1235,9 +1235,8 @@ const inlineEditingcolumns = (props: any) => {
                     onMouseEnter={showOnHoldComment}
                     onMouseLeave={hideOnHoldComment}
                   />
-                  <span className="tooltip-text pop-right">
-                    {onHoldComment &&
-                      comments?.map((commentItem: any, index: any) =>
+                  {onHoldComment && <span className="tooltip-text pop-right">
+                    {comments?.map((commentItem: any, index: any) =>
                         commentItem?.CommentFor !== undefined &&
                           commentItem?.CommentFor === "On-Hold" ? (
                           <div key={index}>
@@ -1253,7 +1252,7 @@ const inlineEditingcolumns = (props: any) => {
                           </div>
                         ) : null
                       )}
-                  </span>
+                  </span>}
                 </div>
               ) : null
             )}
