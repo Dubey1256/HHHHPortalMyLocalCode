@@ -1842,7 +1842,7 @@ export default function ProjectOverview(props: any) {
                                             : ''}
                                     </div>
                                 </div>
-                                <section className="Tabl1eContentSection row taskprofilepagegreen">
+                                <section className="TableContentSection row taskprofilepagegreen">
                                     <div className="container-fluid p-0">
                                         <section className="TableSection">
                                             <div className="container p-0">
