@@ -866,10 +866,6 @@ const inlineEditingcolumns = (props: any) => {
       }));
   }
   if (StatusData.value == 70) {
-    setEditData((prevState: any) => ({
-      ...prevState,
-      IsTodaysTask: true
-    }));
       if (
           EditData.TeamMembers != undefined &&
           EditData.TeamMembers?.length > 0
