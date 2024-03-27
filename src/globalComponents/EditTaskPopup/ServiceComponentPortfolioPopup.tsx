@@ -332,11 +332,14 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         if (selectionType == "Multi" && elem?.length > 0) {
             elem.map((item: any) => MultiSelectedData?.push(item?.original))
             setInitialRender(true)
+            setCheckedList(elem);
             // MultiSelectedData = elem;
         } else {
             if (elem != undefined) {
                 setCheckBoxData([elem])
                 console.log("elem", elem);
+                setCheckedList(elem);
+
                 setInitialRender(true)
             } else {
                 console.log("elem", elem);
@@ -448,7 +451,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title)?.join("-"),
                 cell: ({ row }) => (
                     <>
-                        <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
+                           <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadataItems?.length <= 0 ? AllMetadata : AllMetadataItems} />
                     </>
                 ),
                 id: 'ClientCategory',
@@ -531,7 +534,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 size: 30
             }
         ],
-        [data]
+        [data, AllMetadata]
     );
 
     let Component = 0;
@@ -603,7 +606,55 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     };
 
     let isOpenPopup = false;
-   
+    // const AddStructureCallBackCall = React.useCallback((item) => {
+    //     if (checkedList?.current.length == 0) {
+    //         item[0]?.subRows.map((childs: any) => {
+    //             copyDtaArray.unshift(childs)
+
+    //         })
+    //     } else {
+    //         if (item[0]?.SelectedItem != undefined) {
+    //             copyDtaArray.map((val: any) => {
+    //                 item[0]?.subRows.map((childs: any) => {
+    //                     if (item[0].SelectedItem == val.Id) {
+    //                         val.subRows.unshift(childs)
+    //                     }
+    //                     if (val.subRows != undefined && val.subRows.length > 0) {
+    //                         val.subRows?.map((child: any) => {
+    //                             if (item[0].SelectedItem == child.Id) {
+    //                                 child.subRows.unshift(childs)
+    //                             }
+    //                             if (child.subRows != undefined && child.subRows.length > 0) {
+    //                                 child.subRows?.map((Subchild: any) => {
+    //                                     if (item[0].SelectedItem == Subchild.Id) {
+    //                                         Subchild.subRows.unshift(childs)
+    //                                     }
+    //                                 })
+    //                             }
+    //                         })
+    //                     }
+    //                 })
+    //             })
+
+    //         }
+
+    //     }
+    //     if (item != undefined && item?.length > 0 && item[0].SelectedItem == undefined) {
+    //         item.forEach((value: any) => {
+    //             copyDtaArray.unshift(value)
+    //         })
+    //     }
+
+
+
+    //     setOpenAddStructurePopup(false);
+    //     console.log(item)
+    //     renderData = [];
+    //     renderData = renderData.concat(copyDtaArray)
+    //     refreshData();
+    //     checkedList.current = []
+
+    // }, [])
     const callbackdataAllStructure = React.useCallback((item) => {
         if (item[0]?.SelectedItem != undefined) {
             copyDtaArray.map((val: any) => {
@@ -884,7 +935,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                     </div>
                 </div>
             </div>
-            <Panel
+            {/* <Panel
                 onRenderHeader={onRenderCustomHeaderMain1}
                 type={PanelType.large}
                 isOpen={OpenAddStructurePopup}
@@ -900,6 +951,26 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                         checkedList != null && checkedList?.Id != undefined
                             ? checkedList
                             : props
+                    }
+                />
+             
+            </Panel> */}
+            <Panel
+                onRenderHeader={onRenderCustomHeaderMain1}
+                type={PanelType.large}
+                isOpen={OpenAddStructurePopup}
+                isBlocking={false}
+                onDismiss={callbackdataAllStructure}
+            >
+                  <CreateAllStructureComponent
+                    Close={callbackdataAllStructure}
+                    taskUser={AllUsers}
+                    portfolioTypeData={PortfolitypeData}
+                    PropsValue={Dynamic}
+                    SelectedItem={
+                        checkedList != null && checkedList?.Id != undefined
+                            ? checkedList
+                            : undefined
                     }
                 />
              
