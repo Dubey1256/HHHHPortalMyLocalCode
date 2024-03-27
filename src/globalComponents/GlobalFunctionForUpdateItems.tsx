@@ -1401,14 +1401,17 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
     try {
         const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject } = RequiredData || {};
         const TaskInformation = GenerateMSTeamsNotification(UpdatedDataObject);
-        const finalTaskInfo = `<${TaskInformation.type} {...TaskInformation.props} />`;
-
+        const containerDiv = document.createElement('div');
+        const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
+        ReactDOM.render(reactElement, containerDiv);
+        let finalTaskInfo: any = containerDiv.innerHTML;
+ 
         const TeamsMessage = `
-            <b>Hi ${ReceiverName},</b> 
+            <b>Hi ${ReceiverName},</b>
             <p></p>
             You have been tagged as <b>${ActionType}</b> in the below task.
             <p><br/></p>
-            <span>Reason : ${ReasonStatement}</span>
+            <span>${ActionType} Comment : ${ReasonStatement}</span>
             <p></p>
             <b>Task Details : </b> <span>${finalTaskInfo}</span>
             <p></p>
@@ -1416,7 +1419,7 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
             <p></p>
             <b>Thanks,<br/>Task Management Team</b>
         `;
-
+ 
         if (sendUserEmail?.length > 0) {
             await GlobalCommon.SendTeamMessage(sendUserEmail, TeamsMessage, Context);
         }
@@ -1436,7 +1439,7 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
         This is a gentle reminder to address the below task promptly, as you've been marked as ${ActionType}:
         <p>
         <br/>
-         <span>${ActionType} Point: ${ReasonStatement ? ReasonStatement : ''}</span>
+         <span>${ActionType} Comment: ${ReasonStatement ? ReasonStatement : ''}</span>
         </br>
         <p>
         Task Link:  
@@ -1476,13 +1479,12 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                 <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData?.TaskId}</span><u></u><u></u></p>
                                             </td>
                                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Component:</span></b><u></u><u></u></p>
+                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Portfolio:</span></b><u></u><u></u></p>
                                             </td>
                                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                                                <p>{RequiredData["Component"] != null &&
-                                                    RequiredData["Component"].length > 0 &&
+                                                <p>{RequiredData["Portfolio"] != undefined &&
                                                     <span style={{ fontSize: '10.0pt', color: 'black' }}>
-                                                        {joinObjectValues(RequiredData["Component"])}
+                                                        {RequiredData?.Portfolio?.Title}
                                                     </span>
                                                 }
                                                     <span style={{ color: "black" }}> </span><u></u><u></u></p>

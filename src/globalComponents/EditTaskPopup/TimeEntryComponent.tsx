@@ -2954,6 +2954,7 @@ function reverseArray(arr: any) {
                   <input
                     type="checkbox"
                     className="form-check-input me-1"
+                    checked={checkedFlat}
                     onClick={(e: any) => flatviewOpen(e,data)}
                   />
                   FlatView
