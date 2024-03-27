@@ -63,7 +63,7 @@ const ExpndTable = (props: any) => {
               >
                 Expand Search Result
               </h1>
-              <span><Tooltip ComponentId='3299'/></span>
+              <span><Tooltip ComponentId='1123'/></span>
               <button
                 type="button"
                 className="btn-close"
