@@ -2599,6 +2599,7 @@ const EditTaskPopup = (Items: any) => {
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
                         UpdatedDataObject.SmartPriority = NewSmartPriority;
                         UpdatedDataObject.siteUrl = siteUrls;
+                        UpdatedDataObject.CommentsArray=  UpdatedDataObject?.Comments!=null ?JSON.parse(UpdatedDataObject?.Comments):null
                         let WorkingActionData = UpdatedDataObject?.WorkingAction?.length > 0 ? JSON.parse(UpdatedDataObject?.WorkingAction) : [];
                         WorkingActionData?.map((ItemData: any) => {
                             ItemData.InformationData?.map(async (InfoItem: any) => {
