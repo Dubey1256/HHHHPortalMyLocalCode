@@ -664,7 +664,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             const PreMsg = `
               <b>Hi ${this.state?.ReplyParent?.Header.replaceAll('@', '')},</b>
               <p></p>
-              <span style="display: block; text-align: right;">Task Comment-<span style="background-color: yellow;">${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')}.</span></span>
+               Task Comment-<span style="background-color: yellow;">${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')}.</span>
               <p><br/></p>
               <b>Task Details : </b> <span>${finalTaskInfo}</span>
               <p></p>
@@ -674,8 +674,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           `;
             const CurrentMsg = `
               <b>Hi ${this.state?.ReplyParent?.AuthorName},</b>
-              <p></p>
-              <span style="display: block; text-align: right;">Task Comment-<span style="background-color: yellow;">${txtComment}.</span></span>
+              Task Comment-<span style="background-color: yellow;">${txtComment}.</span>
               <p><br/></p>
               <b>Task Details : </b> <span>${finalTaskInfo}</span>
               <p></p>
@@ -683,13 +682,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               <p></p>
               <b>Thanks,<br/>Task Management Team</b>
           `;
-            TeamsMessage = `<blockquote> ${PreMsg} </blockquote>${CurrentMsg}`;
+            TeamsMessage = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${PreMsg} </blockquote>${CurrentMsg}`;
           }
           else {
             TeamsMessage = `
           <b>Hi ${combinedNames},</b>
           <p></p>
-          <span style="display: block; text-align: right;">Task Comment-<span style="background-color: yellow;">${txtComment}.</span></span>
+          Task Comment-<span style="background-color: yellow;">${txtComment}.</span>
           <p><br/></p>
           <b>Task Details : </b> <span>${finalTaskInfo}</span>
           <p></p>
