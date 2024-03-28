@@ -21,6 +21,7 @@ let GlobalAllCSFData: any = [];
 let GlobalAllProjectData: any = [];
 let GlobalFeedbackJSON: any = [];
 let GlobalCurrentUserData: any;
+let SelectedTaskCategory: any = [];
 const CreateTaskCompareTool = (RequiredData: any) => {
     const { ItemDetails, RequiredListIds, CallbackFunction, CreateTaskForThisPoint, Context } = RequiredData || {};
     const [isOpenTypeCategoryPopup, setIsOpenTypeCategoryPopup] = useState(false);
@@ -152,6 +153,14 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 }
             }
         })
+        if (SelectedCategory.IsSelected == true) {
+            SelectedTaskCategory.push(SelectedCategory)
+        }
+        if (SelectedCategory.IsSelected == false && SelectedTaskCategory.length > 0) {
+            SelectedTaskCategory = SelectedTaskCategory.filter((item: any) =>
+                item.Title != SelectedCategory.Title
+            )
+        }
         setTypeCategoryData([...AllTypeCategory]);
     }
 
@@ -518,6 +527,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                     <button
                         className="btn btn-primary mx-1 px-3"
                         onClick={CreateTaskFunction}
+                        disabled={SelectedTaskCategory.length === 0 || !CreateTaskInfo.Title}
                     >
                         Submit
                     </button>
@@ -590,7 +600,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                         <input
                                             type='text'
                                             className="form-control"
-                                            defaultValue={CreateTaskInfo.Title}
+                                            value={CreateTaskInfo.Title}
                                             onChange={(e) => setCreateTaskInfo({ ...CreateTaskInfo, Title: e.target.value })}
                                         /> :
                                         <input
@@ -723,8 +733,8 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                         <input
                                             type='Number'
                                             className="form-control"
-                                            defaultValue={CreateTaskInfo.PriorityRank}
-                                            onChange={(e) => setCreateTaskInfo({ ...CreateTaskInfo, PriorityRank: e.target.value })}
+                                            value={CreateTaskInfo.PriorityRank}
+                                            onChange={(e) => setCreateTaskInfo({ ...CreateTaskInfo, PriorityRank: parseInt(e.target.value) || 0 })}
                                         /> :
                                         <input
                                             type='Number'
@@ -771,7 +781,8 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                         <input
                                             type='text'
                                             className="form-control"
-                                            defaultValue={CreateTaskInfo.Relevant_Url}
+                                            value={CreateTaskInfo.Relevant_Url}
+
                                             onChange={(e) => setCreateTaskInfo({ ...CreateTaskInfo, Relevant_Url: e.target.value })}
                                         /> :
                                         <input
