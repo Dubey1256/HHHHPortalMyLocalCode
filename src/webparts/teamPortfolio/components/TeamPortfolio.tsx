@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styles from './TeamPortfolio.module.scss';
+//import styles from './TeamPortfolio.module.scss';
 import { ITeamPortfolioProps } from './ITeamPortfolioProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import TeamPortlioTable from './TeamPortlioTable';
