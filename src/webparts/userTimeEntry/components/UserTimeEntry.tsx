@@ -72,6 +72,7 @@ export interface IUserTimeEntryState {
   IsCheckedComponent: boolean;
   IsCheckedService: boolean;
   selectedRadio: any;
+  showChart:boolean;
   IsTimeEntry: boolean;
   showShareTimesheet: boolean;
   disableProperty: boolean;
@@ -99,6 +100,7 @@ export default class UserTimeEntry extends React.Component<
       DateType: "",
       IsOpenTimeSheetPopup: false,
       IsShareTimeEntry: false,
+      showChart: false,
       showShareTimesheet: false,
       disableProperty: true,
       checked: [],
@@ -1411,6 +1413,7 @@ export default class UserTimeEntry extends React.Component<
     let arraycount = 0;
     this.setState({
       loaded: true,
+      showChart:true,
     });
     if (
       DateType == "Today" ||
@@ -2618,11 +2621,14 @@ export default class UserTimeEntry extends React.Component<
     }
     return count;
   }
-  private customTableHeaderButtons = (
-    <a className="barChart" title="Open Bar Graph" onClick={this.showGraph}>
-      <BsBarChartLine />
+  private customTableHeaderButtons = () => (
+    <a className={
+      this.state.showChart ? "barChart" :
+      "barChart Disabled-Link"} 
+      title="Open Bar Graphs" onClick={this.showGraph}>
+      <BsBarChartLine style={{ color: this.state.showChart ? "#000066" : "#808080" }} />
     </a>
-  );
+);
   private onCheck(checked: any) {
     debugger;
     this.setState({ checked }, () => {
