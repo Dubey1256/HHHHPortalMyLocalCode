@@ -11,7 +11,9 @@ import * as globalCommon from '../../globalComponents/globalCommon';
 import { getSP } from '../../spservices/pnpjsConfig';
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
 import { ImReply } from 'react-icons/im';
+import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
 import { FocusTrapCallout, FocusZone, FocusZoneTabbableElements, Stack, Text, } from '@fluentui/react';
+import ReactDOM from "react-dom";
 let color: any = false;
 let Title: any = "";
 let commentlength: any = 0
@@ -642,15 +644,62 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           //   MsgURL = `${this.props.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${this.state.itemID}`
           //   MsgTitle = `${this.state?.Result?.Title}`
           // }
+          this.state.Result["CommentsArray"] = this.state?.Result?.Comments
+          const TaskInformation = await GlobalFunctionForUpdateItems.GenerateMSTeamsNotification(this.state?.Result)
+          const containerDiv = document.createElement('div');
+          const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
+          ReactDOM.render(reactElement, containerDiv);
+          let finalTaskInfo: any = containerDiv.innerHTML;
+          const nameRegex = /@\[(.*?)\]/g; // Regular expression with 'g' flag to match globally
+          const matches = [];
+          let match;
+          while ((match = nameRegex.exec(MentionedValue)) !== null) {
+            matches.push(match[1]);
+          }
+          const combinedNames = matches.join(', ');
+          let TeamsMessage = ''
           if (this.state?.ChildLevel == true) {
             if (this.state?.ReplyParent?.MsTeamCreated == undefined)
               this.state.ReplyParent.MsTeamCreated = ''
-            TeamMsg = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')} </br> <a href=${MsgURL}>${MsgTitle}</a></blockquote>${txtComment}`;
+            const PreMsg = `
+              <b>Hi ${this.state?.ReplyParent?.Header.replaceAll('@', '')},</b>
+              <p></p>
+              <span style="display: block; text-align: right;">Task Comment-<span style="background-color: yellow;">${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')}.</span></span>
+              <p><br/></p>
+              <b>Task Details : </b> <span>${finalTaskInfo}</span>
+              <p></p>
+              Task Link: <a href=${MsgURL}>Click here</a>
+              <p></p>
+              <b>Thanks,<br/>Task Management Team</b>
+          `;
+            const CurrentMsg = `
+              <b>Hi ${this.state?.ReplyParent?.AuthorName},</b>
+              <p></p>
+              <span style="display: block; text-align: right;">Task Comment-<span style="background-color: yellow;">${txtComment}.</span></span>
+              <p><br/></p>
+              <b>Task Details : </b> <span>${finalTaskInfo}</span>
+              <p></p>
+              Task Link: <a href=${MsgURL}>Click here</a>
+              <p></p>
+              <b>Thanks,<br/>Task Management Team</b>
+          `;
+            TeamsMessage = `<blockquote> ${PreMsg} </blockquote>${CurrentMsg}`;
           }
           else {
-            TeamMsg = txtComment + `</br> <a href=${MsgURL}>${MsgTitle}</a>`
+            TeamsMessage = `
+          <b>Hi ${combinedNames},</b>
+          <p></p>
+          <span style="display: block; text-align: right;">Task Comment-<span style="background-color: yellow;">${txtComment}.</span></span>
+          <p><br/></p>
+          <b>Task Details : </b> <span>${finalTaskInfo}</span>
+          <p></p>
+          Task Link: <a href=${MsgURL}>Click here</a>
+          <p></p>
+          <b>Thanks,<br/>Task Management Team</b>
+      `;
           }
-          await globalCommon.SendTeamMessage(mention_To, TeamMsg, this.props.Context)
+
+          await globalCommon.SendTeamMessage(mention_To, TeamsMessage, this.props.Context)
           this.SendEmail(emailprops);
           this.setState({
             ChildLevel: false,
@@ -808,7 +857,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
 
   private detectAndRenderLinks = (html: any) => {
-    
+
     const div = document.createElement('div');
     div.innerHTML = html;
     const paragraphs = div.querySelectorAll('p');
@@ -826,9 +875,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     //   a.setAttribute('target', '_blank');
     //   a.setAttribute('data-interception', 'off');
     // });
-   
-    
-    return  globalCommon?.replaceURLsWithAnchorTags(div.innerHTML);
+
+
+    return globalCommon?.replaceURLsWithAnchorTags(div.innerHTML);
   };
   public render(): React.ReactElement<ICommentCardProps> {
     return (
