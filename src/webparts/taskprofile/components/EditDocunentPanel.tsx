@@ -9,11 +9,19 @@ import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPo
 import ImageInformation from '../../EditPopupFiles/ImageInformation';
 let mastertaskdetails: any = []
 let copyEditData: any = {}
+let mydataa: any = [];
+let count = 0;
+let componentDetailsDaata: any = [];
 
 const EditDocumentpanel = (props: any) => {
   const [EditdocumentsData, setEditdocumentsData]: any = React.useState();
   const [isOpenImageTab, setisOpenImageTab] = React.useState(false);
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = React.useState(false);
+  const [isopenprojectservicepopup, setisopenprojectservicepopup] = React.useState(false);
+  const [projectdata, setProjectData] = React.useState([]);
+  const [SharewebComponentProjectpopup, setSharewebComponentProjectpopup] = React.useState("");
+  const [allProjectDaata, SetAllProjectDaata] = React.useState([]);
+  const [searchedProjectDaata, setSearchedProjectDaata] = React.useState([]);
   let ItemRank = [
     { rankTitle: 'Select Item Rank', rank: null },
     { rankTitle: '(8) Top Highlights', rank: 8 },
@@ -25,12 +33,6 @@ const EditDocumentpanel = (props: any) => {
     { rankTitle: '(1) Archive', rank: 1 },
     { rankTitle: '(0) No Show', rank: 0 }
   ]
-
-  let ReceiverId: any = [];
-  let ReceiverCC: any = [];
-  let recipientLabel = "";
-  let recipientLabelCC = "";
-  let emailString = "";
 
   React.useEffect(() => {
     if (props?.editData != undefined) {
@@ -56,15 +58,21 @@ const EditDocumentpanel = (props: any) => {
           Data.docTitle = getUploadedFileName(Data?.FileLeafRef);
           Data.Item_x002d_Image = Data?.Item_x0020_Cover
           let portfolioData: any = []
+          let projectData: any = []
           if (Data.Portfolios != undefined && Data?.Portfolios?.length > 0) {
             Data?.Portfolios?.map((portfolio: any) => {
               mastertaskdetails.map((mastertask: any) => {
-                if (mastertask.Id == portfolio.Id) {
+                if (mastertask.Id == portfolio.Id && mastertask?.Item_x0020_Type != "Project") {
                   portfolioData.push(mastertask);
+                }
+                if (mastertask.Id == portfolio.Id && mastertask?.Item_x0020_Type == "Project") {
+                  projectData.push(mastertask);
                 }
               });
             });
-            Data.Portfolios = portfolioData
+            Data.Portfolios = portfolioData;
+            Data.projectData = projectData;
+            setProjectData(projectData)
           }
           setTimeout(() => {
             const panelMain: any = document.querySelector('.ms-Panel-main');
@@ -81,6 +89,70 @@ const EditDocumentpanel = (props: any) => {
     }
   };
 
+  async function updateMultiLookup(
+    itemIds: number[],
+    lookupIds: number[],
+    AllListId: any
+  ) {
+    try {
+      if (itemIds?.length == 0) {
+        getMasterTaskListTasksData();
+      } else {
+        let web = new Web(AllListId?.siteUrl);
+        for (const itemId of itemIds) {
+          // Update the multi-lookup field for each item
+          await web.lists
+            .getById(AllListId?.MasterTaskListID)
+            .items.getById(itemId)
+            .update({
+              PortfoliosId: {
+                results:
+                  lookupIds !== undefined && lookupIds?.length > 0
+                    ? lookupIds
+                    : [],
+              },
+            })
+            .then((res: any) => {
+              getMasterTaskListTasksData();
+              count++;
+              console.log(res);
+            });
+        }
+      }
+    } catch (error) {
+      console.error("Error updating multi-lookup field:", error);
+    }
+  }
+
+  let getMasterTaskListTasksData = async function () {
+    try {
+      let web = new Web(props?.AllListId?.siteUrl);
+
+      componentDetailsDaata = await web.lists
+        .getById(props?.AllListId?.MasterTaskListID)
+        .items.select(
+          "Item_x0020_Type",
+          "Title",
+          "PortfolioStructureID",
+          "Id",
+          "PercentComplete",
+          "Portfolios/Id",
+          "Portfolios/Title"
+        )
+        .expand("Portfolios")
+        .filter("(Item_x0020_Type eq 'Project' or Item_x0020_Type eq 'Sprint') and Portfolios/Id eq " + props?.editData?.Id)
+        .top(4000)
+        .getAll();
+
+      // Project Data for HHHH Project Management
+
+      setProjectData(componentDetailsDaata);
+      console.log("data show on componentdetails", componentDetailsDaata);
+    } catch (error) {
+      console.log("error show", error);
+    }
+  };
+
   const LoadMasterTaskList = () => {
     return new Promise(function (resolve, reject) {
       let web = new Web(props.AllListId?.siteUrl);
@@ -91,6 +163,7 @@ const EditDocumentpanel = (props: any) => {
           "Title",
           "Mileage",
           "TaskListId",
+          "Item_x0020_Type",
           "TaskListName",
           "PortfolioType/Id",
           "PortfolioType/Title",
@@ -137,12 +210,32 @@ const EditDocumentpanel = (props: any) => {
   };
   const updateDocumentsData = async () => {
     let componetServicetagData: any = [];
+    var RelevantProjectIdRemove = "";
+    var RelevantProjectIds = "";
     if (EditdocumentsData?.Portfolios?.length > 0) {
       EditdocumentsData?.Portfolios?.map((portfolioId: any) => {
         componetServicetagData.push(portfolioId?.Id)
       })
-
     }
+
+    if (projectdata != undefined && projectdata?.length > 0) {
+            projectdata?.map((com: any) => {
+              if (projectdata != undefined && projectdata?.length >= 0) {
+                $.each(projectdata, function (index: any, smart: any) {
+                  RelevantProjectIds = smart.Id;
+                  componetServicetagData.push(smart.Id);
+                });
+              }
+            });
+          }
+      
+          if (projectdata != null && projectdata.length >= 0) {
+            projectdata.filter((com: any) => {
+              RelevantProjectIdRemove = com.Id;
+              componetServicetagData.push(com.Id);
+            });
+          }
+
     const web = new Web(props?.AllListId?.siteUrl);
     await web.lists.getById(props?.AllListId?.DocumentsListID)
       .items.getById(EditdocumentsData.Id).update({
@@ -178,6 +271,7 @@ const EditDocumentpanel = (props: any) => {
           props.callbackeditpopup();
         }
         mastertaskdetails = []
+        getMasterTaskListTasksData()
 
       }).catch((err: any) => {
         console.log(err)
@@ -261,6 +355,33 @@ const EditDocumentpanel = (props: any) => {
     }
   }, [])
 
+  // -----For project
+  const autoSuggestionForProject = (e: any) => {
+    let searchedKey: any = e.target.value;
+    let tempArray: any = [];
+    if (searchedKey?.length > 0) {
+      allProjectDaata?.map((itemData: any) => {
+        if (itemData.Title.toLowerCase().includes(searchedKey.toLowerCase())) {
+          tempArray.push(itemData);
+        }
+      });
+      setSearchedProjectDaata(tempArray);
+    } else {
+      setSearchedProjectDaata([]);
+    }
+  };
+
+  const handleSuggestionforProject = (suggestion: any) => {
+    allProjectDaata?.map((items: any) => {
+      if (items?.Id === suggestion?.Id) {
+        callServiceComponents([items], "Multi", "Save");
+      }
+    });
+    setSearchedProjectDaata([]);
+  };
+
+  // ------end----
+
   const getUploadedFileName = (fileName: any) => {
     const indexOfLastDot = fileName?.lastIndexOf('.');
     if (indexOfLastDot !== -1) {
@@ -286,6 +407,67 @@ const EditDocumentpanel = (props: any) => {
     })
 
   }
+
+  const openProjectPopup = (itemm: any) => {
+    setisopenprojectservicepopup(true);
+    mydataa.push(props?.editData?.Id);
+    setSharewebComponentProjectpopup(itemm);
+  };
+
+  const callServiceComponents = React.useCallback(
+    (item1: any, type: any, functionType: any) => {
+      if (functionType === "Close") {
+        if (type === "Multi") {
+          setisopenprojectservicepopup(false);
+        } else {
+          setisopenprojectservicepopup(false);
+        }
+      } else {
+        if (type === "Multi" || type === "Single") {
+          let mydataid: any = [props?.editData?.Id];
+          let filteredIds = item1
+            .filter((item: { Id: null }) => item.Id !== null)
+            .map((item: { Id: any }) => item.Id);
+
+          updateMultiLookup(filteredIds, mydataid, props?.AllListId);
+          setisopenprojectservicepopup(false);
+        }
+      }
+    },
+    []
+  );
+
+  const DeleteCrossIconDataForProject = async (titleToRemove: any) => {
+    try {
+      let web = new Web(props?.AllListId?.siteUrl);
+
+      // Update the multi-lookup field for each item
+      titleToRemove.length > 0 &&
+        (await web.lists
+          .getById(props?.AllListId?.MasterTaskListID)
+          .items.getById(titleToRemove[0])
+          .update({
+            PortfoliosId: {
+              results: titleToRemove !== undefined ? titleToRemove : [],
+            },
+          })
+          .then((res: any) => {
+            console.log(res);
+          })
+          .catch((error) => {
+            console.log("error", error);
+          }));
+
+      let updatedComponentDaata: any = [];
+      updatedComponentDaata = projectdata.filter(
+        (itemmm: any) => itemmm.Id !== titleToRemove[0]
+      );
+      console.log("remove data", updatedComponentDaata);
+      setProjectData(updatedComponentDaata);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   /////////folara editor function start//////////
   const HtmlEditorCallBack = (items: any) => {
     console.log(items);
@@ -358,7 +540,7 @@ const EditDocumentpanel = (props: any) => {
                     onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value })}
                   />
                 </div>
-                <div className="input-group mx-4">
+                {/* <div className="input-group mx-4">
                   <label className="form-label full-width">
                     Portfolios
                   </label>
@@ -381,9 +563,214 @@ const EditDocumentpanel = (props: any) => {
                   <span className="input-group-text" title="Linked Component Task Popup">
                     <span className="svg__iconbox svg__icon--editBox" onClick={(e) => opencomonentservicepopup()}></span>
                   </span>
+                </div> */}
+                <div className="input-group mx-4">
+                  <label className="form-label full-width">
+                    Portfolios
+                  </label>
+                  {EditdocumentsData && EditdocumentsData?.Portfolios?.length == 1 ? (
+                    EditdocumentsData?.Portfolios != undefined && EditdocumentsData?.Item_x0020_Type != "Project" &&
+                    EditdocumentsData?.Portfolios?.map((portfolio: any, index: any) => {
+
+                      return (
+                        // <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
+                        //   <a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${portfolio?.Id}`}>{portfolio?.Title}</a>
+                        //   <a>
+                        //     <span className="bg-light svg__icon--cross svg__iconbox" onClick={() => DeleteTagPortfolios(portfolio?.Id)}></span>
+                        //   </a></div>
+                        <div
+                          className="full-width replaceInput alignCenter"
+                          key={index}
+                        >
+                          <a
+                            href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${portfolio.Id}`}
+                            className="textDotted hreflink"
+                            data-interception="off"
+                            target="_blank"
+                          >
+                            {portfolio?.Title}
+                          </a>
+                          <span
+                            className="input-group-text"
+                            placeholder="Project"
+                          >
+                            <span
+                              className="bg-dark svg__icon--cross svg__iconbox"
+                              onClick={() =>
+                                DeleteTagPortfolios([portfolio?.Id])
+                              }
+                            ></span>
+                            <span
+                              title="Project"
+                              onClick={(e) =>
+                                openProjectPopup("Project")
+                              }
+                              className="svg__iconbox svg__icon--editBox"
+                            ></span>
+                          </span>
+                        </div>
+                      )
+                    })
+                  ) : ("")}
+
+                  {EditdocumentsData?.Portfolios?.length == 0 && (
+                    <>
+                      <input
+                        type="text"
+                        className="form-control"
+                        readOnly
+                      />
+                      <span
+                        className="input-group-text"
+                        placeholder="Linked Component Task Popup"
+                      >
+                        <span
+                          onClick={(e) => opencomonentservicepopup()
+                          }
+                          className="svg__iconbox svg__icon--editBox"
+                        ></span>
+                      </span>
+                    </>
+                  )}
+
+                  {/* {EditdocumentsData?.Portfolios?.length == 0 &&
+
+                    <input type="text" className="form-control" readOnly />}
+                  <span className="input-group-text" title="Linked Component Task Popup">
+                    <span className="svg__iconbox svg__icon--editBox" onClick={(e) => opencomonentservicepopup()}></span>
+                  </span> */}
                 </div>
 
               </div>
+{/* -------For Project--- */}
+<div className="col-sm-4 mt-2">
+                <div className="col-sm-12 padding-0 input-group">
+                  <label className="full_width">Project</label>
+
+                  {(projectdata?.length == 0 ||
+                    projectdata.length !== 1) && (
+                      <>
+                        <input
+                          type="text"
+                          className="form-control"
+                          onChange={(e) => autoSuggestionForProject(e)}
+                        />
+                        <span
+                          className="input-group-text"
+                          placeholder="Project"
+                        >
+                          <span
+                            title="Project"
+                            onClick={(e) =>
+                              openProjectPopup("Project")
+                            }
+                            className="svg__iconbox svg__icon--editBox"
+                          ></span>
+                        </span>
+                      </>
+                    )}
+
+                  {projectdata && projectdata.length == 1 ? (
+                    //    "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=4310"
+                    <div className="w-100">
+                      {projectdata?.map((items: any, Index: any) => (
+                        <div
+                          className="full-width replaceInput alignCenter"
+                          key={Index}
+                        >
+                          <a
+                            href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items.Id}`}
+                            className="textDotted hreflink"
+                            data-interception="off"
+                            target="_blank"
+                          >
+                            {items?.Title}
+                          </a>
+                          <span
+                            className="input-group-text"
+                            placeholder="Project"
+                          >
+                            <span
+                              className="bg-dark svg__icon--cross svg__iconbox"
+                              onClick={() =>
+                                DeleteCrossIconDataForProject([items?.Id])
+                                // setProjectData([])
+                              }
+                            ></span>
+                            <span
+                              title="Project"
+                              onClick={(e) =>
+                                openProjectPopup("Project")
+                              }
+                              className="svg__iconbox svg__icon--editBox"
+                            ></span>
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
+                  {searchedProjectDaata?.length > 0 && (
+                    <div className="SmartTableOnTaskPopup">
+                      <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                        {searchedProjectDaata.map(
+                          (suggestion: any, index: any) => (
+                            <li
+                              className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                              key={index}
+                              onClick={() =>
+                                handleSuggestionforProject(suggestion)
+                              }
+                            >
+                              {suggestion?.Title}
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  )}
+
+                  <div className="col-sm-12  inner-tabb">
+                    {projectdata && projectdata.length > 1 ? (
+                      <div className="w=100">
+                        {projectdata?.map((items: any, Index: any) => (
+                          <div
+                            className="block d-flex justify-content-between mb-1"
+                            key={Index}
+                          >
+                            <a
+                              href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items.Id}`}
+                              className="wid-90 light"
+                              data-interception="off"
+                              target="_blank"
+                            >
+                              {items?.Title}
+                            </a>
+                            <a className="text-end">
+                              {" "}
+                              <span
+                                className="bg-light svg__icon--cross svg__iconbox"
+                                onClick={() =>
+                                  DeleteCrossIconDataForProject([items?.Id])
+                                  // setProjectData([])
+                                }
+                              ></span>
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </div>
+              </div>
+
+
+              {/* ------end project--- */}
+
               {EditdocumentsData?.File_x0020_Type === "msg" ?
                 <>
                   <div className='mt-3'>
@@ -517,44 +904,24 @@ const EditDocumentpanel = (props: any) => {
         />
       }
 
+       {isopenprojectservicepopup &&
+        <ServiceComponentPortfolioPopup
+          props={projectdata}
+          Dynamic={props.AllListId}
+          ComponentType={"Component"}
+          selectionType={"Multi"}
+          // Call={ComponentProjectPopupCallBack}
+          Call={(Call: any, type: any, functionType: any) => {
+            callServiceComponents(Call, type, functionType);
+          }}
+          showProject={isopenprojectservicepopup}
+          updateMultiLookup={updateMultiLookup}
+
+        />
+      }
+
     </>
   )
 }
 export default EditDocumentpanel;
 
-
-// {JSON.parse(EditdocumentsData?.recipients).map((val:any) => {
-//   if (val.recipType === 'to') {
-//     return val.email += val.allreciptId.replace('undefined');
-//   }
-//   return(
-//     <input type="text" className="form-control" value={`${val?.recipType == "to" ? "To" :"" || val?.recipType == "cc" ? "CC" :""} : ${val?.allreciptId}`} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, recipients: e.target.value })} />
-
-//   )
-// }).join(';')}
-
-
-// {(EditdocumentsData?.recipients) ?
-//   (JSON.parse(EditdocumentsData?.recipients)?.map((val: any) => {
-//       if (val.recipType === 'to') {
-//           val.email += val?.allreciptId;
-//           return (
-//               <input key={val.email} type="text" className="form-control" value={`To: ${val.email}`} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, recipients: e.target.value })} />
-//           );
-//       } else if (val.recipType === 'cc') {
-//           val.email += val?.allreciptId;
-//           return (
-//               <input key={val.email} type="text" className="form-control" value={`CC: ${val.email}`} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, recipients: e.target.value })} />
-//           );
-//       }
-//       return null;
-//   }).join(';')) :
-//   <input type="text" className="form-control" onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, recipients: e.target.value })} />
-// }
-
-
-
-
-
-
-{/* <input type="text" className="form-control" value={`${item?.recipType == "to" ? "To" :"" || item?.recipType == "cc" ? "CC" :""} : ${ReceiverId.replaceAll("undefined")}`} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, recipients: e.target.value })} /> */ }
