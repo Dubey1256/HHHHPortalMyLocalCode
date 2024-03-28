@@ -1647,12 +1647,12 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                 }
                             </td>
                             {RequiredData?.CommentsArray?.length > 0 ?
-                                <td width="22%" style={{ width: '22.0%', padding: '.75pt .75pt .75pt .75pt' }}>
-                                    <table className='table table-striped ' cellPadding={0} width="100%" style={{ width: '100.0%', border: 'solid #dddddd 1.0pt', borderRadius: '4px' }}>
+                                <td width="22%" style={{ width: '22.0%', padding: '.75pt .75pt .75pt .75pt' ,background: 'whitesmoke' }}>
+                                    <table className='table table-striped ' cellPadding={0} width="100%" style={{ width: '100.0%', border: 'solid #dddddd 1.0pt', borderRadius: '4px', background: 'whitesmoke' }}>
                                         <tbody>
                                             <tr>
-                                                <td style={{ border: 'none', borderBottom: 'solid #dddddd 1.0pt', background: 'whitesmoke', padding: '.75pt .75pt .75pt .75pt' }}>
-                                                    <b style={{ marginBottom: '1.25pt' }}><span>Comments:<u></u><u></u></span></b>
+                                                <td style={{ border: 'none', borderBottom: 'solid #dddddd 1.0pt', background: '#fff',color:"#f333", padding: '.75pt .75pt .75pt .75pt' }}>
+                                                    <b style={{ marginBottom: '1.25pt' }}><span style={{color: 'black'} }>Comments:<u></u><u></u></span></b>
                                                 </td>
                                             </tr>
                                             <tr>
