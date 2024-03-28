@@ -917,19 +917,26 @@ const TimeEntryPopup = (item: any) => {
       return entry1.Title === entry2.Title;
     }
 
+    const modifiedFinal = mergedFinalData.map(item => {
+      return { ...item, Created: "" };
+  });
+  
+ 
     console.log("mergedFinalData", mergedFinalData);
     console.log(
       "TaskTimeSheetCategoriesGrouping",
       TaskTimeSheetCategoriesGrouping
     );
 
+
+    setBackupData(modifiedFinal);
     if(Flatview == true){
-      flatviewOpen(Flatview,mergedFinalData)
+      flatviewOpen(Flatview,modifiedFinal)
     }
     else{
-      backupEdit = mergedFinalData;
-      setData(mergedFinalData);
-      setBackupData(mergedFinalData);
+      backupEdit = modifiedFinal;
+      setData(modifiedFinal);
+      setBackupData(modifiedFinal);
       setTimeSheet(TaskTimeSheetCategoriesGrouping);
       console.log("finalData", finalData);
      
