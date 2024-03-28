@@ -900,7 +900,7 @@ const EditTaskPopup = (Items: any) => {
                 let saveImage = [];
                 if (item?.WorkingAction?.length > 0) {
                     let WorkingActionData: any = JSON.parse(item.WorkingAction);
-                    setWorkingAction([WorkingActionData]);
+                    setWorkingAction(WorkingActionData);
                 }
                 if (item.Categories != null) {
                     setCategoriesData(item.Categories);
@@ -2823,6 +2823,11 @@ const EditTaskPopup = (Items: any) => {
                                 .then((response: any) => {
                                     console.log(response);
                                 });
+                         }
+                         if(TaskDetailsFromCall[0].Categories == 'Design' && CalculateStatusPercentages == 90){
+                            ValueStatus = CalculateStatusPercentages;
+                            setSendEmailNotification(true);
+                            Items.StatusUpdateMail = true;
                         }
                         setLastUpdateTaskData(TaskDetailsFromCall[0]);
                         if (usedFor == "Image-Tab") {
