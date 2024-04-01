@@ -723,7 +723,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                         <input
                                             type='Number'
                                             className="form-control"
-                                            defaultValue={CreateTaskInfo.PriorityRank}
+                                            value={CreateTaskInfo.PriorityRank}
                                             onChange={(e) => setCreateTaskInfo({ ...CreateTaskInfo, PriorityRank: e.target.value })}
                                         /> :
                                         <input
