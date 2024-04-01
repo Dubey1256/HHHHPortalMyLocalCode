@@ -2594,12 +2594,12 @@ const EditTaskPopup = (Items: any) => {
                             TaskDetailsFromCall[0].siteType = EditData.siteType;
                             TaskDetailsFromCall[0].siteUrl = siteUrls;
                             TaskDetailsFromCall[0].siteIcon = Items.Items.SiteIcon;
-                            TaskDetailsFromCall[0].PercentComplete = (TaskDetailsFromCall[0].PercentComplete * 100).toFixed(0);
                         }
                         let UpdatedDataObject: any = TaskDetailsFromCall[0]
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
                         UpdatedDataObject.SmartPriority = NewSmartPriority;
                         UpdatedDataObject.siteUrl = siteUrls;
+                        UpdatedDataObject.CommentsArray=  UpdatedDataObject?.Comments!=null ?JSON.parse(UpdatedDataObject?.Comments):null
                         let WorkingActionData = UpdatedDataObject?.WorkingAction?.length > 0 ? JSON.parse(UpdatedDataObject?.WorkingAction) : [];
                         WorkingActionData?.map((ItemData: any) => {
                             ItemData.InformationData?.map(async (InfoItem: any) => {
@@ -4624,7 +4624,7 @@ const EditTaskPopup = (Items: any) => {
     };
 
     const selectApproverFunction = (selectedData: any) => {
-   let checkduplicateData :any=  ApproverData.filter((data:any)=>data?.AssingedToUserId!=selectedData?.AssingedToUserId)
+   let checkduplicateData :any=  ApproverData.filter((data:any)=>data?.AssingedToUserId==selectedData?.AssingedToUserId)
         if(checkduplicateData?.length==0){
             setApproverData([...ApproverData, selectedData]);
         }
