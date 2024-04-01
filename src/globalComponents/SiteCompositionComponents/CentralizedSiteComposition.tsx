@@ -1973,11 +1973,11 @@ const CentralizedSiteComposition = (Props: any) => {
                                             <SlArrowRight />
                                         )}
                                     </span>
-                                    Client Category Summarization Tool
+                                    Client Category Identification Tool
                                     <span className="hover-text alignIcon">
                                         <span className="svg__iconbox svg__icon--info dark"></span>
                                         <span className="tooltip-text pop-right">
-                                            <b>Client Category Summarization Tool:</b><br />
+                                            <b>Client Category Identification Tool:</b><br />
                                             This tool efficiently consolidates client categories associated with selected items and their corresponding child Items (All Tagged CC in Selected Item CSF and AWT). The tool offers a streamlined view of client categories, filtering them based on their respective sites. The selected client categories seamlessly Inherited to the designated parent item and also inherited into selected items (CSF/AWT) from the Tagged Child Item Table.
                                             <p className="mb-1"><b>Validation Cases:</b> </p>
                                             <b>1. </b>If the selected item have tagged CCs, that CCs will be automatically set as the default selection<br />
