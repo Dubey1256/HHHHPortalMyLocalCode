@@ -22,7 +22,7 @@ import * as Moment from "moment";
 import Slider from "react-slick";
 import { ColumnDef } from "@tanstack/react-table";
 import HighlightableCell from "../../../globalComponents/highlight";
-import { MdOutlineGppGood, MdGppBad } from "react-icons/md";
+import { MdOutlineGppGood, MdGppBad } from "react-icons/Md";
 import { FocusTrapCallout, FocusZone, FocusZoneTabbableElements, Panel, PanelType, Stack, Text, } from '@fluentui/react';
 import { color } from "@mui/system";
 let Count = 0;
@@ -860,8 +860,8 @@ const TaskStatusTbl = (Tile: any) => {
           id: "Id"
         },
         {
-          accessorFn: (row: any) => row?.AuthorName,
-          id: "AuthorName",
+          accessorFn: (row: any) => row?.Title,
+          id: "Title",
           placeholder: "AuthorName",
           header: "",
           size: 155,
@@ -874,13 +874,13 @@ const TaskStatusTbl = (Tile: any) => {
                     <span>
                       {row?.original?.AuthorImage != "" && row?.original.AuthorImage != null ? (
                         <img
-                          className="AssignUserPhoto1 bdrbox m-0 wid29" title={row?.original.AuthorName} data-toggle="popover" data-trigger="hover" src={row?.original.AuthorImage}  ></img>
+                          className="AssignUserPhoto1 bdrbox m-0 wid29" title={row?.original.Title} data-toggle="popover" data-trigger="hover" src={row?.original.AuthorImage}  ></img>
                       ) : (
-                        <>  {" "}  <img className="AssignUserPhoto1 bdrbox m-0 wid29" title={row?.original.AuthorName} data-toggle="popover" data-trigger="hover"
+                        <>  {" "}  <img className="AssignUserPhoto1 bdrbox m-0 wid29" title={row?.original.Title} data-toggle="popover" data-trigger="hover"
                           src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg" ></img>
                         </>
                       )}
-                      <span className="mx-1">{row?.original?.AuthorName}</span>
+                      <span className="mx-1">{row?.original?.Title}</span>
                     </span>
                   </>
                 </div>
@@ -919,6 +919,7 @@ const TaskStatusTbl = (Tile: any) => {
           accessorKey: "TaskTime",
           placeholder: "TaskTime",
           header: "",
+          id: 'TaskTime',
           size: 40,
           isColumnVisible: true,
           fixedColumnWidth: true
@@ -927,6 +928,7 @@ const TaskStatusTbl = (Tile: any) => {
           accessorKey: "Description",
           placeholder: "Description",
           header: "",
+          id: "Description",
           isColumnVisible: true,
           size: 425,
         },
@@ -1221,11 +1223,11 @@ const TaskStatusTbl = (Tile: any) => {
                     </div>
                     <div className="Alltable" >
                       {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
-                        <GlobalCommanTable wrapperHeight="300px" multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                        <GlobalCommanTable wrapperHeight="300px" columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                           pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
                       )}
                       {config?.Tasks != undefined && config?.Tasks?.length == 0 && (
-                        <GlobalCommanTable wrapperHeight="300px" multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                        <GlobalCommanTable wrapperHeight="300px" columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                           pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
                       )}
                     </div>

@@ -425,7 +425,7 @@ const inlineEditingcolumns = (props: any) => {
 
     setAllTaskUser(taskUsers);
   };
-  const openTaskStatusUpdatePopup = () => {
+  const openTaskStatusUpdatePopup = async () => {
     StatusValue = props.item.PercentComplete
     setTaskStatusPopup(true);
   };
@@ -434,12 +434,6 @@ const inlineEditingcolumns = (props: any) => {
     return date.isValid();
   }
   const UpdateTaskStatus = async () => {
-    setUpdateTaskInfo({
-      ...UpdateTaskInfo,
-      PercentCompleteStatus: props?.item?.PercentComplete
-        ? props?.item?.PercentComplete
-        : null
-    });
     if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
       TaskAssignedTo?.map((taskInfo) => {
         AssignedToIds.push(taskInfo.Id);
@@ -461,12 +455,6 @@ const inlineEditingcolumns = (props: any) => {
         ResponsibleTeamIds.push(taskInfo.Id);
       });
     }
-    StatusArray?.map((array: any) => {
-      if (props?.item?.PercentComplete == array.value) {
-        setPercentCompleteStatus(array.status);
-        setTaskStatus(array.taskStatusComment);
-      }
-    });
     let priority: any;
     let priorityRank = 4;
     if (taskPriority === undefined || parseInt(taskPriority) <= 0) {
