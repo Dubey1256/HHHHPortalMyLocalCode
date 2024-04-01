@@ -1621,9 +1621,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         ...prevState.Result,
         Categories: item?.Categories,
         ["SmartPriority"]: globalCommon?.calculateSmartPriority(resultData),
-
+        Comments: JSON.parse(item?.Comments)
       }
     }));
+    this.GetResult()
     console.log(item)
   }
 
