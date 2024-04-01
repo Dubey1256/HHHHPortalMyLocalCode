@@ -1778,6 +1778,7 @@ export const PrepareDataAccordingToSortOrder = (SourceArray: any, currentArray: 
         return currentArray;
     } catch (error) {
         console.log("Error in PrepareDataAccordingToSortOrder function:", error.message)
+        
     }
 }
 
