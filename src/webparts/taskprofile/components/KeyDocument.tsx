@@ -233,7 +233,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                     </div>
 
                     <div className='TableSection w-100'>
-                        <div className='Alltable'>
+                        <div className='Alltable border-0'>
                             <div className='smart Key-documents'>
                               <GlobalCommanTable columns={columns} wrapperHeight="100%" data={copykeyDocument?.length > 0 ? copykeyDocument : keyDocument} callBackData={callBackData} />
                             </div>
