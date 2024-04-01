@@ -191,7 +191,7 @@ const EmailNotificationMail = (props: any) => {
                         <b style={{ fontSize: '10.0pt', color: 'black' }}>Created:</b>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '5pt' }}>
-                        <span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Created"]}</span>
+                        <span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Created"] != null && props.items["Created"] != undefined ? Moment(props.items["Created"]).format("DD-MM-YYYY") : ''}</span>
                       </td>
                       <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '5pt',width:'80pt' }}>
                         <b style={{ fontSize: '10.0pt', color: 'black' }}>Created By:</b>
