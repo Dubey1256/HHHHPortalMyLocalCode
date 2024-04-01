@@ -590,7 +590,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                         <input
                                             type='text'
                                             className="form-control"
-                                            defaultValue={CreateTaskInfo.Title}
+                                            value={CreateTaskInfo.Title}
                                             onChange={(e) => setCreateTaskInfo({ ...CreateTaskInfo, Title: e.target.value })}
                                         /> :
                                         <input
