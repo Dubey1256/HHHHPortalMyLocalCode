@@ -2823,6 +2823,11 @@ const EditTaskPopup = (Items: any) => {
                                 .then((response: any) => {
                                     console.log(response);
                                 });
+                         }
+                         if(TaskDetailsFromCall[0].Categories == 'Design' && CalculateStatusPercentages == 90){
+                            ValueStatus = CalculateStatusPercentages;
+                            setSendEmailNotification(true);
+                            Items.StatusUpdateMail = true;
                         }
                         setLastUpdateTaskData(TaskDetailsFromCall[0]);
                         if (usedFor == "Image-Tab") {
