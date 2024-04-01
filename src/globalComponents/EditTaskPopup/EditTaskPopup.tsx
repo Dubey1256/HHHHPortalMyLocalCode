@@ -900,7 +900,7 @@ const EditTaskPopup = (Items: any) => {
                 let saveImage = [];
                 if (item?.WorkingAction?.length > 0) {
                     let WorkingActionData: any = JSON.parse(item.WorkingAction);
-                    setWorkingAction([WorkingActionData]);
+                    setWorkingAction(WorkingActionData);
                 }
                 if (item.Categories != null) {
                     setCategoriesData(item.Categories);
