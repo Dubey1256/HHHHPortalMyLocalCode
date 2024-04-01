@@ -425,7 +425,7 @@ const inlineEditingcolumns = (props: any) => {
 
     setAllTaskUser(taskUsers);
   };
-  const openTaskStatusUpdatePopup = () => {
+  const openTaskStatusUpdatePopup = async () => {
     StatusValue = props.item.PercentComplete
     setTaskStatusPopup(true);
   };
