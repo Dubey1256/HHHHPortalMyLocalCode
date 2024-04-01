@@ -72,6 +72,7 @@ export interface IUserTimeEntryState {
   IsCheckedComponent: boolean;
   IsCheckedService: boolean;
   selectedRadio: any;
+  showChart: boolean;
   IsTimeEntry: boolean;
   showShareTimesheet: boolean;
   disableProperty: boolean;
@@ -101,6 +102,7 @@ export default class UserTimeEntry extends React.Component<
       IsShareTimeEntry: false,
       showShareTimesheet: false,
       disableProperty: true,
+      showChart: false,
       checked: [],
       expanded: [],
       checkedSites: [],
@@ -1386,7 +1388,7 @@ export default class UserTimeEntry extends React.Component<
         lastMonth.getMonth(),
         1
       );
-      var change = Moment(startingDateOfLastMonth).add(25, "days").format();
+      var change = Moment(startingDateOfLastMonth).add(28, "days").format();
       var b = new Date(change);
       formattedDate = b;
     } else if (startDateOf == "Last Week") {
@@ -1411,6 +1413,7 @@ export default class UserTimeEntry extends React.Component<
     let arraycount = 0;
     this.setState({
       loaded: true,
+      showChart:true
     });
     if (
       DateType == "Today" ||
@@ -2618,11 +2621,14 @@ export default class UserTimeEntry extends React.Component<
     }
     return count;
   }
-  private customTableHeaderButtons = (
-    <a className="barChart" title="Open Bar Graph" onClick={this.showGraph}>
-      <BsBarChartLine />
+  private customTableHeaderButtons = () => (
+    <a className={
+      this.state.showChart ? "barChart" :
+      "barChart Disabled-Link"} 
+      title="Open Bar Graphs" onClick={this.showGraph}>
+      <BsBarChartLine style={{ color: this.state.showChart ? "#000066" : "#808080" }} />
     </a>
-  );
+);
   private onCheck(checked: any) {
     debugger;
     this.setState({ checked }, () => {
@@ -3911,6 +3917,7 @@ export default class UserTimeEntry extends React.Component<
                     expandIcon={true}
                     customHeaderButtonAvailable={true}
                     customTableHeaderButtons={this.customTableHeaderButtons}
+                    hideTeamIcon={true}
                     showCatIcon={true}
                     exportToExcelCategoryReport={this.exportToExcel}
                     showHeader={true}

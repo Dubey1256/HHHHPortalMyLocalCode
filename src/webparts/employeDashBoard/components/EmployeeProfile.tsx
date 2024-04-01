@@ -48,7 +48,7 @@ const EmployeProfile = (props: any) => {
     loadMasterTask();
     loadTaskUsers();
     annouceMent();
-    getAllData(true)
+    getAllData(true);
     generateDateRange()
   }, []);
   const generateDateRange = () => {
@@ -481,48 +481,53 @@ const EmployeProfile = (props: any) => {
               .then((data: any) => {
                 console.log(data);
                 data.map((entry: any) => {
-                  if (entry?.AdditionalTimeEntry != undefined && entry?.AdditionalTimeEntry != null && entry?.AdditionalTimeEntry != '') {
-                    entry.AdditionalTimeEntry = JSON.parse(entry?.AdditionalTimeEntry)
-                    entry.AuthorName = '';
-                    entry.AuthorImage = ''
-                    entry.TaskTime = 0
-                    entry.TaskDate = undefined
-                    entry.CreatedServerDate = undefined
-                    if (entry.AdditionalTimeEntry != undefined && entry.AdditionalTimeEntry?.length > 0) {
-                      entry.AdditionalTimeEntry?.map((TimeEntry: any, index: any) => {
-                        TimeEntry.UpdatedId = entry?.Id;
-                        if ((TimeEntry?.Id == undefined || TimeEntry?.Id == '') && TimeEntry?.ID != undefined && TimeEntry?.ID != '')
-                          TimeEntry.Id = TimeEntry?.ID;
-                        else if ((TimeEntry?.ID == undefined || TimeEntry?.ID == '') && TimeEntry?.Id != undefined && TimeEntry?.Id != '')
-                          TimeEntry.ID = TimeEntry?.Id;
-                        else {
-                          TimeEntry.Id = index;
-                          TimeEntry.ID = index;
-                        }
-                        if (TimeEntry.TaskDate != null) {
-                          var dateValues = TimeEntry?.TaskDate?.split("/");
-                          var dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
-                          var NewDate = new Date(dp);
-                          TimeEntry.sortTaskDate = NewDate;
-                          TimeEntry.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
-                          TimeEntry.sortTaskDate.setHours(0, 0, 0, 0);
-                        }
-                        entry.listId = site?.listId;
-                        entry.siteUrl = site?.siteUrl
-                        if (site?.taskSites != undefined && site?.taskSites?.length > 0) {
-                          site?.taskSites?.forEach((Site: any) => {
-                            if (entry['Task' + Site] != undefined && entry['Task' + Site]?.Id != undefined) {
-                              entry.TaskListType = Site;
-                            }
-                          })
-                        }
-                        if (TimeEntry?.sortTaskDate != undefined && CurrentDate != undefined && CurrentDate.getTime() == TimeEntry?.sortTaskDate.getTime() && TimeEntry?.Status == 'For Approval') {
-                          TempArray.push(TimeEntry)
-                          if (!isItemExists(AllTimeEntry, entry.Id))
-                            AllTimeEntry.push(entry);
-                        }
-                      })
+                  try {
+                    if (entry?.AdditionalTimeEntry != undefined && entry?.AdditionalTimeEntry != null && entry?.AdditionalTimeEntry != '') {
+                      entry.AdditionalTimeEntry = JSON.parse(entry?.AdditionalTimeEntry)
+                      entry.AuthorName = '';
+                      entry.AuthorImage = ''
+                      entry.TaskTime = 0
+                      entry.TaskDate = undefined
+                      entry.CreatedServerDate = undefined
+                      if (entry.AdditionalTimeEntry != undefined && entry.AdditionalTimeEntry?.length > 0) {
+                        entry.AdditionalTimeEntry?.map((TimeEntry: any, index: any) => {
+                          TimeEntry.UpdatedId = entry?.Id;
+                          if ((TimeEntry?.Id == undefined || TimeEntry?.Id == '') && TimeEntry?.ID != undefined && TimeEntry?.ID != '')
+                            TimeEntry.Id = TimeEntry?.ID;
+                          else if ((TimeEntry?.ID == undefined || TimeEntry?.ID == '') && TimeEntry?.Id != undefined && TimeEntry?.Id != '')
+                            TimeEntry.ID = TimeEntry?.Id;
+                          else {
+                            TimeEntry.Id = index;
+                            TimeEntry.ID = index;
+                          }
+                          if (TimeEntry.TaskDate != null) {
+                            var dateValues = TimeEntry?.TaskDate?.split("/");
+                            var dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
+                            var NewDate = new Date(dp);
+                            TimeEntry.sortTaskDate = NewDate;
+                            TimeEntry.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY");
+                            TimeEntry.sortTaskDate.setHours(0, 0, 0, 0);
+                            TimeEntry.Title = TimeEntry?.AuthorName;
+                          }
+                          entry.listId = site?.listId;
+                          entry.siteUrl = site?.siteUrl
+                          if (site?.taskSites != undefined && site?.taskSites?.length > 0) {
+                            site?.taskSites?.forEach((Site: any) => {
+                              if (entry['Task' + Site] != undefined && entry['Task' + Site]?.Id != undefined) {
+                                entry.TaskListType = Site;
+                              }
+                            })
+                          }
+                          if (TimeEntry?.sortTaskDate != undefined && CurrentDate != undefined && CurrentDate.getTime() == TimeEntry?.sortTaskDate.getTime() && TimeEntry?.Status == 'For Approval') {
+                            TempArray.push(TimeEntry)
+                            if (!isItemExists(AllTimeEntry, entry.Id))
+                              AllTimeEntry.push(entry);
+                          }
+                        })
+                      }
                     }
+                  } catch (e) {
+                    console.log(entry)
                   }
                 });
                 arraycount++;
@@ -1048,7 +1053,7 @@ const EmployeProfile = (props: any) => {
   return (
     <>
       {progressBar && <PageLoader />}
-      <myContextValue.Provider value={{ ...myContextValue, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
+      <myContextValue.Provider value={{ ...myContextValue, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
         <div> <Header /></div>
         {IsCallContext == true && <TaskStatusTbl />}
       </myContextValue.Provider >

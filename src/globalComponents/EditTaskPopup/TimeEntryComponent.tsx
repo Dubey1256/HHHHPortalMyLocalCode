@@ -113,14 +113,15 @@ const TimeEntryPopup = (item: any) => {
     Description: "",
     TaskTime: "",
   });
-  const [newData, setNewData] = React.useState({
-    Title: "",
-    TaskDate: "",
-    Description: "",
-    TimeSpentInMinute: "",
-    TimeSpentInHours: "",
-    TaskTime: "",
-  });
+  const initialData = {
+    Title: '',
+    TaskDate: '',
+    Description: '',
+    TimeSpentInMinute: '',
+    TimeSpentInHours: '',
+    TaskTime: '',
+};
+  const [newData, setNewData] = React.useState(initialData);
   const [saveEditTaskTimeChild, setsaveEditTaskTimeChild] = React.useState<any>(
     {}
   );
@@ -408,7 +409,7 @@ const TimeEntryPopup = (item: any) => {
   };
 
   const closeEditcategorypopup = (child: any) => {
-    setNewData(undefined);
+    setNewData(initialData );
     setcheckCategories(undefined);
     setEditcategory(false);
   };
@@ -423,7 +424,7 @@ const TimeEntryPopup = (item: any) => {
       setAddTaskTimepopup(true);
       setTimeInMinutes(0);
       setTimeInHours(0);
-      setNewData(undefined);
+      setNewData(initialData );
       SetWeek(1);
       setediteddata(undefined);
       setCount(1);
@@ -443,7 +444,7 @@ const TimeEntryPopup = (item: any) => {
       PopupType = Type;
       CategryTitle = "";
       setediteddata(undefined);
-      setNewData(undefined);
+      setNewData(initialData );
       setTimeInHours(0);
       setMyDatee(undefined);
       change = Moment().format();
@@ -467,7 +468,7 @@ const TimeEntryPopup = (item: any) => {
       var Childitem: any = [];
       setAddTaskTimepopup(true);
       // Array.push(childitem)
-      setNewData(undefined);
+      setNewData(initialData );
       Childitem.push(childitem);
       backupEdit?.forEach((val: any) => {
         if (val.Id == childitem.MainParentId) {
@@ -514,14 +515,13 @@ const TimeEntryPopup = (item: any) => {
     setAddTaskTimepopup(false);
     setcheckCategories(undefined);
     setTimeInHours(0);
-    setNewData(undefined);
+    setNewData(initialData );
     setTimeInMinutes(0);
     SetWeek(1);
     setediteddata(undefined);
     setCount(1);
     change = Moment().format();
-    setNewData(undefined)
-    setMyDatee(new Date());
+        setMyDatee(new Date());
     setsaveEditTaskTimeChild({});
   };
   // const closeTaskStatusUpdatePoup = () => {
@@ -730,6 +730,36 @@ const TimeEntryPopup = (item: any) => {
 
   const getStructureData = function () {
     TaskCate = AllTimeSpentDetails;
+function reverseArray(arr: any) {
+      const reversed = [];
+      for (let i = arr.length - 1; i >= 0; i--) {
+        reversed.push(arr[i]);
+      }
+      return reversed;
+    }
+    AllTimeSpentDetails.forEach((item: any) => {
+      if (item?.subRows != undefined && item?.subRows?.length > 0){
+      
+          item?.subRows.sort((a: any, b: any) => {
+        const dateA = new Date(reverseArray(a.TaskDate.split("/")).join("-"));
+        const dateB = new Date(reverseArray(b.TaskDate.split("/")).join("-"));
+
+        // compare by year
+        if (dateA.getFullYear() !== dateB.getFullYear()) {
+          return dateA.getFullYear() - dateB.getFullYear();
+        }
+
+        // compare by month
+        if (dateA.getMonth() !== dateB.getMonth()) {
+          return dateA.getMonth() - dateB.getMonth();
+        }
+
+        // compare by day
+        return dateA.getDate() - dateB.getDate();
+      });
+    
+    }
+    });
 
     AllTimeSpentDetails?.map((item: any) => {
       if (item?.subRows != undefined && item?.subRows?.length > 0) {
@@ -2435,7 +2465,7 @@ const TimeEntryPopup = (item: any) => {
       });
   };
   const clearInput = () => {
-    setNewData(undefined)
+    setNewData(initialData )
     setcheckCategoriesTitle('');
    
   }
@@ -2462,16 +2492,21 @@ const TimeEntryPopup = (item: any) => {
   };
 
   //--------------------------------------Change time by custom button-----------------------------------------------------------------------------
-  const changeTimeFunction = (e: any, type: any,Use:any) => {
-   if(Use == 'remove'){
-    changeTime=0;
+  const changeTimeFunction = (e: any, type: any, Use: any) => {
+   let inputValue = Number(e);
+    if (isNaN(inputValue)&& Use!=="remove") {
+        return;
+    }
+
+    if (Use === 'remove') {
+    changeTime = 0;
     setsaveEditTaskTimeChild({});
-    setTimeInMinutes(0)
-    setTimeInHours(0)
-   }
-   else{
-    changeTime = Number(e.target.value);
-    if (type === "AddTime" || type == "AddTime Category") {
+    setTimeInMinutes(0);
+    setTimeInHours(0);
+    } else {
+    changeTime = inputValue;
+
+        if (type === "AddTime" || type === "AddTime Category") {
         if (changeTime !== undefined) {
           const timeInHour: any = changeTime / 60;
           setTimeInHours(timeInHour.toFixed(2));
@@ -2489,7 +2524,7 @@ const TimeEntryPopup = (item: any) => {
           }
           setTimeInMinutes(changeTime);
         } else {
-          saveEditTaskTimeChild.TaskTimeInMin = ''
+          saveEditTaskTimeChild.TaskTimeInMin = '';
           saveEditTaskTimeChild.TaskTime = 0;
           setTimeInMinutes(0);
           setTimeInHours(0);
@@ -2820,6 +2855,7 @@ const TimeEntryPopup = (item: any) => {
         accessorKey: "Description",
         placeholder: "Description",
         header: "",
+        id:"Description"
 
       },
       {
@@ -2918,6 +2954,7 @@ const TimeEntryPopup = (item: any) => {
                   <input
                     type="checkbox"
                     className="form-check-input me-1"
+                    checked={checkedFlat}
                     onClick={(e: any) => flatviewOpen(e,data)}
                   />
                   FlatView
@@ -3010,7 +3047,7 @@ const TimeEntryPopup = (item: any) => {
                           type="text"
                           className="form-control"
                           name="TimeTitle"
-                          value={newData != undefined ? newData?.Title:checkCategoriesTitle}
+                          value={newData?.Title === '' ? (checkCategories|| checkCategoriesTitle): newData?.Title }
                           onChange={(e) =>
                             setNewData({ ...newData, Title: e.target.value })
                           }
@@ -3030,7 +3067,7 @@ const TimeEntryPopup = (item: any) => {
                       type="title"
                       placeholder="Add Title"
                       disabled={true}
-                      defaultValue={CategryTitle}
+                      defaultValue={checkCategories}
 
                     />
 
@@ -3431,10 +3468,10 @@ const TimeEntryPopup = (item: any) => {
             ? saveEditTaskTimeChild.TaskTimeInMin
             : ''
     }
-    onChange={(e) => changeTimeFunction(e, PopupType,'Add')}
+    onChange={(e) => changeTimeFunction(Number(e.target.value), PopupType,'Add')}
 />
 {((TimeInMinutes > 0 || saveEditTaskTimeChild?.TaskTimeInMin != undefined) && (
-    <span className="input-group-text" style={{zIndex:'9'}}><span className="dark mini svg__icon--cross mt-1 svg__iconbox" onClick={(e)=>changeTimeFunction(e, PopupType,'remove')}></span></span>
+    <span className="input-group-text" style={{zIndex:'9'}}><span className="dark mini svg__icon--cross mt-1 svg__iconbox" onClick={(e)=>changeTimeFunction(Number(e), PopupType,'remove')}></span></span>
 ))}
 </div>
                   </div>
@@ -3542,7 +3579,9 @@ const TimeEntryPopup = (item: any) => {
                     <div className="mb-1">
                       <a
                         target="_blank"
-                        href="{{pageContext}}/SitePages/SmartMetadata.aspx?TabName=Timesheet"
+                        href={`${CurrentSiteUrl}/SitePages/ManageSmartMetadata.aspx?TabName=TimesheetCategories`}
+                        data-interception="off"
+                       
                       >
                         Manage Categories
                       </a>
@@ -3702,7 +3741,7 @@ const TimeEntryPopup = (item: any) => {
                         defaultValue={
                           checkCategories != undefined
                             ? checkCategories
-                            : item.Title
+                            : item.Category.Title
                         }
                         onChange={(e) =>
                           setNewData({ ...newData, Title: e.target.value })

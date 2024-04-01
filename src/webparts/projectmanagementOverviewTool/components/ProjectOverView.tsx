@@ -88,7 +88,7 @@ export default function ProjectOverview(props: any) {
             const params = new URLSearchParams(window.location.search);
             let query = params.get("SelectedView");
             if (query == 'ProjectsTask') {
-                setSelectedView('grouped')
+                setSelectedView('Projects')
             }
             if (query == 'TodaysTask') {
                 changeToggleWorkingToday()
@@ -1842,7 +1842,7 @@ export default function ProjectOverview(props: any) {
                                             : ''}
                                     </div>
                                 </div>
-                                <section className="Tabl1eContentSection row taskprofilepagegreen">
+                                <section className="TableContentSection row taskprofilepagegreen">
                                     <div className="container-fluid p-0">
                                         <section className="TableSection">
                                             <div className="container p-0">

@@ -141,10 +141,10 @@ const Header = () => {
           </div>
         </div> */}
       </section >
-      {UserGroup != undefined && (UserGroup[0]?.UserGroup?.Title === 'Senior Developer Team' || UserGroup[0]?.UserGroup?.Title === 'Smalsus Lead Team') ?
+      {/* {UserGroup != undefined && (UserGroup[0]?.UserGroup?.Title === 'Senior Developer Team' || UserGroup[0]?.UserGroup?.Title === 'Smalsus Lead Team') ?
         <div className='mb-5'><a className="pull-right empCol hreflink" onClick={(e) => openAnnouncementPopup(e)}> Add Announcement </a>
         </div>
-        : ''}
+        : ''} */}
       {annouceMents.length > 0 && (<section className='annocumentSec'>
         <div id="carouselExampleIndicators" className="carousel slide" data-bs-ride="carousel">
           <div className="carousel-indicators">
@@ -196,30 +196,33 @@ const Header = () => {
               </Slider>
             ) : (
               <>
-                {DashboardConfig.map((items: any, index: any) => (
-                  items?.TileName && (
-                    <div key={items.TileName} className={`col alignCenter me-1 mb-3 hreflink p-3 ${activeTile === items.TileName ? 'empBg shadow-sm active empBg' : 'bg-white shadow-sm'}`}
-                      onClick={() => handleTileClick(items.TileName)}  >
-                      {items.SiteIcon ? (<img className="imgWid29 pe-1" title="HHHH" src={items.SiteIcon} alt={items.TileName} />)
-                        :
-                        (
-                          <span className="iconSec" title={items.TileName}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16">
-                              <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
-                              <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
-                            </svg>
-                          </span>
-                        )}
-                      <span className="ms-2">
-                        <div>{items.WebpartTitle}</div>
-                        <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>
-                      </span>
-                    </div>
-                  )
-                ))}
+                <div className='row ps-2'>
+                  {DashboardConfig.map((items: any, index: any) => (
+                    items?.TileName && (
+
+                      <div key={items.TileName} className={`col alignCenter me-1 mb-3 hreflink p-3 ${activeTile === items.TileName ? 'empBg shadow-sm active empBg' : 'bg-white shadow-sm'}`}
+                        onClick={() => handleTileClick(items.TileName)}  >
+                        {items.SiteIcon ? (<img className="imgWid29 pe-1" title="HHHH" src={items.SiteIcon} alt={items.TileName} />)
+                          :
+                          (
+                            <span className="iconSec" title={items.TileName}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16">
+                                <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
+                                <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
+                              </svg>
+                            </span>
+                          )}
+                        <span className="ms-2">
+                          <div>{items.WebpartTitle}</div>
+                          <div className="f-18 fw-semibold">{items?.Tasks?.length}</div>
+                        </span>
+                      </div>
+
+                    )
+                  ))}
+                </div>
               </>
             )}
-
           </div>
 
           <div className={`col-1 alignCenter hreflink mb-3  ${activeTile === 'TimeSheet' ? 'empBg shadow-sm active empBg' : 'bg-white shadow-sm'}`} onClick={() => handleTileClick('TimeSheet')}   >

@@ -13,12 +13,28 @@ const EmailNotificationMail = (props: any) => {
   const sendEmail = async (send: any) => {
     count++
     let mention_To: any = [];
+    let Subjects = ''
     mention_To.push(props?.items.TaskCreatorData[0].Email);
     if (mention_To.length > 0) {
+      if(props.items.Categories == 'Email Notification'){
+        Subjects = `[Email Notification - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] Task Completed`
+      }
+       if(props.items.Categories == 'Immediate' && props.statusValue == '90'){
+        Subjects = `[Immediate - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] Immediate  Task Completed`
+      }
+       if(props.items.Categories == 'Immediate' && props.statusValue == '5'){
+        Subjects = `[Immediate - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] Immediate Task acknowledged`
+      }
+       if(props.items.Categories == 'Immediate' && props.statusValue == '10'){
+        Subjects = `[Immediate - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] Immediate Task is worked on`
+      }
+       if(props.items.Categories == 'Immediate' && props.statusValue == '80'){
+        Subjects = `[Immediate - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] Immediate Task only QA pending`
+      }
       let category = joinObjectValues(props.items?.TaskCategories)
       let EmailProps = {
         To: mention_To,
-        Subject: `[${props.ValueStatu == '90'?'Your Task has been completed':''} ${props.items.TaskId}:${category} _${props?.statusValue}%  - ${props.items.Title}]`,
+        Subject: Subjects,
         Body: props.items.Title
       }
       console.log(EmailProps);
@@ -94,7 +110,7 @@ const EmailNotificationMail = (props: any) => {
 
             <div style={{ marginTop: "11.25pt" }}>
             <div style={{ marginTop: "2pt" }}>Hello {props?.items?.CreatorTitle},</div>
-            <div style={{ marginTop: "5pt" }}>Your task has been set to  {props?.statusValue}%  by {props.CurrentUser[0]?.Title}, team will process it further.</div>
+            <div style={{ marginTop: "5pt" }}>Your task has been set to  {props?.statusValue}%  by {props.CurrentUser[0]?.Title}</div>
             <div style={{ marginTop: "5pt" }}>Have a nice day !</div>
             <div style={{ marginTop: "5pt" }}>Regards,</div>
             <div style={{ marginTop: "5pt" }}>Task Management Team,</div>
@@ -172,7 +188,7 @@ const EmailNotificationMail = (props: any) => {
                         <b style={{ fontSize: '10.0pt', color: 'black' }}>Created:</b>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '5pt' }}>
-                        <span style={{ fontSize: '10.0pt', color: 'black' }}>{Moment(props.items["Created"]).format("DD-MM-YYYY")}</span>
+                        <span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Created"]}</span>
                       </td>
                       <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '5pt',width:'80pt' }}>
                         <b style={{ fontSize: '10.0pt', color: 'black' }}>Created By:</b>
