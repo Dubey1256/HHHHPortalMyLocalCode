@@ -117,7 +117,7 @@ export function Filter({
 }): any {
     const columnFilterValue = column.getFilterValue();
     return (
-        <input style={{ width: "100%", paddingRight: "13px" }} className="m-1 ps-10 on-search-cross" title={placeholder?.placeholder} type="search" value={(columnFilterValue ?? "") as string}
+        <input style={{ width: "100%", paddingRight: "13px" }} className="m-1 on-search-cross" title={placeholder?.placeholder} type="search" value={(columnFilterValue ?? "") as string}
             onChange={(e) => column.setFilterValue(e.target.value)} placeholder={`${placeholder?.placeholder}`} />
     );
 }
