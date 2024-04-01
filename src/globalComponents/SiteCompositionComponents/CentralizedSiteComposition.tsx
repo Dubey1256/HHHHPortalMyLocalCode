@@ -571,7 +571,7 @@ const CentralizedSiteComposition = (Props: any) => {
             })
             return data;
         } catch (error) {
-            console.log("Get individual Site All Data Function", error.message);
+            console.log("Get Idividual Site All Data Function", error.message);
         }
     }
 
@@ -1973,7 +1973,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                             <SlArrowRight />
                                         )}
                                     </span>
-                                    Client Category Identification Tool
+                                    Client Category Summarization Tool
                                     <span className="hover-text alignIcon">
                                         <span className="svg__iconbox svg__icon--info dark"></span>
                                         <span className="tooltip-text pop-right">
