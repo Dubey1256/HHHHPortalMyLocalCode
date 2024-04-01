@@ -1623,6 +1623,7 @@ export const sendImmediateEmailNotifications = async (
                                 //       <h4>Client Email : - ${SDCDetails?.SDCEmail}
                                 //   </div><br><br>`;
                                 } else if (UpdateItem?.PercentComplete == 90) {
+                                    Subject =  `[Client Task - ${clientTaskDetails?.ClientSite} - ${clientTaskDetails?.SDCTaskId} ${clientTaskDetails?.SDCTitle} by ${clientTaskDetails?.SDCCreatedBy}] Client Task completed`
                                     extraBody = `<div>
                                       <h2>Email Subject : Your Task has been completed - [${SDCDetails?.SDCTaskId} ${UpdateItem?.Title}]</h2>
                                       <p>Message:</p>

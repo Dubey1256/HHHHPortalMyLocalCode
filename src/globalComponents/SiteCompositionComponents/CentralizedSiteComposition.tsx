@@ -522,7 +522,7 @@ const CentralizedSiteComposition = (Props: any) => {
     }
 
     const GetIndividualSiteAllData = async () => {
-        let query: any = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,Project/PortfolioStructureID,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+        let query: any = "Id,Title,FeedBack,PriorityRank,Remark,Project/PriorityRank,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,Project/PortfolioStructureID,workingThisWeek,SiteCompositionSettings,Sitestagging,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,Created,Modified,Author/Id,Author/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
         try {
             const data = await web.lists.getById(ItemDetails?.listId).items.select(query).getAll();
             data?.map((task: any) => {
@@ -1973,11 +1973,11 @@ const CentralizedSiteComposition = (Props: any) => {
                                             <SlArrowRight />
                                         )}
                                     </span>
-                                    Client Category Summarization Tool
+                                    Client Category Identification Tool
                                     <span className="hover-text alignIcon">
                                         <span className="svg__iconbox svg__icon--info dark"></span>
                                         <span className="tooltip-text pop-right">
-                                            <b>Client Category Summarization Tool:</b><br />
+                                            <b>Client Category Identification Tool:</b><br />
                                             This tool efficiently consolidates client categories associated with selected items and their corresponding child Items (All Tagged CC in Selected Item CSF and AWT). The tool offers a streamlined view of client categories, filtering them based on their respective sites. The selected client categories seamlessly Inherited to the designated parent item and also inherited into selected items (CSF/AWT) from the Tagged Child Item Table.
                                             <p className="mb-1"><b>Validation Cases:</b> </p>
                                             <b>1. </b>If the selected item have tagged CCs, that CCs will be automatically set as the default selection<br />

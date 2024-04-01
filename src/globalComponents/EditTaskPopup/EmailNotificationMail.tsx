@@ -31,6 +31,9 @@ const EmailNotificationMail = (props: any) => {
        if(props.items.Categories == 'Immediate' && props.statusValue == '80'){
         Subjects = `[Immediate - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] Immediate Task only QA pending`
       }
+      if (props.items.Categories == 'Design' && props.statusValue == '90') {
+        Subjects = `[Design - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] Design Task awaiting QA`
+      }
       let category = joinObjectValues(props.items?.TaskCategories)
       let EmailProps = {
         To: mention_To,
