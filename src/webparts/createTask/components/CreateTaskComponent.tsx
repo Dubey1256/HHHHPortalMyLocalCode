@@ -1517,7 +1517,7 @@ function CreateTaskComponent(props: any) {
                 header: "",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 42
+                size: 60
             },
             {
                 accessorFn: (row) => row?.DueDate,
@@ -1567,7 +1567,7 @@ function CreateTaskComponent(props: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
-                size: 42
+                size: 55
             },
             {
                 accessorFn: (row) => row?.Created,
