@@ -6448,7 +6448,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
               ) : (
                 <a
                   data-interception="off"
-                  target="_blank"
+                  target="_blank"                                                                                                                                                                           
                   className="hreflink serviceColor_Active"
                   href={
                     props?.contextValue?.siteUrl +
