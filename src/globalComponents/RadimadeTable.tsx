@@ -498,6 +498,7 @@ function ReadyMadeTable(SelectedProp: any) {
                         // if (item?.TaskCategories?.some((category: any) => category.Title.toLowerCase() === "draft")) { item.isDrafted = true; }
                     });
                     AllTasks = AllTasks.concat(AllTasksMatches);
+                }
                     if (Counter == siteConfig.length) {
                         // AllTasks = AllTasks?.filter((type: any) => type.isDrafted === false);
                         map(AllTasks, (result: any) => {
@@ -709,7 +710,7 @@ function ReadyMadeTable(SelectedProp: any) {
                         }
                         // allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
                     }
-                }
+                
             });
             // GetComponents();
         }
