@@ -932,6 +932,9 @@ export default function ProjectOverview(props: any) {
                         item?.AssignedTo?.map((user: any) => {
                             memberOnLeave = AllLeaves.some((emp: any) => emp == user?.Id)
                         });
+                        if (item?.AssignedTo == undefined || item?.AssignedTo?.length <= 0) {
+                            memberOnLeave=true;
+                        }
                         if (!memberOnLeave) {
                             taskCount++;
                             let teamUsers: any = [];
@@ -1850,7 +1853,7 @@ export default function ProjectOverview(props: any) {
                                                     <div className="col-sm-12 p-0 smart">
                                                         <div>
                                                             <div>
-                                                                {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} taskTypeDataItem={taskTypeDataItem} showingAllPortFolioCount={true} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                                                {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} hideShowingTaskCountToolTip={true} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} taskTypeDataItem={taskTypeDataItem} showingAllPortFolioCount={true} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                                                 {selectedView == 'Projects' ? <GlobalCommanTable fixedWidthTable={true} expandIcon={true} ref={childRef} callChildFunction={callChildFunction} AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false}
                                                                     customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} multiSelect={true} columns={column2}
                                                                     data={workingTodayFiltered ? data : flatData} portfolioTypeData={portfolioTypeDataItem} showingAllPortFolioCount={true} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
