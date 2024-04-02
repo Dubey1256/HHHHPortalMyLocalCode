@@ -2764,6 +2764,7 @@ const TeamSmartFilter = (item: any) => {
                                                         <label className='mb-1 form-label full-width'>Start Date</label>
                                                         <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                                                             className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
+                                                             maxDate={endDate}
                                                             renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
                                                             }) => (<div style={{ margin: 10, display: "flex", justifyContent: "center" }}>
                                                                 <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>{"<"}</button>
@@ -2780,6 +2781,7 @@ const TeamSmartFilter = (item: any) => {
                                                         <label className='mb-1 form-label full-width'>End Date</label>
                                                         <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                                                             className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
+                                                            minDate={startDate}
                                                             renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
                                                             }) => (<div style={{ margin: 10, display: "flex", justifyContent: "center" }}>
                                                                 <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>{"<"}</button>
