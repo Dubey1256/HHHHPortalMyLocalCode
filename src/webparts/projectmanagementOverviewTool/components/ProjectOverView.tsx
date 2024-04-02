@@ -932,6 +932,9 @@ export default function ProjectOverview(props: any) {
                         item?.AssignedTo?.map((user: any) => {
                             memberOnLeave = AllLeaves.some((emp: any) => emp == user?.Id)
                         });
+                        if (item?.AssignedTo == undefined || item?.AssignedTo?.length <= 0) {
+                            memberOnLeave=true;
+                        }
                         if (!memberOnLeave) {
                             taskCount++;
                             let teamUsers: any = [];
