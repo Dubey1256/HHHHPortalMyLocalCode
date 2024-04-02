@@ -4726,51 +4726,65 @@ const EditTaskPopup = (Items: any) => {
         setBottleneckSearchKey("");
         setAttentionSearchKey("");
         setBottleneckSearchedData([]);
+        let  SelectedDataUnique=true;
         if (usedFor == "Bottleneck" || usedFor == "Attention") {
             let CreatorData: any = currentUserBackupArray[0];
             let copyWorkAction: any = [...WorkingAction]
-            let CreateObject: any = {
-                CreatorName: CreatorData?.Title,
-                CreatorImage: CreatorData.UserImage,
-                CreatorID: CreatorData.Id,
-                TaggedUsers: {
-                    Title: ApproverData.Title,
-                    Email: ApproverData.Email,
-                    AssingedToUserId: ApproverData.AssingedToUserId,
-                    userImage: ApproverData.Item_x0020_Cover?.Url,
-                },
-                NotificationSend: false,
-                Comment: '',
-                CreatedOn: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY"),
-            }
-            if (copyWorkAction?.length > 0) {
-                copyWorkAction?.map((DataItem: any) => {
-                    if (DataItem.Title == usedFor) {
-                        CreateObject.Id = DataItem.InformationData?.length;
-                        DataItem.InformationData.push(CreateObject);
-                    }
-                })
-            } else {
-                let TempArrya: any = [
-                    {
-                        Title: "Bottleneck",
-                        InformationData: []
+            copyWorkAction?.map((WAItemData: any, ItemIndex: number) => {
+                if (WAItemData.Title == usedFor && WAItemData?.InformationData?.length > 0) {
+                    WAItemData?.InformationData?.map((item: any) => {
+                        item.Id = ApproverData?.AssingedToUserId;
+                        SelectedDataUnique=false
+                    })
+    
+                }
+    
+            })
+            if(SelectedDataUnique){
+                let CreateObject: any = {
+                    CreatorName: CreatorData?.Title,
+                    CreatorImage: CreatorData.UserImage,
+                    CreatorID: CreatorData.Id,
+                    TaggedUsers: {
+                        Title: ApproverData.Title,
+                        Email: ApproverData.Email,
+                        AssingedToUserId: ApproverData.AssingedToUserId,
+                        userImage: ApproverData.Item_x0020_Cover?.Url,
                     },
-                    {
-                        Title: "Attention",
-                        InformationData: []
-                    }
-                ]
-                TempArrya?.map((TempItem: any) => {
-                    if (TempItem.Title == usedFor) {
-                        CreateObject.Id = TempItem.InformationData?.length;
-                        TempItem.InformationData.push(CreateObject);
-                    }
-                })
-                copyWorkAction = TempArrya;
+                    NotificationSend: false,
+                    Comment: '',
+                    CreatedOn: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY"),
+                }
+                if (copyWorkAction?.length > 0) {
+                    copyWorkAction?.map((DataItem: any) => {
+                        if (DataItem.Title == usedFor) {
+                            CreateObject.Id = DataItem.InformationData?.length;
+                            DataItem.InformationData.push(CreateObject);
+                        }
+                    })
+                } else {
+                    let TempArrya: any = [
+                        {
+                            Title: "Bottleneck",
+                            InformationData: []
+                        },
+                        {
+                            Title: "Attention",
+                            InformationData: []
+                        }
+                    ]
+                    TempArrya?.map((TempItem: any) => {
+                        if (TempItem.Title == usedFor) {
+                            CreateObject.Id = TempItem.InformationData?.length;
+                            TempItem.InformationData.push(CreateObject);
+                        }
+                    })
+                    copyWorkAction = TempArrya;
+                }
+                setWorkingAction([...copyWorkAction]);
+                console.log("Bottleneck All Details:", copyWorkAction)
             }
-            setWorkingAction([...copyWorkAction]);
-            console.log("Bottleneck All Details:", copyWorkAction)
+         
         } else {
             selectApproverFunction(ApproverData);
             setTaskAssignedTo([ApproverData]);
