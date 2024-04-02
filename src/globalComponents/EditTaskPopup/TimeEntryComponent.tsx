@@ -917,8 +917,11 @@ const TimeEntryPopup = (item: any) => {
       return entry1.Title === entry2.Title;
     }
 
-    const modifiedFinal = mergedFinalData.map(item => {
-      return { ...item, Created: "" };
+   const modifiedFinal = mergedFinalData.map((item) => {
+      if (item.Created !== undefined) {
+          item.Created = '';
+      }
+      return item; 
   });
   
  

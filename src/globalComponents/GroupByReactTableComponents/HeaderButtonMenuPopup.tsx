@@ -49,11 +49,11 @@ const HeaderButtonMenuPopup = (items: any) => {
 
                         {items?.hideOpenNewTableIcon != true ? <>
                             {items?.selectedRow?.length > 0 ?
-                                <div className="alignCenter mb-1 col-sm-12 p-0"><a onClick={() => items?.openTaskAndPortfolioMulti()} title='Open in New Tab' className="openWebIcon p-0 me-1"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>Open in New Tab</div>
-                                : <div className="alignCenter mb-1 col-sm-12 p-0"><a className="openWebIcon p-0 me-1" title='Open in New Tab'><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a>Open in New Tab</div>}
+                                <div  onClick={() => items?.openTaskAndPortfolioMulti()}  className="alignCenter mb-1 col-sm-12 p-0" style={{cursor:"pointer"}}><a title='Open in New Tab' className="openWebIcon p-0 me-1"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>Open in New Tab</div>
+                                : <div className="alignCenter mb-1 col-sm-12 p-0" style={{cursor:"pointer"}}><a className="openWebIcon p-0 me-1" title='Open in New Tab'><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a>Open in New Tab</div>}
                         </> : ''}
 
-                        <div className="alignCenter mb-1 col-sm-12"><a className='excal me-1' title='Export to Excel' onClick={() => items?.exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>Export to Excel</div>
+                        <div onClick={() => items?.exportToExcel()} className="alignCenter mb-1 col-sm-12" style={{cursor:"pointer"}} ><a className='excal me-1' title='Export to Excel'><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>Export to Excel</div>
 
                         {items?.SmartTimeIconShow === true && items?.AllListId?.isShowTimeEntry === true && <div className="alignCenter mb-1 col-sm-12"><a className='smartTotalTime me-1' title="Load SmartTime of AWT" onClick={() => items?.openCreationAllStructure("Smart-Time")} > <BsClockHistory style={{ color: `${portfolioColor}` }} /></a>Load SmartTime of AWT</div>}
 
@@ -62,10 +62,10 @@ const HeaderButtonMenuPopup = (items: any) => {
 
                         {items?.flatView === true && items?.updatedSmartFilterFlatView === true && <div className="alignCenter mb-1 col-sm-12"><a className='smartTotalTime me-1' title='deactivated to Groupby View'><FaListAlt style={{ color: "#918d8d" }} /></a>deactivated to Groupby View</div>}
 
-                        <div className="alignCenter mb-1 col-sm-12"><a className='brush me-1'><i className="fa fa-paint-brush hreflink" style={{ color: `${portfolioColor}` }} aria-hidden="true" title="Clear All" onClick={() => { items?.setGlobalFilter(''); items?.setColumnFilters([]); items?.setRowSelection({}); }}></i></a>Clear All</div>
+                        <div  onClick={() => { items?.setGlobalFilter(''); items?.setColumnFilters([]); items?.setRowSelection({}); }} className="alignCenter mb-1 col-sm-12" style={{cursor:"pointer"}}><a className='brush me-1'><i className="fa fa-paint-brush hreflink" style={{ color: `${portfolioColor}` }} aria-hidden="true" title="Clear All"></i></a>Clear All</div>
 
 
-                        <div className="alignCenter mb-1 col-sm-12"><a className='Prints me-1' onClick={() => items?.downloadPdf()}>
+                        <div onClick={() => items?.downloadPdf()} className="alignCenter mb-1 col-sm-12" style={{cursor:"pointer"}}><a className='Prints me-1' >
                             <i className="fa fa-print" aria-hidden="true" style={{ color: `${portfolioColor}` }} title="Print"></i>
                         </a>Print</div>
                         {items?.bulkEditIcon === true && <div className="alignCenter mb-1 col-sm-12"><a className='smartTotalTime me-1' title='Bulk editing setting' onClick={() => items?.bulkEditingSettingPopupEvent()} ><RiListSettingsFill style={{ color: `${portfolioColor}` }} /></a>Bulk editing setting</div>}

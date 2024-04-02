@@ -247,6 +247,11 @@ const TaskDashboard = (props: any) => {
 
                         data?.forEach((item: any) => {
                             item.taskDetails = checkTimeEntrySite(item);
+                            if (item?.FeedBack != undefined) {
+                                item.descriptionsSearch = globalCommon.descriptionSearchData(item)
+                            } else {
+                                item.descriptionsSearch = '';
+                            }
                             AllTaskTimeEntries.push(item);
                         });
                         currentUserTimeEntry('This Week');
@@ -997,7 +1002,7 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.original?.Title}
                         </a>
-                        {row?.original?.Body !== null && <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} />
+                        {row?.original?.descriptionsSearch !== null && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
                         }
                     </div>
 
