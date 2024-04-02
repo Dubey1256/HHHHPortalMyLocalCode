@@ -1386,7 +1386,7 @@ export default class UserTimeEntry extends React.Component<
         lastMonth.getMonth(),
         1
       );
-      var change = Moment(startingDateOfLastMonth).add(28, "days").format();
+      var change = Moment(startingDateOfLastMonth).add(18, "days").format();
       var b = new Date(change);
       formattedDate = b;
     } else if (startDateOf == "Last Week") {
@@ -3911,6 +3911,7 @@ export default class UserTimeEntry extends React.Component<
                     expandIcon={true}
                     customHeaderButtonAvailable={true}
                     customTableHeaderButtons={this.customTableHeaderButtons}
+                    hideTeamIcon={true}
                     showCatIcon={true}
                     exportToExcelCategoryReport={this.exportToExcel}
                     showHeader={true}

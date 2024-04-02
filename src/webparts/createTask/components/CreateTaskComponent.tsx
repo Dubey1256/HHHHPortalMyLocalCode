@@ -1028,7 +1028,7 @@ function CreateTaskComponent(props: any) {
                         let newTitle = data?.data?.Title
                         let CreatedTaskID = data?.data?.Id
                         data.data.siteType = save.siteType;
-                        if (CategoryTitle?.indexOf('Immediate') > -1 || CategoryTitle?.indexOf("Email Notification") > -1) {
+                        if (CategoryTitle?.indexOf('Immediate') > -1 || CategoryTitle?.indexOf('Email Notification') > -1 ) {
                             let listID = '3BBA0B9A-4A9F-4CE0-BC15-61F4F550D556'
                             var postData = {
                                 __metadata: { 'type': 'SP.Data.ImmediateNotificationsListItem' },
@@ -1037,9 +1037,12 @@ function CreateTaskComponent(props: any) {
                                 "Site": save.siteType
                             };
                             await createTaskByListId(selectedSite?.siteUrl?.Url, listID, postData, save.siteType)
-                            await globalCommon?.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, undefined, 'Immediate', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
-                                console.log(response);
-                            });;
+                            if(CategoryTitle?.indexOf('Immediate') > -1 ){
+                                await globalCommon?.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, undefined, 'Immediate', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
+                                    console.log(response);
+                                });;
+                            }
+                           
                         }
                         if (CategoryTitle?.indexOf('Immediate') < -1) {
                             setSendApproverMail(true);
