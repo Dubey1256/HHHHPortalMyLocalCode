@@ -1411,7 +1411,7 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
             <p></p>
             You have been tagged as <b>${ActionType}</b> in the below task.
             <p><br/></p>
-            <span><b>${ActionType} Comment </b>: ${ReasonStatement}</span>
+            <span><b>${ActionType} Comment </b>: <span style="background-color: yellow"; >${ReasonStatement}</span></span>
             <p></p>
             <b>Task Details : </b> <span>${finalTaskInfo}</span>
             <p></p>
@@ -1439,7 +1439,7 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
         This is a gentle reminder to address the below task promptly, as you've been marked as ${ActionType}:
         <p>
         <br/>
-         <span>${ActionType} Point: ${ReasonStatement ? ReasonStatement : ''}</span>
+        <span><b>${ActionType} Comment </b>: <span style="background-color: yellow"; >${ReasonStatement? ReasonStatement:""}</span></span>
         </br>
         <p>
         Task Link:  
