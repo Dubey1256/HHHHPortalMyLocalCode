@@ -1920,7 +1920,7 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
               </div>
             </div>
           }
-            <section className='row p-0'>
+            <section className='row py-2'>
               <h2 className="heading d-flex ps-0 justify-content-between align-items-center">
                 <span className='alignCenter'>
                   {this.state.Result["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={this?.state?.Result?.siteType} src={this.state.Result["SiteIcon"]} />}

@@ -8,6 +8,7 @@ import ShowTaskTeamMembers from "./ShowTaskTeamMembers";
 import TeamConfigurationCard from "./TeamConfiguration/TeamConfiguration";
 import TeamConfigurationCards from "../webparts/EditPopupFiles/TeamConfigurationPortfolio";
 import { OverlayTrigger, Popover } from "react-bootstrap";
+import OnHoldCommentCard from "./Comments/OnHoldCommentCard";
 import Picker from "./EditTaskPopup/SmartMetaDataPicker";
 import Tooltip from "./Tooltip";
 import { IoHandRightOutline } from "react-icons/io5";
@@ -29,6 +30,8 @@ let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
 let StatusValue: any
+let onHoldCategory: any = []
+let TempArrya: any = [];
 const inlineEditingcolumns = (props: any) => {
   const [EditData, setEditData] = React.useState(props?.item)
   const [TimeInHours, setTimeInHours] = React.useState(0);
@@ -79,6 +82,7 @@ const inlineEditingcolumns = (props: any) => {
   const [selectedCatId, setSelectedCatId]: any[] = React.useState([]);
   const [feedback, setFeedback] = useState("");
   const [comments, setComments] = useState([])
+  const [onHoldPanel, setOnHoldPanel] = useState(false)
   const StatusArray = [
     { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
     { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -425,7 +429,7 @@ const inlineEditingcolumns = (props: any) => {
 
     setAllTaskUser(taskUsers);
   };
-  const openTaskStatusUpdatePopup = () => {
+  const openTaskStatusUpdatePopup = async () => {
     StatusValue = props.item.PercentComplete
     setTaskStatusPopup(true);
   };
@@ -516,7 +520,7 @@ const inlineEditingcolumns = (props: any) => {
     switch (props?.columnName) {
       case 'TaskCategories':
         postData.Categories = CategoryTitle;
-        postData.TaskCategoriesId = { results: selectedCategoriesId };
+        postData.TaskCategoriesId = { results: selectedCategoriesId ? selectedCategoriesId : [] };
         break;
 
       case 'Team':
@@ -607,12 +611,12 @@ const inlineEditingcolumns = (props: any) => {
 
             props.item = task;
             clearEstimations();
-            setTaskCategoriesPopup(false);
             closeTaskDueDate();
             props?.callBack(task);
           });
         setCategoriesData(CategoriesData);
         setSelectedCatId(selectedCategoriesId);
+        setTaskCategoriesPopup(false);
         setTaskStatusPopup(false);
         setTaskPriorityPopup(false);
         setTeamMembersPopup(false);
@@ -638,19 +642,49 @@ const inlineEditingcolumns = (props: any) => {
       }
     });
   };
+  
   const CategoryCallBack = React.useCallback((item1: any, type: any) => {
-    setIsComponentPicker(false);
-    // setIsClientPopup(false);
+    setIsComponentPicker(false)
+    setTaskCategoriesPopup(true)
     if (type == "Category-Task-Footertable") {
       if (item1?.length > 0) {
         item1?.map((cat: any) => {
           cat.ActiveTile = true;
+          if(cat.Title == "On-Hold") {
+            onHoldCategory.push(cat)
+            setOnHoldPanel(true)
+          }
+          else {
+            TempArrya.push(cat)
+          }
         });
       }
-      setCategoriesData(item1);
-      props.item.TaskCategories = item1;
     }
+    setCategoriesData(TempArrya) 
+  }, [])
+
+  const smartCategoryPopup = React.useCallback(() => {
+    setIsComponentPicker(false);
+    setTaskCategoriesPopup(true);
   }, []);
+
+  const inlineCategoryCallBack = React.useCallback((usedFor: any) => {
+    setOnHoldPanel(false);
+    setTaskCategoriesPopup(true);
+    if (usedFor == "Save") {
+        let uniqueIds: any =  {}
+        TempArrya.push(onHoldCategory[0]);
+        const result: any = TempArrya.filter((item: any) => {
+            if (!uniqueIds[item.Id]) {
+                uniqueIds[item.Id] = true;
+                return true;
+            }
+            return false;
+        });
+        setCategoriesData(result);
+    }
+    onHoldCategory = [];
+}, []);
   const DDComponentCallBack = (dt: any) => {
     setTeamConfig(dt);
 
@@ -692,13 +726,13 @@ const inlineEditingcolumns = (props: any) => {
   const EditComponentPicker = (item: any) => {
     setIsComponentPicker(true);
     setSharewebCategory(item);
+    setTaskCategoriesPopup(true)
   };
 
   const selectSubTaskCategory = (title: any, Id: any, item: any) => {
     setCategorySearchKey("");
-    setIsComponentPicker(false);
     setSearchedCategoryData([]);
-    let TaskCategories: any[] = CategoriesData;
+    let TaskCategories: any[] = CategoriesData
     if (item.ActiveTile) {
       item.ActiveTile = !item.ActiveTile;
       TaskCategories = TaskCategories.filter(
@@ -709,7 +743,13 @@ const inlineEditingcolumns = (props: any) => {
       setSelectedCatId(IdsCat);
     } else if (!item.ActiveTile) {
       item.ActiveTile = !item.ActiveTile;
-      TaskCategories.push(item);
+      if(item.Title == "On-Hold") {
+        setOnHoldPanel(true)
+        onHoldCategory.push(item)
+      }
+      else{
+        TaskCategories.push(item)
+      } 
     }
     setInstantCategories((CategoriesData: any) =>
       CategoriesData?.map((selectCAT: any) => {
@@ -719,8 +759,10 @@ const inlineEditingcolumns = (props: any) => {
         return selectCAT; // Return the original value if no change is needed
       })
     );
+    TempArrya = TaskCategories
     setCategoriesData(TaskCategories);
   };
+
   const clearEstimations = () => {
     setTimeInHours(0);
     setTimeInMinutes(0);
@@ -791,6 +833,7 @@ const inlineEditingcolumns = (props: any) => {
       setSearchedCategoryData([]);
     }
   };
+
   const PercentCompleted = (StatusData: any) => {
     setUpdateTaskInfo({
       ...UpdateTaskInfo,
@@ -1820,7 +1863,7 @@ const inlineEditingcolumns = (props: any) => {
                             target="_blank"
                             data-interception="off"
                           >
-                            {type.Title}
+                            {type?.Title}
                           </a>
                           <span
                             className="bg-light ml-auto svg__iconbox svg__icon--cross"
@@ -1851,9 +1894,10 @@ const inlineEditingcolumns = (props: any) => {
         <Picker
           props={SharewebCategory}
           selectedCategoryData={CategoriesData}
-          usedFor="Task-Footertable"
+          usedFor="Task-Profile"
           AllListId={props?.AllListId}
           Call={CategoryCallBack}
+          closePopupCallBack={smartCategoryPopup}
         ></Picker>
       )}
       {UpdateFeatureType && (
@@ -1864,6 +1908,17 @@ const inlineEditingcolumns = (props: any) => {
           TaxType='Feature Type'
           usedFor="Single"
         ></Smartmetadatapickerin>
+      )}
+      {onHoldPanel && (
+        <OnHoldCommentCard
+        siteUrl={props?.item?.siteUrl}
+        ItemId={props?.item?.Id}
+        AllListIds={props?.AllListId}
+        Context={props?.Context}
+        callback={inlineCategoryCallBack}
+        usedFor="Task-Profile"
+        CommentFor={"On-Hold"}
+        />
       )}
     </>
   );
