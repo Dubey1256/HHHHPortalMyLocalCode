@@ -1559,7 +1559,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>% Complete:</span></b><u></u><u></u></p>
                                             </td>
                                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                                                {(RequiredData["PercentComplete"] * 100).toFixed(0)}
+                                                {(RequiredData["PercentComplete"])}
                                             </td>
                                         </tr>
                                         <tr>
@@ -1718,7 +1718,7 @@ export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredD
         let messageContent = '';
 
         if (usedFor === "Information-Request") {
-            emailSubject = `[Information Request - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title}. Request is completed`;
+            emailSubject = `[Information Request - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title} - Request is completed`;
             messageContent = 'Task created from your end for Information Request has been completed. Please take necessary action';
         }
         if (usedFor === "Priority-Check") {

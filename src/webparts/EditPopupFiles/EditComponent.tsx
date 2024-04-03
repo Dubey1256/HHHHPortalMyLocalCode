@@ -3240,7 +3240,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                                                         <li
                                                                             className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
                                                                             key={Item.id}
-                                                                            onClick={() => Call( [Item] , "Multi","Save")}>
+                                                                            onClick={() => Call( [Item] , "Single","Save")}>
                                                                             <a>{Item.Path}</a>
                                                                         </li>
                                                                     );
