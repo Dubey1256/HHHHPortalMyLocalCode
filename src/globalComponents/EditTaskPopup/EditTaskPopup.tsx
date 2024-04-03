@@ -4717,7 +4717,6 @@ const EditTaskPopup = (Items: any) => {
         }
     };
 
-
     const SelectApproverFromAutoSuggestion = (ApproverData: any, usedFor: string) => {
         setApproverSearchedData([]);
         setApproverSearchedDataForPopup([]);
@@ -4733,8 +4732,10 @@ const EditTaskPopup = (Items: any) => {
             copyWorkAction?.map((WAItemData: any, ItemIndex: number) => {
                 if (WAItemData.Title == usedFor && WAItemData?.InformationData?.length > 0) {
                     WAItemData?.InformationData?.map((item: any) => {
-                        item.Id = ApproverData?.AssingedToUserId;
-                        SelectedDataUnique=false
+                        if(item?.TaggedUsers?.AssingedToUserId==ApproverData?.AssingedToUserId){
+                            SelectedDataUnique=false
+                        }
+                      
                     })
     
                 }
