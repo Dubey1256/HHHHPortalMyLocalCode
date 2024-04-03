@@ -28,7 +28,9 @@ let smartMetadataListId: any = "";
 let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
+let StatusValue: any
 const inlineEditingcolumns = (props: any) => {
+  const [EditData, setEditData] = React.useState(props?.item)
   const [TimeInHours, setTimeInHours] = React.useState(0);
   const [taskStatusInNumber, setTaskStatusInNumber] = React.useState(0);
   const [TimeInMinutes, setTimeInMinutes] = React.useState(0);
@@ -424,88 +426,7 @@ const inlineEditingcolumns = (props: any) => {
     setAllTaskUser(taskUsers);
   };
   const openTaskStatusUpdatePopup = async () => {
-    let statusValue: any;
-    let AssignedUsers: any = [];
-    let TeamMemberTemp: any = [];
-    if (props?.item?.Approver?.length > 0) {
-      TaskApproverBackupArray = props?.item?.Approver;
-    }
-
-    if (props?.item?.Author != undefined && props?.item?.Author != null) {
-      AllTaskUser?.map((userData: any) => {
-        if (props?.item?.Author.Id == userData?.AssingedToUserId) {
-          userData.Approver?.map((AData: any) => {
-            // ApproverDataTemp.push(AData);
-            TaskCreatorApproverBackupArray.push(AData);
-          });
-        }
-      });
-      if (statusValue <= 2 && ApprovalStatusGlobal) {
-        if (
-          TaskApproverBackupArray != undefined &&
-          TaskApproverBackupArray.length > 0
-        ) {
-          AllTaskUser?.map((userData1: any) => {
-            TaskApproverBackupArray.map((itemData: any) => {
-              if (itemData.Id == userData1?.AssingedToUserId) {
-                AssignedUsers.push(userData1);
-                TeamMemberTemp.push(userData1);
-              }
-            });
-          });
-        } else {
-          if (TaskCreatorApproverBackupArray?.length > 0) {
-            AllTaskUser?.map((userData1: any) => {
-              TaskCreatorApproverBackupArray?.map((itemData: any) => {
-                if (itemData.Id == userData1?.AssingedToUserId) {
-                  AssignedUsers.push(userData1);
-                  TeamMemberTemp.push(userData1);
-                }
-              });
-            });
-          }
-        }
-      } else {
-        AllTaskUser?.map((userData: any) => {
-          props?.item?.AssignedTo?.map((AssignedUser: any) => {
-            if (userData?.AssingedToUserId == AssignedUser.Id) {
-              AssignedUsers.push(userData);
-            }
-          });
-        });
-      }
-    }
-    if (taskStatusInNumber != undefined) {
-      statusValue = taskStatusInNumber;
-      props.item.PercentComplete = statusValue;
-      if (statusValue < 70 && statusValue > 20) {
-        setTaskStatus("In Progress");
-        setPercentCompleteStatus(`${statusValue}% In Progress`);
-        setUpdateTaskInfo({
-          ...UpdateTaskInfo,
-          PercentCompleteStatus: `${statusValue}`
-        });
-      } else {
-        StatusArray?.map((item: any) => {
-          if (statusValue == item.value) {
-            setPercentCompleteStatus(item.status);
-            setTaskStatus(item.taskStatusComment);
-          }
-        });
-      }
-
-      if (statusValue == 0) {
-        setTaskStatus("Not Started");
-        setPercentCompleteStatus("Not Started");
-        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: "0" });
-      }
-
-      if (statusValue <= 3 && ApprovalStatusGlobal) {
-        ChangeTaskUserStatus = false;
-      } else {
-        ChangeTaskUserStatus = true;
-      }
-    }
+    StatusValue = props.item.PercentComplete
     setTaskStatusPopup(true);
   };
   function isValidDate(dateString: any): boolean {
@@ -513,12 +434,6 @@ const inlineEditingcolumns = (props: any) => {
     return date.isValid();
   }
   const UpdateTaskStatus = async () => {
-    setUpdateTaskInfo({
-      ...UpdateTaskInfo,
-      PercentCompleteStatus: props?.item?.PercentComplete
-        ? props?.item?.PercentComplete
-        : null
-    });
     if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
       TaskAssignedTo?.map((taskInfo) => {
         AssignedToIds.push(taskInfo.Id);
@@ -540,12 +455,6 @@ const inlineEditingcolumns = (props: any) => {
         ResponsibleTeamIds.push(taskInfo.Id);
       });
     }
-    StatusArray?.map((array: any) => {
-      if (props?.item?.PercentComplete == array.value) {
-        setPercentCompleteStatus(array.status);
-        setTaskStatus(array.taskStatusComment);
-      }
-    });
     let priority: any;
     let priorityRank = 4;
     if (taskPriority === undefined || parseInt(taskPriority) <= 0) {
@@ -607,7 +516,7 @@ const inlineEditingcolumns = (props: any) => {
     switch (props?.columnName) {
       case 'TaskCategories':
         postData.Categories = CategoryTitle;
-        postData.TaskCategoriesId = { results: selectedCategoriesId };
+        postData.TaskCategoriesId = { results: selectedCategoriesId ? selectedCategoriesId : [] };
         break;
 
       case 'Team':
@@ -634,7 +543,12 @@ const inlineEditingcolumns = (props: any) => {
         break;
 
       case 'PercentComplete':
-        postData.PercentComplete = taskStatusInNumber / 100;
+        postData.PercentComplete = StatusValue / 100;
+        postData.IsTodaysTask = EditData?.IsTodaysTask
+        postData.workingThisWeek = EditData?.workingThisWeek
+        postData.AssignedToId = { results: AssignedToIds ?? [] };
+        postData.StartDate = EditData?.StartDate
+        postData.CompletedDate = EditData?.CompletedDate
         break;
 
       case 'DueDate':
@@ -693,12 +607,12 @@ const inlineEditingcolumns = (props: any) => {
 
             props.item = task;
             clearEstimations();
-            setTaskCategoriesPopup(false);
             closeTaskDueDate();
             props?.callBack(task);
           });
         setCategoriesData(CategoriesData);
         setSelectedCatId(selectedCategoriesId);
+        setTaskCategoriesPopup(false);
         setTaskStatusPopup(false);
         setTaskPriorityPopup(false);
         setTeamMembersPopup(false);
@@ -724,6 +638,7 @@ const inlineEditingcolumns = (props: any) => {
       }
     });
   };
+  
   const CategoryCallBack = React.useCallback((item1: any, type: any) => {
     setIsComponentPicker(false);
     // setIsClientPopup(false);
@@ -807,6 +722,7 @@ const inlineEditingcolumns = (props: any) => {
     );
     setCategoriesData(TaskCategories);
   };
+
   const clearEstimations = () => {
     setTimeInHours(0);
     setTimeInMinutes(0);
@@ -878,126 +794,133 @@ const inlineEditingcolumns = (props: any) => {
     }
   };
   const PercentCompleted = (StatusData: any) => {
-    setTaskStatusInNumber(StatusData?.value);
     setUpdateTaskInfo({
       ...UpdateTaskInfo,
-      PercentCompleteStatus: StatusData.value
-    });
-    setPercentCompleteStatus(StatusData.status);
-    setTaskStatus(StatusData.taskStatusComment);
-    setPercentCompleteCheck(false);
-    if (StatusData.value == 1) {
+      PercentCompleteStatus: StatusData.value,
+  });
+  setPercentCompleteStatus(StatusData.status);
+  setTaskStatus(StatusData.taskStatusComment);
+  setPercentCompleteCheck(false);
+  StatusValue = StatusData.value
+  if (StatusData.value == 1) {
       let tempArray: any = [];
       if (
-        TaskApproverBackupArray != undefined &&
-        TaskApproverBackupArray.length > 0
+          TaskApproverBackupArray != undefined &&
+          TaskApproverBackupArray.length > 0
       ) {
-        TaskApproverBackupArray.map((dataItem: any) => {
-          tempArray.push(dataItem);
-        });
+          TaskApproverBackupArray.map((dataItem: any) => {
+              tempArray.push(dataItem);
+          });
       } else if (
-        TaskCreatorApproverBackupArray != undefined &&
-        TaskCreatorApproverBackupArray.length > 0
+          TaskCreatorApproverBackupArray != undefined &&
+          TaskCreatorApproverBackupArray.length > 0
       ) {
-        TaskCreatorApproverBackupArray.map((dataItem: any) => {
-          tempArray.push(dataItem);
-        });
+          TaskCreatorApproverBackupArray.map((dataItem: any) => {
+              tempArray.push(dataItem);
+          });
       }
-      setTaskAssignedTo(tempArray);
-      setTaskTeamMembers(tempArray);
-      setApproverData(tempArray);
-    }
-    if (StatusData.value == 2) {
+      const finalData = tempArray.filter((val: any, id: any, array: any) => {
+          return array.indexOf(val) == id;
+      });
+      setTaskAssignedTo(finalData);
+      setTaskTeamMembers(finalData);
+      setApproverData(finalData);
+      var e: any = "false";
+      props.item.TaskApprovers = finalData;
+  }
+  if (StatusData.value == 2) {
       setInputFieldDisable(true);
-    }
-    if (StatusData.value != 2) {
+  }
+  if (StatusData.value != 2) {
       setInputFieldDisable(false);
-    }
+  }
 
-    if (StatusData.value == 80) {
-      // let tempArray: any = [];
+  if (StatusData.value == 80) {
+      setEditData((prevState: any) => ({
+        ...prevState,
+        IsTodaysTask: false,
+        workingThisWeek: false
+      }));
       if (
-        props?.item?.TeamMembers != undefined &&
-        props?.item?.TeamMembers?.length > 0
+          EditData.TeamMembers != undefined &&
+          EditData.TeamMembers?.length > 0
       ) {
-        setWorkingMemberFromTeam(props?.item?.TeamMembers, "QA", 143);
+          setWorkingMemberFromTeam(EditData.TeamMembers, "QA", 143);
       } else {
-        setWorkingMember(143);
+          setWorkingMember(143);
       }
-      props.item.IsTodaysTask = false;
-      props.item.CompletedDate = undefined;
-    }
-
-    if (StatusData.value == 5) {
-      // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-      //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-      // } else if (EditData.TeamMembers != undefined && EditData.TeamMembers?.length > 0) {
-      //     setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 156);
-
-      // } else {
-      //     setWorkingMember(156);
-      // }
-      props.item.CompletedDate = undefined;
-      props.item.IsTodaysTask = false;
-    }
-    if (StatusData.value == 10) {
-      props.item.CompletedDate = undefined;
-      if (props?.item?.StartDate == undefined) {
-        props.item.StartDate = Moment(new Date()).format("MM-DD-YYYY");
+      setEditData((prevState: any) => ({
+        ...prevState,
+        IsTodaysTask: false,
+        CompletedDate: undefined
+      }));
+  }
+  if (StatusData.value == 70) {
+      if (
+          EditData.TeamMembers != undefined &&
+          EditData.TeamMembers?.length > 0
+      ) {
+          setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
+      } else {
+          setWorkingMember(0);
       }
-      props.item.IsTodaysTask = true;
-      // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-      //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-      // } else {
-      //     setWorkingMember(156);
-      // }
-    }
-    // if (StatusData.value == 70) {
-    // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-    //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-    // } else if (EditData.TeamMembers != undefined && EditData.TeamMembers?.length > 0) {
-    //     setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 156);
-    // } else {
-    //     setWorkingMember(156);
-    // }
-    // }
+  }
 
-    if (
+  if (StatusData.value == 5) {
+      EditData.CompletedDate = undefined;
+      EditData.IsTodaysTask = false;
+  }
+
+  if (StatusData.value == 10) {
+      EditData.CompletedDate = undefined;
+      if (EditData.StartDate == undefined) {
+          EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY");
+      }
+      setEditData((prevState: any) => ({
+        ...prevState,
+        IsTodaysTask: true
+      }));
+  }
+  if (
       StatusData.value == 93 ||
       StatusData.value == 96 ||
       StatusData.value == 99
-    ) {
-      setWorkingMember(9);
+  ) {
+    setEditData((prevState: any) => ({
+      ...prevState,
+      IsTodaysTask: false,
+      workingThisWeek: false
+    }));
+      setWorkingMember(32);
       StatusArray?.map((item: any) => {
-        if (StatusData.value == item.value) {
-          setPercentCompleteStatus(item.status);
-          setTaskStatus(item.taskStatusComment);
-        }
+          if (StatusData.value == item.value) {
+              setPercentCompleteStatus(item.status);
+              setTaskStatus(item.taskStatusComment);
+          }
       });
-    }
-    if (StatusData.value == 90) {
-      let DesignStatus = false;
-      if (props?.item?.TaskCategories?.length > 0) {
-        DesignStatus = isItemExistTitle(
-          "Design",
-          props?.item?.TaskCategories?.length
-        );
-      }
-      if (props?.item?.siteType == "Offshore Tasks") {
-        setWorkingMember(36);
-      } else if (DesignStatus) {
-        setWorkingMember(172);
+  }
+  if (StatusData.value == 90) {
+    setEditData((prevState: any) => ({
+      ...prevState,
+      IsTodaysTask: false,
+      workingThisWeek: false
+    }));
+      if (EditData.siteType == "Offshore Tasks") {
+          setWorkingMember(36);
       } else {
-        setWorkingMember(42);
+          setWorkingMember(42);
       }
-      props.item.CompletedDate = Moment(new Date()).format("MM-DD-YYYY");
+      setEditData((prevState: any) => ({
+        ...prevState,
+        CompletedDate: Moment(new Date()).format("MM-DD-YYYY")
+      }));
       StatusArray?.map((item: any) => {
-        if (StatusData.value == item.value) {
-          setPercentCompleteStatus(item.status);
-          setTaskStatus(item.taskStatusComment);
-        }
+          if (StatusData.value == item.value) {
+              setPercentCompleteStatus(item.status);
+              setTaskStatus(item.taskStatusComment);
+          }
       });
-    }
+  }
   };
   const closeTaskStatusUpdatePopup = () => {
     setTaskStatusPopup(false);
@@ -1625,7 +1548,7 @@ const inlineEditingcolumns = (props: any) => {
                         <input
                           className="radio"
                           type="radio"
-                          checked={taskStatusInNumber == item?.value}
+                          checked={StatusValue == item?.value}
                           onClick={() => PercentCompleted(item)}
                         />
                         <label className="form-check-label">
