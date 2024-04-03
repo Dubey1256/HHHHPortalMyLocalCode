@@ -66,65 +66,65 @@ const AddProject = (props: any) => {
                         }).then((res: any) => {
                             const newProjectId = res.data.Id;
                             let result: any = res.data;
-                           try{
-                            result.siteUrl = props?.AllListId?.siteUrl;
-                            result["siteType"] = "Master Tasks";
-                            result.AllTeamName = "";
-                            result.portfolioItemsSearch = result?.Item_x0020_Type;
-                            result.TeamLeaderUser = []
-                            result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
-                            result.DisplayCreateDate = Moment(result?.Created).format("DD/MM/YYYY");
-                            result.DueDate = Moment(result?.DueDate).format('DD/MM/YYYY')
-                            if (result.DueDate == 'Invalid date' || '') {
-                                result.DueDate = result?.DueDate?.replaceAll("Invalid date", "")
-                            }
-                            if (result.DisplayDueDate == "Invalid date" || "") {
-                                result.DisplayDueDate = result.DisplayDueDate.replaceAll(
-                                    "Invalid date",
-                                    ""
-                                );
-                            }
-                            if (result.DisplayCreateDate == "Invalid date" || "") {
-                                result.DisplayCreateDate = result.DisplayCreateDate.replaceAll(
-                                    "Invalid date",
-                                    ""
-                                );
-                            }
-                            if (result.PercentComplete != undefined)
-                                result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+                            try {
+                                result.siteUrl = props?.AllListId?.siteUrl;
+                                result["siteType"] = "Master Tasks";
+                                result.AllTeamName = "";
+                                result.portfolioItemsSearch = result?.Item_x0020_Type;
+                                result.TeamLeaderUser = []
+                                result.DisplayDueDate = Moment(result?.DueDate).format("DD/MM/YYYY");
+                                result.DisplayCreateDate = Moment(result?.Created).format("DD/MM/YYYY");
+                                result.DueDate = Moment(result?.DueDate).format('DD/MM/YYYY')
+                                if (result.DueDate == 'Invalid date' || '') {
+                                    result.DueDate = result?.DueDate?.replaceAll("Invalid date", "")
+                                }
+                                if (result.DisplayDueDate == "Invalid date" || "") {
+                                    result.DisplayDueDate = result.DisplayDueDate.replaceAll(
+                                        "Invalid date",
+                                        ""
+                                    );
+                                }
+                                if (result.DisplayCreateDate == "Invalid date" || "") {
+                                    result.DisplayCreateDate = result.DisplayCreateDate.replaceAll(
+                                        "Invalid date",
+                                        ""
+                                    );
+                                }
+                                if (result.PercentComplete != undefined)
+                                    result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
 
-                            if (result.Item_x0020_Type === "Project") {
-                                result.lableColor = "w-bg";
-                                result.ItemCat = "Project"
-                            }
-                            if (result.Item_x0020_Type === "Sprint") {
-                                result.ItemCat = "Project"
-                            }
-                            if (result?.Item_x0020_Type != undefined) {
-                                result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
+                                if (result.Item_x0020_Type === "Project") {
+                                    result.lableColor = "w-bg";
+                                    result.ItemCat = "Project"
+                                }
+                                if (result.Item_x0020_Type === "Sprint") {
+                                    result.ItemCat = "Project"
+                                }
+                                if (result?.Item_x0020_Type != undefined) {
+                                    result.SiteIconTitle = result?.Item_x0020_Type?.charAt(0);
+                                }
+
+                                result.descriptionsSearch = '';
+
+                                result.Id = result.Id != undefined ? result.Id : result.ID;
+                                result["TaskID"] = result?.PortfolioStructureID;
+
+                                if (result?.ClientCategory?.length > 0) {
+                                    result.ClientCategorySearch = result?.ClientCategory?.map(
+                                        (elem: any) => elem.Title
+                                    ).join(" ");
+                                } else {
+                                    result.ClientCategorySearch = "";
+                                }
+                            } catch (e) {
+                                console.log(e, 'Error Creating Data after Post')
                             }
 
-                            result.descriptionsSearch = '';
-                            
-                            result.Id = result.Id != undefined ? result.Id : result.ID;
-                            result["TaskID"] = result?.PortfolioStructureID;
-                          
-                            if (result?.ClientCategory?.length > 0) {
-                                result.ClientCategorySearch = result?.ClientCategory?.map(
-                                    (elem: any) => elem.Title
-                                ).join(" ");
-                            } else {
-                                result.ClientCategorySearch = "";
-                            }
-                           }catch(e){
-                            console.log(e,'Error Creating Data after Post')
-                           }
-                            
                             if (props?.PageName == "ProjectOverview") {
                                 window.open(`${props?.AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${newProjectId}`, "_blank");
-                                props?.CallBack(result,"Save")
-                            }else{
-                                props?.CallBack(result,"Save")
+                                props?.CallBack(result, "Save")
+                            } else {
+                                props?.CallBack(result, "Save")
                             }
                             closePopup()
                         })
@@ -156,7 +156,7 @@ const AddProject = (props: any) => {
                         }).then((res: any) => {
                             const newProjectId = res.data.Id;
                             closePopup()
-                            props?.CallBack(res.data,"Save")
+                            props?.CallBack(res.data, "Save")
                             window.open(`${props?.AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${newProjectId}`, "_blank");
                         })
                     })
@@ -186,10 +186,10 @@ const AddProject = (props: any) => {
             MasterTaskListID: props?.AllListId.MasterTaskListID,
             siteUrl: props?.AllListId.siteUrl,
             TaskUserListId: props?.AllListId.TaskUsertListID,
-          }
+        }
         let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
         if (results?.AllData?.length > 0) {
-          AllFlatProject = results?.FlatProjectData
+            AllFlatProject = results?.FlatProjectData
         }
 
     }
@@ -209,7 +209,7 @@ const AddProject = (props: any) => {
                 setSearchedProjectKey(SearchedKeyWord);
             }
             else {
-                setProjectData([]);                
+                setProjectData([]);
             }
 
         } else {
@@ -228,7 +228,7 @@ const AddProject = (props: any) => {
         setSmartComponentData([])
         setProjectData([])
         setLgShow(false)
-        props?.CallBack(undefined,"Save")
+        props?.CallBack(undefined, "Save")
 
     }
     const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
@@ -269,7 +269,7 @@ const AddProject = (props: any) => {
                 {props?.items != undefined && props?.items?.length == 1 &&
                     <div>
                         <ul className="spfxbreadcrumb mb-2 ms-2 p-0">
-                            <li><a>Project Management</a></li>
+                            <li><a data-interception="off" target="_blank" href={`${props?.AllListId?.siteUrl}/SitePages/PX-Overview.aspx`}>PX Management Overview</a></li>
                             <li>
                                 {" "}
                                 <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${props?.items[0]?.Id}`}>{props?.items[0]?.Title}</a>{" "}

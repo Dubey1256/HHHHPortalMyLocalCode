@@ -31,6 +31,9 @@ const EmailNotificationMail = (props: any) => {
        if(props.items.Categories == 'Immediate' && props.statusValue == '80'){
         Subjects = `[Immediate - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] Immediate Task only QA pending`
       }
+      if (props.items.Categories == 'Design' && props.statusValue == '90') {
+        Subjects = `[Design - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] Design Task awaiting QA`
+      }
       let category = joinObjectValues(props.items?.TaskCategories)
       let EmailProps = {
         To: mention_To,
@@ -188,7 +191,7 @@ const EmailNotificationMail = (props: any) => {
                         <b style={{ fontSize: '10.0pt', color: 'black' }}>Created:</b>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '5pt' }}>
-                        <span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Created"]}</span>
+                        <span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Created"] != null && props.items["Created"] != undefined ? Moment(props.items["Created"]).format("DD-MM-YYYY") : ''}</span>
                       </td>
                       <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '5pt',width:'80pt' }}>
                         <b style={{ fontSize: '10.0pt', color: 'black' }}>Created By:</b>

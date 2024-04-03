@@ -140,6 +140,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       ID: 'T' + taskDetails["ID"],
       TaskId: globalCommon.GetTaskId(taskDetails),
       Title: taskDetails["Title"],
+      Portfolio: taskDetails["Portfolio"],
       DueDate: taskDetails["DueDate"] != null ? (new Date(taskDetails["DueDate"])).toLocaleDateString() : '',
       Categories: taskDetails["Categories"],
       StartDate: taskDetails["StartDate"] != null ? (new Date(taskDetails["StartDate"])).toLocaleDateString() : '',
@@ -147,7 +148,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       Status: taskDetails["Status"],
       TeamLeader: taskDetails["ResponsibleTeam"] != null ? this.GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null,
       TeamMembers: taskDetails["TeamMembers"] != null ? this.GetUserObjectFromCollection(taskDetails["TeamMembers"]) : null,
-      PercentComplete: (taskDetails["PercentComplete"] * 100),
+      PercentComplete: taskDetails["PercentComplete"],
       Priority: taskDetails["Priority"],
       Created: taskDetails["Created"] != null ? (new Date(taskDetails["Created"])).toLocaleDateString() : '',
       Modified: taskDetails["Modified"] != null ? (new Date(taskDetails["Modified"])).toLocaleDateString() : '',
@@ -470,7 +471,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     return mention_str.trim();
   }
   private GetUserObjectArr(username: any) {
-    let userDeatails = [];
+    let userDeatails = { 'Id': '', 'Name': '', 'Suffix': '', 'Title': '', 'userImage': '' };
     if (username != undefined && this.taskUsers != undefined && this.taskUsers.length > 0) {
       let senderObject = this.taskUsers?.filter(function (user: any, i: any) {
         if (user.AssingedToUser != undefined) {
@@ -481,13 +482,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         }
       });
       if (senderObject.length > 0) {
-        userDeatails.push({
-          'Id': senderObject[0].Id,
-          'Name': senderObject[0]?.AssingedToUser?.EMail,
-          'Suffix': senderObject[0].Suffix,
-          'Title': senderObject[0].Title,
-          'userImage': senderObject[0]?.Item_x0020_Cover?.Url
-        })
+        userDeatails.Id = senderObject[0].Id;
+        userDeatails.Name = senderObject[0]?.AssingedToUser?.EMail;
+        userDeatails.Suffix = senderObject[0].Suffix;
+        userDeatails.Title = senderObject[0].Title;
+        userDeatails.userImage = senderObject[0]?.Item_x0020_Cover?.Url;
       }
       return userDeatails;
     }
@@ -664,7 +663,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             const PreMsg = `
               <b>Hi ${this.state?.ReplyParent?.Header.replaceAll('@', '')},</b>
               <p></p>
-              <span style="display: block; text-align: right;">Task Comment-<span style="background-color: yellow;">${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')}.</span></span>
+               Task Comment-<span style="background-color: yellow;">${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')}.</span>
               <p><br/></p>
               <b>Task Details : </b> <span>${finalTaskInfo}</span>
               <p></p>
@@ -674,8 +673,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           `;
             const CurrentMsg = `
               <b>Hi ${this.state?.ReplyParent?.AuthorName},</b>
-              <p></p>
-              <span style="display: block; text-align: right;">Task Comment-<span style="background-color: yellow;">${txtComment}.</span></span>
+              Task Comment-<span style="background-color: yellow;">${txtComment}.</span>
               <p><br/></p>
               <b>Task Details : </b> <span>${finalTaskInfo}</span>
               <p></p>
@@ -683,13 +681,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               <p></p>
               <b>Thanks,<br/>Task Management Team</b>
           `;
-            TeamsMessage = `<blockquote> ${PreMsg} </blockquote>${CurrentMsg}`;
+            TeamsMessage = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${PreMsg} </blockquote>${CurrentMsg}`;
           }
           else {
             TeamsMessage = `
           <b>Hi ${combinedNames},</b>
           <p></p>
-          <span style="display: block; text-align: right;">Task Comment-<span style="background-color: yellow;">${txtComment}.</span></span>
+          Task Comment-<span style="background-color: yellow;">${txtComment}.</span>
           <p><br/></p>
           <b>Task Details : </b> <span>${finalTaskInfo}</span>
           <p></p>
@@ -1322,7 +1320,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                             <p style={{ margin: '4pt 0pt' }}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created:</span></b></p>
                           </td>
                           <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p style={{ margin: '4pt 0pt' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 && this.state.Result["Author"][0].Title}</span></p>
+                            <p style={{ margin: '4pt 0pt' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["Author"] != null && this.state.Result["Author"] != '' && this.state.Result["Author"].Title}</span></p>
                           </td>
                         </tr>
                         <tr>
@@ -1342,7 +1340,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                             <p style={{ margin: '4pt 0pt' }}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>% Complete:</span></b></p>
                           </td>
                           <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p style={{ margin: '4pt 0pt' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["PercentComplete"]}</span></p>
+                            <p style={{ margin: '4pt 0pt' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{(this.state.Result["PercentComplete"] * 100).toFixed(0)}</span></p>
                           </td>
                         </tr>
                         <tr>

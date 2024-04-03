@@ -286,7 +286,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 }
             });
 
-            if (SelectedCategories.length > 0 || CreateTaskInfo.Title?.length > 0) {
+            if (SelectedCategories.length > 0 && CreateTaskInfo.Title?.length > 0) {
                 let UpdateJSONData: any = {
                     Title: CreateTaskInfo.Title,
                     DueDate: CreateTaskInfo.DueDate ? Moment(CreateTaskInfo.DueDate).format("MM-DD-YYYY") : null,
@@ -723,7 +723,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                         <input
                                             type='Number'
                                             className="form-control"
-                                            defaultValue={CreateTaskInfo.PriorityRank}
+                                            value={CreateTaskInfo.PriorityRank}
                                             onChange={(e) => setCreateTaskInfo({ ...CreateTaskInfo, PriorityRank: e.target.value })}
                                         /> :
                                         <input
