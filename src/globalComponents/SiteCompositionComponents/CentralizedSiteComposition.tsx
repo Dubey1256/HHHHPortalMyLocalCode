@@ -945,7 +945,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 hasCheckbox: true,
                 hasCustomExpanded: true,
                 hasExpanded: true,
-                size: 55,
+                size: 69,
                 id: "Id"
             },
             {
