@@ -2595,6 +2595,8 @@ const EditTaskPopup = (Items: any) => {
                             TaskDetailsFromCall[0].siteUrl = siteUrls;
                             TaskDetailsFromCall[0].siteIcon = Items.Items.SiteIcon;
                             TaskDetailsFromCall[0].PercentComplete = (TaskDetailsFromCall[0].PercentComplete * 100).toFixed(0);
+                            TaskDetailsFromCall[0].Comments = TaskDetailsFromCall[0].Comments != null ? JSON.parse(TaskDetailsFromCall[0].Comments):null
+                           
                         }
                         let UpdatedDataObject: any = TaskDetailsFromCall[0]
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)

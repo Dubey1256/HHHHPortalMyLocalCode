@@ -23,6 +23,9 @@ const EmailNotificationMail = (props: any) => {
       if (props.items.Categories.indexOf('Immediate') != -1 && props.statusValue == '90') {
         Subjects = `[Immediate - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] Immediate  Task Completed`
       }
+      if (props.items.Categories.indexOf('Immediate') != -1 && props.statusValue == '0') {
+        Subjects = `[Immediate - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] New Immediate  Task Created`
+      }
       if (props.items.Categories.indexOf('Immediate') != -1 && props.statusValue == '5') {
         Subjects = `[Immediate - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] Immediate Task acknowledged`
       }

@@ -1612,7 +1612,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                         <div style={{ marginBottom: '3.75pt' }}>
                                                                             <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span>{fbComment.AuthorName} - {fbComment.Created}<u></u><u></u></span></p>
                                                                         </div>
-                                                                        <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span><u></u><u></u></span></p>
+                                                                        <p style={{ marginLeft: '15px'}}><span><span style={{ backgroundColor: 'yellow'}}dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span><u></u><u></u></span></p>
                                                                     
                                                                        {fbComment?. ReplyMessages?.length>0 && fbComment?.ReplyMessages?.map((replycom:any)=>{
                                                                         return(
@@ -1620,7 +1620,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                             <div style={{ marginBottom: '3.75pt' }}>
                                                                                 <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span>{replycom.AuthorName} - {replycom.Created}<u></u><u></u></span></p>
                                                                             </div>
-                                                                            <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span><span dangerouslySetInnerHTML={{ __html: replycom['Title'] }}></span><u></u><u></u></span></p>
+                                                                            <p style={{ marginLeft: '15px'}}><span><span style={{ backgroundColor: 'yellow'}} dangerouslySetInnerHTML={{ __html: replycom['Title'] }}></span><u></u><u></u></span></p>
                                                                             </div>   
                                                                         )
                                                                        })}
@@ -1645,14 +1645,14 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                                 <div style={{ marginBottom: '3.75pt' }}>
                                                                                     <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}<u></u><u></u></span></p>
                                                                                 </div>
-                                                                                <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span><u></u><u></u></span></p>
+                                                                                <p style={{ marginLeft: '15px' }}><span style={{ fontSize: '10.0pt', backgroundColor: 'yellow' }}><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span><u></u><u></u></span></p>
                                                                         {fbSubComment?. ReplyMessages?.length>0 && fbSubComment?.ReplyMessages?.map((replycom:any)=>{
                                                                         return(
                                                                             <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
                                                                             <div style={{ marginBottom: '3.75pt' }}>
                                                                                 <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span>{replycom.AuthorName} - {replycom.Created}<u></u><u></u></span></p>
                                                                             </div>
-                                                                            <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span><span dangerouslySetInnerHTML={{ __html: replycom['Title'] }}></span><u></u><u></u></span></p>
+                                                                            <p style={{ marginLeft: '15px'}}><span style={{ backgroundColor: 'yellow'}}><span dangerouslySetInnerHTML={{ __html: replycom['Title'] }}></span><u></u><u></u></span></p>
                                                                             </div>   
                                                                         )
                                                                        })}
