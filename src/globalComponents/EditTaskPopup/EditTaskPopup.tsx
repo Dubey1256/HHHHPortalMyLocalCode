@@ -2722,7 +2722,28 @@ const EditTaskPopup = (Items: any) => {
                                     </b>
                                     `;
 
-
+                                    if(IsTaskStatusUpdated && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject.Categories == 'Immediate'){
+                                        taskUsers?.forEach((allUserItem: any) => {
+                                            if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                                addEmailAndUserName(allUserItem);
+                                            }
+                                            if(checkStatusUpdate == 5){
+                                             CommonMsg = `Below task has been set to 5%, please review it.`
+                                            }
+                                            if(checkStatusUpdate == 80){
+                                                CommonMsg = `Below task has been set to 80%, please review it.`
+                                            }
+                                        });
+                                        if (sendUserEmails.length > 0) {
+                                            // await sendTeamMessagePromise(SendUserEmailFinal, SendMessage, Items.context)
+                                            globalCommon.SendTeamMessage(sendUserEmails, SendMessage, Items.context).then(() => {
+                                                console.log("MS Teams Message Send Succesfully !!!!")
+                                            }).catch((error) => {
+                                                console.log("MS Teams Message Not Send !!!!", error.message)
+                                            })
+                                        }
+        
+                                      }
                                 if ((sendMSGCheck || SendMsgToAuthor || TeamMemberChanged || TeamLeaderChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
                                     if (sendUserEmails.length > 0) {
                                         // await sendTeamMessagePromise(SendUserEmailFinal, SendMessage, Items.context)
