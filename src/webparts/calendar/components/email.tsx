@@ -48,9 +48,9 @@ const EmailComponenet = (props: any) => {
 
   React.useEffect(() => {
     loadleave()
-    if (Object.keys(nameidTotals).length !== 0) {
+    if (Object.keys(nameidTotals).length !== 0 ) {
       SendEmail()
-    } else if (hhhhteamavailabel > 0) {
+    } else if (props?.data?.length===0) {
       SendEmail()
     }
 
@@ -186,7 +186,7 @@ const EmailComponenet = (props: any) => {
     // Assuming 'yeardata' is available from somewhere (prop, state, or elsewhere)
     // const yeardata = ...;
 
-    const userId = props.data.filter((item: any) => item?.NameId != null);
+    const userId = props?.data?.filter((item: any) => item?.NameId != null);
 
     const nameidData: any = {};
 
@@ -204,7 +204,7 @@ const EmailComponenet = (props: any) => {
     });
     count++;
     setNameidTotals(nameidData);
-  }, [props.data]);
+  }, [props?.data]);
 
 
   console.log(nameidTotals)
@@ -215,7 +215,7 @@ const EmailComponenet = (props: any) => {
   // arr.map((item:any)=>{})
 
   // For prepare the property
-  const data = props.data;
+  const data = props?.data;
   {
     data?.map((item: any, index: any) => {
       let condate = new Date(item.end);
@@ -570,4 +570,3 @@ const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId != 10
   );
 };
 export default EmailComponenet;
-
