@@ -1288,13 +1288,13 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                             <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>} */}
 
                                         {isShowingDataAll === true ? <>
-                                            <label style={{ color: "white" }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
+                                            <label style={{ color: "white", backgroundColor: `${portfolioColor}`}} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
                                             <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `}/</label>
                                             <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
                                             {/* {index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
                                         </> :
                                             <>
-                                                <label style={{ color: "white" }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
+                                                <label style={{ color: "white", backgroundColor: `${portfolioColor}`}} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
                                                 <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `}/</label>
                                                 <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
                                                 {/* {index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
@@ -1306,13 +1306,13 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                 return (
                                     <>
                                         {isShowingDataAll === true ? <>
-                                            <label style={{ color: "white" }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
+                                            <label style={{ color: "white", backgroundColor: `${portfolioColor}`}} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
                                             <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `}/</label>
                                             <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
                                             {/* {index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
                                         </> :
                                             <>
-                                                <label style={{ color: "white" }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
+                                                <label style={{ color: "white", backgroundColor: `${portfolioColor}`}} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
                                                 <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `}/</label>
                                                 <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
                                                 {/* {index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
@@ -1473,15 +1473,11 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
                     {items?.SmartTimeIconShow === true && items?.AllListId?.isShowTimeEntry === true && <a className='smartTotalTime hreflink' title="Load SmartTime of AWT" onClick={() => openCreationAllStructure("Smart-Time")} > <BsClockHistory style={{ color: `${portfolioColor}` }} /></a>}
 
-                    {items?.flatView === true && items?.updatedSmartFilterFlatView === false && <>{items?.clickFlatView === false ? <a className='smartTotalTime hreflink' title='Switch to Flat-View' style={{ color: `${portfolioColor}` }} onClick={() => openCreationAllStructure("Flat-View")}><BsList /></a> :
-                        <a className='smartTotalTime' title='Switch to Groupby View' style={{ color: `${portfolioColor}` }} onClick={() => openCreationAllStructure("Groupby-View")}><FaListAlt /></a>}</>}
+                    {items?.flatView === true && items?.updatedSmartFilterFlatView === false && <>{items?.clickFlatView === false ? <a className='smartTotalTime hreflink' title='Switch to Flat-View' style={{ color: `${portfolioColor}` }} onClick={() => openCreationAllStructure("Flat-View")}><BsList style={{ color: `${portfolioColor}` }}/></a> :
+                        <a className='smartTotalTime' title='Switch to Groupby View' style={{ color: `${portfolioColor}` }} onClick={() => openCreationAllStructure("Groupby-View")}><FaListAlt style={{ color: `${portfolioColor}` }} /></a>}</>}
 
-                    {items?.flatView === true && items?.updatedSmartFilterFlatView === true && <a className='smartTotalTime hreflink' title='deactivated to Groupby View'><FaListAlt style={{ color: "#918d8d" }} /></a>}
-
-
+                    {items?.flatView === true && items?.updatedSmartFilterFlatView === true && <a className='smartTotalTime hreflink' title='deactivated to Groupby View'><FaListAlt style={{ color: `${portfolioColor}` }}/></a>}
                     <a className='brush'><i className="fa fa-paint-brush hreflink" style={{ color: `${portfolioColor}` }} aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); setRowSelection({}); }}></i></a>
-
-
                     <a className='Prints' onClick={() => downloadPdf()}>
                         <i className="fa fa-print" aria-hidden="true" style={{ color: `${portfolioColor}` }} title="Print"></i>
                     </a>
@@ -1491,8 +1487,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         <ExpndTable prop={expndpopup} prop1={tablecontiner} />
                     </a>}
 
-                    {items?.showFilterIcon === true && <><a className='smartTotalTime hreflink' title='Filter all task' style={{ color: `${portfolioColor}` }} onClick={() => openCreationAllStructure("loadFilterTask")}><RiFilter3Fill /></a></>}
-                    {items?.columnSettingIcon === true && <><a className='smartTotalTime hreflink' title='Column setting' style={{ color: `${portfolioColor}` }} onClick={() => setColumnSettingPopup(true)}><AiFillSetting /></a></>}
+                    {items?.showFilterIcon === true && <><a className='smartTotalTime hreflink' title='Filter all task' style={{ color: `${portfolioColor}` }} onClick={() => openCreationAllStructure("loadFilterTask")}><RiFilter3Fill  style={{ color: `${portfolioColor}` }} /></a></>}
+                    {items?.columnSettingIcon === true && <><a className='smartTotalTime hreflink' title='Column setting' style={{ color: `${portfolioColor}` }} onClick={() => setColumnSettingPopup(true)}><AiFillSetting style={{ color: `${portfolioColor}` }} /></a></>}
                     <Tooltip ComponentId={5756} />
                 </span>
             </div >}
