@@ -478,7 +478,10 @@ export default function VersionHistory(props: any) {
                             break;  
                         case 'Client_x005f_x003a_x005f_Category':
                             newKey = 'ClientCategory';
-                            break;                                                 
+                            break; 
+                        case "Item_x005f_x005F_x005f_x0020_x005f_Cover":
+                            newKey = "ItemCover";
+                            break;
                         default:
                             newKey = key; // If no transformation needed, keep the same key
                             break;
