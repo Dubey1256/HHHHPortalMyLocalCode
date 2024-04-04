@@ -1835,6 +1835,9 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
     // let TaskUsers: any = [];
     let AllMasterTaskData: any = [];
     try {
+        
+        let Response: ArrayLike<any> = [];
+        Response = await loadTaskUsers();
         let ProjectData: any = [];
         let web = new Web(Props.siteUrl);
         AllMasterTaskData = await web.lists
@@ -2074,6 +2077,7 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
     }
     console.log("all Service and Coponent data in global common =======", AllMasterTaskData)
 }
+
 
 
 export const componentGrouping = (Portfolio: any, AllProtFolioData: any, path: string = "") => {
