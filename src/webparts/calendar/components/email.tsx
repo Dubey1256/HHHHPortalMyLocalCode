@@ -345,7 +345,7 @@ const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId != 10
             <div style="padding-top: 56px;" width="100%">
               <table style="height: 50px;border-collapse: collapse;" border="0" align="left">
                 <tr>
-                  <td width="35px" height="35px"><img width="100%" height="100%" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png" style="width: 35px;height: 35px;border-radius: 50%;" alt="Site Icon"></td>
+                  <td width="35px" height="35px"><img width="100%" height="100%" src="https://hochhuth-consulting.de/images/icon_small_hhhh.png" style="width: 35px;height: 35px;border-radius: 50%;" alt="Site Icon"></td>
                   <td style="margin-left:4px;"><div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;">Attendance Report</div></td>
                 </tr>
               </table>
@@ -496,7 +496,7 @@ const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId != 10
      
     </div>
 <div style="display: flex;align-items: center;padding-bottom: 56px;">
-    <img width="35px" height="35px" src="https://www.hochhuth-consulting.de/images/logo.png" style="height: 35px;" alt="Site Icon">
+    <img width="35px" height="35px" src="https://hochhuth-consulting.de/images/logo_small2.png" style="height: 35px;" alt="Site Icon">
     <div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;">Hochhuth Consulting GmbH</div>
 </div>`
 
@@ -536,7 +536,7 @@ const SPfxtotal = AllTaskuser.filter((Junior: any) => (Junior?.UserGroupId != 10
             <div width="100%">
                 <table style="height: 50px;border-collapse: collapse;" border="0" align="left">
                   <tr>
-                    <td width="35px" height="35px"><img src="https://www.hochhuth-consulting.de/images/logo.png" width="100%" height="100%" style="width: 35px;height: 35px;" alt="Site Icon"></td>
+                    <td width="35px" height="35px"><img src="https://hochhuth-consulting.de/images/logo_small2.png" width="100%" height="100%" style="width: 35px;height: 35px;" alt="Site Icon"></td>
                     <td style="margin-left:4px;"><div style="color: var(--black, #333);text-align: center;font-family: Segoe UI;font-size: 14px;font-style: normal; font-weight: 600;margin-left: 4px;">Hochhuth Consulting GmbH</div></td>
                   </tr>
                 </table>

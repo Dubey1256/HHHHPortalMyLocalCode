@@ -1406,12 +1406,23 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
         ReactDOM.render(reactElement, containerDiv);
         let finalTaskInfo: any = containerDiv.innerHTML;
 
+        let NotificationTypeMessage: string = '';
+        let isShowComment: any = false;
+
+        if (ActionType == "Bottleneck" || ActionType == "Attention") {
+            NotificationTypeMessage = `You have been tagged as <b>${ActionType}</b> in the below task.`;
+            isShowComment = true;
+        } else {
+            NotificationTypeMessage = `Task created from your end as ${ActionType} category Task status has been set as ${UpdatedDataObject.PercentComplete + "%"}. Please take necessary action`;
+            isShowComment = false;
+        }
+
         const TeamsMessage = `
             <b>Hi ${ReceiverName},</b>
             <p></p>
-            You have been tagged as <b>${ActionType}</b> in the below task.
+           ${NotificationTypeMessage}
             <p><br/></p>
-            <span><b>${ActionType} Comment </b>: <span style="background-color: yellow"; >${ReasonStatement}</span></span>
+            ${isShowComment ? `<span><b>${ActionType} Comment </b>: <span style="background-color: yellow"; >${ReasonStatement}</span></span>` : ''}
             <p></p>
             <b>Task Details : </b> <span>${finalTaskInfo}</span>
             <p></p>

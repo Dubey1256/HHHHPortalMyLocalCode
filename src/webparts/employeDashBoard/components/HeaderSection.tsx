@@ -177,7 +177,7 @@ const Header = () => {
                       key={items.TileName} className={`col alignCenter me-1 mb-3 hreflink p-3 ${activeTile === items.TileName ? 'empBg shadow-sm active empBg' : 'bg-white shadow-sm'}`}
                       onClick={() => handleTileClick(items.TileName)} >
                       {items.SiteIcon ? (
-                        <img width={35} height={35} title="HHHH" src={items.SiteIcon} alt={items.TileName} />
+                        <img width={35} height={35} title={items.TileName} src={items.SiteIcon} alt={items.TileName} />
                       ) : (
                         <span className="iconSec" title={items.TileName}>
                           <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="#057BD0" className="bi bi-calendar4-event" viewBox="0 0 16 16">
@@ -202,7 +202,7 @@ const Header = () => {
 
                       <div key={items.TileName} className={`col alignCenter me-1 mb-3 hreflink p-3 ${activeTile === items.TileName ? 'empBg shadow-sm active empBg' : 'bg-white shadow-sm'}`}
                         onClick={() => handleTileClick(items.TileName)}  >
-                        {items.SiteIcon ? (<img className="imgWid29 pe-1" title="HHHH" src={items.SiteIcon} alt={items.TileName} />)
+                        {items.SiteIcon ? (<img className="imgWid29 pe-1" title={items?.TileName} src={items.SiteIcon} alt={items.TileName} />)
                           :
                           (
                             <span className="iconSec" title={items.TileName}>
