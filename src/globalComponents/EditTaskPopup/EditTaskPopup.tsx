@@ -2638,7 +2638,7 @@ const EditTaskPopup = (Items: any) => {
                         const CheckForInformationRequestCategory: any = TaskCategories.includes("Information Request");
                         let checkStatusUpdate = Number(taskPercentageValue) * 100;
                         // This is used for send MS Teams Notification 
-                        if (SendCategoryName !== "Bottleneck") {
+                        if (TaskCategories !== "Bottleneck" && TaskCategories !== "Immediate" && TaskCategories !== "Design") {
                             try {
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
@@ -3159,7 +3159,7 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
             TaskAssignedTo?.map((taskInfo) => {
-                AssignedToIds.push(taskInfo.AssingedToUserId);
+                AssignedToIds.push(taskInfo.Id);
             });
         }
 
@@ -3174,7 +3174,7 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
             TaskTeamMembers?.map((taskInfo) => {
-                TeamMemberIds.push(taskInfo.AssingedToUserId);
+                TeamMemberIds.push(taskInfo.Id);
             });
         }
 
@@ -3195,7 +3195,7 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
             TaskResponsibleTeam?.map((taskInfo) => {
-                ResponsibleTeamIds.push(taskInfo.AssingedToUserId);
+                ResponsibleTeamIds.push(taskInfo.Id);
             });
         }
         if (
