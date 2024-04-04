@@ -219,22 +219,22 @@ const EditDocumentpanel = (props: any) => {
     }
 
     if (projectdata != undefined && projectdata?.length > 0) {
-            projectdata?.map((com: any) => {
-              if (projectdata != undefined && projectdata?.length >= 0) {
-                $.each(projectdata, function (index: any, smart: any) {
-                  RelevantProjectIds = smart.Id;
-                  componetServicetagData.push(smart.Id);
-                });
-              }
-            });
-          }
-      
-          if (projectdata != null && projectdata.length >= 0) {
-            projectdata.filter((com: any) => {
-              RelevantProjectIdRemove = com.Id;
-              componetServicetagData.push(com.Id);
-            });
-          }
+      projectdata?.map((com: any) => {
+        if (projectdata != undefined && projectdata?.length >= 0) {
+          $.each(projectdata, function (index: any, smart: any) {
+            RelevantProjectIds = smart.Id;
+            componetServicetagData.push(smart.Id);
+          });
+        }
+      });
+    }
+
+    if (projectdata != null && projectdata.length >= 0) {
+      projectdata.filter((com: any) => {
+        RelevantProjectIdRemove = com.Id;
+        componetServicetagData.push(com.Id);
+      });
+    }
 
     const web = new Web(props?.AllListId?.siteUrl);
     await web.lists.getById(props?.AllListId?.DocumentsListID)
@@ -642,8 +642,8 @@ const EditDocumentpanel = (props: any) => {
                 </div>
 
               </div>
-{/* -------For Project--- */}
-<div className="col-sm-4 mt-2">
+              {/* -------For Project--- */}
+              <div className="col-sm-4 mt-2">
                 <div className="col-sm-12 padding-0 input-group">
                   <label className="full_width">Project</label>
 
@@ -679,11 +679,11 @@ const EditDocumentpanel = (props: any) => {
                           key={Index}
                         >
                           <a
-                            href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items.Id}`}
-                            className="textDotted hreflink"
-                            data-interception="off"
+                            href={`${props?.AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${items.Id}`}
                             target="_blank"
-                          >
+                            className="textDotted hreflink"
+                            data-interception="off">
+                          
                             {items?.Title}
                           </a>
                           <span
@@ -741,7 +741,7 @@ const EditDocumentpanel = (props: any) => {
                             key={Index}
                           >
                             <a
-                              href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items.Id}`}
+                              href={`${props?.AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${items.Id}`}
                               className="wid-90 light"
                               data-interception="off"
                               target="_blank"
@@ -807,7 +807,7 @@ const EditDocumentpanel = (props: any) => {
 
                       }
                       <div className='input-group gap-1'>
-                        <label className="form-label full-width">CC:</label>                                    
+                        <label className="form-label full-width">CC:</label>
                         {(EditdocumentsData?.recipients !== null) ?
                           (JSON.parse(EditdocumentsData?.recipients)?.map((items: any) => {
                             if (items.recipType === "cc") {
@@ -818,10 +818,10 @@ const EditDocumentpanel = (props: any) => {
                                       ...EditdocumentsData,
                                       recipients: e.target,
                                     })}>
-                                   <span className='textDotted'>{items.email}</span>
+                                    <span className='textDotted'>{items.email}</span>
                                   </div></div>
                               )
-                            }               
+                            }
                           }))
                           :
                           <div className="col-sm-3"
@@ -904,7 +904,7 @@ const EditDocumentpanel = (props: any) => {
         />
       }
 
-       {isopenprojectservicepopup &&
+      {isopenprojectservicepopup &&
         <ServiceComponentPortfolioPopup
           props={projectdata}
           Dynamic={props.AllListId}
