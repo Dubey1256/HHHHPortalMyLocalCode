@@ -912,7 +912,7 @@ const TaskDashboard = (props: any) => {
 
             },
             {
-                accessorFn: (row) => row?.Created,
+                accessorFn: (row) => row?.DisplayCreateDate,
                 cell: ({ row, getValue }) => (
                     <span draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
                         <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
@@ -926,7 +926,7 @@ const TaskDashboard = (props: any) => {
                             : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
                     </span>
                 ),
-                id: "Created",
+                id: "DisplayCreateDate",
                 filterFn: (row: any, columnId: any, filterValue: any) => {
                     if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
                         return true
@@ -1110,7 +1110,7 @@ const TaskDashboard = (props: any) => {
                 size: 55
             },
             {
-                accessorFn: (row) => row?.Created,
+                accessorFn: (row) => row?.DisplayCreateDate,
                 cell: ({ row, getValue }) => (
                     <span>
                         <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
@@ -1124,7 +1124,7 @@ const TaskDashboard = (props: any) => {
                             : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
                     </span>
                 ),
-                id: "Created",
+                id: "DisplayCreateDate",
                 filterFn: (row: any, columnId: any, filterValue: any) => {
                     if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
                         return true
@@ -2179,7 +2179,7 @@ const TaskDashboard = (props: any) => {
                                         {workingTodayTasks?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable'>
                                                 <>
-                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={workingTodayTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
+                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={workingTodayTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
                                                 </>
                                             </div>
                                             : <div className='text-center full-width'>
@@ -2194,7 +2194,7 @@ const TaskDashboard = (props: any) => {
                                         {thisWeekTasks?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable' >
                                                 <>
-                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={thisWeekTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
+                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={thisWeekTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
                                                 </>
                                             </div> : <div className='text-center full-width'>
                                                 <span>No Working This Week Tasks Available</span>
@@ -2207,7 +2207,7 @@ const TaskDashboard = (props: any) => {
                                         {UserImmediateTasks?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable'>
                                                 <>
-                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={UserImmediateTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
+                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={UserImmediateTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
                                                 </>
                                             </div>
                                             : <div className='text-center full-width'>
@@ -2221,7 +2221,7 @@ const TaskDashboard = (props: any) => {
                                         {bottleneckTasks?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable '>
                                                 <>
-                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={bottleneckTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
+                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={bottleneckTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
                                                 </>
                                             </div>
                                             : <div className='text-center full-width'>
@@ -2239,7 +2239,7 @@ const TaskDashboard = (props: any) => {
                                             <>
                                                 <div className='Alltable border-0 dashboardTable float-none' >
                                                     <>
-                                                        <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={AllAssignedTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
+                                                        <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={AllAssignedTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
                                                     </>
                                                 </div>
 
@@ -2292,7 +2292,7 @@ const TaskDashboard = (props: any) => {
                                                     {weeklyTimeReport?.length > 0 ?
                                                         <>
                                                               <div className='Alltable border-0 dashboardTable float-none' >
-                                                            <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnTimeReport} data={weeklyTimeReport} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
+                                                            <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnTimeReport} data={weeklyTimeReport} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
                                                          </div>
                                                         </> : <div className='text-center full-width border p-3'>
                                                             <span>No Time Entry Available</span>
@@ -2322,7 +2322,7 @@ const TaskDashboard = (props: any) => {
 
                                         <div className='Alltable dashboardTable float-none'>
                                             <>
-                                                <GlobalCommanTable AllListId={AllListId} showPagination={true} columns={columnsName} data={value} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
+                                                <GlobalCommanTable AllListId={AllListId} showPagination={true} columns={columnsName} data={value} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
                                             </>
                                         </div>
 
