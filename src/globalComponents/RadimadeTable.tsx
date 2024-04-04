@@ -441,8 +441,8 @@ function ReadyMadeTable(SelectedProp: any) {
             );
             countTaskAWTLevel(countAllTasksData1);
         }
-
-        if (countAllComposubData?.length > 0) {
+ 
+        if (countAllComposubData?.length > 0 && filterTaskType==false) {
             let countAllTasksData11 = countAllComposubData?.filter(
                 (ele: any, ind: any, arr: any) => {
                     const isDuplicate =
@@ -805,7 +805,7 @@ function ReadyMadeTable(SelectedProp: any) {
                         if (SelectedProp?.SelectedItem != undefined) {
                             if (port.Title === SelectedProp?.SelectedItem?.PortfolioType?.Title) {
                                 componentData = []
-                                componentGrouping(port?.Id, port?.Id);
+                                componentGrouping(port?.Id, portfolioTypeData?.length - 1);
                             }
                         } else {
                             componentData = []
@@ -1473,10 +1473,13 @@ function ReadyMadeTable(SelectedProp: any) {
         // setData(smartAllFilterData);
     }
     const FilterAllTask = ()=>{
-        filterTaskType=true;
-        setLoaded(false)
-        SelectedProp.TaskFilter= "PercentComplete gt '0.89'";
-        LoadAllSiteTasks()
+        if(filterTaskType==false){
+            filterTaskType=true;
+            setLoaded(false)
+            SelectedProp.TaskFilter= "PercentComplete gt '0.89'";
+            LoadAllSiteTasks()
+        }
+      
        
       }
 
