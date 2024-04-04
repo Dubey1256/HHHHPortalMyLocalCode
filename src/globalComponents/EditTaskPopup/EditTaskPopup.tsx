@@ -2596,7 +2596,7 @@ const EditTaskPopup = (Items: any) => {
                             TaskDetailsFromCall[0].siteUrl = siteUrls;
                             TaskDetailsFromCall[0].siteIcon = Items.Items.SiteIcon;
                             TaskDetailsFromCall[0].PercentComplete = (TaskDetailsFromCall[0].PercentComplete * 100).toFixed(0);
-                            TaskDetailsFromCall[0].Comments = JSON.parse(TaskDetailsFromCall[0]?.Comments)
+                            TaskDetailsFromCall[0].Comments = JSON.parse(TaskDetailsFromCall[0].Comments)
                         }
                         let UpdatedDataObject: any = TaskDetailsFromCall[0]
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
@@ -2638,7 +2638,7 @@ const EditTaskPopup = (Items: any) => {
                         const CheckForInformationRequestCategory: any = TaskCategories.includes("Information Request");
                         let checkStatusUpdate = Number(taskPercentageValue) * 100;
                         // This is used for send MS Teams Notification 
-                        if (SendCategoryName !== "Bottleneck" &&  UpdatedDataObject.Categories != 'Immediate' &&  UpdatedDataObject.Categories == 'Design') {
+                        if (TaskCategories !== "Bottleneck" && TaskCategories !== "Immediate" && TaskCategories !== "Design") {
                             try {
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
@@ -2737,7 +2737,6 @@ const EditTaskPopup = (Items: any) => {
                                 console.log("Error", error.message);
                             }
                         }
-
                         let Createtordata: any = []
                         if ((IsTaskStatusUpdated || checkStatusUpdate == 0) && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject.Categories == 'Immediate') {
                             taskUsers?.forEach((allUserItem: any) => {
@@ -3160,7 +3159,7 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
             TaskAssignedTo?.map((taskInfo) => {
-                AssignedToIds.push(taskInfo.AssingedToUserId);
+                AssignedToIds.push(taskInfo.Id);
             });
         }
 
@@ -3175,7 +3174,7 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
             TaskTeamMembers?.map((taskInfo) => {
-                TeamMemberIds.push(taskInfo.AssingedToUserId);
+                TeamMemberIds.push(taskInfo.Id);
             });
         }
 
@@ -3196,7 +3195,7 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
             TaskResponsibleTeam?.map((taskInfo) => {
-                ResponsibleTeamIds.push(taskInfo.AssingedToUserId);
+                ResponsibleTeamIds.push(taskInfo.Id);
             });
         }
         if (
