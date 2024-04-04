@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import * as $ from "jquery";
@@ -2595,12 +2596,13 @@ const EditTaskPopup = (Items: any) => {
                             TaskDetailsFromCall[0].siteUrl = siteUrls;
                             TaskDetailsFromCall[0].siteIcon = Items.Items.SiteIcon;
                             TaskDetailsFromCall[0].PercentComplete = (TaskDetailsFromCall[0].PercentComplete * 100).toFixed(0);
+                            TaskDetailsFromCall[0].Comments = JSON.parse(TaskDetailsFromCall[0].Comments)
                         }
                         let UpdatedDataObject: any = TaskDetailsFromCall[0]
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
                         UpdatedDataObject.SmartPriority = NewSmartPriority;
                         UpdatedDataObject.siteUrl = siteUrls;
-                        UpdatedDataObject.CommentsArray=  UpdatedDataObject?.Comments!=null ?JSON.parse(UpdatedDataObject?.Comments):null
+                        UpdatedDataObject.CommentsArray = UpdatedDataObject?.Comments != null ? JSON.parse(UpdatedDataObject?.Comments) : null
                         let WorkingActionData = UpdatedDataObject?.WorkingAction?.length > 0 ? JSON.parse(UpdatedDataObject?.WorkingAction) : [];
                         WorkingActionData?.map((ItemData: any) => {
                             ItemData.InformationData?.map(async (InfoItem: any) => {
@@ -2735,6 +2737,60 @@ const EditTaskPopup = (Items: any) => {
                                 console.log("Error", error.message);
                             }
                         }
+                        let Createtordata: any = []
+                        if ((IsTaskStatusUpdated || checkStatusUpdate == 0) && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject.Categories == 'Immediate') {
+                            taskUsers?.forEach((allUserItem: any) => {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                    Createtordata.push(allUserItem);
+                                }
+
+                            });
+
+                            Createtordata?.map((InfoItem: any) => {
+                                let DataForNotification: any = {
+                                    ReceiverName: InfoItem?.Title,
+                                    sendUserEmail: [InfoItem?.Email],
+                                    Context: Items.context,
+                                    ActionType: "Immediate",
+                                    ReasonStatement: '',
+                                    UpdatedDataObject: UpdatedDataObject
+                                }
+                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    console.log("Ms Teams Notifications send")
+                                })
+
+                            })
+
+
+
+                        }
+                        if (IsTaskStatusUpdated && checkStatusUpdate == 90 && UpdatedDataObject.Categories == 'Design') {
+                            taskUsers?.forEach((allUserItem: any) => {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                    Createtordata.push(allUserItem);
+                                }
+
+                            });
+
+                            Createtordata?.map((InfoItem: any) => {
+
+                                let DataForNotification: any = {
+                                    ReceiverName: InfoItem?.Title,
+                                    sendUserEmail: [InfoItem?.Email],
+                                    Context: Items.context,
+                                    ActionType: "Design",
+                                    ReasonStatement: "",
+                                    UpdatedDataObject: UpdatedDataObject
+                                }
+                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    console.log("Ms Teams Notifications send")
+                                })
+
+                            })
+
+
+
+                        }
 
                         // This is used for send Email Notification for design Category Task 
 
@@ -2757,7 +2813,7 @@ const EditTaskPopup = (Items: any) => {
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             taskUsers.forEach((val: any) => {
                                 if (
-                                    ApproverData[0]?.Id == val?.AssignedToUserId &&
+                                    ApproverData[0]?.Id == val?.AssingedToUserId &&
                                     ApproverData[0].Company == undefined
                                 ) {
                                     EditData.TaskApprovers = ApproverData;
@@ -2767,7 +2823,7 @@ const EditTaskPopup = (Items: any) => {
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             taskUsers.forEach((val: any) => {
                                 if (
-                                    ApproverData[0]?.AssignedToUserId == val?.AssignedToUserId &&
+                                    ApproverData[0]?.AssingedToUserId == val?.AssingedToUserId &&
                                     ApproverData[0].Company != undefined
                                 ) {
                                     EditData.TaskApprovers = ApproverData;
@@ -2789,46 +2845,12 @@ const EditTaskPopup = (Items: any) => {
                         } else {
                             console.log("No last name found");
                         }
-                        let CalculateStatusPercentages: any = TaskDetailsFromCall[0].PercentComplete
-                            ? TaskDetailsFromCall[0].PercentComplete
-                            : 0;
+                        let CalculateStatusPercentages: any = TaskDetailsFromCall[0].PercentComplete ? TaskDetailsFromCall[0].PercentComplete
+                                : 0;
                         if (CalculateStatusPercentages == 90 && EmailStatus == true) {
                             setLastUpdateTaskData(TaskDetailsFromCall[0]);
                             ValueStatus = "90";
                             setSendEmailNotification(true);
-                        }
-                        if (CalculateStatusPercentages == 90 && EditData?.ClientActivityJson != undefined) {
-                            setLastUpdateTaskData(TaskDetailsFromCall[0]);
-                            ValueStatus = "90";
-                            let SDCRecipientMail: any[] = [];
-                            taskUsers?.map((User: any) => {
-                                if (
-                                    User?.Title?.toLowerCase() == "robert ungethuem" ||
-                                    User?.Title?.toLowerCase() == "stefan hochhuth"
-                                ) {
-                                    //  if (User?.Title?.toLowerCase() == 'abhishek tiwari') {
-                                    SDCRecipientMail.push(User);
-                                }
-                            });
-                            await globalCommon
-                                .sendImmediateEmailNotifications(
-                                    EditData.Id,
-                                    siteUrls,
-                                    Items.Items.listId,
-                                    EditData,
-                                    SDCRecipientMail,
-                                    "Client Task Completed",
-                                    taskUsers,
-                                    Context
-                                )
-                                .then((response: any) => {
-                                    console.log(response);
-                                });
-                         }
-                         if(TaskDetailsFromCall[0].Categories == 'Design' && CalculateStatusPercentages == 90){
-                            ValueStatus = CalculateStatusPercentages;
-                            setSendEmailNotification(true);
-                            Items.StatusUpdateMail = true;
                         }
                         setLastUpdateTaskData(TaskDetailsFromCall[0]);
                         if (usedFor == "Image-Tab") {
@@ -2852,8 +2874,8 @@ const EditTaskPopup = (Items: any) => {
                             TempSmartInformationIds = [];
                             userSendAttentionEmails = [];
                             SiteCompositionPrecentageValue = 0;
-                            let CalculateStatusPercentage: any = TaskDetailsFromCall[0].PercentComplete
-                                ? TaskDetailsFromCall[0].PercentComplete
+
+                            let CalculateStatusPercentage: any = TaskDetailsFromCall[0].PercentComplete ? TaskDetailsFromCall[0].PercentComplete
                                 : 0;
                             isApprovalByStatus = false;
                             if (Items.sendApproverMail != undefined) {
@@ -2873,6 +2895,11 @@ const EditTaskPopup = (Items: any) => {
                             if (
                                 (CalculateStatusPercentage == 5 || CalculateStatusPercentage == 10 || CalculateStatusPercentage == 80 ||
                                     CalculateStatusPercentage == 90) && ImmediateStatus && EditData.PercentComplete != CalculateStatusPercentage) {
+                                ValueStatus = CalculateStatusPercentage;
+                                setSendEmailNotification(true);
+                                Items.StatusUpdateMail = true;
+                            }
+                            if (TaskDetailsFromCall[0].Categories == 'Design' && CalculateStatusPercentage == 90) {
                                 ValueStatus = CalculateStatusPercentage;
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
@@ -3023,7 +3050,7 @@ const EditTaskPopup = (Items: any) => {
                 EditData.TaskApprovers = ApproverData;
                 ApproverData?.map((ApproverInfo) => {
                     if (ApproverInfo.Id == undefined) {
-                        ApproverInfo.Id = ApproverInfo.AssignedToUserId;
+                        ApproverInfo.Id = ApproverInfo.AssingedToUserId;
                     }
                 });
                 ApprovalData = ApproverData;
@@ -3132,22 +3159,22 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
             TaskAssignedTo?.map((taskInfo) => {
-                AssignedToIds.push(taskInfo.Id);
+                AssignedToIds.push(taskInfo.AssingedToUserId);
             });
         }
 
         if (ApproverData != undefined && ApproverData?.length > 0) {
             ApproverData?.map((ApproverInfo) => {
                 if (ApproverInfo.Id == undefined) {
-                    ApproverInfo.Id = ApproverInfo.ID;
+                    ApproverInfo.Id = ApproverInfo.AssingedToUserId;
                 }
-                ApproverIds.push(ApproverInfo.Id);
+                ApproverIds.push(ApproverInfo.AssingedToUserId);
             });
         }
 
         if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
             TaskTeamMembers?.map((taskInfo) => {
-                TeamMemberIds.push(taskInfo.Id);
+                TeamMemberIds.push(taskInfo.AssingedToUserId);
             });
         }
 
@@ -3168,7 +3195,7 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
             TaskResponsibleTeam?.map((taskInfo) => {
-                ResponsibleTeamIds.push(taskInfo.Id);
+                ResponsibleTeamIds.push(taskInfo.AssingedToUserId);
             });
         }
         if (
@@ -4717,6 +4744,7 @@ const EditTaskPopup = (Items: any) => {
         }
     };
 
+
     const SelectApproverFromAutoSuggestion = (ApproverData: any, usedFor: string) => {
         setApproverSearchedData([]);
         setApproverSearchedDataForPopup([]);
@@ -4725,67 +4753,51 @@ const EditTaskPopup = (Items: any) => {
         setBottleneckSearchKey("");
         setAttentionSearchKey("");
         setBottleneckSearchedData([]);
-        let  SelectedDataUnique=true;
         if (usedFor == "Bottleneck" || usedFor == "Attention") {
             let CreatorData: any = currentUserBackupArray[0];
             let copyWorkAction: any = [...WorkingAction]
-            copyWorkAction?.map((WAItemData: any, ItemIndex: number) => {
-                if (WAItemData.Title == usedFor && WAItemData?.InformationData?.length > 0) {
-                    WAItemData?.InformationData?.map((item: any) => {
-                        if(item?.TaggedUsers?.AssingedToUserId==ApproverData?.AssingedToUserId){
-                            SelectedDataUnique=false
-                        }
-                      
-                    })
-    
-                }
-    
-            })
-            if(SelectedDataUnique){
-                let CreateObject: any = {
-                    CreatorName: CreatorData?.Title,
-                    CreatorImage: CreatorData.UserImage,
-                    CreatorID: CreatorData.Id,
-                    TaggedUsers: {
-                        Title: ApproverData.Title,
-                        Email: ApproverData.Email,
-                        AssingedToUserId: ApproverData.AssingedToUserId,
-                        userImage: ApproverData.Item_x0020_Cover?.Url,
-                    },
-                    NotificationSend: false,
-                    Comment: '',
-                    CreatedOn: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY"),
-                }
-                if (copyWorkAction?.length > 0) {
-                    copyWorkAction?.map((DataItem: any) => {
-                        if (DataItem.Title == usedFor) {
-                            CreateObject.Id = DataItem.InformationData?.length;
-                            DataItem.InformationData.push(CreateObject);
-                        }
-                    })
-                } else {
-                    let TempArrya: any = [
-                        {
-                            Title: "Bottleneck",
-                            InformationData: []
-                        },
-                        {
-                            Title: "Attention",
-                            InformationData: []
-                        }
-                    ]
-                    TempArrya?.map((TempItem: any) => {
-                        if (TempItem.Title == usedFor) {
-                            CreateObject.Id = TempItem.InformationData?.length;
-                            TempItem.InformationData.push(CreateObject);
-                        }
-                    })
-                    copyWorkAction = TempArrya;
-                }
-                setWorkingAction([...copyWorkAction]);
-                console.log("Bottleneck All Details:", copyWorkAction)
+            let CreateObject: any = {
+                CreatorName: CreatorData?.Title,
+                CreatorImage: CreatorData.UserImage,
+                CreatorID: CreatorData.Id,
+                TaggedUsers: {
+                    Title: ApproverData.Title,
+                    Email: ApproverData.Email,
+                    AssingedToUserId: ApproverData.AssingedToUserId,
+                    userImage: ApproverData.Item_x0020_Cover?.Url,
+                },
+                NotificationSend: false,
+                Comment: '',
+                CreatedOn: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY"),
             }
-         
+            if (copyWorkAction?.length > 0) {
+                copyWorkAction?.map((DataItem: any) => {
+                    if (DataItem.Title == usedFor) {
+                        CreateObject.Id = DataItem.InformationData?.length;
+                        DataItem.InformationData.push(CreateObject);
+                    }
+                })
+            } else {
+                let TempArrya: any = [
+                    {
+                        Title: "Bottleneck",
+                        InformationData: []
+                    },
+                    {
+                        Title: "Attention",
+                        InformationData: []
+                    }
+                ]
+                TempArrya?.map((TempItem: any) => {
+                    if (TempItem.Title == usedFor) {
+                        CreateObject.Id = TempItem.InformationData?.length;
+                        TempItem.InformationData.push(CreateObject);
+                    }
+                })
+                copyWorkAction = TempArrya;
+            }
+            setWorkingAction([...copyWorkAction]);
+            console.log("Bottleneck All Details:", copyWorkAction)
         } else {
             selectApproverFunction(ApproverData);
             setTaskAssignedTo([ApproverData]);

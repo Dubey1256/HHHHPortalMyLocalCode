@@ -929,6 +929,14 @@ function reverseArray(arr: any) {
       flatviewOpen(Flatview,mergedFinalData)
     }
     else{
+      mergedFinalData.forEach(item => {
+        item.subRows?.sort((a:any, b:any) => {
+          const dateA:any = new Date(a.TaskDate.split('/').reverse().join('/'));
+          const dateB:any = new Date(b.TaskDate.split('/').reverse().join('/'));
+          return dateB - dateA;
+        });
+      });
+     
       backupEdit = mergedFinalData;
       setData(mergedFinalData);
       setBackupData(mergedFinalData);
