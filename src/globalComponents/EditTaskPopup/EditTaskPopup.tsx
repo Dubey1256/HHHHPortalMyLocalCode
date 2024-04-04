@@ -2596,7 +2596,7 @@ const EditTaskPopup = (Items: any) => {
                             TaskDetailsFromCall[0].siteUrl = siteUrls;
                             TaskDetailsFromCall[0].siteIcon = Items.Items.SiteIcon;
                             TaskDetailsFromCall[0].PercentComplete = (TaskDetailsFromCall[0].PercentComplete * 100).toFixed(0);
-                            TaskDetailsFromCall[0].Comments = JSON.parse(TaskDetailsFromCall[0].Comments)
+                            TaskDetailsFromCall[0].Comments = JSON.parse(TaskDetailsFromCall[0]?.Comments)
                         }
                         let UpdatedDataObject: any = TaskDetailsFromCall[0]
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
@@ -2638,7 +2638,7 @@ const EditTaskPopup = (Items: any) => {
                         const CheckForInformationRequestCategory: any = TaskCategories.includes("Information Request");
                         let checkStatusUpdate = Number(taskPercentageValue) * 100;
                         // This is used for send MS Teams Notification 
-                        if (SendCategoryName !== "Bottleneck") {
+                        if (SendCategoryName !== "Bottleneck" &&  UpdatedDataObject.Categories != 'Immediate' &&  UpdatedDataObject.Categories == 'Design') {
                             try {
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
@@ -2737,6 +2737,7 @@ const EditTaskPopup = (Items: any) => {
                                 console.log("Error", error.message);
                             }
                         }
+
                         let Createtordata: any = []
                         if ((IsTaskStatusUpdated || checkStatusUpdate == 0) && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject.Categories == 'Immediate') {
                             taskUsers?.forEach((allUserItem: any) => {
