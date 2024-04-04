@@ -1903,7 +1903,7 @@ const inlineEditingcolumns = (props: any) => {
         <Picker
           props={SharewebCategory}
           selectedCategoryData={CategoriesData}
-          usedFor="Task-Footertable"
+          usedFor="Task-Profile"
           AllListId={props?.AllListId}
           Call={CategoryCallBack}
         ></Picker>
