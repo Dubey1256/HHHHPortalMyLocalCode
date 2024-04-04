@@ -1906,6 +1906,7 @@ const inlineEditingcolumns = (props: any) => {
           usedFor="Task-Profile"
           AllListId={props?.AllListId}
           Call={CategoryCallBack}
+          closePopupCallBack={smartCategoryPopup}
         ></Picker>
       )}
       {UpdateFeatureType && (
