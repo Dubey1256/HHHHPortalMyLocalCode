@@ -30,6 +30,7 @@ let AllProject: any = [];
 let timeSheetConfig: any = {};
 var AllListId: any = {};
 var currentUserId: '';
+let todaysDrafTimeEntry = [];
 var currentUser: any = [];
 let AllTimeEntries: any = [];
 let headerOptions: any = {
@@ -358,7 +359,13 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 enableMultiSort: true,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.ProjectPriority == filterValue
+                    if ((row?.original?.ProjectPriority?.toString().charAt(0) == filterValue.toString().charAt(0))
+                        && (row?.original?.ProjectPriority.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
                 isColumnDefultSortingDesc: true,
                 resetSorting: false,
@@ -380,7 +387,13 @@ export default function ProjectOverview(props: any) {
                 resetSorting: false,
                 size: 55,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PercentComplete == filterValue
+                    if ((row?.original?.PercentComplete?.toString()?.charAt(0) == filterValue?.toString()?.charAt(0))
+                        && (row?.original?.PercentComplete?.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
             },
             {
@@ -395,7 +408,13 @@ export default function ProjectOverview(props: any) {
                 placeholder: "Priority",
                 resetColumnFilters: false,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PriorityRank == filterValue
+                    if ((row?.original?.PriorityRank?.toString().charAt(0) == filterValue.toString().charAt(0))
+                        && (row?.original?.PriorityRank.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
                 isColumnDefultSortingDesc: true,
                 enableMultiSort: true,
@@ -431,6 +450,16 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    if (row?.original?.AssignedTo?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase()) ||
+                        row?.original?.ResponsibleTeam?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase()) ||
+                        row?.original?.TeamMembers?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase())) {
+                        return true
+                    } else {
+                        return false
+                    }
+
+                },
                 size: 85,
             },
             {
@@ -647,7 +676,13 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 size: 45,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PercentComplete == filterValue
+                    if ((row?.original?.PercentComplete?.toString().charAt(0) == filterValue.toString().charAt(0))
+                        && (row?.original?.PercentComplete.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
             },
             {
@@ -663,14 +698,20 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 size: 50,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PriorityRank == filterValue
+                    if ((row?.original?.PriorityRank?.toString().charAt(0) == filterValue.toString().charAt(0))
+                        && (row?.original?.PriorityRank.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
                 isColumnDefultSortingDesc: true,
                 resetSorting: false,
                 header: ""
             },
             {
-                accessorFn: (row) => row?.TeamMembers?.map((elem: any) => elem.Title).join('-'),
+                accessorFn: (row) => row?.TeamMembersSearch,
                 cell: ({ row }) => (
                     <span>
                         <InlineEditingcolumns
@@ -683,10 +724,20 @@ export default function ProjectOverview(props: any) {
                         />
                     </span>
                 ),
-                id: 'TeamMembers',
+                id: 'TeamMembersSearch',
                 canSort: false,
                 resetColumnFilters: false,
                 resetSorting: false,
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    if (row?.original?.AssignedTo?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase()) ||
+                        row?.original?.ResponsibleTeam?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase()) ||
+                        row?.original?.TeamMembers?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase())) {
+                        return true
+                    } else {
+                        return false
+                    }
+
+                },
                 placeholder: "TeamMembers",
                 header: "",
                 size: 85,
@@ -843,8 +894,8 @@ export default function ProjectOverview(props: any) {
         }
 
 
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
-        //let to: any = ["abhishek.tiwari@hochhuth-consulting.de", "ranu.trivedi@hochhuth-consulting.de"];
+        // let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
+        let to: any = ["abhishek.tiwari@hochhuth-consulting.de",  "prashant.kumar@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let groupedData = data;
@@ -854,7 +905,6 @@ export default function ProjectOverview(props: any) {
             var subject = "Today's Working Tasks Under Projects";
             const GroupedPromises = await groupedData?.map(async (group: any) => {
                 body += projectEmailContent(group, false)
-
             })
 
             let sendAllTasks =
@@ -932,10 +982,8 @@ export default function ProjectOverview(props: any) {
                         item?.AssignedTo?.map((user: any) => {
                             memberOnLeave = AllLeaves.some((emp: any) => emp == user?.Id)
                         });
-                        if (item?.AssignedTo == undefined || item?.AssignedTo?.length <= 0) {
-                            memberOnLeave=true;
-                        }
-                        if (!memberOnLeave) {
+
+                        if (!memberOnLeave && item?.AssignedTo?.length > 0) {
                             taskCount++;
                             let teamUsers: any = [];
                             if (item?.AssignedTo?.length > 0) {
@@ -1599,40 +1647,10 @@ export default function ProjectOverview(props: any) {
                     }
                     items.TeamMembersSearch = "";
                     items.AssignedToIds = [];
-                    if (items.AssignedTo != undefined) {
-                        items?.AssignedTo?.map((taskUser: any) => {
-                            items.AssignedToIds.push(taskUser?.Id)
-                            AllTaskUsers.map((user: any) => {
-                                if (user.AssingedToUserId == taskUser.Id) {
-                                    if (user?.Title != undefined) {
-                                        items.TeamMembersSearch =
-                                            items.TeamMembersSearch + " " + user?.Title;
-                                    }
-                                }
-                            });
-                        });
-                    }
+
 
                     items.TaskID = globalCommon.getTaskId(items);
-                    AllTaskUsers?.map((user: any) => {
-                        if (user.AssingedToUserId == items.Author.Id) {
-                            items.createdImg = user?.Item_x0020_Cover?.Url;
-                        }
-                        if (items.TeamMembers != undefined) {
-                            items.TeamMembers.map((taskUser: any) => {
-                                var newuserdata: any = {};
-                                if (user.AssingedToUserId == taskUser.Id) {
-                                    newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
-                                    newuserdata["Suffix"] = user?.Suffix;
-                                    newuserdata["Title"] = user?.Title;
-                                    newuserdata["UserId"] = user?.AssingedToUserId;
-                                    items["Usertitlename"] = user?.Title;
-                                    items.AllTeamMember.push(newuserdata);
-                                }
 
-                            });
-                        }
-                    });
                     AllTask.push(items);
                 });
 
