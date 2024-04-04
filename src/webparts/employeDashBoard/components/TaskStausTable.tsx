@@ -729,6 +729,14 @@ const TaskStatusTbl = (Tile: any) => {
         fixedColumnWidth: true
       },
       {
+        accessorKey: "timeSheetsDescriptionSearch",
+        placeholder: "timeSheetsDescriptionSearch",
+        header: "",
+        resetColumnFilters: false,
+        id: "timeSheetsDescriptionSearch",
+        isColumnVisible: false
+      },
+      {
         accessorFn: (row: any) => row?.Created,
         cell: ({ row, column }: any) => (
           <div className="alignCenter">
@@ -925,12 +933,13 @@ const TaskStatusTbl = (Tile: any) => {
           fixedColumnWidth: true
         },
         {
-          accessorKey: "Description",
-          placeholder: "Description",
+          accessorKey: "timeSheetsDescriptionSearch",
+          placeholder: "Timesheet Description",
           header: "",
-          id: "Description",
+          id: "timeSheetsDescriptionSearch",
           isColumnVisible: true,
           size: 425,
+          columnHide: false,
         },
         {
           id: "ff",
@@ -1223,11 +1232,11 @@ const TaskStatusTbl = (Tile: any) => {
                     </div>
                     <div className="Alltable" >
                       {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
-                        <GlobalCommanTable wrapperHeight="300px" columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                        <GlobalCommanTable wrapperHeight="300px" ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                           pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
                       )}
                       {config?.Tasks != undefined && config?.Tasks?.length == 0 && (
-                        <GlobalCommanTable wrapperHeight="300px" columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                        <GlobalCommanTable wrapperHeight="300px" ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                           pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
                       )}
                     </div>
@@ -1303,4 +1312,3 @@ const TaskStatusTbl = (Tile: any) => {
   );
 };
 export default TaskStatusTbl;
-

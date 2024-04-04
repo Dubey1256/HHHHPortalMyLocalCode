@@ -1528,14 +1528,20 @@ export default class UserTimeEntry extends React.Component<
     });
   };
   private showGraph = (tileName: any) => {
-    if (DateType == "Custom") {
-      let start = Moment(this.state.startdate).format("DD/MM/YYYY");
-      let end = Moment(this.state.enddate).format("DD/MM/YYYY");
-      DateType = `${start} - ${end}`;
+    if(this.state.AllTimeEntry.length > 0){
+      if (DateType == "Custom") {
+        let start = Moment(this.state.startdate).format("DD/MM/YYYY");
+        let end = Moment(this.state.enddate).format("DD/MM/YYYY");
+        DateType = `${start} - ${end}`;
+      }
+      this.setState({
+        IsOpenTimeSheetPopup: true,
+      });
     }
-    this.setState({
-      IsOpenTimeSheetPopup: true,
-    });
+    else{
+      alert('Please click update filter button')
+    }
+   
   };
   private async generateTimeEntry() {
     let FilterTimeEntry: any[] = [];
