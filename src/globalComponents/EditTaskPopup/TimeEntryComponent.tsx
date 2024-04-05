@@ -2506,12 +2506,6 @@ function reverseArray(arr: any) {
   };
 
   //--------------------------------------Change time by custom button-----------------------------------------------------------------------------
-<<<<<<< HEAD
-  const changeTimeFunction = (e: any, type: any) => {
-      changeTime = Number(e.target.value);
-    if (type === "AddTime" || type == "AddTime Category") {
-      
-=======
   const changeTimeFunction = (e: any, type: any, Use: any) => {
    let inputValue = Number(e);
     if (isNaN(inputValue)&& Use!=="remove") {
@@ -2527,7 +2521,6 @@ function reverseArray(arr: any) {
     changeTime = inputValue;
 
         if (type === "AddTime" || type === "AddTime Category") {
->>>>>>> 8acad7efe8f09300661a73fdc7754989cfc72479
         if (changeTime !== undefined) {
           const timeInHour: any = changeTime / 60;
           setTimeInHours(timeInHour.toFixed(2));
