@@ -364,10 +364,20 @@ export default class UserTimeEntry extends React.Component<
             let currentCount = siteConfig?.length;
             if (arraycount === currentCount) {
               AllSitesAllTasks = AllSiteTasks;
+            
+              let completionCounter = 0; // Counter to track completion
+            
               totalTimedata?.map((data: any) => {
                 data.taskDetails = this.checkTimeEntrySite(data);
+                
+                completionCounter++;
+            
+                // Check if all items have been processed
+                if (completionCounter === totalTimedata.length) {
+                  // If all items are processed, execute setState
+                  this.setState({ disableProperty: false });
+                }
               });
-              this.setState({ disableProperty: false });
             }
           } else {
             arraycount++;
@@ -1347,6 +1357,7 @@ export default class UserTimeEntry extends React.Component<
     });
   }
   private updatefilter(IsLoader: any) {
+    this.setState({ disableProperty: true });
     if (
       this.state.ImageSelectedUsers == undefined ||
       this.state.ImageSelectedUsers.length == 0
