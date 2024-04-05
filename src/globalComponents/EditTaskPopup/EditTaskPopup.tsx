@@ -2638,7 +2638,7 @@ const EditTaskPopup = (Items: any) => {
                         const CheckForInformationRequestCategory: any = TaskCategories.includes("Information Request");
                         let checkStatusUpdate = Number(taskPercentageValue) * 100;
                         // This is used for send MS Teams Notification 
-                        if (TaskCategories !== "Bottleneck" && TaskCategories !== "Immediate" && TaskCategories !== "Design") {
+                        if (TaskCategories !== "Bottleneck" && TaskCategories != "Immediate" && TaskCategories != "Design") {
                             try {
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
