@@ -810,7 +810,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 <button type="button" disabled className="btn btn-primary" style={{ color: "#fff" }} title=" Add Structure"> {" "} Add Structure{" "}</button>
             }
 
-            {(childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length>0) ?
+            {(childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length ==2) ?
                 < button type="button" className="btn btn-primary" title='Compare' style={{color: '#fff' }} onClick={() => openCompareTool()}>Compare</button> :
                 <button type="button" className="btn btn-primary" style={{ color: '#fff' }} disabled={true} >Compare</button>
             }

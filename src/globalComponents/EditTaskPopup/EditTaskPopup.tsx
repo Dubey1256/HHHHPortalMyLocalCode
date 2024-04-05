@@ -3202,13 +3202,19 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
             TaskAssignedTo?.map((taskInfo) => {
-                AssignedToIds.push(taskInfo.Id);
+                if(taskInfo.AssingedToUserId != undefined){
+                    AssignedToIds.push(taskInfo.AssingedToUserId);   
+                }
+                else{
+                    AssignedToIds.push(taskInfo.Id);
+                }
+               
             });
         }
 
         if (ApproverData != undefined && ApproverData?.length > 0) {
             ApproverData?.map((ApproverInfo) => {
-                if (ApproverInfo.Id == undefined) {
+                if (ApproverInfo.AssingedToUserId != undefined) {
                     ApproverIds.push(ApproverInfo.AssingedToUserId)
                 }
                 else{
@@ -3220,7 +3226,13 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
             TaskTeamMembers?.map((taskInfo) => {
-                TeamMemberIds.push(taskInfo.Id);
+                if (taskInfo.AssingedToUserId != undefined) {
+                    TeamMemberIds.push(taskInfo.AssingedToUserId)
+                }
+                else{
+                    TeamMemberIds.push(taskInfo.Id);
+                }
+               
             });
         }
 
@@ -3241,7 +3253,13 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
             TaskResponsibleTeam?.map((taskInfo) => {
-                ResponsibleTeamIds.push(taskInfo.Id);
+                if (taskInfo.AssingedToUserId != undefined) {
+                    ResponsibleTeamIds.push(taskInfo.AssingedToUserId)
+                }
+                else{
+                    ResponsibleTeamIds.push(taskInfo.Id);
+                }
+               
             });
         }
         if (
