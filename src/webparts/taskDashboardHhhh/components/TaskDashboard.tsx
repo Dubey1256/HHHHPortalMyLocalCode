@@ -83,6 +83,7 @@ const TaskDashboard = (props: any) => {
     const [dragedTask, setDragedTask] = React.useState({
         task: {},
         taskId: '',
+        PickupLocation:''
         // origin: ''
     });
     const TimeEntryCallBack = React.useCallback((item1) => {
@@ -700,7 +701,7 @@ const TaskDashboard = (props: any) => {
                 resetSorting: false,
                 size: 100,
                 cell: ({ row }) => (
-                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
+                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
                         <>
                             <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} AllListId={AllListId} />
                         </>
@@ -710,7 +711,7 @@ const TaskDashboard = (props: any) => {
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row }: any) => (
-                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
+                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
                         <a className='hreflink'
                             href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                             data-interception="off"
@@ -746,7 +747,7 @@ const TaskDashboard = (props: any) => {
             {
                 accessorFn: (row) => row?.PortfolioTitle,
                 cell: ({ row }: any) => (
-                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
+                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
                         <a className='hreflink' data-interception="off"
                             target="blank"
                             href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
@@ -770,7 +771,7 @@ const TaskDashboard = (props: any) => {
                 header: "",
                 size: 100,
                 cell: ({ row }: any) => (
-                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
+                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
                         <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
                    
                     </div>
@@ -786,7 +787,7 @@ const TaskDashboard = (props: any) => {
                 header: "",
                 size: 90,
                 cell: ({ row }: any) => (
-                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
+                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
                         <InlineEditingcolumns AllListId={AllListId} type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
                         {row?.original?.priorityRank}
                     </div>
@@ -826,7 +827,7 @@ const TaskDashboard = (props: any) => {
                 accessorFn: (row) => row?.DisplayDueDate,
 
                 cell: ({ row }: any) =>
-                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
+                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
                         {row?.original?.DisplayDueDate}
                     </div>
                 , filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -853,7 +854,7 @@ const TaskDashboard = (props: any) => {
                 header: "",
                 size: 60,
                 cell: ({ row }: any) => (
-                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
+                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
                         {row?.original?.EstimatedTime != undefined ? row?.original?.EstimatedTime : ''}
                     </div>
                 ),
@@ -871,7 +872,7 @@ const TaskDashboard = (props: any) => {
             {
                 accessorFn: (row) => row?.PercentComplete,
                 cell: ({ row, getValue }) => (
-                    <span draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
+                    <span draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
                         <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
                         {/* {row?.original?.PercentComplete} */}
                     </span>
@@ -912,9 +913,9 @@ const TaskDashboard = (props: any) => {
 
             },
             {
-                accessorFn: (row) => row?.DisplayCreateDate,
+                accessorFn: (row) => row?.Created,
                 cell: ({ row, getValue }) => (
-                    <span draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
+                    <span draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
                         <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
                         {row?.original?.createdImg != undefined ?
                             <>
@@ -970,6 +971,7 @@ const TaskDashboard = (props: any) => {
                 size: 100,
                 cell: ({ row }) => (
                     <div>
+                            <div draggable onDragStart={() => startDrag(row?.original,row?.original?.TaskID,"TimeEntry")}></div>
                         <>
                             <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} />
                         </>
@@ -994,6 +996,7 @@ const TaskDashboard = (props: any) => {
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
+                    <div draggable onDragStart={() =>startDrag(row?.original,row?.original?.TaskID,"TimeEntry")}>
                     <div className='alignCenter'>
                         <a className='hreflink'
                             href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
@@ -1005,7 +1008,7 @@ const TaskDashboard = (props: any) => {
                         {row?.original?.descriptionsSearch !== null && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
                         }
                     </div>
-
+                    </div>
                 ),
                 id: "Title",
                 placeholder: "Title",
@@ -1409,7 +1412,12 @@ const TaskDashboard = (props: any) => {
             let thisWeekTask = thisWeekTasks;
             let allTasks = AllAssignedTasks;
             let task: any = dragedTask.task;
-            if (destination == 'thisWeek' && (task?.workingThisWeek == false || task?.workingThisWeek == undefined)) {
+            let timeEntryPickUp=false
+            if(dragedTask?.PickupLocation=='TimeEntry'){
+                timeEntryPickUp=true
+            }
+
+            if (destination == 'thisWeek' && (task?.workingThisWeek == false || task?.workingThisWeek == undefined||timeEntryPickUp==true)) {
                 task.IsTodaysTask = false;
                 task.workingThisWeek = true;
                 UpdateTaskStatus(task);
@@ -1417,7 +1425,7 @@ const TaskDashboard = (props: any) => {
                 todayTasks = todayTasks.filter(taskItem => taskItem.TaskID != dragedTask.taskId)
                 allTasks = allTasks.filter(taskItem => taskItem.TaskID != dragedTask.taskId)
             }
-            if (destination == 'workingToday' && (task?.IsTodaysTask == false || task?.IsTodaysTask == undefined)) {
+            if (destination == 'workingToday' && (task?.IsTodaysTask == false || task?.IsTodaysTask == undefined||timeEntryPickUp==true)) {
                 task.IsTodaysTask = true;
                 task.workingThisWeek = false;
                 UpdateTaskStatus(task);
@@ -1425,7 +1433,7 @@ const TaskDashboard = (props: any) => {
                 thisWeekTask = thisWeekTask.filter(taskItem => taskItem.TaskID != dragedTask.taskId)
                 allTasks = allTasks.filter(taskItem => taskItem.TaskID != dragedTask.taskId)
             }
-            if (destination == 'AllTasks' && (task?.IsTodaysTask == true || task?.workingThisWeek == true)) {
+            if (destination == 'AllTasks' && (task?.IsTodaysTask == true || task?.workingThisWeek == true||timeEntryPickUp==true)) {
                 task.IsTodaysTask = false;
                 task.workingThisWeek = false;
                 UpdateTaskStatus(task);
@@ -1451,10 +1459,11 @@ const TaskDashboard = (props: any) => {
         }
 
     }
-    const startDrag = (task: any, taskId: any) => {
+    const startDrag = (task: any, taskId: any,PickupArea:any) => {
         let taskDetails = {
             task: task,
             taskId: taskId,
+            PickupLocation:PickupArea
             // origin: origin
         }
         setDragedTask(taskDetails)

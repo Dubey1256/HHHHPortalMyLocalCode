@@ -997,7 +997,7 @@ function TeamPortlioTable(SelectedProp: any) {
             portfolioTypeDataItem?.map((type: any) => {
                 if (result?.Item_x0020_Type === type.Title && result.PortfolioType != undefined) {
                     type[type.Title + 'number'] += 1;
-                    type[type.Title + 'filterNumber'] += 1;
+                    // type[type.Title + 'filterNumber'] += 1;
                 }
             })
             if (result?.ClientCategory?.length > 0) {
@@ -1313,6 +1313,7 @@ function TeamPortlioTable(SelectedProp: any) {
         let FinalComponent: any = []
         let AllProtFolioData = smartAllFilterData?.filter((comp: any) => comp?.PortfolioType?.Id === portId && comp.TaskType === undefined);
         let AllComponents = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === 0 || comp?.Parent?.Id === undefined);
+        countComponentLevel(AllComponents,true)
         AllComponents?.map((masterTask: any) => {
             masterTask.subRows = [];
             taskTypeData?.map((levelType: any) => {
@@ -1321,6 +1322,7 @@ function TeamPortlioTable(SelectedProp: any) {
             })
             let subComFeat = AllProtFolioData?.filter((comp: any) => comp?.Parent?.Id === masterTask?.Id)
             masterTask.subRows = masterTask?.subRows?.concat(subComFeat);
+            countComponentLevel(subComFeat,true)
             subComFeat?.forEach((subComp: any) => {
                 subComp.subRows = [];
                 taskTypeData?.map((levelType: any) => {
@@ -1329,6 +1331,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 })
                 let allFeattData = AllProtFolioData?.filter((elem: any) => elem?.Parent?.Id === subComp?.Id);
                 subComp.subRows = subComp?.subRows?.concat(allFeattData);
+                countComponentLevel(allFeattData,true)
                 allFeattData?.forEach((subFeat: any) => {
                     subFeat.subRows = [];
                     taskTypeData?.map((levelType: any) => {
