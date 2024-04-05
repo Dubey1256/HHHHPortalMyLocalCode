@@ -936,8 +936,13 @@ const BulkEditingFeature = (props: any) => {
     };
 
     React.useEffect(() => {
-        GetSmartmetadata()
+        GetSmartmetadata();
     }, [])
+
+
+    const ClearBulkUpdateFeature = () => {
+        props?.setBulkEditingCongration({});
+    }
     return (
         <>
             {props?.bulkEditingCongration?.priority && <div className='clearfix col px-1 my-3'>
@@ -972,7 +977,8 @@ const BulkEditingFeature = (props: any) => {
             </div>}
             {bulkEditingSettingPopup && <SelectedTaskUpdateOnPopup activeCategory={activeCategory} precentComplete={precentComplete} featureTypeItemTiles={featureTypeItemTiles} priorityRank={priorityRank} AllTaskUser={props?.AllTaskUser} save={save} selectedData={props?.selectedData} isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} columns={props?.columns} data={props?.data} setData={props?.setData} updatedSmartFilterFlatView={props?.updatedSmartFilterFlatView} clickFlatView={props?.clickFlatView} ContextValue={props?.ContextValue} masterTaskData={props?.masterTaskData} />}
             {/* {(props?.bulkEditingCongration?.priority || props?.bulkEditingCongration?.dueDate || props?.bulkEditingCongration?.status || props?.bulkEditingCongration?.Project) && <div onClick={(e) => bulkEditingSettingPopupEvent()}><span className="svg__iconbox svg__icon--edit"></span></div>} */}
-            <div className='d-flex justify-content-end mx-2 mb-2'>{(props?.bulkEditingCongration?.priority || props?.bulkEditingCongration?.dueDate || props?.bulkEditingCongration?.status || props?.bulkEditingCongration?.Project || props?.bulkEditingCongration?.FeatureType || props?.bulkEditingCongration?.categories) && <button onClick={(e) => bulkEditingSettingPopupEvent()} className='btn btn-primary'>Bulk Update</button>}</div>
+
+            <div className='d-flex justify-content-end mx-2 mb-2'>{(props?.bulkEditingCongration?.priority || props?.bulkEditingCongration?.dueDate || props?.bulkEditingCongration?.status || props?.bulkEditingCongration?.Project || props?.bulkEditingCongration?.FeatureType || props?.bulkEditingCongration?.categories) && <button onClick={(e) => bulkEditingSettingPopupEvent()} className='btn btn-primary'>Bulk Update</button>} <button onClick={(e) => ClearBulkUpdateFeature()} className='btn btn-primary ms-2'>Clear</button></div>
         </>
     )
 }

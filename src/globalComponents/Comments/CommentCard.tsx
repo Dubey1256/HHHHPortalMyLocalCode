@@ -11,7 +11,9 @@ import * as globalCommon from '../../globalComponents/globalCommon';
 import { getSP } from '../../spservices/pnpjsConfig';
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
 import { ImReply } from 'react-icons/im';
+import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
 import { FocusTrapCallout, FocusZone, FocusZoneTabbableElements, Stack, Text, } from '@fluentui/react';
+import ReactDOM from "react-dom";
 let color: any = false;
 let Title: any = "";
 let commentlength: any = 0
@@ -113,31 +115,53 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           .getByTitle(this.state.listName)
           .items
           .getById(this.state.itemID)
-          .select("ID", "Title", "DueDate", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "Sitestagging", "ClientTime", "Editor/Title", "Modified", "Comments")
-          .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "SharewebTaskType", "Editor")
+          .select("ID", "Title", "DueDate", "ComponentLink", "PriorityRank", "TaskCategories/Id", "TaskCategories/Title", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "Sitestagging", "ClientTime", "Editor/Title", "Modified", "Comments")
+          .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "SharewebTaskType", "Editor", "Project", "TaskCategories")
           .get()
       } else {
         taskDetails = await web.lists
           .getByTitle(this.state.listName)
           .items
           .getById(this.state.itemID)
-          .select("ID", "Title", "DueDate", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "Sitestagging", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
-          .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "SharewebTaskType", "Portfolio", "Editor")
+          .select("ID", "Title", "DueDate", "ComponentLink", "PriorityRank", "TaskCategories/Id", "TaskCategories/Title", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "Sitestagging", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+          .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "SharewebTaskType", "Portfolio", "Editor", "Project", "TaskCategories")
           .get()
       }
     } else {
-      taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "DueDate", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
-        .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "SharewebTaskType", "Portfolio", "PortfolioType", "Editor")
+      taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "ComponentLink", "PriorityRank", "DueDate", "TaskCategories/Id", "TaskCategories/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+        .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "SharewebTaskType", "Portfolio", "PortfolioType", "Editor", "Project", "TaskCategories")
         .get()
     }
     await this.GetTaskUsers();
     console.log("this is result function")
     //this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
     Title = taskDetails["Title"];
+    if (taskDetails.PriorityRank == undefined || taskDetails.PriorityRank == null || taskDetails.PriorityRank == 0) {
+      if (taskDetails.Priority != undefined) {
+        if (taskDetails.Priority == "(3) Low") {
+          taskDetails.PriorityRank = 1;
+        }
+        if (taskDetails.Priority == "(2) Normal") {
+          taskDetails.PriorityRank = 4;
+        }
+        if (taskDetails.Priority == "(1) High") {
+          taskDetails.PriorityRank = 8;
+        }
+      }
+    }
+    // taskDetails.SmartPriority;
+    // taskDetails.TaskTypeValue = '';
+    // taskDetails.projectPriorityOnHover = '';
+    // taskDetails.taskPriorityOnHover = taskDetails?.PriorityRank;
+    // taskDetails.showFormulaOnHover;
+    taskDetails.SmartPriority = globalCommon?.calculateSmartPriority(taskDetails);
     let tempTask = {
       ID: 'T' + taskDetails["ID"],
       TaskId: globalCommon.GetTaskId(taskDetails),
       Title: taskDetails["Title"],
+      SmartPriority: taskDetails["SmartPriority"],
+      ComponentLink: taskDetails["ComponentLink"],
+      Portfolio: taskDetails["Portfolio"],
       DueDate: taskDetails["DueDate"] != null ? (new Date(taskDetails["DueDate"])).toLocaleDateString() : '',
       Categories: taskDetails["Categories"],
       StartDate: taskDetails["StartDate"] != null ? (new Date(taskDetails["StartDate"])).toLocaleDateString() : '',
@@ -145,7 +169,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       Status: taskDetails["Status"],
       TeamLeader: taskDetails["ResponsibleTeam"] != null ? this.GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null,
       TeamMembers: taskDetails["TeamMembers"] != null ? this.GetUserObjectFromCollection(taskDetails["TeamMembers"]) : null,
-      PercentComplete: (taskDetails["PercentComplete"] * 100),
+      PercentComplete: taskDetails["PercentComplete"],
       Priority: taskDetails["Priority"],
       Created: taskDetails["Created"] != null ? (new Date(taskDetails["Created"])).toLocaleDateString() : '',
       Modified: taskDetails["Modified"] != null ? (new Date(taskDetails["Modified"])).toLocaleDateString() : '',
@@ -468,7 +492,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     return mention_str.trim();
   }
   private GetUserObjectArr(username: any) {
-    let userDeatails = [];
+    let userDeatails = { 'Id': '', 'Name': '', 'Suffix': '', 'Title': '', 'userImage': '' };
     if (username != undefined && this.taskUsers != undefined && this.taskUsers.length > 0) {
       let senderObject = this.taskUsers?.filter(function (user: any, i: any) {
         if (user.AssingedToUser != undefined) {
@@ -479,13 +503,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         }
       });
       if (senderObject.length > 0) {
-        userDeatails.push({
-          'Id': senderObject[0].Id,
-          'Name': senderObject[0]?.AssingedToUser?.EMail,
-          'Suffix': senderObject[0].Suffix,
-          'Title': senderObject[0].Title,
-          'userImage': senderObject[0]?.Item_x0020_Cover?.Url
-        })
+        userDeatails.Id = senderObject[0].Id;
+        userDeatails.Name = senderObject[0]?.AssingedToUser?.EMail;
+        userDeatails.Suffix = senderObject[0].Suffix;
+        userDeatails.Title = senderObject[0].Title;
+        userDeatails.userImage = senderObject[0]?.Item_x0020_Cover?.Url;
       }
       return userDeatails;
     }
@@ -642,15 +664,61 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           //   MsgURL = `${this.props.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${this.state.itemID}`
           //   MsgTitle = `${this.state?.Result?.Title}`
           // }
+          this.state.Result["CommentsArray"] = this.state?.Result?.Comments
+          const TaskInformation = await GlobalFunctionForUpdateItems.GenerateMSTeamsNotification(this.state?.Result)
+          const containerDiv = document.createElement('div');
+          const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
+          ReactDOM.render(reactElement, containerDiv);
+          let finalTaskInfo: any = containerDiv.innerHTML;
+          const nameRegex = /@\[(.*?)\]/g; // Regular expression with 'g' flag to match globally
+          const matches = [];
+          let match;
+          while ((match = nameRegex.exec(MentionedValue)) !== null) {
+            matches.push(match[1]);
+          }
+          const combinedNames = matches.join(', ');
+          let TeamsMessage = ''
           if (this.state?.ChildLevel == true) {
             if (this.state?.ReplyParent?.MsTeamCreated == undefined)
               this.state.ReplyParent.MsTeamCreated = ''
-            TeamMsg = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')} </br> <a href=${MsgURL}>${MsgTitle}</a></blockquote>${txtComment}`;
+            const PreMsg = `
+              <b>Hi ${this.state?.ReplyParent?.Header.replaceAll('@', '')},</b>
+              <p></p>
+               Task Comment-<span style="background-color: yellow;">${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')}.</span>
+              <p><br/></p>
+              <b>Task Details : </b> <span>${finalTaskInfo}</span>
+              <p></p>
+              Task Link: <a href=${MsgURL}>Click here</a>
+              <p></p>
+              <b>Thanks,<br/>Task Management Team</b>
+          `;
+            const CurrentMsg = `
+              <b>Hi ${this.state?.ReplyParent?.AuthorName},</b>
+              Task Comment-<span style="background-color: yellow;">${txtComment}.</span>
+              <p><br/></p>
+              <b>Task Details : </b> <span>${finalTaskInfo}</span>
+              <p></p>
+              Task Link: <a href=${MsgURL}>Click here</a>
+              <p></p>
+              <b>Thanks,<br/>Task Management Team</b>
+          `;
+            TeamsMessage = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${PreMsg} </blockquote>${CurrentMsg}`;
           }
           else {
-            TeamMsg = txtComment + `</br> <a href=${MsgURL}>${MsgTitle}</a>`
+            TeamsMessage = `
+          <b>Hi ${combinedNames},</b>
+          <p></p>
+          Task Comment-<span style="background-color: yellow;">${txtComment}.</span>
+          <p><br/></p>
+          <b>Task Details : </b> <span>${finalTaskInfo}</span>
+          <p></p>
+          Task Link: <a href=${MsgURL}>Click here</a>
+          <p></p>
+          <b>Thanks,<br/>Task Management Team</b>
+      `;
           }
-          await globalCommon.SendTeamMessage(mention_To, TeamMsg, this.props.Context)
+
+          await globalCommon.SendTeamMessage(mention_To, TeamsMessage, this.props.Context)
           this.SendEmail(emailprops);
           this.setState({
             ChildLevel: false,
@@ -808,7 +876,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
 
   private detectAndRenderLinks = (html: any) => {
-    
+
     const div = document.createElement('div');
     div.innerHTML = html;
     const paragraphs = div.querySelectorAll('p');
@@ -826,9 +894,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     //   a.setAttribute('target', '_blank');
     //   a.setAttribute('data-interception', 'off');
     // });
-   
-    
-    return  globalCommon?.replaceURLsWithAnchorTags(div.innerHTML);
+
+
+    return globalCommon?.replaceURLsWithAnchorTags(div.innerHTML);
   };
   public render(): React.ReactElement<ICommentCardProps> {
     return (
@@ -1273,7 +1341,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                             <p style={{ margin: '4pt 0pt' }}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created:</span></b></p>
                           </td>
                           <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p style={{ margin: '4pt 0pt' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 && this.state.Result["Author"][0].Title}</span></p>
+                            <p style={{ margin: '4pt 0pt' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["Author"] != null && this.state.Result["Author"] != '' && this.state.Result["Author"].Title}</span></p>
                           </td>
                         </tr>
                         <tr>
@@ -1293,7 +1361,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                             <p style={{ margin: '4pt 0pt' }}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>% Complete:</span></b></p>
                           </td>
                           <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p style={{ margin: '4pt 0pt' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["PercentComplete"]}</span></p>
+                            <p style={{ margin: '4pt 0pt' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{(this.state.Result["PercentComplete"] * 100).toFixed(0)}</span></p>
                           </td>
                         </tr>
                         <tr>

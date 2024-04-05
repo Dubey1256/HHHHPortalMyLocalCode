@@ -72,6 +72,9 @@ const TeamSmartFavoritesCopy = (item: any) => {
     ///// Year Range Using Piker ////////
     const [years, setYear] = React.useState([])
     const [months, setMonths] = React.useState(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December",])
+    const [selectedValue, setSelectedValue] = React.useState("Modified");
+    const [tablePageSize, setTablePageSize] = React.useState(null);
+    const [count, setCount] = React.useState(true);
     React.useEffect(() => {
         const currentYear = new Date().getFullYear();
         const year: any = [];
@@ -99,6 +102,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
             setIsModifiedDateSelected(item?.isModifiedDateSelected);
             setIsDueDateSelected(item?.isDueDateSelected);
             setTaskUsersData(item?.TaskUsersData);
+            setCount(false);
         } else if (item?.updatedSmartFilter === true && item?.updatedEditData) {
             setsmartTitle(item?.updatedEditData?.Title)
             setisShowEveryone(item?.updatedEditData?.isShowEveryone)
@@ -119,6 +123,9 @@ const TeamSmartFavoritesCopy = (item: any) => {
             setIsModifiedDateSelected((prev: any) => item?.updatedEditData?.isModifiedDateSelected);
             setIsDueDateSelected((prev: any) => item?.updatedEditData?.isDueDateSelected);
             setTaskUsersData((prev: any) => item?.updatedEditData?.TaskUsersData);
+            setSelectedValue((prev: any) => item?.updatedEditData?.showPageSizeSetting?.selectedTopValue);
+            setTablePageSize((prev: any) => item?.updatedEditData?.showPageSizeSetting?.tablePageSize);
+            setCount(false);
         }
     }, [item])
     ///// Year Range Using Piker end////////
@@ -359,6 +366,12 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 setStartDate(last30DaysStartDate);
                 setEndDate(last30DaysEndDate);
                 break;
+            case "last3months":
+                    const lastMonthEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
+                    const last3MonthsStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 3, 1); 
+                    setStartDate(last3MonthsStartDate);
+                    setEndDate(lastMonthEndDate);
+                    break;
             case "thisyear":
                 const yearStartDate = new Date(currentDate.getFullYear(), 0, 1);
                 setStartDate(yearStartDate);
@@ -385,8 +398,16 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 }
                 break;
             default:
-                setStartDate(null);
-                setEndDate(null);
+                if (count === true && item?.updatedSmartFilter === true && item?.updatedEditData) {
+                    setStartDate((prev: any) => item?.updatedEditData?.startDate);
+                    setEndDate((prev: any) => item?.updatedEditData?.endDate);
+                } else if (item?.updatedSmartFilter != true && !item?.updatedEditData && count === true) {
+                    setStartDate(item?.startDate);
+                    setEndDate(item?.endDate);
+                } else {
+                    setStartDate(null);
+                    setEndDate(null);
+                }
                 break;
         }
     }, [selectedFilter]);
@@ -402,7 +423,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
         ) {
             switch (event.target.value) {
                 case "today": case "yesterday": case "thisweek": case "last7days":
-                case "thismonth": case "last30days": case "thisyear": case "lastyear": case "Pre-set":
+                case "thismonth": case "last30days": case "last3months": case "thisyear": case "lastyear": case "Pre-set":
                     setIsCreatedDateSelected(true);
                     setIsModifiedDateSelected(true);
                     setIsDueDateSelected(true);
@@ -673,7 +694,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 <div className="alignCenter subheading">
                     <span className="siteColor">Smart Favorite</span>
                 </div>
-                <span style={{marginTop:'2.3px'}}><Tooltip ComponentId={1636} /></span>
+                <span style={{ marginTop: '2.3px' }}><Tooltip ComponentId={1636} /></span>
             </div>
         );
     };
@@ -713,6 +734,13 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 // Createmodified: props?.Createmodified
             }
         }
+        if (tablePageSize > 0) {
+            Favorite.showPageSizeSetting = {
+                tablePageSize: parseInt(tablePageSize),
+                showPagination: true,
+                selectedTopValue: selectedValue
+            };
+        }
         // else {
         //     var SmartFavorites = (SmartFavoriteUrl.split('SitePages/')[1]).split('.aspx')[0];
         //     SelectedFavorites.push({
@@ -730,16 +758,14 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 Key: 'Smartfavorites',
                 Title: 'Smartfavorites',
             };
-            await web.lists.getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID).items.add(postData).then((result: any) => {
+            await web.lists.getByTitle("AdminConfigurations").items.add(postData).then((result: any) => {
                 console.log("Successfully Added SmartFavorite");
                 setModalIsOpenToFalse("", "");
             })
         }
         else if (item?.updatedSmartFilter === true) {
             AddnewItem.push(Favorite);
-            await web.lists
-                .getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID)
-                .items.getById(item?.updatedEditData?.Id)
+            await web.lists.getByTitle("AdminConfigurations").items.getById(item?.updatedEditData?.Id)
                 .update({
                     Configurations: JSON.stringify(AddnewItem),
                     Key: 'Smartfavorites',
@@ -750,7 +776,6 @@ const TeamSmartFavoritesCopy = (item: any) => {
                     setModalIsOpenToFalse(res, "updatedData");
                 });
         }
-
     }
     const FavoriteField = (event: any) => {
         const fieldvalue = event.target.value;
@@ -770,6 +795,9 @@ const TeamSmartFavoritesCopy = (item: any) => {
         const Url = event.target.value;
         setSmartFavoriteUrl(Url);
     }
+    const handleChange = (event: any) => {
+        setSelectedValue(event.target.value);
+    };
     return (
         <>
             <Panel
@@ -787,18 +815,31 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                 <label className='SpfxCheckRadio'>
                                     <input className='radio' type='radio' value="SmartFilterBased" checked={FavoriteFieldvalue === "SmartFilterBased"} onChange={(event) => FavoriteField(event)} /> SmartFilter Based
                                 </label>
-                                <label className='SpfxCheckRadio'>
-                                    <input className='radio' type='radio' value="UrlBased" checked={FavoriteFieldvalue === "UrlBased"} onChange={(event) => FavoriteField(event)} /> Url Based
-                                </label>
+                                <label className='SpfxCheckRadio'><input className='radio' type='radio' value="UrlBased" checked={FavoriteFieldvalue === "UrlBased"} onChange={(event) => FavoriteField(event)} /> Url Based</label>
                             </div>
-                            {FavoriteFieldvalue === "SmartFilterBased" && <div className='mb-2 col-7 p-0'>
-                                <div className='input-group mt-3'>
-                                    <label className='d-flex form-label full-width justify-content-between'>Title <span><input type="checkbox" className='form-check-input' checked={isShowEveryone} onChange={(e) => isShowEveryOneCheck(e)} /> For EveryOne</span></label>
-                                    <input type="text" className='form-control' value={smartTitle} onChange={(e) => ChangeTitle(e)} />
+                            {FavoriteFieldvalue === "SmartFilterBased" &&
+                                <div className='row'>
+                                    <div className='mb-2 col-7'>
+                                        <div className='input-group mt-3'>
+                                            <label className='d-flex form-label full-width justify-content-between'>Title <span><input type="checkbox" className='form-check-input' checked={isShowEveryone} onChange={(e) => isShowEveryOneCheck(e)} /> For EveryOne</span></label>
+                                            <input type="text" className='form-control' value={smartTitle} onChange={(e) => ChangeTitle(e)} />
+                                        </div>
+                                    </div>
+                                    <div className='mb-2 col-3'>
+                                        <div className='input-group mt-3'>
+                                            <label className='d-flex form-label full-width justify-content-between'>Table Page Size
+                                                <span>
+                                                    <label className='SpfxCheckRadio'><input className='radio' type='radio' value="Created" checked={selectedValue === "Created"} onChange={handleChange} /> Created</label>
+                                                    <label className='SpfxCheckRadio'><input className='radio' type='radio' value="DueDate" checked={selectedValue === "DueDate"} onChange={handleChange} /> Due Date</label>
+                                                    <label className='SpfxCheckRadio'><input className='radio' type='radio' value="Modified" checked={selectedValue === "Modified"} onChange={handleChange} /> Modified</label>
+                                                </span>
+                                            </label>
+                                            <input type="number" className='form-control' value={tablePageSize} onChange={(e) => setTablePageSize(e.target.value)} />
+                                        </div>
+                                    </div>
                                 </div>
 
-
-                            </div>}
+                            }
                             {FavoriteFieldvalue == "UrlBased" && <div className='mb-2 col-7 p-0'>
                                 <div className='input-group mt-3'>
                                     <label className='d-flex form-label full-width justify-content-between'>Title <span><input type="checkbox" className='form-check-input' checked={isShowEveryone} onChange={(e) => isShowEveryOneCheck(e)} /> For EveryOne</span></label>
@@ -1261,6 +1302,10 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                                     <span className='SpfxCheckRadio  me-3'>
                                                         <input type="radio" name="dateFilter" value="last30days" className='radio' checked={selectedFilter === "last30days"} onChange={handleDateFilterChange} />
                                                         <label className='ms-1'>Last 30 Days</label>
+                                                    </span>
+                                                    <span className='SpfxCheckRadio  me-3'>
+                                                        <input type="radio" name="dateFilter" value="last3months" className='radio' checked={selectedFilter === "last3months"} onChange={handleDateFilterChange} />
+                                                        <label className='ms-1'>Last 3 Months</label>
                                                     </span>
                                                     <span className='SpfxCheckRadio  me-3'>
                                                         <input type="radio" name="dateFilter" value="thisyear" className='radio' checked={selectedFilter === "thisyear"} onChange={handleDateFilterChange} />

@@ -30,6 +30,14 @@ const RelevantDocuments = (props: any, ref: any) => {
                         if (user?.AssingedToUser?.Id == doc?.Editor?.Id) {
                             doc.EditorImage = user?.Item_x0020_Cover?.Url
                         }
+                        if (doc?.Modified !== undefined) {
+                            doc.Modified = doc?.Modified.replaceAll("T", " ").replaceAll("Z", "")
+
+                        }
+                        if (doc?.Created !== undefined) {
+                            doc.Created = doc?.Created.replaceAll("T", " ").replaceAll("Z", "")
+
+                        }
                     }
                 })
             })
@@ -62,15 +70,16 @@ const RelevantDocuments = (props: any, ref: any) => {
                 finalKeyData = []
                 if (MyContextdata?.keyDoc?.length == 1) {
                     MyContextdata.keyDoc = [];
+                    setCopyKeyDocument([])
                     MyContextdata.FunctionCall(null, null, false)
                 } else {
                     let deleteKeyData: any = MyContextdata?.keyDoc?.filter((item: any) => item.Id != copyEditData?.Id)
                     MyContextdata.keyDoc = deleteKeyData;
                     // getKeyDoc()
-                //   setKeyDocument(deleteKeyData)
-                 if (deleteKeyData?.length <=3) {
-                     setCopyKeyDocument([])
-                  }
+                    //   setKeyDocument(deleteKeyData)
+                    if (deleteKeyData?.length <= 3) {
+                        setCopyKeyDocument([])
+                    }
 
                     MyContextdata.FunctionCall(null, null, false)
                 }
@@ -101,8 +110,8 @@ const RelevantDocuments = (props: any, ref: any) => {
 
                 }
             }
-        }else{
-            setEditdocpanel(false);  
+        } else {
+            setEditdocpanel(false);
         }
 
 
@@ -139,7 +148,10 @@ const RelevantDocuments = (props: any, ref: any) => {
             {
                 accessorFn: (row: any) => row?.Modified,
                 cell: ({ row }: any) => (
-                    <div> {row?.original.Modified !== null ? moment(row?.original.Modified).format("DD/MM/YYYY") : ""}
+                    // <div> {row?.original?.Modified !== null ? moment(row?.original?.Modified).format("DD/MM/YYYY") : ""}
+                    <div> {row?.original?.Modified !== null ? moment(row?.original?.Modified, 'YYYY-MM-DDTHH:mm:ss').format("DD/MM/YYYY") : ""}
+
+
                         <>
                             <a href={`${myContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
                                 target="_blank" data-interception="off">
@@ -158,9 +170,7 @@ const RelevantDocuments = (props: any, ref: any) => {
             {
                 accessorFn: (row: any) => row?.Created,
                 cell: ({ row }: any) => (
-                    <div>{row?.original.Created !== null ? moment(row?.original.Created).format("DD/MM/YYYY") : ""}
-
-
+                    <div>{row?.original?.Created !== null ? moment(row?.original?.Created, 'YYYY-MM-DDTHH:mm:ss').format("DD/MM/YYYY") : ""}
                         <>
                             <a href={`${myContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
                                 target="_blank" data-interception="off">
@@ -192,7 +202,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                 size: 42,
             }
 
-        ], [copykeyDocument?.length > 0 ? copykeyDocument : keyDocument?.length>0]);
+        ], [copykeyDocument?.length > 0 ? copykeyDocument : keyDocument?.length > 0]);
 
 
     const ShowData = () => {
@@ -235,7 +245,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                     <div className='TableSection w-100'>
                         <div className='Alltable'>
                             <div className='smart Key-documents'>
-                              <GlobalCommanTable columns={columns} wrapperHeight="100%" data={copykeyDocument?.length > 0 ? copykeyDocument : keyDocument} callBackData={callBackData} />
+                                <GlobalCommanTable columns={columns} wrapperHeight="100%" data={copykeyDocument?.length > 0 ? copykeyDocument : keyDocument} callBackData={callBackData} />
                             </div>
                         </div>
                     </div>

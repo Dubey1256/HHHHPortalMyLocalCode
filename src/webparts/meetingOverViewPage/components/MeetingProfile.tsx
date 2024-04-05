@@ -268,7 +268,7 @@ const MeetingProfile = (props: any) => {
 
         .items.getById(AllListId?.meetingId)
 
-        .select("Id", "Title", "DueDate", "AssignedTo/Id", "Attachments", "Sitestagging", "FeedBack", "PortfolioStructureID", "AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id", 'AttachmentFiles', "ShortDescriptionVerified", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
+        .select("Id", "Title", "DueDate", "AssignedTo/Id", "Attachments","Created","Modified", "Sitestagging", "FeedBack", "PortfolioStructureID", "AssignedTo/Title", "ResponsibleTeam/Title", "ResponsibleTeam/Id", 'AttachmentFiles', "ShortDescriptionVerified", "BasicImageInfo", 'Author/Id', 'Author/Title', "Editor/Title", "Editor/Id", "OffshoreComments", "OffshoreImageUrl", "TeamMembers/Id", "TeamMembers/Title")
 
 
 

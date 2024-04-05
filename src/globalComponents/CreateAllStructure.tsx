@@ -3,7 +3,7 @@ import * as $ from "jquery";
 import * as Moment from "moment";
 import { Panel, PanelType } from "office-ui-fabric-react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { sp } from "sp-pnp-js";
+import { Web, sp } from "sp-pnp-js";
 import PageLoader from "./pageLoader";
 let defaultPortfolioType = 'Component'
 let PortfoliotypeData: any = '';
@@ -275,7 +275,10 @@ const CreateAllStructureComponent = (props: any) => {
 
                         // Create feature item in SharePoint list
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8acad7efe8f09300661a73fdc7754989cfc72479
                         const featuredata = await createListItem('Master Tasks', featureItem);
 
 
@@ -369,7 +372,8 @@ const CreateAllStructureComponent = (props: any) => {
     const createListItem = async (listName: string, item: any) => {
         if (item.Title != "") {
             try {
-                const result = await sp.web.lists.getByTitle(listName).items.add(item);
+                let web = new Web(props?.PropsValue?.siteUrl);
+                const result = await web.lists.getByTitle(listName).items.add(item);
                 return result.data;
             } catch (error) {
                 throw new Error(`Failed to create item in the list. Error: ${error}`);
@@ -390,8 +394,8 @@ const CreateAllStructureComponent = (props: any) => {
             //filter = "Parent/Id eq '" + item.Id
         }
 
-
-        let results = await sp.web.lists
+        let web = new Web(props?.PropsValue?.siteUrl);
+        let results = await web.lists
             .getByTitle('Master Tasks')
             .items
             .select("Id", "Title", "PortfolioLevel",'Item_x0020_Type', "PortfolioStructureID", "Parent/Id", "PortfolioType/Id", "PortfolioType/Title")

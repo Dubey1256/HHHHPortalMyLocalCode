@@ -30,6 +30,7 @@ let AllProject: any = [];
 let timeSheetConfig: any = {};
 var AllListId: any = {};
 var currentUserId: '';
+let todaysDrafTimeEntry = [];
 var currentUser: any = [];
 let AllTimeEntries: any = [];
 let headerOptions: any = {
@@ -88,7 +89,7 @@ export default function ProjectOverview(props: any) {
             const params = new URLSearchParams(window.location.search);
             let query = params.get("SelectedView");
             if (query == 'ProjectsTask') {
-                setSelectedView('grouped')
+                setSelectedView('Projects')
             }
             if (query == 'TodaysTask') {
                 changeToggleWorkingToday()
@@ -358,7 +359,13 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 enableMultiSort: true,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.ProjectPriority == filterValue
+                    if ((row?.original?.ProjectPriority?.toString().charAt(0) == filterValue.toString().charAt(0))
+                        && (row?.original?.ProjectPriority.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
                 isColumnDefultSortingDesc: true,
                 resetSorting: false,
@@ -380,7 +387,13 @@ export default function ProjectOverview(props: any) {
                 resetSorting: false,
                 size: 55,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PercentComplete == filterValue
+                    if ((row?.original?.PercentComplete?.toString()?.charAt(0) == filterValue?.toString()?.charAt(0))
+                        && (row?.original?.PercentComplete?.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
             },
             {
@@ -395,7 +408,13 @@ export default function ProjectOverview(props: any) {
                 placeholder: "Priority",
                 resetColumnFilters: false,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PriorityRank == filterValue
+                    if ((row?.original?.PriorityRank?.toString().charAt(0) == filterValue.toString().charAt(0))
+                        && (row?.original?.PriorityRank.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
                 isColumnDefultSortingDesc: true,
                 enableMultiSort: true,
@@ -431,6 +450,16 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    if (row?.original?.AssignedTo?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase()) ||
+                        row?.original?.ResponsibleTeam?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase()) ||
+                        row?.original?.TeamMembers?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase())) {
+                        return true
+                    } else {
+                        return false
+                    }
+
+                },
                 size: 85,
             },
             {
@@ -536,7 +565,7 @@ export default function ProjectOverview(props: any) {
 
                 cell: ({ row }) => (
                     <>
-                        {row?.original?.siteType === "Project" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="alignIcon svg__iconbox svg__icon--edit hreflink" ></span> : ''}
+                        {row?.original?.siteType === "Project" ? <span title={row?.original?.Item_x0020_Type != "Project" ? "Edit Sprint" : "Edit Project"} onClick={(e) => EditComponentPopup(row?.original)} className="alignIcon svg__iconbox svg__icon--edit hreflink" ></span> : ''}
                         {row?.original?.Item_x0020_Type === "tasks" ? <>
                             <span onClick={(e) => EditDataTimeEntry(e, row.original)}
                                 className="svg__iconbox svg__icon--clock"
@@ -647,7 +676,13 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 size: 45,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PercentComplete == filterValue
+                    if ((row?.original?.PercentComplete?.toString().charAt(0) == filterValue.toString().charAt(0))
+                        && (row?.original?.PercentComplete.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
             },
             {
@@ -663,14 +698,20 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 size: 50,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PriorityRank == filterValue
+                    if ((row?.original?.PriorityRank?.toString().charAt(0) == filterValue.toString().charAt(0))
+                        && (row?.original?.PriorityRank.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
                 isColumnDefultSortingDesc: true,
                 resetSorting: false,
                 header: ""
             },
             {
-                accessorFn: (row) => row?.TeamMembers?.map((elem: any) => elem.Title).join('-'),
+                accessorFn: (row) => row?.TeamMembersSearch,
                 cell: ({ row }) => (
                     <span>
                         <InlineEditingcolumns
@@ -683,10 +724,20 @@ export default function ProjectOverview(props: any) {
                         />
                     </span>
                 ),
-                id: 'TeamMembers',
+                id: 'TeamMembersSearch',
                 canSort: false,
                 resetColumnFilters: false,
                 resetSorting: false,
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    if (row?.original?.AssignedTo?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase()) ||
+                        row?.original?.ResponsibleTeam?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase()) ||
+                        row?.original?.TeamMembers?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase())) {
+                        return true
+                    } else {
+                        return false
+                    }
+
+                },
                 placeholder: "TeamMembers",
                 header: "",
                 size: 85,
@@ -843,8 +894,8 @@ export default function ProjectOverview(props: any) {
         }
 
 
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
-        //let to: any = ["abhishek.tiwari@hochhuth-consulting.de", "ranu.trivedi@hochhuth-consulting.de"];
+        // let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
+        let to: any = ["abhishek.tiwari@hochhuth-consulting.de",  "prashant.kumar@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let groupedData = data;
@@ -854,7 +905,6 @@ export default function ProjectOverview(props: any) {
             var subject = "Today's Working Tasks Under Projects";
             const GroupedPromises = await groupedData?.map(async (group: any) => {
                 body += projectEmailContent(group, false)
-
             })
 
             let sendAllTasks =
@@ -932,7 +982,8 @@ export default function ProjectOverview(props: any) {
                         item?.AssignedTo?.map((user: any) => {
                             memberOnLeave = AllLeaves.some((emp: any) => emp == user?.Id)
                         });
-                        if (!memberOnLeave) {
+
+                        if (!memberOnLeave && item?.AssignedTo?.length > 0) {
                             taskCount++;
                             let teamUsers: any = [];
                             if (item?.AssignedTo?.length > 0) {
@@ -1596,40 +1647,10 @@ export default function ProjectOverview(props: any) {
                     }
                     items.TeamMembersSearch = "";
                     items.AssignedToIds = [];
-                    if (items.AssignedTo != undefined) {
-                        items?.AssignedTo?.map((taskUser: any) => {
-                            items.AssignedToIds.push(taskUser?.Id)
-                            AllTaskUsers.map((user: any) => {
-                                if (user.AssingedToUserId == taskUser.Id) {
-                                    if (user?.Title != undefined) {
-                                        items.TeamMembersSearch =
-                                            items.TeamMembersSearch + " " + user?.Title;
-                                    }
-                                }
-                            });
-                        });
-                    }
+
 
                     items.TaskID = globalCommon.getTaskId(items);
-                    AllTaskUsers?.map((user: any) => {
-                        if (user.AssingedToUserId == items.Author.Id) {
-                            items.createdImg = user?.Item_x0020_Cover?.Url;
-                        }
-                        if (items.TeamMembers != undefined) {
-                            items.TeamMembers.map((taskUser: any) => {
-                                var newuserdata: any = {};
-                                if (user.AssingedToUserId == taskUser.Id) {
-                                    newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
-                                    newuserdata["Suffix"] = user?.Suffix;
-                                    newuserdata["Title"] = user?.Title;
-                                    newuserdata["UserId"] = user?.AssingedToUserId;
-                                    items["Usertitlename"] = user?.Title;
-                                    items.AllTeamMember.push(newuserdata);
-                                }
 
-                            });
-                        }
-                    });
                     AllTask.push(items);
                 });
 
@@ -1818,7 +1839,7 @@ export default function ProjectOverview(props: any) {
                     <div className="section-event project-overview-Table">
                         <div >
                             <div className='align-items-center d-flex justify-content-between'>
-                                <h2 className='heading'>Project Management Overview</h2>
+                                <h2 className='heading'>PX Management Overview</h2>
 
                                 {/* {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a></span> : ''} */}
 
@@ -1827,7 +1848,7 @@ export default function ProjectOverview(props: any) {
                                 <div className='ProjectOverViewRadioFlat  d-flex justify-content-between SpfxCheckRadio mb-2 mt-1'>
                                     <dl className='alignCenter gap-2 mb-0'>
                                         <dt>
-                                            <input className='radio' type="radio" value="Projects" name="date" checked={selectedView == 'Projects'} onClick={() => setSelectedView('Projects')} /> Projects
+                                            <input className='radio' type="radio" value="Projects" name="date" checked={selectedView == 'Projects'} onClick={() => setSelectedView('Projects')} /> Projects/Sprints
                                         </dt>
                                         <dt>
                                             <input className='radio' type="radio" value="teamWise" name="date" checked={selectedView == 'teamWise'} onClick={() => setSelectedView('teamWise')} /> Team View
@@ -1842,7 +1863,7 @@ export default function ProjectOverview(props: any) {
                                             : ''}
                                     </div>
                                 </div>
-                                <section className="Tabl1eContentSection row taskprofilepagegreen">
+                                <section className="TableContentSection row taskprofilepagegreen">
                                     <div className="container-fluid p-0">
                                         <section className="TableSection">
                                             <div className="container p-0">
@@ -1850,7 +1871,7 @@ export default function ProjectOverview(props: any) {
                                                     <div className="col-sm-12 p-0 smart">
                                                         <div>
                                                             <div>
-                                                                {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} taskTypeDataItem={taskTypeDataItem} showingAllPortFolioCount={true} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                                                {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} hideShowingTaskCountToolTip={true} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} taskTypeDataItem={taskTypeDataItem} showingAllPortFolioCount={true} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                                                 {selectedView == 'Projects' ? <GlobalCommanTable fixedWidthTable={true} expandIcon={true} ref={childRef} callChildFunction={callChildFunction} AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false}
                                                                     customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} multiSelect={true} columns={column2}
                                                                     data={workingTodayFiltered ? data : flatData} portfolioTypeData={portfolioTypeDataItem} showingAllPortFolioCount={true} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}

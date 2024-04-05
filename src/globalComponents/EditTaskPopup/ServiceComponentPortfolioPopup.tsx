@@ -332,11 +332,14 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         if (selectionType == "Multi" && elem?.length > 0) {
             elem.map((item: any) => MultiSelectedData?.push(item?.original))
             setInitialRender(true)
+            setCheckedList(elem);
             // MultiSelectedData = elem;
         } else {
             if (elem != undefined) {
                 setCheckBoxData([elem])
                 console.log("elem", elem);
+                setCheckedList(elem);
+
                 setInitialRender(true)
             } else {
                 console.log("elem", elem);
@@ -391,10 +394,15 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 size: 55,
                 id: 'Id',
             }, {
-                accessorKey: "PortfolioStructureID",
+                accessorKey: "TaskID",
                 placeholder: "ID",
                 size: 136,
+<<<<<<< HEAD
                 id: 'PortfolioStructureID',
+=======
+                id: "TaskID",
+
+>>>>>>> 8acad7efe8f09300661a73fdc7754989cfc72479
                 cell: ({ row, getValue }) => (
                     <div className="alignCenter">
                         {row?.original?.SiteIcon != undefined ? (
@@ -445,35 +453,51 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 header: "",
             },
             {
-                accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title)?.join("-"),
+                accessorFn: (row) => row?.ClientCategorySearch,
                 cell: ({ row }) => (
                     <>
-                        <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
+                        <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadataItems?.length <= 0 ? AllMetadata : AllMetadataItems} />
                     </>
                 ),
-                id: 'ClientCategory',
+                id: "ClientCategorySearch",
                 placeholder: "Client Category",
                 header: "",
+                resetColumnFilters: false,
                 size: 100,
+                isColumnVisible: true
             },
             {
-                accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title)?.join("-"),
+                accessorFn: (row) => row?.AllTeamName,
                 cell: ({ row }) => (
-                    <div>
-                        <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} />
+                    <div className="alignCenter">
+                        <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers}/>
                     </div>
                 ),
-                id: 'TeamLeaderUser',
+                id: "AllTeamName",
                 placeholder: "Team",
                 header: "",
                 size: 100,
+              
             },
+            // {
+            //     accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title)?.join("-"),
+            //     cell: ({ row }) => (
+            //         <div>
+            //             <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} />
+            //         </div>
+            //     ),
+            //     id: 'TeamLeaderUser',
+            //     placeholder: "Team",
+            //     header: "",
+            //     size: 100,
+            // },
             {
                 accessorKey: "PercentComplete",
                 placeholder: "Status",
                 header: "",
                 id: 'PercentComplete',
                 size: 42,
+                id:"PercentComplete"
             },
             {
                 accessorKey: "descriptionsSearch",
@@ -496,7 +520,11 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 placeholder: "Item Rank",
                 header: "",
                 size: 42,
+<<<<<<< HEAD
                 id: "ItemRank",
+=======
+                id:"ItemRank",
+>>>>>>> 8acad7efe8f09300661a73fdc7754989cfc72479
             },
             {
                 accessorKey: "DueDate",
@@ -504,6 +532,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 header: "",
                 id: "DueDate",
                 size: 100,
+                id:"DueDate",
             },
             {
                 cell: ({ row, getValue }) => (
@@ -534,7 +563,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 size: 30
             }
         ],
-        [data]
+        [data, AllMetadata]
     );
 
     let Component = 0;
@@ -606,7 +635,55 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     };
 
     let isOpenPopup = false;
-   
+    // const AddStructureCallBackCall = React.useCallback((item) => {
+    //     if (checkedList?.current.length == 0) {
+    //         item[0]?.subRows.map((childs: any) => {
+    //             copyDtaArray.unshift(childs)
+
+    //         })
+    //     } else {
+    //         if (item[0]?.SelectedItem != undefined) {
+    //             copyDtaArray.map((val: any) => {
+    //                 item[0]?.subRows.map((childs: any) => {
+    //                     if (item[0].SelectedItem == val.Id) {
+    //                         val.subRows.unshift(childs)
+    //                     }
+    //                     if (val.subRows != undefined && val.subRows.length > 0) {
+    //                         val.subRows?.map((child: any) => {
+    //                             if (item[0].SelectedItem == child.Id) {
+    //                                 child.subRows.unshift(childs)
+    //                             }
+    //                             if (child.subRows != undefined && child.subRows.length > 0) {
+    //                                 child.subRows?.map((Subchild: any) => {
+    //                                     if (item[0].SelectedItem == Subchild.Id) {
+    //                                         Subchild.subRows.unshift(childs)
+    //                                     }
+    //                                 })
+    //                             }
+    //                         })
+    //                     }
+    //                 })
+    //             })
+
+    //         }
+
+    //     }
+    //     if (item != undefined && item?.length > 0 && item[0].SelectedItem == undefined) {
+    //         item.forEach((value: any) => {
+    //             copyDtaArray.unshift(value)
+    //         })
+    //     }
+
+
+
+    //     setOpenAddStructurePopup(false);
+    //     console.log(item)
+    //     renderData = [];
+    //     renderData = renderData.concat(copyDtaArray)
+    //     refreshData();
+    //     checkedList.current = []
+
+    // }, [])
     const callbackdataAllStructure = React.useCallback((item) => {
         if (item[0]?.SelectedItem != undefined) {
             copyDtaArray.map((val: any) => {
@@ -726,8 +803,17 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     
     const customTableHeaderButtons1 = (
         <>
-            <button type="button" className="btn btn-primary" onClick={() => OpenAddStructureModal()}>{showProject == true?"Add Project":"Add Structure"}</button>
-            <button type="button" className="btn btn-primary" onClick={() => openCompareTool()}> Compare</button>
+            {/* <button type="button" className="btn btn-primary" onClick={() => OpenAddStructureModal()}>{showProject == true?"Add Project":"Add Structure"}</button> */}
+            {  childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length<2 ?
+                <button type="button" className="btn btn-primary" style={{  color: "#fff" }} title=" Add Structure" onClick={() => OpenAddStructureModal()}>
+                    {" "}{showProject == true?"Add Project":"Add Structure"}{" "}</button> :
+                <button type="button" disabled className="btn btn-primary" style={{ color: "#fff" }} title=" Add Structure"> {" "} Add Structure{" "}</button>
+            }
+
+            {(childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length>0) ?
+                < button type="button" className="btn btn-primary" title='Compare' style={{color: '#fff' }} onClick={() => openCompareTool()}>Compare</button> :
+                <button type="button" className="btn btn-primary" style={{ color: '#fff' }} disabled={true} >Compare</button>
+            }
             <label className="switch me-2" htmlFor="checkbox5">
             <input checked={IsSelectionsBelow} onChange={() => checkSelection1("SelectionsBelow")} type="checkbox" id="checkbox5" />
                 {IsSelectionsBelow === true ? <div className="slider round" title='Switch to Single Selection' ></div> : <div title='Switch to  Multi Selection' className="slider round"></div>}
@@ -797,7 +883,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                                 </div>
                             </td>
                             <td>
-                                <a className="hreflink serviceColor_Active" data-interception="off" target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/PX-Profile.aspx?ProjectId=${item.PortfolioStructureID}`}>
+                                <a className="hreflink serviceColor_Active" data-interception="off" target="_blank" href={showProject == true?`${Dynamic?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${item.Id}`:`${Dynamic?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item.Id}`}>
                                     <span>{item.Title}</span>
                                 </a>
                                
@@ -887,7 +973,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                     </div>
                 </div>
             </div>
-            <Panel
+            {/* <Panel
                 onRenderHeader={onRenderCustomHeaderMain1}
                 type={PanelType.large}
                 isOpen={OpenAddStructurePopup}
@@ -903,6 +989,26 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                         checkedList != null && checkedList?.Id != undefined
                             ? checkedList
                             : props
+                    }
+                />
+             
+            </Panel> */}
+            <Panel
+                onRenderHeader={onRenderCustomHeaderMain1}
+                type={PanelType.large}
+                isOpen={OpenAddStructurePopup}
+                isBlocking={false}
+                onDismiss={callbackdataAllStructure}
+            >
+                  <CreateAllStructureComponent
+                    Close={callbackdataAllStructure}
+                    taskUser={AllUsers}
+                    portfolioTypeData={PortfolitypeData}
+                    PropsValue={Dynamic}
+                    SelectedItem={
+                        checkedList != null && checkedList?.Id != undefined
+                            ? checkedList
+                            : undefined
                     }
                 />
              

@@ -7,7 +7,7 @@ import {
     PanelType,
 } from "office-ui-fabric-react";
 import Tooltip from '../Tooltip';
-import { MdCompare } from 'react-icons/md';
+import { MdCompare } from 'react-icons/Md';
 import { BsArrowRightSquare } from "react-icons/bs";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import ServiceComponentPortfolioPopup from '../EditTaskPopup/ServiceComponentPortfolioPopup';
@@ -286,7 +286,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 }
             });
 
-            if (SelectedCategories.length > 0 || CreateTaskInfo.Title?.length > 0) {
+            if (SelectedCategories.length > 0 && CreateTaskInfo.Title?.length > 0) {
                 let UpdateJSONData: any = {
                     Title: CreateTaskInfo.Title,
                     DueDate: CreateTaskInfo.DueDate ? Moment(CreateTaskInfo.DueDate).format("MM-DD-YYYY") : null,
@@ -590,7 +590,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                         <input
                                             type='text'
                                             className="form-control"
-                                            defaultValue={CreateTaskInfo.Title}
+                                            value={CreateTaskInfo.Title}
                                             onChange={(e) => setCreateTaskInfo({ ...CreateTaskInfo, Title: e.target.value })}
                                         /> :
                                         <input
@@ -723,7 +723,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                                         <input
                                             type='Number'
                                             className="form-control"
-                                            defaultValue={CreateTaskInfo.PriorityRank}
+                                            value={CreateTaskInfo.PriorityRank}
                                             onChange={(e) => setCreateTaskInfo({ ...CreateTaskInfo, PriorityRank: e.target.value })}
                                         /> :
                                         <input

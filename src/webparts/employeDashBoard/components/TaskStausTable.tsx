@@ -22,7 +22,7 @@ import * as Moment from "moment";
 import Slider from "react-slick";
 import { ColumnDef } from "@tanstack/react-table";
 import HighlightableCell from "../../../globalComponents/highlight";
-import { MdOutlineGppGood, MdGppBad } from "react-icons/Md";
+import { MdOutlineGppGood, MdGppBad } from "react-icons/md";
 import { FocusTrapCallout, FocusZone, FocusZoneTabbableElements, Panel, PanelType, Stack, Text, } from '@fluentui/react';
 import { color } from "@mui/system";
 let Count = 0;
@@ -620,10 +620,11 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "SmartPriority",
         resetColumnFilters: false,
         resetSorting: false,
-        isColumnDefultSortingDesc: true,
+        isColumnDefultSortingDesc: item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === undefined ? true : false,
         header: "",
         size: 45,
-        isColumnVisible: true
+        isColumnVisible: true,
+        fixedColumnWidth: true
       },
       {
         accessorFn: (row: any) => row?.PriorityRank,
@@ -642,7 +643,8 @@ const TaskStatusTbl = (Tile: any) => {
         resetColumnFilters: false,
         header: "",
         size: 42,
-        isColumnVisible: false
+        isColumnVisible: false,
+        fixedColumnWidth: true
       },
       {
         accessorFn: (row: any) => row?.projectStructerId + "." + row?.ProjectTitle,
@@ -668,7 +670,8 @@ const TaskStatusTbl = (Tile: any) => {
         resetColumnFilters: false,
         size: 45,
         id: "percentage",
-        isColumnVisible: true
+        isColumnVisible: true,
+        fixedColumnWidth: true
       },
       {
         accessorFn: (row: any) => row?.TaskTypeValue,
@@ -722,6 +725,15 @@ const TaskStatusTbl = (Tile: any) => {
         resetColumnFilters: false,
         header: "",
         size: 42,
+        isColumnVisible: false,
+        fixedColumnWidth: true
+      },
+      {
+        accessorKey: "timeSheetsDescriptionSearch",
+        placeholder: "timeSheetsDescriptionSearch",
+        header: "",
+        resetColumnFilters: false,
+        id: "timeSheetsDescriptionSearch",
         isColumnVisible: false
       },
       {
@@ -755,7 +767,9 @@ const TaskStatusTbl = (Tile: any) => {
         },
         header: "",
         size: 100,
-        isColumnVisible: true
+        isColumnVisible: true,
+        fixedColumnWidth: true,
+        isColumnDefultSortingDesc: item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Created" ? true : false
       },
       {
         accessorFn: (row: any) => row?.DueDate,
@@ -775,7 +789,9 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "DueDate",
         header: "",
         size: 91,
-        isColumnVisible: false
+        isColumnVisible: false,
+        fixedColumnWidth: true,
+        isColumnDefultSortingDesc: item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "DueDate" ? true : false
       },
       {
         accessorFn: (row: any) => row?.Modified,
@@ -800,7 +816,7 @@ const TaskStatusTbl = (Tile: any) => {
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Modified",
-        isColumnVisible: false,
+        isColumnVisible: item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Modified" ? true : false,
         filterFn: (row: any, columnName: any, filterValue: any) => {
           if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
             return true
@@ -809,7 +825,9 @@ const TaskStatusTbl = (Tile: any) => {
           }
         },
         header: "",
-        size: 100
+        size: 100,
+        fixedColumnWidth: true,
+        isColumnDefultSortingDesc: item?.configurationData[0]?.showPageSizeSetting?.selectedTopValue === "Modified" ? true : false
       },
       {
         accessorKey: "TotalTaskTime",
@@ -818,7 +836,8 @@ const TaskStatusTbl = (Tile: any) => {
         header: "",
         resetColumnFilters: false,
         size: 45,
-        isColumnVisible: false
+        isColumnVisible: false,
+        fixedColumnWidth: true
       },
       {
         cell: ({ row, getValue }: any) => (
@@ -832,7 +851,8 @@ const TaskStatusTbl = (Tile: any) => {
         resetColumnFilters: false,
         resetSorting: false,
         size: 45,
-        isColumnVisible: true
+        isColumnVisible: true,
+        fixedColumnWidth: true
       },]
     }
     else if (item?.DataSource == 'TimeSheet') {
@@ -848,8 +868,8 @@ const TaskStatusTbl = (Tile: any) => {
           id: "Id"
         },
         {
-          accessorFn: (row: any) => row?.AuthorName,
-          id: "AuthorName",
+          accessorFn: (row: any) => row?.Title,
+          id: "Title",
           placeholder: "AuthorName",
           header: "",
           size: 155,
@@ -862,13 +882,13 @@ const TaskStatusTbl = (Tile: any) => {
                     <span>
                       {row?.original?.AuthorImage != "" && row?.original.AuthorImage != null ? (
                         <img
-                          className="AssignUserPhoto1 bdrbox m-0 wid29" title={row?.original.AuthorName} data-toggle="popover" data-trigger="hover" src={row?.original.AuthorImage}  ></img>
+                          className="AssignUserPhoto1 bdrbox m-0 wid29" title={row?.original.Title} data-toggle="popover" data-trigger="hover" src={row?.original.AuthorImage}  ></img>
                       ) : (
-                        <>  {" "}  <img className="AssignUserPhoto1 bdrbox m-0 wid29" title={row?.original.AuthorName} data-toggle="popover" data-trigger="hover"
+                        <>  {" "}  <img className="AssignUserPhoto1 bdrbox m-0 wid29" title={row?.original.Title} data-toggle="popover" data-trigger="hover"
                           src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg" ></img>
                         </>
                       )}
-                      <span className="mx-1">{row?.original?.AuthorName}</span>
+                      <span className="mx-1">{row?.original?.Title}</span>
                     </span>
                   </>
                 </div>
@@ -900,21 +920,26 @@ const TaskStatusTbl = (Tile: any) => {
           },
           header: "",
           size: 121,
-          isColumnVisible: true
+          isColumnVisible: true,
+          fixedColumnWidth: true
         },
         {
           accessorKey: "TaskTime",
           placeholder: "TaskTime",
           header: "",
+          id: 'TaskTime',
           size: 40,
-          isColumnVisible: true
+          isColumnVisible: true,
+          fixedColumnWidth: true
         },
         {
-          accessorKey: "Description",
-          placeholder: "Description",
+          accessorKey: "timeSheetsDescriptionSearch",
+          placeholder: "Timesheet Description",
           header: "",
+          id: "timeSheetsDescriptionSearch",
           isColumnVisible: true,
           size: 425,
+          columnHide: false,
         },
         {
           id: "ff",
@@ -923,6 +948,7 @@ const TaskStatusTbl = (Tile: any) => {
           canSort: false,
           placeholder: "",
           isColumnVisible: true,
+          fixedColumnWidth: true,
           cell: ({ row, index }: any) => (
             <div className="alignCenter gap-1 pull-right approvelicon position-relative" >
               <span title="Approve" onClick={() => SaveApprovalRejectPopup('Approved', row?.original,)} ><MdOutlineGppGood style={{ color: "#008f47", fontSize: "22px" }} /> </span>
@@ -1088,9 +1114,10 @@ const TaskStatusTbl = (Tile: any) => {
                       {<span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(config?.Tasks)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
                     </span>
                   </div>
-                  <div className="Alltable maXh-300" style={{ height: "300px" }} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
+                  <div className="Alltable" draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
-                      <GlobalCommanTable wrapperHeight="87% " tableId={config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                      <GlobalCommanTable wrapperHeight="300px" tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                        pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
                     )}
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
                       {sendMail && emailStatus != "" && approveItem && <EmailComponenet approvalcallback={approvalcallback} Context={AllListId} emailStatus={"Approved"} items={approveItem} />}
@@ -1178,9 +1205,9 @@ const TaskStatusTbl = (Tile: any) => {
                                 Date.IsShowTask == true && (
                                   <>
                                     <h3 className="f-15">{user?.Title} {Date?.DisplayDate} Task</h3>
-                                    <div key={index} className="Alltable maXh-300 mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} style={{ height: "300px" }}>
-                                      <GlobalCommanTable columnSettingIcon={true} multiSelect={true} tableId={config?.Id + index + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} wrapperHeight="87%" showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
-                                        callBackData={callBackData} />
+                                    <div key={index} className="Alltable mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} style={{ height: "300px" }}>
+                                      <GlobalCommanTable wrapperHeight="300px" columnSettingIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
+                                        callBackData={callBackData} pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
                                     </div>
                                   </>
                                 )
@@ -1203,12 +1230,14 @@ const TaskStatusTbl = (Tile: any) => {
                           : <span className="me-1 mt-2 hreflink" style={{ color: "#646464" }}>Approve All</span>}
                       </span>
                     </div>
-                    <div className="Alltable maXh-300" style={{ height: "300px" }} >
+                    <div className="Alltable" >
                       {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
-                        <GlobalCommanTable wrapperHeight="87%" multiSelect={true} tableId={config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                        <GlobalCommanTable wrapperHeight="300px" ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                          pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
                       )}
                       {config?.Tasks != undefined && config?.Tasks?.length == 0 && (
-                        <GlobalCommanTable wrapperHeight="87%" multiSelect={true} tableId={config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData} />
+                        <GlobalCommanTable wrapperHeight="300px" ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                          pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
                       )}
                     </div>
                   </>}
@@ -1283,4 +1312,3 @@ const TaskStatusTbl = (Tile: any) => {
   );
 };
 export default TaskStatusTbl;
-

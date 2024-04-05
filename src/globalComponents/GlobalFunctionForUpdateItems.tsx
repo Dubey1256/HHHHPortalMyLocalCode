@@ -1359,14 +1359,60 @@ export const getDataByKey = (DataArray: any, keyName: any) => {
 
 // This is used for send MS Teams Notification for Bottleneck and Attention Category Tasks 
 
+<<<<<<< HEAD
 export const SendMSTeamsNotificationForWorkingActions = (RequiredData: any) => {
     return new Promise(async (resolve, reject) => {
         const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject } = RequiredData || {};
         let TaskInformation: any = GenerateMSTeamsNotification(UpdatedDataObject);
+=======
+// export const SendMSTeamsNotificationForWorkingActions = (RequiredData: any) => {
+//     return new Promise(async (resolve, reject) => {
+//         const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject } = RequiredData || {};
+//         let TaskInformation: any = GenerateMSTeamsNotification(UpdatedDataObject);
+//         const containerDiv = document.createElement('div');
+//         const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
+//         ReactDOM.render(reactElement, containerDiv);
+//         let finalTaskInfo: any = containerDiv.innerHTML;
+//         let TeamsMessage = `<b>Hi ${ReceiverName},</b> 
+//         <p></p>
+//         You have been tagged as <b>${ActionType}</b> in the below task.
+//         <p>
+//         <br/>
+//          <span>${ReasonStatement ? "<b>" + ActionType + " Point : </b>" + ReasonStatement + " <p></p>" : ''}</span>
+//         <b>Task Details : </b> <span>${finalTaskInfo}</span>
+//         </br>
+//         <p>
+//         Task Link:  
+//         <a href=${UpdatedDataObject?.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
+//          Click-Here
+//         </a>
+//         <p></p>
+//         <b>
+//         Thanks, </br>
+//         Task Management Team
+//         </b>`;
+
+//         if (sendUserEmail?.length > 0) {
+//             await GlobalCommon.SendTeamMessage(
+//                 sendUserEmail,
+//                 TeamsMessage,
+//                 Context
+//             );
+//         }
+//     })
+
+// }
+
+export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any) => {
+    try {
+        const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject } = RequiredData || {};
+        const TaskInformation = GenerateMSTeamsNotification(UpdatedDataObject);
+>>>>>>> 8acad7efe8f09300661a73fdc7754989cfc72479
         const containerDiv = document.createElement('div');
         const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
         ReactDOM.render(reactElement, containerDiv);
         let finalTaskInfo: any = containerDiv.innerHTML;
+<<<<<<< HEAD
         let TeamsMessage = `<b>Hi ${ReceiverName},</b> 
         <p></p>
         You have been tagged as <b> </b> in the below task.
@@ -1426,6 +1472,43 @@ export const SendMSTeamsNotificationForWorkingActions = (RequiredData: any) => {
 //         throw error;
 //     }
 // };
+=======
+
+        let NotificationTypeMessage: string = '';
+        let isShowComment: any = false;
+
+        if (ActionType == "Bottleneck" || ActionType == "Attention") {
+            NotificationTypeMessage = `You have been tagged as <b>${ActionType}</b> in the below task.`;
+            isShowComment = true;
+        } else {
+            NotificationTypeMessage = `Task created from your end as ${ActionType} category Task status has been set as ${UpdatedDataObject.PercentComplete + "%"}. Please take necessary action`;
+            isShowComment = false;
+        }
+
+        const TeamsMessage = `
+            <b>Hi ${ReceiverName},</b>
+            <p></p>
+           ${NotificationTypeMessage}
+            <p><br/></p>
+            ${isShowComment ? `<span><b>${ActionType} Comment </b>: <span style="background-color: yellow"; >${ReasonStatement}</span></span>` : ''}
+            <p></p>
+            <b>Task Details : </b> <span>${finalTaskInfo}</span>
+            <p></p>
+            Task Link: <a href="${UpdatedDataObject?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}">Click here</a>
+            <p></p>
+            <b>Thanks,<br/>Task Management Team</b>
+        `;
+
+        if (sendUserEmail?.length > 0) {
+            await GlobalCommon.SendTeamMessage(sendUserEmail, TeamsMessage, Context);
+        }
+        return 'Notification sent successfully';
+    } catch (error) {
+        console.error('Error sending notification:', error);
+        throw error;
+    }
+};
+>>>>>>> 8acad7efe8f09300661a73fdc7754989cfc72479
 
 
 export const MSTeamsReminderMessage = (RequiredData: any) => {
@@ -1436,7 +1519,11 @@ export const MSTeamsReminderMessage = (RequiredData: any) => {
         This is a gentle reminder to address the below task promptly, as you've been marked as ${ActionType}:
         <p>
         <br/>
+<<<<<<< HEAD
          <span>${ActionType} Point: ${ReasonStatement ? ReasonStatement : ''}</span>
+=======
+        <span><b>${ActionType} Comment </b>: <span style="background-color: yellow"; >${ReasonStatement? ReasonStatement:""}</span></span>
+>>>>>>> 8acad7efe8f09300661a73fdc7754989cfc72479
         </br>
         <p>
         Task Link:  
@@ -1462,7 +1549,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
     try {
         if (RequiredData?.Title?.length > 0) {
             return (
-                <table cellPadding="0" width="100%" style={{ width: "100.0%" }}>
+                <table cellPadding="0" width="100%" style={{ width: "100%" }}>
                     <tbody>
                         <tr>
                             <td width="70%" valign="top" style={{ width: '70.0%', padding: '.75pt .75pt .75pt .75pt' }}>
@@ -1479,10 +1566,9 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Component:</span></b><u></u><u></u></p>
                                             </td>
                                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                                                <p>{RequiredData["Component"] != null &&
-                                                    RequiredData["Component"].length > 0 &&
+                                                <p>{RequiredData["Portfolio"] != null &&
                                                     <span style={{ fontSize: '10.0pt', color: 'black' }}>
-                                                        {joinObjectValues(RequiredData["Component"])}
+                                                        {RequiredData["Portfolio"]?.Title}
                                                     </span>
                                                 }
                                                     <span style={{ color: "black" }}> </span><u></u><u></u></p>
@@ -1499,27 +1585,27 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Start Date:</span></b><u></u><u></u></p>
                                             </td>
                                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                                                <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined ? Moment(RequiredData["StartDate"]).format("DD-MMMM-YYYY") : ""}</span><u></u><u></u></p>
+                                                <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD-MMMM-YYYY") : ""}</span><u></u><u></u></p>
                                             </td>
                                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Completion Date:</span></b><u></u><u></u></p>
                                             </td>
                                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                                                <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined ? Moment(RequiredData["CompletedDate"]).format("DD-MMMM-YYYY") : ""}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                                <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD-MMMM-YYYY") : ""}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                                             </td>
                                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Due Date:</span></b><u></u><u></u></p>
                                             </td>
                                             <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                                                <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined ? Moment(RequiredData["DueDate"]).format("DD-MMMM-YYYY") : ''}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                                <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD-MMMM-YYYY") : ''}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Team Members:</span></b><u></u><u></u></p>
                                             </td>
-                                            <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                                                <p>{RequiredData["TeamMembers"] != null &&
+                                            <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt', width:'130px' }}>
+                                                <p style={{wordBreak: "break-all"}}>{RequiredData["TeamMembers"] != null &&
                                                     RequiredData["TeamMembers"].length > 0 &&
                                                     <span style={{ fontSize: '10.0pt', color: 'black' }}>
                                                         {joinObjectValues(RequiredData["TeamMembers"])}
@@ -1560,17 +1646,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                 {RequiredData["PercentComplete"]}
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>URL:</span></b><span style={{ color: "black" }}> </span><u></u><u></u></p>
-                                            </td>
-                                            <td colSpan={7} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                                                <p><span style={{ fontSize: '10.0pt', color: 'black' }}>
-                                                    {RequiredData["ComponentLink"] != null &&
-                                                        <a href={RequiredData["ComponentLink"].Url} target="_blank">{RequiredData["ComponentLink"].Url}</a>
-                                                    }</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
-                                            </td>
-                                        </tr>
+                                        
                                         <tr>
                                             <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                                                 <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Smart Priority:</span></b><span style={{ color: "black" }}> </span><u></u><u></u></p>
@@ -1580,6 +1656,19 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                             </td>
                                         </tr>
                                     </tbody>
+                                </table>
+                                <table cellPadding="0" width="99%" style={{ width: "99.0%" }}>
+                                <tr>
+                                            <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt', width:'100px' }}>
+                                                <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>URL:</span></b><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            </td>
+                                            <td colSpan={7} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                                                <p style={{ wordBreak: "break-all"}}><span style={{ fontSize: '10.0pt', color: 'black' }}>
+                                                    {RequiredData["ComponentLink"] != null &&
+                                                        <a href={RequiredData["ComponentLink"].Url} target="_blank">{RequiredData["ComponentLink"].Url}</a>
+                                                    }</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                                            </td>
+                                        </tr>
                                 </table>
                                 {RequiredData["FeedBack"] != null &&
                                     RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
@@ -1607,7 +1696,19 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                         <div style={{ marginBottom: '3.75pt' }}>
                                                                             <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span>{fbComment.AuthorName} - {fbComment.Created}<u></u><u></u></span></p>
                                                                         </div>
-                                                                        <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span><u></u><u></u></span></p>
+                                                                        <p style={{ marginLeft: '15px'}}><span><span style={{ backgroundColor: 'yellow'}}dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span><u></u><u></u></span></p>
+                                                                    
+                                                                       {fbComment?. ReplyMessages?.length>0 && fbComment?.ReplyMessages?.map((replycom:any)=>{
+                                                                        return(
+                                                                            <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                                                                            <div style={{ marginBottom: '3.75pt' }}>
+                                                                                <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span>{replycom.AuthorName} - {replycom.Created}<u></u><u></u></span></p>
+                                                                            </div>
+                                                                            <p style={{ marginLeft: '15px'}}><span><span style={{ backgroundColor: 'yellow'}} dangerouslySetInnerHTML={{ __html: replycom['Title'] }}></span><u></u><u></u></span></p>
+                                                                            </div>   
+                                                                        )
+                                                                       })}
+                                                                    
                                                                     </div>
                                                                 })}
                                                             </td>
@@ -1628,7 +1729,18 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                                 <div style={{ marginBottom: '3.75pt' }}>
                                                                                     <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}<u></u><u></u></span></p>
                                                                                 </div>
-                                                                                <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span><u></u><u></u></span></p>
+                                                                                <p style={{ marginLeft: '15px' }}><span style={{ fontSize: '10.0pt', backgroundColor: 'yellow' }}><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span><u></u><u></u></span></p>
+                                                                        {fbSubComment?. ReplyMessages?.length>0 && fbSubComment?.ReplyMessages?.map((replycom:any)=>{
+                                                                        return(
+                                                                            <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                                                                            <div style={{ marginBottom: '3.75pt' }}>
+                                                                                <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span>{replycom.AuthorName} - {replycom.Created}<u></u><u></u></span></p>
+                                                                            </div>
+                                                                            <p style={{ marginLeft: '15px'}}><span style={{ backgroundColor: 'yellow'}}><span dangerouslySetInnerHTML={{ __html: replycom['Title'] }}></span><u></u><u></u></span></p>
+                                                                            </div>   
+                                                                        )
+                                                                       })}
+                                                                            
                                                                             </div>
                                                                         })}
                                                                     </td>
@@ -1644,25 +1756,44 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                 }
                             </td>
                             {RequiredData?.CommentsArray?.length > 0 ?
-                                <td width="22%" style={{ width: '22.0%', padding: '.75pt .75pt .75pt .75pt' }}>
-                                    <table className='table table-striped ' cellPadding={0} width="100%" style={{ width: '100.0%', border: 'solid #dddddd 1.0pt', borderRadius: '4px' }}>
+                                <td width="22%" style={{ width: '22.0%', padding: '.75pt .75pt .75pt .75pt', background: 'whitesmoke' }}>
+                                    <table className='table table-striped ' cellPadding={0} width="100%" style={{ width: '100.0%', border: 'solid #dddddd 1.0pt', borderRadius: '4px', background: 'whitesmoke' }}>
                                         <tbody>
                                             <tr>
-                                                <td style={{ border: 'none', borderBottom: 'solid #dddddd 1.0pt', background: 'whitesmoke', padding: '.75pt .75pt .75pt .75pt' }}>
-                                                    <b style={{ marginBottom: '1.25pt' }}><span>Comments:<u></u><u></u></span></b>
+                                                <td style={{ border: 'none', borderBottom: 'solid #dddddd 1.0pt', background: '#fff', color: "#f333", padding: '.75pt .75pt .75pt .75pt' }}>
+                                                    <b style={{ marginBottom: '1.25pt' }}><span style={{ color: 'black' }}>Comments:<u></u><u></u></span></b>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td style={{ border: 'none', padding: '.75pt .75pt .75pt .75pt' }}>
                                                     {RequiredData["CommentsArray"] != undefined && RequiredData["CommentsArray"]?.length > 0 && RequiredData["CommentsArray"]?.map((cmtData: any, i: any) => {
-                                                        return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
-                                                            <div style={{ marginBottom: "3.75pt" }}>
-                                                                <p style={{ marginBottom: '1.25pt' }}>
-                                                                    <span style={{ color: 'black', background: '#fbfbfb' }}>{cmtData.AuthorName} - {cmtData.Created}</span></p>
-                                                            </div>
-                                                            <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
-                                                                <span style={{ color: 'black' }}>{cmtData.Description}</span></p>
-                                                        </div>
+                                                        return (
+                                                            <>
+                                                                <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                                                                    <div style={{ marginBottom: "3.75pt" }}>
+                                                                        <p style={{ marginBottom: '1.25pt' }}>
+                                                                            <span style={{ color: 'black', background: '#fbfbfb' }}>{cmtData.AuthorName} - {cmtData.Created}</span></p>
+                                                                    </div>
+                                                                    <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
+                                                                        <span style={{ color: 'black' }}>{cmtData.Description}</span></p>
+                                                                
+                                                                {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
+                                                                    return (
+                                                                        <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt', marginLeft: '10pt' }}>
+                                                                            <div style={{ marginBottom: "3.75pt" }}>
+                                                                                <p style={{ marginBottom: '1.25pt' }}>
+                                                                                    <span style={{ color: 'black', background: '#fbfbfb' }}>{replyData.AuthorName} - {replyData.Created}</span></p>
+                                                                            </div>
+                                                                            <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
+                                                                                <span style={{ color: 'black' }}>{replyData.Description}</span></p>
+                                                                        </div>
+                                                                    )
+                                                                })}
+                                                                </div>
+                                                            </>
+
+                                                        )
+
                                                     })}
                                                 </td>
                                             </tr>
@@ -1684,6 +1815,65 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
 
 
 // This is used for Send Email Notification for the Information Request Category Tasks 
+<<<<<<< HEAD
+=======
+
+export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredData: any) => {
+    try {
+        const { ItemDetails, ReceiverEmail, Context, usedFor, ReceiverName } = requiredData || {};
+        const emailMessage = GenerateMSTeamsNotification(ItemDetails);
+        const containerDiv = document.createElement('div');
+        const reactElement = React.createElement(emailMessage?.type, emailMessage?.props);
+        ReactDOM.render(reactElement, containerDiv);
+
+        let emailSubject = '';
+        let messageContent = '';
+
+        if (usedFor === "Information-Request") {
+            emailSubject = `[Information Request - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title} - Request is completed`;
+            messageContent = 'Task created from your end for Information Request has been completed. Please take necessary action';
+        }
+        if (usedFor === "Priority-Check") {
+            emailSubject = `[Task Priority Check - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title}. Please have a look`;
+            messageContent = 'Task created from your end has been set to 8%. Please take necessary action';
+        }
+
+        const emailBodyContent = `<p>Hi ${ReceiverName},</b></p>
+            <p>${messageContent}</p>
+            <b>Task Description:</b> ${containerDiv.innerHTML}
+            <p>Task Link: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
+            ${ItemDetails?.TaskId}-${ItemDetails?.Title}</a></p>
+            <p><b>Thanks,</b></p>
+            <p><b>Task Management Team</b></p>`;
+
+        const emailProps = {
+            To: ReceiverEmail,
+            Subject: emailSubject,
+            Body: emailBodyContent
+        };
+
+        if (ReceiverEmail?.length > 0) {
+            const sp = spfi().using(spSPFx(Context));
+            const data = await sp.utility.sendEmail({
+                Body: emailProps.Body,
+                Subject: emailProps.Subject,
+                To: emailProps.To,
+                AdditionalHeaders: {
+                    "content-type": "text/html"
+                },
+            });
+            console.log("Email Sent!");
+            console.log(data);
+            return data;
+        } else {
+            throw new Error("Receiver email not provided");
+        }
+    } catch (error) {
+        console.error("Error:", error.message);
+        throw error;
+    }
+};
+>>>>>>> 8acad7efe8f09300661a73fdc7754989cfc72479
 
 export const SendEmailNotificationForIRCTasks = (RequiredData: any) => {
     return new Promise(async (resolve, reject) => {
@@ -1721,8 +1911,27 @@ export const SendEmailNotificationForIRCTasks = (RequiredData: any) => {
             }
         } catch (error) {
 
+<<<<<<< HEAD
         }
     })
+=======
+// This is used for Prepare Data on The basis of sort order 
+
+export const PrepareDataAccordingToSortOrder = (SourceArray: any, currentArray: any) => {
+    try {
+        currentArray?.forEach((currentArrayObject: any) => {
+            let correspondingSourceArrayObject: any = SourceArray?.find((objA: any) => objA.Title === currentArrayObject.Title);
+            if (correspondingSourceArrayObject) {
+                currentArrayObject.SortOrder = correspondingSourceArrayObject?.SortOrder;
+            }
+        });
+        console.log(currentArray);
+        currentArray?.sort((a: any, b: any) => a.SortOrder - b.SortOrder);
+        return currentArray;
+    } catch (error) {
+        console.log("Error in PrepareDataAccordingToSortOrder function:", error.message)
+    }
+>>>>>>> 8acad7efe8f09300661a73fdc7754989cfc72479
 }
 
 

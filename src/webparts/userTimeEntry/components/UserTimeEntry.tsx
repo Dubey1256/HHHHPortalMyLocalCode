@@ -1386,7 +1386,7 @@ export default class UserTimeEntry extends React.Component<
         lastMonth.getMonth(),
         1
       );
-      var change = Moment(startingDateOfLastMonth).add(25, "days").format();
+      var change = Moment(startingDateOfLastMonth).add(18, "days").format();
       var b = new Date(change);
       formattedDate = b;
     } else if (startDateOf == "Last Week") {
@@ -1528,14 +1528,20 @@ export default class UserTimeEntry extends React.Component<
     });
   };
   private showGraph = (tileName: any) => {
-    if (DateType == "Custom") {
-      let start = Moment(this.state.startdate).format("DD/MM/YYYY");
-      let end = Moment(this.state.enddate).format("DD/MM/YYYY");
-      DateType = `${start} - ${end}`;
+    if(this.state.AllTimeEntry.length > 0){
+      if (DateType == "Custom") {
+        let start = Moment(this.state.startdate).format("DD/MM/YYYY");
+        let end = Moment(this.state.enddate).format("DD/MM/YYYY");
+        DateType = `${start} - ${end}`;
+      }
+      this.setState({
+        IsOpenTimeSheetPopup: true,
+      });
     }
-    this.setState({
-      IsOpenTimeSheetPopup: true,
-    });
+    else{
+      alert('Please click update filter button')
+    }
+   
   };
   private async generateTimeEntry() {
     let FilterTimeEntry: any[] = [];
@@ -3911,6 +3917,7 @@ export default class UserTimeEntry extends React.Component<
                     expandIcon={true}
                     customHeaderButtonAvailable={true}
                     customTableHeaderButtons={this.customTableHeaderButtons}
+                    hideTeamIcon={true}
                     showCatIcon={true}
                     exportToExcelCategoryReport={this.exportToExcel}
                     showHeader={true}

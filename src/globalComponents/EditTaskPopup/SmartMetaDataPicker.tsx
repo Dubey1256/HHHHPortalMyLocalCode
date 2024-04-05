@@ -69,7 +69,13 @@ const Picker = (item: any) => {
             NewArray = []
             SelectedCategoryBackupArray = [];
             setSelect([])
-        } else {
+        }
+        else if (usedFor == "Task-Profile") {
+            item.Call(select, "Category-Task-Footertable")
+            NewArray = []
+            SelectedCategoryBackupArray = [];
+            setSelect([])
+        }  else {
             item.props.categories = [];
             item.props.smartCategories = [];
             var title: any = {}
@@ -147,7 +153,7 @@ const Picker = (item: any) => {
     }
 
     const selectPickerData = (item: any) => {
-        if (usedFor == "Task-Popup" || usedFor == "Task-Footertable") {
+        if (usedFor == "Task-Popup" || usedFor == "Task-Footertable" || usedFor == "Task-Profile") {
             let tempArray: any = [];
             let checkDataExistCount = 0;
             if (SelectedCategoryBackupArray != undefined && SelectedCategoryBackupArray.length > 0) {
@@ -431,7 +437,7 @@ const Picker = (item: any) => {
                             <div className="">
                                 <div id="addNewTermDescription">
                                     <p className="mb-1"> New items are added under the currently selected item.
-                                        <span><a className="hreflink" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} > Add New Item </a></span>
+                                        <span><a className="hreflink" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/ManageSmartMetaData.aspx`} > Add New Item </a></span>
                                     </p>
                                 </div>
                                 <div id="SendFeedbackTr">
@@ -443,7 +449,7 @@ const Picker = (item: any) => {
                             </div>
                             <div className="pull-right">
                                 <span>
-                                    <a className="siteColor mx-1" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
+                                    <a className="siteColor mx-1" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/ManageSmartMetaData.aspx`} >Manage Smart Taxonomy</a>
                                 </span>
                                 <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveCategories} >
                                     Save

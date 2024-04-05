@@ -441,8 +441,8 @@ function ReadyMadeTable(SelectedProp: any) {
             );
             countTaskAWTLevel(countAllTasksData1);
         }
-
-        if (countAllComposubData?.length > 0) {
+ 
+        if (countAllComposubData?.length > 0 && filterTaskType==false) {
             let countAllTasksData11 = countAllComposubData?.filter(
                 (ele: any, ind: any, arr: any) => {
                     const isDuplicate =
@@ -498,6 +498,7 @@ function ReadyMadeTable(SelectedProp: any) {
                         // if (item?.TaskCategories?.some((category: any) => category.Title.toLowerCase() === "draft")) { item.isDrafted = true; }
                     });
                     AllTasks = AllTasks.concat(AllTasksMatches);
+                }
                     if (Counter == siteConfig.length) {
                         // AllTasks = AllTasks?.filter((type: any) => type.isDrafted === false);
                         map(AllTasks, (result: any) => {
@@ -709,7 +710,7 @@ function ReadyMadeTable(SelectedProp: any) {
                         }
                         // allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
                     }
-                }
+                
             });
             // GetComponents();
         }
@@ -782,9 +783,39 @@ function ReadyMadeTable(SelectedProp: any) {
                         componentData = []
                         componentGrouping(port?.Id, port?.Id);
                     }
+<<<<<<< HEAD
                 } else {
                     componentData = []
                     componentGrouping(port?.Id, index);
+=======
+                    if ('ParentTask' in SelectedProp?.SelectedItem) {
+                        let data: any = [SelectedProp?.SelectedItem]
+                        data?.map((wTdata: any) => {
+                            wTdata.subRows = [];
+                            componentWsT(wTdata);
+                        })
+                       
+                        setLoaded(true)
+                        setData(data[0]?.subRows);
+        
+        
+                    }
+                    console.log(data)
+        
+                }else{
+                    portfolioTypeData?.map((port: any, index: any) => {
+                        if (SelectedProp?.SelectedItem != undefined) {
+                            if (port.Title === SelectedProp?.SelectedItem?.PortfolioType?.Title) {
+                                componentData = []
+                                componentGrouping(port?.Id, portfolioTypeData?.length - 1);
+                            }
+                        } else {
+                            componentData = []
+                            componentGrouping(port?.Id, index);
+                        }
+        
+                    })
+>>>>>>> 8acad7efe8f09300661a73fdc7754989cfc72479
                 }
 
             })
@@ -1444,10 +1475,13 @@ function ReadyMadeTable(SelectedProp: any) {
         // setData(smartAllFilterData);
     }
     const FilterAllTask = ()=>{
-        filterTaskType=true;
-        setLoaded(false)
-        SelectedProp.TaskFilter= "PercentComplete gt '0.89'";
-        LoadAllSiteTasks()
+        if(filterTaskType==false){
+            filterTaskType=true;
+            setLoaded(false)
+            SelectedProp.TaskFilter= "PercentComplete gt '0.89'";
+            LoadAllSiteTasks()
+        }
+      
        
       }
 
@@ -2225,7 +2259,7 @@ function ReadyMadeTable(SelectedProp: any) {
                         {checkedList != null && checkedList != undefined && checkedList?.SiteIconTitle != undefined && checkedList?.SiteIconTitle != null ? <span className="Dyicons me-2" >{checkedList?.SiteIconTitle}</span> : ''} {`${checkedList != null && checkedList != undefined && checkedList?.Title != undefined && checkedList?.Title != null ? checkedList?.Title
                             + '- Create Child Component' : 'Create Component'}`}</>
                 </div>
-                <Tooltip ComponentId={checkedList?.Id} />
+                <Tooltip ComponentId="444" />
             </>
         );
     };

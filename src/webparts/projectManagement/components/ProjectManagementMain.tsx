@@ -1654,14 +1654,14 @@ const ProjectManagementMain = (props: any) => {
               >
                 <ul className="spfxbreadcrumb mb-2 ms-2 mt-16 p-0">
                   <li>
-                    <a href={`${props?.siteUrl}/SitePages/PX-Overview.aspx`}>
-                      Project Management
+                    <a data-interception="off" target="_blank" href={`${props?.siteUrl}/SitePages/PX-Overview.aspx`}>
+                      PX Management Overview
                     </a>
                   </li>
                   {Masterdata?.Item_x0020_Type != "Project" && Masterdata?.Parent?.Title ?
                     <li>
                       {" "}
-                      <a data-interception="off" href={`${props?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${Masterdata?.Parent?.Id}`}>{Masterdata?.Parent?.Title}</a>{" "}
+                      <a data-interception="off" target="_blank" href={`${props?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${Masterdata?.Parent?.Id}`}>{Masterdata?.Parent?.Title}</a>{" "}
                     </li> : ''}
                   <li>
                     {" "}
@@ -1705,7 +1705,7 @@ const ProjectManagementMain = (props: any) => {
                                 return (
                                   <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
                                     <span>
-                                      <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank" onClick={() => filterPotfolioTasks(component, index, "Component")}>
+                                      <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="_blank" onClick={() => filterPotfolioTasks(component, index, "Component")}>
                                         {component?.Title}
                                       </a>
                                     </span>
