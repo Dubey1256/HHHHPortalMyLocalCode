@@ -3930,14 +3930,11 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       IsOpenTimeSheetPopup: true
     })
   }
-<<<<<<< HEAD
-=======
   private ClickBulkUpdate = (tileName: any) => {
     this.setState({
       IsOpenbulkUpdate: true
     })
   }
->>>>>>> 8acad7efe8f09300661a73fdc7754989cfc72479
   private CallBack = () => {
     //setIsOpenTimeSheetPopup(false)
     this.setState({
@@ -4015,20 +4012,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
   }
   public render(): React.ReactElement<ICategoriesWeeklyMultipleReportProps> {
-<<<<<<< HEAD
-    //   const { AllTimeEntry } = this?.state;
-
-    //  // SPComponentLoader.loadCss("https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
-
-    //   const {
-    //     description,
-    //     isDarkTheme,
-    //     environmentMessage,
-    //     hasTeamsContext,
-    //     userDisplayName
-    //   } = this.props;
-    //  console.log('Checked === ', this.state.checked);
-=======
     const customTableHeaderButtons = (
       <>
         <a className='barChart' title='Open Bar Graph' onClick={(e) => this.showGraph(e)}><BsBarChartLine /></a>
@@ -4048,7 +4031,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       </>
     );
     console.log('Checked === ', this.state.checked);
->>>>>>> 8acad7efe8f09300661a73fdc7754989cfc72479
     return (
       <div>
         <div className="col-sm-12 padL-0">

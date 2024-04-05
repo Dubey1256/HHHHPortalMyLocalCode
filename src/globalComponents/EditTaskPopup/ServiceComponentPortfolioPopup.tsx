@@ -397,12 +397,8 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 accessorKey: "TaskID",
                 placeholder: "ID",
                 size: 136,
-<<<<<<< HEAD
-                id: 'PortfolioStructureID',
-=======
                 id: "TaskID",
 
->>>>>>> 8acad7efe8f09300661a73fdc7754989cfc72479
                 cell: ({ row, getValue }) => (
                     <div className="alignCenter">
                         {row?.original?.SiteIcon != undefined ? (
@@ -495,7 +491,6 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 accessorKey: "PercentComplete",
                 placeholder: "Status",
                 header: "",
-                id: 'PercentComplete',
                 size: 42,
                 id:"PercentComplete"
             },
@@ -520,17 +515,12 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 placeholder: "Item Rank",
                 header: "",
                 size: 42,
-<<<<<<< HEAD
-                id: "ItemRank",
-=======
                 id:"ItemRank",
->>>>>>> 8acad7efe8f09300661a73fdc7754989cfc72479
             },
             {
                 accessorKey: "DueDate",
                 placeholder: "Due Date",
                 header: "",
-                id: "DueDate",
                 size: 100,
                 id:"DueDate",
             },

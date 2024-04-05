@@ -783,11 +783,6 @@ function ReadyMadeTable(SelectedProp: any) {
                         componentData = []
                         componentGrouping(port?.Id, port?.Id);
                     }
-<<<<<<< HEAD
-                } else {
-                    componentData = []
-                    componentGrouping(port?.Id, index);
-=======
                     if ('ParentTask' in SelectedProp?.SelectedItem) {
                         let data: any = [SelectedProp?.SelectedItem]
                         data?.map((wTdata: any) => {
@@ -815,7 +810,6 @@ function ReadyMadeTable(SelectedProp: any) {
                         }
         
                     })
->>>>>>> 8acad7efe8f09300661a73fdc7754989cfc72479
                 }
 
             })
