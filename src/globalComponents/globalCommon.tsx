@@ -1436,14 +1436,14 @@ export const sendImmediateEmailNotifications = async (
                             }
                         } else if (
                             UpdateItem?.PercentComplete == 0 &&
-                            UpdateItem?.Category?.toLowerCase()?.indexOf("design") > -1
+                            UpdateItem?.Category?.toLowerCase()?.indexOf("user experience - ux") > -1
                         ) {
                             if (isLoadNotification == "DesignMail") {
                                 Subject =
                                     "[" +
                                     siteType +
                                     " - " +
-                                    "Design" +
+                                    "User Experience - UX" +
                                     "]" +
                                     UpdateItem?.Title +
                                     "";
@@ -2166,6 +2166,7 @@ export const GetCompleteTaskId = (Item: any) => {
     }
     return taskIds;
 };
+
 export const GetTaskId = (Item: any) => {
     const { TaskID, ParentTask, Id, TaskType, Item_x0020_Type } = Item;
     let taskIds = "";
@@ -2605,7 +2606,7 @@ export const AwtGroupingAndUpdatePrarticularColumn = async (findGrouping: any, A
                 });
         }
     }
-    return { findGrouping, flatdata };
+    return { findGrouping, flatdata }; 
 }
 export const replaceURLsWithAnchorTags = (text:any) => {
     // Regular expression to match URLs
@@ -3344,19 +3345,3 @@ export const findTaskCategoryParent = (taskCategories: any, result: any) => {
     }
     return result;
 }
-export const smartTimeUseLocalStorage = (AllTasksData:any,timeEntryDataLocalStorage:any) => {
-    if (timeEntryDataLocalStorage?.length > 0) {
-        const timeEntryIndexLocalStorage = JSON.parse(timeEntryDataLocalStorage)
-        AllTasksData?.map((task: any) => {
-            task.TotalTaskTime = 0;
-            task.timeSheetsDescriptionSearch = "";
-            const key = `Task${task?.siteType + task.Id}`;
-            if (timeEntryIndexLocalStorage.hasOwnProperty(key) && timeEntryIndexLocalStorage[key]?.Id === task.Id && timeEntryIndexLocalStorage[key]?.siteType === task.siteType) {
-                // task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime;
-                task.TotalTaskTime = timeEntryIndexLocalStorage[key]?.TotalTaskTime % 1 != 0 ? parseFloat(timeEntryIndexLocalStorage[key]?.TotalTaskTime?.toFixed(2)) : timeEntryIndexLocalStorage[key]?.TotalTaskTime;
-                task.timeSheetsDescriptionSearch = timeEntryIndexLocalStorage[key]?.timeSheetsDescriptionSearch;
-            }
-        });
-        return AllTasksData;
-    }
-};

@@ -364,10 +364,20 @@ export default class UserTimeEntry extends React.Component<
             let currentCount = siteConfig?.length;
             if (arraycount === currentCount) {
               AllSitesAllTasks = AllSiteTasks;
+            
+              let completionCounter = 0; // Counter to track completion
+            
               totalTimedata?.map((data: any) => {
                 data.taskDetails = this.checkTimeEntrySite(data);
+                
+                completionCounter++;
+            
+                // Check if all items have been processed
+                if (completionCounter === totalTimedata.length) {
+                  // If all items are processed, execute setState
+                  this.setState({ disableProperty: false });
+                }
               });
-              this.setState({ disableProperty: false });
             }
           } else {
             arraycount++;
@@ -1347,6 +1357,7 @@ export default class UserTimeEntry extends React.Component<
     });
   }
   private updatefilter(IsLoader: any) {
+    this.setState({ disableProperty: true });
     if (
       this.state.ImageSelectedUsers == undefined ||
       this.state.ImageSelectedUsers.length == 0
@@ -3301,13 +3312,13 @@ export default class UserTimeEntry extends React.Component<
                 <a>All Timesheets</a>{" "}
               </span>
               <span className="text-end fs-6">
-                <a
+                {/* <a
                   target="_blank"
                   data-interception="off"
                   href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}
                 >
                   Old UserTimeEntry
-                </a>
+                </a> */}
               </span>
             </h2>
           </div>
@@ -3880,7 +3891,7 @@ export default class UserTimeEntry extends React.Component<
                 </Col>
               </Col>
             </details>
-            {this.state.showShareTimesheet && (
+           
               <span
                 className={
                   this.state.disableProperty
@@ -3892,7 +3903,7 @@ export default class UserTimeEntry extends React.Component<
                 <span className="svg__iconbox svg__icon--mail ms-1"></span>Share{" "}
                 {DateType}'s Time Entry
               </span>
-            )}
+            
           </Col>
           <div className="col">
             <section className="TableContentSection">
