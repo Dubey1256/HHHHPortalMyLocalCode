@@ -5,7 +5,8 @@ import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
 import { useState } from 'react';
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 import { myContextValue } from '../../../globalComponents/globalCommon';
-export default function CustomNode(props: any) {
+
+export default function CustomNode(props:any) {
     const globalContextData: any = React.useContext<any>(myContextValue)
     return (
         <>

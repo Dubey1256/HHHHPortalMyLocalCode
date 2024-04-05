@@ -394,9 +394,10 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 size: 55,
                 id: 'Id',
             }, {
-                accessorKey: "PortfolioStructureID",
+                accessorKey: "TaskID",
                 placeholder: "ID",
                 size: 136,
+                id: "TaskID",
 
                 cell: ({ row, getValue }) => (
                     <div className="alignCenter">
@@ -448,34 +449,50 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 header: "",
             },
             {
-                accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title)?.join("-"),
+                accessorFn: (row) => row?.ClientCategorySearch,
                 cell: ({ row }) => (
                     <>
-                           <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadataItems?.length <= 0 ? AllMetadata : AllMetadataItems} />
+                        <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadataItems?.length <= 0 ? AllMetadata : AllMetadataItems} />
                     </>
                 ),
-                id: 'ClientCategory',
+                id: "ClientCategorySearch",
                 placeholder: "Client Category",
                 header: "",
+                resetColumnFilters: false,
                 size: 100,
+                isColumnVisible: true
             },
             {
-                accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title)?.join("-"),
+                accessorFn: (row) => row?.AllTeamName,
                 cell: ({ row }) => (
-                    <div>
-                        <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} />
+                    <div className="alignCenter">
+                        <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers}/>
                     </div>
                 ),
-                id: 'TeamLeaderUser',
+                id: "AllTeamName",
                 placeholder: "Team",
                 header: "",
                 size: 100,
+              
             },
+            // {
+            //     accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title)?.join("-"),
+            //     cell: ({ row }) => (
+            //         <div>
+            //             <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} />
+            //         </div>
+            //     ),
+            //     id: 'TeamLeaderUser',
+            //     placeholder: "Team",
+            //     header: "",
+            //     size: 100,
+            // },
             {
                 accessorKey: "PercentComplete",
                 placeholder: "Status",
                 header: "",
                 size: 42,
+                id:"PercentComplete"
             },
             {
                 accessorKey: "descriptionsSearch",
@@ -498,12 +515,14 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 placeholder: "Item Rank",
                 header: "",
                 size: 42,
+                id:"ItemRank",
             },
             {
                 accessorKey: "DueDate",
                 placeholder: "Due Date",
                 header: "",
                 size: 100,
+                id:"DueDate",
             },
             {
                 cell: ({ row, getValue }) => (
@@ -774,8 +793,17 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     
     const customTableHeaderButtons1 = (
         <>
-            <button type="button" className="btn btn-primary" onClick={() => OpenAddStructureModal()}>{showProject == true?"Add Project":"Add Structure"}</button>
-            <button type="button" className="btn btn-primary" onClick={() => openCompareTool()}> Compare</button>
+            {/* <button type="button" className="btn btn-primary" onClick={() => OpenAddStructureModal()}>{showProject == true?"Add Project":"Add Structure"}</button> */}
+            {  childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length<2 ?
+                <button type="button" className="btn btn-primary" style={{  color: "#fff" }} title=" Add Structure" onClick={() => OpenAddStructureModal()}>
+                    {" "}{showProject == true?"Add Project":"Add Structure"}{" "}</button> :
+                <button type="button" disabled className="btn btn-primary" style={{ color: "#fff" }} title=" Add Structure"> {" "} Add Structure{" "}</button>
+            }
+
+            {(childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length>0) ?
+                < button type="button" className="btn btn-primary" title='Compare' style={{color: '#fff' }} onClick={() => openCompareTool()}>Compare</button> :
+                <button type="button" className="btn btn-primary" style={{ color: '#fff' }} disabled={true} >Compare</button>
+            }
             <label className="switch me-2" htmlFor="checkbox5">
             <input checked={IsSelectionsBelow} onChange={() => checkSelection1("SelectionsBelow")} type="checkbox" id="checkbox5" />
                 {IsSelectionsBelow === true ? <div className="slider round" title='Switch to Single Selection' ></div> : <div title='Switch to  Multi Selection' className="slider round"></div>}
