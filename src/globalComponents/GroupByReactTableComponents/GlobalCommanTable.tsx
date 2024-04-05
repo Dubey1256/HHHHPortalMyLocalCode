@@ -712,7 +712,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 }
             })
         }
-    }, [data])
+    }, [])
     /****************** defult Expend Other Section end *******************/
     /****************** defult sorting  part end *******************/
 
