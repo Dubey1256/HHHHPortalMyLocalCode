@@ -3880,7 +3880,7 @@ export default class UserTimeEntry extends React.Component<
                 </Col>
               </Col>
             </details>
-            {this.state.showShareTimesheet && (
+           
               <span
                 className={
                   this.state.disableProperty
@@ -3892,7 +3892,7 @@ export default class UserTimeEntry extends React.Component<
                 <span className="svg__iconbox svg__icon--mail ms-1"></span>Share{" "}
                 {DateType}'s Time Entry
               </span>
-            )}
+            
           </Col>
           <div className="col">
             <section className="TableContentSection">
