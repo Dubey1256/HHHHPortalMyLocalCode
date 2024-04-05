@@ -3166,9 +3166,12 @@ const EditTaskPopup = (Items: any) => {
         if (ApproverData != undefined && ApproverData?.length > 0) {
             ApproverData?.map((ApproverInfo) => {
                 if (ApproverInfo.Id == undefined) {
-                    ApproverInfo.Id = ApproverInfo.AssingedToUserId;
+                    ApproverIds.push(ApproverInfo.AssingedToUserId)
                 }
-                ApproverIds.push(ApproverInfo.AssingedToUserId);
+                else{
+                    ApproverIds.push(ApproverInfo.Id);
+                }
+               
             });
         }
 
