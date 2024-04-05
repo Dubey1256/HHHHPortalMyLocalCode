@@ -3301,13 +3301,13 @@ export default class UserTimeEntry extends React.Component<
                 <a>All Timesheets</a>{" "}
               </span>
               <span className="text-end fs-6">
-                <a
+                {/* <a
                   target="_blank"
                   data-interception="off"
                   href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}
                 >
                   Old UserTimeEntry
-                </a>
+                </a> */}
               </span>
             </h2>
           </div>
