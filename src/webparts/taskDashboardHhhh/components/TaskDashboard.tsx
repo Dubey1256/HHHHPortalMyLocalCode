@@ -1316,7 +1316,7 @@ const TaskDashboard = (props: any) => {
                 taskUser = await web.lists
                     .getById(AllListId?.TaskUsertListID)
                     .items
-                    .select("Id,UserGroupId,Suffix,IsActive,Title,Email,SortOrder,Role,showAllTimeEntry,Company,Group,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+                    .select("Id,UserGroupId,TimeCategory,Suffix,IsActive,Title,Email,SortOrder,Role,showAllTimeEntry,Company,Group,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
                     .filter('IsActive eq 1')
                     .get();
             }
@@ -1903,6 +1903,9 @@ const TaskDashboard = (props: any) => {
                             let UserTotalTime = 0 
                             tasksCopy = filterCurrentUserWorkingTodayTask(teamMember?.AssingedToUserId)
                             if (tasksCopy?.length > 0) {
+                                tasksCopy = tasksCopy?.sort((a: any, b: any) => {
+                                    return b?.SmartPriority - a?.SmartPriority;
+                                });
                                 tasksCopy?.map((item: any) => {
                                     taskCount+=1;
                                     let teamUsers: any = [];
@@ -1972,7 +1975,7 @@ const TaskDashboard = (props: any) => {
                                     <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">% </th>
                                     <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Smart Priority</th>
                                     <th width="70" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px" >Time</th>
-                                    <th height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px; border-right:0px" >Est Desc.</th>
+                                    <th height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px; border-right:0px" >Timesheet Description (Draft)</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -2013,8 +2016,8 @@ const TaskDashboard = (props: any) => {
                 + '<h3>'
                 + currentUserData?.Title
                 + '</h3>'
-                subject = `[Todays Working Tasks - Team Wise] ${Moment(new Date()).format('YYYY-MM-DD')}: ${taskCount} Tasks; ${totalTime/estimatedTimeUsersCount} hrs scheduled on average`
-            SendEmailFinal(to, subject, sendAllTasks.replaceAll(",", "  "));
+                subject = `[Todays Working Tasks - Team Wise] ${Moment(new Date()).format('YYYY-MM-DD')} - ${taskCount} Tasks`
+                SendEmailFinal(to, subject, sendAllTasks.replaceAll("," , "  "));
 
         }
 
@@ -2106,7 +2109,7 @@ const TaskDashboard = (props: any) => {
                                     <li className="nav__item  pb-1 pt-0">
 
                                     </li>
-                                    {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
+                                    {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Santosh Kumar"  || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
                                         <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
                                             Share Everyone's Today's Task
                                         </a> : ''}

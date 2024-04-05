@@ -917,31 +917,37 @@ function reverseArray(arr: any) {
       return entry1.Title === entry2.Title;
     }
 
-    console.log("mergedFinalData", mergedFinalData);
+    const finalData1 = mergedFinalData.map((item) => {
+      if (item.Created !== undefined) {
+          item.Created = '';
+      }
+      return item; 
+  });
+    console.log("mergedFinalData", finalData1);
     console.log(
       "TaskTimeSheetCategoriesGrouping",
       TaskTimeSheetCategoriesGrouping
     );
-
-
-    setBackupData(mergedFinalData);
+  
+    setBackupData(finalData1);
     if(Flatview == true){
-      flatviewOpen(Flatview,mergedFinalData)
+      flatviewOpen(Flatview,finalData1)
     }
     else{
-      mergedFinalData.forEach(item => {
+      finalData1.forEach(item => {
         item.subRows?.sort((a:any, b:any) => {
           const dateA:any = new Date(a.TaskDate.split('/').reverse().join('/'));
           const dateB:any = new Date(b.TaskDate.split('/').reverse().join('/'));
           return dateB - dateA;
         });
+
       });
      
-      backupEdit = mergedFinalData;
-      setData(mergedFinalData);
-      setBackupData(mergedFinalData);
+      backupEdit = finalData1;
+      setData(finalData1);
+      setBackupData(finalData1);
       setTimeSheet(TaskTimeSheetCategoriesGrouping);
-      console.log("finalData", finalData);
+      console.log("finalData", finalData1);
      
     }
 

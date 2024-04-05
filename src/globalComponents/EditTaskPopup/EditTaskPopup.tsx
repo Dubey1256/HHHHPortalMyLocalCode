@@ -2638,7 +2638,7 @@ const EditTaskPopup = (Items: any) => {
                         const CheckForInformationRequestCategory: any = TaskCategories.includes("Information Request");
                         let checkStatusUpdate = Number(taskPercentageValue) * 100;
                         // This is used for send MS Teams Notification 
-                        if (SendCategoryName !== "Bottleneck") {
+                        if (TaskCategories !== "Bottleneck" && TaskCategories !== "Immediate" && TaskCategories !== "Design") {
                             try {
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
@@ -3159,22 +3159,37 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
             TaskAssignedTo?.map((taskInfo) => {
-                AssignedToIds.push(taskInfo.AssingedToUserId);
+                if(taskInfo.AssingedToUserId != undefined){
+                    AssignedToIds.push(taskInfo.AssingedToUserId);   
+                }
+                else{
+                    AssignedToIds.push(taskInfo.Id);
+                }
+               
             });
         }
 
         if (ApproverData != undefined && ApproverData?.length > 0) {
             ApproverData?.map((ApproverInfo) => {
-                if (ApproverInfo.Id == undefined) {
-                    ApproverInfo.Id = ApproverInfo.AssingedToUserId;
+                if (ApproverInfo.AssingedToUserId != undefined) {
+                    ApproverIds.push(ApproverInfo.AssingedToUserId)
                 }
-                ApproverIds.push(ApproverInfo.AssingedToUserId);
+                else{
+                    ApproverIds.push(ApproverInfo.Id);
+                }
+               
             });
         }
 
         if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
             TaskTeamMembers?.map((taskInfo) => {
-                TeamMemberIds.push(taskInfo.AssingedToUserId);
+                if (taskInfo.AssingedToUserId != undefined) {
+                    TeamMemberIds.push(taskInfo.AssingedToUserId)
+                }
+                else{
+                    TeamMemberIds.push(taskInfo.Id);
+                }
+               
             });
         }
 
@@ -3195,7 +3210,13 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
             TaskResponsibleTeam?.map((taskInfo) => {
-                ResponsibleTeamIds.push(taskInfo.AssingedToUserId);
+                if (taskInfo.AssingedToUserId != undefined) {
+                    ResponsibleTeamIds.push(taskInfo.AssingedToUserId)
+                }
+                else{
+                    ResponsibleTeamIds.push(taskInfo.Id);
+                }
+               
             });
         }
         if (

@@ -266,7 +266,7 @@ const EmailNotificationMail = (props: any) => {
                       <td width='200pt' valign="top">
                         <table>
                             <>
-                              {props.items?.ImageData.map((val: any, index: any) => {
+                              {props.items?.ImageData?.map((val: any, index: any) => {
                                 return (
                                   <>
                                     <tr className='BasicimagesInfo_group'>
