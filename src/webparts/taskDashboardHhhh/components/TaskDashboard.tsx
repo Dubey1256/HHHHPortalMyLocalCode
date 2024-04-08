@@ -484,8 +484,12 @@ const TaskDashboard = (props: any) => {
                             taskUsers?.map((user: any) => {
                                 if (user.AssingedToUserId == taskUser.Id) {
                                     if (user?.Title != undefined) {
-                                        task.TeamMembersSearch =
-                                            task.TeamMembersSearch + " " + user?.Title;
+                                        if(task.TeamMembersSearch?.includes(user?.Title)){
+                                            task.TeamMembersSearch = task.TeamMembersSearch
+                                        }
+                                        else{
+                                            task.TeamMembersSearch = task.TeamMembersSearch + " " + user?.Title;
+                                        }
                                     }
                                     newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
                                     newuserdata["Suffix"] = user?.Suffix;
