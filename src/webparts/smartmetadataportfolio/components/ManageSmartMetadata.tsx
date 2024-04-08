@@ -17,6 +17,7 @@ let ParentMetaDataItems: any = [];
 let TabsData: any = [];
 let SelectedMetadataItem: any = [];
 let CopySmartmetadata: any = []
+let UrlTabName: any = ""
 export default function ManageSmartMetadata(selectedProps: any) {
     const MyContextValue: any = useContext(myContextValue)
     const [SmartmetadataAdd, setSmartmetadataAdd] = useState(false);
@@ -43,6 +44,9 @@ export default function ManageSmartMetadata(selectedProps: any) {
         childRefdata = { ...childRef };
 
     }
+    const params = new URLSearchParams(window.location.search);
+    UrlTabName = params.get('TabName');
+    console.log(params.get('TabName'));
     //...........................................................Start Filter SmartMetadata Items counts....................................................
 
     const getFilterMetadataItems = (Metadata: any) => {
@@ -92,13 +96,16 @@ export default function ManageSmartMetadata(selectedProps: any) {
     };
     const LoadSmartMetadata = async () => {
         try {
-            let web = new Web(selectedProps.AllList.SPSitesListUrl);
-            const AllMetaDataItems = await web.lists.getById(selectedProps.AllList.SPSmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderby=Title&$filter=isDeleted ne 1").getAll();
+            let web = new Web(selectedProps?.AllList?.SPSitesListUrl);
+            const AllMetaDataItems = await web.lists.getById(selectedProps?.AllList?.SmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderby=Title&$filter=isDeleted ne 1").getAll();
             SmartmetadataItems = SmartmetadataItems.concat(AllMetaDataItems)
             if (TabsData.length > 0) {
                 TabsData.filter((item: any) => {
-                    if (item.Title === 'Categories')
-                        ShowingTabsData(item.Title);
+                    if (UrlTabName !== null) {
+                        ShowingTabsData(UrlTabName)
+                    } else {
+                        ShowingTabsData("Categories");
+                    }
                 })
             }
         } catch (error) {
@@ -326,7 +333,10 @@ export default function ManageSmartMetadata(selectedProps: any) {
         },
     ],
         [Smartmetadata]);
-
+    const closeCreateSmartMetadataPopup = () => {
+        setSmartmetadataAdd(false);
+        childRefdata?.current?.setRowSelection({});
+    }
     const CloseEditSmartMetaPopup = () => {
         setSmartMetadataEditPopupOpen(false);
         childRefdata?.current?.setRowSelection({});
@@ -481,6 +491,11 @@ export default function ManageSmartMetadata(selectedProps: any) {
     const buttonRestructureCheck = () => {
         setSmartmetadataRestructure(true);
     }
+    const closeCompareAndRestructuepopup = () => {
+        setSmartmetadataCompare(false);
+        setSmartmetadataRestructure(false);
+        childRefdata?.current?.setRowSelection({});
+    }
     const customTableHeaderButtons = (
         <div>
             <button type="button" title="Add" onClick={OpenCreateSmartMetadataPopup} className="btnCol btn btn-primary">Add +</button>
@@ -506,14 +521,14 @@ export default function ManageSmartMetadata(selectedProps: any) {
                         <span>
                             {
                                 SmartmetadataAdd === true ?
-                                    <CreateMetadataItem AddButton={SmartmetadataAdd} childRefdata={childRefdata} AllList={selectedProps.AllList} addItemCallBack={callBackSmartMetaData} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedMetadataItem} setName={setName} ParentItem={Smartmetadata} TabSelected={TabSelected} categoriesTabName={categoriesTabName}></CreateMetadataItem>
+                                    <CreateMetadataItem AddButton={SmartmetadataAdd} childRefdata={childRefdata} AllList={selectedProps.AllList} addItemCallBack={callBackSmartMetaData} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} closeCreateSmartMetadataPopup={closeCreateSmartMetadataPopup} SelectedItem={SelectedMetadataItem} setName={setName} ParentItem={Smartmetadata} TabSelected={TabSelected} categoriesTabName={categoriesTabName}></CreateMetadataItem>
                                     : ''
                             }
                         </span>
                         <span>
                             {
                                 SmartmetadataCompare === true ?
-                                    <CompareSmartMetaData CompareButton={SmartmetadataCompare} childRefdata={childRefdata} AllList={selectedProps.AllList} compareSeletected={SelectedMetadataItem} ref={childRef} SelectedItem={SelectedMetadataItem} setName={setName} ParentItem={Smartmetadata} TabSelected={TabSelected}></CompareSmartMetaData>
+                                    <CompareSmartMetaData closeComparepopup={closeCompareAndRestructuepopup} CompareButton={SmartmetadataCompare} childRefdata={childRefdata} AllList={selectedProps.AllList} compareSeletected={SelectedMetadataItem} ref={childRef} SelectedItem={SelectedMetadataItem} setName={setName} ParentItem={Smartmetadata} TabSelected={TabSelected}></CompareSmartMetaData>
                                     : ''
                             }
                         </span>
@@ -521,6 +536,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                             {
                                 SmartmetadataRestructure === true ?
                                     <RestructureSmartMetaData
+                                        closeRestructurepopup={closeCompareAndRestructuepopup}
                                         RestructureButton={SmartmetadataRestructure} childRefdata={childRefdata} AllList={selectedProps.AllList} ref={childRef} AllMetaData={Smartmetadata} restructureItemCallBack={callBackSmartMetaData} restructureItem={SelectedMetadataItem} SmartrestructureFunct={SmartrestructureFunct} TabSelected={TabSelected} />
                                     : ''
                             }
@@ -528,7 +544,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                     </div>
                 </section>
                 <ul className="nav nav-tabs" role="tablist">
-                    {Tabs.map((item: any, index: any) => (
+                    {Tabs?.map((item: any, index: any) => (
                         <button className={
                             index === 0
                                 ? "nav-link active"
@@ -538,7 +554,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                         </button>
                     ))}
                     <span className='ml-auto'>
-                        <a className='text-end hyperlink ' onClick={() => generateJSONOfTaskLists()}>Generate JSON </a>
+                        <a className='text-end hyperlink' onClick={() => generateJSONOfTaskLists()}>Generate JSON </a>
                     </span>
                 </ul>
                 <div className="border border-top-0 clearfix p-2 tab-content " id="myTabContent">
