@@ -19,7 +19,7 @@ const CreateAllStructureComponent = (props: any) => {
     const [OpenAddStructurePopup, setOpenAddStructurePopup] = React.useState(true)
     const [count, setCount] = React.useState(0)
     const [loaded, setLoaded] = React.useState(true);
-    const [components, setComponents] = React.useState<any>([{ id: 1, value: '', isCheckedSub: false, isCheckedComp: false , Feature: [{ id: 1, isChecked: false, value: '' }], SubComponent: [{ id: 1, isCheckedSub: false, value: '', Feature: [{ id: 1, isChecked: false, value: '' }] }] }]);
+    const [components, setComponents] = React.useState<any>([{ id: 1, value: '', isCheckedSub: false, isCheckedFea: false,Feature:[{}], SubComponent: [{ id: 1, isCheckedSub: false, value: '', Feature: [{ }] }] }]);
     const [Subcomponents, setSubComponents] = React.useState([{ id: 1, value: '' }]);
     const [Feature, setFeature] = React.useState([{ id: 1, value: '' }]);
 
@@ -50,12 +50,12 @@ const CreateAllStructureComponent = (props: any) => {
     console.log(components,"hi");
     const handleAddSubComponent = (componentIndex: number, subComIndex: any, FeaIndex: any, Type: any) => {
         if (Type == 'Component') {
-            const newComponent = { id: components.length + 1, value: '', isCheckedSub: false, isCheckedComp: false,Feature: [{ id: 1, value: '' }] , SubComponent: [{ id: 1, isCheckedSub: false, value: ''}] }
+            const newComponent = { id: components.length + 1, value: '', isCheckedSub: false, isCheckedComp: false,Feature: [{}] , SubComponent: [{}] }
             //components.push(newComponent)
             setComponents([...components, newComponent]);
         }
         if (Type == 'SubComponent') {
-            components[componentIndex].SubComponent.push({ id: subComIndex + 2, isCheckedSub: true, value: '', Feature: [{ id: 1, value: '' }] })
+            components[componentIndex].SubComponent.push({ id: subComIndex + 2, isCheckedSub: true, value: '', Feature: [{  }] })
             
             setComponents(components);
             setCount(count + 1) 
@@ -416,7 +416,7 @@ const CreateAllStructureComponent = (props: any) => {
             .top(1)
             .get()
         console.log(results)
-            
+            ;
         return results
     }
 
@@ -453,6 +453,7 @@ const CreateAllStructureComponent = (props: any) => {
         else {
             component.SubComponent.push({ id: component.SubComponent.length + 1, isCheckedSub: true, value: '', Feature: [{ id: 1, value: '' }] })
             component.isCheckedSub = true;
+            component.isCheckedFea = false;
             setCount(count + 1)
         }
     }
@@ -464,7 +465,13 @@ const CreateAllStructureComponent = (props: any) => {
     }
     return (
         <>
-          
+            {/* <Panel
+        onRenderHeader={onRenderCustomHeaderMain1}
+        type={PanelType.medium}
+        isOpen={OpenAddStructurePopup}
+        isBlocking={false}
+        onDismiss={AddStructureCallBackCall}
+      > */}
             <div className={defaultPortfolioType == 'Events' ? 'eventpannelorange' : ((defaultPortfolioType == 'Service' || defaultPortfolioType == 'Service Portfolio') ? 'serviepannelgreena' : 'component Portfolio clearfix')}>
                 <div className='modal-body '>
 
@@ -480,6 +487,7 @@ const CreateAllStructureComponent = (props: any) => {
                         </div> </>}
 
                     <div>
+                       
                         {components?.map((component: any, index: any) => (
 
                             <div key={component.id} className="mb-5">
@@ -601,7 +609,7 @@ const CreateAllStructureComponent = (props: any) => {
                                 value={Features.value}
                                 onChange={(event) => handleInputChange(index, indexSub, indexFea, event, 'feature')}
                             />
-                            {Subcomponent.Feature.length == 1 && Subcomponent.isCheckedFea===true && <span onClick={() => handleDelete(index, indexSub, indexFea, 'feature')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>}
+                            {Subcomponent.Feature.length == 1 && (component.isCheckedFea===true || Subcomponent.isCheckedFea===true) &&  <span onClick={() => handleDelete(index, indexSub, indexFea, 'feature')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>}
                           
                             
                             {indexFea === Subcomponent.Feature.length - 1 && (
