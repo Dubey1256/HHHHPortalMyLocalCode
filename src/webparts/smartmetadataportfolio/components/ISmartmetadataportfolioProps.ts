@@ -5,7 +5,7 @@ export interface ISmartmetadataportfolioProps {
   hasTeamsContext: boolean;
   userDisplayName: string;
   SPSiteConfigListID: string;
-  SPSmartMetadataListID: string;
+  SmartMetadataListID: string;
   SPTopNavigationListID: string
   PageUrl: any
   SPSitesListUrl: string;

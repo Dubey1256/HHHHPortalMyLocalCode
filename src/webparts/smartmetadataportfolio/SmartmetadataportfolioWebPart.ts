@@ -15,7 +15,7 @@ import { ISmartmetadataportfolioProps } from './components/ISmartmetadataportfol
 export interface ISmartmetadataportfolioWebPartProps {
   SPSiteConfigListID: string;
   SPSitesListUrl: string;
-  SPSmartMetadataListID: string;
+  SmartMetadataListID: string;
   SPTopNavigationListID: string;
   TaskUsertListID: string
   description: string;
@@ -40,7 +40,7 @@ export default class SmartmetadataportfolioWebPart extends BaseClientSideWebPart
         userDisplayName: this.context.pageContext.user.displayName,
         SPSitesListUrl: this.context.pageContext.web.absoluteUrl,
         SPSiteConfigListID: this.properties.SPSiteConfigListID,
-        SPSmartMetadataListID: this.properties.SPSmartMetadataListID,
+        SmartMetadataListID: this.properties.SmartMetadataListID,
         SPTopNavigationListID: this.properties.SPTopNavigationListID,
         TaskUsertListID: this.properties.TaskUsertListID,
         PageUrl: this.context?.pageContext?.site?.serverRequestPath,
@@ -105,8 +105,8 @@ export default class SmartmetadataportfolioWebPart extends BaseClientSideWebPart
                 PropertyPaneTextField('SPSiteConfigListID', {
                   label: 'SPSiteConfigListID'
                 }),
-                PropertyPaneTextField('SPSmartMetadataListID', {
-                  label: 'SPSmartMetadataListID'
+                PropertyPaneTextField('SmartMetadataListID', {
+                  label: 'SmartMetadataListID'
                 }),
                 PropertyPaneTextField('SPTopNavigationListID', {
                   label: 'SPTopNavigationListID'
