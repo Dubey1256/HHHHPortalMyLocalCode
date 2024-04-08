@@ -14,8 +14,8 @@ import { IPermissionManagementProps } from './components/IPermissionManagementPr
 
 export interface IPermissionManagementWebPartProps {
   description: string;
-  SitePagesList:"16839758-4688-49D5-A45F-CFCED9F80BA6",
-  TaskUsertListID:string
+  SitePagesList: "16839758-4688-49D5-A45F-CFCED9F80BA6",
+  TaskUsertListID: string
 }
 
 export default class PermissionManagementWebPart extends BaseClientSideWebPart<IPermissionManagementWebPartProps> {
@@ -34,8 +34,8 @@ export default class PermissionManagementWebPart extends BaseClientSideWebPart<I
         userDisplayName: this.context.pageContext.user.displayName,
         siteUrl: this.context.pageContext.web.absoluteUrl,
         SitePagesList: this.properties.SitePagesList,
-        TaskUsertListID:this.properties.TaskUsertListID,
-        context:this.context.pageContext
+        TaskUsertListID: this.properties.TaskUsertListID,
+        context: this.context
       }
     );
 
@@ -53,7 +53,7 @@ export default class PermissionManagementWebPart extends BaseClientSideWebPart<I
   private _getEnvironmentMessage(): Promise<string> {
     if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
       return this.context.sdks.microsoftTeams.teamsJs.app.getContext()
-        .then((context:any) => {
+        .then((context: any) => {
           let environmentMessage: string = '';
           switch (context.app.host.name) {
             case 'Office': // running in Office
@@ -116,7 +116,7 @@ export default class PermissionManagementWebPart extends BaseClientSideWebPart<I
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
                 }),
-                 PropertyPaneTextField('SitePagesList', {
+                PropertyPaneTextField('SitePagesList', {
                   label: 'Site Pages'
                 }),
                 PropertyPaneTextField('TaskUsertListID', {
