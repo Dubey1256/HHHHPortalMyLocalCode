@@ -4820,32 +4820,51 @@ const EditTaskPopup = (Items: any) => {
             setWorkingAction([...copyWorkAction]);
             console.log("Bottleneck All Details:", copyWorkAction)
         } else {
+            let ApproverHistoryObject: any 
             selectApproverFunction(ApproverData);
             setTaskAssignedTo([ApproverData]);
             setTaskTeamMembers([ApproverData]);
             TaskApproverBackupArray = [ApproverData];
-            StatusOptions?.map((item: any) => {
-                if (item.value == 1) {
-                    Items.sendApproverMail = true;
-                    setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: "1" });
-                    setPercentCompleteStatus(item.status);
-                    setTaskStatus(item.taskStatusComment);
-                }
-            });
-            let ApproverHistoryObject: any = {
-                ApproverName: ApproverData.Title,
-                ApprovedDate: Moment(new Date())
-                    .tz("Europe/Berlin")
-                    .format("DD MMM YYYY HH:mm"),
-                ApproverId: ApproverData.AssingedToUserId,
-                ApproverImage:
-                    ApproverData.Item_x0020_Cover != undefined ||
-                        ApproverData.Item_x0020_Cover != null
-                        ? ApproverData.Item_x0020_Cover.Url
-                        : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-                ApproverSuffix: ApproverData.Suffix,
-                ApproverEmail: ApproverData.Email,
-            };
+            if(useFor=="Bottleneck"||useFor=="Attention"){
+                ApproverHistoryObject = {
+                    ApproverName: ApproverData.Title,
+                    ApprovedDate: Moment(new Date())
+                        .tz("Europe/Berlin")
+                        .format("DD MMM YYYY HH:mm"),
+                    ApproverId: ApproverData.AssingedToUserId,
+                    ApproverImage:
+                        ApproverData.Item_x0020_Cover != undefined ||
+                            ApproverData.Item_x0020_Cover != null
+                            ? ApproverData.Item_x0020_Cover.Url
+                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                    ApproverSuffix: ApproverData.Suffix,
+                    ApproverEmail: ApproverData.Email,
+                };  
+            }else{
+                StatusOptions?.map((item: any) => {
+                    if (item.value == 1 ) {
+                        Items.sendApproverMail = true;
+                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: "1" });
+                        setPercentCompleteStatus(item.status);
+                        setTaskStatus(item.taskStatusComment);
+                    }
+                });
+                 ApproverHistoryObject = {
+                    ApproverName: ApproverData.Title,
+                    ApprovedDate: Moment(new Date())
+                        .tz("Europe/Berlin")
+                        .format("DD MMM YYYY HH:mm"),
+                    ApproverId: ApproverData.AssingedToUserId,
+                    ApproverImage:
+                        ApproverData.Item_x0020_Cover != undefined ||
+                            ApproverData.Item_x0020_Cover != null
+                            ? ApproverData.Item_x0020_Cover.Url
+                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                    ApproverSuffix: ApproverData.Suffix,
+                    ApproverEmail: ApproverData.Email,
+                };
+            }
+          
             ApproverHistoryData.push(ApproverHistoryObject);
         }
     };
