@@ -7,8 +7,10 @@ import "react-popper-tooltip/dist/styles.css";
 import ColumnSettingSortingToolTip from "./ColumnSettingSortingToolTip";
 import { Web } from "sp-pnp-js";
 import CoustomInfoIcon from "./CoustomInfoIcon";
+import { myContextValue } from '../globalCommon';
 // let propColumns: any = [];
 const ColumnsSetting = (props: any) => {
+    let MyContextdata: any = React.useContext(myContextValue);
     const [columnSettingVisibility, setColumnSettingVisibility] = React.useState<any>({});
     const [showHeader, setShowHeader] = React.useState<any>(props?.showHeader);
     const [editing, setEditing] = React.useState<any>({});
@@ -104,114 +106,151 @@ const ColumnsSetting = (props: any) => {
         props?.columnSettingCallBack('close');
     };
     const handleChangeDateAndDataCallBack = () => {
-        const updatedData = { ...props?.columnVisibilityData };
-        for (let key in columnSettingVisibility) {
-            if (columnSettingVisibility.hasOwnProperty(key)) {
-                if (props?.columnVisibilityData.hasOwnProperty(key)) {
-                    updatedData[key] = columnSettingVisibility[key];
-                } else {
-                    updatedData[key] = columnSettingVisibility[key];
+        if (props?.smartFabBasedColumnsSettingToggle != true) {
+            const updatedData = { ...props?.columnVisibilityData };
+            for (let key in columnSettingVisibility) {
+                if (columnSettingVisibility.hasOwnProperty(key)) {
+                    if (props?.columnVisibilityData.hasOwnProperty(key)) {
+                        updatedData[key] = columnSettingVisibility[key];
+                    } else {
+                        updatedData[key] = columnSettingVisibility[key];
+                    }
                 }
             }
-        }
-        let preSetColumnSettingVisibility: any = {
-            columnSettingVisibility: updatedData,
-            showHeader: showHeader,
-            columanSize: columanSize,
-            columnSorting: columnSorting,
-            tableId: props?.tableId,
-            columnOrderValue: columnOrderValue,
-            tableHeightValue: tableHeightValue,
+            let preSetColumnSettingVisibility: any = {
+                columnSettingVisibility: updatedData,
+                showHeader: showHeader,
+                columanSize: columanSize,
+                columnSorting: columnSorting,
+                tableId: props?.tableId,
+                columnOrderValue: columnOrderValue,
+                tableHeightValue: tableHeightValue,
 
-        }
-        if (tablePageSize > 0) {
-            preSetColumnSettingVisibility.showPageSizeSetting = {
-                tablePageSize: parseInt(tablePageSize),
-                showPagination: true,
-            };
-        }
-        else {
-            preSetColumnSettingVisibility.showPageSizeSetting = {
-                tablePageSize: 0,
-                showPagination: false,
-            };
-        }
-        const dataString = JSON.stringify(preSetColumnSettingVisibility);
-        try {
-            const updatePromises: Promise<any>[] = [];
-            if (tableId && props?.settingConfrigrationData?.length > 0 && props?.settingConfrigrationData[0]?.tableId === tableId) {
-                const web = new Web(props?.ContextValue.siteUrl);
-                const updatePromise = web.lists.getByTitle("AdminConfigurations").items.getById(props?.settingConfrigrationData[0]?.ConfrigId).update({
-                    Configurations: dataString,
-                    Key: tableId,
-                    Title: tableId,
-                });
-                updatePromises.push(updatePromise);
-            } else if (tableId != undefined && tableId != "") {
-                const web = new Web(props?.ContextValue.siteUrl);
-                const updatePromise = web.lists.getByTitle("AdminConfigurations").items.add({
-                    Configurations: dataString,
-                    Key: tableId,
-                    Title: tableId,
-                });
-                updatePromises.push(updatePromise);
             }
-        } catch (error) {
-            console.log(error)
-        }
-        // localStorage.setItem(tableId, dataString);
-        let columnsVisibllityDataAll: any = {
-            columnSettingVisibility: columnSettingVisibility,
-            showHeader: showHeader,
-            columanSize: columanSize,
-            columnSorting: columnSorting,
-            tableId: props?.tableId,
-            columnOrderValue: columnOrderValue,
-            tableHeightValue: tableHeightValue,
-        }
-        if (tablePageSize > 0) {
-            columnsVisibllityDataAll.showPageSizeSetting = {
-                tablePageSize: parseInt(tablePageSize),
-                showPagination: true,
+            if (tablePageSize > 0) {
+                preSetColumnSettingVisibility.showPageSizeSetting = {
+                    tablePageSize: parseInt(tablePageSize),
+                    showPagination: true,
+                };
+            }
+            else {
+                preSetColumnSettingVisibility.showPageSizeSetting = {
+                    tablePageSize: 0,
+                    showPagination: false,
+                };
+            }
+            const dataString = JSON.stringify(preSetColumnSettingVisibility);
+            try {
+                const updatePromises: Promise<any>[] = [];
+                if (tableId && props?.settingConfrigrationData?.length > 0 && props?.settingConfrigrationData[0]?.tableId === tableId) {
+                    const web = new Web(props?.ContextValue.siteUrl);
+                    const updatePromise = web.lists.getByTitle("AdminConfigurations").items.getById(props?.settingConfrigrationData[0]?.ConfrigId).update({
+                        Configurations: dataString,
+                        Key: tableId,
+                        Title: tableId,
+                    });
+                    updatePromises.push(updatePromise);
+                } else if (tableId != undefined && tableId != "") {
+                    const web = new Web(props?.ContextValue.siteUrl);
+                    const updatePromise = web.lists.getByTitle("AdminConfigurations").items.add({
+                        Configurations: dataString,
+                        Key: tableId,
+                        Title: tableId,
+                    });
+                    updatePromises.push(updatePromise);
+                }
+            } catch (error) {
+                console.log(error)
+            }
+            // localStorage.setItem(tableId, dataString);
+            let columnsVisibllityDataAll: any = {
+                columnSettingVisibility: columnSettingVisibility,
+                showHeader: showHeader,
+                columanSize: columanSize,
+                columnSorting: columnSorting,
+                tableId: props?.tableId,
+                columnOrderValue: columnOrderValue,
+                tableHeightValue: tableHeightValue,
+            }
+            if (tablePageSize > 0) {
+                columnsVisibllityDataAll.showPageSizeSetting = {
+                    tablePageSize: parseInt(tablePageSize),
+                    showPagination: true,
+                };
+            } else {
+                columnsVisibllityDataAll.showPageSizeSetting = {
+                    tablePageSize: 0,
+                    showPagination: false,
+                };
+            }
+            if (props?.columns?.length > 0 && props?.columns != undefined && (Object.keys(columnsVisibllityDataAll?.columnSorting)?.length > 0 || columnsVisibllityDataAll?.columanSize?.length > 0)) {
+                let sortingDescData: any = [];
+                props.columns = props?.columns?.map((col: any) => {
+                    let updatedSortDec = { ...col }
+                    let idMatch = updatedSortDec.id;
+                    if (columnsVisibllityDataAll?.columnSorting[idMatch]?.id === updatedSortDec.id) {
+                        if (columnsVisibllityDataAll?.columnSorting[idMatch]?.desc === true) {
+                            let obj = { 'id': updatedSortDec.id, desc: true }
+                            sortingDescData.push(obj);
+                        }
+                        if (columnsVisibllityDataAll?.columnSorting[idMatch]?.asc === true) {
+                            let obj = { 'id': updatedSortDec.id, desc: false }
+                            sortingDescData.push(obj);
+                        }
+                    }
+                    columnsVisibllityDataAll?.columanSize?.map((elem: any) => {
+                        if (elem?.id === updatedSortDec.id) {
+                            let sizeValue = { ...elem }
+                            updatedSortDec.size = parseInt(sizeValue?.size);
+                        }
+                    })
+                    if (sortingDescData.length > 0) {
+                        props?.setSorting(sortingDescData);
+                    } else {
+                        props?.setSorting([]);
+                    }
+                    return col;
+                });
+                // props?.columnSettingCallBack(columnsVisibllityDataAll)
             };
-        } else {
-            columnsVisibllityDataAll.showPageSizeSetting = {
-                tablePageSize: 0,
-                showPagination: false,
-            };
-        }
+            props?.columnSettingCallBack(columnsVisibllityDataAll);
+        } else if (props?.smartFabBasedColumnsSettingToggle === true) {
+            const updatedData = { ...props?.columnVisibilityData };
+            for (let key in columnSettingVisibility) {
+                if (columnSettingVisibility.hasOwnProperty(key)) {
+                    if (props?.columnVisibilityData.hasOwnProperty(key)) {
+                        updatedData[key] = columnSettingVisibility[key];
+                    } else {
+                        updatedData[key] = columnSettingVisibility[key];
+                    }
+                }
+            }
+            let preSetColumnSettingVisibility: any = {
+                columnSettingVisibility: updatedData,
+                showHeader: showHeader,
+                columanSize: columanSize,
+                columnSorting: columnSorting,
+                tableId: props?.tableId,
+                columnOrderValue: columnOrderValue,
+                tableHeightValue: tableHeightValue,
 
-        if (props?.columns?.length > 0 && props?.columns != undefined && (Object.keys(columnsVisibllityDataAll?.columnSorting)?.length > 0 || columnsVisibllityDataAll?.columanSize?.length > 0)) {
-            let sortingDescData: any = [];
-            props.columns = props?.columns?.map((col: any) => {
-                let updatedSortDec = { ...col }
-                let idMatch = updatedSortDec.id;
-                if (columnsVisibllityDataAll?.columnSorting[idMatch]?.id === updatedSortDec.id) {
-                    if (columnsVisibllityDataAll?.columnSorting[idMatch]?.desc === true) {
-                        let obj = { 'id': updatedSortDec.id, desc: true }
-                        sortingDescData.push(obj);
-                    }
-                    if (columnsVisibllityDataAll?.columnSorting[idMatch]?.asc === true) {
-                        let obj = { 'id': updatedSortDec.id, desc: false }
-                        sortingDescData.push(obj);
-                    }
-                }
-                columnsVisibllityDataAll?.columanSize?.map((elem: any) => {
-                    if (elem?.id === updatedSortDec.id) {
-                        let sizeValue = { ...elem }
-                        updatedSortDec.size = parseInt(sizeValue?.size);
-                    }
-                })
-                if (sortingDescData.length > 0) {
-                    props?.setSorting(sortingDescData);
-                } else {
-                    props?.setSorting([]);
-                }
-                return col;
-            });
-            // props?.columnSettingCallBack(columnsVisibllityDataAll)
-        };
-        props?.columnSettingCallBack(columnsVisibllityDataAll)
+            }
+            if (tablePageSize > 0) {
+                preSetColumnSettingVisibility.showPageSizeSetting = {
+                    tablePageSize: parseInt(tablePageSize),
+                    showPagination: true,
+                };
+            }
+            else {
+                preSetColumnSettingVisibility.showPageSizeSetting = {
+                    tablePageSize: 0,
+                    showPagination: false,
+                };
+            }
+            MyContextdata.allContextValueData.smartFabBasedColumnsSetting = preSetColumnSettingVisibility;
+            // props?.setSmartFabBasedColumnsSetting(columnsVisibllityDataAll);
+            props?.setSmartFabBasedColumnsSettingToggle(false);
+        }
     };
 
     const coustomColumnsSetting = (item: any, event: any) => {
