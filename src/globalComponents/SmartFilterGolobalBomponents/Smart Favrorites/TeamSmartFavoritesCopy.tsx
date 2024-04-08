@@ -16,7 +16,9 @@ import PreSetDatePikerPannel from '../PreSetDatePiker';
 import { GlobalConstants } from '../../LocalCommon';
 import { Web } from 'sp-pnp-js';
 import Tooltip from '../../Tooltip';
+import { myContextValue } from '../../globalCommon';
 const TeamSmartFavoritesCopy = (item: any) => {
+    let MyContextdata: any = React.useContext(myContextValue);
     let ContextValue = item?.ContextValue;
     let portfolioColor: any = item?.portfolioColor
     let AllProjectBackupArray: any = []
@@ -72,8 +74,8 @@ const TeamSmartFavoritesCopy = (item: any) => {
     ///// Year Range Using Piker ////////
     const [years, setYear] = React.useState([])
     const [months, setMonths] = React.useState(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December",])
-    const [selectedValue, setSelectedValue] = React.useState("Modified");
-    const [tablePageSize, setTablePageSize] = React.useState(null);
+    // const [selectedValue, setSelectedValue] = React.useState("Modified");
+    // const [tablePageSize, setTablePageSize] = React.useState(null);
     const [count, setCount] = React.useState(true);
     React.useEffect(() => {
         const currentYear = new Date().getFullYear();
@@ -123,8 +125,8 @@ const TeamSmartFavoritesCopy = (item: any) => {
             setIsModifiedDateSelected((prev: any) => item?.updatedEditData?.isModifiedDateSelected);
             setIsDueDateSelected((prev: any) => item?.updatedEditData?.isDueDateSelected);
             setTaskUsersData((prev: any) => item?.updatedEditData?.TaskUsersData);
-            setSelectedValue((prev: any) => item?.updatedEditData?.showPageSizeSetting?.selectedTopValue);
-            setTablePageSize((prev: any) => item?.updatedEditData?.showPageSizeSetting?.tablePageSize);
+            // setSelectedValue((prev: any) => item?.updatedEditData?.showPageSizeSetting?.selectedTopValue);
+            // setTablePageSize((prev: any) => item?.updatedEditData?.showPageSizeSetting?.tablePageSize);
             setCount(false);
         }
     }, [item])
@@ -725,16 +727,18 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 isModifiedDateSelected: isModifiedDateSelected,
                 isDueDateSelected: isDueDateSelected,
                 TaskUsersData: TaskUsersData,
+                smartFabBasedColumnsSetting: MyContextdata?.allContextValueData?.smartFabBasedColumnsSetting ? MyContextdata?.allContextValueData?.smartFabBasedColumnsSetting : {},
                 // Createmodified: props?.Createmodified
             }
         }
-        if (tablePageSize > 0) {
-            Favorite.showPageSizeSetting = {
-                tablePageSize: parseInt(tablePageSize),
-                showPagination: true,
-                selectedTopValue: selectedValue
-            };
-        }
+        // if (tablePageSize > 0) {
+        //     Favorite.showPageSizeSetting = {
+        //         tablePageSize: parseInt(tablePageSize),
+        //         showPagination: true,
+        //         selectedTopValue: selectedValue
+        //     };
+        // }
+        console.log("++++++++++++fab col setting val", MyContextdata?.allContextValueData?.smartFabBasedColumnsSetting);
         // else {
         //     var SmartFavorites = (SmartFavoriteUrl.split('SitePages/')[1]).split('.aspx')[0];
         //     SelectedFavorites.push({
@@ -755,6 +759,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
             await web.lists.getByTitle("AdminConfigurations").items.add(postData).then((result: any) => {
                 console.log("Successfully Added SmartFavorite");
                 setModalIsOpenToFalse("", "");
+                MyContextdata.allContextValueData.smartFabBasedColumnsSetting = {}
             })
         }
         else if (item?.updatedSmartFilter === true) {
@@ -789,9 +794,9 @@ const TeamSmartFavoritesCopy = (item: any) => {
         const Url = event.target.value;
         setSmartFavoriteUrl(Url);
     }
-    const handleChange = (event: any) => {
-        setSelectedValue(event.target.value);
-    };
+    // const handleChange = (event: any) => {
+    //     setSelectedValue(event.target.value);
+    // };
     return (
         <>
             <Panel
@@ -810,6 +815,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                     <input className='radio' type='radio' value="SmartFilterBased" checked={FavoriteFieldvalue === "SmartFilterBased"} onChange={(event) => FavoriteField(event)} /> SmartFilter Based
                                 </label>
                                 <label className='SpfxCheckRadio'><input className='radio' type='radio' value="UrlBased" checked={FavoriteFieldvalue === "UrlBased"} onChange={(event) => FavoriteField(event)} /> Url Based</label>
+                                <label className='SpfxCheckRadio hreflink siteColor' onClick={() => item?.openTableSettingPopup("favBased")}>Table Confrigrations</label>
                             </div>
                             {FavoriteFieldvalue === "SmartFilterBased" &&
                                 <div className='row'>
@@ -819,7 +825,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                             <input type="text" className='form-control' value={smartTitle} onChange={(e) => ChangeTitle(e)} />
                                         </div>
                                     </div>
-                                    <div className='mb-2 col-3'>
+                                    {/* <div className='mb-2 col-3'>
                                         <div className='input-group mt-3'>
                                             <label className='d-flex form-label full-width justify-content-between'>Table Page Size
                                                 <span>
@@ -830,7 +836,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                             </label>
                                             <input type="number" className='form-control' value={tablePageSize} onChange={(e) => setTablePageSize(e.target.value)} />
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </div>
 
                             }
@@ -1413,6 +1419,5 @@ const TeamSmartFavoritesCopy = (item: any) => {
             </Panel>
         </>
     )
-
 }
 export default TeamSmartFavoritesCopy;
