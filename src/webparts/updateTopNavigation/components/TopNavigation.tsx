@@ -19,6 +19,7 @@ let isSort:any= false;
 const TopNavigation = (dynamicData: any) => {
   CurrentSite = dynamicData?.dynamicData?.Context?.pageContext?.web.title
   var ListId = dynamicData?.dynamicData?.TopNavigationListID;
+  var AllListId = dynamicData?.dynamicData;
   const [root, setRoot] = React.useState([]);
   const [EditPopup, setEditPopup] = React.useState(false);
   const [sortedArray, setSortedArray] = React.useState([]);
@@ -1033,6 +1034,7 @@ const TopNavigation = (dynamicData: any) => {
                                         taskId={popupData[0]?.Id}
                                         listId={ListId}
                                         siteUrls={dynamicData.dynamicData.siteUrl}
+                                      RequiredListIds={AllListId}
                                     />}
               </span>
               </div>
