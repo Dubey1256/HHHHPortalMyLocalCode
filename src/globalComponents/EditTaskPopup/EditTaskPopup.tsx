@@ -2805,7 +2805,7 @@ const EditTaskPopup = (Items: any) => {
 
                                 let DataForNotification: any = {
                                     ReceiverName: InfoItem?.Title,
-                                    sendUserEmail: [InfoItem?.Email],
+                                    sendUserEmail: ['alina.chyhasova@hochhuth-consulting.de','kristina.kovach@hochhuth-consulting.de'],
                                     Context: Items.context,
                                     ActionType: "Design",
                                     ReasonStatement: "",
@@ -2832,7 +2832,7 @@ const EditTaskPopup = (Items: any) => {
 
                                 let DataForNotification: any = {
                                     ReceiverName: InfoItem?.Title,
-                                    sendUserEmail: [InfoItem?.Email],
+                                    sendUserEmail: ['alina.chyhasova@hochhuth-consulting.de','kristina.kovach@hochhuth-consulting.de'],
                                     Context: Items.context,
                                     ActionType: "Design",
                                     ReasonStatement: "",
