@@ -630,12 +630,12 @@ export const MonthlyLeaveReport = (props: any) => {
         if(item.Event_x002d_Type === "Restricted Holiday") {
        
         let startDate = moment(item.EventDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
-        let endDateFirst = moment(item.EndDate, 'YYYY-MM-DD').startOf('day')
-        if (item.fAllDayEvent == false) {
-          endDateFirst = endDateFirst.subtract(3, 'hours')
-          item.EndDate = endDateFirst.utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
-        }
-        let endDate = endDateFirst.format('DD/MM/YYYY')
+        // let endDateFirst = moment(item.EndDate, 'YYYY-MM-DD').startOf('day')
+        // if (item.fAllDayEvent == false) {
+        //   endDateFirst = endDateFirst.subtract(3, 'hours')
+        //   item.EndDate = endDateFirst.utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+        // }
+        let endDate = moment(item.EndDate, 'YYYY-MM-DD').format('DD/MM/YYYY');
 
         if (startDate !== endDate) {
           return `${startDate}-${endDate}`;
