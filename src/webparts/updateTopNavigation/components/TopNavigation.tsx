@@ -174,15 +174,17 @@ const TopNavigation = (dynamicData: any) => {
       }
     });
   };
-  const editPopup = (item: any) => {
+  const editPopup = (item: any,ParentData:any) => {
     var Data: any = [];
     item.CreatedDate = Moment(item.Created).format("DD/MM/YYYY");
     item.ModifiedDate = Moment(item.Modified).format("DD/MM/YYYY");
     setisVisible(item.IsVisible);
+    item.ParentTitle = ParentData;
     Data.push(item);
     setPopupData(Data);
     setEditPopup(true);
   };
+
   const ClosePopup = () => {
     setEditPopup(false);
     setPostData(undefined);
@@ -632,7 +634,7 @@ const TopNavigation = (dynamicData: any) => {
       <div className=" newupdatenav p-0 row"  id="TopNavRound">
         <ul className="top-navigate  p-0">
        
-          {root.map((item) => {
+         {root.map((item) => {
             return (
               <>
                 <li className="parent">
@@ -653,7 +655,7 @@ const TopNavigation = (dynamicData: any) => {
                   <span className="float-end ms-2">
                     <span
                       className="alignIcon svg__iconbox svg__icon--editBox"
-                      onClick={() => editPopup(item)}
+                      onClick={() => editPopup(item,'Parent')}
                     ></span>
                    
                     {/* <span
@@ -687,7 +689,7 @@ const TopNavigation = (dynamicData: any) => {
                             <span className="float-end">
                               <span
                                 className="alignIcon svg__iconbox svg__icon--editBox"
-                                onClick={() => editPopup(child)}
+                                onClick={() => editPopup(child,item?.Title)}
                               ></span>
                               <span
                                 className="alignIcon svg__iconbox svg__icon--Switcher"
@@ -728,7 +730,7 @@ const TopNavigation = (dynamicData: any) => {
                                       <span className="float-end">
                                         <span
                                           className="alignIcon svg__iconbox svg__icon--editBox"
-                                          onClick={() => editPopup(subchild)}
+                                          onClick={() => editPopup(subchild,child?.Title)}
                                         ></span>
                                         <span
                                           className="alignIcon svg__iconbox svg__icon--Switcher"
@@ -789,7 +791,7 @@ const TopNavigation = (dynamicData: any) => {
                                                     <span
                                                       className="alignIcon svg__iconbox svg__icon--editBox"
                                                       onClick={() =>
-                                                        editPopup(subchildLast)
+                                                        editPopup(subchildLast,subchild?.Title)
                                                       }
                                                     ></span>
                                                     <span
@@ -856,8 +858,8 @@ const TopNavigation = (dynamicData: any) => {
             <div className="col-sm-5">
               <div className="form-group">
                 <label>
-                  {popupData[0]?.Title != undefined && popupData[0]?.Title != ""
-                    ? popupData[0]?.Title
+                  {popupData[0]?.ParentTitle != undefined && popupData[0]?.ParentTitle != ""
+                    ? popupData[0]?.ParentTitle
                     : "Root"}
                 </label>
               </div>
@@ -1068,6 +1070,7 @@ const TopNavigation = (dynamicData: any) => {
           </div>
         </footer>
       </Panel>
+
 
 
       <Panel
