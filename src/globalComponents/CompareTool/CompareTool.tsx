@@ -29,7 +29,7 @@ import EditProjectPopup from "../EditProjectPopup";
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 let renderData: any = [];
 let AutoCompleteItemsArray: any = [];
-let AllFeatureTypeData : any = [];
+let AllFeatureTypeData: any = [];
 let catItem: any = {};
 let color: any = false;
 let PutComment: any = "";
@@ -685,10 +685,10 @@ const CompareTool = (props: any) => {
 
 
                     }
-                  
+
                     if (datas[0]?.FeatureType?.Id != undefined)
                         datas[0].FeatureType = [{ Id: datas[0]?.FeatureType?.Id, Title: datas[0]?.FeatureType?.Title }];
-                    else   datas[0].FeatureType = [];
+                    else datas[0].FeatureType = [];
                     // datas[0].ProjectItem = datas[0]?.Portfolios === undefined ? [] : datas[0]?.Portfolios;
                     datas[0].ResponsibileUsers = [];
                     if (datas[0]?.CompletedDate != undefined && datas[0]?.CompletedDate != null)
@@ -1220,7 +1220,7 @@ const CompareTool = (props: any) => {
         let AllPriorityData: any = [];
         let AllPriorityRankData: any = [];
         let CategoriesGroupByData: any = [];
-      //  let AllFeatureTypeData: any = [];
+        //  let AllFeatureTypeData: any = [];
         let AllSitesData: any = [];
         let AllTimesheetCategoriesData: any = [];
         try {
@@ -1812,9 +1812,11 @@ const CompareTool = (props: any) => {
                 'ItemRank': Item.ItemRank,
                 'Mileage': Item.Mileage,
                 'PriorityRank': Item.PriorityRank,
+                // 'ComponentId': { "results": $scope.smartComponentsIds },
                 'PortfoliosId': { "results": portfolioIds },
                 'TaskCategoriesId': { "results": taskCategoryIds },
                 'Package': Item.Package,
+                // 'SiteCompositionSettings': angular.toJson(Item.SiteCompositionSettingsValue),
                 'Sitestagging': JSON.stringify(Item.SiteCompositionSettingsValue),
                 'Deliverables': Item.Deliverables,
                 'ClientActivity': Item.ClientActivity,
@@ -2412,10 +2414,15 @@ const CompareTool = (props: any) => {
                         {data[0]?.Item_x0020_Type === "Component" || data[0]?.Item_x0020_Type === "SubComponent" || data[0]?.Item_x0020_Type === "Feature" || data[0]?.Item_x0020_Type === "Project" || data[0]?.Item_x0020_Type === "Sprint" ?
                             (<Row className="Metadatapannel ">
                                 <Col sm="5" md="5" lg="5" className="alignCenter siteColor contentSec">
-                                    <span className="Dyicons me-1">{data[0]?.Item_x0020_Type.charAt(0)}</span> <Label><a target="_blank" data-interception="off"
-                                        href={`${data[0]?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${data[0]?.Id}`}>
-                                        {data[0]?.Title}
-                                    </a></Label> <span className="svg__iconbox svg__icon--edit"
+                                    <span className="Dyicons me-1">{data[0]?.Item_x0020_Type.charAt(0)}</span> <Label>
+                                        {data[0]?.Item_x0020_Type === "Project" || data[0]?.Item_x0020_Type === "Sprint" ? <a target="_blank" data-interception="off"
+                                            href={`${data[0]?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${data[0]?.Id}`}>
+                                            {data[0]?.Title}
+                                        </a> : <a target="_blank" data-interception="off"
+                                            href={`${data[0]?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${data[0]?.Id}`}>
+                                            {data[0]?.Title}
+                                        </a>}
+                                    </Label> <span className="svg__iconbox svg__icon--edit"
                                         onClick={() => EditComponenetPopup(data[1])}
                                     ></span>
                                 </Col>
@@ -2424,10 +2431,13 @@ const CompareTool = (props: any) => {
                                 </Col>
                                 <Col sm="5" md="5" lg="5" className="alignCenter siteColor contentSec">
                                     <span className="Dyicons me-1">{data[1]?.Item_x0020_Type.charAt(0)}</span> <Label>
-                                        <a target="_blank" data-interception="off"
+                                        {data[0]?.Item_x0020_Type === "Project" || data[0]?.Item_x0020_Type === "Sprint" ? <a target="_blank" data-interception="off"
+                                            href={`${data[1]?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${data[1]?.Id}`}>
+                                            {data[1]?.Title}
+                                        </a> : <a target="_blank" data-interception="off"
                                             href={`${data[1]?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${data[1]?.Id}`}>
                                             {data[1]?.Title}
-                                        </a>
+                                        </a>}
                                     </Label>
                                     <span className="svg__iconbox svg__icon--edit"
                                         onClick={() => EditComponenetPopup(data[1])}
@@ -2596,10 +2606,13 @@ const CompareTool = (props: any) => {
                                                 <span className="Dyicons me-1">{items?.IconTitle}</span>
 
                                                 <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
-                                                <span> <a target="_blank" className="ms-2" data-interception="off"
+                                                <span> {data[0]?.Item_x0020_Type === "Project" || data[0]?.Item_x0020_Type === "Sprint" ? <a target="_blank" className="ms-2" data-interception="off"
+                                                    href={`${items?.siteUrl}/SitePages/Px-Profile.aspx?ProjectId=${items?.Id}`}>
+                                                    {items?.Title}
+                                                </a> : <a target="_blank" className="ms-2" data-interception="off"
                                                     href={`${items?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items?.Id}`}>
                                                     {items?.Title}
-                                                </a></span>
+                                                </a>}</span>
                                             </div>
                                         })
                                     }</div>
@@ -2617,10 +2630,13 @@ const CompareTool = (props: any) => {
                                             return <div className="SpfxCheckRadio alignCenter">
                                                 <span className="Dyicons me-1">{items?.IconTitle}</span>
                                                 <input type="radio" checked={taggedItems?.Id === items?.Id ? true : false} name="radioCheck" onClick={() => handleRadioChange(items, 'taggedComponents')} className="radio" />
-                                                <span> <a target="_blank" className="mx-2" data-interception="off"
+                                                <span>{data[0]?.Item_x0020_Type === "Project" || data[0]?.Item_x0020_Type === "Sprint" ? <a target="_blank" className="mx-2" data-interception="off"
+                                                    href={`${items?.siteUrl}/SitePages/Px-Profile.aspx?ProjectId=${items?.Id}`}>
+                                                    {items?.Title}
+                                                </a> : <a target="_blank" className="mx-2" data-interception="off"
                                                     href={`${items?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items?.Id}`}>
                                                     {items?.Title}
-                                                </a></span>
+                                                </a>}</span>
                                             </div>
                                         })
                                     }</div>
@@ -3087,84 +3103,6 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('TaskCategories')} />
                             </Col>
                         </Row>
-                        {/* <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Client Categories</label>
-                                    <input type="text" className="form-control" placeholder="Search Category Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ClientCategory0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ClientCategory', 0, AllMasterTasksItems?.AllData)} />
-                                    {data[0]?.ClientCategory != undefined && data[0]?.ClientCategory.map((type: any, index: number) => {
-                                        return (
-                                            <div className="block w-100">
-                                                <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
-                                                <span onClick={() => removeItem(type, 0, 'ClientCategory')} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox" >
-                                                </span>
-                                            </div>
-                                        );
-                                    }
-                                    )}
-                                    <span className="input-group-text">
-                                        <span title="Edit Categories" onClick={() => EditClientCategory(data[0], true, 'ClientCategory')} className="svg__iconbox svg__icon--editBox"></span>
-                                    </span>
-                                    {autoSearch?.itemIndex === 0 && autoSearch?.property === 'ClientCategory' && SearchedCategoryData?.length > 0 ? (
-                                        <div className="SmartTableOnTaskPopup">
-                                            <ul className="list-group hreflink scrollbar maXh-200">
-                                                {SearchedCategoryData?.map((item: any) => {
-                                                    return (
-                                                        <li className="hreflink list-group-item p-1 rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                            <a>{item.Newlabel}</a>
-                                                        </li>
-                                                    )
-                                                }
-                                                )}
-                                            </ul>
-                                        </div>) : null}
-                                </div>
-
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="iconSec">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'ClientCategory', data[1]?.ClientCategory)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'ClientCategory', data[0]?.ClientCategory)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Client Categories</label>
-                                    <input type="text" className="form-control" placeholder="Search Category Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ClientCategory1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ClientCategory', 1, AllMasterTasksItems?.AllData)} />
-
-                                    {data[1]?.ClientCategory != undefined && data[1]?.ClientCategory.map((type: any, index: number) => {
-                                        return (
-                                            <div className="block w-100">
-                                                <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
-                                                <span onClick={() => removeItem(type, 1, 'ClientCategory')} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox" >
-                                                </span>
-                                            </div>
-                                        );
-                                    }
-                                    )}
-                                    <span className="input-group-text">
-                                        <span title="Edit Categories" onClick={() => EditClientCategory(data[1], true, 'ClientCategory')} className="svg__iconbox svg__icon--editBox"></span>
-                                    </span>
-                                    {autoSearch?.itemIndex === 1 && autoSearch?.property === 'ClientCategory' && SearchedCategoryData?.length > 0 ? (
-                                        <div className="SmartTableOnTaskPopup">
-                                            <ul className="list-group hreflink scrollbar maXh-200">
-                                                {SearchedCategoryData?.map((item: any) => {
-                                                    return (
-                                                        <li className="hreflink list-group-item p-1 rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                            <a>{item.Newlabel}</a>
-                                                        </li>
-                                                    )
-                                                }
-                                                )}
-                                            </ul>
-                                        </div>) : null}
-                                </div>
-
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('ClientCategory')} />
-                            </Col>
-                        </Row> */}
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group mb-2">
@@ -3252,13 +3190,13 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('PortfolioItem')} />
                             </Col>
                         </Row>
-                        {data[0]?.TaskType === undefined &&
+                        {data[0]?.Item_x0020_Type === "Component" || data[0]?.Item_x0020_Type === "SubComponent" || data[0]?.Item_x0020_Type === "Feature" ?
                             <Row className="Metadatapannel">
                                 <Col sm="5" md="5" lg="5" className="contentSec">
                                     <div className="input-group">
                                         <label className="fw-semibold full-width form-label">Feature Type</label>
                                         {data[0]?.FeatureType?.length === 0 ?
-                                            <input type="text"  className="form-control" placeholder="Search Feature Type Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'FeatureType0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'FeatureType', 0, AllFeatureTypeData)} />
+                                            <input type="text" className="form-control" placeholder="Search Feature Type Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'FeatureType0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'FeatureType', 0, AllFeatureTypeData)} />
                                             : <>
                                                 <div className="full-width">
                                                     <div className="full-width replaceInput alignCenter">
@@ -3309,19 +3247,6 @@ const CompareTool = (props: any) => {
                                                     <span title="Edit FeatureType" onClick={() => OpenComponentPicker(data[1], true, 'FeatureType')} className="svg__iconbox svg__icon--editBox"></span>
                                                 </span>
                                             </>}
-                                        {/* {data[1]?.FeatureType != undefined && data[1]?.FeatureType?.map((type: any, index: number) => {
-                                            return (
-                                                <div className="block w-100">
-                                                    <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
-                                                    <span onClick={() => removeItem(type, 1, 'FeatureType')} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox" >
-                                                    </span>
-                                                </div>
-                                            );
-                                        }
-                                        )}
-                                        <span className="input-group-text">
-                                            <span title="Edit Categories" onClick={() => OpenComponentPicker(data[1], true, 'FeatureType')} className="svg__iconbox svg__icon--editBox"></span>
-                                        </span> */}
                                         {data[1]?.FeatureType?.length === 0 && autoSearch?.itemIndex === 1 && autoSearch?.property === 'FeatureType' && SearchedCategoryData?.length > 0 ? (
                                             <div className="SmartTableOnTaskPopup">
                                                 <ul className="list-group hreflink scrollbar maXh-200">
@@ -3341,109 +3266,87 @@ const CompareTool = (props: any) => {
                                 <Col sm="1" md="1" lg="1" className="text-center iconSec">
                                     <LuUndo2 size="25" onClick={() => undoChangescolumns('FeatureType')} />
                                 </Col>
-                            </Row>
+                            </Row> : <></>
                         }
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Project</label>
+                        {data[0]?.TaskType?.Title != undefined || data[0]?.Item_x0020_Type === "Component" || data[0]?.Item_x0020_Type === "SubComponent" || data[0]?.Item_x0020_Type === "Feature" ?
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Project</label>
 
-                                    {data[0]?.ProjectItem?.length === 0 ?
-                                        <input type="text" className="form-control" placeholder="Search Project Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ProjectItem0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 0, AllMasterTasksItems?.ProjectData)} />
-                                        : <>
-                                            <div className="full-width">
-                                                <div className="full-width replaceInput alignCenter">
-                                                    <a style={{ color: "#fff !important" }} className="textDotted" > {data[0]?.ProjectItem[0].Title}</a>
+                                        {data[0]?.ProjectItem?.length === 0 ?
+                                            <input type="text" className="form-control" placeholder="Search Project Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ProjectItem0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 0, AllMasterTasksItems?.ProjectData)} />
+                                            : <>
+                                                <div className="full-width">
+                                                    <div className="full-width replaceInput alignCenter">
+                                                        <a style={{ color: "#fff !important" }} className="textDotted" > {data[0]?.ProjectItem[0].Title}</a>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <span className="input-group-text">
-                                                <span title="Edit Project" onClick={() => OpenComponentPicker(data[0], true, 'ProjectItem')} className="svg__iconbox svg__icon--editBox"></span>
-                                            </span>
-                                        </>}
-                                    {/* {data[0]?.ProjectItem != undefined && data[0]?.ProjectItem?.map((type: any, index: number) => {
-                                        return (
-                                            <div className="block w-100">
-                                                <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
-                                                <span onClick={() => removeItem(type, 0, 'ProjectItem')} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox" >
+                                                <span className="input-group-text">
+                                                    <span title="Edit Project" onClick={() => OpenComponentPicker(data[0], true, 'ProjectItem')} className="svg__iconbox svg__icon--editBox"></span>
                                                 </span>
-                                            </div>
-                                        );
-                                    }
-                                    )}
-                                    <span className="input-group-text">
-                                        <span title="Edit Project" onClick={() => OpenComponentPicker(data[0], true, 'ProjectItem')} className="svg__iconbox svg__icon--editBox"></span>
-                                    </span> */}
-                                    {data[0]?.ProjectItem?.length === 0 && autoSearch?.itemIndex === 0 && autoSearch?.property === 'ProjectItem' && SearchedCategoryData?.length > 0 ? (
-                                        <div className="SmartTableOnTaskPopup">
-                                            <ul className="list-group hreflink scrollbar maXh-200">
-                                                {SearchedCategoryData?.map((item: any) => {
-                                                    return (
-                                                        <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                            <a>{item.Newlabel || item.Path}</a>
-                                                        </li>
-                                                    )
-                                                }
-                                                )}
-                                            </ul>
-                                        </div>) : null}
-                                </div>
+                                            </>}
 
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="iconSec">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'ProjectItem', data[1]?.ProjectItem)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'ProjectItem', data[0]?.ProjectItem)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Project</label>
+                                        {data[0]?.ProjectItem?.length === 0 && autoSearch?.itemIndex === 0 && autoSearch?.property === 'ProjectItem' && SearchedCategoryData?.length > 0 ? (
+                                            <div className="SmartTableOnTaskPopup">
+                                                <ul className="list-group hreflink scrollbar maXh-200">
+                                                    {SearchedCategoryData?.map((item: any) => {
+                                                        return (
+                                                            <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                                <a>{item.Newlabel || item.Path}</a>
+                                                            </li>
+                                                        )
+                                                    }
+                                                    )}
+                                                </ul>
+                                            </div>) : null}
+                                    </div>
 
-                                    {data[1]?.ProjectItem?.length === 0 ?
-                                        <input type="text" className="form-control" placeholder="Search Project Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ProjectItem1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 1, AllMasterTasksItems?.ProjectData)} />
-                                        : <>
-                                            <div className="full-width">
-                                                <div className="full-width replaceInput alignCenter">
-                                                    <a style={{ color: "#fff !important" }} className="textDotted" > {data[1]?.ProjectItem[0].Title}</a>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="iconSec">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'ProjectItem', data[1]?.ProjectItem)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'ProjectItem', data[0]?.ProjectItem)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Project</label>
+
+                                        {data[1]?.ProjectItem?.length === 0 ?
+                                            <input type="text" className="form-control" placeholder="Search Project Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'ProjectItem1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'ProjectItem', 1, AllMasterTasksItems?.ProjectData)} />
+                                            : <>
+                                                <div className="full-width">
+                                                    <div className="full-width replaceInput alignCenter">
+                                                        <a style={{ color: "#fff !important" }} className="textDotted" > {data[1]?.ProjectItem[0].Title}</a>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <span className="input-group-text">
-                                                <span title="Edit Project" onClick={() => OpenComponentPicker(data[1], true, 'ProjectItem')} className="svg__iconbox svg__icon--editBox"></span>
-                                            </span>
-                                        </>}
-                                    {/* {data[1]?.ProjectItem != undefined && data[1]?.ProjectItem?.map((type: any, index: number) => {
-                                        return (
-                                            <div className="block w-100">
-                                                <a style={{ color: "#fff !important" }} className="textDotted" > {type.Title}</a>
-                                                <span onClick={() => removeItem(type, 1, 'ProjectItem')} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox" >
+                                                <span className="input-group-text">
+                                                    <span title="Edit Project" onClick={() => OpenComponentPicker(data[1], true, 'ProjectItem')} className="svg__iconbox svg__icon--editBox"></span>
                                                 </span>
-                                            </div>
-                                        );
-                                    }
-                                    )}
-                                    <span className="input-group-text">
-                                        <span title="Edit Project" onClick={() => OpenComponentPicker(data[1], true, 'ProjectItem')} className="svg__iconbox svg__icon--editBox"></span>
-                                    </span> */}
-                                    {data[1]?.ProjectItem?.length === 0 && autoSearch?.itemIndex === 1 && autoSearch?.property === 'ProjectItem' && SearchedCategoryData?.length > 0 ? (
-                                        <div className="SmartTableOnTaskPopup">
-                                            <ul className="list-group hreflink scrollbar maXh-200">
-                                                {SearchedCategoryData?.map((item: any) => {
-                                                    return (
-                                                        <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                            <a>{item.Newlabel || item.Path}</a>
-                                                        </li>
-                                                    )
-                                                }
-                                                )}
-                                            </ul>
-                                        </div>) : null}
-                                </div>
+                                            </>}
 
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('ProjectItem')} />
-                            </Col>
-                        </Row>
+                                        {data[1]?.ProjectItem?.length === 0 && autoSearch?.itemIndex === 1 && autoSearch?.property === 'ProjectItem' && SearchedCategoryData?.length > 0 ? (
+                                            <div className="SmartTableOnTaskPopup">
+                                                <ul className="list-group hreflink scrollbar maXh-200">
+                                                    {SearchedCategoryData?.map((item: any) => {
+                                                        return (
+                                                            <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                                <a>{item.Newlabel || item.Path}</a>
+                                                            </li>
+                                                        )
+                                                    }
+                                                    )}
+                                                </ul>
+                                            </div>) : null}
+                                    </div>
+
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('ProjectItem')} />
+                                </Col>
+                            </Row>
+                            : <></>}
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
@@ -3625,29 +3528,31 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('PriorityRank')} />
                             </Col>
                         </Row>
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Client Activity</label>
-                                    <input type="text" className="form-control" defaultValue={data[0]?.ClientActivity} onChange={(e) => changeData(0, 'ClientActivity', e.target.value)} />
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="iconSec">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'ClientActivity', data[1]?.ClientActivity)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'ClientActivity', data[0]?.ClientActivity)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Client Activity</label>
-                                    <input type="text" className="form-control" defaultValue={data[1]?.ClientActivity} onChange={(e) => changeData(1, 'ClientActivity', e.target.value)} />
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('ClientActivity')} />
-                            </Col>
-                        </Row>
+                        {data[0]?.Item_x0020_Type === "Component" || data[0]?.Item_x0020_Type === "SubComponent" || data[0]?.Item_x0020_Type === "Feature" ?
+                            < Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Client Activity</label>
+                                        <input type="text" className="form-control" defaultValue={data[0]?.ClientActivity} onChange={(e) => changeData(0, 'ClientActivity', e.target.value)} />
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="iconSec">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'ClientActivity', data[1]?.ClientActivity)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'ClientActivity', data[0]?.ClientActivity)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Client Activity</label>
+                                        <input type="text" className="form-control" defaultValue={data[1]?.ClientActivity} onChange={(e) => changeData(1, 'ClientActivity', e.target.value)} />
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('ClientActivity')} />
+                                </Col>
+                            </Row>
+                            : <></>}
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
@@ -3694,7 +3599,7 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={() => undoChangescolumns('ComponentLink')} />
                             </Col>
                         </Row>
-                        {data[0]?.TaskType === undefined && <>
+                        {data[0]?.Item_x0020_Type === "Component" || data[0]?.Item_x0020_Type === "SubComponent" || data[0]?.Item_x0020_Type === "Feature" ? <>
                             <Row className="Metadatapannel">
                                 <Col sm="5" md="5" lg="5" className="contentSec">
                                     <div className="input-group">
@@ -3744,33 +3649,34 @@ const CompareTool = (props: any) => {
                                     <LuUndo2 size="25" onClick={() => undoChangescolumns('Package')} />
                                 </Col>
                             </Row>
-                        </>}
-                        <Row className="Metadatapannel">
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Admin Status</label>
-                                    <input type="text" className="form-control" defaultValue={data[0]?.AdminStatus} onChange={(e) => changeData(0, 'AdminStatus', e.target.value)} />
-                                </div>
-                                {/* <TextField label="Admin Status" value={data[0]?.AdminStatus} /> */}
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="iconSec">
-                                <div className="text-center">
-                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'AdminStatus', data[1]?.AdminStatus)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'AdminStatus', data[0]?.AdminStatus)} /></div>
-                                </div>
-                            </Col>
-                            <Col sm="5" md="5" lg="5" className="contentSec">
-                                {/* <TextField label="Admin Status" value={data[1]?.AdminStatus} /> */}
-                                <div className="input-group">
-                                    <label className="fw-semibold full-width form-label">Admin Status</label>
-                                    <input type="text" className="form-control" defaultValue={data[1]?.AdminStatus} onChange={(e) => changeData(1, 'AdminStatus', e.target.value)} />
-                                </div>
-                            </Col>
-                            <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                <LuUndo2 size="25" onClick={() => undoChangescolumns('AdminStatus')} />
-                            </Col>
-                        </Row>
-                        {data[0]?.TaskType === undefined &&
+                        </> : <></>}
+                        {data[0]?.Item_x0020_Type === "Component" || data[0]?.Item_x0020_Type === "SubComponent" || data[0]?.Item_x0020_Type === "Feature" ?
+                            <Row className="Metadatapannel">
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Admin Status</label>
+                                        <input type="text" className="form-control" defaultValue={data[0]?.AdminStatus} onChange={(e) => changeData(0, 'AdminStatus', e.target.value)} />
+                                    </div>
+                                    {/* <TextField label="Admin Status" value={data[0]?.AdminStatus} /> */}
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="iconSec">
+                                    <div className="text-center">
+                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'AdminStatus', data[1]?.AdminStatus)} /></div>
+                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'AdminStatus', data[0]?.AdminStatus)} /></div>
+                                    </div>
+                                </Col>
+                                <Col sm="5" md="5" lg="5" className="contentSec">
+                                    {/* <TextField label="Admin Status" value={data[1]?.AdminStatus} /> */}
+                                    <div className="input-group">
+                                        <label className="fw-semibold full-width form-label">Admin Status</label>
+                                        <input type="text" className="form-control" defaultValue={data[1]?.AdminStatus} onChange={(e) => changeData(1, 'AdminStatus', e.target.value)} />
+                                    </div>
+                                </Col>
+                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('AdminStatus')} />
+                                </Col>
+                            </Row> : <></>}
+                        {data[0]?.Item_x0020_Type === "Component" || data[0]?.Item_x0020_Type === "SubComponent" || data[0]?.Item_x0020_Type === "Feature" ?
                             <Row className="Metadatapannel">
                                 <Col sm="5" md="5" lg="5" className="contentSec">
                                     <div className="input-group">
@@ -3794,7 +3700,7 @@ const CompareTool = (props: any) => {
                                     <LuUndo2 size="25" onClick={() => undoChangescolumns('Synonyms')} />
                                 </Col>
                             </Row>
-                        }
+                            : <></>}
                         <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5" className="contentSec">
                                 <div className="input-group">
@@ -3943,7 +3849,7 @@ const CompareTool = (props: any) => {
                                 </Col>
                             </Row>)}
 
-                        {data[0]?.TaskType === undefined && <span>
+                        {data[0]?.Item_x0020_Type === "Component" || data[0]?.Item_x0020_Type === "SubComponent" || data[0]?.Item_x0020_Type === "Feature" ? <>
                             <Row className="Metadatapannel">
                                 <Col sm="5" md="5" lg="5" className="contentSec">
                                     <div className="input-group">
@@ -3998,34 +3904,35 @@ const CompareTool = (props: any) => {
                                 <Col sm="1" md="1" lg="1" className="text-center iconSec">
                                     <LuUndo2 size="25" onClick={() => undoChangescolumns('TechnicalExplanations')} />
                                 </Col>
-                            </Row>
-                            <Row className="Metadatapannel">
-                                <Col sm="5" md="5" lg="5" className="contentSec">
-                                    <div className="input-group">
-                                        <label className="fw-semibold full-width form-label">Deliverables
-                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Deliverables", true) }}></span>
-                                        </label>
-                                        <textarea className="form-control" rows={3} value={data[0]?.Deliverables != null && data[0]?.Deliverables != undefined ? data[0]?.Deliverables?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
-                                    </div>
-                                </Col>
-                                <Col sm="1" md="1" lg="1" className="iconSec">
-                                    <div className="text-center">
-                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'Deliverables', data[1]?.Deliverables)} /></div>
-                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'Deliverables', data[0]?.Deliverables)} /></div>
-                                    </div>
-                                </Col>
-                                <Col sm="5" md="5" lg="5" className="contentSec">
-                                    <div className="input-group">
-                                        <label className="fw-semibold full-width form-label">Deliverables
-                                            <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Deliverables", true) }}></span>
-                                        </label>
-                                        <textarea className="form-control" rows={3} value={data[1]?.Deliverables != undefined && data[1]?.Deliverables != null ? data[1]?.Deliverables?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
-                                    </div>
-                                </Col>
-                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('Deliverables')} />
-                                </Col>
-                            </Row>
+                            </Row></> : <></>}
+                        <Row className="Metadatapannel">
+                            <Col sm="5" md="5" lg="5" className="contentSec">
+                                <div className="input-group">
+                                    <label className="fw-semibold full-width form-label">Deliverables
+                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[0], 0, "Deliverables", true) }}></span>
+                                    </label>
+                                    <textarea className="form-control" rows={3} value={data[0]?.Deliverables != null && data[0]?.Deliverables != undefined ? data[0]?.Deliverables?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                </div>
+                            </Col>
+                            <Col sm="1" md="1" lg="1" className="iconSec">
+                                <div className="text-center">
+                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'Deliverables', data[1]?.Deliverables)} /></div>
+                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'Deliverables', data[0]?.Deliverables)} /></div>
+                                </div>
+                            </Col>
+                            <Col sm="5" md="5" lg="5" className="contentSec">
+                                <div className="input-group">
+                                    <label className="fw-semibold full-width form-label">Deliverables
+                                        <span className="svg__iconbox alignIcon svg__icon--edit" onClick={() => { bindEditorData(data[1], 1, "Deliverables", true) }}></span>
+                                    </label>
+                                    <textarea className="form-control" rows={3} value={data[1]?.Deliverables != undefined && data[1]?.Deliverables != null ? data[1]?.Deliverables?.replace(/(<([^>]+)>)/gi, "").replace(/\n/g, '').replace(/&#160;/g, ' ').replace(/&nbsp;/g, ' ') : ''}></textarea>
+                                </div>
+                            </Col>
+                            <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                <LuUndo2 size="25" onClick={() => undoChangescolumns('Deliverables')} />
+                            </Col>
+                        </Row>
+                        {data[0]?.Item_x0020_Type === "Component" || data[0]?.Item_x0020_Type === "SubComponent" || data[0]?.Item_x0020_Type === "Feature" ? <>
                             <Row className="Metadatapannel">
                                 <Col sm="5" md="5" lg="5" className="contentSec">
                                     <div className="input-group">
@@ -4075,56 +3982,57 @@ const CompareTool = (props: any) => {
                                 <Col sm="1" md="1" lg="1" className="text-center iconSec">
                                     <LuUndo2 size="25" onClick={() => undoChangescolumns('AdminNotes')} />
                                 </Col>
-                            </Row>
-                            <Row className="Metadatapannel">
-                                <Col sm="5" md="5" lg="5" className="contentSec">
-                                    <div className="input-group">
-                                        <label className="fw-semibold full-width form-label">Background</label>
-                                        <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 0, 'Background')} rows={3} value={(data[0]?.Background == null || data[0]?.Background === "") ? "" : data[0]?.Background} ></textarea>
-                                    </div>
-                                </Col>
-                                <Col sm="1" md="1" lg="1" className="iconSec">
-                                    <div className="text-center">
-                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'Background', data[1]?.Background)} /></div>
-                                        <div><FaRightLong size="16" onClick={() => changeData(1, 'Background', data[0]?.Background)} /></div>
-                                    </div>
-                                </Col>
-                                <Col sm="5" md="5" lg="5" className="contentSec">
-                                    <div className="input-group">
-                                        <label className="fw-semibold full-width form-label">Background</label>
-                                        <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 1, 'Background')} rows={3} value={(data[1]?.Background == null || data[1]?.Background === "") ? "" : data[1]?.Background} ></textarea>
-                                    </div>
-                                </Col>
-                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('Background')} />
-                                </Col>
-                            </Row>
-                            <Row className="Metadatapannel">
-                                <Col sm="5" md="5" lg="5" className="contentSec">
-                                    {/* <TextField label="Idea" value={data[0]?.Idea} /> */}
-                                    <div className="input-group">
-                                        <label className="fw-semibold full-width form-label">Idea</label>
-                                        <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 0, 'Idea')} rows={3} value={(data[0]?.Idea == null || data[0]?.Idea === "") ? "" : data[0]?.Idea}></textarea>
-                                    </div>
-                                </Col>
-                                <Col sm="1" md="1" lg="1" className="iconSec">
-                                    <div className="text-center">
-                                        <div><FaLeftLong size="16" onClick={() => changeData(0, 'Idea', data[1]?.Idea)} /></div>
-                                        <div><FaRightLong size="16" onClick={() => changeData(0, 'Idea', data[1]?.Idea)} /></div>
-                                    </div>
-                                </Col>
-                                <Col sm="5" md="5" lg="5" className="contentSec">
-                                    {/* <TextField label="Idea" value={data[1]?.Idea} /> */}
-                                    <div className="input-group">
-                                        <label className="fw-semibold full-width form-label">Idea</label>
-                                        <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 1, 'Idea')} rows={3} value={(data[1]?.Idea == null || data[1]?.Idea === "") ? "" : data[1]?.Idea}></textarea>
-                                    </div>
-                                </Col>
-                                <Col sm="1" md="1" lg="1" className="text-center iconSec">
-                                    <LuUndo2 size="25" onClick={() => undoChangescolumns('Idea')} />
-                                </Col>
-                            </Row>
-                            <Row className="Metadatapannel">
+                            </Row></> : <></>}
+                        <Row className="Metadatapannel">
+                            <Col sm="5" md="5" lg="5" className="contentSec">
+                                <div className="input-group">
+                                    <label className="fw-semibold full-width form-label">Background</label>
+                                    <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 0, 'Background')} rows={3} value={(data[0]?.Background == null || data[0]?.Background === "") ? "" : data[0]?.Background} ></textarea>
+                                </div>
+                            </Col>
+                            <Col sm="1" md="1" lg="1" className="iconSec">
+                                <div className="text-center">
+                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'Background', data[1]?.Background)} /></div>
+                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'Background', data[0]?.Background)} /></div>
+                                </div>
+                            </Col>
+                            <Col sm="5" md="5" lg="5" className="contentSec">
+                                <div className="input-group">
+                                    <label className="fw-semibold full-width form-label">Background</label>
+                                    <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 1, 'Background')} rows={3} value={(data[1]?.Background == null || data[1]?.Background === "") ? "" : data[1]?.Background} ></textarea>
+                                </div>
+                            </Col>
+                            <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                <LuUndo2 size="25" onClick={() => undoChangescolumns('Background')} />
+                            </Col>
+                        </Row>
+                        <Row className="Metadatapannel">
+                            <Col sm="5" md="5" lg="5" className="contentSec">
+                                {/* <TextField label="Idea" value={data[0]?.Idea} /> */}
+                                <div className="input-group">
+                                    <label className="fw-semibold full-width form-label">Idea</label>
+                                    <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 0, 'Idea')} rows={3} value={(data[0]?.Idea == null || data[0]?.Idea === "") ? "" : data[0]?.Idea}></textarea>
+                                </div>
+                            </Col>
+                            <Col sm="1" md="1" lg="1" className="iconSec">
+                                <div className="text-center">
+                                    <div><FaLeftLong size="16" onClick={() => changeData(0, 'Idea', data[1]?.Idea)} /></div>
+                                    <div><FaRightLong size="16" onClick={() => changeData(0, 'Idea', data[1]?.Idea)} /></div>
+                                </div>
+                            </Col>
+                            <Col sm="5" md="5" lg="5" className="contentSec">
+                                {/* <TextField label="Idea" value={data[1]?.Idea} /> */}
+                                <div className="input-group">
+                                    <label className="fw-semibold full-width form-label">Idea</label>
+                                    <textarea className="full-width" onChange={(e) => bindMultilineValue(e, 1, 'Idea')} rows={3} value={(data[1]?.Idea == null || data[1]?.Idea === "") ? "" : data[1]?.Idea}></textarea>
+                                </div>
+                            </Col>
+                            <Col sm="1" md="1" lg="1" className="text-center iconSec">
+                                <LuUndo2 size="25" onClick={() => undoChangescolumns('Idea')} />
+                            </Col>
+                        </Row>
+                        {data[0]?.Item_x0020_Type === "Component" || data[0]?.Item_x0020_Type === "SubComponent" || data[0]?.Item_x0020_Type === "Feature" ?
+                            <>   <Row className="Metadatapannel">
                                 <Col sm="5" md="5" lg="5" className="contentSec">
                                     <div className="input-group" key={data[0]}>
                                         <label className="fw-semibold full-width form-label">Value Added</label>
@@ -4147,7 +4055,7 @@ const CompareTool = (props: any) => {
                                     <LuUndo2 size="25" onClick={() => undoChangescolumns('ValueAdded')} />
                                 </Col>
                             </Row>
-                        </span>}
+                            </> : <></>}
                         {/* <Row className="Metadatapannel">
                             <Col sm="5" md="5" lg="5">
                                 <div className="input-group">
@@ -4169,7 +4077,7 @@ const CompareTool = (props: any) => {
                                 <LuUndo2 size="25" onClick={undoChanges} />
                             </Col>
                         </Row> */}
-                        {data[0]?.TaskType === undefined &&
+                        {data[0]?.Item_x0020_Type === "Component" || data[0]?.Item_x0020_Type === "SubComponent" || data[0]?.Item_x0020_Type === "Feature" ?
                             <Row className="Metadatapannel">
                                 <Col sm="5" md="5" lg="5" className="contentSec">
                                     <div className="input-group">
@@ -4193,7 +4101,7 @@ const CompareTool = (props: any) => {
                                     <LuUndo2 size="25" onClick={() => undoChangescolumns('HelpDescription')} />
                                 </Col>
                             </Row>
-                        }
+                            : <></>}
                         {data[0]?.TaskType?.Title != undefined &&
                             <Row className="Metadatapannel">
                                 <Col sm="5" md="5" lg="5" className="contentSec">
@@ -4353,7 +4261,7 @@ const CompareTool = (props: any) => {
                     </div>
                 </footer>
                 {showLoader ? <PageLoader /> : ''}
-            </Panel>
+            </Panel >
 
             {
                 categories?.condition && <Picker
@@ -4375,13 +4283,17 @@ const CompareTool = (props: any) => {
                     showProject={isPicker?.PortfolioTitle === 'ProjectItem' ? true : false}
                 />
             }
-            {(componentItem?.Item_x0020_Type === "Project" || componentItem?.Item_x0020_Type === "Sprint") && (
-                <EditProjectPopup AllListId={props.contextValue} props={componentItem} Call={Call}  > {" "} </EditProjectPopup>)}
+            {
+                (componentItem?.Item_x0020_Type === "Project" || componentItem?.Item_x0020_Type === "Sprint") && (
+                    <EditProjectPopup AllListId={props.contextValue} props={componentItem} Call={Call}  > {" "} </EditProjectPopup>)
+            }
 
             {SiteCompositionShow && (<CentralizedSiteComposition ItemDetails={catItem} RequiredListIds={props.contextValue} closePopupCallBack={ClosePopupCallBack} usedFor={"CSF"} />)}
 
-            {(componentItem?.Item_x0020_Type === "Component" || componentItem?.Item_x0020_Type === "SubComponent" || componentItem?.Item_x0020_Type === "Feature") && (
-                <EditInstituton item={componentItem} Calls={Call} SelectD={props.contextValue} portfolioTypeData={PortFolioType}  > </EditInstituton>)}
+            {
+                (componentItem?.Item_x0020_Type === "Component" || componentItem?.Item_x0020_Type === "SubComponent" || componentItem?.Item_x0020_Type === "Feature") && (
+                    <EditInstituton item={componentItem} Calls={Call} SelectD={props.contextValue} portfolioTypeData={PortFolioType}  > </EditInstituton>)
+            }
 
             {isPicker?.condition && isPicker?.PortfolioTitle === 'FeatureType' && (<Smartmetadatapickerin props={catItem} Call={Smartmetadatafeature} selectedFeaturedata={catItem?.FeatureType != undefined ? catItem?.FeatureType[0] : catItem?.FeatureType} AllListId={props.contextValue} TaxType='Feature Type' usedFor="Single" ></Smartmetadatapickerin>)}
 
