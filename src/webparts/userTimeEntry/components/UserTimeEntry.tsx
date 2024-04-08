@@ -3271,6 +3271,11 @@ export default class UserTimeEntry extends React.Component<
     this.setState({ showShareTimesheet: true });
   };
   private shareTaskInEmail = () => {
+    if (DateType == "Custom") {
+      let start = Moment(this.state.startdate).format("DD/MM/YYYY");
+      let end = Moment(this.state.enddate).format("DD/MM/YYYY");
+      DateType = `${start} - ${end}`;
+    }
     if (totalTimedata.length == 0) {
       alert("Data is not available in table");
     } else {

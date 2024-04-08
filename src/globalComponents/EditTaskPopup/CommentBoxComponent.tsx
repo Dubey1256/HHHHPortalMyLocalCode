@@ -1,12 +1,12 @@
 import * as React from "react";
 import { useState, useEffect, useCallback } from 'react';
-// import HtmlEditorCard from "../HtmlEditor/HtmlEditor";
+import HtmlEditorCard from "../HtmlEditor/HtmlEditor";
 import AddCommentComponent from './AddCommentComponent';
 import Example from "./SubCommentComponent";
 import pnp from 'sp-pnp-js';
 import * as Moment from 'moment';
 import ApprovalHistoryPopup from "./ApprovalHistoryPopup";
-import FroalaEditorComponent from '../FlorarComponents/FroalaEditorComponent';
+// import FroalaEditorComponent from '../FlorarComponents/FroalaEditorComponent';
 
 const CommentBoxComponent = (commentData: any) => {
     const Context = commentData.Context;
@@ -322,16 +322,16 @@ const CommentBoxComponent = (commentData: any) => {
                                     </div>
                                     <div className={`d-flex`} title={obj.isShowLight}>
                                         <span className="SubTestBorder p-1 me-1">{i + 1}</span>
-                                        {/* <HtmlEditorCard
+                                        <HtmlEditorCard
                                             editorValue={obj.Title != undefined ? obj.Title : ''}
                                             HtmlEditorStateChange={HtmlEditorCallBack}
                                         >
-                                        </HtmlEditorCard> */}
-                                        <FroalaEditorComponent
+                                        </HtmlEditorCard>
+                                        {/* <FroalaEditorComponent
                                             EditorValue={obj.Title != undefined ? obj.Title : ''}
                                             callBack={HtmlEditorCallBack}
                                         >
-                                        </FroalaEditorComponent>
+                                        </FroalaEditorComponent> */}
                                     </div>
                                 </div>
                                 <div>
