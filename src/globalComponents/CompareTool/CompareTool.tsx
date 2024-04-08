@@ -29,6 +29,7 @@ import EditProjectPopup from "../EditProjectPopup";
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 let renderData: any = [];
 let AutoCompleteItemsArray: any = [];
+let AllFeatureTypeData : any = [];
 let catItem: any = {};
 let color: any = false;
 let PutComment: any = "";
@@ -144,7 +145,7 @@ const CompareTool = (props: any) => {
             }
             // get tagged component of selected Component
             else {
-                select = "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo, TechnicalExplanations, SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,PriorityRank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title, Portfolios/Id,Portfolios/ItemType, ClientTime,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Parent,Portfolios,TaskCategories,ClientCategory,Author,Editor,SharewebCategories"
+                select = "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,TaskCategories/Title,TaskCategories/Id,AdminNotes,Status,ClientActivity,PriorityRank,Item_x002d_Image,AdminStatus,Help_x0020_Information,HelpInfo, TechnicalExplanations, SiteCompositionSettings,HelpDescription,PortfolioStructureID,ValueAdded,Idea,Synonyms,ComponentLink,Package,Comments,TaskDueDate,DueDate,Sitestagging,Body,Deliverables, DeliverableSynonyms,StartDate,Created,Item_x0020_Type,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,PriorityRank,Priority,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Portfolios/Title, Portfolios/Id,Portfolios/ItemType, ClientTime,Parent/Id,Parent/Title,Author/Title,Author/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=Parent,Portfolios,TaskCategories,ClientCategory,Author,Editor"
                 await globalCommon.getData(props?.contextValue?.siteUrl, items?.listId === undefined ? props?.contextValue?.MasterTaskListID : items?.listId, select + "&$filter=" + `(Parent/Id eq ${items?.Id})`)
                     .then(async (datas: any) => {
                         count++;
@@ -174,7 +175,7 @@ const CompareTool = (props: any) => {
             props?.contextValue
         );
         if (CallBackData.AllData != undefined && CallBackData.AllData.length > 0) {
-            CallBackData.AllData = [...CallBackData.AllData, ...CallBackData.ProjectData];
+            CallBackData.AllDatawithProject = [...CallBackData.AllData, ...CallBackData.ProjectData];
             setAllMasterTasksItems(CallBackData);
         }
 
@@ -383,214 +384,214 @@ const CompareTool = (props: any) => {
 
                 });
     }
-    const TimeEntryColumnsFirst = React.useMemo<ColumnDef<any, unknown>[]>(
-        () => [
-            {
-                accessorKey: "",
-                placeholder: "",
-                hasCheckbox: true,
-                hasCustomExpanded: true,
-                hasExpanded: true,
-                isHeaderNotAvlable: true,
-                size: 22,
-                id: 'Id',
+    // const TimeEntryColumnsFirst = React.useMemo<ColumnDef<any, unknown>[]>(
+    //     () => [
+    //         {
+    //             accessorKey: "",
+    //             placeholder: "",
+    //             hasCheckbox: true,
+    //             hasCustomExpanded: true,
+    //             hasExpanded: true,
+    //             isHeaderNotAvlable: true,
+    //             size: 22,
+    //             id: 'Id',
 
-            },
-            {
-                id: "AuthorName",
-                placeholder: "",
-                canSort: false,
-                header: "",
-                size: 90,
-                cell: ({ row }) => (
-                    <>
-                        <span>
-                            <div className="d-flex">
-                                <>
-                                    {row?.original?.CategoryTitleShow != true ? (
-                                        <span>
-                                            {row?.original?.AuthorImage != "" &&
-                                                row?.original.AuthorImage != null ? (
-                                                <img
-                                                    className="AssignUserPhoto1 bdrbox m-0 wid29"
-                                                    title={row?.original.AuthorName}
-                                                    data-toggle="popover"
-                                                    data-trigger="hover"
-                                                    src={row?.original.AuthorImage}
-                                                ></img>
-                                            ) : (
-                                                <>
-                                                    {" "}
-                                                    <img
-                                                        className="AssignUserPhoto1 bdrbox m-0 wid29"
-                                                        title={row?.original.AuthorName}
-                                                        data-toggle="popover"
-                                                        data-trigger="hover"
-                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
-                                                    ></img>
-                                                </>
-                                            )}
-                                            <span className="mx-1">{row?.original?.AuthorName}</span>
-                                        </span>
-                                    ) : (
-                                        <>
-                                            <span className="mx-1">
-                                                {row?.original?.Category?.Title} -{" "}
-                                                {row?.original?.Title}
-                                            </span>
-                                        </>
-                                    )}
-                                </>
-                            </div>
-                        </span>
-                    </>
-                )
-            },
-            {
-                cell: ({ row }) => (
-                    <>
-                        <span>{row?.original?.TaskDate}</span>
-                    </>
-                ),
-                id: "TaskDate",
-                size: 95,
-                placeholder: "",
-                canSort: false,
-                header: "",
-            },
-            {
-                cell: ({ row }) => (
-                    <>
-                        <span>{row?.original?.TaskTime}</span>
-                    </>
-                ),
-                id: "TaskTime",
-                size: 95,
-                placeholder: "",
-                canSort: false,
-                header: "",
-            },
-            {
-                cell: ({ row }) => (
-                    <>
-                        <span>{row?.original?.Description}</span>
-                    </>
-                ),
-                id: "Description",
-                size: 300,
-                placeholder: "",
-                canSort: false,
-                header: "",
-            },
-        ],
-        [data[0]?.finalData]
-    );
-    const callBackDataFirst = React.useCallback((elem: any, ShowingData: any) => { },
-        []);
-    const TimeEntryColumnsSecond = React.useMemo<ColumnDef<any, unknown>[]>(
-        () => [
-            {
-                accessorKey: "",
-                placeholder: "",
-                hasCheckbox: true,
-                hasCustomExpanded: true,
-                hasExpanded: true,
-                isHeaderNotAvlable: true,
-                size: 22,
-                id: 'Id',
+    //         },
+    //         {
+    //             id: "AuthorName",
+    //             placeholder: "",
+    //             canSort: false,
+    //             header: "",
+    //             size: 90,
+    //             cell: ({ row }) => (
+    //                 <>
+    //                     <span>
+    //                         <div className="d-flex">
+    //                             <>
+    //                                 {row?.original?.CategoryTitleShow != true ? (
+    //                                     <span>
+    //                                         {row?.original?.AuthorImage != "" &&
+    //                                             row?.original.AuthorImage != null ? (
+    //                                             <img
+    //                                                 className="AssignUserPhoto1 bdrbox m-0 wid29"
+    //                                                 title={row?.original.AuthorName}
+    //                                                 data-toggle="popover"
+    //                                                 data-trigger="hover"
+    //                                                 src={row?.original.AuthorImage}
+    //                                             ></img>
+    //                                         ) : (
+    //                                             <>
+    //                                                 {" "}
+    //                                                 <img
+    //                                                     className="AssignUserPhoto1 bdrbox m-0 wid29"
+    //                                                     title={row?.original.AuthorName}
+    //                                                     data-toggle="popover"
+    //                                                     data-trigger="hover"
+    //                                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+    //                                                 ></img>
+    //                                             </>
+    //                                         )}
+    //                                         <span className="mx-1">{row?.original?.AuthorName}</span>
+    //                                     </span>
+    //                                 ) : (
+    //                                     <>
+    //                                         <span className="mx-1">
+    //                                             {row?.original?.Category?.Title} -{" "}
+    //                                             {row?.original?.Title}
+    //                                         </span>
+    //                                     </>
+    //                                 )}
+    //                             </>
+    //                         </div>
+    //                     </span>
+    //                 </>
+    //             )
+    //         },
+    //         {
+    //             cell: ({ row }) => (
+    //                 <>
+    //                     <span>{row?.original?.TaskDate}</span>
+    //                 </>
+    //             ),
+    //             id: "TaskDate",
+    //             size: 95,
+    //             placeholder: "",
+    //             canSort: false,
+    //             header: "",
+    //         },
+    //         {
+    //             cell: ({ row }) => (
+    //                 <>
+    //                     <span>{row?.original?.TaskTime}</span>
+    //                 </>
+    //             ),
+    //             id: "TaskTime",
+    //             size: 95,
+    //             placeholder: "",
+    //             canSort: false,
+    //             header: "",
+    //         },
+    //         {
+    //             cell: ({ row }) => (
+    //                 <>
+    //                     <span>{row?.original?.Description}</span>
+    //                 </>
+    //             ),
+    //             id: "Description",
+    //             size: 300,
+    //             placeholder: "",
+    //             canSort: false,
+    //             header: "",
+    //         },
+    //     ],
+    //     [data[0]?.finalData]
+    // );
+    // const callBackDataFirst = React.useCallback((elem: any, ShowingData: any) => { },
+    //     []);
+    // const TimeEntryColumnsSecond = React.useMemo<ColumnDef<any, unknown>[]>(
+    //     () => [
+    //         {
+    //             accessorKey: "",
+    //             placeholder: "",
+    //             hasCheckbox: true,
+    //             hasCustomExpanded: true,
+    //             hasExpanded: true,
+    //             isHeaderNotAvlable: true,
+    //             size: 22,
+    //             id: 'Id',
 
-            },
-            {
-                cell: ({ row }) => (
-                    <>
-                        <span>
-                            <div className="d-flex">
-                                <>
-                                    {row?.original?.CategoryTitleShow != true ? (
-                                        <span>
-                                            {row?.original?.AuthorImage != "" &&
-                                                row?.original.AuthorImage != null ? (
-                                                <img
-                                                    className="AssignUserPhoto1 bdrbox m-0 wid29"
-                                                    title={row?.original.AuthorName}
-                                                    data-toggle="popover"
-                                                    data-trigger="hover"
-                                                    src={row?.original.AuthorImage}
-                                                ></img>
-                                            ) : (
-                                                <>
-                                                    {" "}
-                                                    <img
-                                                        className="AssignUserPhoto1 bdrbox m-0 wid29"
-                                                        title={row?.original.AuthorName}
-                                                        data-toggle="popover"
-                                                        data-trigger="hover"
-                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
-                                                    ></img>
-                                                </>
-                                            )}
-                                            <span className="mx-1">{row?.original?.AuthorName}</span>
-                                        </span>
-                                    ) : (
-                                        <>
-                                            <span className="mx-1">
-                                                {row?.original?.Category?.Title} -{" "}
-                                                {row?.original?.Title}
-                                            </span>
-                                        </>
-                                    )}
-                                </>
-                            </div>
-                        </span>
-                    </>
-                ),
-                id: "AuthorName",
-                placeholder: "",
-                canSort: false,
-                header: "",
-                size: 90,
-            },
-            {
-                cell: ({ row }) => (
-                    <>
-                        <span>{row?.original?.TaskDate}</span>
-                    </>
-                ),
-                id: "TaskDate",
-                size: 95,
-                placeholder: "",
-                canSort: false,
-                header: "",
-            },
-            {
-                cell: ({ row }) => (
-                    <>
-                        <span>{row?.original?.TaskTime}</span>
-                    </>
-                ),
-                id: "TaskTime",
-                size: 95,
-                placeholder: "",
-                canSort: false,
-                header: "",
-            },
-            {
-                cell: ({ row }) => (
-                    <>
-                        <span>{row?.original?.Description}</span>
-                    </>
-                ),
-                id: "Description",
-                size: 300,
-                placeholder: "",
-                canSort: false,
-                header: "",
-            },
-        ],
-        [data[1]?.finalData]
-    );
-    const callBackDataSecond = React.useCallback((elem: any, ShowingData: any) => { },
-        []);
+    //         },
+    //         {
+    //             cell: ({ row }) => (
+    //                 <>
+    //                     <span>
+    //                         <div className="d-flex">
+    //                             <>
+    //                                 {row?.original?.CategoryTitleShow != true ? (
+    //                                     <span>
+    //                                         {row?.original?.AuthorImage != "" &&
+    //                                             row?.original.AuthorImage != null ? (
+    //                                             <img
+    //                                                 className="AssignUserPhoto1 bdrbox m-0 wid29"
+    //                                                 title={row?.original.AuthorName}
+    //                                                 data-toggle="popover"
+    //                                                 data-trigger="hover"
+    //                                                 src={row?.original.AuthorImage}
+    //                                             ></img>
+    //                                         ) : (
+    //                                             <>
+    //                                                 {" "}
+    //                                                 <img
+    //                                                     className="AssignUserPhoto1 bdrbox m-0 wid29"
+    //                                                     title={row?.original.AuthorName}
+    //                                                     data-toggle="popover"
+    //                                                     data-trigger="hover"
+    //                                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+    //                                                 ></img>
+    //                                             </>
+    //                                         )}
+    //                                         <span className="mx-1">{row?.original?.AuthorName}</span>
+    //                                     </span>
+    //                                 ) : (
+    //                                     <>
+    //                                         <span className="mx-1">
+    //                                             {row?.original?.Category?.Title} -{" "}
+    //                                             {row?.original?.Title}
+    //                                         </span>
+    //                                     </>
+    //                                 )}
+    //                             </>
+    //                         </div>
+    //                     </span>
+    //                 </>
+    //             ),
+    //             id: "AuthorName",
+    //             placeholder: "",
+    //             canSort: false,
+    //             header: "",
+    //             size: 90,
+    //         },
+    //         {
+    //             cell: ({ row }) => (
+    //                 <>
+    //                     <span>{row?.original?.TaskDate}</span>
+    //                 </>
+    //             ),
+    //             id: "TaskDate",
+    //             size: 95,
+    //             placeholder: "",
+    //             canSort: false,
+    //             header: "",
+    //         },
+    //         {
+    //             cell: ({ row }) => (
+    //                 <>
+    //                     <span>{row?.original?.TaskTime}</span>
+    //                 </>
+    //             ),
+    //             id: "TaskTime",
+    //             size: 95,
+    //             placeholder: "",
+    //             canSort: false,
+    //             header: "",
+    //         },
+    //         {
+    //             cell: ({ row }) => (
+    //                 <>
+    //                     <span>{row?.original?.Description}</span>
+    //                 </>
+    //             ),
+    //             id: "Description",
+    //             size: 300,
+    //             placeholder: "",
+    //             canSort: false,
+    //             header: "",
+    //         },
+    //     ],
+    //     [data[1]?.finalData]
+    // );
+    // const callBackDataSecond = React.useCallback((elem: any, ShowingData: any) => { },
+    //     []);
 
 
 
@@ -666,7 +667,7 @@ const CompareTool = (props: any) => {
                     datas[0].ProjectItem = [];
 
                     datas[0]?.Portfolios?.forEach((obj: any) => {
-                        let dataitem: any = AllMasterTasksItems?.AllData?.filter((master: any) => master.Id === obj.Id);
+                        let dataitem: any = AllMasterTasksItems?.AllDatawithProject?.filter((master: any) => master.Id === obj.Id);
                         if (dataitem?.length === 0)
                             dataitem = AllMasterTasksItems?.ProjectData?.filter((master: any) => master.Id === obj.Id)
                         if (dataitem[0]?.Item_x0020_Type != undefined && dataitem[0]?.Item_x0020_Type === 'Project')
@@ -684,9 +685,10 @@ const CompareTool = (props: any) => {
 
 
                     }
-                    datas[0].FeatureType = [];
+                  
                     if (datas[0]?.FeatureType?.Id != undefined)
                         datas[0].FeatureType = [{ Id: datas[0]?.FeatureType?.Id, Title: datas[0]?.FeatureType?.Title }];
+                    else   datas[0].FeatureType = [];
                     // datas[0].ProjectItem = datas[0]?.Portfolios === undefined ? [] : datas[0]?.Portfolios;
                     datas[0].ResponsibileUsers = [];
                     if (datas[0]?.CompletedDate != undefined && datas[0]?.CompletedDate != null)
@@ -1218,7 +1220,7 @@ const CompareTool = (props: any) => {
         let AllPriorityData: any = [];
         let AllPriorityRankData: any = [];
         let CategoriesGroupByData: any = [];
-        let AllFeatureTypeData: any = [];
+      //  let AllFeatureTypeData: any = [];
         let AllSitesData: any = [];
         let AllTimesheetCategoriesData: any = [];
         try {
@@ -1238,22 +1240,22 @@ const CompareTool = (props: any) => {
                             SmartItemData.Title?.toLowerCase() == "pse" &&
                             SmartItemData.TaxType == "Client Category"
                         ) {
-                            SmartItemData.newTitle = "EPS";
+                            SmartItemData.Newlabel = "EPS";
                         } else if (
                             SmartItemData.Title?.toLowerCase() == "e+i" &&
                             SmartItemData.TaxType == "Client Category"
                         ) {
-                            SmartItemData.newTitle = "EI";
+                            SmartItemData.Newlabel = "EI";
                         } else if (
                             SmartItemData.Title?.toLowerCase() == "education" &&
                             SmartItemData.TaxType == "Client Category"
                         ) {
-                            SmartItemData.newTitle = "Education";
+                            SmartItemData.Newlabel = "Education";
                         } else {
-                            SmartItemData.newTitle = SmartItemData.Title;
+                            SmartItemData.Newlabel = SmartItemData.Title;
                         }
                     } else {
-                        SmartItemData.newTitle = SmartItemData.Title;
+                        SmartItemData.Newlabel = SmartItemData.Title;
                     }
                     if (SmartItemData?.TaxType === 'timesheetListConfigrations')
                         timesheetListConfigrations = globalCommon.parseJSON(SmartItemData.Configurations);
@@ -1299,18 +1301,18 @@ const CompareTool = (props: any) => {
                 );
                 if (CategoriesGroupByData?.length > 0) {
                     CategoriesGroupByData?.map((item: any) => {
-                        if (item.newTitle != undefined) {
-                            item["Newlabel"] = item.newTitle;
+                        if (item.Newlabel != undefined) {
+                            item["Newlabel"] = item.Newlabel;
                             AutoCompleteItemsArray.push(item);
                             if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
                                 item.childs.map((childitem: any) => {
-                                    if (childitem.newTitle != undefined) {
+                                    if (childitem.Newlabel != undefined) {
                                         childitem["Newlabel"] = item["Newlabel"] + " > " + childitem.Title;
                                         AutoCompleteItemsArray.push(childitem);
                                     }
                                     if (childitem.childs.length > 0) {
                                         childitem.childs.map((subchilditem: any) => {
-                                            if (subchilditem.newTitle != undefined) {
+                                            if (subchilditem.Newlabel != undefined) {
                                                 subchilditem["Newlabel"] = childitem["Newlabel"] + " > " + subchilditem.Title;
                                                 AutoCompleteItemsArray.push(subchilditem);
                                             }
@@ -1810,11 +1812,9 @@ const CompareTool = (props: any) => {
                 'ItemRank': Item.ItemRank,
                 'Mileage': Item.Mileage,
                 'PriorityRank': Item.PriorityRank,
-                // 'ComponentId': { "results": $scope.smartComponentsIds },
                 'PortfoliosId': { "results": portfolioIds },
                 'TaskCategoriesId': { "results": taskCategoryIds },
                 'Package': Item.Package,
-                // 'SiteCompositionSettings': angular.toJson(Item.SiteCompositionSettingsValue),
                 'Sitestagging': JSON.stringify(Item.SiteCompositionSettingsValue),
                 'Deliverables': Item.Deliverables,
                 'ClientActivity': Item.ClientActivity,
@@ -3111,7 +3111,7 @@ const CompareTool = (props: any) => {
                                                 {SearchedCategoryData?.map((item: any) => {
                                                     return (
                                                         <li className="hreflink list-group-item p-1 rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                            <a>{item.newTitle}</a>
+                                                            <a>{item.Newlabel}</a>
                                                         </li>
                                                     )
                                                 }
@@ -3151,7 +3151,7 @@ const CompareTool = (props: any) => {
                                                 {SearchedCategoryData?.map((item: any) => {
                                                     return (
                                                         <li className="hreflink list-group-item p-1 rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
-                                                            <a>{item.newTitle}</a>
+                                                            <a>{item.Newlabel}</a>
                                                         </li>
                                                     )
                                                 }
@@ -3258,7 +3258,7 @@ const CompareTool = (props: any) => {
                                     <div className="input-group">
                                         <label className="fw-semibold full-width form-label">Feature Type</label>
                                         {data[0]?.FeatureType?.length === 0 ?
-                                            <input type="text" defaultValue={data[1]?.TaskCategories} className="form-control" placeholder="Search Feature Type Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'FeatureType0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'FeatureType', 0, AllMasterTasksItems?.AllData)} />
+                                            <input type="text"  className="form-control" placeholder="Search Feature Type Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'FeatureType0') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'FeatureType', 0, AllFeatureTypeData)} />
                                             : <>
                                                 <div className="full-width">
                                                     <div className="full-width replaceInput alignCenter">
@@ -3298,7 +3298,7 @@ const CompareTool = (props: any) => {
                                         <label className="fw-semibold full-width form-label">Feature Type</label>
 
                                         {data[1]?.FeatureType?.length === 0 ?
-                                            <input type="text" className="form-control" placeholder="Search Feature Type Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'FeatureType1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'FeatureType', 1, AllMasterTasksItems?.AllData)} />
+                                            <input type="text" className="form-control" placeholder="Search Feature Type Here" value={(autoSearch?.property + autoSearch?.itemIndex === 'FeatureType1') ? categorySearchKey : ''} onChange={(e) => autoSuggestionsForCategory(e, 'FeatureType', 1, AllFeatureTypeData)} />
                                             : <>
                                                 <div className="full-width">
                                                     <div className="full-width replaceInput alignCenter">

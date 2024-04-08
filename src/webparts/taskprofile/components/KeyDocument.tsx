@@ -31,11 +31,11 @@ const RelevantDocuments = (props: any, ref: any) => {
                             doc.EditorImage = user?.Item_x0020_Cover?.Url
                         }
                         if (doc?.Modified !== undefined) {
-                            doc.Modified = doc?.Modified.replaceAll("T", "").replaceAll("Z", "")
+                            doc.Modified = doc?.Modified.replaceAll("T", " ").replaceAll("Z", "")
 
                         }
                         if (doc?.Created !== undefined) {
-                            doc.Created = doc?.Created.replaceAll("T", "").replaceAll("Z", "")
+                            doc.Created = doc?.Created.replaceAll("T", " ").replaceAll("Z", "")
 
                         }
                     }

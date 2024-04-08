@@ -20,7 +20,15 @@ export default function VersionHistory(props: any) {
     const siteTypeUrl = props.siteUrls;
     const listId = props?.listId
     const ItemId = props?.taskId;
-    let sitetype = window?.location?.search !== '' ? window?.location?.search?.split("&Site=")[1] || "Master Tasks" : 'Task Users';
+    var sitetype = window?.location?.search !== '' ? window?.location?.search?.split("&Site=")[1] || "Master Tasks" : 'Task Users';
+    try {
+        if (window?.location?.search?.split("&Site=")[1]?.indexOf("&OR") > -1) {
+            sitetype = window?.location?.search?.split("&Site=")[1]?.split("&OR")[0];
+        } 
+    }
+    catch (e) {
+        console.log(e);
+    }
     const RequiredListIds: any = props?.RequiredListIds;
     let tempEstimatedArrayData: any;
     const [show, setShow] = React.useState(false);
@@ -478,7 +486,10 @@ export default function VersionHistory(props: any) {
                             break;  
                         case 'Client_x005f_x003a_x005f_Category':
                             newKey = 'ClientCategory';
-                            break;                                                 
+                            break; 
+                        case "Item_x005f_x005F_x005f_x0020_x005f_Cover":
+                            newKey = "ItemCover";
+                            break;
                         default:
                             newKey = key; // If no transformation needed, keep the same key
                             break;

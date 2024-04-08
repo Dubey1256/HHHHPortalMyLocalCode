@@ -441,8 +441,8 @@ function ReadyMadeTable(SelectedProp: any) {
             );
             countTaskAWTLevel(countAllTasksData1);
         }
-
-        if (countAllComposubData?.length > 0) {
+ 
+        if (countAllComposubData?.length > 0 && filterTaskType==false) {
             let countAllTasksData11 = countAllComposubData?.filter(
                 (ele: any, ind: any, arr: any) => {
                     const isDuplicate =
@@ -775,16 +775,13 @@ function ReadyMadeTable(SelectedProp: any) {
             localStorage.setItem('timeEntryIndex', dataString);
         }
         console.log("timeEntryIndex", timeEntryIndex)
-      
-      
-            if (AllSiteTasksData?.length > 0) {
-                setData([]);
-                if (SelectedProp?.configration == "AllAwt" && SelectedProp?.SelectedItem != undefined) {
-                    if ('Parent' in SelectedProp?.SelectedItem) {
-                        taskTypeData?.map((levelType: any) => {
-                            if (levelType.Level === 1)
-                                componentActivity(levelType, SelectedProp?.SelectedItem);
-                        })
+        if (AllSiteTasksData?.length > 0) {
+            setData([]);
+            portfolioTypeData?.map((port: any, index: any) => {
+                if (SelectedProp?.SelectedItem != undefined) {
+                    if (port.Title === SelectedProp?.SelectedItem?.Item_x0020_Type) {
+                        componentData = []
+                        componentGrouping(port?.Id, port?.Id);
                     }
                     if ('ParentTask' in SelectedProp?.SelectedItem) {
                         let data: any = [SelectedProp?.SelectedItem]
@@ -805,7 +802,7 @@ function ReadyMadeTable(SelectedProp: any) {
                         if (SelectedProp?.SelectedItem != undefined) {
                             if (port.Title === SelectedProp?.SelectedItem?.PortfolioType?.Title) {
                                 componentData = []
-                                componentGrouping(port?.Id, port?.Id);
+                                componentGrouping(port?.Id, portfolioTypeData?.length - 1);
                             }
                         } else {
                             componentData = []
@@ -814,12 +811,11 @@ function ReadyMadeTable(SelectedProp: any) {
         
                     })
                 }
-              
-                countsrun++;
-    
-            }
-      
-      
+
+            })
+            countsrun++;
+
+        }
 
         setLoaded(true)
         return AllSiteTasksData;
@@ -1473,10 +1469,13 @@ function ReadyMadeTable(SelectedProp: any) {
         // setData(smartAllFilterData);
     }
     const FilterAllTask = ()=>{
-        filterTaskType=true;
-        setLoaded(false)
-        SelectedProp.TaskFilter= "PercentComplete gt '0.89'";
-        LoadAllSiteTasks()
+        if(filterTaskType==false){
+            filterTaskType=true;
+            setLoaded(false)
+            SelectedProp.TaskFilter= "PercentComplete gt '0.89'";
+            LoadAllSiteTasks()
+        }
+      
        
       }
 

@@ -491,7 +491,9 @@ const EmployeProfile = (props: any) => {
                       entry.CreatedServerDate = undefined
                       if (entry.AdditionalTimeEntry != undefined && entry.AdditionalTimeEntry?.length > 0) {
                         entry.AdditionalTimeEntry?.map((TimeEntry: any, index: any) => {
+                          TimeEntry.timeSheetsDescriptionSearch = '';
                           TimeEntry.UpdatedId = entry?.Id;
+                          TimeEntry.timeSheetsDescriptionSearch = TimeEntry?.Description
                           if ((TimeEntry?.Id == undefined || TimeEntry?.Id == '') && TimeEntry?.ID != undefined && TimeEntry?.ID != '')
                             TimeEntry.Id = TimeEntry?.ID;
                           else if ((TimeEntry?.ID == undefined || TimeEntry?.ID == '') && TimeEntry?.Id != undefined && TimeEntry?.Id != '')

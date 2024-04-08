@@ -364,10 +364,20 @@ export default class UserTimeEntry extends React.Component<
             let currentCount = siteConfig?.length;
             if (arraycount === currentCount) {
               AllSitesAllTasks = AllSiteTasks;
+            
+              let completionCounter = 0; // Counter to track completion
+            
               totalTimedata?.map((data: any) => {
                 data.taskDetails = this.checkTimeEntrySite(data);
+                
+                completionCounter++;
+            
+                // Check if all items have been processed
+                if (completionCounter === totalTimedata.length) {
+                  // If all items are processed, execute setState
+                  this.setState({ disableProperty: false });
+                }
               });
-              this.setState({ disableProperty: false });
             }
           } else {
             arraycount++;
@@ -1347,6 +1357,7 @@ export default class UserTimeEntry extends React.Component<
     });
   }
   private updatefilter(IsLoader: any) {
+    this.setState({ disableProperty: true });
     if (
       this.state.ImageSelectedUsers == undefined ||
       this.state.ImageSelectedUsers.length == 0
@@ -1528,14 +1539,20 @@ export default class UserTimeEntry extends React.Component<
     });
   };
   private showGraph = (tileName: any) => {
-    if (DateType == "Custom") {
-      let start = Moment(this.state.startdate).format("DD/MM/YYYY");
-      let end = Moment(this.state.enddate).format("DD/MM/YYYY");
-      DateType = `${start} - ${end}`;
+    if(this.state.AllTimeEntry.length > 0){
+      if (DateType == "Custom") {
+        let start = Moment(this.state.startdate).format("DD/MM/YYYY");
+        let end = Moment(this.state.enddate).format("DD/MM/YYYY");
+        DateType = `${start} - ${end}`;
+      }
+      this.setState({
+        IsOpenTimeSheetPopup: true,
+      });
     }
-    this.setState({
-      IsOpenTimeSheetPopup: true,
-    });
+    else{
+      alert('Please click update filter button')
+    }
+   
   };
   private async generateTimeEntry() {
     let FilterTimeEntry: any[] = [];
@@ -3254,6 +3271,11 @@ export default class UserTimeEntry extends React.Component<
     this.setState({ showShareTimesheet: true });
   };
   private shareTaskInEmail = () => {
+    if (DateType == "Custom") {
+      let start = Moment(this.state.startdate).format("DD/MM/YYYY");
+      let end = Moment(this.state.enddate).format("DD/MM/YYYY");
+      DateType = `${start} - ${end}`;
+    }
     if (totalTimedata.length == 0) {
       alert("Data is not available in table");
     } else {
@@ -3295,13 +3317,13 @@ export default class UserTimeEntry extends React.Component<
                 <a>All Timesheets</a>{" "}
               </span>
               <span className="text-end fs-6">
-                <a
+                {/* <a
                   target="_blank"
                   data-interception="off"
                   href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/UserTimeEntry-Old.aspx`}
                 >
                   Old UserTimeEntry
-                </a>
+                </a> */}
               </span>
             </h2>
           </div>
@@ -3874,7 +3896,7 @@ export default class UserTimeEntry extends React.Component<
                 </Col>
               </Col>
             </details>
-            {this.state.showShareTimesheet && (
+           
               <span
                 className={
                   this.state.disableProperty
@@ -3886,7 +3908,7 @@ export default class UserTimeEntry extends React.Component<
                 <span className="svg__iconbox svg__icon--mail ms-1"></span>Share{" "}
                 {DateType}'s Time Entry
               </span>
-            )}
+            
           </Col>
           <div className="col">
             <section className="TableContentSection">

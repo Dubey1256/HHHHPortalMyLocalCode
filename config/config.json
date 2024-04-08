@@ -426,6 +426,7 @@
         }
       ]
     },
+
     "smart-dynamic-table-web-part": {
       "components": [
         {
@@ -475,7 +476,6 @@
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
     "DatacleanuptoolWebPartStrings": "lib/webparts/datacleanuptool/loc/{locale}.js",
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
-    "FlowCreationWebPartStrings": "lib/webparts/flowCreation/loc/{locale}.js",
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
     "TaskUserManagementWebPartStrings": "lib/webparts/taskUserManagement/loc/{locale}.js",
     "SiteStructureWebPartStrings": "lib/webparts/SiteStructure/loc/{locale}.js",
@@ -514,9 +514,12 @@
     "LastModifiedViewsWebPartStrings": "lib/webparts/lastModifiedViews/loc/{locale}.js",
     "HrContractProfileWebPartStrings": "lib/webparts/hrContractProfile/loc/{locale}.js",
     "ManagedashboardconfigWebPartStrings": "lib/webparts/managedashboardconfig/loc/{locale}.js",
+    "FlowCreationWebPartStrings": "lib/webparts/flowCreation/loc/{locale}.js",
     "SMarttaskWebPartStrings": "lib/webparts/sMarttask/loc/{locale}.js",
     "GmbhCalendarWebPartStrings": "lib/webparts/gmbhCalendar/loc/{locale}.js",
     "GroupByComponentsDashboardWebPartStrings": "lib/webparts/groupByComponentsDashboard/loc/{locale}.js",
-    "SmartDynamicTableWebPartStrings": "lib/webparts/smartDynamicTable/loc/{locale}.js"
+    "SmartDynamicTableWebPartStrings": "lib/webparts/smartDynamicTable/loc/{locale}.js",
+    "TaskProfileTemplateWebPartStrings": "lib/webparts/taskProfileTemplate/loc/{locale}.js",
+    "EmployeeDashboardTemplatedWebPartStrings": "lib/webparts/employeeDashboardTemplated/loc/{locale}.js"
   }
 }
