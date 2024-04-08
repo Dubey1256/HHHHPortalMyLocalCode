@@ -7,7 +7,7 @@ import Tooltip from '../../../globalComponents/Tooltip';
 export default function CreateMetadataItem(props: any) {
     let SelectedItem: any = props.SelectedItem;
     let Taxtype: any = props.TabSelected;
-    let SmartMetadataListID = props.AllList.SPSmartMetadataListID;
+    let SmartMetadataListID = props.AllList.SmartMetadataListID;
     let addItemCallBack: any = props.addItemCallBack
     const [addedMetadataItem, setAddedMetadataItem]: any = useState({});
     const [SmartMetadataEditPopupOpen, setSmartMetadataEditPopupOpen] = useState(false);
@@ -212,9 +212,10 @@ export default function CreateMetadataItem(props: any) {
         setSmartDescription('');
         setSmartMetaDataTitle('');
         setIsCreatePopupOpen(false);
+        props?.closeCreateSmartMetadataPopup();
         props?.childRefdata?.current?.setRowSelection({});
     }
-    const onRenderDeleteSmartMetadata = () => {
+    const onRenderCreateSmartMetadata = () => {
         return (
             <>
                 <div className='subheading siteColor'>
@@ -234,7 +235,7 @@ export default function CreateMetadataItem(props: any) {
             </div> */}
             {
                 IsCreatePopupOpen === true ? <section>
-                    <Panel type={PanelType.custom} onRenderHeader={onRenderDeleteSmartMetadata} customWidth="500px" isOpen={IsCreatePopupOpen} onDismiss={closeCreateSmartMetadataPopup} isBlocking={false} closeButtonAriaLabel="Close">
+                    <Panel type={PanelType.custom} onRenderHeader={onRenderCreateSmartMetadata} customWidth="500px" isOpen={IsCreatePopupOpen} onDismiss={closeCreateSmartMetadataPopup} isBlocking={false} closeButtonAriaLabel="Close">
                         {props.ParentItem.Id == undefined && (
                             <div className="modal-body">
                                 <div className="col-sm-12 padL-0">
