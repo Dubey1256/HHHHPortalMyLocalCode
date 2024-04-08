@@ -2632,18 +2632,38 @@ function isURLInsideAnchorTag(url:any, text:any) {
 }
 //--------------------------------------Share TimeSheet Report-----------------------------------------------------------------------
 
-export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Context: any, type: any) => {
+export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, taskUser: any, Context: any, type: any) => {
     let AllData: any = []
+    var isCustomDate = false;
     const currentLoginUserId = Context.pageContext?._legacyPageContext.userId;
     const CurrentUserTitle = Context.pageContext?._legacyPageContext?.userDisplayName;
 
-    const startDate = getStartingDate(type);
-    const endDate = getEndingDate(type);
-    const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
-    const endDateMidnight = new Date(endDate.setHours(0, 0, 0, 0));
-
-    var startDateMid = moment(startDateMidnight).format("DD/MM/YYYY")
-    var eventDateMid = moment(endDateMidnight).format("DD/MM/YYYY")
+    var startDateMid =''
+    var eventDateMid = ''
+    if (type == "Today" || type == "Yesterday" || type == "This Week" ||  type == "Last Week" || type == "This Month"){
+        const startDate = getStartingDate(type);
+        const endDate = getEndingDate(type);
+        const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
+        const endDateMidnight = new Date(endDate.setHours(0, 0, 0, 0));
+    
+         startDateMid = moment(startDateMidnight).format("DD/MM/YYYY")
+         eventDateMid = moment(endDateMidnight).format("DD/MM/YYYY")
+      }
+      else{
+        var splitDate = type.split(' - ')
+         startDateMid = splitDate[0]
+         eventDateMid = splitDate[1]
+         day = 'Custom'
+         if(splitDate[0] == splitDate[1]){
+            isCustomDate = false
+         }
+         else{
+            isCustomDate = true;
+         }
+        
+      }
+     
+    
     var NewStartDate = startDateMid.split("/")
     var NewEndDate = eventDateMid.split("/")
 
@@ -2775,13 +2795,12 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
           updatedCategoryTime.yesterday +
           " hours ";
       } else {
-        const formattedStartDate = formatDate(startDate);
-        const formattedEndDate = formatDate(endDate);
         subject =
           "Daily Timesheet - " +
           CurrentUserTitle +
           " - " +
-          `${formattedStartDate} - ${formattedEndDate}`;
+          type;
+          day = 'Custom'
       }
     AllData.map((item: any) => {
         item.ClientCategories = ''
@@ -2813,7 +2832,7 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
         `<table width="100%" align="center" cellpadding="0" cellspacing="0" border="0">
             <thead>
             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Username: </td><td style="padding: 5px 0px;"> <a style="text-decoration:none;" href='${Context?.pageContext?.web?.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${currentLoginUserId}'>${CurrentUserTitle}</a></td></tr>
-            <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours ${day} :</td><td style="padding: 5px 0px;">${day == 'Today' ? updatedCategoryTime.today : updatedCategoryTime.yesterday} Hours</td></tr>
+            <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours ${day=='Custom'?day:'Total Time'} :</td><td style="padding: 5px 0px;">${totalTimeDay} Hours</td></tr>
             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours this week :</td><td style="padding: 5px 0px;">${updatedCategoryTime.thisWeek} Hours</td></tr>
             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600;padding: 5px 0px;width: 210px;">Total hours this month :</td><td style="padding: 5px 0px;">${updatedCategoryTime.thisMonth} Hours</td></tr>
             <tr valign="middle" style="font-size:15px;"><td colspan="2" style="padding: 5px 0px;"><a style="text-decoration:none;" href ='${Context.pageContext?.web?.absoluteUrl}/SitePages/UserTimeEntry.aspx?userId=${currentLoginUserId}'>Click here to open Online-Timesheet</a></td></tr>
