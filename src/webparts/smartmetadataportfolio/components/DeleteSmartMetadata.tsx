@@ -33,7 +33,7 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
             const web = new Web(props?.AllList?.SPSitesListUrl);
             const query = `(TaxType eq 'Categories') or (TaxType eq 'Sites')`
             const select = `Id,Title,TaxType,listId`;
-            const AllMetaData = await web.lists.getById(props.AllList.SPSmartMetadataListID).items.select(select).filter(query).getAll()
+            const AllMetaData = await web.lists.getById(props.AllList.SmartMetadataListID).items.select(select).filter(query).getAll()
             SitesConfig = getSmartMetadataItemsByTaxType(AllMetaData, 'Sites');
             for (var i = 0; i < SitesConfig.length; i++) {
                 if (SitesConfig[i].listId == undefined || SitesConfig[i].Title == 'Master Tasks') {
@@ -133,7 +133,7 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
                 });
             })
             setAllSitesTask(allSitesTask);
-            if (allSitesTask.length > 0)
+            if (allSitesTask?.length === 0 || allSitesTask?.length > 0)
                 setloaded(false)
         }
         catch (error) {
@@ -145,7 +145,7 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
         var flag = confirm(`Are you sure, you want to delete this id?`)
         if (flag === true) {
             let web = new Web(props.AllList.SPSitesListUrl);
-            web.lists.getById(props.AllList.SPSmartMetadataListID).items.getById(item.Id).recycle().then((response: any) => {
+            web.lists.getById(props.AllList.SmartMetadataListID).items.getById(item.Id).recycle().then((response: any) => {
                 console.log("delete successful")
                 if (response) {
                     DeleteItemCallBack(props.AllMetadata, '', smartMetadataItem.TaxType, '');
