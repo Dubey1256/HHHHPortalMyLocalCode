@@ -63,6 +63,9 @@ export default function SmartMetadataEditPopup(props: any) {
         props.CloseEditSmartMetaPopup();
     }
     const handleTabChange = (tab: any) => {
+        if (tab === "TaskInfo") {
+            loadtaggedTasks();
+        }
         setActiveTab(tab);
     };
     const loaddropdown = async () => {
@@ -110,9 +113,26 @@ export default function SmartMetadataEditPopup(props: any) {
                 });
         }
     };
-    const LoadAllMetaData = async () => {
+    const loadtaggedTasks = async () => {
+        const TaggedTasks: any = []
+        setloaded(true);
         SitesConfig = await globalCommon?.loadAllSiteTasks(props?.AllList, undefined);
-        setAllSitesTask(SitesConfig);
+        SitesConfig.filter((item: any) => {
+            if (item.Categories !== null && item.Categories !== undefined) {
+                if (props?.modalInstance?.TaxType === "Categories" && item?.Categories === props?.modalInstance?.Title) {
+                    item.Modified = (item.Modified !== "" && item.Modified !== undefined) ? moment(item.Modified).format("DD/MM/YYYY") : ''
+                    item.Created = (item.Created !== "" && item.Created !== undefined) ? moment(item.Created).format("DD/MM/YYYY") : ''
+                    item.DueDate = (item.DueDate !== "" && item.Created !== undefined) ? moment(item.DueDate).format("DD/MM/YYYY") : ''
+                    TaggedTasks.push(item)
+                }
+
+            }
+        })
+        if (TaggedTasks.length === 0 || TaggedTasks.length > 1) {
+            setloaded(false)
+            setAllSitesTask(TaggedTasks);
+        }
+
     }
     const openParent = (Value: any) => {
         setOpenChangeParentPopup(true)
@@ -241,7 +261,6 @@ export default function SmartMetadataEditPopup(props: any) {
         if (taxType == 'Categories') {
             if (item != undefined && item.Id != undefined) {
                 CategoryTitle = item.Id;
-                LoadAllMetaData();
             }
         }
         SecondLevel = parent;
