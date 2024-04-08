@@ -22,7 +22,7 @@ import * as Moment from "moment";
 import Slider from "react-slick";
 import { ColumnDef } from "@tanstack/react-table";
 import HighlightableCell from "../../../globalComponents/highlight";
-import { MdOutlineGppGood, MdGppBad } from "react-icons/md";
+import { MdOutlineGppGood, MdGppBad } from "react-icons/Md";
 import { FocusTrapCallout, FocusZone, FocusZoneTabbableElements, Panel, PanelType, Stack, Text, } from '@fluentui/react';
 import { color } from "@mui/system";
 let Count = 0;
@@ -1312,3 +1312,4 @@ const TaskStatusTbl = (Tile: any) => {
   );
 };
 export default TaskStatusTbl;
+
