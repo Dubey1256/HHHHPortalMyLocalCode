@@ -718,6 +718,9 @@ const CentralizedSiteComposition = (Props: any) => {
         items.subRows = items?.subRows?.concat(findActivity)
     }
 
+    // This function is used for AWT Grouping for the CSF
+
+
     const AWTGroupingForCSF = (items: any, AllAWT: any) => {
         let findActivityCSF = AllAWT?.filter((elem: any) => elem?.ParentTask?.Id === items?.Id && elem?.TaskType?.Id == 3);
         let findDirectTaskAWT = AllAWT?.filter((elem: any) => elem?.ParentTask?.Id === items?.Id && elem?.TaskType?.Id == 2);
@@ -729,6 +732,16 @@ const CentralizedSiteComposition = (Props: any) => {
             let workStreamAndTask = AllAWT?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
             if (workStreamAndTask.length > 0) {
                 act.subRows = act?.subRows?.concat(workStreamAndTask);
+                workStreamAndTask?.map((wst: any) => {
+                    if (wst?.ClientCategory?.length > 0) {
+                        AllClientCategoryBucket = AllClientCategoryBucket.concat(wst?.ClientCategory);
+                    }
+                })
+            }
+        })
+        findDirectTaskAWT?.map((DT: any) => {
+            if (DT?.ClientCategory?.length > 0) {
+                AllClientCategoryBucket = AllClientCategoryBucket.concat(DT?.ClientCategory);
             }
         })
         items.subRows = items?.subRows?.concat(findActivityCSF);
@@ -736,12 +749,13 @@ const CentralizedSiteComposition = (Props: any) => {
         return items;
     }
 
+    // This function is used for Direct AWT Grouping for the CSF
 
     const AWTGrouping = (items: any, FnUsedFor: any) => {
         console.log("this is the AWTGrouping function")
         let FinalAWTData: any = [];
-        let findActivity = FlatViewTableData?.filter((elem: any) => elem?.ParentTask?.Id === items?.Id && elem?.TaskType?.Id == 3);
-        let findDirectTask = FlatViewTableData?.filter((elem: any) => elem?.ParentTask?.Id === items?.Id && elem?.TaskType?.Id == 2);
+        let findActivity: any = FlatViewTableData?.filter((elem: any) => elem?.ParentTask?.Id === items?.Id && elem?.TaskType?.Id == 3);
+        let findDirectTask: any = FlatViewTableData?.filter((elem: any) => elem?.ParentTask?.Id === items?.Id && elem?.TaskType?.Id == 2);
         findActivity?.forEach((act: any) => {
             act.subRows = [];
             if (act?.ClientCategory?.length > 0) {
@@ -750,6 +764,16 @@ const CentralizedSiteComposition = (Props: any) => {
             let workStreamAndTask = FlatViewTableData?.filter((taskData: any) => taskData?.ParentTask?.Id === act?.Id && taskData?.siteType === act?.siteType)
             if (workStreamAndTask.length > 0) {
                 act.subRows = act?.subRows?.concat(workStreamAndTask);
+                workStreamAndTask?.map((wst: any) => {
+                    if (wst?.ClientCategory?.length > 0) {
+                        AllClientCategoryBucket = AllClientCategoryBucket.concat(wst?.ClientCategory);
+                    }
+                })
+            }
+        })
+        findDirectTask?.map((DT: any) => {
+            if (DT?.ClientCategory?.length > 0) {
+                AllClientCategoryBucket = AllClientCategoryBucket.concat(DT?.ClientCategory);
             }
         })
         items.subRows = items?.subRows?.concat(findActivity);
@@ -945,6 +969,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 hasCheckbox: true,
                 hasCustomExpanded: true,
                 hasExpanded: true,
+                expendedTrue: true,
                 size: 69,
                 id: "Id"
             },
@@ -1973,11 +1998,11 @@ const CentralizedSiteComposition = (Props: any) => {
                                             <SlArrowRight />
                                         )}
                                     </span>
-                                    Client Category Identification Tool
+                                    Client Category Summarization Tool
                                     <span className="hover-text alignIcon">
                                         <span className="svg__iconbox svg__icon--info dark"></span>
                                         <span className="tooltip-text pop-right">
-                                            <b>Client Category Identification Tool:</b><br />
+                                            <b>Client Category Summarization Tool:</b><br />
                                             This tool efficiently consolidates client categories associated with selected items and their corresponding child Items (All Tagged CC in Selected Item CSF and AWT). The tool offers a streamlined view of client categories, filtering them based on their respective sites. The selected client categories seamlessly Inherited to the designated parent item and also inherited into selected items (CSF/AWT) from the Tagged Child Item Table.
                                             <p className="mb-1"><b>Validation Cases:</b> </p>
                                             <b>1. </b>If the selected item have tagged CCs, that CCs will be automatically set as the default selection<br />
@@ -2091,28 +2116,6 @@ const CentralizedSiteComposition = (Props: any) => {
                                 </div>
                             </div>
                             <div className="tagged-child-items-table border">
-                                {/* <Loader
-                                    loaded={loaded}
-                                    lines={13}
-                                    length={20}
-                                    width={10}
-                                    radius={30}
-                                    corners={1}
-                                    rotate={0}
-                                    direction={1}
-                                    color={"#000069"}
-                                    speed={2}
-                                    trail={60}
-                                    shadow={false}
-                                    hwaccel={false}
-                                    className="spinner"
-                                    zIndex={2e9}
-                                    top="28%"
-                                    left="50%"
-                                    scale={1.0}
-                                    loadedClassName="loadedContent"
-                                /> */}
-
                                 <GlobalCommonTable
                                     setLoaded={setLoaded}
                                     AllListId={RequiredListIds}
@@ -2122,6 +2125,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                     callBackData={GlobalTableCallBackData}
                                     showHeader={false}
                                     fixedWidth={true}
+                                    expendedTrue={true}
                                 />
                             </div>
                         </div> : null
@@ -2145,7 +2149,6 @@ const CentralizedSiteComposition = (Props: any) => {
                 </section>
                 {!loaded ? <PageLoader /> : ""}
             </Panel>
-
         </section>
     )
 }
