@@ -142,7 +142,7 @@ export default function DocumentSearchPage(Props: any) {
           ),
         },
         {
-            accessorKey: "Created", placeholder: "Created Date", header: "", size: 120, id: "Created", isColumnDefultSortingDesc: true,
+            accessorKey: "Created", placeholder: "Created Date", header: "", size: 120, id: "CreatedDate", isColumnDefultSortingDesc: true,
             cell: ({ row }) => (
                 <>
                     {row?.original?.CreatedDate}
@@ -155,7 +155,7 @@ export default function DocumentSearchPage(Props: any) {
             ),
         },
         {
-            accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 172, id: "Modified",
+            accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 172, id: "ModifiedDate",
             cell: ({ row }) => (
                 <>
                     {row?.original?.ModifiedDate}

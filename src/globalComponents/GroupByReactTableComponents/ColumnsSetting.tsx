@@ -228,7 +228,7 @@ const ColumnsSetting = (props: any) => {
             });
         } else {
             propColumns?.forEach((element: any) => {
-                if (element.id != "Title" && element.id != "portfolioItemsSearch" && element.id != "TaskID" && element.id != "descriptionsSearch" && element.id != "commentsSearch" && element.id != "timeSheetsDescriptionSearch") {
+                if ((element.id != "Title" && element.id != "portfolioItemsSearch" && element.id != "TaskID" && element.id != "descriptionsSearch" && element.id != "commentsSearch" && element.id != "timeSheetsDescriptionSearch") || (element.id === "timeSheetsDescriptionSearch" && element.columnHide === false)) {
                     element.isColumnVisible = checked
                     setColumnSettingVisibility((prevCheckboxes: any) => ({
                         ...prevCheckboxes,
@@ -385,17 +385,17 @@ const ColumnsSetting = (props: any) => {
                                             {propColumns?.map((column: any) => {
                                                 return (
                                                     <>
-                                                        {column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && <tr key={column?.id} style={columnSorting[column?.id]?.asc === true || columnSorting[column.id]?.desc === true ? { background: "#ddd" } : {}}>
+                                                        {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <tr key={column?.id} style={columnSorting[column?.id]?.asc === true || columnSorting[column.id]?.desc === true ? { background: "#ddd" } : {}}>
                                                             <td style={{ width: "40%" }}>
-                                                                {column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && <div className="alignCenter">
+                                                                {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <div className="alignCenter">
                                                                     <input className="form-check-input cursor-pointer me-1" id={column.id} type='checkbox' disabled={column?.id === "Title" || column?.id === "TaskID" || column?.id === "portfolioItemsSearch" ? true : false} checked={column?.isColumnVisible}
                                                                         onChange={(e: any) => coustomColumnsSetting(column, event)} name={column.id}
                                                                     />
                                                                     <ColumnSettingSortingToolTip columnSorting={columnSorting} column={column} placeholder={column?.placeholder} handleSortClick={handleSortClick} />
-                                                                </div>}
+                                                                </div> : ""}
                                                             </td>
                                                             <td style={{ width: "30%" }}>
-                                                                {column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && <div className="alignCenter">
+                                                                {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <div className="alignCenter">
                                                                     <div title={column?.placeholder} className="columnSettingWidth" style={(column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" } : { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px", background: "gray", color: "white" }}>{column?.size}</div>
                                                                     {!editing[column?.id] && ((column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? (<div className="pencil-icons" onClick={() => handleEdit(column.id)}> <span className="svg__iconbox svg__icon--editBox"></span></div>) : (!editing[column?.id] && (<div className="pencil-icons"> <span style={{ background: "gray" }} className="svg__iconbox svg__icon--editBox"></span></div>)))}
                                                                     {editing[column?.id] && (
@@ -405,9 +405,9 @@ const ColumnsSetting = (props: any) => {
                                                                             <span onClick={() => handleCancel(column.id)} className="svg__iconbox svg__icon--cross"></span>
                                                                         </div>
                                                                     )}
-                                                                </div>}
+                                                                </div> : ""}
                                                             </td>
-                                                        </tr>}
+                                                        </tr> : ""}
                                                     </>
                                                 )
                                             })}
@@ -419,7 +419,7 @@ const ColumnsSetting = (props: any) => {
                                         <tbody className="border-0">
                                             {columnOrderValue?.map((column1: any, index: any) => (
                                                 <>
-                                                    {column1?.placeholder != undefined && column1?.placeholder !== '' && column1.id != "descriptionsSearch" && column1.id != "commentsSearch" && column1.id != "timeSheetsDescriptionSearch" && (
+                                                    {(column1?.placeholder != undefined && column1?.placeholder !== '' && column1.id != "descriptionsSearch" && column1.id != "commentsSearch" && column1.id != "timeSheetsDescriptionSearch") || (column1.id === "timeSheetsDescriptionSearch" && propColumns?.some((elem:any)=> elem.id === column1.id && elem?.columnHide === false )) ? (
                                                         <tr
                                                             key={index}
                                                             className={`px-1 ${index === draggedIndex ? "dragged" : ""}`}
@@ -432,7 +432,7 @@ const ColumnsSetting = (props: any) => {
                                                             <td style={{ width: "80%" }}>{column1?.placeholder}</td>
                                                             <td style={{ width: "20%" }}>{++columnIndexPostion}</td>
                                                         </tr>
-                                                    )}
+                                                    ) : ""}
                                                 </>
                                             ))}
                                         </tbody>

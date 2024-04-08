@@ -114,7 +114,7 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
                 };
                 let web = new Web(props?.AllList?.SPSitesListUrl);
                 await web.lists
-                    .getById(props?.AllList?.SPSmartMetadataListID)
+                    .getById(props?.AllList?.SmartMetadataListID)
                     .items.getById(props?.restructureItem[0]?.Id)
                     .update(postData)
                     .then(async (res: any) => {
@@ -260,7 +260,7 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
                 };
             }
             await web.lists
-                .getById(props.AllList.SPSmartMetadataListID)
+                .getById(props.AllList.SmartMetadataListID)
                 .items.getById(props?.restructureItem[0]?.Id)
                 .update(postData)
                 .then(async (res: any) => {
@@ -272,7 +272,10 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
     };
     const closeRestructurePopup = () => {
         setResturuningOpen(false)
+        props.RestructureButton = false;
         restructureItemCallBack(props?.restructureItem[0], false, props?.restructureItem[0]?.TaxType);
+        props?.closeRestructurepopup();
+
     }
     const onRenderRestuctureSmartMetadata = () => {
         return (

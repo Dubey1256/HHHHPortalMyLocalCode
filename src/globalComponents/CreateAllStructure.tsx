@@ -19,7 +19,7 @@ const CreateAllStructureComponent = (props: any) => {
     const [OpenAddStructurePopup, setOpenAddStructurePopup] = React.useState(true)
     const [count, setCount] = React.useState(0)
     const [loaded, setLoaded] = React.useState(true);
-    const [components, setComponents] = React.useState<any>([{ id: 1, value: '', isCheckedSub: false, isCheckedFea: false, SubComponent: [{ id: 1, isCheckedSub: false, value: '', Feature: [{ id: 1, isChecked: false, value: '' }] }] }]);
+    const [components, setComponents] = React.useState<any>([{ id: 1, value: '', isCheckedSub: false, isCheckedComp: false , Feature: [{ id: 1, isChecked: false, value: '' }], SubComponent: [{ id: 1, isCheckedSub: false, value: '', Feature: [{ id: 1, isChecked: false, value: '' }] }] }]);
     const [Subcomponents, setSubComponents] = React.useState([{ id: 1, value: '' }]);
     const [Feature, setFeature] = React.useState([{ id: 1, value: '' }]);
 
@@ -43,21 +43,22 @@ const CreateAllStructureComponent = (props: any) => {
         }
     }, [])
 
-    const handleAddComponent = () => {
-        const newComponent = { id: components.length + 1, value: '' };
-        setComponents([...components, newComponent]);
-    };
-
+    // const handleAddComponent = () => {
+    //     const newComponent = { id: components.length + 1, value: '' };
+    //     setComponents([...components, newComponent]);
+    // };
+    console.log(components,"hi");
     const handleAddSubComponent = (componentIndex: number, subComIndex: any, FeaIndex: any, Type: any) => {
         if (Type == 'Component') {
-            const newComponent = { id: components.length + 1, value: '', isCheckedSub: false, isCheckedFea: false, SubComponent: [{ id: 1, isCheckedSub: false, value: '', Feature: [{ id: 1, value: '' }] }] }
+            const newComponent = { id: components.length + 1, value: '', isCheckedSub: false, isCheckedComp: false,Feature: [{ id: 1, value: '' }] , SubComponent: [{ id: 1, isCheckedSub: false, value: ''}] }
             //components.push(newComponent)
             setComponents([...components, newComponent]);
         }
         if (Type == 'SubComponent') {
             components[componentIndex].SubComponent.push({ id: subComIndex + 2, isCheckedSub: true, value: '', Feature: [{ id: 1, value: '' }] })
+            
             setComponents(components);
-            setCount(count + 1)
+            setCount(count + 1) 
         }
         if (Type == 'Feature') {
             components[componentIndex].SubComponent[subComIndex].Feature.push({ id: FeaIndex + 2, isChecked: true, value: '' })
@@ -109,14 +110,28 @@ const CreateAllStructureComponent = (props: any) => {
             const newSubComponents = [...components];
             //newSubComponents[index].SubComponent.splice(subIndex, 1)
             newSubComponents[index].SubComponent.splice(subIndex, 1)
-            newSubComponents[index].isCheckedSub = false;
-            setSubComponents(newSubComponents);
+            if (newSubComponents[index].SubComponent.length <= 1) {
+                newSubComponents[index].isCheckedSub = false;
+            }
+            setComponents(newSubComponents);
         }
         if (type === 'feature') {
             const newFeatures = [...components];
-            newFeatures[index].SubComponent[subIndex].Feature.splice(FeaIndex, 1);
-            newFeatures[index].isCheckedFea = false;
-            setFeature(newFeatures);
+            const component = newFeatures[index];
+            const subComponent = component.SubComponent[subIndex];
+            
+            if (subComponent.Feature.length === 1) {
+              
+                subComponent.Feature[FeaIndex] = { id: 1, value: '' };
+                component.isCheckedFea=false;
+                subComponent.isCheckedFea=false;
+            } else {
+                
+                subComponent.Feature.splice(FeaIndex, 1);
+            }
+            
+
+            setComponents(newFeatures);
         }
     };
 
@@ -401,16 +416,17 @@ const CreateAllStructureComponent = (props: any) => {
             .top(1)
             .get()
         console.log(results)
-            ;
+            
         return results
     }
 
     const handleFeatureChange = (index: any, subIndex: any, component: any, Subcomponent: any) => {
         if (index == 0) {
-            if (component.isCheckedSub == true) {
+            if (component.isCheckedSub === true) {
                 Subcomponent.isCheckedFea = true;
             } else {
-                component.SubComponent[subIndex].isCheckedFea = true;
+                component.SubComponent[subIndex].isChecked = true;
+                component.isCheckedFea = true;
             }
 
             setCount(count + 1)
@@ -426,7 +442,7 @@ const CreateAllStructureComponent = (props: any) => {
             }
 
             setCount(count + 1)
-        };
+        }
     }
     const handleSubComponentChange = (index: any, component: any) => {
         if (index == 0) {
@@ -438,7 +454,7 @@ const CreateAllStructureComponent = (props: any) => {
             component.SubComponent.push({ id: component.SubComponent.length + 1, isCheckedSub: true, value: '', Feature: [{ id: 1, value: '' }] })
             component.isCheckedSub = true;
             setCount(count + 1)
-        };
+        }
     }
     const CheckPortfolioType = (item: any) => {
         PortfoliotypeData = item;
@@ -448,13 +464,7 @@ const CreateAllStructureComponent = (props: any) => {
     }
     return (
         <>
-            {/* <Panel
-        onRenderHeader={onRenderCustomHeaderMain1}
-        type={PanelType.medium}
-        isOpen={OpenAddStructurePopup}
-        isBlocking={false}
-        onDismiss={AddStructureCallBackCall}
-      > */}
+          
             <div className={defaultPortfolioType == 'Events' ? 'eventpannelorange' : ((defaultPortfolioType == 'Service' || defaultPortfolioType == 'Service Portfolio') ? 'serviepannelgreena' : 'component Portfolio clearfix')}>
                 <div className='modal-body '>
 
@@ -470,128 +480,6 @@ const CreateAllStructureComponent = (props: any) => {
                         </div> </>}
 
                     <div>
-                        {/* {components?.map((component: any, index: any) => (
-                            <div key={component.id} className="mb-5">
-                                <label className="form-label full-width" htmlFor={`exampleFormControlInput${component.id}`}>{isDisable == false && <><span>{index + 1} - </span>  <span>Component</span></>}
-                                    <span className={isDisable?'':"pull-right"}>
-                                        <label className='SpfxCheckRadio'>
-                                            <input
-                                                type="radio"
-                                                name={`SubComponent-${index}`}
-                                                onChange={() => handleSubComponentChange(index, component)}
-                                                checked={component.isCheckedSub}
-                                                className="radio"
-                                            />
-                                            SubComponent
-                                        </label>
-                                        <label className='SpfxCheckRadio me-0'>
-                                            <input
-                                                type="radio"
-                                                name={`Feature-${index}`}
-                                                onChange={() => handleFeatureChange(index, 0, component, 0)}
-                                                checked={component.isCheckedFea}
-                                                className="radio"
-                                            />
-                                            Feature
-                                        </label>
-                                    </span>
-                                </label>
-                                {isDisable == false &&
-                                    <div className="input-group">
-                                        <input
-                                            type="text"
-                                            disabled={isDisable}
-                                            className="form-control"
-                                            id={`exampleFormControlInput${component.id}`}
-                                            placeholder=""
-                                            value={component.value}
-                                            onChange={(event) => handleInputChange(index, 0, 0, event, 'component')}
-                                        />
-                                        {index === components.length - 1 && (
-                                            <>
-                                                <div className="input-group-append alignCenter">
-                                                    <span onClick={() => handleAddSubComponent(index, 0, 0, 'Component')} title="Add" className="svg__iconbox svg__icon--Plus mx-1 hreflink"></span>
-
-                                                    {components.length > 1 && (
-                                                        <span onClick={() => handleDelete(index, 0, 0, 'component')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>
-                                                    )}
-                                                </div>
-                                            </>
-
-                                        )}
-                                    </div>}
-
-
-                                <div className="mt-2 ps-4">
-                                    {component?.SubComponent?.map((Subcomponent: any, indexSub: any) => (
-                                        <div key={Subcomponent.id} className="form-group">
-                                            {(Subcomponent.isCheckedSub) &&
-                                                <div>
-
-                                                    <label className="form-label full-width" htmlFor={`exampleFormControlInput${Subcomponent.id}`}><span>{indexSub + 1} - </span> SubComponent
-                                                        <span className="pull-right">
-                                                            <label className='SpfxCheckRadio me-0'>
-                                                                <input type="radio" name="Feature" checked={Subcomponent.isCheckedFea} onChange={() => handleFeatureChange(index, indexSub, component, Subcomponent)} className="radio" />Feature
-                                                            </label></span>
-                                                    </label>
-                                                    <div className="input-group">
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            id={`exampleFormControlInput${Subcomponent.id}`}
-                                                            placeholder=""
-                                                            value={Subcomponent.value}
-                                                            onChange={(event) => handleInputChange(index, indexSub, 0, event, 'subcomponent')}
-                                                        />
-                                                        {indexSub === component.SubComponent.length - 1 && (
-                                                            <div className="input-group-append alignCenter">
-                                                                <span onClick={() => handleAddSubComponent(index, indexSub, 0, 'SubComponent')} title="Add" className="svg__iconbox mx-1 svg__icon--Plus hreflink"></span>
-
-                                                                {component.SubComponent.length > 1 && (
-                                                                    <span onClick={() => handleDelete(index, indexSub, 0, 'subcomponent')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>
-                                                                )}
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                </div>
-                                            }
-                                            {(Subcomponent.isCheckedFea || component.isCheckedFea || isDisableSub == true) &&
-                                                <div className="mt-2 ps-4">
-                                                    {Subcomponent?.Feature?.map((Features: any, indexFea: any) => (
-                                                        <div key={Features.id} className="form-group">
-                                                            <span>{indexFea + 1} - </span>
-                                                            <label htmlFor={`exampleFormControlInput${Features.id}`}>Feature</label>
-                                                            <div className="input-group">
-                                                                <input
-                                                                    type="text"
-                                                                    className="form-control"
-                                                                    id={`exampleFormControlInput${Features.id}`}
-                                                                    placeholder=""
-                                                                    value={Features.value}
-                                                                    onChange={(event) => handleInputChange(index, indexSub, indexFea, event, 'feature')}
-                                                                />
-                                                                {indexFea === Feature.length - 1 && (
-                                                                    <div className="input-group-append alignCenter">
-                                                                        <span onClick={() => handleAddSubComponent(index, indexSub, indexFea, 'Feature')} title="Add" className="svg__iconbox mx-1 svg__icon--Plus hreflink"></span>
-
-                                                                        {Feature.length > 1 && (
-                                                                            <span onClick={() => handleDelete(index, indexSub, indexFea, 'feature')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>
-                                                                        )}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>}
-
-                                        </div>
-                                    ))}
-                                </div>
-
-
-                            </div>
-                        ))} */}
                         {components?.map((component: any, index: any) => (
 
                             <div key={component.id} className="mb-5">
@@ -686,7 +574,7 @@ const CreateAllStructureComponent = (props: any) => {
                         value={Subcomponent.value}
                         onChange={(event) => handleInputChange(index, indexSub, 0, event, 'subcomponent')}
                     />
-                    {component.SubComponent.length == 1 && <span onClick={() => handleDelete(index, indexSub, 0, 'subcomponent')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>}
+                    {/* {component.SubComponent.length == 1 && <span onClick={() => handleDelete(index, indexSub, 0, 'subcomponent')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>} */}
                     {indexSub === component.SubComponent.length - 1 && (
                         <div className="input-group-append alignCenter">
                             <span onClick={() => handleAddSubComponent(index, indexSub, 0, 'SubComponent')} title="Add" className="svg__iconbox mx-1 svg__icon--Plus hreflink"></span>
@@ -713,7 +601,9 @@ const CreateAllStructureComponent = (props: any) => {
                                 value={Features.value}
                                 onChange={(event) => handleInputChange(index, indexSub, indexFea, event, 'feature')}
                             />
-                            {Subcomponent.Feature.length == 1 && <span onClick={() => handleDelete(index, indexSub, indexFea, 'feature')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>}
+                            {Subcomponent.Feature.length == 1 && Subcomponent.isCheckedFea===true && <span onClick={() => handleDelete(index, indexSub, indexFea, 'feature')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>}
+                          
+                            
                             {indexFea === Subcomponent.Feature.length - 1 && (
                                 <div className="input-group-append alignCenter">
                                     <span onClick={() => handleAddSubComponent(index, indexSub, indexFea, 'Feature')} title="Add" className="svg__iconbox mx-1 svg__icon--Plus hreflink"></span>

@@ -1976,8 +1976,7 @@ const RestructuringCom = (props: any, ref: any) => {
                           : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png";
                     } else {
                       if (
-                        items?.Id == obj.Id &&
-                        obj.Item_x0020_Type != "Task"
+                        items?.Id == obj.Id && obj.Item_x0020_Type != "Task"
                       ) {
                       
                         newObj = {...obj, TaskType: {Id:obj.TaskType?.Id == undefined ? "" : obj.TaskType?.Id,Title:obj.TaskType?.Title}, siteIcon:obj.SiteIconTitle === undefined? obj.SiteIcon: obj.SiteIconTitle}
@@ -6449,7 +6448,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
               ) : (
                 <a
                   data-interception="off"
-                  target="_blank"
+                  target="_blank"                                                                                                                                                                           
                   className="hreflink serviceColor_Active"
                   href={
                     props?.contextValue?.siteUrl +
@@ -6533,13 +6532,51 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
             </table>
             </div>
           </div>
+          {
+                  (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.Item_x0020_Type == 'Feature' || newItemBackUp?.Item_x0020_Type == 'SubComponent' || newItemBackUp?.Item_x0020_Type == 'Component') && RestructureChecked[0]?.TaskType?.Id == 1 &&
+                  restructureItem.some((item:any) => Array.isArray(item?.subRows) && item.subRows.length > 0) ?
+                   '' :  <>
+                   {"Select Task Type :"}
+                    <label className="SpfxCheckRadio ms-3 me-1">
+                      <input
+                        type="radio"
+                        className="radio" 
+                        value="Workstream"
+                        checked={
+                          RestructureChecked[0]?.TaskType?.Id == 3
+                            ? true
+                            : RestructureChecked[0]?.TaskType?.Id == 1
+                            ? true
+                            : false
+                        }
+                        onChange={()=>setRestructure(RestructureChecked, 3)}/>
+                    </label>
+                    <label className="ms-1"> {"Workstream"} </label>
+                    <label className="SpfxCheckRadio ms-3 me-1">
+                      <input
+                        type="radio"
+                        className="radio"
+                        name="fav_language"
+                        value="Task"
+                        checked={
+                          RestructureChecked[0]?.TaskType?.Id === 2
+                            ? true
+                            : false
+                        }
+                        onChange={(e) =>
+                          setRestructure(RestructureChecked, 2)
+                        }
+                      />
+                    </label>
+                    <label className="ms-1"> {"Task"} </label>
+                  </>
+                }
           {selectedItems != undefined &&
           selectedItems?.length > 1 &&
           selectedItems[0]?.Item_x0020_Type == "Task" &&
           selectedItems[0]?.TaskType?.Id == 2 ? (
             <div className="mt-2">
               <span>
-               
                 {newItemBackUp?.Item_x0020_Type != "Task" ? (
                   <>
                    {"Select Task Type :"}
@@ -6577,7 +6614,8 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                   </>
                 ) : (
                   <>
-                    {newItemBackUp?.Item_x0020_Type == "Task" &&
+                    {
+                    newItemBackUp?.Item_x0020_Type == "Task" &&
                     newItemBackUp?.TaskType?.Id == 1 ? (
                       <>
                        {"Select Task Type :"}
