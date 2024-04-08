@@ -1605,6 +1605,12 @@ const TeamSmartFilter = (item: any) => {
                 setStartDate(last30DaysStartDate);
                 setEndDate(last30DaysEndDate);
                 break;
+                case "last3months":
+                    const lastMonthEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
+                    const last3MonthsStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 3, 1); 
+                    setStartDate(last3MonthsStartDate);
+                    setEndDate(lastMonthEndDate);
+                    break;
             case "thisyear":
                 const yearStartDate = new Date(currentDate.getFullYear(), 0, 1);
                 setStartDate(yearStartDate);
@@ -1648,7 +1654,7 @@ const TeamSmartFilter = (item: any) => {
         ) {
             switch (event.target.value) {
                 case "today": case "yesterday": case "thisweek": case "last7days":
-                case "thismonth": case "last30days": case "thisyear": case "lastyear": case "Pre-set":
+                case "thismonth": case "last30days": case "last3months": case "thisyear": case "lastyear": case "Pre-set":
                     setIsCreatedDateSelected(true);
                     setIsModifiedDateSelected(true);
                     setIsDueDateSelected(true);
@@ -2251,10 +2257,10 @@ const TeamSmartFilter = (item: any) => {
                                         <label className='SpfxCheckRadio m-0'>
                                             <input className='radio' type='radio' value="Title" checked={selectedKeyDefultTitle === "Title"} onChange={() => setSelectedKeyDefultTitle("Title")} />Title
                                         </label>
-                                        <span className='mx-2'>|</span>
+                                        {/* <span className='mx-2'>|</span>
                                         <input className='form-check-input me-1' type='checkbox' id='Component' value='Component' checked={isPortfolioItems} onChange={() => setIsPortfolioItems(!isPortfolioItems)} />Portfolio Items
                                         <span className='mx-2'>|</span>
-                                        <input className='form-check-input me-1' type='checkbox' id='Task' value='Task' checked={isTaskItems} onChange={() => setIsTaskItems(!isTaskItems)} />Task Items
+                                        <input className='form-check-input me-1' type='checkbox' id='Task' value='Task' checked={isTaskItems} onChange={() => setIsTaskItems(!isTaskItems)} />Task Items */}
 
                                     </div>
                                 </div> : ''}
@@ -2735,6 +2741,10 @@ const TeamSmartFilter = (item: any) => {
                                                 <label className='ms-1'>Last 30 Days</label>
                                             </span>
                                             <span className='SpfxCheckRadio  me-3'>
+                                                <input type="radio" name="dateFilter" value="last3months" className='radio' checked={selectedFilter === "last3months"} onChange={handleDateFilterChange} />
+                                                <label className='ms-1'>Last 3 Months</label>
+                                            </span>
+                                            <span className='SpfxCheckRadio  me-3'>
                                                 <input type="radio" name="dateFilter" value="thisyear" className='radio' checked={selectedFilter === "thisyear"} onChange={handleDateFilterChange} />
                                                 <label className='ms-1'>This Year</label>
                                             </span>
@@ -2761,6 +2771,7 @@ const TeamSmartFilter = (item: any) => {
                                                         <label className='mb-1 form-label full-width'>Start Date</label>
                                                         <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                                                             className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
+                                                            maxDate={endDate}
                                                             renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
                                                             }) => (<div style={{ margin: 10, display: "flex", justifyContent: "center" }}>
                                                                 <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>{"<"}</button>
@@ -2777,6 +2788,7 @@ const TeamSmartFilter = (item: any) => {
                                                         <label className='mb-1 form-label full-width'>End Date</label>
                                                         <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                                                             className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
+                                                            minDate={startDate}
                                                             renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
                                                             }) => (<div style={{ margin: 10, display: "flex", justifyContent: "center" }}>
                                                                 <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>{"<"}</button>

@@ -19,6 +19,7 @@ import ShowTeamMembers from '../../../globalComponents/ShowTeamMember';
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 import RestructuringCom from '../../../globalComponents/Restructuring/RestructuringCom';
+import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
 var siteConfig: any = []
 let AllProjectDataWithAWT: any = [];
 var AllTaskUsers: any = [];
@@ -30,6 +31,7 @@ let AllProject: any = [];
 let timeSheetConfig: any = {};
 var AllListId: any = {};
 var currentUserId: '';
+let todaysDrafTimeEntry = [];
 var currentUser: any = [];
 let AllTimeEntries: any = [];
 let headerOptions: any = {
@@ -75,6 +77,8 @@ export default function ProjectOverview(props: any) {
     const [taskTypeDataItem, setTaskTypeDataItem] = React.useState([]);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Project', Suffix: 'P', Level: 1 }, { Title: 'Sprint', Suffix: 'X', Level: 2 }]);
     const [portfolioTypeDataItem, setPortFolioTypeIcon] = React.useState([]);
+    const [openCompareToolPopup, setOpenCompareToolPopup] = React.useState(false);
+    const [ActiveCompareToolButton, setActiveCompareToolButton] = React.useState(false);
     const childRef = React.useRef<any>();
     const restructuringRef = React.useRef<any>();
     React.useEffect(() => {
@@ -358,7 +362,13 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 enableMultiSort: true,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.ProjectPriority == filterValue
+                    if ((row?.original?.ProjectPriority?.toString().charAt(0) == filterValue.toString().charAt(0))
+                        && (row?.original?.ProjectPriority.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
                 isColumnDefultSortingDesc: true,
                 resetSorting: false,
@@ -380,7 +390,13 @@ export default function ProjectOverview(props: any) {
                 resetSorting: false,
                 size: 55,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PercentComplete == filterValue
+                    if ((row?.original?.PercentComplete?.toString()?.charAt(0) == filterValue?.toString()?.charAt(0))
+                        && (row?.original?.PercentComplete?.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
             },
             {
@@ -395,7 +411,13 @@ export default function ProjectOverview(props: any) {
                 placeholder: "Priority",
                 resetColumnFilters: false,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PriorityRank == filterValue
+                    if ((row?.original?.PriorityRank?.toString().charAt(0) == filterValue.toString().charAt(0))
+                        && (row?.original?.PriorityRank.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
                 isColumnDefultSortingDesc: true,
                 enableMultiSort: true,
@@ -431,6 +453,16 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    if (row?.original?.AssignedTo?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase()) ||
+                        row?.original?.ResponsibleTeam?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase()) ||
+                        row?.original?.TeamMembers?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase())) {
+                        return true
+                    } else {
+                        return false
+                    }
+
+                },
                 size: 85,
             },
             {
@@ -647,7 +679,13 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 size: 45,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PercentComplete == filterValue
+                    if ((row?.original?.PercentComplete?.toString().charAt(0) == filterValue.toString().charAt(0))
+                        && (row?.original?.PercentComplete.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
             },
             {
@@ -663,14 +701,20 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 size: 50,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PriorityRank == filterValue
+                    if ((row?.original?.PriorityRank?.toString().charAt(0) == filterValue.toString().charAt(0))
+                        && (row?.original?.PriorityRank.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
                 isColumnDefultSortingDesc: true,
                 resetSorting: false,
                 header: ""
             },
             {
-                accessorFn: (row) => row?.TeamMembers?.map((elem: any) => elem.Title).join('-'),
+                accessorFn: (row) => row?.TeamMembersSearch,
                 cell: ({ row }) => (
                     <span>
                         <InlineEditingcolumns
@@ -683,10 +727,20 @@ export default function ProjectOverview(props: any) {
                         />
                     </span>
                 ),
-                id: 'TeamMembers',
+                id: 'TeamMembersSearch',
                 canSort: false,
                 resetColumnFilters: false,
                 resetSorting: false,
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    if (row?.original?.AssignedTo?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase()) ||
+                        row?.original?.ResponsibleTeam?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase()) ||
+                        row?.original?.TeamMembers?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase())) {
+                        return true
+                    } else {
+                        return false
+                    }
+
+                },
                 placeholder: "TeamMembers",
                 header: "",
                 size: 85,
@@ -843,8 +897,8 @@ export default function ProjectOverview(props: any) {
         }
 
 
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
-        //let to: any = ["abhishek.tiwari@hochhuth-consulting.de", "ranu.trivedi@hochhuth-consulting.de"];
+        // let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
+        let to: any = ["abhishek.tiwari@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let groupedData = data;
@@ -854,7 +908,6 @@ export default function ProjectOverview(props: any) {
             var subject = "Today's Working Tasks Under Projects";
             const GroupedPromises = await groupedData?.map(async (group: any) => {
                 body += projectEmailContent(group, false)
-
             })
 
             let sendAllTasks =
@@ -932,7 +985,8 @@ export default function ProjectOverview(props: any) {
                         item?.AssignedTo?.map((user: any) => {
                             memberOnLeave = AllLeaves.some((emp: any) => emp == user?.Id)
                         });
-                        if (!memberOnLeave) {
+
+                        if (!memberOnLeave && item?.AssignedTo?.length > 0) {
                             taskCount++;
                             let teamUsers: any = [];
                             if (item?.AssignedTo?.length > 0) {
@@ -1544,7 +1598,7 @@ export default function ProjectOverview(props: any) {
                 let filter = 'ProjectId ne null'
                 smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, filter)
                 smartmeta.map((items: any) => {
-                    let EstimatedDesc = JSON.parse(items?.EstimatedTimeDescription)
+                    let EstimatedDesc = globalCommon.parseJSON(items?.EstimatedTimeDescription)
                     items.Item_x0020_Type = 'tasks';
                     items.ShowTeamsIcon = false
                     items.descriptionsSearch = '';
@@ -1596,40 +1650,10 @@ export default function ProjectOverview(props: any) {
                     }
                     items.TeamMembersSearch = "";
                     items.AssignedToIds = [];
-                    if (items.AssignedTo != undefined) {
-                        items?.AssignedTo?.map((taskUser: any) => {
-                            items.AssignedToIds.push(taskUser?.Id)
-                            AllTaskUsers.map((user: any) => {
-                                if (user.AssingedToUserId == taskUser.Id) {
-                                    if (user?.Title != undefined) {
-                                        items.TeamMembersSearch =
-                                            items.TeamMembersSearch + " " + user?.Title;
-                                    }
-                                }
-                            });
-                        });
-                    }
+
 
                     items.TaskID = globalCommon.getTaskId(items);
-                    AllTaskUsers?.map((user: any) => {
-                        if (user.AssingedToUserId == items.Author.Id) {
-                            items.createdImg = user?.Item_x0020_Cover?.Url;
-                        }
-                        if (items.TeamMembers != undefined) {
-                            items.TeamMembers.map((taskUser: any) => {
-                                var newuserdata: any = {};
-                                if (user.AssingedToUserId == taskUser.Id) {
-                                    newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
-                                    newuserdata["Suffix"] = user?.Suffix;
-                                    newuserdata["Title"] = user?.Title;
-                                    newuserdata["UserId"] = user?.AssingedToUserId;
-                                    items["Usertitlename"] = user?.Title;
-                                    items.AllTeamMember.push(newuserdata);
-                                }
 
-                            });
-                        }
-                    });
                     AllTask.push(items);
                 });
 
@@ -1785,6 +1809,17 @@ export default function ProjectOverview(props: any) {
     const restructureFunct = (items: any) => {
         setTrueRestructuring(items);
     }
+    React.useEffect(() => {
+        if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length === 2) {
+            if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined && (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Tasks' || childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Tasks')) {
+                setActiveCompareToolButton(true);
+            } else if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType != undefined) {
+                setActiveCompareToolButton(true);
+            }
+        } else {
+            setActiveCompareToolButton(false);
+        }
+    }, [childRef?.current?.table?.getSelectedRowModel()?.flatRows])
     const customTableHeaderButtons = (
         <>
             {((TableProperty?.length === 1 && TableProperty[0]?.original?.Item_x0020_Type != "Feature" && TableProperty[0]?.original?.Item_x0020_Type != "Sprint" &&
@@ -1795,21 +1830,36 @@ export default function ProjectOverview(props: any) {
                 :
                 <button type="button" disabled className="btn btn-primary" title=" Add Structure"> {" "} Add Structure{" "}</button>}
 
-            {
-                trueRestructuring == true ?
-                    <RestructuringCom AllSitesTaskData={AllSitesAllTasks} AllMasterTasksData={MyAllData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllTaskUser} contextValue={AllListId} allData={workingTodayFiltered ? data : flatData} restructureCallBack={restructureCallback} findPage={"ProjectOverView"} restructureItem={childRef.current.table.getSelectedRowModel().flatRows} />
-                    : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
-            }
+            {trueRestructuring == true ?
+                <RestructuringCom AllSitesTaskData={AllSitesAllTasks} AllMasterTasksData={MyAllData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllTaskUser} contextValue={AllListId} allData={workingTodayFiltered ? data : flatData} restructureCallBack={restructureCallback} findPage={"ProjectOverView"} restructureItem={childRef.current.table.getSelectedRowModel().flatRows} />
+                : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>}
             <label className="switch me-2" htmlFor="checkbox">
-                <input checked={showAllAWTGrouped} onChange={() => { changeToggleAWT() }} type="checkbox" id="checkbox" />
-                {showAllAWTGrouped === true ? <div className="slider round" title="Switch To Project/Sprints Only"  ></div> : <div title='Swtich to Show All AWT Items' className="slider round"></div>}
+                <input checked={showAllAWTGrouped} onChange={() => { changeToggleAWT(); }} type="checkbox" id="checkbox" />
+                {showAllAWTGrouped === true ? <div className="slider round" title="Switch To Project/Sprints Only"></div> : <div title='Swtich to Show All AWT Items' className="slider round"></div>}
             </label> <label className="switch me-2" htmlFor="checkbox1">
-                <input checked={workingTodayFiltered} onChange={() => { changeToggleWorkingToday() }} type="checkbox" id="checkbox1" />
-                {workingTodayFiltered === true ? <div className="slider round" title='Swtich to Show All Items' ></div> : <div title="Switch To Working Today's" className="slider round"></div>}
+                <input checked={workingTodayFiltered} onChange={() => { changeToggleWorkingToday(); }} type="checkbox" id="checkbox1" />
+                {workingTodayFiltered === true ? <div className="slider round" title='Swtich to Show All Items'></div> : <div title="Switch To Working Today's" className="slider round"></div>}
             </label>
-        </>
-    )
 
+            {(ActiveCompareToolButton) ?
+                <button type="button" className="btn btn-primary" title='Compare' style={{ color: '#fff' }} onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
+                <button type="button" className="btn btn-primary" style={{ color: '#fff' }} disabled={true}>Compare</button>}
+        </>
+
+    )
+    const compareToolCallBack = React.useCallback((compareData) => {
+        if (compareData != "close") {
+            setOpenCompareToolPopup(false);
+        } else {
+            setOpenCompareToolPopup(false);
+        }
+    }, []);
+
+    const trigerAllEventButton = (eventValue: any) => {
+        if (eventValue === "Compare") {
+            setOpenCompareToolPopup(true);
+        }
+    }
 
     return (
         <>
@@ -1877,6 +1927,7 @@ export default function ProjectOverview(props: any) {
                 {ShowTeamPopup === true ? <ShowTeamMembers props={checkData} callBack={showTaskTeamCAllBack} TaskUsers={AllTaskUser} /> : ''}
                 {openTimeEntryPopup && <TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />}
                 {isAddStructureOpen && <AddProject CallBack={CallBack} items={CheckBoxData} PageName={"ProjectOverview"} AllListId={AllListId} data={data} />}
+                {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={props?.props} />}
             </div >
             {pageLoaderActive ? <PageLoader /> : ''
             }

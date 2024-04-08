@@ -64,7 +64,7 @@ function PreSetDatePikerPannel2(props: any) {
             let startDatas = JSON.stringify(startDate);
             localStorage.setItem('startDatePre2', startDatas);
             let endDates = JSON.stringify(endDate);
-            localStorage.setItem('endtDatePre2', endDates);
+            localStorage.setItem('endDatePre2', endDates);
         }
     };
 
