@@ -37,6 +37,7 @@ let startTime: any,
 let maxD = new Date(8640000000000000);
 
 let events: any = [];
+let userData: any = []
 const localizer = momentLocalizer(moment);
 const today: Date = new Date();
 const minDate: Date = today;
@@ -64,6 +65,7 @@ const Designation = [
   { key: "Management", text: "Management" },
   { key: "JTM (Junior Task Manager)", text: "JTM (Junior Task Manager)" }
 ];
+let newEvent: any
 const Apps = (props: any) => {
   const [leaveReport, setleaveReport] = React.useState(false);
   const [recurringEvents, setRecurringEvents] = useState([]);
@@ -90,6 +92,7 @@ const Apps = (props: any) => {
   const [email, setEmail]: any = React.useState(false);
   const [todayEvent, setTodayEvent]: any = React.useState(false);
   const [peopleName, setPeopleName]: any = React.useState();
+  const [peopleId, setPeopleId]: any = React.useState();
   const [isChecked, setIsChecked] = React.useState(false);
   const [disableTime, setDisableTime] = React.useState(false);
   const [selectedPeople, setSelectedPeople] = React.useState([]);
@@ -616,7 +619,7 @@ const Apps = (props: any) => {
     const web = new Web(props.props.siteUrl);
     const regionalSettings = await web.regionalSettings.get(); console.log(regionalSettings);
     const query =
-      "RecurrenceData,Duration,Author/Title,Editor/Title,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo,Color,Created,Modified";
+      "RecurrenceData,Duration,Designation,Author/Title,Editor/Title,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo,Color,Created,Modified";
     try {
       const results = await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
@@ -670,7 +673,7 @@ const Apps = (props: any) => {
 
         console.log(filteredData); // Display filtered data
         localArr = processDataArray(filteredData);
-
+        setChkName(localArr)
         setRecurringEvents(filteredData);
       }
     } catch (error) {
@@ -715,6 +718,7 @@ const Apps = (props: any) => {
           "EventType",
           "Title",
           "Description",
+          "Designation",
           "EventDate",
           "EndDate",
           "Location",
@@ -752,7 +756,7 @@ const Apps = (props: any) => {
         Category: event.Category,
         Duration: event.Duration,
         UID: event.UID,
-
+        Designation:event.Designation,
         fRecurrence: event.fRecurrence,
         RecurrenceID: event.RecurrenceID,
         MasterSeriesItemID: event.MasterSeriesItemID
@@ -1195,56 +1199,62 @@ const Apps = (props: any) => {
     setShowRecurrenceSeriesInfo(recurChecked);
     setNewRecurrenceEvent(recurChecked);
   };
-  const getUserInfo = async (userMail: string) => {
-    const userEndPoint: any = `${props.props.context.pageContext.web.absoluteUrl}/_api/Web/EnsureUser`;
-
-    const userData: string = JSON.stringify({
-      logonName: userMail
-    });
-
-    const userReqData = {
-      body: userData
-    };
-
-    const resUserInfo = await props.props.context.spHttpClient.post(
-      userEndPoint,
-      SPHttpClient.configurations.v1,
-      userReqData
-    );
-    const userInfo = await resUserInfo.json();
-
-    return userInfo;
+  const getUserInfo = async (userMail: any[]) => {
+    const userInfoArray = [];
+    for (const userMails of userMail) {
+      const userEndPoint: any = `${props.props.context.pageContext.web.absoluteUrl}/_api/Web/EnsureUser`;
+      const userData: string = JSON.stringify({ logonName: userMails });
+      const userReqData = { body: userData };
+      const resUserInfo = await props.props.context.spHttpClient.post(userEndPoint, SPHttpClient.configurations.v1, userReqData);
+      const userInfo = await resUserInfo.json(); userInfoArray.push(userInfo);
+    }
+    return userInfoArray;
   };
   const people = async (people: any) => {
-    let userId: number = undefined;
-    let userTitle: any;
-    let userSuffix: string = undefined;
+    let userId: any = [];
+    let userTitle: any = [];
+    let userSuffix: any = [];
 
     if (people?.length > 0) {
-      let userMail = people[0].id.split("|")[2];
+      let userMail: any = []
+      people.map((item: any) => {
+        if (item?.id != undefined) {
+          userMail?.push(item?.id.split("|")[2])
+        }
+      })
       let userInfo = await getUserInfo(userMail);
-      userId = userInfo.Id;
-      userTitle = userInfo.Title;
-      userSuffix = userTitle
-        .split(" ")
-        .map((i: any) => i.charAt(0))
-        .join("");
+      userData = userInfo
+      userInfo.map((item: any) => {
+        // userId = item.Id
+        if (item?.Title != undefined) {
+          userTitle.push(item.Title)
+          userId.push(item.Id)
+        }
+      })
+      // userSuffix = userTitle
+      //   .split(" ")
+      //   .map((i: any) => i.charAt(0))
+      //   .join("");
       title_Id = userId;
       title_people = userTitle;
       setPeopleName(userTitle);
+      setPeopleId(userId)
     } else {
       let userInfo = await getUserInfo(
         props.props.context._pageContext._legacyPageContext.userPrincipalName
       );
-      userId = userInfo.Id;
-      userTitle = userInfo.Title;
-      userSuffix = userTitle
-        .split(" ")
-        .map((i: any) => i.charAt(0))
-        .join("");
+      userInfo.map((item: any) => {
+        userId = item.Id
+        userTitle = item.Title
+      })
+      // userSuffix = userTitle
+      //   .split(" ")
+      //   .map((i: any) => i.charAt(0))
+      //   .join("");
       title_Id = userId;
       title_people = userTitle;
       setPeopleName(userTitle);
+      setPeopleId(title_Id)
     }
   };
 
@@ -1266,7 +1276,7 @@ const Apps = (props: any) => {
         } else {
           if (newRecurrenceEvent) {
             await saveRecurrenceEvent();
-             void getEvents();
+            void getEvents();
             closem(undefined);
             setIsChecked(false);
             setIsFirstHalfDChecked(false);
@@ -1280,51 +1290,53 @@ const Apps = (props: any) => {
             setPeopleName(props.props.context._pageContext._user.displayName);
           } else {
             setPeopleName(title_people);
+            setPeopleId(title_Id)
           }
+          userData.map((item: any) => {
+            newEvent = {
+              name: item.Title,
+              nameId: item.Id,
+              title: inputValueName,
+              start: startDate,
+              end: endDate,
+              reason: inputValueReason,
+              type: HalfDaye == true ? "Half Day" : HalfDayT == true ? "Half Day" : type,
+              loc: location,
+              Designation: dType,
+            };
+            setDetails(newEvent);
 
-          const newEvent = {
-            name: peopleName,
-            nameId: title_Id,
-            title: inputValueName,
-            start: startDate,
-            end: endDate,
-            reason: inputValueReason,
-            type: HalfDaye == true ? "Half Day" : HalfDayT == true ? "Half Day" : type,
-            loc: location,
-            Designation: dType,
-          };
+            let mytitle = newEvent.name + "-" + newEvent.type + "-" + newEvent.title;
+            if (newEvent != undefined && (newEvent?.type == "National Holiday" || newEvent?.type == "Company Holiday")) {
+              mytitle = newEvent.type + "-" + newEvent.title;
+            }
 
-          setDetails(newEvent);
+            let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : newEvent.type === "Work From Home" ? "#e0a209" : (newEvent.type === "Company Holiday" || newEvent.type === "National Holiday") ? "#228B22" : "";
 
-          let mytitle = newEvent.name + "-" + newEvent.type + "-" + newEvent.title;
-          if (newEvent != undefined && (newEvent?.type == "National Holiday" || newEvent?.type == "Company Holiday")) {
-            mytitle = newEvent.type + "-" + newEvent.title;
-          }
+            let eventData = {
+              Title: mytitle,
+              EmployeeId: newEvent.nameId,
+              Location: newEvent.loc,
+              Event_x002d_Type: newEvent.type,
+              Description: newEvent.reason,
+              EndDate: ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) + " " + (selectedTimeEnd + "" + ":00"),
+              EventDate: ConvertLocalTOServerDateToSave(startDate, selectedTime) + " " + (selectedTime + "" + ":00"),
+              fAllDayEvent: allDay,
+              HalfDay: HalfDaye,
+              HalfDayTwo: HalfDayT,
+              Designation: newEvent.Designation,
+              Color: mycolors
+            };
 
-          let mycolors = (HalfDaye === true || HalfDayT === true) ? "#6d36c5" : newEvent.type === "Work From Home" ? "#e0a209" : (newEvent.type === "Company Holiday" || newEvent.type === "National Holiday") ? "#228B22" : "";
+            let web = new Web(props.props.siteUrl);
 
-          let eventData = {
-            Title: mytitle,
-            EmployeeId: newEvent.nameId,
-            Location: newEvent.loc,
-            Event_x002d_Type: newEvent.type,
-            Description: newEvent.reason,
-            EndDate: ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) + " " + (selectedTimeEnd + "" + ":00"),
-            EventDate: ConvertLocalTOServerDateToSave(startDate, selectedTime) + " " + (selectedTime + "" + ":00"),
-            fAllDayEvent: allDay,
-            HalfDay: HalfDaye,
-            HalfDayTwo: HalfDayT,
-            // Designation: newEvent.Designation,
-            Color: mycolors
-          };
-
-          let web = new Web(props.props.siteUrl);
-
-          await web.lists
-            .getById(props.props.SmalsusLeaveCalendar)
-            .items.add(eventData);
-
-          // void getEvents();
+            web.lists
+              .getById(props.props.SmalsusLeaveCalendar)
+              .items.add(eventData)
+              .then(() => {
+                getEvents();
+              })
+          });
           closem(undefined);
           setIsChecked(false);
           setIsFirstHalfDChecked(false);
@@ -1335,7 +1347,6 @@ const Apps = (props: any) => {
           HalfDaye = "false";
           HalfDayT = "false";
         }
-        void getEvents();
       } else {
         alert("Please fill in the short description and Team and Leave Type");
       }
@@ -1665,7 +1676,7 @@ const Apps = (props: any) => {
               <PeoplePicker
                 context={props.props.context}
                 principalTypes={[PrincipalType.User]}
-                personSelectionLimit={1}
+                personSelectionLimit={10}
                 titleText="Select People"
                 resolveDelay={1000}
                 onChange={people}

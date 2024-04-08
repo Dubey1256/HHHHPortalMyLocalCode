@@ -63,7 +63,7 @@ const ExpndTable = (props: any) => {
               >
                 Expand Search Result
               </h1>
-              <span><Tooltip ComponentId='3299'/></span>
+              <span><Tooltip ComponentId='1123'/></span>
               <button
                 type="button"
                 className="btn-close"
@@ -114,7 +114,7 @@ const ExpndTable = (props: any) => {
                 </div>
               </div>
             </div>
-            <div className="modal-footer">
+            <div className="modal-footer text-end">
               <button  type="button" className="btn btn-default"  data-bs-dismiss="modal" >
                 Cancel
               </button>

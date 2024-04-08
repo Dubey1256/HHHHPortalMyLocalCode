@@ -1114,4 +1114,3 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
 }
 
 export default TaskUserManagementTable;
-

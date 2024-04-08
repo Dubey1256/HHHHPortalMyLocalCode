@@ -19,6 +19,7 @@ let isSort:any= false;
 const TopNavigation = (dynamicData: any) => {
   CurrentSite = dynamicData?.dynamicData?.Context?.pageContext?.web.title
   var ListId = dynamicData?.dynamicData?.TopNavigationListID;
+  var AllListId = dynamicData?.dynamicData;
   const [root, setRoot] = React.useState([]);
   const [EditPopup, setEditPopup] = React.useState(false);
   const [sortedArray, setSortedArray] = React.useState([]);
@@ -603,6 +604,13 @@ const TopNavigation = (dynamicData: any) => {
     );
   };
 
+  const handleRadioChange = (value:any) => {
+    if (value === "visible") {
+      setisVisible(true);
+    } else if (value === "noShow") {
+      setisVisible(false);
+    }
+  };
   return (
     <>
       <div className="row">
@@ -827,6 +835,7 @@ const TopNavigation = (dynamicData: any) => {
           </li>
         </ul>
       </div>
+
       <Panel
         onRenderHeader={onRenderCustomHeaderUpdate}
         headerText="Edit Category"
@@ -872,15 +881,15 @@ const TopNavigation = (dynamicData: any) => {
                 </label>
               </div>
             </div>
-            <div className="col-sm-5">
+            {/* <div className="col-sm-5">
               <span className="col-sm-2">
                 <label className="rediobutton">
                   <span className="SpfxCheckRadio">
                     <input
                       type="radio"
                       className="radio"
-                      name="radio"
-                      checked={isVisible}
+                      name="radio1"
+                      checked={isVisible==true?isVisible:false}
                       onChange={(e) => setisVisible(true)}
                     />
                     Visible (All)
@@ -893,15 +902,45 @@ const TopNavigation = (dynamicData: any) => {
                     <input
                       type="radio"
                       className="radio"
-                      name="radio"
-                      checked={isVisible == false ? true : false}
+                      name="radio2"
+                      checked={isVisible==false?isVisible:false}
                       onChange={(e) => setisVisible(true)}
                     />
                     No Show{" "}
                   </span>
                 </label>
               </span>
-            </div>
+            </div> */}
+            <div className="col-sm-5">
+  <span className="col-sm-2">
+    <label className="rediobutton">
+      <span className="SpfxCheckRadio">
+        <input
+          type="radio"
+          className="radio"
+          name="radio1"
+          checked={isVisible === true}
+          onChange={() => handleRadioChange("visible")}
+        />
+        Visible (All)
+      </span>
+    </label>
+  </span>
+  <span className="col-sm-2">
+    <label className="rediobutton">
+      <span className="SpfxCheckRadio">
+        <input
+          type="radio"
+          className="radio"
+          name="radio2"
+          checked={isVisible === false}
+          onChange={() => handleRadioChange("noShow")}
+        />
+        No Show
+      </span>
+    </label>
+  </span>
+</div>
             <div className="col-sm-5">
               <div className="form-group">
                 <label>
@@ -995,6 +1034,7 @@ const TopNavigation = (dynamicData: any) => {
                                         taskId={popupData[0]?.Id}
                                         listId={ListId}
                                         siteUrls={dynamicData.dynamicData.siteUrl}
+                                      RequiredListIds={AllListId}
                                     />}
               </span>
               </div>
@@ -1004,6 +1044,7 @@ const TopNavigation = (dynamicData: any) => {
             </div>
             <div className="col  text-end">
               <a
+               
                 data-interception="off"
                 target="_blank"
                 href={`${dynamicData.dynamicData.siteUrl}/Lists/TopNavigation/AllItems.aspx`}
@@ -1011,6 +1052,7 @@ const TopNavigation = (dynamicData: any) => {
                 Open out-of-the-box form
               </a>
               <button
+            
                 type="button"
                 className="btn btn-primary ms-2"
                 onClick={() => UpdateData(popupData[0])}
@@ -1028,6 +1070,8 @@ const TopNavigation = (dynamicData: any) => {
           </div>
         </footer>
       </Panel>
+
+
       <Panel
         onRenderHeader={onRenderCustomHeaderAdd}
         headerText="Edit Category"
@@ -1167,6 +1211,7 @@ const TopNavigation = (dynamicData: any) => {
                                 form
                             </a> */}
               <button
+                disabled={(postData != undefined && postData.Title != '')?false:true}
                 type="button"
                 className="btn btn-primary ms-2"
                 onClick={() => Additem()}
@@ -1177,6 +1222,8 @@ const TopNavigation = (dynamicData: any) => {
           </div>
         </div>
       </Panel>
+
+      
       <Panel
         onRenderHeader={onRenderCustomHeaderSelect}
         headerText="Edit Category"

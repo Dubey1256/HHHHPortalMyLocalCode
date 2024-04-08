@@ -5,6 +5,7 @@ import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import Tooltip from '../Tooltip';
 import { noAuto } from '@fortawesome/fontawesome-svg-core';
+import { FaLinesLeaning } from 'react-icons/fa6';
 function PreSetDatePikerPannel(props: any) {
     const [startDateLocalStorage, setStartDateLocalStorage] = React.useState<any>(localStorage.getItem('startDate'));
     const [endDateLocalStorage, setEndDateLocalStorage] = React.useState<any>(localStorage.getItem('endDate'));
@@ -108,7 +109,7 @@ function PreSetDatePikerPannel(props: any) {
                 isOpen={props?.isOpen}
                 onDismiss={setModalIsOpenToFalse}
                 onRenderHeader={onRenderCustomHeader}
-                isBlocking={props?.isOpen}
+                isBlocking={false}
             // onRenderFooter={CustomFooter}
             >
                 <div className="modal-body p-0 mt-2 mb-3">
@@ -116,6 +117,11 @@ function PreSetDatePikerPannel(props: any) {
                         <div className="col-sm-4 pe-3">
                             <label className='form-label w-100'>Start Date</label>
                             <DatePicker selected={startDate} selectsStart startDate={startDate} endDate={endDate} onChange={(date) => setStartDate(date)} dateFormat="dd/MM/yyyy" customInput={<ExampleCustomInput />} />
+                            <div className="text-end mt-1">
+                                <button id="DayPlus" className="btn btn-primary" onClick={() => setStartDate(new Date())}>Today </button>
+                               
+                               
+                            </div>
                         </div>
                         <div className="col-sm-8 session-control-buttons alignCenter">
                             <div className="col-sm-4 pe-2 text-center">
@@ -142,6 +148,11 @@ function PreSetDatePikerPannel(props: any) {
                             <label className='form-label w-100'>End Date</label>
                             <DatePicker selected={endDate} selectsEnd startDate={startDate} endDate={endDate} dateFormat="dd/MM/yyyy" onChange={(date) => setEndDate(date)} customInput={<ExampleCustomInput />}
                             />
+                            <div className="text-end mt-1">
+                                <button id="DayPlus" className="btn btn-primary" onClick={() => setEndDate(new Date())}>Today </button>
+                                
+                               
+                            </div>
                         </div>
                         <div className="col-sm-8 session-control-buttons alignCenter">
                             <div className="col-sm-4 pe-2 text-center">
@@ -165,10 +176,11 @@ function PreSetDatePikerPannel(props: any) {
                     </div>
                 </div>
                 <footer className='modal-footer'>
-                    <button onClick={() => handleChangeData()} className="btn btn-primary ms-1">OK</button>
+                  
                     <button type="button" className="btn btn-default ms-1" style={{ backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` }} onClick={setModalIsOpenToFalse}>
                         Cancel
                     </button>
+                    <button type="button" onClick={() => handleChangeData()} className="btn btn-primary ms-1">OK</button>
 
                 </footer>
             </Panel>

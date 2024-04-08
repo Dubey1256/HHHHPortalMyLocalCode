@@ -409,7 +409,7 @@ const TimeEntryPopup = (item: any) => {
   };
 
   const closeEditcategorypopup = (child: any) => {
-    setNewData(initialData);
+    setNewData(initialData );
     setcheckCategories(undefined);
     setEditcategory(false);
   };
@@ -424,7 +424,7 @@ const TimeEntryPopup = (item: any) => {
       setAddTaskTimepopup(true);
       setTimeInMinutes(0);
       setTimeInHours(0);
-      setNewData(initialData);
+      setNewData(initialData );
       SetWeek(1);
       setediteddata(undefined);
       setCount(1);
@@ -444,7 +444,7 @@ const TimeEntryPopup = (item: any) => {
       PopupType = Type;
       CategryTitle = "";
       setediteddata(undefined);
-      setNewData(initialData);
+      setNewData(initialData );
       setTimeInHours(0);
       setMyDatee(undefined);
       change = Moment().format();
@@ -468,7 +468,7 @@ const TimeEntryPopup = (item: any) => {
       var Childitem: any = [];
       setAddTaskTimepopup(true);
       // Array.push(childitem)
-      setNewData(initialData);
+      setNewData(initialData );
       Childitem.push(childitem);
       backupEdit?.forEach((val: any) => {
         if (val.Id == childitem.MainParentId) {
@@ -515,13 +515,13 @@ const TimeEntryPopup = (item: any) => {
     setAddTaskTimepopup(false);
     setcheckCategories(undefined);
     setTimeInHours(0);
-    setNewData(initialData);
+    setNewData(initialData );
     setTimeInMinutes(0);
     SetWeek(1);
     setediteddata(undefined);
     setCount(1);
     change = Moment().format();
-    setMyDatee(new Date());
+        setMyDatee(new Date());
     setsaveEditTaskTimeChild({});
   };
   // const closeTaskStatusUpdatePoup = () => {
@@ -666,7 +666,7 @@ const TimeEntryPopup = (item: any) => {
   // };
   React.useEffect(() => {
     GetTimeSheet();
-    GetSmartMetadata();
+     GetSmartMetadata();
   }, [updateData, updateData2]);
 
   //----------------------------------------Load Dynamic Lists----------------------------------------------------------------------------------------
@@ -730,7 +730,7 @@ const TimeEntryPopup = (item: any) => {
 
   const getStructureData = function () {
     TaskCate = AllTimeSpentDetails;
-    function reverseArray(arr: any) {
+function reverseArray(arr: any) {
       const reversed = [];
       for (let i = arr.length - 1; i >= 0; i--) {
         reversed.push(arr[i]);
@@ -917,34 +917,40 @@ const TimeEntryPopup = (item: any) => {
       return entry1.Title === entry2.Title;
     }
 
-   const modifiedFinal = mergedFinalData.map((item) => {
+    const finalData1 = mergedFinalData.map((item) => {
       if (item.Created !== undefined) {
           item.Created = '';
       }
       return item; 
   });
-  
- 
-    console.log("mergedFinalData", mergedFinalData);
+    console.log("mergedFinalData", finalData1);
     console.log(
       "TaskTimeSheetCategoriesGrouping",
       TaskTimeSheetCategoriesGrouping
     );
-
-
-    setBackupData(modifiedFinal);
+  
+    setBackupData(finalData1);
     if(Flatview == true){
-      flatviewOpen(Flatview,modifiedFinal)
+      flatviewOpen(Flatview,finalData1)
     }
     else{
-      backupEdit = modifiedFinal;
-      setData(modifiedFinal);
-      setBackupData(modifiedFinal);
+      finalData1.forEach(item => {
+        item.subRows?.sort((a:any, b:any) => {
+          const dateA:any = new Date(a.TaskDate.split('/').reverse().join('/'));
+          const dateB:any = new Date(b.TaskDate.split('/').reverse().join('/'));
+          return dateB - dateA;
+        });
+
+      });
+     
+      backupEdit = finalData1;
+      setData(finalData1);
+      setBackupData(finalData1);
       setTimeSheet(TaskTimeSheetCategoriesGrouping);
-      console.log("finalData", finalData);
+      console.log("finalData", finalData1);
      
     }
-   
+
 
     if (TaskStatuspopup == true) {
       setupdateData(updateData + 1);
@@ -953,6 +959,7 @@ const TimeEntryPopup = (item: any) => {
 
     setModalIsTimeOpenToTrue();
   };
+
 
   const setModalIsTimeOpenToTrue = () => {
     setTimeModalIsOpen(true);
@@ -1121,7 +1128,6 @@ const TimeEntryPopup = (item: any) => {
   //------------------------------------------------------Load Timesheet Data-----------------------------------------------------------------------------
   const EditData = async (items: any) => {
     AllTimeSpentDetails = [];
-
     TaskTimeSheetCategories = getSmartMetadataItemsByTaxType(
       AllMetadata,
       "TimesheetCategories"
@@ -1625,7 +1631,7 @@ const TimeEntryPopup = (item: any) => {
             let count = 0
             mainParentId = foundCategory;
             mainParentTitle = checkCategories;
-           data?.forEach((val: any) => {
+            data?.forEach((val: any) => {
               val?.subRows.forEach(async (items: any) => {
                   if (!isAvailble && items.AuthorId === CurntUserId) {
                       count++;
@@ -1676,8 +1682,7 @@ const TimeEntryPopup = (item: any) => {
               createItemMainList(); 
           }
           }
-          
-          else {
+           else {
             let itemMetadataAdded = {
               Title:
                 newData != undefined &&
@@ -1878,6 +1883,7 @@ const TimeEntryPopup = (item: any) => {
 
   //-----------------------------------------------Create Add Timesheet--------------------------------------------------------------------------------------
   const AddTaskTime = async (child: any, Type: any) => {
+
     setbuttonDisable(true);
 
     if (Type == "EditTime") {
@@ -2678,6 +2684,7 @@ const TimeEntryPopup = (item: any) => {
     }
     else{
       Flatview = e.target.checked;
+      checkedFlat = e.target.checked;
     }
    
     if (Flatview == false) {
@@ -2861,6 +2868,7 @@ const TimeEntryPopup = (item: any) => {
         accessorKey: "Description",
         placeholder: "Description",
         header: "",
+        id:"Description"
 
       },
       {
@@ -2959,6 +2967,7 @@ const TimeEntryPopup = (item: any) => {
                   <input
                     type="checkbox"
                     className="form-check-input me-1"
+                    checked={checkedFlat}
                     onClick={(e: any) => flatviewOpen(e,data)}
                   />
                   FlatView
@@ -3584,6 +3593,8 @@ const TimeEntryPopup = (item: any) => {
                       <a
                         target="_blank"
                         href={`${CurrentSiteUrl}/SitePages/ManageSmartMetadata.aspx?TabName=TimesheetCategories`}
+                        data-interception="off"
+                       
                       >
                         Manage Categories
                       </a>

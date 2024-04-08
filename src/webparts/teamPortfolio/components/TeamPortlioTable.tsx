@@ -31,7 +31,7 @@ import PageLoader from "../../../globalComponents/pageLoader";
 import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
 import TrafficLightComponent from "../../../globalComponents/TrafficLightVerification/TrafficLightComponent";
 import CreateAllStructureComponent from "../../../globalComponents/CreateAllStructure";
-
+import { myContextValue } from "../../../globalComponents/globalCommon";
 var filt: any = "";
 var ContextValue: any = {};
 let globalFilterHighlited: any;
@@ -80,6 +80,8 @@ function TeamPortlioTable(SelectedProp: any) {
     ContextValue = SelectedProp?.SelectedProp;
     const refreshData = () => setData(() => renderData);
     const [loaded, setLoaded] = React.useState(false);
+    const [isCallTask, setIsCallTask] = React.useState(null);
+    const [isCallComponent, setIsCallComponent] = React.useState(null);
     const [siteConfig, setSiteConfig] = React.useState([]);
     const [dataAllGruping, seDataAllGruping] = React.useState([]);
     const [data, setData] = React.useState([]);
@@ -800,6 +802,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     });
                     setAllSiteTasksData(AllTasksData);
                     countTaskAWTLevel(AllTasksData, '');
+                    setIsCallTask(1);
                     // let taskBackup = JSON.parse(JSON.stringify(AllTasksData));
                     // allTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(AllTasksData))
                     try {
@@ -1023,6 +1026,7 @@ function TeamPortlioTable(SelectedProp: any) {
         }
         AllComponetsData = componentDetails;
         ComponetsData["allComponets"] = componentDetails;
+        setIsCallComponent(1);
     };
     React.useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -1079,10 +1083,12 @@ function TeamPortlioTable(SelectedProp: any) {
     }, [AllMetadata.length > 0 && portfolioTypeData.length > 0])
 
     React.useEffect(() => {
-        if (AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0) {
+        if (AllSiteTasksData?.length > 0 && AllMasterTasksData?.length > 0) {
+            setFilterCounters(true);
+        } else if ((isCallTask === 1 && isCallComponent === 1) && ((AllSiteTasksData?.length === 0 && AllMasterTasksData?.length === 0) || (AllSiteTasksData?.length > 0 && AllMasterTasksData?.length === 0) || (AllSiteTasksData?.length === 0 && AllMasterTasksData?.length > 0))) {
             setFilterCounters(true);
         }
-    }, [AllSiteTasksData.length > 0 && AllMasterTasksData.length > 0])
+    }, [(AllSiteTasksData && AllMasterTasksData) && (isCallTask && isCallComponent)])
 
     const firstTimeFullDataGrouping = () => {
         if (allLoadeDataMasterTaskAndTask?.length > 0) {
@@ -3548,6 +3554,7 @@ function TeamPortlioTable(SelectedProp: any) {
 
 
     return (
+        <myContextValue.Provider value={{ ...myContextValue, allContextValueData: {} }}>
         <div id="ExandTableIds" style={{}}>
             <section className="ContentSection smartFilterSection">
                 <div className="col-sm-12 clearfix">
@@ -3586,7 +3593,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     </h2>
                 </div>
                 <div className="togglecontent mt-1">
-                    {filterCounters == true ? <TeamSmartFilter LoadAllSiteTasksAllData={LoadAllSiteTasksAllData} AllSiteTasksDataLoadAll={AllSiteTasksDataLoadAll} IsUpdated={IsUpdated} IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
+                    {filterCounters == true ? <TeamSmartFilter openTableSettingPopup={childRef?.current?.openTableSettingPopup} setSmartFabBasedColumnsSetting={childRef?.current?.setSmartFabBasedColumnsSetting} LoadAllSiteTasksAllData={LoadAllSiteTasksAllData} AllSiteTasksDataLoadAll={AllSiteTasksDataLoadAll} IsUpdated={IsUpdated} IsSmartfavorite={IsSmartfavorite} IsSmartfavoriteId={IsSmartfavoriteId} ProjectData={ProjectData} portfolioTypeData={portfolioTypeData} setLoaded={setLoaded} AllSiteTasksData={AllSiteTasksData} AllMasterTasksData={AllMasterTasksData} SelectedProp={SelectedProp.SelectedProp} ContextValue={ContextValue} smartFiltercallBackData={smartFiltercallBackData} portfolioColor={portfolioColor} /> : ''}
                 </div>
             </section>
             <section className="Tabl1eContentSection row taskprofilepagegreen">
@@ -3781,6 +3788,8 @@ function TeamPortlioTable(SelectedProp: any) {
             )}
             {!loaded && <PageLoader />}
         </div>
+        </myContextValue.Provider>
     );
 }
 export default TeamPortlioTable;
+export { myContextValue }

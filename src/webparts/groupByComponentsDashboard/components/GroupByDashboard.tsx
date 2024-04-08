@@ -286,7 +286,7 @@ const GroupByDashboard = (SelectedProp: any) => {
     const inlineCallBack = React.useCallback((item: any) => {
         let ComponentsData: any = [];
         let AllMasterItem = backupAllMaster;
-        AllMasterItem = AllMasterItem?.map((result: any) => {
+        backupAllMaster = AllMasterItem = AllMasterItem?.map((result: any) => {
             if (result?.Id == item?.Id) {
                 return { ...result, ...item };
             }
@@ -430,7 +430,7 @@ const GroupByDashboard = (SelectedProp: any) => {
                 accessorFn: (row) => row?.HelpInformationVerified,
                 cell: ({ row }) => (
                     <div className="alignCenter">
-                        <span> <TrafficLightComponent columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>
+                        <span> <TrafficLightComponent callBack={inlineCallBack} columnName={"HelpInformationVerified"} columnData={row?.original} usedFor="GroupByComponents" /></span>
                    </div>
                 ),
                 id: "HelpInformationVerified",

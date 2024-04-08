@@ -629,6 +629,7 @@ const Permission_management = (props: any) => {
 
       <Panel
         onRenderHeader={onRenderCustomCalculateSC}
+        className='PresetDate'
         type={PanelType.large}
         isOpen={truePanel}
         isBlocking={false}

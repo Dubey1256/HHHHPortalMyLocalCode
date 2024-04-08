@@ -1051,6 +1051,16 @@ export const sendImmediateEmailNotifications = async (
     taskUsers: any,
     Context: any
 ) => {
+    let clientTaskDetails :any= [];
+    if(item?.ClientActivityJson!=undefined){
+        try{
+            clientTaskDetails= JSON.parse(item?.ClientActivityJson);
+            clientTaskDetails= clientTaskDetails[0]
+        }catch(e){
+
+        }
+    }
+   
     await GetImmediateTaskNotificationEmails(
         item,
         isLoadNotification,
@@ -1339,16 +1349,25 @@ export const sendImmediateEmailNotifications = async (
                                 UpdateItem?.Category.toLowerCase("approval") > -1
                             )
                                 item.CategoriesType = item?.Category?.replace("Approval,", "");
-                            Subject =
-                                "[" +
-                                siteType +
-                                " - " +
-                                UpdateItem?.Category +
-                                " (" +
-                                UpdateItem?.PercentComplete +
-                                "%)] " +
-                                UpdateItem?.Title +
-                                "";
+                                if (
+                                    UpdateItem?.Category?.toLowerCase()?.indexOf("immediate") > -1
+                                ) {
+                                    Subject =
+                                    `[Immediate - ${UpdateItem.siteType} - ${UpdateItem.TaskID} ${UpdateItem.Title}] New Immediate Task Created`
+                                }
+                                else{
+                                    Subject =
+                                    "[" +
+                                    siteType +
+                                    " - " +
+                                    UpdateItem?.Category +
+                                    " (" +
+                                    UpdateItem?.PercentComplete +
+                                    "%)] " +
+                                    UpdateItem?.Title +
+                                    "";
+                                }
+                           
                         }
                         if (UpdateItem?.PercentComplete != 1) {
                             Subject = Subject?.replaceAll("Approval,", "");
@@ -1376,15 +1395,11 @@ export const sendImmediateEmailNotifications = async (
                                 "] " +
                                 UpdateItem?.Title +
                                 "";
-                            if (isLoadNotification == "Client Task") {
-                                Subject =
-                                    "[ SDC Client Task - " +
-                                    siteType +
-                                    " - " +
-                                    item?.SDCAuthor +
-                                    " ] " +
-                                    UpdateItem?.Title +
-                                    "";
+                            if (isLoadNotification == "Client Task" && clientTaskDetails?.ClientActivityId!=undefined) {
+                                Subject =  `[Client Task - ${clientTaskDetails?.ClientSite} - ${clientTaskDetails?.SDCTaskId} ${clientTaskDetails?.SDCTitle} by ${clientTaskDetails?.SDCCreatedBy}] New Client Task`
+                            }
+                            if (isLoadNotification == "Client Task Completed" && clientTaskDetails?.ClientActivityId!=undefined) {
+                                Subject =  `[Client Task - ${clientTaskDetails?.ClientSite} - ${clientTaskDetails?.SDCTaskId} ${clientTaskDetails?.SDCTitle} by ${clientTaskDetails?.SDCCreatedBy}] Client Task completed`
                             }
                             if (
                                 UpdateItem?.Category?.toLowerCase()?.indexOf(
@@ -1417,13 +1432,7 @@ export const sendImmediateEmailNotifications = async (
                                 UpdateItem?.Category?.toLowerCase()?.indexOf("immediate") > -1
                             ) {
                                 Subject =
-                                    "[" +
-                                    siteType +
-                                    " - " +
-                                    "Approval,Immediate" +
-                                    "] " +
-                                    UpdateItem?.Title +
-                                    "";
+                                `[Immediate - ${UpdateItem.siteType} - ${UpdateItem.TaskId} ${UpdateItem.Title} New Immediate Task Created]`
                             }
                         } else if (
                             UpdateItem?.PercentComplete == 0 &&
@@ -1594,28 +1603,27 @@ export const sendImmediateEmailNotifications = async (
                             let extraBody = "";
                             if (UpdateItem?.ClientActivityJson?.SDCCreatedBy?.length > 0) {
                                 SDCDetails = UpdateItem?.ClientActivityJson;
-                                Subject =
-                                    "[ SDC Client Task - " +
-                                    siteType +
-                                    " - " +
-                                    SDCDetails?.SDCCreatedBy +
-                                    " ] " +
-                                    UpdateItem?.Title +
-                                    "";
+                                if (isLoadNotification == "Client Task" && clientTaskDetails?.ClientActivityId!=undefined) {
+                                    Subject =  `[Client Task - ${clientTaskDetails?.ClientSite} - ${clientTaskDetails?.SDCTaskId} ${clientTaskDetails?.SDCTitle} by ${clientTaskDetails?.SDCCreatedBy}] New Client Task`
+                                }
+                                if (isLoadNotification == "Client Task Completed" && clientTaskDetails?.ClientActivityId!=undefined) {
+                                    Subject =  `[Client Task - ${clientTaskDetails?.ClientSite} - ${clientTaskDetails?.SDCTaskId} ${clientTaskDetails?.SDCTitle} by ${clientTaskDetails?.SDCCreatedBy}] Client Task completed`
+                                }
                                 if (UpdateItem?.PercentComplete < 90) {
-                                    extraBody = `<div>
-                                      <h2>Email Subject : Your Task has been seen - [${SDCDetails?.SDCTaskId} ${UpdateItem?.Title}]</h2>
-                                      <p>Message:</p>
-                                      <p>Dear ${SDCDetails?.SDCCreatedBy},</p>
-                                      <p>Thank you for your Feedback!</p>
-                                      <p>Your Task - [${UpdateItem?.Title}] has been seen by our Team and we are now working on it.</p>
-                                      <p>You can track your Task Status here: <a href="${SDCDetails?.SDCTaskUrl}">${SDCDetails?.SDCTaskUrl}</a></p>
-                                      <p>If you want to see all your Tasks or all Sharweb Tasks click here: <a href="${SDCDetails?.SDCTaskDashboard}">Team Dashboard - Task View</a></p>
-                                      <p>Best regards,<br />Your HHHH Support Team</p>
-                                      <br>
-                                      <h4>Client Email : - ${SDCDetails?.SDCEmail}
-                                  </div><br><br>`;
+                                //     extraBody = `<div>
+                                //       <h2>Email Subject : Your Task has been seen - [${SDCDetails?.SDCTaskId} ${UpdateItem?.Title}]</h2>
+                                //       <p>Message:</p>
+                                //       <p>Dear ${SDCDetails?.SDCCreatedBy},</p>
+                                //       <p>Thank you for your Feedback!</p>
+                                //       <p>Your Task - [${UpdateItem?.Title}] has been seen by our Team and we are now working on it.</p>
+                                //       <p>You can track your Task Status here: <a href="${SDCDetails?.SDCTaskUrl}">${SDCDetails?.SDCTaskUrl}</a></p>
+                                //       <p>If you want to see all your Tasks or all Sharweb Tasks click here: <a href="${SDCDetails?.SDCTaskDashboard}">Team Dashboard - Task View</a></p>
+                                //       <p>Best regards,<br />Your HHHH Support Team</p>
+                                //       <br>
+                                //       <h4>Client Email : - ${SDCDetails?.SDCEmail}
+                                //   </div><br><br>`;
                                 } else if (UpdateItem?.PercentComplete == 90) {
+                                    Subject =  `[Client Task - ${clientTaskDetails?.ClientSite} - ${clientTaskDetails?.SDCTaskId} ${clientTaskDetails?.SDCTitle} by ${clientTaskDetails?.SDCCreatedBy}] Client Task completed`
                                     extraBody = `<div>
                                       <h2>Email Subject : Your Task has been completed - [${SDCDetails?.SDCTaskId} ${UpdateItem?.Title}]</h2>
                                       <p>Message:</p>
@@ -1632,6 +1640,20 @@ export const sendImmediateEmailNotifications = async (
 
                                 body = extraBody + body;
                             }
+                           
+                        }
+                        if(UpdateItem?.Category?.toLowerCase()?.indexOf("immediate") > -1){
+
+                            let headercontain = 
+                            `<div style="margin-top: 11.25pt;">
+                                <div style="margin-top: 2pt;">Hello ${UpdateItem?.Author1},</div>
+                                <div style="margin-top: 5pt;">Your task has been set to  ${UpdateItem?.PercentComplete}%  by ${UpdateItem?.Author1}, team will process it further.</div>
+                                <div style="margin-top: 5pt;">Have a nice day !</div>
+                                <div style="margin-top: 5pt;">Regards,</div>
+                                <div style="margin-top: 5pt;">Task Management Team,</div>
+                            </div>`
+
+                            body = headercontain + body;
                         }
                         var from = "",
                             to = ToEmails,
@@ -1813,6 +1835,9 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
     // let TaskUsers: any = [];
     let AllMasterTaskData: any = [];
     try {
+        
+        let Response: ArrayLike<any> = [];
+        Response = await loadTaskUsers();
         let ProjectData: any = [];
         let web = new Web(Props.siteUrl);
         AllMasterTaskData = await web.lists
@@ -2052,6 +2077,7 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
     }
     console.log("all Service and Coponent data in global common =======", AllMasterTaskData)
 }
+
 
 
 export const componentGrouping = (Portfolio: any, AllProtFolioData: any, path: string = "") => {
@@ -2606,18 +2632,38 @@ function isURLInsideAnchorTag(url:any, text:any) {
 }
 //--------------------------------------Share TimeSheet Report-----------------------------------------------------------------------
 
-export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Context: any, type: any) => {
+export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, taskUser: any, Context: any, type: any) => {
     let AllData: any = []
+    var isCustomDate = false;
     const currentLoginUserId = Context.pageContext?._legacyPageContext.userId;
     const CurrentUserTitle = Context.pageContext?._legacyPageContext?.userDisplayName;
 
-    const startDate = getStartingDate(type);
-    const endDate = getEndingDate(type);
-    const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
-    const endDateMidnight = new Date(endDate.setHours(0, 0, 0, 0));
-
-    var startDateMid = moment(startDateMidnight).format("DD/MM/YYYY")
-    var eventDateMid = moment(endDateMidnight).format("DD/MM/YYYY")
+    var startDateMid =''
+    var eventDateMid = ''
+    if (type == "Today" || type == "Yesterday" || type == "This Week" ||  type == "Last Week" || type == "This Month"){
+        const startDate = getStartingDate(type);
+        const endDate = getEndingDate(type);
+        const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
+        const endDateMidnight = new Date(endDate.setHours(0, 0, 0, 0));
+    
+         startDateMid = moment(startDateMidnight).format("DD/MM/YYYY")
+         eventDateMid = moment(endDateMidnight).format("DD/MM/YYYY")
+      }
+      else{
+        var splitDate = type.split(' - ')
+         startDateMid = splitDate[0]
+         eventDateMid = splitDate[1]
+         day = 'Custom'
+         if(splitDate[0] == splitDate[1]){
+            isCustomDate = false
+         }
+         else{
+            isCustomDate = true;
+         }
+        
+      }
+     
+    
     var NewStartDate = startDateMid.split("/")
     var NewEndDate = eventDateMid.split("/")
 
@@ -2749,13 +2795,12 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
           updatedCategoryTime.yesterday +
           " hours ";
       } else {
-        const formattedStartDate = formatDate(startDate);
-        const formattedEndDate = formatDate(endDate);
         subject =
           "Daily Timesheet - " +
           CurrentUserTitle +
           " - " +
-          `${formattedStartDate} - ${formattedEndDate}`;
+          type;
+          day = 'Custom'
       }
     AllData.map((item: any) => {
         item.ClientCategories = ''
@@ -2787,7 +2832,7 @@ export const ShareTimeSheet = async (AllTaskTimeEntries: any, taskUser: any, Con
         `<table width="100%" align="center" cellpadding="0" cellspacing="0" border="0">
             <thead>
             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Username: </td><td style="padding: 5px 0px;"> <a style="text-decoration:none;" href='${Context?.pageContext?.web?.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${currentLoginUserId}'>${CurrentUserTitle}</a></td></tr>
-            <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours ${day} :</td><td style="padding: 5px 0px;">${day == 'Today' ? updatedCategoryTime.today : updatedCategoryTime.yesterday} Hours</td></tr>
+            <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours ${day=='Custom'?day:'Total Time'} :</td><td style="padding: 5px 0px;">${totalTimeDay} Hours</td></tr>
             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours this week :</td><td style="padding: 5px 0px;">${updatedCategoryTime.thisWeek} Hours</td></tr>
             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600;padding: 5px 0px;width: 210px;">Total hours this month :</td><td style="padding: 5px 0px;">${updatedCategoryTime.thisMonth} Hours</td></tr>
             <tr valign="middle" style="font-size:15px;"><td colspan="2" style="padding: 5px 0px;"><a style="text-decoration:none;" href ='${Context.pageContext?.web?.absoluteUrl}/SitePages/UserTimeEntry.aspx?userId=${currentLoginUserId}'>Click here to open Online-Timesheet</a></td></tr>
