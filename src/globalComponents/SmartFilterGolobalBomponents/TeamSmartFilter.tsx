@@ -24,11 +24,13 @@ import "react-popper-tooltip/dist/styles.css";
 // import TeamSmartFavorites from './Smart Favrorites/TeamSmartFavorites';
 import TeamSmartFavoritesCopy from './Smart Favrorites/TeamSmartFavoritesCopy';
 import { GlobalConstants } from '../LocalCommon';
+import { myContextValue } from '../globalCommon';
 
 let filterGroupsDataBackup: any = [];
 let filterGroupData1: any = [];
 let timeSheetConfig: any = {};
 const TeamSmartFilter = (item: any) => {
+    let MyContextdata: any = React.useContext(myContextValue);
     let web = new Web(item?.ContextValue?.Context?.pageContext?._web?.absoluteUrl + '/');
     let allMasterTasksData: any = item.AllMasterTasksData;
     let allTastsData: any = item.AllSiteTasksData;
@@ -247,7 +249,10 @@ const TeamSmartFilter = (item: any) => {
                 }
             });
             let allMasterTaskDataFlatLoadeViewBackup = JSON.parse(JSON.stringify(configurationData));
-            setSmartFavoritesItemsQueryStringBasedBackup(allMasterTaskDataFlatLoadeViewBackup)
+            setSmartFavoritesItemsQueryStringBasedBackup(allMasterTaskDataFlatLoadeViewBackup);
+            let SmartFavoritesItemsQueryStringBasedTableConfigValue = [];
+            SmartFavoritesItemsQueryStringBasedTableConfigValue.push(configurationData[0]?.smartFabBasedColumnsSetting);
+            item?.setSmartFabBasedColumnsSetting(SmartFavoritesItemsQueryStringBasedTableConfigValue)
             setSmartFavoritesItemsQueryStringBased(configurationData);
         } catch (error) {
             console.log(error);
@@ -1300,6 +1305,7 @@ const TeamSmartFilter = (item: any) => {
             setIsTeamMembersExpendShow(false);
             setIsDateExpendShow(false);
             setIsSmartfilter(false);
+            item?.setSmartFabBasedColumnsSetting([]);
             // setPreSet(false);
         } else {
             item?.setLoaded(false);
@@ -1316,6 +1322,7 @@ const TeamSmartFilter = (item: any) => {
             setIsSmartfilter(false);
             // setItemsQueryBasedCall(false);
             loadAdminConfigurationsId(item?.IsSmartfavoriteId);
+            item?.setSmartFabBasedColumnsSetting([])
             rerender();
         }
     };
@@ -2908,7 +2915,7 @@ const TeamSmartFilter = (item: any) => {
                 : null
             }
             <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} portfolioColor={portfolioColor} />}</>
-            {selectedFilterPanelIsOpen && <TeamSmartFavoritesCopy isOpen={selectedFilterPanelIsOpen} selectedFilterCallBack={selectedFilterCallBack}
+            {selectedFilterPanelIsOpen && <TeamSmartFavoritesCopy openTableSettingPopup={item?.openTableSettingPopup} isOpen={selectedFilterPanelIsOpen} selectedFilterCallBack={selectedFilterCallBack}
                 portfolioColor={portfolioColor}
                 filterGroupsData={filterGroupsData}
                 allFilterClintCatogryData={allFilterClintCatogryData}
@@ -2931,7 +2938,7 @@ const TeamSmartFilter = (item: any) => {
                 AllUsers={AllUsers}
                 TaskUsersData={TaskUsersData}
             />}
-            {selectedFilterPanelIsOpenUpdate && updatedEditData && <TeamSmartFavoritesCopy isOpen={selectedFilterPanelIsOpenUpdate} selectedFilterCallBack={selectedFilterCallBack}
+            {selectedFilterPanelIsOpenUpdate && updatedEditData && <TeamSmartFavoritesCopy openTableSettingPopup={item?.openTableSettingPopup} isOpen={selectedFilterPanelIsOpenUpdate} selectedFilterCallBack={selectedFilterCallBack}
                 portfolioColor={portfolioColor}
                 updatedSmartFilter={true}
                 updatedEditData={updatedEditData}
