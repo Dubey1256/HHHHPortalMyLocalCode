@@ -109,7 +109,7 @@ const CompareTool = (props: any) => {
                 items.taggedTasks = [];
                 if (Itesm?.length > 0) {
                     Itesm.forEach((obj: any) => {
-                        if (obj?.Portfolio?.Id === items?.Id) {
+                        if (obj?.Portfolio?.Id === items?.Id || obj?.Project?.Id === items?.Id) {
                             obj.property = 'taggedTasks';
                             obj.isExpanded = false;
                             items.taggedTasks.push(obj);
@@ -724,7 +724,7 @@ const CompareTool = (props: any) => {
                     datas[0].TaskID = globalCommon.GetTaskId(datas[0]);
                     datas[0].siteUrl = props?.contextValue?.siteUrl,
                         datas[0].listId = items?.listId === undefined ? props?.contextValue?.MasterTaskListID : items?.listId,
-                        datas[0].siteType = items.siteType === undefined ? "Master Tasks" : items.siteType,
+                        datas[0].siteType = (items.siteType === undefined || items.siteType ==="Project") ? "Master Tasks" : items.siteType,
                         getDocuments(datas)
                     if (datas[0]?.TaskType?.Id != undefined)
                         GetTaskTime(datas[0]);
@@ -1635,14 +1635,24 @@ const CompareTool = (props: any) => {
         }
     }
     const TaggedTaskSavingConfiguration = (Firstitem: any, secondItem: any) => {
-        let PortfoliosIds: any = [];
-        let taggedtasks = Firstitem?.taggedTasks?.filter((obj: any) => obj?.Portfolio?.Id == secondItem.Id)
+        let taggedtasks: any = [];
+        if (Firstitem?.Item_x0020_Type === "Project" || Firstitem?.Item_x0020_Type === "Sprint") {
+            taggedtasks = Firstitem?.taggedTasks?.filter((obj: any) => obj?.Project?.Id == secondItem.Id);
+        }
+        else {
+            taggedtasks = Firstitem?.taggedTasks?.filter((obj: any) => obj?.Portfolio?.Id == secondItem.Id)
+        }
         try {
             if (taggedtasks?.length > 0) {
                 taggedtasks.forEach((element: any) => {
-                    let postData = {
-                        PortfolioId: Firstitem.Id,
+                    let postData:any = {
+                        // PortfolioId: Firstitem.Id,
                     }
+                    if (Firstitem.Item_x0020_Type != "Project" || Firstitem.Item_x0020_Type != "Sprint") {
+                        postData.PortfolioId = Firstitem.Id;
+                    }
+                    else { postData.ProjectId = Firstitem.Id; }
+
                     globalCommon.updateItemById(element.siteUrl, element.listId, postData, element.Id)
                         .then((returnresult) => {
                             console.log(returnresult);
@@ -4017,7 +4027,7 @@ const CompareTool = (props: any) => {
                             <Col sm="1" md="1" lg="1" className="iconSec">
                                 <div className="text-center">
                                     <div><FaLeftLong size="16" onClick={() => changeData(0, 'Idea', data[1]?.Idea)} /></div>
-                                    <div><FaRightLong size="16" onClick={() => changeData(0, 'Idea', data[1]?.Idea)} /></div>
+                                    <div><FaRightLong size="16" onClick={() => changeData(1, 'Idea', data[0]?.Idea)} /></div>
                                 </div>
                             </Col>
                             <Col sm="5" md="5" lg="5" className="contentSec">
