@@ -2640,7 +2640,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         // This is used for send MS Teams Notification 
-                        if (TaskCategories !== "Bottleneck" && TaskCategories != "Immediate" && TaskCategories != "Design") {
+                        if (TaskCategories !== "Bottleneck" && UpdatedDataObject.Categories.indexOf('Immediate') != -1 && UpdatedDataObject.Categories.indexOf('Design') != -1) {
                             try {
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
@@ -2739,9 +2739,8 @@ const EditTaskPopup = (Items: any) => {
                                 console.log("Error", error.message);
                             }
                         }
-
                         let Createtordata: any = []
-                        if (IsTaskStatusUpdated  && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject.Categories == 'Immediate') {
+                        if (IsTaskStatusUpdated  && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject.Categories.indexOf('Immediate') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2767,7 +2766,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
-                        if (checkStatusUpdate == 0  && UpdatedDataObject.Categories == 'Immediate') {
+                        if (checkStatusUpdate == 0  && UpdatedDataObject.Categories.indexOf('Immediate') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2793,7 +2792,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
-                        if (IsTaskStatusUpdated  && checkStatusUpdate == 90 && UpdatedDataObject.Categories == 'Design') {
+                        if (IsTaskStatusUpdated  && checkStatusUpdate == 90 && UpdatedDataObject.Categories.indexOf('Design') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2805,7 +2804,7 @@ const EditTaskPopup = (Items: any) => {
 
                                 let DataForNotification: any = {
                                     ReceiverName: InfoItem?.Title,
-                                    sendUserEmail: ['alina.chyhasova@hochhuth-consulting.de','kristina.kovach@hochhuth-consulting.de'],
+                                    sendUserEmail: [InfoItem?.Email],
                                     Context: Items.context,
                                     ActionType: "Design",
                                     ReasonStatement: "",
@@ -2820,7 +2819,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
-                        if (checkStatusUpdate == 0 && UpdatedDataObject.Categories == 'Design') {
+                        if (checkStatusUpdate == 0 && UpdatedDataObject.Categories.indexOf('Design') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2832,7 +2831,7 @@ const EditTaskPopup = (Items: any) => {
 
                                 let DataForNotification: any = {
                                     ReceiverName: InfoItem?.Title,
-                                    sendUserEmail: ['alina.chyhasova@hochhuth-consulting.de','kristina.kovach@hochhuth-consulting.de'],
+                                    sendUserEmail: [InfoItem?.Email],
                                     Context: Items.context,
                                     ActionType: "Design",
                                     ReasonStatement: "",
@@ -2847,6 +2846,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
+
 
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             taskUsers.forEach((val: any) => {
@@ -2885,7 +2885,7 @@ const EditTaskPopup = (Items: any) => {
                         }
                         let CalculateStatusPercentages: any = TaskDetailsFromCall[0].PercentComplete ? TaskDetailsFromCall[0].PercentComplete
                                 : 0;
-                        if (CalculateStatusPercentages == 90 && EmailStatus == true) {
+                        if (IsTaskStatusUpdated && CalculateStatusPercentages == 90 && EmailStatus == true) {
                             setLastUpdateTaskData(TaskDetailsFromCall[0]);
                             ValueStatus = "90";
                             setSendEmailNotification(true);
