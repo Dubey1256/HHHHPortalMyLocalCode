@@ -1,10 +1,10 @@
 import * as React from 'react'
 import $ from 'jquery';
 import { ColumnDef } from "@tanstack/react-table";
-// import '../../projectmanagementOverviewTool/components/styles.css'
+import '../../projectmanagementOverviewTool/components/styles.css'
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
-// import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel';
+import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel';
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import "@pnp/sp/sputilities";
 import { spfi, SPFx as spSPFx } from "@pnp/sp";
@@ -761,21 +761,21 @@ const TaskDashboard = (props: any) => {
                 size: 10,
                 id: 'Id',
             },
-            // {
-            //     accessorKey: "TaskID",
-            //     placeholder: "ID",
-            //     id: "TaskID",
-            //     resetColumnFilters: false,
-            //     resetSorting: false,
-            //     size: 100,
-            //     cell: ({ row }) => (
-            //         <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
-            //             <>
-            //                 <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} AllListId={AllListId} />
-            //             </>
-            //         </div>
-            //     ),
-            // },
+            {
+                accessorKey: "TaskID",
+                placeholder: "ID",
+                id: "TaskID",
+                resetColumnFilters: false,
+                resetSorting: false,
+                size: 100,
+                cell: ({ row }) => (
+                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
+                        <>
+                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} AllListId={AllListId} />
+                        </>
+                    </div>
+                ),
+            },
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row }: any) => (
@@ -1030,21 +1030,21 @@ const TaskDashboard = (props: any) => {
         () => [
 
 
-            // {
-            //     accessorKey: "TaskID",
-            //     placeholder: "Id",
-            //     id: "TaskID",
-            //     resetColumnFilters: false,
-            //     resetSorting: false,
-            //     size: 100,
-            //     cell: ({ row }) => (
-            //         <div>
-            //             <>
-            //                 <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} />
-            //             </>
-            //         </div>
-            //     ),
-            // },
+            {
+                accessorKey: "TaskID",
+                placeholder: "Id",
+                id: "TaskID",
+                resetColumnFilters: false,
+                resetSorting: false,
+                size: 100,
+                cell: ({ row }) => (
+                    <div>
+                        <>
+                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} />
+                        </>
+                    </div>
+                ),
+            },
             {
                 accessorFn: (row) => row?.siteType,
                 cell: ({ row, getValue }) => (
