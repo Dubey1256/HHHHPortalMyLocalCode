@@ -248,7 +248,7 @@ const ColumnsSetting = (props: any) => {
                 };
             }
             MyContextdata.allContextValueData.smartFabBasedColumnsSetting = preSetColumnSettingVisibility;
-            // props?.setSmartFabBasedColumnsSetting(columnsVisibllityDataAll);
+            props?.columnSettingCallBack('close');
             props?.setSmartFabBasedColumnsSettingToggle(false);
         }
     };
