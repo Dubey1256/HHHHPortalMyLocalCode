@@ -80,7 +80,7 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
         [{ accessorKey: "TaskID", placeholder: "Site", header: "", size: 10, },
         {
             cell: ({ row }: any) => (
-                <a target='_blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Task-Profile.aspx?taskId=${row?.original.Id}&Site=${row?.original.Title}`}>{row.original.Title}</a>
+                <a target='_blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Task-Profile.aspx?taskId=${row?.original.Id}&Site=${row?.original.siteType}`}>{row.original.Title}</a>
 
             ),
             accessorKey: 'Title',
