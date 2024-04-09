@@ -19,7 +19,7 @@ import { GrNext, GrPrevious } from "react-icons/gr";
 import * as Moment from "moment";
 import Slider from "react-slick";
 import HighlightableCell from "../../../globalComponents/highlight";
-import { MdOutlineGppGood, MdGppBad } from "react-icons/Md";
+import { MdOutlineGppGood, MdGppBad } from "react-icons/md";
 import { Panel } from '@fluentui/react';
 let Count = 0;
 let DashboardConfig: any = [];
