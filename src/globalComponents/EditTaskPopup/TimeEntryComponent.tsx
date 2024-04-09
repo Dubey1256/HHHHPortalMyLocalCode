@@ -1626,13 +1626,13 @@ function reverseArray(arr: any) {
             var listNames = listName;
             var listUri: string = `${RelativeUrl}/Lists/${listNames}`;
           }
-          if (foundCategory) {
+          if (foundCategory.length > 0) {
             let isAvailble = false;
             let count = 0
             mainParentId = foundCategory?.Id;
             mainParentTitle = checkCategories;
            
-              foundCategory?.subRows.forEach(async (items: any) => {
+              foundCategory?.subRows?.forEach(async (items: any) => {
                   if (!isAvailble && items.AuthorId === CurntUserId) {
                       count++;
                       isAvailble = true;
