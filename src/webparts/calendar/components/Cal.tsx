@@ -619,7 +619,7 @@ const Apps = (props: any) => {
     const web = new Web(props.props.siteUrl);
     const regionalSettings = await web.regionalSettings.get(); console.log(regionalSettings);
     const query =
-      "RecurrenceData,Duration,Designation,Author/Title,Editor/Title,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo,Color,Created,Modified";
+      "RecurrenceData,Duration,Author/Title,Editor/Title,Employee/Id,Employee/Title,Category,Designation,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo,Color,Created,Modified";
     try {
       const results = await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
@@ -665,12 +665,20 @@ const Apps = (props: any) => {
         const currentMonth = currentDate.getMonth() + 1; // Get current month (January is 0, so add 1)
         const currentYear = currentDate.getFullYear(); // Get current year
         const filteredData = events.filter((event: any) => {
-          const eventDate = new Date(event.start); // Assuming event has a 'date' property
-          const eventMonth = eventDate.getMonth() + 1; // Get month of the event
-          const eventYear = eventDate.getFullYear(); // Get year of the event
-          return eventMonth === currentMonth && eventYear === currentYear; // Filter events for current month and year
-        });
+          const startDate = new Date(event.start); // Parse start date
+          const endDate = new Date(event.end);
+          const eventStartYear = startDate.getFullYear();
+          const eventStartMonth = startDate.getMonth() + 1; // Months are zero-based
+          const eventEndYear = endDate.getFullYear();
+          const eventEndMonth = endDate.getMonth() + 1; // Months are zero-based
 
+          return (
+            (eventStartYear === currentYear && eventStartMonth === currentMonth) || // Event starts in current month
+            (eventEndYear === currentYear && eventEndMonth === currentMonth) || // Event ends in current month
+            (eventStartYear < currentYear && eventEndYear > currentYear) || // Event spans across multiple years
+            (eventStartYear === currentYear && eventEndYear === currentYear && eventStartMonth < currentMonth && eventEndMonth > currentMonth) // Event spans across multiple months within the same year
+          );
+        });
         console.log(filteredData); // Display filtered data
         localArr = processDataArray(filteredData);
         setChkName(localArr)
@@ -756,7 +764,7 @@ const Apps = (props: any) => {
         Category: event.Category,
         Duration: event.Duration,
         UID: event.UID,
-        Designation:event.Designation,
+        Designation: event.Designation,
         fRecurrence: event.fRecurrence,
         RecurrenceID: event.RecurrenceID,
         MasterSeriesItemID: event.MasterSeriesItemID
@@ -775,14 +783,19 @@ const Apps = (props: any) => {
   }
   const handleNavigate = (newDate: any) => {
     const { year: currentYear, month: currentMonth } = getYearMonthFromDate(newDate);
-
     const filteredData = events.filter((event: any) => {
-      const { year, month } = getYearMonthFromDate(event.start);
-      return month === currentMonth && year === currentYear;
+      const startDate = getYearMonthFromDate(event.start);
+      const endDate = getYearMonthFromDate(event.end);
+      return (
+        (startDate.year < currentYear || (startDate.year === currentYear && startDate.month <= currentMonth)) &&
+        (endDate.year > currentYear || (endDate.year === currentYear && endDate.month >= currentMonth))
+      );
     });
     localArr = processDataArray(filteredData);
     setRecurringEvents(filteredData);
   };
+
+
   // Handle Show More 
   const handleShowMore = (event: any, date: any) => {
     // console.log
@@ -865,6 +878,7 @@ const Apps = (props: any) => {
     setPeoplePickerShow(false);
     setShowRecurrenceSeriesInfo(false);
     setEditRecurrenceEvent(false);
+    setType(event.Event_x002d_Type);
 
     if (event?.eventType === "Company Holiday" || event?.eventType === "National Holiday") {
       setIsDisableField(true);
@@ -1021,6 +1035,7 @@ const Apps = (props: any) => {
     setInputValueName("");
     setStartDate(null);
     setEndDate(null);
+    setType("");
     sedType("");
     setInputValueReason("");
     setIsDisableField(false);
@@ -1075,10 +1090,10 @@ const Apps = (props: any) => {
         Title: newEvent.Title,
         Description: newEvent.Description,
         EventDate: await getUtcTime(newEvent.EventDate),
-        // Event_x002d_Type: newEvent.Event_x002d_Type,
+        Event_x002d_Type: newEvent.Event_x002d_Type,
         EndDate: await getUtcTime(newEvent.EndDate),
         Location: newEvent.Location,
-        // Designation: newEvent.Designation,
+        Designation: newEvent.Designation,
         fAllDayEvent: newEvent.fAllDayEvent,
         fRecurrence: newEvent.fRecurrence,
         EventType: newEvent.EventType,
