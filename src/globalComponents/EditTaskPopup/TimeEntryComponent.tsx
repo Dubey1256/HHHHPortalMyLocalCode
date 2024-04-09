@@ -917,31 +917,37 @@ function reverseArray(arr: any) {
       return entry1.Title === entry2.Title;
     }
 
-    console.log("mergedFinalData", mergedFinalData);
+    const finalData1 = mergedFinalData.map((item) => {
+      if (item.Created !== undefined) {
+          item.Created = '';
+      }
+      return item; 
+  });
+    console.log("mergedFinalData", finalData1);
     console.log(
       "TaskTimeSheetCategoriesGrouping",
       TaskTimeSheetCategoriesGrouping
     );
-
-
-    setBackupData(mergedFinalData);
+  
+    setBackupData(finalData1);
     if(Flatview == true){
-      flatviewOpen(Flatview,mergedFinalData)
+      flatviewOpen(Flatview,finalData1)
     }
     else{
-      mergedFinalData.forEach(item => {
+      finalData1.forEach(item => {
         item.subRows?.sort((a:any, b:any) => {
           const dateA:any = new Date(a.TaskDate.split('/').reverse().join('/'));
           const dateB:any = new Date(b.TaskDate.split('/').reverse().join('/'));
           return dateB - dateA;
         });
+
       });
      
-      backupEdit = mergedFinalData;
-      setData(mergedFinalData);
-      setBackupData(mergedFinalData);
+      backupEdit = finalData1;
+      setData(finalData1);
+      setBackupData(finalData1);
       setTimeSheet(TaskTimeSheetCategoriesGrouping);
-      console.log("finalData", finalData);
+      console.log("finalData", finalData1);
      
     }
 
@@ -1589,11 +1595,11 @@ function reverseArray(arr: any) {
     });
 
     function findCategoryById(data: any, categoryId: any): any | null {
-      let foundCategoryId: any = null;
+      let foundCategoryId: any = [];
 
       data.forEach((categoryData: { Id: any; Category: { Id: any } }) => {
         if (categoryData.Category.Id === categoryId) {
-          foundCategoryId = categoryData.Id;
+          foundCategoryId = categoryData;
         }
       });
 
@@ -1623,10 +1629,10 @@ function reverseArray(arr: any) {
           if (foundCategory) {
             let isAvailble = false;
             let count = 0
-            mainParentId = foundCategory;
+            mainParentId = foundCategory?.Id;
             mainParentTitle = checkCategories;
-            data?.forEach((val: any) => {
-              val?.subRows.forEach(async (items: any) => {
+           
+              foundCategory?.subRows.forEach(async (items: any) => {
                   if (!isAvailble && items.AuthorId === CurntUserId) {
                       count++;
                       isAvailble = true;
@@ -1656,12 +1662,12 @@ function reverseArray(arr: any) {
                       update["TaskDate"] = Moment(Datee).format("DD/MM/YYYY");
                       update["Description"] = postData?.Description;
           
-                      val.AdditionalTime.push(update);
+                      foundCategory.AdditionalTime.push(update);
           
                       var ListId = items.siteType === "Migration" || items.siteType === "ALAKDigital" ? TimeSheetlistId : TimeSheetlistId;
           
                       await web.lists.getById(ListId).items.getById(NewparentId).update({
-                          AdditionalTimeEntry: JSON.stringify(val.AdditionalTime),
+                          AdditionalTimeEntry: JSON.stringify(foundCategory.AdditionalTime),
                           TimesheetTitleId: NewMainparentId,
                       }).then((res: any) => {
                           console.log(res);
@@ -1669,7 +1675,7 @@ function reverseArray(arr: any) {
                       });
                   }
               });
-          });
+          
          
            
              if (!isAvailble) {

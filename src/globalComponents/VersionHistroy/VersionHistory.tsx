@@ -20,7 +20,15 @@ export default function VersionHistory(props: any) {
     const siteTypeUrl = props.siteUrls;
     const listId = props?.listId
     const ItemId = props?.taskId;
-    let sitetype = window?.location?.search !== '' ? window?.location?.search?.split("&Site=")[1] || "Master Tasks" : 'Task Users';
+    var sitetype = window?.location?.search !== '' ? window?.location?.search?.split("&Site=")[1] || "Master Tasks" : 'Task Users';
+    try {
+        if (window?.location?.search?.split("&Site=")[1]?.indexOf("&OR") > -1) {
+            sitetype = window?.location?.search?.split("&Site=")[1]?.split("&OR")[0];
+        } 
+    }
+    catch (e) {
+        console.log(e);
+    }
     const RequiredListIds: any = props?.RequiredListIds;
     let tempEstimatedArrayData: any;
     const [show, setShow] = React.useState(false);

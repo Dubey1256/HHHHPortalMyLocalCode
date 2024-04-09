@@ -81,6 +81,9 @@ const EmailNotificationMail = (props: any) => {
     });
     return val;
   }
+  const removeTags = (htmlString:any) => {
+    return htmlString.replace(/<\/?p>/g, '');
+  };
   return (
     <>
       <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
@@ -266,7 +269,7 @@ const EmailNotificationMail = (props: any) => {
                       <td width='200pt' valign="top">
                         <table>
                             <>
-                              {props.items?.ImageData.map((val: any, index: any) => {
+                              {props.items?.ImageData?.map((val: any, index: any) => {
                                 return (
                                   <>
                                     <tr className='BasicimagesInfo_group'>
@@ -315,7 +318,18 @@ const EmailNotificationMail = (props: any) => {
                                         <div style={{ marginBottom: '3.75pt' }}>
                                           <div style={{ marginLeft: '15px', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{fbComment.AuthorName} - {fbComment.Created}</span></div>
                                         </div>
-                                        <div style={{ marginLeft: '15px', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }} dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span></div>
+                                        <div style={{ marginLeft: '15px', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }} dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span>
+                                        </div>
+                                        {fbComment?. ReplyMessages?.length>0 && fbComment?.ReplyMessages?.map((replycom:any)=>{
+                                                                        return(
+                                                                            <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                                                                            <div style={{ marginBottom: '3.75pt' }}>
+                                                                                <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span>{replycom.AuthorName} - {replycom.Created}<u></u><u></u></span></p>
+                                                                            </div>
+                                                                            <p style={{ marginLeft: '15px'}}><span><span  dangerouslySetInnerHTML={{ __html: replycom['Title'] }}></span><u></u><u></u></span></p>
+                                                                            </div>   
+                                                                        )
+                                                                       })}
                                       </div>
                                     })}
                                   </td>
@@ -346,6 +360,16 @@ const EmailNotificationMail = (props: any) => {
                                               <span style={{ fontSize: '10.0pt', color: 'black' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}</span>
                                             </div>
                                             <div style={{ marginLeft: '15px', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }} dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span></div>
+                                            {fbSubComment?. ReplyMessages?.length>0 && fbSubComment?.ReplyMessages?.map((replycom:any)=>{
+                                                                        return(
+                                                                            <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                                                                            <div style={{ marginBottom: '3.75pt' }}>
+                                                                                <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span>{replycom.AuthorName} - {replycom.Created}<u></u><u></u></span></p>
+                                                                            </div>
+                                                                            <p style={{ marginLeft: '15px'}}><span><span dangerouslySetInnerHTML={{ __html: replycom['Title'] }}></span><u></u><u></u></span></p>
+                                                                            </div>   
+                                                                        )
+                                                                       })}
                                           </div>
                                         })}
                                       </td>
@@ -380,6 +404,18 @@ const EmailNotificationMail = (props: any) => {
                               </div>
                               <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
                                 <span style={{ color: 'black' }}>{cmtData.Description}</span></p>
+                                {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
+                                                                    return (
+                                                                        <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt', marginLeft: '10pt' }}>
+                                                                            <div style={{ marginBottom: "3.75pt" }}>
+                                                                                <p style={{ marginBottom: '1.25pt' }}>
+                                                                                    <span style={{ color: 'black', background: '#fbfbfb' }}>{replyData.AuthorName} - {replyData.Created}</span></p>
+                                                                            </div>
+                                                                            <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
+                                                                                <span style={{ color: 'black' }}>{removeTags(replyData.Description)}</span></p>
+                                                                        </div>
+                                                                    )
+                                                                })}
                             </div>
                           })}
                         </td>

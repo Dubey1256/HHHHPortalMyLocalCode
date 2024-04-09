@@ -775,16 +775,13 @@ function ReadyMadeTable(SelectedProp: any) {
             localStorage.setItem('timeEntryIndex', dataString);
         }
         console.log("timeEntryIndex", timeEntryIndex)
-      
-      
-            if (AllSiteTasksData?.length > 0) {
-                setData([]);
-                if (SelectedProp?.configration == "AllAwt" && SelectedProp?.SelectedItem != undefined) {
-                    if ('Parent' in SelectedProp?.SelectedItem) {
-                        taskTypeData?.map((levelType: any) => {
-                            if (levelType.Level === 1)
-                                componentActivity(levelType, SelectedProp?.SelectedItem);
-                        })
+        if (AllSiteTasksData?.length > 0) {
+            setData([]);
+            portfolioTypeData?.map((port: any, index: any) => {
+                if (SelectedProp?.SelectedItem != undefined) {
+                    if (port.Title === SelectedProp?.SelectedItem?.Item_x0020_Type) {
+                        componentData = []
+                        componentGrouping(port?.Id, port?.Id);
                     }
                     if ('ParentTask' in SelectedProp?.SelectedItem) {
                         let data: any = [SelectedProp?.SelectedItem]
@@ -814,12 +811,11 @@ function ReadyMadeTable(SelectedProp: any) {
         
                     })
                 }
-              
-                countsrun++;
-    
-            }
-      
-      
+
+            })
+            countsrun++;
+
+        }
 
         setLoaded(true)
         return AllSiteTasksData;

@@ -12,7 +12,6 @@ import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import { setMonth } from 'office-ui-fabric-react';
 import { end } from '@popperjs/core';
 import moment from 'moment';
-import { Start } from '@mui/icons-material';
 
 let allReportData: any = [];
 let Short_x0020_Description_x0020_On:any = '';
@@ -78,7 +77,7 @@ export const MonthlyLeaveReport = (props: any) => {
     const web = new Web(props.props.siteUrl);
     try {
       const results: any = await web.lists.getById(props.props.SmalsusLeaveCalendar).items.select(
-        "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,EventDescription,ID,EndDate,EventDate,Location,Title,fAllDayEvent,Created,EventType,UID,fRecurrence,HalfDay,HalfDayTwo,Event_x002d_Type"
+        "RecurrenceData,Duration,Author/Title,Editor/Title,NameId,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,Created,EventType,UID,fRecurrence,HalfDay,HalfDayTwo,Event_x002d_Type"
       ).expand("Author,Editor,Employee").getAll();
       setLeaveData(results);
     } catch (err) {
