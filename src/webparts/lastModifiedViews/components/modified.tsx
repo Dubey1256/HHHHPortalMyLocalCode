@@ -1908,7 +1908,7 @@ export const Modified = (props: any) => {
             sites && sites.map((siteValue: any) =>
               <>
 
-                <button disabled={!isButtonDisabled} onClick={() => { getCurrentData(siteValue); }} className={`nav-link ${siteValue.TabName == sites[0].TabName ? 'active' : ''}`} id={`nav-${siteValue.TabName}-tab`} data-bs-toggle="tab" data-bs-target={`#nav-${siteValue.TabName}`} type="button" role="tab" aria-controls="nav-home" aria-selected="true">{siteValue.DisplaySiteName}</button>
+                <button disabled={!isButtonDisabled} onClick={() => { getCurrentData(siteValue); }} className={`nav-link ${siteValue.TabName == sites[0].TabName ? 'active' : ''}`} id={`nav-${siteValue.TabName}-tab`} data-bs-toggle="tab" data-bs-target={`#nav-${siteValue.TabName}`} type="button" role="tab" aria-controls="nav-home" aria-selected="true"><div>{siteValue.DisplaySiteName}</div></button>
               </>
             )
           }

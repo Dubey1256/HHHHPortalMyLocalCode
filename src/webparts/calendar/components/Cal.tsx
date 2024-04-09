@@ -681,7 +681,6 @@ const Apps = (props: any) => {
         });
         console.log(filteredData); // Display filtered data
         localArr = processDataArray(filteredData);
-
         setChkName(localArr)
         setRecurringEvents(filteredData);
       }

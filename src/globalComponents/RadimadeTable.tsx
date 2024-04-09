@@ -200,12 +200,9 @@ function ReadyMadeTable(SelectedProp: any) {
             if (SelectedProp?.ComponentFilter != undefined) {
                 setIsUpdated(SelectedProp?.ComponentFilter)
             }
-            if (SelectedProp?.configration == "AllCSF" && SelectedProp?.showProject === false) {
+            if (SelectedProp?.configration == "AllCSF") {
                 GetComponents();
-            }
-            else if(SelectedProp?.configration == "AllCSF" && SelectedProp?.showProject === true) {
-            GetProjectData()
-            }else if (SelectedProp?.configration == "AllAwt") {
+            } else if (SelectedProp?.configration == "AllAwt") {
                 // GetComponents();
                 // setSiteConfig()
                 LoadAllSiteTasks();
@@ -220,17 +217,6 @@ function ReadyMadeTable(SelectedProp: any) {
 
         }
     }, [AllMetadata?.length > 0 && portfolioTypeData?.length > 0])
- const GetProjectData= async()=>{
-        let results = await globalCommon.GetServiceAndComponentAllData(ContextValue)
-        if (results?.AllData?.length > 0) {
-            let componentDetails: any = results?.AllData;
-            let groupedComponentData: any = results?.GroupByData;
-            let groupedProjectData: any = results?.ProjectData;
-            let AllProjects: any = results?.FlatProjectData
-            setData(groupedProjectData)
-            setLoaded(true)
-          }
-    }
     const getTaskUsers = async () => {
         let web = new Web(ContextValue.siteUrl);
         let taskUsers = [];
@@ -455,8 +441,8 @@ function ReadyMadeTable(SelectedProp: any) {
             );
             countTaskAWTLevel(countAllTasksData1);
         }
-
-        if (countAllComposubData?.length > 0) {
+ 
+        if (countAllComposubData?.length > 0 && filterTaskType==false) {
             let countAllTasksData11 = countAllComposubData?.filter(
                 (ele: any, ind: any, arr: any) => {
                     const isDuplicate =
@@ -512,6 +498,7 @@ function ReadyMadeTable(SelectedProp: any) {
                         // if (item?.TaskCategories?.some((category: any) => category.Title.toLowerCase() === "draft")) { item.isDrafted = true; }
                     });
                     AllTasks = AllTasks.concat(AllTasksMatches);
+                }
                     if (Counter == siteConfig.length) {
                         // AllTasks = AllTasks?.filter((type: any) => type.isDrafted === false);
                         map(AllTasks, (result: any) => {
@@ -723,7 +710,7 @@ function ReadyMadeTable(SelectedProp: any) {
                         }
                         // allLoadeDataMasterTaskAndTask = allLoadeDataMasterTaskAndTask.concat(taskBackup);
                     }
-                }
+                
             });
             // GetComponents();
         }
@@ -818,7 +805,7 @@ function ReadyMadeTable(SelectedProp: any) {
                         if (SelectedProp?.SelectedItem != undefined) {
                             if (port.Title === SelectedProp?.SelectedItem?.PortfolioType?.Title) {
                                 componentData = []
-                                componentGrouping(port?.Id, port?.Id);
+                                componentGrouping(port?.Id, portfolioTypeData?.length - 1);
                             }
                         } else {
                             componentData = []
@@ -1097,11 +1084,6 @@ function ReadyMadeTable(SelectedProp: any) {
             DataPrepareForCSFAWT()
         }
     }, [(AllMasterTasksData.length > 0 && AllSiteTasksData?.length > 0)]);
- React.useEffect(() => {
-        if (AllMasterTasksData?.length > 0) {
-            DataPrepareForCSFAWT()
-        }
-    }, [(AllMasterTasksData.length > 0 && SelectedProp?.configration == "AllCSF")]);
 
 
     function DataPrepareForCSFAWT(){
@@ -1491,10 +1473,13 @@ function ReadyMadeTable(SelectedProp: any) {
         // setData(smartAllFilterData);
     }
     const FilterAllTask = ()=>{
-        filterTaskType=true;
-        setLoaded(false)
-        SelectedProp.TaskFilter= "PercentComplete gt '0.89'";
-        LoadAllSiteTasks()
+        if(filterTaskType==false){
+            filterTaskType=true;
+            setLoaded(false)
+            SelectedProp.TaskFilter= "PercentComplete gt '0.89'";
+            LoadAllSiteTasks()
+        }
+      
        
       }
 
@@ -2214,9 +2199,6 @@ function ReadyMadeTable(SelectedProp: any) {
             array = [];
         }
         checkedList1.current = array;
-     if(childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length>0 && SelectedProp?.setCheckBoxData !== undefined){
-            SelectedProp?.setCheckBoxData([childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original])
-        }
     }, []);
 
 
