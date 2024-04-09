@@ -11,6 +11,7 @@ import * as globalCommon from "../../../globalComponents/globalCommon";
 let portfolioType = '';
 let AllListId: any = {};
 let AllFlatProject: any = [];
+let selectedProject: any = {};
 const AddProject = (props: any) => {
     const [title, settitle] = React.useState('')
     const [lgShow, setLgShow] = useState(false);
@@ -27,15 +28,17 @@ const AddProject = (props: any) => {
         setLgShow(true)
     }
     React.useEffect(() => {
-        try{
+        try {
             if (props?.items?.length == 1 && props?.items[0]?.Item_x0020_Type == "Project") {
                 setSetSelectedItem(props?.items[0])
-            }else if(props?.items?.length == 1 && props?.items[0][0]?.original?.Item_x0020_Type == "Project"){
+                selectedProject = props?.items[0];
+            } else if (props?.items?.length == 1 && props?.items[0][0]?.original?.Item_x0020_Type == "Project") {
                 setSetSelectedItem(props?.items[0][0]?.original)
+                selectedProject = props?.items[0][0]?.original;
             }
-           }catch(e){
-            console.log('Error In Add Project')
-           }
+        } catch (e) {
+
+        }
         GetMasterData();
     }, [props?.items?.length])
     const addFunction = async () => {
@@ -278,7 +281,7 @@ const AddProject = (props: any) => {
                             <li><a data-interception="off" target="_blank" href={`${props?.AllListId?.siteUrl}/SitePages/PX-Overview.aspx`}>PX Management Overview</a></li>
                             <li>
                                 {" "}
-                                <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${props?.items[0]?.Id}`}>{props?.items[0]?.Title}</a>{" "}
+                                <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${selectedProject?.Id}`}>{selectedProject?.Title}</a>{" "}
                             </li>
                         </ul>
                     </div>
