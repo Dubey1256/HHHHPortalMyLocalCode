@@ -1771,44 +1771,9 @@ const CentralizedSiteComposition = (Props: any) => {
                 customWidth="1500px"
             >
                 <section className="mb-5 modal-body">
-                    <div className="Site-composition-and-client-category d-flex full-width my-2">
+                    <div className="Site-composition-and-client-category d-flex full-width">
                         <div className="site-settings-and-site-composition-distributions full-width">
-                            <div className="site-settings">
-                                <div className="border p-1 siteColor alignCenter">
-                                    Site Composition Settings
-                                    <span className="hover-text alignIcon">
-                                        <span className="svg__iconbox svg__icon--info dark"></span>
-                                        <span className="tooltip-text pop-right">
-                                            {"The site composition Settings options include manual input by users for selected sites, equal distribution among selected sites totaling 100% (proportional allocation), and predefined dynamic configurations (Deluxe and Standard) in the cockpit."}
-                                        </span>
-                                    </span>
-                                </div>
-                                <div className="border p-2 alignCenter">
-                                    {SiteSettingJSON?.map((SSItem: any) => {
-                                        return (
-                                            <div className="SpfxCheckRadio me-2">
-                                                <input
-                                                    type={SSItem.Type}
-                                                    id={SSItem.Name}
-                                                    name={SSItem.BtnName}
-                                                    defaultChecked={SSItem.IsSelected == true ? true : false}
-                                                    checked={SSItem.IsSelected == true ? true : false}
-                                                    className={SSItem.Type}
-                                                    onClick={() => ChangeSiteCompositionSettings(SSItem.Name)}
-                                                />
-                                                {SSItem.Name}
-                                                <span className="hover-text alignIcon">
-                                                    <span className="svg__iconbox svg__icon--info dark"></span>
-                                                    <span className="tooltip-text pop-right">
-                                                        {SSItem.Descriptions}
-                                                    </span>
-                                                </span>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            </div>
-                            <div className="siteColor border p-1 mt-1 alignCenter">
+                            <div className="siteColor border p-1 alignCenter">
                                 <span className="me-2" onClick={() =>
                                     setSiteCompositionTool(SiteCompositionTool ? false : true)
                                 }>
@@ -1818,16 +1783,45 @@ const CentralizedSiteComposition = (Props: any) => {
                                         <SlArrowRight />
                                     )}
                                 </span>
-                                Site Composition Distributions
+                                Site Composition Settings & Distributions
                                 <span className="hover-text alignIcon">
                                     <span className="svg__iconbox svg__icon--info dark"></span>
                                     <span className="tooltip-text pop-right">
+                                        <b>Site Composition Settings :</b>
+                                        {"The site composition Settings options include manual input by users for selected sites, equal distribution among selected sites totaling 100% (proportional allocation), and predefined dynamic configurations (Deluxe and Standard) in the cockpit."}
+                                        <p></p>
+                                        <b>Site Composition Distributions :</b>
                                         {"With the Site Composition Distribution Tool, users can both add and modify the Site Composition Distribution of CSF-AWT. Subsequently, the tool will generate the time spent on an AWT based on the specified Site Composition."}
                                     </span>
                                 </span>
+
                             </div>
                             {SiteCompositionTool ?
                                 <>
+                                    <div className="alignCenter border p-1 pt-0 site-settings">
+                                        {SiteSettingJSON?.map((SSItem: any) => {
+                                            return (
+                                                <div className="SpfxCheckRadio me-2">
+                                                    <input
+                                                        type={SSItem.Type}
+                                                        id={SSItem.Name}
+                                                        name={SSItem.BtnName}
+                                                        defaultChecked={SSItem.IsSelected == true ? true : false}
+                                                        checked={SSItem.IsSelected == true ? true : false}
+                                                        className={SSItem.Type}
+                                                        onClick={() => ChangeSiteCompositionSettings(SSItem.Name)}
+                                                    />
+                                                    {SSItem.Name}
+                                                    <span className="hover-text alignIcon">
+                                                        <span className="svg__iconbox svg__icon--info dark"></span>
+                                                        <span className="tooltip-text pop-right">
+                                                            {SSItem.Descriptions}
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
                                     <table
                                         className="table table-bordered mb-1"
                                     >
@@ -2126,6 +2120,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                     showHeader={false}
                                     fixedWidth={true}
                                     expendedTrue={true}
+
                                 />
                             </div>
                         </div> : null
