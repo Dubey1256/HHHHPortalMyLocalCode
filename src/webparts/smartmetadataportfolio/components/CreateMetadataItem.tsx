@@ -212,6 +212,7 @@ export default function CreateMetadataItem(props: any) {
         setSmartDescription('');
         setSmartMetaDataTitle('');
         setIsCreatePopupOpen(false);
+        props?.closeCreateSmartMetadataPopup();
         props?.childRefdata?.current?.setRowSelection({});
     }
     const onRenderCreateSmartMetadata = () => {
@@ -234,7 +235,8 @@ export default function CreateMetadataItem(props: any) {
             </div> */}
             {
                 IsCreatePopupOpen === true ? <section>
-                  <Panel type={PanelType.custom} onRenderHeader={onRenderCreateSmartMetadata} customWidth="500px" isOpen={IsCreatePopupOpen} onDismiss={closeCreateSmartMetadataPopup} isBlocking={false} closeButtonAriaLabel="Close">       {props.ParentItem.Id == undefined && (
+                    <Panel type={PanelType.custom} onRenderHeader={onRenderCreateSmartMetadata} customWidth="500px" isOpen={IsCreatePopupOpen} onDismiss={closeCreateSmartMetadataPopup} isBlocking={false} closeButtonAriaLabel="Close">
+                        {props.ParentItem.Id == undefined && (
                             <div className="modal-body">
                                 <div className="col-sm-12 padL-0">
                                     <div className="input-group my-2">

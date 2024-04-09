@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useRef, useCallback, useContext } from 'react';
 import { Web } from 'sp-pnp-js';
 import { ColumnDef } from '@tanstack/react-table';
@@ -620,3 +619,5 @@ export default function ManageSmartMetadata(selectedProps: any) {
         </>
     );
 }
+
+

@@ -280,8 +280,10 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
     const onRenderRestuctureSmartMetadata = () => {
         return (
             <>
-                <h3> Restucture Smartmetadata <span className="ml-auto"> <Tooltip ComponentId={'1630'} /></span>
-                </h3>
+                <div className='subheading siteColor'>
+                    Restructure SmartMetadata - {props?.restructureItem[0]?.Title}
+                </div>
+                <Tooltip ComponentId={'1630'} />
             </>
         );
     };
@@ -312,9 +314,6 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
     }
     return (
         <>
-            {/* <button type="button" title="Restructure" className="btnCol btn btn-primary" style={{ backgroundColor: `${props.portfolioColor}`, borderColor: `${props.portfolioColor}`, color: '#fff' }}
-                onClick={buttonRestructureCheck}
-            >Restructure</button> */}
             {
                 ResturuningOpen === true && restructureItem?.length == 1 ?
                     <Panel
@@ -369,3 +368,4 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
     )
 };
 export default forwardRef(RestructureSmartMetaData);
+
