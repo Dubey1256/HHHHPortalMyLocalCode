@@ -575,24 +575,34 @@ const EmployeProfile = (props: any) => {
           if (config?.IsDraftTask != undefined && items.Categories?.toLowerCase().indexOf(config?.IsDraftTask.toLowerCase()) > -1 && items.Author?.Id == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items)) {
             config?.Tasks.push(items);
           }
+          if (config?.IsBottleneckTask != undefined && items?.WorkingAction != undefined && items?.WorkingAction?.length > 0) {
+            items?.WorkingAction?.map((workingDetails: any) => {
+              if (workingDetails?.Title != undefined && workingDetails?.InformationData != undefined && workingDetails?.Title === config?.IsBottleneckTask && workingDetails?.InformationData.length > 0) {
+                workingDetails?.InformationData?.map((botteleckInfo: any) => {
+                  if (botteleckInfo?.TaggedUsers != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items)) {
+                    config?.Tasks.push(items);
+                  }
+                })
+              }
+            })
+          }
           items.AssignedTo?.forEach((assign: any) => {
             if (assign && assign.Id === currentUserData?.AssingedToUser?.Id) {
               if (config.IsTodaysTask != undefined && items.IsTodaysTask === config.IsTodaysTask && !isTaskItemExists(config?.Tasks, items)) {
                 config?.Tasks.push(items)
               }
               // && items.Categories?.toLowerCase().indexOf(config?.IsBottleneckTask.toLowerCase()) > -1 
-              else if (config?.IsBottleneckTask != undefined && items?.WorkingAction != undefined && items?.WorkingAction?.length > 0) {
-                items?.WorkingAction?.map((workingDetails: any) => {
-                  if (workingDetails?.Title != undefined && workingDetails?.InformationData != undefined && workingDetails?.Title === config?.IsBottleneckTask && workingDetails?.InformationData.length > 0) {
-                    workingDetails?.InformationData?.map((botteleckInfo: any) => {
-                      if (botteleckInfo?.TaggedUsers != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items)) {
-                        config?.Tasks.push(items);
-                      }
-                    })
-                  }
-                })
-
-              }
+              // else if (config?.IsBottleneckTask != undefined && items?.WorkingAction != undefined && items?.WorkingAction?.length > 0) {
+              //   items?.WorkingAction?.map((workingDetails: any) => {
+              //     if (workingDetails?.Title != undefined && workingDetails?.InformationData != undefined && workingDetails?.Title === config?.IsBottleneckTask && workingDetails?.InformationData.length > 0) {
+              //       workingDetails?.InformationData?.map((botteleckInfo: any) => {
+              //         if (botteleckInfo?.TaggedUsers != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId != undefined && botteleckInfo?.TaggedUsers?.AssingedToUserId == currentUserData?.AssingedToUser?.Id && !isTaskItemExists(config?.Tasks, items)) {
+              //           config?.Tasks.push(items);
+              //         }
+              //       })
+              //     }
+              //   })
+              // }
               else if (config?.IsImmediateTask != undefined && items.Categories?.toLowerCase().indexOf(config?.IsImmediateTask.toLowerCase()) > -1 && !isTaskItemExists(config?.Tasks, items)) {
                 config?.Tasks.push(items);
               }
@@ -659,6 +669,10 @@ const EmployeProfile = (props: any) => {
             EstimatedDesc?.map((time: any) => {
               items.EstimatedTime += Number(time?.EstimatedTime)
             })
+          }
+          items.portfolioItemsSearch = '';
+          if (items?.TaskType) {
+            items.portfolioItemsSearch = items?.TaskType?.Title;
           }
           items.TaskTypeValue = '';
           if (items?.TaskCategories?.length > 0) {
@@ -734,7 +748,8 @@ const EmployeProfile = (props: any) => {
           if (items.Editor) {
             items.Editor.autherImage = findUserByName(items.Editor?.Id)
           }
-          items.percentage = items.PercentComplete + "%";
+          items.percentage = items.PercentComplete
+          //  + "%";
           if (items.PercentComplete != undefined && items.PercentComplete != '' && items.PercentComplete != null)
             items.percentCompleteValue = parseInt(items?.PercentComplete);
           items.site = items.siteType;
