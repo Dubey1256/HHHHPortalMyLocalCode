@@ -27,9 +27,15 @@ const AddProject = (props: any) => {
         setLgShow(true)
     }
     React.useEffect(() => {
-        if (props?.items?.length == 1 && props?.items[0]?.Item_x0020_Type == "Project") {
-            setSetSelectedItem(props?.items[0])
-        }
+        try{
+            if (props?.items?.length == 1 && props?.items[0]?.Item_x0020_Type == "Project") {
+                setSetSelectedItem(props?.items[0])
+            }else if(props?.items?.length == 1 && props?.items[0][0]?.original?.Item_x0020_Type == "Project"){
+                setSetSelectedItem(props?.items[0][0]?.original)
+            }
+           }catch(e){
+            console.log('Error In Add Project')
+           }
         GetMasterData();
     }, [props?.items?.length])
     const addFunction = async () => {

@@ -895,7 +895,7 @@ export default function ProjectOverview(props: any) {
 
 
         // let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
-        let to: any = ["abhishek.tiwari@hochhuth-consulting.de",  "prashant.kumar@hochhuth-consulting.de"];
+        let to: any = ["abhishek.tiwari@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let groupedData = data;
@@ -1233,7 +1233,7 @@ export default function ProjectOverview(props: any) {
                                     }
                                 })
                             }
-                            child.SiteIconTitle = child?.Item_x0020_Type.charAt(0)
+                            child.SiteIconTitle = child?.Item_x0020_Type == "Sprint" ? "X" : child?.Item_x0020_Type.charAt(0);
                         })
                     }
                 })
