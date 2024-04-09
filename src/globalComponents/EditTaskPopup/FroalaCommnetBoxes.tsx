@@ -162,14 +162,13 @@ export default function FroalaCommnetBoxes(textItems: any) {
             callBack("delete");
         } else {
             UpdatedFeedBackParentArray = []
-            UpdatedFeedBackParentArray.push(tempArray)
+            UpdatedFeedBackParentArray=tempArray
             callBack(tempArray);
         }
         UpdatedFeedBackParentArray = []
-        UpdatedFeedBackParentArray.push(tempArray)
+        UpdatedFeedBackParentArray=tempArray
         setState(tempArray);
     }
-
     function handleChange(e: any) {
         UpdatedFeedBackParentArray = State;
         const id = parseInt(e.currentTarget.dataset.id, 10);

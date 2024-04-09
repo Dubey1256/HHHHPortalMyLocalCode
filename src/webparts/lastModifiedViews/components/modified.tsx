@@ -65,9 +65,12 @@ export const Modified = (props: any) => {
 
 
   const getAllUsers = async () => {
-
-
-    Users = await globalCommon.loadTaskUsers();
+    let web = new Web(baseUrl);
+    Users = await web.lists
+    .getById(props?.props?.TaskUsertListID)
+    .items
+    .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+    .get();
     setAllUsers(Users)
     if (baseUrl.toLowerCase().includes("gmbh")) {
       setGmbhSite(true)
@@ -964,7 +967,7 @@ export const Modified = (props: any) => {
           id: 'Id',
         },
         {
-          accessorKey: "FileLeafRef", placeholder: "Title", header: "", id: "FileLeafRef",
+            accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
           cell: ({ row }) =>
             <>
               {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ? <a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</> : undefined}
@@ -1905,7 +1908,7 @@ export const Modified = (props: any) => {
             sites && sites.map((siteValue: any) =>
               <>
 
-                <button disabled={!isButtonDisabled} onClick={() => { getCurrentData(siteValue); }} className={`nav-link ${siteValue.TabName == sites[0].TabName ? 'active' : ''}`} id={`nav-${siteValue.TabName}-tab`} data-bs-toggle="tab" data-bs-target={`#nav-${siteValue.TabName}`} type="button" role="tab" aria-controls="nav-home" aria-selected="true">{siteValue.DisplaySiteName}</button>
+                <button disabled={!isButtonDisabled} onClick={() => { getCurrentData(siteValue); }} className={`nav-link ${siteValue.TabName == sites[0].TabName ? 'active' : ''}`} id={`nav-${siteValue.TabName}-tab`} data-bs-toggle="tab" data-bs-target={`#nav-${siteValue.TabName}`} type="button" role="tab" aria-controls="nav-home" aria-selected="true"><div>{siteValue.DisplaySiteName}</div></button>
               </>
             )
           }
