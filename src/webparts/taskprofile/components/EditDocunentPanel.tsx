@@ -53,7 +53,9 @@ const EditDocumentpanel = (props: any) => {
         .expand('Author,Editor,Portfolios')
         .get()
         .then((Data) => {
-          Data.Title = getUploadedFileName(Data?.Title);
+          if(Data?.Title.includes(Data?.File_x0020_Type)){
+            Data.Title = getUploadedFileName(Data?.Title);
+          }
           Data.siteType = 'sp';
           Data.docTitle = getUploadedFileName(Data?.FileLeafRef);
           Data.Item_x002d_Image = Data?.Item_x0020_Cover
