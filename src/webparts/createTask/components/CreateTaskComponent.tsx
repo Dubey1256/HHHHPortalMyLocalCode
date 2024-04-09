@@ -2020,7 +2020,7 @@ function CreateTaskComponent(props: any) {
                     />
                 )}
                 {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup context={props?.SelectedProp.Context} SDCTaskDetails={burgerMenuTaskDetails}
-                    sendApproverMail={sendApproverMail} AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
+                    sendApproverMail={sendApproverMail} AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} pageType={'createTask'}/> : ''}
             </div >
             {(SuggestedProjectsOfporfolio?.length > 0 || relevantProjects?.length > 0) ?
                 <span className="ms-4">
