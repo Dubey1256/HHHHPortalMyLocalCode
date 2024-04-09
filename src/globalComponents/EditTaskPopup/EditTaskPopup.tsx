@@ -2766,7 +2766,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
-                        if (checkStatusUpdate == 0  && UpdatedDataObject.Categories.indexOf('Immediate') != -1) {
+                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0  && UpdatedDataObject.Categories.indexOf('Immediate') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2804,7 +2804,7 @@ const EditTaskPopup = (Items: any) => {
 
                                 let DataForNotification: any = {
                                     ReceiverName: InfoItem?.Title,
-                                    sendUserEmail: [InfoItem?.Email],
+                                    sendUserEmail: ['alina.chyhasova@hochhuth-consulting.de','kristina.kovach@hochhuth-consulting.de'],
                                     Context: Items.context,
                                     ActionType: "Design",
                                     ReasonStatement: "",
@@ -2819,7 +2819,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
-                        if (checkStatusUpdate == 0 && UpdatedDataObject.Categories.indexOf('Design') != -1) {
+                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject.Categories.indexOf('Design') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2937,11 +2937,11 @@ const EditTaskPopup = (Items: any) => {
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
                             }
-                            // if (TaskDetailsFromCall[0].Categories == 'Design' && CalculateStatusPercentage == 90) {
-                            //     ValueStatus = CalculateStatusPercentage;
-                            //     setSendEmailNotification(true);
-                            //     Items.StatusUpdateMail = true;
-                            // }
+                            if (TaskDetailsFromCall[0].Categories.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
+                                ValueStatus = CalculateStatusPercentage;
+                                setSendEmailNotification(true);
+                                Items.StatusUpdateMail = true;
+                            }
                             else {
                                 setSendEmailComponentStatus(false);
                                 Items.StatusUpdateMail = false;
