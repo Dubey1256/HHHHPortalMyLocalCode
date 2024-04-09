@@ -47,7 +47,9 @@ const RelevantDocuments = (props: any, ref: any) => {
           let keydoc: any = [];
           if (Data?.length > 0) {
             Data?.map((item: any, index: any) => {
-              item.Title = getUploadedFileName(item?.Title);
+              if(item?.Title.includes(item?.File_x0020_Type)){
+                item.Title = getUploadedFileName(item?.Title);
+              }
               item.siteType = 'sp'
               item.Description = item?.Body
               if (item?.Title != undefined && item?.File_x0020_Type != undefined) {
