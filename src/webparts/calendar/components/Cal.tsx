@@ -775,10 +775,13 @@ const Apps = (props: any) => {
   }
   const handleNavigate = (newDate: any) => {
     const { year: currentYear, month: currentMonth } = getYearMonthFromDate(newDate);
-
     const filteredData = events.filter((event: any) => {
-      const { year, month } = getYearMonthFromDate(event.start);
-      return month === currentMonth && year === currentYear;
+      const startDate = getYearMonthFromDate(event.start);
+      const endDate = getYearMonthFromDate(event.end); 
+      return (
+        (startDate.year < currentYear || (startDate.year === currentYear && startDate.month <= currentMonth)) &&
+        (endDate.year > currentYear || (endDate.year === currentYear && endDate.month >= currentMonth))
+      );
     });
     localArr = processDataArray(filteredData);
     setRecurringEvents(filteredData);

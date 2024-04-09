@@ -114,7 +114,7 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
                 };
                 let web = new Web(props?.AllList?.SPSitesListUrl);
                 await web.lists
-                    .getById(props?.AllList?.SPSmartMetadataListID)
+                    .getById(props?.AllList?.SmartMetadataListID)
                     .items.getById(props?.restructureItem[0]?.Id)
                     .update(postData)
                     .then(async (res: any) => {
@@ -260,7 +260,7 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
                 };
             }
             await web.lists
-                .getById(props.AllList.SPSmartMetadataListID)
+                .getById(props.AllList.SmartMetadataListID)
                 .items.getById(props?.restructureItem[0]?.Id)
                 .update(postData)
                 .then(async (res: any) => {
@@ -272,13 +272,18 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
     };
     const closeRestructurePopup = () => {
         setResturuningOpen(false)
+        props.RestructureButton = false;
         restructureItemCallBack(props?.restructureItem[0], false, props?.restructureItem[0]?.TaxType);
+        props?.closeRestructurepopup();
+
     }
     const onRenderRestuctureSmartMetadata = () => {
         return (
             <>
-                <h3> Restucture Smartmetadata <span className="ml-auto"> <Tooltip ComponentId={'1630'} /></span>
-                </h3>
+                <div className='subheading siteColor'>
+                    Restructure SmartMetadata - {props?.restructureItem[0]?.Title}
+                </div>
+                <Tooltip ComponentId={'1630'} />
             </>
         );
     };
@@ -309,9 +314,6 @@ const RestructureSmartMetaData = (props: any, ref: any) => {
     }
     return (
         <>
-            {/* <button type="button" title="Restructure" className="btnCol btn btn-primary" style={{ backgroundColor: `${props.portfolioColor}`, borderColor: `${props.portfolioColor}`, color: '#fff' }}
-                onClick={buttonRestructureCheck}
-            >Restructure</button> */}
             {
                 ResturuningOpen === true && restructureItem?.length == 1 ?
                     <Panel
