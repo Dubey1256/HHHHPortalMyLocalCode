@@ -157,10 +157,11 @@ function PreSetDatePikerPannel2(props: any) {
                     </div>
                 </div>
                 <footer className='modal-footer'>
+                <button onClick={() => handleChangeData()} className="btn btn-primary ms-1">OK</button>
                     <button type="button" className="btn btn-default ms-1" style={{ backgroundColor: `${props?.portfolioColor}`, borderColor: `${props?.portfolioColor}` }} onClick={setModalIsOpenToFalse}>
                         Cancel
                     </button>
-                    <button onClick={() => handleChangeData()} className="btn btn-primary ms-1">OK</button>
+                  
                 </footer>
             </Panel>
         </>
