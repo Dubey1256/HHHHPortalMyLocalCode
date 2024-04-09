@@ -2217,7 +2217,7 @@ const TeamSmartFilter = (item: any) => {
                             </div>
                         </div>
                     </section>
-                    {collapseAll == false ? <section className="smartFilterSection p-0 mb-1 eventpannelorange ">
+                    {collapseAll == false ? <section className="smartFilterSection p-0 mb-1">
                         <div className="px-2">
                             <div className="togglebox">
                                 <label className="toggler full_width active">
@@ -2234,21 +2234,21 @@ const TeamSmartFilter = (item: any) => {
                                     <div className='col-7 p-0'>
                                         <div className='input-group alignCenter'>
                                             <label className="full-width form-label"></label>
-                                            <input  className="form-control" placeholder='Keywords' type='text' value={keyWordSearchTearm} onChange={handleInputChange}></input>
+                                            <input className="form-control" placeholder='Keywords' type='text' value={keyWordSearchTearm} onChange={handleInputChange}></input>
                                         </div></div>
                                     <div className='alignCenter mt-1'>
                                         <label className='SpfxCheckRadio me-3'>
-                                            <input  style={{ backgroundColor: `${portfolioColor}` }}  className='radio' type='radio' value="Allwords" checked={selectedKeyWordFilter === "Allwords"} onChange={() => setKeyWordSelected("Allwords")} /> All words
+                                            <input className='radio' type='radio' value="Allwords" checked={selectedKeyWordFilter === "Allwords"} onChange={() => setKeyWordSelected("Allwords")} /> All words
                                         </label>
                                         <label className='SpfxCheckRadio me-3'>
-                                            <input style={{ backgroundColor: `${portfolioColor}` }}  className='radio' type='radio' value="Anywords" checked={selectedKeyWordFilter === "Anywords"} onChange={() => setKeyWordSelected("Anywords")} /> Any words
+                                            <input className='radio' type='radio' value="Anywords" checked={selectedKeyWordFilter === "Anywords"} onChange={() => setKeyWordSelected("Anywords")} /> Any words
                                         </label>
                                         <label className='SpfxCheckRadio'>
-                                            <input style={{ backgroundColor: `${portfolioColor}` }} className='radio' type='radio' value="ExactPhrase" checked={selectedKeyWordFilter === "ExactPhrase"} onChange={() => setKeyWordSelected("ExactPhrase")} /> Exact Phrase
+                                            <input className='radio' type='radio' value="ExactPhrase" checked={selectedKeyWordFilter === "ExactPhrase"} onChange={() => setKeyWordSelected("ExactPhrase")} /> Exact Phrase
                                         </label>
                                         <span className='mx-2'> | </span>
                                         <label className='SpfxCheckRadio m-0'>
-                                            <input style={{ backgroundColor: `${portfolioColor}` }} className='radio' type='radio' value="Title" checked={selectedKeyDefultTitle === "Title"} onChange={() => setSelectedKeyDefultTitle("Title")} />Title
+                                            <input className='radio' type='radio' value="Title" checked={selectedKeyDefultTitle === "Title"} onChange={() => setSelectedKeyDefultTitle("Title")} />Title
                                         </label>
                                         {/* <span className='mx-2'>|</span>
                                         <input className='form-check-input me-1' type='checkbox' id='Component' value='Component' checked={isPortfolioItems} onChange={() => setIsPortfolioItems(!isPortfolioItems)} />Portfolio Items
@@ -2336,7 +2336,7 @@ const TeamSmartFilter = (item: any) => {
                                             <div className='alignCenter'>
                                                 {isSitesExpendShow === true ?
                                                     <SlArrowDown style={{ color: "#555555", width: '12px' }} /> : <SlArrowRight style={{ color: "#555555", width: '12px' }} />}
-                                                <span style={{ color: "#333333", }} className='ms-2 f-15 fw-semibold'>Sites</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{sitesCountInfo ? '- ' + sitesCountInfo : ''}</div>
+                                                <span style={{ color: "#333333" }} className='ms-2 f-15 fw-semibold'>Sites</span><div className="ms-2 f-14" style={{ color: "#333333" }}>{sitesCountInfo ? '- ' + sitesCountInfo : ''}</div>
                                             </div>
 
 
@@ -2590,25 +2590,25 @@ const TeamSmartFilter = (item: any) => {
                                 {isTeamMembersExpendShow === true ? <div className="togglecontent mb-3 ms-20 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #BDBDBD" }}>
                                     <Col className='mb-2 '>
                                         <label className='me-3'>
-                                            <input style={{backgroundColor: `${portfolioColor}`}} className='form-check-input' type="checkbox" value="isSelectAll" checked={isSelectAll} onChange={handleSelectAllChangeTeamSection} /> Select All
+                                            <input className='form-check-input' type="checkbox" value="isSelectAll" checked={isSelectAll} onChange={handleSelectAllChangeTeamSection} /> Select All
                                         </label>
                                         <label className='me-3'>
-                                            <input style={{backgroundColor: `${portfolioColor}`}} className='form-check-input' type="checkbox" value="isCretaedBy" checked={isCreatedBy} onChange={() => setIsCreatedBy(!isCreatedBy)} /> Created by
+                                            <input className='form-check-input' type="checkbox" value="isCretaedBy" checked={isCreatedBy} onChange={() => setIsCreatedBy(!isCreatedBy)} /> Created by
                                         </label>
                                         <label className='me-3'>
-                                            <input style={{backgroundColor: `${portfolioColor}`}} className='form-check-input' type="checkbox" value="isModifiedBy" checked={isModifiedby} onChange={() => setIsModifiedby(!isModifiedby)} /> Modified by
+                                            <input className='form-check-input' type="checkbox" value="isModifiedBy" checked={isModifiedby} onChange={() => setIsModifiedby(!isModifiedby)} /> Modified by
                                         </label>
                                         <label className='me-3'>
-                                            <input style={{backgroundColor: `${portfolioColor}`}} className='form-check-input' type="checkbox" value="isAssignedBy" checked={isAssignedto} onChange={() => setIsAssignedto(!isAssignedto)} /> Working Member
+                                            <input className='form-check-input' type="checkbox" value="isAssignedBy" checked={isAssignedto} onChange={() => setIsAssignedto(!isAssignedto)} /> Working Member
                                         </label>
                                         <label className='me-3'>
-                                            <input style={{backgroundColor: `${portfolioColor}`}} className='form-check-input' type="checkbox" value="isTeamLead" checked={isTeamLead} onChange={() => setIsTeamLead(!isTeamLead)} /> Team Lead
+                                            <input className='form-check-input' type="checkbox" value="isTeamLead" checked={isTeamLead} onChange={() => setIsTeamLead(!isTeamLead)} /> Team Lead
                                         </label>
                                         <label className='me-3'>
-                                            <input style={{backgroundColor: `${portfolioColor}`}} className='form-check-input' type="checkbox" value="isTeamMember" checked={isTeamMember} onChange={() => setIsTeamMember(!isTeamMember)} /> Team Member
+                                            <input className='form-check-input' type="checkbox" value="isTeamMember" checked={isTeamMember} onChange={() => setIsTeamMember(!isTeamMember)} /> Team Member
                                         </label>
                                         <label className='me-3'>
-                                            <input style={{backgroundColor: `${portfolioColor}`}} className='form-check-input' type="checkbox" value="isTodaysTask" checked={isTodaysTask} onChange={() => setIsTodaysTask(!isTodaysTask)} /> Working Today
+                                            <input className='form-check-input' type="checkbox" value="isTodaysTask" checked={isTodaysTask} onChange={() => setIsTodaysTask(!isTodaysTask)} /> Working Today
                                         </label>
                                     </Col>
                                     <div className="col-sm-12 pad0">
@@ -2764,7 +2764,7 @@ const TeamSmartFilter = (item: any) => {
                                                         <label className='mb-1 form-label full-width'>Start Date</label>
                                                         <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} dateFormat="dd/MM/yyyy" // Format as DD/MM/YYYY
                                                             className="form-control date-picker" popperPlacement="bottom-start" customInput={<ExampleCustomInput />}
-                                                             maxDate={endDate}
+                                                            maxDate={endDate}
                                                             renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled
                                                             }) => (<div style={{ margin: 10, display: "flex", justifyContent: "center" }}>
                                                                 <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>{"<"}</button>
@@ -2803,8 +2803,8 @@ const TeamSmartFilter = (item: any) => {
 
                             </div>
                         </div >
-                        <div className='full-width text-end full-width me-1 my-3 pe-2 text-end'><button style={{backgroundColor: `${portfolioColor}`, borderColor:'${portfolioColor}'}} className='btn btn-primary me-1 px-3 py-1' onClick={() => UpdateFilterData("udateClickTrue")}>Update Filter</button>
-                            <button style={{ borderColor:'${portfolioColor}'}} className='btn  btn-default px-3 py-1' onClick={ClearFilter}> Clear Filters</button></div>
+                        <div className='full-width text-end full-width me-1 my-3 pe-2 text-end'><button className='btn btn-primary me-1 px-3 py-1' onClick={() => UpdateFilterData("udateClickTrue")}>Update Filter</button>
+                            <button className='btn  btn-default px-3 py-1' onClick={ClearFilter}> Clear Filters</button></div>
                     </section> : ''}
 
                 </>}
