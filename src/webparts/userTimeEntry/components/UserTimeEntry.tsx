@@ -3282,6 +3282,7 @@ export default class UserTimeEntry extends React.Component<
       this.setState({ IsShareTimeEntry: true });
       if (this.state.ImageSelectedUsers.length == 1) {
         globalCommon.ShareTimeSheet(
+          this.state.resultSummary.totalTime,
           totalTimedata,
           AllTaskUser,
           this?.props?.Context,
