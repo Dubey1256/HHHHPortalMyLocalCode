@@ -920,8 +920,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               </div>
               {/* onKeyDown={this.handleKeyDown} onMouseDown={this.handleMouseClick} */}
               <span className='clintlist'>
-                <MentionsInput placeholder='Recipients Name' value={this.state?.mentionValue ? this.state?.mentionValue : ""} onChange={(e) => this.setMentionValue(e)}
-                  className="form-control"
+                <MentionsInput   placeholder='Recipients Name' value={this.state?.mentionValue ? this.state?.mentionValue : ""} onChange={(e) => this.setMentionValue(e)}
+                  className="form-control  "
                   classNames={mentionClass}>
                   <Mention trigger="@" data={this.mentionUsers} appendSpaceOnAdd={true} />
                   {/* {this.state.keyPressed && this.mentionUsers && this.state?.mentionValue ? 
