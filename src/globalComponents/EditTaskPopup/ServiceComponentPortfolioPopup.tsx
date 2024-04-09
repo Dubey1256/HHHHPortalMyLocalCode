@@ -796,7 +796,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             {/* <button type="button" className="btn btn-primary" onClick={() => OpenAddStructureModal()}>{showProject == true?"Add Project":"Add Structure"}</button> */}
             {  childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length<2 ?
                 <button type="button" className="btn btn-primary" style={{  color: "#fff" }} title=" Add Structure" onClick={() => OpenAddStructureModal()}>
-                    {" "}{showProject == true?"Add Project":"Add Structure"}{" "}</button> :
+                    {" "}{showProject == true?"Add PX":"Add Structure"}{" "}</button> :
                 <button type="button" disabled className="btn btn-primary" style={{ color: "#fff" }} title=" Add Structure"> {" "} Add Structure{" "}</button>
             }
 
