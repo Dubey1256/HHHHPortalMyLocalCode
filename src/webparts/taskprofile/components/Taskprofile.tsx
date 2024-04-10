@@ -2297,7 +2297,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       <dl>
 
                         <dt className='bg-Fa'>Portfolio Item</dt>
-                        <dd className='bg-Ff full-width'>
+                        <dd className='bg-Ff full-width columnFixedTitle'>
                           {this.state?.TagConceptPaper?.length > 0 &&
                             <a href={this.state?.TagConceptPaper[0].EncodedAbsUrl}>
                               <span className={`alignIcon svg__iconbox svg__icon--${this.state?.TagConceptPaper[0]?.File_x0020_Type}`} title={this.state?.TagConceptPaper[0]?.File_x0020_Type}></span>
@@ -2305,7 +2305,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           }
                           {this.state?.Result["Portfolio"] != null &&
 
-                            <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state?.Result["Portfolio"].Id}`}>
+                            <a className="hreflink text-content w-100" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state?.Result["Portfolio"].Id}`}>
 
                               {this.state?.Result["Portfolio"]?.Title}
 
@@ -2319,12 +2319,12 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Project</dt>
-                        <dd className='bg-Ff full-width'>
-                          <div>
-                            {ProjectData?.Title != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
+                        <dd className='bg-Ff full-width columnFixedTitle'>
+                       
+                            {ProjectData?.Title != undefined ? <a className="hreflink text-content w-100" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
                               <ReactPopperTooltipSingleLevel ShareWebId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
                             <span className="pull-right svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
-                          </div>
+                         
                         </dd>
                       </dl>
                       {isShowSiteCompostion && <dl className="Sitecomposition">
