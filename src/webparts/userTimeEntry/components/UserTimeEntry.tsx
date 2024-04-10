@@ -3362,7 +3362,7 @@ export default class UserTimeEntry extends React.Component<
                       <label>Select All </label>
                     </span>
                     <summary>
-                      <span className="fw-semibold f-15 fw-semibold">
+                      <span className="fw-semibold f-15 fw-semibold siteColor">
                         Team members
                       </span>
                     </summary>
@@ -3466,7 +3466,7 @@ export default class UserTimeEntry extends React.Component<
                   </details>
                   <details className="m-0" open>
                     <summary>
-                      <span className="fw-semibold f-15 fw-semibold">
+                      <span className="fw-semibold f-15 fw-semibold siteColor">
                         {" "}
                         Date
                       </span>{" "}
@@ -3638,7 +3638,7 @@ export default class UserTimeEntry extends React.Component<
                     <Row className="ps-30 mb-2">
                       <div className="col-2">
                         <div className="input-group">
-                          <label className="full-width">Start Date</label>
+                          <label className="full-width mb-1">Start Date</label>
                           <span>
                             <DatePicker
                               selected={this.state.startdate}
@@ -3654,7 +3654,7 @@ export default class UserTimeEntry extends React.Component<
                       </div>
                       <div className="col-2">
                         <div className="input-group">
-                          <label className="full-width">End Date</label>
+                          <label className="full-width mb-1">End Date</label>
                           <span>
                             <DatePicker
                               selected={this.state.enddate}
@@ -3701,7 +3701,7 @@ export default class UserTimeEntry extends React.Component<
                     <div className="togglebox">
                       <details open>
                         <summary>
-                          <span className="fw-semibold f-15 fw-semibold">
+                          <span className="fw-semibold f-15 fw-semibold siteColor">
                             {" "}
                             SmartSearch – Filters
                           </span>
@@ -3864,14 +3864,14 @@ export default class UserTimeEntry extends React.Component<
                   <div className="col text-end mb-2">
                     <button
                       type="button"
-                      className="btnCol btn btn-primary me-1"
+                      className="btnCol btn btn-primary me-2"
                       onClick={(e) => this.LoadAllTimeSheetaData()}
                     >
                       Update Filters
                     </button>
                     <button
                       type="button"
-                      className="btn btn-default me-1"
+                      className="btn btn-default me-2"
                       onClick={() => this.ClearFilters()}
                     >
                       Clear Filters
