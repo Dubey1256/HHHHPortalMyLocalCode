@@ -414,6 +414,11 @@ const TaskDashboard = (props: any) => {
                         if (task?.EstimatedTimeDescription != undefined && task?.EstimatedTimeDescription != '' && task?.EstimatedTimeDescription != null) {
                             EstimatedDesc = JSON.parse(task?.EstimatedTimeDescription)
                         }
+                        let workingAct:any=[]
+                        if (task?.WorkingAction != undefined && task?.WorkingAction != '' && task?.WorkingAction != null) {
+                            workingAct = JSON.parse(task?.WorkingAction)
+                            task.WorkingAction=workingAct;
+                        }
                         task.HierarchyData = [];
                         task.EstimatedTime = 0;
                         task.SmartPriority;
@@ -502,10 +507,26 @@ const TaskDashboard = (props: any) => {
                                 task.AllTeamMember.push(newuserdata);
                             });
                         });
-                        const isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
+                        let isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
                         const isImmediate = checkUserExistence('Immediate', task?.TaskCategories);
                         const isEmailNotification = checkUserExistence('Email Notification', task?.TaskCategories);
                         const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
+                       
+                        if (task?.WorkingAction?.length > 0) {
+                             task?.WorkingAction?.forEach((data:any) => {
+                               if (data?.Title === "Bottleneck") {
+                                isBottleneckTask=true;
+                                    // data?.InformationData?.forEach((userBottleneckTasks:any) => {
+                                    //      if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currenUserAssignedToUserId) {
+                                    //             // userBottleneckTasks.TaggedUsers.isBottleneck = true;
+                                    //             // AllBottleNeckTasks.push(userBottleneckTasks)
+                                    //             isBottleneckTask=true;
+                                    //         }
+                                    //   });
+                                 }
+                             });
+                        }
+  
                         if (isCurrentUserApprover && task?.PercentComplete == '1') {
                             approverTask.push(task)
                         }
@@ -627,7 +648,22 @@ const TaskDashboard = (props: any) => {
                 const isCurrentUserAssigned = task?.AssignedToIds?.includes(currentUserId);
                 const isImmediate = checkUserExistence('Immediate', task?.TaskCategories);
                 const isEmailNotfication = checkUserExistence('Email Notification', task?.TaskCategories);
-                const isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
+                let isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
+                let isBottleneckTaskNew = false;
+                if (task?.WorkingAction?.length > 0) {
+                    task?.WorkingAction?.forEach((data:any) => {
+                      if (data?.Title === "Bottleneck") {
+                       
+                           data?.InformationData?.forEach((userBottleneckTasks:any) => {
+                                if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currentUserId) {
+                                       // userBottleneckTasks.TaggedUsers.isBottleneck = true;
+                                       // AllBottleNeckTasks.push(userBottleneckTasks)
+                                       isBottleneckTaskNew=true;
+                                   }
+                             });
+                        }
+                    });
+               }
 
                 // Testing Only Please Remove Before deployement
                 // const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
@@ -644,7 +680,7 @@ const TaskDashboard = (props: any) => {
                 } else if (task?.workingThisWeek && (isCurrentUserAssigned)) {
                     workingThisWeekTask.push(task)
                     alreadyPushed = true;
-                } if (isBottleneckTask && (isCurrentUserAssigned)) {
+                } if ((isBottleneckTask && (isCurrentUserAssigned))||isBottleneckTaskNew ) {
                     bottleneckTask.push(task)
                     alreadyPushed = true;
                 } if (!alreadyPushed && (isCurrentUserAssigned)) {

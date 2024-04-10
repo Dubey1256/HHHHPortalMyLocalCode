@@ -291,8 +291,9 @@ const inlineEditingcolumns = (props: any) => {
           }
           if (
             metadata.Title == "Immediate" ||
-            metadata.Title == "Bottleneck" ||
             metadata.Title == "Favorite"
+            // metadata.Title == "Bottleneck" ||
+           
           ) {
             impSharewebCategories.push(metadata);
           }
@@ -1225,14 +1226,14 @@ const inlineEditingcolumns = (props: any) => {
                   </a>
                 );
               }
-              if (category?.Title == "Bottleneck") {
-                return (
-                  <a title="Bottleneck">
-                    {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/bottleneck.svg")} />  */}
-                    <span className=" svg__iconbox svg__icon--bottleneck alignIcon "></span>
-                  </a>
-                );
-              }
+              // if (category?.Title == "Bottleneck") {
+              //   return (
+              //     <a title="Bottleneck">
+              //       {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/bottleneck.svg")} />  */}
+              //       <span className=" svg__iconbox svg__icon--bottleneck alignIcon "></span>
+              //     </a>
+              //   );
+              // }
               if (category?.Title == "Favorite") {
                 return (
                   <a title="Favorite">
@@ -1664,6 +1665,7 @@ const inlineEditingcolumns = (props: any) => {
           {props?.mypriority != true &&
             <>
               {impTaskCategoryType?.map((option) => (
+                 option.Title !== 'Bottleneck' && (
                 <div
                   className={
                     ServicesTaskCheck ? "serviepannelgreena d-flex" : "d-flex"
@@ -1684,11 +1686,11 @@ const inlineEditingcolumns = (props: any) => {
                     ) : (
                       ""
                     )}
-                    {option.Title == "Bottleneck" ? (
+                    {/* {option.Title == "Bottleneck" ? (
                       <span className="workmember svg__iconbox svg__icon--bottleneck "></span>
                     ) : (
                       ""
-                    )}
+                    )} */}
                     {option.Title == "Favorite" ? (
                       <span className="workmember svg__iconbox svg__icon--Star "></span>
                     ) : (
@@ -1698,7 +1700,7 @@ const inlineEditingcolumns = (props: any) => {
                   <label htmlFor={option.Id} className="ms-2">
                     {option.Title}
                   </label>
-                </div>
+                </div>)
               ))}
             </>
           }

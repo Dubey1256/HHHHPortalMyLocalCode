@@ -304,7 +304,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [showPaginationSetting, setShowPaginationSetting] = React.useState(false);
     const [tableSettingPageSize, setTableSettingPageSize] = React.useState(items?.pageSize ? items?.pageSize : 0);
     const [smartFabBasedColumnsSettingToggle, setSmartFabBasedColumnsSettingToggle] = React.useState(false);
-    const [smartFabBasedColumnsSetting, setSmartFabBasedColumnsSetting] = React.useState([]);
+    const [smartFabBasedColumnsSetting, setSmartFabBasedColumnsSetting] = React.useState(items?.smartFavTableConfig != undefined && items?.smartFavTableConfig?.length > 0 ? items?.smartFavTableConfig : []);
     // const [settingConfrigrationData, setSettingConfrigrationData] = React.useState([]);
     let MyContextdata: any = React.useContext(myContextValue)
     React.useEffect(() => {
