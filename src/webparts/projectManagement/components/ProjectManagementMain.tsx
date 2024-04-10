@@ -362,13 +362,13 @@ const ProjectManagementMain = (props: any) => {
               const suggestedKeywords = fetchedProject?.Title.toLowerCase().split(/\s+/);
               if (suggestedKeywords.length > 0) {
                 suggestedPortfolioItems = MasterListData.filter((masterItm: any) => {
-                    const titleWords = masterItm?.Title.toLowerCase();
-                    const includesAnyKeyword = suggestedKeywords.some((keyword: any) => titleWords.includes(keyword));
-                    const isNotMatchingTitles = titleWords !== fetchedProject?.Title.toLowerCase() && titleWords !== 'latest annual report';
-                    return includesAnyKeyword && isNotMatchingTitles
+                  const titleWords = masterItm?.Title.toLowerCase();
+                  const includesAnyKeyword = suggestedKeywords.some((keyword: any) => titleWords.includes(keyword));
+                  const isNotMatchingTitles = titleWords !== fetchedProject?.Title.toLowerCase() && titleWords !== 'latest annual report';
+                  return includesAnyKeyword && isNotMatchingTitles
                 });
+              }
             }
-          }
             projectData = fetchedProject;
             if (loadtask == true) {
               LoadAllSiteTasks();
@@ -678,15 +678,15 @@ const ProjectManagementMain = (props: any) => {
           }
           suggestedPortfolioItems = suggestedPortfolioItems.filter((itms: any) => {
             if (smartPortfoliosData !== undefined || taskTaggedComponents !== undefined) {
-                const isKeyTitleMatch = smartPortfoliosData.some((tagPort: any) => tagPort?.Title === itms?.Title); 
-                const isRelevantTitleMatch = taskTaggedComponents.some((taskTag: any) => taskTag?.Title === itms?.Title);
-                const isProjectOrSprint = itms?.Item_x0020_Type === 'Project' || itms?.Item_x0020_Type === 'Sprint';    
-                if (isKeyTitleMatch || isRelevantTitleMatch || isProjectOrSprint) {
-                    return false;
-                }
+              const isKeyTitleMatch = smartPortfoliosData.some((tagPort: any) => tagPort?.Title === itms?.Title);
+              const isRelevantTitleMatch = taskTaggedComponents.some((taskTag: any) => taskTag?.Title === itms?.Title);
+              const isProjectOrSprint = itms?.Item_x0020_Type === 'Project' || itms?.Item_x0020_Type === 'Sprint';
+              if (isKeyTitleMatch || isRelevantTitleMatch || isProjectOrSprint) {
+                return false;
+              }
             }
             return itms?.Item_x0020_Type !== 'Project' && itms?.Item_x0020_Type !== 'Sprint';
-        });
+          });
           items.PortfolioTitle = '';
           items.portfolio = items?.Portfolio;
           items.PortfolioTitle = items?.Portfolio?.Title;
@@ -749,7 +749,7 @@ const ProjectManagementMain = (props: any) => {
       if (projectData?.subRows?.length > 0 && projectData?.Item_x0020_Type == "Project") {
         allSprints = projectData?.subRows
         allSprints?.map((Sprint: any) => {
-          
+
           let allSprintActivities: any = []
           allSprintActivities = AllTask.filter((task: any) => {
             if (task?.TaskType?.Id == 1 && task?.Project?.Id == Sprint?.Id) {
@@ -959,7 +959,7 @@ const ProjectManagementMain = (props: any) => {
         let filteredSmartPortfolios = propsItems?.taggedPortfolios.filter((tagPort: any) => tagPort?.Id !== undefined).map((tagPort: any) => smartPortfoliosData.find((port: any) => port?.Id === tagPort?.Id));
         smartPortfoliosData = filteredSmartPortfolios
       }
-    }  
+    }
     if (propsItems?.Item_x0020_Type == "Project") {
       setMasterdata(propsItems)
     } else if (propsItems?.Item_x0020_Type == "Sprint") {
@@ -984,8 +984,8 @@ const ProjectManagementMain = (props: any) => {
       setIsOpenWorkstream(false)
       LoadAllSiteTasks();
     }
-      setIsComponent(false);
-      GetMasterData(false)
+    setIsComponent(false);
+    GetMasterData(false)
   };
 
   const LoadAllSiteAllTasks = async function () {
@@ -1080,7 +1080,7 @@ const ProjectManagementMain = (props: any) => {
   const switchFlatViewData = (data?: any | null, workingToday?: boolean | null) => {
     let groupedDataItems = [];
     if (workingToday == undefined) {
-   
+
       try {
         groupedDataItems = JSON.parse(JSON.stringify(data));
       } catch (e) {
@@ -1099,10 +1099,10 @@ const ProjectManagementMain = (props: any) => {
     } else {
       if (workingToday) {
         groupedDataItems = globalCommon.deepCopy(backupTableData);
-        let flattenedData :any = []
-        try{
+        let flattenedData: any = []
+        try {
           flattenedData = flattenData(groupedDataItems)
-        }catch(e){
+        } catch (e) {
 
         }
         let filteredTodayTak = flattenedData?.filter((task: any) => {
@@ -1118,7 +1118,7 @@ const ProjectManagementMain = (props: any) => {
       }
       setWorkingTodayFiltered(workingToday)
     }
-  
+
 
     // setProjectTableData(smartAllFilterData);
   }
@@ -1180,22 +1180,25 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         resetSorting: false,
         resetColumnFilters: false,
-        size: 50
+        size: 50,
+        isColumnVisible: true
       },
       {
         accessorKey: "TaskID",
-        placeholder: "Task Id",
-        header: "",
-        resetColumnFilters: false,
-        resetSorting: false,
-        size: 125,
-        cell: ({ row, getValue }) => (
+                cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
               <ReactPopperTooltipSingleLevel AllListId={AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </>
         ),
+        id:"TaskID",
+        placeholder: "Task Id",
+        header: "",
+        resetColumnFilters: false,
+        resetSorting: false,
+        size: 125,
+        isColumnVisible: true
       },
       {
         accessorFn: (row) => row?.Title,
@@ -1250,6 +1253,7 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         resetSorting: false,
         header: "",
+        isColumnVisible: true
       },
 
       {
@@ -1270,7 +1274,8 @@ const ProjectManagementMain = (props: any) => {
         placeholder: "Portfolio Item",
         resetColumnFilters: false,
         resetSorting: false,
-        header: ""
+        header: "",
+        isColumnVisible: true
       },
       {
         accessorFn: (row) => row?.TaskTypeValue,
@@ -1311,6 +1316,7 @@ const ProjectManagementMain = (props: any) => {
         id: 'Priority',
         header: "",
         resetColumnFilters: false,
+        isColumnVisible: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.PriorityRank == filterValue
         },
@@ -1325,6 +1331,7 @@ const ProjectManagementMain = (props: any) => {
         id: "SmartPriority",
         placeholder: "SmartPriority",
         resetColumnFilters: false,
+        isColumnVisible: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.SmartPriority == filterValue
         },
@@ -1345,8 +1352,9 @@ const ProjectManagementMain = (props: any) => {
         ),
         id: 'DueDate',
         resetColumnFilters: false,
-        isColumnDefultSortingDesc: true,
+
         resetSorting: false,
+        isColumnVisible: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.DisplayDueDate?.includes(filterValue)
         },
@@ -1387,6 +1395,7 @@ const ProjectManagementMain = (props: any) => {
         id: 'PercentComplete',
         placeholder: "% Complete",
         resetColumnFilters: false,
+        isColumnVisible: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.PercentComplete == filterValue
         },
@@ -1413,7 +1422,8 @@ const ProjectManagementMain = (props: any) => {
         resetSorting: false,
         placeholder: "TeamMembers",
         header: "",
-        size: 110
+        size: 110,
+        isColumnVisible: true
       },
       {
         accessorFn: (row) => row?.SmartInformationTitle,
@@ -1427,7 +1437,8 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         placeholder: "Remarks",
         header: '',
-        size: 50
+        size: 50,
+        isColumnVisible: true
       },
 
       {
@@ -1456,6 +1467,7 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Created",
+        isColumnVisible: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
             return true
@@ -1492,6 +1504,7 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Modified",
+        isColumnVisible: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
             return true
@@ -1512,6 +1525,7 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         resetColumnFilters: false,
         size: 49,
+        isColumnVisible: true
       },
       {
         header: ({ table }: any) => (
@@ -1541,11 +1555,11 @@ const ProjectManagementMain = (props: any) => {
       },
       {
         cell: ({ row }) => (
-          <>
+          <div className="text-end">
             {row?.original?.TaskType != undefined &&
-            (row?.original?.TaskType?.Title == "Activities" ||
-              row?.original?.TaskType?.Title == "Workstream" ||
-              row?.original?.TaskType?.Title == "Task") ? (
+              (row?.original?.TaskType?.Title == "Activities" ||
+                row?.original?.TaskType?.Title == "Workstream" ||
+                row?.original?.TaskType?.Title == "Task") ? (
               <>
                 <span
                   onClick={(e) => EditDataTimeEntry(e, row.original)}
@@ -1565,7 +1579,7 @@ const ProjectManagementMain = (props: any) => {
                 className="alignIcon svg__iconbox svg__icon--edit hreflink"
               ></span>
             )}
-          </>
+          </div>
         ),
         id: "EditPopup",
         accessorKey: "",
@@ -1638,7 +1652,7 @@ const ProjectManagementMain = (props: any) => {
     const searchQuery = e?.target?.value
     setSuggestedItems(searchQuery);
     const filteredPortfolioItems = suggestedPortfolioItems.filter((item: any) =>
-        item?.Title.toLowerCase().includes(searchQuery.toLowerCase())
+      item?.Title.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setSuggestedPortfolios(searchQuery === '' ? suggestedPortfolioItems : filteredPortfolioItems);
   }
@@ -1654,14 +1668,14 @@ const ProjectManagementMain = (props: any) => {
               >
                 <ul className="spfxbreadcrumb mb-2 ms-2 mt-16 p-0">
                   <li>
-                    <a href={`${props?.siteUrl}/SitePages/PX-Overview.aspx`}>
-                      Project Management
+                    <a data-interception="off" target="_blank" href={`${props?.siteUrl}/SitePages/PX-Overview.aspx`}>
+                      PX Management Overview
                     </a>
                   </li>
                   {Masterdata?.Item_x0020_Type != "Project" && Masterdata?.Parent?.Title ?
                     <li>
                       {" "}
-                      <a data-interception="off" href={`${props?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${Masterdata?.Parent?.Id}`}>{Masterdata?.Parent?.Title}</a>{" "}
+                      <a data-interception="off" target="_blank" href={`${props?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${Masterdata?.Parent?.Id}`}>{Masterdata?.Parent?.Title}</a>{" "}
                     </li> : ''}
                   <li>
                     {" "}
@@ -1695,94 +1709,94 @@ const ProjectManagementMain = (props: any) => {
                           </a>
                         </li>
                         <li className="nav__item  pb-1 pt-0 mt-1">
-                        <div className="nav__text">
-                        <>
-                        {Masterdata?.taggedPortfolios?.length > 0 ? (
-                          <div>
-                          <span className="nav__text">Key Portfolio Items</span>
-                            <ul className="nav__subList wrapper ps-0 pe-2">
-                              {Masterdata?.taggedPortfolios?.map((component: any, index: any) => {
-                                return (
-                                  <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
-                                    <span>
-                                      <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank" onClick={() => filterPotfolioTasks(component, index, "Component")}>
-                                        {component?.Title}
-                                      </a>
-                                    </span>
-                                  </li>
-                                )
-                              })}
-                            </ul>
-                        </div>
-                        ) : (
-                        <>
-                        <span className="nav__text">Key Portfolio Items</span>  
-                          <div className="nontag mt-2 text-center">
-                              No Tagged Portfolio
-                          </div>
-                        </>  
-                        )}
-                        {TaskTaggedPortfolios?.length > 0 ? (
-                          <div>
-                          <span className="nav__text">Relevant Portfolio Items</span>
-                          <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar">
-                            {TaskTaggedPortfolios?.map((component: any, index: any) => {
-                              return (
-                                <li key={index} className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
-                                  <div className="alignCenter">
-                                    <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank" onClick={() => filterPotfolioTasks(component, index, "taskComponent")}>
-                                      {component?.Title}
-                                    </a>
-                                  <span
-                                  className="ml-auto wid30 svg__iconbox svg__icon--Plus light hreflink"
-                                  onClick={(e) =>
-                                  ComponentServicePopupCallBack([component],'','')}
-                                  >
-                                  </span>
+                          <div className="nav__text">
+                            <>
+                              {Masterdata?.taggedPortfolios?.length > 0 ? (
+                                <div>
+                                  <span className="nav__text">Key Portfolio Items</span>
+                                  <ul className="nav__subList wrapper ps-0 pe-2">
+                                    {Masterdata?.taggedPortfolios?.map((component: any, index: any) => {
+                                      return (
+                                        <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
+                                          <span>
+                                            <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="_blank" onClick={() => filterPotfolioTasks(component, index, "Component")}>
+                                              {component?.Title}
+                                            </a>
+                                          </span>
+                                        </li>
+                                      )
+                                    })}
+                                  </ul>
+                                </div>
+                              ) : (
+                                <>
+                                  <span className="nav__text">Key Portfolio Items</span>
+                                  <div className="nontag mt-2 text-center">
+                                    No Tagged Portfolio
                                   </div>
-                                </li>
-                                )
-                              })}
-                          </ul>
-                        </div>
-                        ) : (
-                          <>
-                        <span className="nav__text">Relevant Portfolio Items</span>  
-                          <div className="nontag mt-2 text-center">
-                              No Tagged Portfolio
-                          </div>
-                          </>
-                        )}
-                        <div>
-                        <span className="nav__text">Suggested Portfolio Items</span>
-                          <input
-                            type="search"
-                            value={suggestedItems}
-                            onChange={(e) => searchSuggestedPortfolio(e)}
-                            placeholder="Search Suggested Portfolio Items"
-                            className="bg-transparent full-width px-1 py-0 mt-1 text-bg-secondary"
-                          />
-                             {suggestedPortfolios?.length > 0 ? (
-                              <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar mt-2">
-                                {suggestedPortfolios?.map(
-                                  (component: any, index: any) => (
-                                    <li
-                                      key={index}
-                                      className={
-                                      component?.Id ==
-                                      createTaskId?.portfolioData?.Id
-                                      ? "nav__item bg-ee ps-1"
-                                      : "mb-1 bg-shade hreflink"
-                                      }
-                                    >
-                                      <div className="alignCenter">
-                                        <a
+                                </>
+                              )}
+                              {TaskTaggedPortfolios?.length > 0 ? (
+                                <div>
+                                  <span className="nav__text">Relevant Portfolio Items</span>
+                                  <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar">
+                                    {TaskTaggedPortfolios?.map((component: any, index: any) => {
+                                      return (
+                                        <li key={index} className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
+                                          <div className="alignCenter">
+                                            <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank" onClick={() => filterPotfolioTasks(component, index, "taskComponent")}>
+                                              {component?.Title}
+                                            </a>
+                                            <span
+                                              className="ml-auto wid30 svg__iconbox svg__icon--Plus light hreflink"
+                                              onClick={(e) =>
+                                                ComponentServicePopupCallBack([component], '', '')}
+                                            >
+                                            </span>
+                                          </div>
+                                        </li>
+                                      )
+                                    })}
+                                  </ul>
+                                </div>
+                              ) : (
+                                <>
+                                  <span className="nav__text">Relevant Portfolio Items</span>
+                                  <div className="nontag mt-2 text-center">
+                                    No Tagged Portfolio
+                                  </div>
+                                </>
+                              )}
+                              <div>
+                                <span className="nav__text">Suggested Portfolio Items</span>
+                                <input
+                                  type="search"
+                                  value={suggestedItems}
+                                  onChange={(e) => searchSuggestedPortfolio(e)}
+                                  placeholder="Search Suggested Portfolio Items"
+                                  className="bg-transparent full-width px-1 py-0 mt-1 text-bg-secondary"
+                                />
+                                {suggestedPortfolios?.length > 0 ? (
+                                  <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar mt-2">
+                                    {suggestedPortfolios?.map(
+                                      (component: any, index: any) => (
+                                        <li
+                                          key={index}
                                           className={
                                             component?.Id ==
-                                            createTaskId?.portfolioData?.Id
-                                            ? "hreflink "
-                                            : "text-white hreflink"
+                                              createTaskId?.portfolioData?.Id
+                                              ? "nav__item bg-ee ps-1"
+                                              : "mb-1 bg-shade hreflink"
                                           }
+                                        >
+                                          <div className="alignCenter">
+                                            <a
+                                              className={
+                                                component?.Id ==
+                                                  createTaskId?.portfolioData?.Id
+                                                  ? "hreflink "
+                                                  : "text-white hreflink"
+                                              }
                                               data-interception="off"
                                               target="blank"
                                               onClick={() =>
@@ -1812,14 +1826,14 @@ const ProjectManagementMain = (props: any) => {
                                   </ul>
                                 ) : (
                                   <>
-                                  <div className="nontag mt-2 text-center">
-                                    No Tagged Portfolio
-                                  </div>
-                                </>
-                              )}
-                            </div>
-                        </>
-                        </div>
+                                    <div className="nontag mt-2 text-center">
+                                      No Tagged Portfolio
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            </>
+                          </div>
                         </li>
                       </ul>
                     </nav>
@@ -2058,6 +2072,8 @@ const ProjectManagementMain = (props: any) => {
                                   bulkEditIcon={true} setData={setProjectTableData} setLoaded={setPageLoader}
                                   customTableHeaderButtons={customTableHeaderButtons}
                                   showRestructureButton={true}
+                                  columnSettingIcon={true}
+                                  tableId="pxlandingpage"
                                   switchGroupbyData={switchGroupbyData}
                                   restructureCallBack={callBackData1}
                                   ref={childRef} callChildFunction={callChildFunction}
