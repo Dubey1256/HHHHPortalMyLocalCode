@@ -18,7 +18,7 @@ import {
     Panel,
     PanelType
 } from "office-ui-fabric-react";
-
+import { LuBellPlus } from "react-icons/lu";
 import { FaExpandAlt } from "react-icons/fa";
 import { RiDeleteBin6Line, RiH6 } from "react-icons/ri";
 import { SlArrowDown, SlArrowRight, SlUserUnfollow } from "react-icons/sl";
@@ -7171,10 +7171,10 @@ const EditTaskPopup = (Items: any) => {
 
                                                                         <div className="alignCenter">
                                                                             <span
-                                                                                className="hover-text m-0 alignIcon"
+                                                                                className="hover-text m-1"
                                                                                 onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
                                                                             >
-                                                                                <span className="svg__iconbox svg__icon--clock dark"></span>
+                                                                            <LuBellPlus></LuBellPlus>
                                                                                 <span className="tooltip-text pop-left">
                                                                                     Send reminder notifications
                                                                                 </span>
@@ -7286,9 +7286,9 @@ const EditTaskPopup = (Items: any) => {
                                                                         <div className="alignCenter">
                                                                             <span
                                                                                 onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
-                                                                                className="hover-text m-0 alignIcon"
+                                                                                className="hover-text m-1"
                                                                             >
-                                                                                <span className="svg__iconbox svg__icon--clock dark"></span>
+                                                                               <LuBellPlus></LuBellPlus>
                                                                                 <span className="tooltip-text pop-left">
                                                                                     Send reminder notifications
                                                                                 </span>
