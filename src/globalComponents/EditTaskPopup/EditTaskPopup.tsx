@@ -2712,9 +2712,9 @@ const EditTaskPopup = (Items: any) => {
                                 const reactElement = React.createElement(emailMessage?.type, emailMessage?.props);
                                 ReactDOM.render(reactElement, containerDiv);
 
-                                    const SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> 
+                                const SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> 
                                 </br> 
-                                    <b>Task Details :</b> ${containerDiv.innerHTML}
+                                    ${containerDiv.innerHTML}
                                     <p>
                                     Task Link:  
                                     <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
