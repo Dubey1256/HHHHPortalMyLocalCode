@@ -2641,7 +2641,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         // This is used for send MS Teams Notification 
-                        if (TaskCategories !== "Bottleneck" && UpdatedDataObject.Categories.indexOf('Immediate') != -1 && UpdatedDataObject.Categories.indexOf('Design') != -1) {
+                        if (TaskCategories !== "Bottleneck" || UpdatedDataObject.Categories.indexOf('Immediate') != -1 || UpdatedDataObject.Categories.indexOf('Design') != -1) {
                             try {
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
