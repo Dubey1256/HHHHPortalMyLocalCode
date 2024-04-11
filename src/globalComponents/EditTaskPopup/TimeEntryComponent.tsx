@@ -1595,11 +1595,11 @@ function reverseArray(arr: any) {
     });
 
     function findCategoryById(data: any, categoryId: any): any | null {
-      let foundCategoryId: any = null;
+      let foundCategoryId: any = [];
 
       data.forEach((categoryData: { Id: any; Category: { Id: any } }) => {
         if (categoryData.Category.Id === categoryId) {
-          foundCategoryId = categoryData.Id;
+          foundCategoryId = categoryData;
         }
       });
 
@@ -1626,13 +1626,13 @@ function reverseArray(arr: any) {
             var listNames = listName;
             var listUri: string = `${RelativeUrl}/Lists/${listNames}`;
           }
-          if (foundCategory) {
+          if (foundCategory.length > 0) {
             let isAvailble = false;
             let count = 0
-            mainParentId = foundCategory;
+            mainParentId = foundCategory?.Id;
             mainParentTitle = checkCategories;
-            data?.forEach((val: any) => {
-              val?.subRows.forEach(async (items: any) => {
+           
+              foundCategory?.subRows?.forEach(async (items: any) => {
                   if (!isAvailble && items.AuthorId === CurntUserId) {
                       count++;
                       isAvailble = true;
@@ -1662,12 +1662,12 @@ function reverseArray(arr: any) {
                       update["TaskDate"] = Moment(Datee).format("DD/MM/YYYY");
                       update["Description"] = postData?.Description;
           
-                      val.AdditionalTime.push(update);
+                      foundCategory.AdditionalTime.push(update);
           
                       var ListId = items.siteType === "Migration" || items.siteType === "ALAKDigital" ? TimeSheetlistId : TimeSheetlistId;
           
                       await web.lists.getById(ListId).items.getById(NewparentId).update({
-                          AdditionalTimeEntry: JSON.stringify(val.AdditionalTime),
+                          AdditionalTimeEntry: JSON.stringify(foundCategory.AdditionalTime),
                           TimesheetTitleId: NewMainparentId,
                       }).then((res: any) => {
                           console.log(res);
@@ -1675,7 +1675,7 @@ function reverseArray(arr: any) {
                       });
                   }
               });
-          });
+          
          
            
              if (!isAvailble) {
@@ -3816,12 +3816,12 @@ function reverseArray(arr: any) {
       </Panel>
       {isAlertVisible ?
         <CustomAlert
-          hidden={!isAlertVisible}
-          toggleDialog={toggleDialog}
-          message="You are not part of Team members of this site. Please click here to add yourself or contact the site administrator."
-          linkText="Please Click Here!"
-          linkUrl="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskUser-Management.aspx"
-        /> : null
+        hidden={!isAlertVisible}
+        toggleDialog={toggleDialog}
+        message="You are not part of Team members of this site. Please click here to add yourself or contact the site administrator."
+        linkText="Click Here!"
+        linkUrl={`${CurrentSiteUrl}/SitePages/TaskUser-Management.aspx`}
+      /> : null
       }
     </div>
   );

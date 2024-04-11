@@ -9,6 +9,7 @@ import ImageTabComponenet from '../../taskprofile/components/ImageTabComponent';
 import VersionHistory from '../../../globalComponents/VersionHistroy/VersionHistory';
 import PageLoader from '../../../globalComponents/pageLoader';
 import moment from 'moment';
+import * as globalCommon from '../../../globalComponents/globalCommon'
 let modaltype: any;
 let SitesConfig: any[] = []
 let allSitesTask: any[] = []
@@ -62,12 +63,15 @@ export default function SmartMetadataEditPopup(props: any) {
         props.CloseEditSmartMetaPopup();
     }
     const handleTabChange = (tab: any) => {
+        if (tab === "TaskInfo") {
+            loadtaggedTasks();
+        }
         setActiveTab(tab);
     };
     const loaddropdown = async () => {
         try {
             const web = new Web(props?.AllList?.SPSitesListUrl);
-            const fieldsData = await web.lists.getById(props.AllList.SPSmartMetadataListID).fields.filter("EntityPropertyName eq 'Status'").select('Choices').get();
+            const fieldsData = await web.lists.getById(props.AllList.SmartMetadataListID).fields.filter("EntityPropertyName eq 'Status'").select('Choices').get();
             if (fieldsData && fieldsData[0].Choices) {
                 setDropdownArray(fieldsData[0].Choices);
                 console.log('DropdownArray', dropdownArray);
@@ -78,20 +82,6 @@ export default function SmartMetadataEditPopup(props: any) {
             console.error('Error loading dropdown:', error);
         }
     };
-    // const loadSmartfilters = async () => {
-    //     try {
-    //         const web = new Web(props?.AllList?.SPSitesListUrl);
-    //         const fieldsData = await web.lists.getById(props.AllList.SPSmartMetadataListID).fields.filter("EntityPropertyName eq 'SmartFilters'").select('Choices').get();
-    //         if (fieldsData && fieldsData[0].Choices) {
-    //             setDropdownArraySmartfilter(fieldsData[0].Choices);
-    //             console.log('DropdownArray', dropdownArraySmartfilter);
-    //         } else {
-    //             console.error('No Choices found');
-    //         }
-    //     } catch (error) {
-    //         console.error('Error loading dropdown:', error);
-    //     }
-    // };
     const getChilds = (item: any, items: any) => {
         item.childs = [];
         items.forEach((childItem: any) => {
@@ -114,7 +104,7 @@ export default function SmartMetadataEditPopup(props: any) {
         if (deleteConfirmation) {
             let web = new Web(props?.AllList?.SPSitesListUrl);
             await web.lists
-                .getById(props?.AllList?.SPSmartMetadataListID)
+                .getById(props?.AllList?.SmartMetadataListID)
                 .items.getById(item.Id)
                 .delete()
                 .then((i) => {
@@ -123,119 +113,26 @@ export default function SmartMetadataEditPopup(props: any) {
                 });
         }
     };
-    const LoadAllMetaData = async () => {
-        try {
-            SitesConfig = [];
-            const web = new Web(props?.AllList?.SPSitesListUrl);
-            const query = `(TaxType eq 'Categories') or (TaxType eq 'Sites')`
-            const select = `Id,Title,TaxType,listId`;
-            const AllMetaData = await web.lists.getById(props.AllList.SPSmartMetadataListID).items.select(select).filter(query).getAll()
-            SitesConfig = getSmartMetadataItemsByTaxType(AllMetaData, 'Sites');
-            for (var i = 0; i < SitesConfig.length; i++) {
-                if (SitesConfig[i].listId == undefined || SitesConfig[i].Title == 'Master Tasks') {
-                    SitesConfig.splice(i, 1);
-                    i--;
+    const loadtaggedTasks = async () => {
+        const TaggedTasks: any = []
+        setloaded(true);
+        SitesConfig = await globalCommon?.loadAllSiteTasks(props?.AllList, undefined);
+        SitesConfig.filter((item: any) => {
+            if (item.Categories !== null && item.Categories !== undefined) {
+                if (props?.modalInstance?.TaxType === "Categories" && item?.Categories === props?.modalInstance?.Title) {
+                    item.Modified = (item.Modified !== "" && item.Modified !== undefined) ? moment(item.Modified).format("DD/MM/YYYY") : ''
+                    item.Created = (item.Created !== "" && item.Created !== undefined) ? moment(item.Created).format("DD/MM/YYYY") : ''
+                    item.DueDate = (item.DueDate !== "" && item.Created !== undefined) ? moment(item.DueDate).format("DD/MM/YYYY") : ''
+                    TaggedTasks.push(item)
                 }
+
             }
-            loadAllSitesTask();
-        } catch (error: any) {
-            console.error(error);
-        };
-    }
-    const loadAllSitesTask = async () => {
-        try {
-            //const filters = CategoryTitle ? `SharewebCategories/Id eq '${CategoryTitle}'` : '';
-            allCalls = [];
-            allCalls = SitesConfig.map((site) => {
-                let web = new Web(props.AllList.SPSitesListUrl);
-                return web.lists.getById(site.listId).items.select(`Id,Title,SharewebTaskLevel1No,SharewebTaskLevel2No,SharewebTaskType/Id,SharewebTaskType/Title,Component/Id,Services/Id,Events/Id,PercentComplete,ComponentId,ServicesId,EventsId,Priority_x0020_Rank,DueDate,Created,TaskID,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/Id,ParentTask/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title`).expand('AssignedTo', 'Author', 'Editor', 'Component', 'Services', 'Events', 'Team_x0020_Members', 'ParentTask', 'SharewebCategories', 'Responsible_x0020_Team', 'SharewebTaskType')
-                    .getAll();
-            });
-            setloaded(true);
-            const success = await Promise.all(allCalls);
-            allSitesTask = [];
-            success.forEach((val) => {
-                val.forEach((item: any) => {
-                    if (item?.SharewebCategories.length > 0) {
-                        item.SharewebCategories.forEach((cate: any) => {
-                            if (cate.Id === CategoryTitle) {
-                                item.Created = item.Created !== null ? moment(item?.Created).format("DD/MM/YYYY") : '';
-                                item.DueDate = item.DueDate !== null ? moment(item?.DueDate).format("DD/MM/YYYY") : '';
-                                item.Modified = item.Modified !== null ? moment(item?.Modified).format("DD/MM/YYYY") : '';
-                                if (item.ComponentId.length > 0) {
-                                    item['Portfoliotype'] = 'Component';
-                                } else if (item.ServicesId.length > 0) {
-                                    item['Portfoliotype'] = 'Service';
-                                } else if (item.EventsId.length > 0) {
-                                    item['Portfoliotype'] = 'Event';
-                                }
-                                if (item.PercentComplete != undefined) {
-                                    item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
-                                } else if (item.PercentComplete != undefined)
-                                    item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
-                                else
-                                    item.PercentComplete = 0;
-                                if (item.ComponentId.length > 0) {
-                                    item.Portfoliotype = 'Component';
-                                } else if (item.ServicesId.length > 0) {
-                                    item.Portfoliotype = 'Service';
-                                } else if (item.EventsId.length > 0) {
-                                    item.Portfoliotype = 'Event';
-                                }
-                                if (item.siteType != undefined && item.siteType == 'Offshore Tasks') {
-                                    item.Companytype = 'Offshoretask';
-                                } else {
-                                    item.Companytype = 'Alltask';
-                                }
-                                if (item.Companytype == 'Alltask') {
-                                    allSitesTask.push(item);
-                                }
-                            }
-                        })
-                    } else {
-                        if (item.SharewebCategories[0]?.Id === CategoryTitle) {
-                            item.Created = item.Created !== null ? moment(item?.Created).format("DD/MM/YYYY") : '';
-                            item.DueDate = item.DueDate !== null ? moment(item?.DueDate).format("DD/MM/YYYY") : '';
-                            item.Modified = item.Modified !== null ? moment(item?.Modified).format("DD/MM/YYYY") : '';
-                            if (item.ComponentId.length > 0) {
-                                item['Portfoliotype'] = 'Component';
-                            } else if (item.ServicesId.length > 0) {
-                                item['Portfoliotype'] = 'Service';
-                            } else if (item.EventsId.length > 0) {
-                                item['Portfoliotype'] = 'Event';
-                            }
-                            if (item.PercentComplete != undefined) {
-                                item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
-                            } else if (item.PercentComplete != undefined)
-                                item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
-                            else
-                                item.PercentComplete = 0;
-                            if (item.ComponentId.length > 0) {
-                                item.Portfoliotype = 'Component';
-                            } else if (item.ServicesId.length > 0) {
-                                item.Portfoliotype = 'Service';
-                            } else if (item.EventsId.length > 0) {
-                                item.Portfoliotype = 'Event';
-                            }
-                            if (item.siteType != undefined && item.siteType == 'Offshore Tasks') {
-                                item.Companytype = 'Offshoretask';
-                            } else {
-                                item.Companytype = 'Alltask';
-                            }
-                            if (item.Companytype == 'Alltask') {
-                                allSitesTask.push(item);
-                            }
-                        }
-                    }
-                });
-            })
-            setAllSitesTask(allSitesTask);
-            setloaded(false);
+        })
+        if (TaggedTasks.length === 0 || TaggedTasks.length > 1) {
+            setloaded(false)
+            setAllSitesTask(TaggedTasks);
         }
-        catch (error) {
-            console.error(error);
-            // Handle errors
-        }
+
     }
     const openParent = (Value: any) => {
         setOpenChangeParentPopup(true)
@@ -318,7 +215,7 @@ export default function SmartMetadataEditPopup(props: any) {
                 const web = new Web(props?.AllList?.SPSitesListUrl);
                 const query = `TaxType eq '${props.modalInstance.TaxType}'`
                 const select = `*,Author/Title,Editor/Title,Parent/Id,Parent/Title`;
-                const items = await web.lists.getById(props.AllList.SPSmartMetadataListID).items.select(select).expand("Author,Editor,Parent").filter(query).getAll();
+                const items = await web.lists.getById(props.AllList.SmartMetadataListID).items.select(select).expand("Author,Editor,Parent").filter(query).getAll();
                 const SmartMetDataAllItems: any[] = [];
                 items.forEach((item: any) => {
                     if (item.Parent == undefined) {
@@ -364,7 +261,6 @@ export default function SmartMetadataEditPopup(props: any) {
         if (taxType == 'Categories') {
             if (item != undefined && item.Id != undefined) {
                 CategoryTitle = item.Id;
-                LoadAllMetaData();
             }
         }
         SecondLevel = parent;
@@ -491,14 +387,14 @@ export default function SmartMetadataEditPopup(props: any) {
             }
             if (modaltype == "Add") {
                 const web = new Web(props?.AllList?.SPSitesListUrl);
-                await web.lists.getById(props.AllList.SPSmartMetadataListID).items.add(item);
+                await web.lists.getById(props.AllList.SmartMetadataListID).items.add(item);
                 props.EditItemCallBack('', '', SmartTaxonomyItem?.TaxType, '')
                 CloseEditSmartMetaPopup()
             }
 
             if (modaltype == "Update") {
                 const web = new Web(props?.AllList?.SPSitesListUrl);
-                await web.lists.getById(props.AllList.SPSmartMetadataListID).items.getById(SmartTaxonomyItem.Id).update(item);
+                await web.lists.getById(props.AllList.SmartMetadataListID).items.getById(SmartTaxonomyItem.Id).update(item);
                 props.EditItemCallBack('', '', SmartTaxonomyItem?.TaxType, '')
                 CloseEditSmartMetaPopup()
             }
@@ -513,7 +409,7 @@ export default function SmartMetadataEditPopup(props: any) {
         [{ accessorKey: "TaskID", placeholder: "Site", header: "", size: 10, },
         {
             cell: ({ row }: any) => (
-                <a target='_blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Task-Profile.aspx?taskId=${row?.original.Id}&Site=${row?.original.Title}`}>{row.original.Title}</a>
+                <a target='_blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Task-Profile.aspx?taskId=${row?.original.Id}&Site=${row?.original.siteType}`}>{row.original.Title}</a>
 
             ),
             accessorKey: 'Title',
@@ -890,7 +786,7 @@ export default function SmartMetadataEditPopup(props: any) {
                                                 taskId={SmartTaxonomyItem?.Id}
                                                 RequiredListIds={props?.AllList}
                                                 siteUrls={props?.AllList?.SPSitesListUrl}
-                                                listId={props?.AllList?.SPSmartMetadataListID}
+                                                listId={props?.AllList?.SmartMetadataListID}
                                             />}
                                         </div>
                                     </span>

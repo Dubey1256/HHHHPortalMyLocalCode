@@ -19,6 +19,7 @@ import ShowTeamMembers from '../../../globalComponents/ShowTeamMember';
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 import RestructuringCom from '../../../globalComponents/Restructuring/RestructuringCom';
+import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
 var siteConfig: any = []
 let AllProjectDataWithAWT: any = [];
 var AllTaskUsers: any = [];
@@ -76,6 +77,8 @@ export default function ProjectOverview(props: any) {
     const [taskTypeDataItem, setTaskTypeDataItem] = React.useState([]);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Project', Suffix: 'P', Level: 1 }, { Title: 'Sprint', Suffix: 'X', Level: 2 }]);
     const [portfolioTypeDataItem, setPortFolioTypeIcon] = React.useState([]);
+    const [openCompareToolPopup, setOpenCompareToolPopup] = React.useState(false);
+    const [ActiveCompareToolButton, setActiveCompareToolButton] = React.useState(false);
     const childRef = React.useRef<any>();
     const restructuringRef = React.useRef<any>();
     React.useEffect(() => {
@@ -894,8 +897,8 @@ export default function ProjectOverview(props: any) {
         }
 
 
-        // let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
-        let to: any = ["abhishek.tiwari@hochhuth-consulting.de",  "prashant.kumar@hochhuth-consulting.de"];
+        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
+        // let to: any = ["abhishek.tiwari@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let groupedData = data;
@@ -1233,7 +1236,7 @@ export default function ProjectOverview(props: any) {
                                     }
                                 })
                             }
-                            child.SiteIconTitle = child?.Item_x0020_Type.charAt(0)
+                            child.SiteIconTitle = child?.Item_x0020_Type == "Sprint" ? "X" : child?.Item_x0020_Type.charAt(0);
                         })
                     }
                 })
@@ -1595,7 +1598,7 @@ export default function ProjectOverview(props: any) {
                 let filter = 'ProjectId ne null'
                 smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, filter)
                 smartmeta.map((items: any) => {
-                    let EstimatedDesc = JSON.parse(items?.EstimatedTimeDescription)
+                    let EstimatedDesc = globalCommon.parseJSON(items?.EstimatedTimeDescription)
                     items.Item_x0020_Type = 'tasks';
                     items.ShowTeamsIcon = false
                     items.descriptionsSearch = '';
@@ -1806,6 +1809,17 @@ export default function ProjectOverview(props: any) {
     const restructureFunct = (items: any) => {
         setTrueRestructuring(items);
     }
+    React.useEffect(() => {
+        if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length === 2) {
+            if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined && (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Tasks' || childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Tasks')) {
+                setActiveCompareToolButton(true);
+            } else if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType != undefined) {
+                setActiveCompareToolButton(true);
+            }
+        } else {
+            setActiveCompareToolButton(false);
+        }
+    }, [childRef?.current?.table?.getSelectedRowModel()?.flatRows])
     const customTableHeaderButtons = (
         <>
             {((TableProperty?.length === 1 && TableProperty[0]?.original?.Item_x0020_Type != "Feature" && TableProperty[0]?.original?.Item_x0020_Type != "Sprint" &&
@@ -1816,21 +1830,36 @@ export default function ProjectOverview(props: any) {
                 :
                 <button type="button" disabled className="btn btn-primary" title=" Add Structure"> {" "} Add Structure{" "}</button>}
 
-            {
-                trueRestructuring == true ?
-                    <RestructuringCom AllSitesTaskData={AllSitesAllTasks} AllMasterTasksData={MyAllData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllTaskUser} contextValue={AllListId} allData={workingTodayFiltered ? data : flatData} restructureCallBack={restructureCallback} findPage={"ProjectOverView"} restructureItem={childRef.current.table.getSelectedRowModel().flatRows} />
-                    : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
-            }
+            {trueRestructuring == true ?
+                <RestructuringCom AllSitesTaskData={AllSitesAllTasks} AllMasterTasksData={MyAllData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllTaskUser} contextValue={AllListId} allData={workingTodayFiltered ? data : flatData} restructureCallBack={restructureCallback} findPage={"ProjectOverView"} restructureItem={childRef.current.table.getSelectedRowModel().flatRows} />
+                : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>}
             <label className="switch me-2" htmlFor="checkbox">
-                <input checked={showAllAWTGrouped} onChange={() => { changeToggleAWT() }} type="checkbox" id="checkbox" />
-                {showAllAWTGrouped === true ? <div className="slider round" title="Switch To Project/Sprints Only"  ></div> : <div title='Swtich to Show All AWT Items' className="slider round"></div>}
+                <input checked={showAllAWTGrouped} onChange={() => { changeToggleAWT(); }} type="checkbox" id="checkbox" />
+                {showAllAWTGrouped === true ? <div className="slider round" title="Switch To Project/Sprints Only"></div> : <div title='Swtich to Show All AWT Items' className="slider round"></div>}
             </label> <label className="switch me-2" htmlFor="checkbox1">
-                <input checked={workingTodayFiltered} onChange={() => { changeToggleWorkingToday() }} type="checkbox" id="checkbox1" />
-                {workingTodayFiltered === true ? <div className="slider round" title='Swtich to Show All Items' ></div> : <div title="Switch To Working Today's" className="slider round"></div>}
+                <input checked={workingTodayFiltered} onChange={() => { changeToggleWorkingToday(); }} type="checkbox" id="checkbox1" />
+                {workingTodayFiltered === true ? <div className="slider round" title='Swtich to Show All Items'></div> : <div title="Switch To Working Today's" className="slider round"></div>}
             </label>
-        </>
-    )
 
+            {(ActiveCompareToolButton) ?
+                <button type="button" className="btn btn-primary" title='Compare' style={{ color: '#fff' }} onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
+                <button type="button" className="btn btn-primary" style={{ color: '#fff' }} disabled={true}>Compare</button>}
+        </>
+
+    )
+    const compareToolCallBack = React.useCallback((compareData) => {
+        if (compareData != "close") {
+            setOpenCompareToolPopup(false);
+        } else {
+            setOpenCompareToolPopup(false);
+        }
+    }, []);
+
+    const trigerAllEventButton = (eventValue: any) => {
+        if (eventValue === "Compare") {
+            setOpenCompareToolPopup(true);
+        }
+    }
 
     return (
         <>
@@ -1898,6 +1927,7 @@ export default function ProjectOverview(props: any) {
                 {ShowTeamPopup === true ? <ShowTeamMembers props={checkData} callBack={showTaskTeamCAllBack} TaskUsers={AllTaskUser} /> : ''}
                 {openTimeEntryPopup && <TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />}
                 {isAddStructureOpen && <AddProject CallBack={CallBack} items={CheckBoxData} PageName={"ProjectOverview"} AllListId={AllListId} data={data} />}
+                {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={props?.props} />}
             </div >
             {pageLoaderActive ? <PageLoader /> : ''
             }
