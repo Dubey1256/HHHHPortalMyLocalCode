@@ -29,7 +29,14 @@ const AddProject = (props: any) => {
     }
     React.useEffect(() => {
         try {
-            if (props?.items?.length == 1 && props?.items[0]?.Item_x0020_Type == "Project") {
+            if (props?.items?.length == 1 && props?.items[0]?.original?.Item_x0020_Type == "Project") {
+                setSetSelectedItem(props?.items[0]?.original)
+                selectedProject = props?.items[0]?.original;
+            } else if (props?.items?.Id != undefined && props?.items?.Item_x0020_Type == "Project") {
+                setSetSelectedItem(props?.items)
+                selectedProject = props?.items;
+                props.items = [props?.items];
+            } else if (props?.items?.length == 1 && props?.items[0]?.Item_x0020_Type == "Project") {
                 setSetSelectedItem(props?.items[0])
                 selectedProject = props?.items[0];
             } else if (props?.items?.length == 1 && props?.items[0][0]?.original?.Item_x0020_Type == "Project") {
