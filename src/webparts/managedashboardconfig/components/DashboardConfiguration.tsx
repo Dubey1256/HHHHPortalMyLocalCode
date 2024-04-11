@@ -18,6 +18,12 @@ const DashboardConfiguration = (props: any) => {
     } catch (e) {
         console.log(e);
     }
+    let AllListId: any = {
+        TaskUsertListID: props?.AdminConfigurationListId,
+        siteUrl: props?.props?.Context?._pageContext?._web?.absoluteUrl,
+        Context: props?.props?.Context
+
+    };
     const LoadAdminConfiguration = async () => {
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
         await web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'DashBoardConfigurationId'").getAll().then((data: any) => {
@@ -67,7 +73,8 @@ const DashboardConfiguration = (props: any) => {
                 placeholder: "Title",
                 resetColumnFilters: false,
                 header: "",
-                size: 50,
+                size: 300,
+                isColumnVisible: true,
             },
             {
                 accessorFn: (row) => row?.Value,
@@ -84,14 +91,17 @@ const DashboardConfiguration = (props: any) => {
                 resetColumnFilters: false,
                 header: "",
                 size: 40,
+                isColumnVisible: true,
             },
             {
                 cell: ({ row }) => (
                     <>
-                        <a className="alignCenter" data-bs-toggle="tooltip" data-bs-placement="auto" title={'Edit ' + `${row.original.Title}`}  >
-                            {" "}
-                            <span className="svg__iconbox svg__icon--edit" onClick={(e) => EditConfig(row?.original)} ></span>
-                        </a>
+                        <div className='text-end'>
+                            <a data-bs-toggle="tooltip" data-bs-placement="auto" title={'Edit ' + `${row.original.Title}`}  >
+                                {" "}
+                                <span className="svg__iconbox svg__icon--edit" onClick={(e) => EditConfig(row?.original)} ></span>
+                            </a>
+                        </div>
                     </>
                 ),
                 id: "row?.original.Id",
@@ -99,6 +109,7 @@ const DashboardConfiguration = (props: any) => {
                 placeholder: "",
                 header: "",
                 size: 30,
+                isColumnVisible: true,
             },
         ],
         [WebpartConfig]
@@ -121,12 +132,15 @@ const DashboardConfiguration = (props: any) => {
             </h3>
             <div ><a className="pull-right empCol hreflink" onClick={(e) => AddNewConfig()}> Add New Dashboard </a>
             </div>
-            <div className="Alltable maXh-300" style={{ height: "300px" }}>
-                {WebpartConfig?.length > 0 && (
-                    <GlobalCommanTable wrapperHeight="87%" showHeader={true} portfolioColor={'#000066'} columns={columns} data={WebpartConfig} callBackData={callBackData} />
-                )}
+            <div className='TableSection'>
+                <div className="Alltable">
+                    {WebpartConfig?.length > 0 && (
+                        <GlobalCommanTable columnSettingIcon={true} tableId="DashboardConfigID" AllListId={AllListId} hideOpenNewTableIcon={true} hideTeamIcon={true} showHeader={true} portfolioColor={'#000066'} columns={columns} data={WebpartConfig} callBackData={callBackData} />
+                    )}
+                </div>
+                {IsOpenPopup && <AddConfiguration props={props?.props} EditItem={EditItem} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseConfigPopup} />}
             </div>
-            {IsOpenPopup && <AddConfiguration props={props?.props} EditItem={EditItem} IsOpenPopup={IsOpenPopup} CloseConfigPopup={CloseConfigPopup} />}
+
         </>
     );
 };

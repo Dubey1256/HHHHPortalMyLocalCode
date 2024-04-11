@@ -873,7 +873,13 @@ const TaskDashboard = (props: any) => {
             {
                 accessorFn: (row) => row?.SmartPriority,
                 cell: ({ row }: any) => row?.original?.SmartPriority !== null && (
-                    <SmartPriorityToolTip smartPriority={row?.original?.SmartPriority} hoverFormula={row?.original?.showFormulaOnHover} />
+                    <span className={row?.original?.SmartPriority!= undefined ? "hover-text hreflink m-0 r sxsvc" : "hover-text hreflink m-0 cssc"}>
+                    <>{row?.original?.SmartPriority!= undefined ? row?.original?.SmartPriority : 0}</>
+                    <span className="tooltip-text pop-right">
+                      {row?.original?.SmartPriority != undefined ?
+                        <SmartPriorityHover editValue={row?.original} /> : ""}
+                    </span>
+                  </span> 
                 ),
                 filterFn: (row: any, columnId: any, filterValue: any) => {
 

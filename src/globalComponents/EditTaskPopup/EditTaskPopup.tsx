@@ -39,6 +39,7 @@ import EmailNotificationMail from "./EmailNotificationMail";
 import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
+import SmartPriorityHover from "./SmartPriorityHover";
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -6388,11 +6389,13 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="col-md-6">
                                                         <div className="input-group">
                                                             <label className="form-label full-width">SmartPriority</label>
-                                                            <div className="bg-e9 w-100 py-1 px-2">
+                                                            <div className="bg-e9 w-100 py-1 px-2" style={{border:'1px solid #CDD4DB'}}>
                                                                 <span className={EditData?.SmartPriority != undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
                                                                     <>{EditData?.SmartPriority != undefined ? EditData?.SmartPriority : 0}</>
                                                                     <span className="tooltip-text pop-right">
-                                                                        {EditData?.showFormulaOnHover != undefined ? EditData?.showFormulaOnHover : ""}
+                                                                        {EditData?.showFormulaOnHover != undefined ?
+                                                
+                                                                        <SmartPriorityHover editValue={EditData}/> : ""}
                                                                     </span>
                                                                 </span>
                                                             </div>
