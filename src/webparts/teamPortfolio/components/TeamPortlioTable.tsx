@@ -1051,6 +1051,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 portfolioTypeData?.map((elem: any) => {
                     if (elem.Title === isUpdated || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) {
                         portfolioColor = elem.Color;
+                        document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
                     }
                 })
             }
@@ -1059,6 +1060,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 portfolioTypeData?.map((elem: any) => {
                     if (elem.Title === "Component") {
                         portfolioColor = elem.Color;
+                        document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
                     }
                 })
             }
