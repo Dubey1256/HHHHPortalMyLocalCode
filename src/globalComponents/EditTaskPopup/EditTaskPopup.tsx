@@ -2641,31 +2641,31 @@ const EditTaskPopup = (Items: any) => {
 
 
                         // This is used for send MS Teams Notification 
-                        if (TaskCategories !== "Bottleneck" || UpdatedDataObject.Categories.indexOf('Immediate') != -1 || UpdatedDataObject.Categories.indexOf('Design') != -1) {
+                        if (TaskCategories !== "Bottleneck" || UpdatedDataObject?.Categories?.indexOf('Immediate') != -1 || UpdatedDataObject?.Categories?.indexOf('Design') != -1) {
                             try {
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
                                 const addEmailAndUserName = (userItem: any) => {
-                                    if (userItem.AssingedToUserId !== currentUserId) {
+                                    if (userItem?.AssingedToUserId !== currentUserId) {
                                         sendUserEmails.push(userItem.Email);
-                                        AssignedUserName = AssignedUserName ? "Team" : userItem.Title;
+                                        AssignedUserName = AssignedUserName ? "Team" : userItem?.Title;
                                     }
                                 };
 
                                 if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
                                     taskUsers?.forEach((allUserItem: any) => {
-                                        if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                        if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
                                             addEmailAndUserName(allUserItem);
                                         }
                                     });
                                 } else {
-                                    const usersToCheck = TeamLeaderChanged && TeamMemberChanged ? TaskResponsibleTeam.concat(TaskAssignedTo) :
+                                    const usersToCheck = TeamLeaderChanged && TeamMemberChanged ? TaskResponsibleTeam?.concat(TaskAssignedTo) :
                                         TeamLeaderChanged ? UpdatedDataObject?.ResponsibleTeam :
                                             TeamMemberChanged || IsTaskStatusUpdated ? TaskAssignedTo : [];
 
                                     usersToCheck.forEach((userDtl: any) => {
                                         taskUsers?.forEach((allUserItem: any) => {
-                                            if (userDtl.Id === allUserItem.AssingedToUserId) {
+                                            if (userDtl.Id === allUserItem?.AssingedToUserId) {
                                                 addEmailAndUserName(allUserItem);
                                             }
                                         });
@@ -2673,7 +2673,7 @@ const EditTaskPopup = (Items: any) => {
                                 }
                                 let CommonMsg = '';
                                 const sendMSGCheck = (checkStatusUpdate === 80 || checkStatusUpdate === 70) && IsTaskStatusUpdated;
-                                const SendUserEmailFinal: any = sendUserEmails.filter((item: any, index: any) => sendUserEmails.indexOf(item) === index);
+                                const SendUserEmailFinal: any = sendUserEmails?.filter((item: any, index: any) => sendUserEmails?.indexOf(item) === index);
                                 if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
                                     CommonMsg = ` Task created from your end has been set to 8%. Please take necessary action.`;
                                     let functionType: any = '';
@@ -2717,7 +2717,7 @@ const EditTaskPopup = (Items: any) => {
                                     <b>Task Details :</b> ${containerDiv.innerHTML}
                                     <p>
                                     Task Link:  
-                                    <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
+                                    <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
                                      Click-here
                                     </a>
                                     </p>
@@ -2744,9 +2744,9 @@ const EditTaskPopup = (Items: any) => {
                             }
                         }
                         let Createtordata: any = []
-                        if (IsTaskStatusUpdated && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject.Categories.indexOf('Immediate') != -1) {
+                        if (IsTaskStatusUpdated && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject?.Categories?.indexOf('Immediate') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
-                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
                                 }
 
@@ -2770,9 +2770,9 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
-                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject.Categories.indexOf('Immediate') != -1) {
+                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.indexOf('Immediate') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
-                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
                                 }
 
@@ -2796,7 +2796,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
-                        if (IsTaskStatusUpdated && checkStatusUpdate == 90 && UpdatedDataObject.Categories.indexOf('Design') != -1) {
+                        if (IsTaskStatusUpdated && checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.indexOf('Design') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2823,7 +2823,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
-                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject.Categories.indexOf('Design') != -1) {
+                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.indexOf('Design') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2881,9 +2881,9 @@ const EditTaskPopup = (Items: any) => {
                                 //EditData.TaskApprovers.push(EditData?.Author)
                             }
                         }
-                        let spaceIndex = EditData.TaskCreatorData[0]?.Title.lastIndexOf(' ');
+                        let spaceIndex = EditData.TaskCreatorData[0]?.Title?.lastIndexOf(' ');
                         if (spaceIndex !== -1) {
-                            TaskDetailsFromCall[0].CreatorTitle = EditData.TaskCreatorData[0]?.Title.substring(0, spaceIndex);
+                            TaskDetailsFromCall[0].CreatorTitle = EditData.TaskCreatorData[0]?.Title?.substring(0, spaceIndex);
                         } else {
                             console.log("No last name found");
                         }
