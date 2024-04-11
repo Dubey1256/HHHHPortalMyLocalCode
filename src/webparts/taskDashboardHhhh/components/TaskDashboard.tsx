@@ -18,7 +18,7 @@ import PageLoader from '../../../globalComponents/pageLoader';
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import SendEmailEODReport from './SendEmailEODReport';
 import SmartPriorityToolTip from '../../../globalComponents/SmartPriorityTooltip';
-// import SmartPriorityHover from '../../../globalComponents/EditTaskPopup/SmartPriorityHover';
+import SmartPriorityHover from '../../../globalComponents/EditTaskPopup/SmartPriorityHover';
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
