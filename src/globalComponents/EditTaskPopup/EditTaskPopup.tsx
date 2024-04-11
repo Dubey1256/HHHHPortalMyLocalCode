@@ -677,7 +677,7 @@ const EditTaskPopup = (Items: any) => {
                     TaxonomyItems.push(item);
                 }
                 uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
-                    return array.indexOf(val) == id;
+                    return array?.indexOf(val) == id;
                 });
             }
         });
@@ -1074,13 +1074,13 @@ const EditTaskPopup = (Items: any) => {
                         let tempArray: any = [];
                         const TaskApproverBackupTemp = TaskApproverBackupArray?.filter(
                             (val: any, id: any, array: any) => {
-                                return array.indexOf(val) == id;
+                                return array?.indexOf(val) == id;
                             }
                         );
                         const TaskCreatorApproverBackupTemp =
                             TaskCreatorApproverBackupArray?.filter(
                                 (val: any, id: any, array: any) => {
-                                    return array.indexOf(val) == id;
+                                    return array?.indexOf(val) == id;
                                 }
                             );
 
@@ -1206,7 +1206,7 @@ const EditTaskPopup = (Items: any) => {
                 ) {
                     const finalData = TaskCreatorApproverBackupArray?.filter(
                         (val: any, id: any, array: any) => {
-                            return array.indexOf(val) == id;
+                            return array?.indexOf(val) == id;
                         }
                     );
                     TaskCreatorApproverBackupArray = finalData;
@@ -1517,7 +1517,7 @@ const EditTaskPopup = (Items: any) => {
                                 LinkedPortfolioDataBackup.concat(DataItem);
                             const finalData = LinkedPortfolioDataBackup?.filter(
                                 (val: any, id: any, array: any) => {
-                                    return array.indexOf(val) == id;
+                                    return array?.indexOf(val) == id;
                                 }
                             );
                             setLinkedPortfolioData(finalData);
@@ -1826,7 +1826,7 @@ const EditTaskPopup = (Items: any) => {
                     // }
                     const finalData = tempArray.filter(
                         (val: any, id: any, array: any) => {
-                            return array.indexOf(val) == id;
+                            return array?.indexOf(val) == id;
                         }
                     );
 
@@ -2284,7 +2284,7 @@ const EditTaskPopup = (Items: any) => {
                     });
                 }
                 const finalData = tempArray.filter((val: any, id: any, array: any) => {
-                    return array.indexOf(val) == id;
+                    return array?.indexOf(val) == id;
                 });
                 setTaskAssignedTo(finalData);
                 setTaskTeamMembers(finalData);
@@ -2941,7 +2941,7 @@ const EditTaskPopup = (Items: any) => {
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
                             }
-                            if (TaskDetailsFromCall[0].Categories.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
+                            if (TaskDetailsFromCall[0].Categories?.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
                                 ValueStatus = CalculateStatusPercentage;
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
@@ -3068,7 +3068,7 @@ const EditTaskPopup = (Items: any) => {
             if (ApproverData == undefined && ApproverData.length == 0) {
                 const finalData = tempArrayApprover.filter(
                     (val: any, id: any, array: any) => {
-                        return array.indexOf(val) == id;
+                        return array?.indexOf(val) == id;
                     }
                 );
                 TaskAssignedTo = finalData;
