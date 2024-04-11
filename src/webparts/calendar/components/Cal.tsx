@@ -1083,12 +1083,15 @@ const Apps = (props: any) => {
     try {
       const web = new Web(props.props.siteUrl);
 
-      const mycolors = (HalfDaye || HalfDayT) ? "#6d36c5" :
+      
         (newEvent.Event_x002d_Type === "Work From Home") ? "#e0a209" :
           ((newEvent.Event_x002d_Type === "Company Holiday") || (newEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
-
+          let mytitle = newEvent.name + "-" + newEvent.type + "-" + newEvent.title;
+          if (newEvent != undefined && (newEvent?.type == "National Holiday" || newEvent?.type == "Company Holiday")) {
+            mytitle = newEvent.type + "-" + newEvent.title;
+          }
       const addEventItem = {
-        Title: newEvent.Title,
+        Title: mytitle,
         Description: newEvent.Description,
         EventDate: await getUtcTime(newEvent.EventDate),
         Event_x002d_Type: newEvent.Event_x002d_Type,
@@ -1098,7 +1101,7 @@ const Apps = (props: any) => {
         fAllDayEvent: newEvent.fAllDayEvent,
         fRecurrence: newEvent.fRecurrence,
         EventType: newEvent.EventType,
-        Color: mycolors,
+        // Color: mycolors,
         UID: newEvent.UID,
         HalfDay: HalfDaye,
         HalfDayTwo: HalfDayT,
