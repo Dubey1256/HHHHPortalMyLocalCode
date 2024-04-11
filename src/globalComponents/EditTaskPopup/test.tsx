@@ -2638,8 +2638,10 @@ const EditTaskPopup = (Items: any) => {
                         const TaskCategories = result.map((item: any) => item.Title).join(', ');
                         const CheckForInformationRequestCategory: any = TaskCategories.includes("Information Request");
                         let checkStatusUpdate = Number(taskPercentageValue) * 100;
+
+
                         // This is used for send MS Teams Notification 
-                        if (TaskCategories !== "Bottleneck" && TaskCategories !== "Immediate" && TaskCategories !== "Design") {
+                        if (TaskCategories !== "Bottleneck" && UpdatedDataObject.Categories.indexOf('Immediate') != -1 && UpdatedDataObject.Categories.indexOf('Design') != -1) {
                             try {
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
@@ -2739,7 +2741,7 @@ const EditTaskPopup = (Items: any) => {
                             }
                         }
                         let Createtordata: any = []
-                        if ((IsTaskStatusUpdated || checkStatusUpdate == 0) && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject.Categories == 'Immediate') {
+                        if (IsTaskStatusUpdated  && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject.Categories.indexOf('Immediate') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2765,7 +2767,60 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
-                        if (IsTaskStatusUpdated && checkStatusUpdate == 90 && UpdatedDataObject.Categories == 'Design') {
+                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0  && UpdatedDataObject.Categories.indexOf('Immediate') != -1) {
+                            taskUsers?.forEach((allUserItem: any) => {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                    Createtordata.push(allUserItem);
+                                }
+
+                            });
+
+                            Createtordata?.map((InfoItem: any) => {
+                                let DataForNotification: any = {
+                                    ReceiverName: InfoItem?.Title,
+                                    sendUserEmail: [InfoItem?.Email],
+                                    Context: Items.context,
+                                    ActionType: "Immediate",
+                                    ReasonStatement: '',
+                                    UpdatedDataObject: UpdatedDataObject
+                                }
+                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    console.log("Ms Teams Notifications send")
+                                })
+
+                            })
+
+
+
+                        }
+                        if (IsTaskStatusUpdated  && checkStatusUpdate == 90 && UpdatedDataObject.Categories.indexOf('Design') != -1) {
+                            taskUsers?.forEach((allUserItem: any) => {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                    Createtordata.push(allUserItem);
+                                }
+
+                            });
+
+                            Createtordata?.map((InfoItem: any) => {
+
+                                let DataForNotification: any = {
+                                    ReceiverName: InfoItem?.Title,
+                                    sendUserEmail: ['alina.chyhasova@hochhuth-consulting.de','kristina.kovach@hochhuth-consulting.de'],
+                                    Context: Items.context,
+                                    ActionType: "Design",
+                                    ReasonStatement: "",
+                                    UpdatedDataObject: UpdatedDataObject
+                                }
+                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    console.log("Ms Teams Notifications send")
+                                })
+
+                            })
+
+
+
+                        }
+                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject.Categories.indexOf('Design') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2793,23 +2848,6 @@ const EditTaskPopup = (Items: any) => {
 
                         }
 
-                        // This is used for send Email Notification for design Category Task 
-
-                        if (SendDesignEmailStatus && (taskPercentageValue < 20 || taskPercentageValue == 0 || taskPercentageValue == undefined)) {
-                            let EmailRecievers: any = [];
-                            taskUsers?.map((userItemData: any) => {
-                                if (userItemData.AssingedToUserId !== currentUserId && (userItemData.Title == "Robert Ungethuem" || userItemData.Title == "Alina Chyhasova")) {
-                                    EmailRecievers.push(userItemData);
-                                }
-                            })
-                            if (EmailRecievers?.length > 0) {
-                                globalCommon.sendImmediateEmailNotifications(UpdatedDataObject.Id, siteUrl, EditData?.listId, UpdatedDataObject, EmailRecievers, 'DesignMail', taskUsers, Context).then((response: any) => {
-                                    console.log(response);
-                                    console.log("Design Email Notification Sent !!");
-                                });
-
-                            }
-                        }
 
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             taskUsers.forEach((val: any) => {
@@ -2848,7 +2886,7 @@ const EditTaskPopup = (Items: any) => {
                         }
                         let CalculateStatusPercentages: any = TaskDetailsFromCall[0].PercentComplete ? TaskDetailsFromCall[0].PercentComplete
                                 : 0;
-                        if (CalculateStatusPercentages == 90 && EmailStatus == true) {
+                        if (IsTaskStatusUpdated && CalculateStatusPercentages == 90 && EmailStatus == true) {
                             setLastUpdateTaskData(TaskDetailsFromCall[0]);
                             ValueStatus = "90";
                             setSendEmailNotification(true);
@@ -2900,7 +2938,7 @@ const EditTaskPopup = (Items: any) => {
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
                             }
-                            if (TaskDetailsFromCall[0].Categories == 'Design' && CalculateStatusPercentage == 90) {
+                            if (TaskDetailsFromCall[0].Categories.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
                                 ValueStatus = CalculateStatusPercentage;
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
@@ -4767,6 +4805,7 @@ const EditTaskPopup = (Items: any) => {
     };
 
 
+   
     const SelectApproverFromAutoSuggestion = (ApproverData: any, usedFor: string) => {
         setApproverSearchedData([]);
         setApproverSearchedDataForPopup([]);
@@ -4869,6 +4908,7 @@ const EditTaskPopup = (Items: any) => {
             ApproverHistoryData.push(ApproverHistoryObject);
         }
     };
+
 
     // *********** this is for Send Email Notification for Approval Category Task Functions ****************************
 
