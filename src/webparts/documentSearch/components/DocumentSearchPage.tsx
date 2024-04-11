@@ -5,6 +5,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import EditDocument from '../../taskprofile/components/EditDocunentPanel';
 import moment from 'moment';
 var TaskUser: any = []
+let arr: any = []
+let mastertaskdata: any = []
 export default function DocumentSearchPage(Props: any) {
     //#region Required Varibale on Page load BY PB
     var AllListId = Props.Selectedprops
@@ -18,14 +20,35 @@ export default function DocumentSearchPage(Props: any) {
     //#region code to load All Documents By PB
     const LoadDocs = () => {
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
-        web.lists.getById(PageContext.DocumentsListID).items.select("Id,Title,PriorityRank,Year,Body,recipients,senderEmail,creationTime,Item_x0020_Cover,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl").filter('FSObjType eq 0').expand("Author,Editor,SharewebTask,Portfolios").orderBy("Created", false).getAll()
+        web.lists.getById(PageContext.DocumentsListID).items.select("Id,Title,PriorityRank,File/Length,Year,Body,recipients,senderEmail,creationTime,Item_x0020_Cover,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl").filter('FSObjType eq 0').expand("Author,Editor,SharewebTask,Portfolios,File").orderBy("Created", false).getAll()
             .then((response: any) => {
+                let AllProjectData: any = []
+               
+
                 try {
                     response.forEach((Doc: any) => {
-                        Doc?.Title === null ? Doc.Title = Doc?.FileLeafRef : '';
+                        let projectTitle: any = ''
+                        Doc?.Title === null ? Doc.Title = Doc?.FileLeafRef : Doc.Title;
+                        Doc?.Title !== null ? Doc.Title = Doc.Title.split(".")[0] : Doc.Title;
+                        // Doc.Portfolios.map((item: any) => {
+                        //     mastertaskdata.map((mastertask: any) => {
+                        //         if (mastertask.Id == item.Id && mastertask?.Item_x0020_Type == "Project") {
+                        //             AllProjectData.push(mastertask)
+                        //         }
+                        //     })
+                        // })
+                        // AllProjectData.map((items: any) => {
+                        //     if (items.Title != undefined){
+                        //         projectTitle += items.Title + " ,"
+                        //     }
+                           
+                        // })
+                        // console.log(AllProjectData)
+                        
                         Doc.CreatedDate = moment(Doc?.Created).format('DD/MM/YYYY');
                         Doc.ModifiedDate = moment(Doc?.Modified).format('DD/MM/YYYY HH:mm')
                         Doc.SiteIcon = PageContext.context._pageContext._web.title;
+                        // Doc.ProjectTitle = projectTitle;
                         Doc.AllModifiedImages = [];
                         Doc.AllCreatedImages = [];
                         let CreatedUserObj: any = {};
@@ -70,9 +93,11 @@ export default function DocumentSearchPage(Props: any) {
     }
     //#endregion
     //#region code to load TaskUser By PB
+
+
     const LoadTaskUser = () => {
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
-        web.lists.getById(PageContext.TaskUsertListID).items.select('Id,Suffix,Title,SortOrder,Item_x0020_Cover,AssingedToUserId,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType').expand('AssingedToUser').getAll().then((response: any) => {
+        web.lists.getById(PageContext.TaskUsertListID).items.select('Id,Suffix,Title,SortOrder,Item_x0020_Type,Item_x0020_Cover,AssingedToUserId,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType').expand('AssingedToUser').getAll().then((response: any) => {
             TaskUser = response;
             LoadDocs();
         }).catch((error: any) => {
@@ -81,7 +106,36 @@ export default function DocumentSearchPage(Props: any) {
     }
     useEffect(() => {
         LoadTaskUser()
+        // LoadMasterTaskList()
     }, []);
+
+    // const LoadMasterTaskList = () => {
+    //     return new Promise(function (resolve, reject) {
+    //         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/');
+    //         web.lists
+    //             .getById(PageContext.MasterTaskListID).items
+    //             .select(
+    //                 "Id",
+    //                 "Title",
+    //                 "Mileage",
+    //                 "TaskListId",
+    //                 "Item_x0020_Type",
+    //                 "TaskListName",
+    //                 "PortfolioType/Id",
+    //                 "PortfolioType/Title",
+    //                 "PortfolioType/Color",
+    //             ).expand("PortfolioType").top(4999).get()
+    //             .then((dataserviccomponent: any) => {
+    //                 console.log(dataserviccomponent)
+    //                 mastertaskdata = dataserviccomponent;
+    //                 resolve(dataserviccomponent)
+
+    //             }).catch((error: any) => {
+    //                 console.log(error)
+    //                 reject(error)
+    //             })
+    //     })
+    // }
     //#endregion
     //#region code to edit delete and callback function BY PB
     const closeEditPopup = () => {
@@ -117,18 +171,7 @@ export default function DocumentSearchPage(Props: any) {
             id: 'Id',
         },
         {
-            accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
-            cell: ({ row }) => (
-                <div className='alignCenter '>
-                    <a target="_blank" data-interception="off" href={row?.original?.FileDirRef}>
-                        <span className="alignIcon svg__iconbox svg__icon--folder"></span>
-                        {row?.original?.Title ? <a className='ms-1 ' title={row?.original?.Title} target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.Title} </a> : <a className='ms-1 ' title={row?.original?.FileDirRef} target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>}
-                    </a>
-                </div>
-            ),
-        },
-        {
-            accessorKey: "FileLeafRef", placeholder: "Document Url", header: "", id: "FileLeafRef",
+            accessorKey: "FileLeafRef", placeholder: "Title", header: "", id: "FileLeafRef",
             cell: ({ row }) => (
                 <div className='alignCenter '>
                     {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'jfif' && <span title={`${row?.original?.File_x0020_Type}`} className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
@@ -137,12 +180,40 @@ export default function DocumentSearchPage(Props: any) {
                     {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
                     {row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--docx "></span> : ''}
                     {row?.original?.File_x0020_Type == 'jfif' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
-                    <a className='ms-1 wid90' target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>
+                    <a className='ms-1 wid90' target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.Title} </a>
+
                 </div>
-          ),
+            ),
+        },
+        // {
+        //     accessorKey: "ProjectTitle", placeholder: "Project", header: "", size: 120, id: "ProjectTitle", isColumnDefultSortingDesc: true,
+        //     cell: ({ row }) => (
+        //         <>
+        //             {row?.original?.ProjectTitle}
+
+        //         </>
+        //     )
+        // },
+        {
+            accessorKey: "File_x0020_Type", placeholder: "Item Type", header: "", size: 120, id: "File_x0020_Type", isColumnDefultSortingDesc: true,
+            cell: ({ row }) => (
+                <>
+                    {row?.original?.File_x0020_Type}
+
+                </>
+            )
         },
         {
-            accessorKey: "Created", placeholder: "Created Date", header: "", size: 120, id: "CreatedDate", isColumnDefultSortingDesc: true,
+            accessorKey: "File", placeholder: "File Size", header: "", size: 120, id: "File", isColumnDefultSortingDesc: true,
+            cell: ({ row }) => (
+                <>
+                    {Math.ceil(row?.original?.File?.Length / 1024)} KB
+
+                </>
+            )
+        },
+        {
+            accessorKey: "Created", placeholder: "Created Date", header: "", size: 120, id: "Created", isColumnDefultSortingDesc: true,
             cell: ({ row }) => (
                 <>
                     {row?.original?.CreatedDate}
@@ -155,7 +226,7 @@ export default function DocumentSearchPage(Props: any) {
             ),
         },
         {
-            accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 172, id: "ModifiedDate",
+            accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 172, id: "Modified",
             cell: ({ row }) => (
                 <>
                     {row?.original?.ModifiedDate}
