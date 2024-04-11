@@ -21,6 +21,7 @@ import Slider from "react-slick";
 import HighlightableCell from "../../../globalComponents/highlight";
 import { MdOutlineGppGood, MdGppBad } from "react-icons/md";
 import { Panel } from '@fluentui/react';
+let requiredTimeEntries: any = []
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -30,6 +31,7 @@ let approveItem: any;
 let emailStatus: any = "";
 let IsShowConfigBtn = false;
 let dragItem: any;
+let todaysDrafTimeEntry:any = [];
 let StatusOptions = [{ value: 0, taskStatusComment: "Not Started" }, { value: 1, taskStatusComment: "For Approval" }, { value: 2, taskStatusComment: "Follow Up" }, { value: 3, taskStatusComment: "Approved" },
 { value: 4, taskStatusComment: "Checking" }, { value: 5, taskStatusComment: "Acknowledged" }, { value: 8, taskStatusComment: "Priority Check" }, { value: 9, taskStatusComment: "Ready To Go" },
 { value: 10, taskStatusComment: "working on it" }, { value: 70, taskStatusComment: "Re-Open" }, { value: 75, taskStatusComment: "Deployment Pending" }, { value: 80, taskStatusComment: "In QA Review" },
@@ -1004,66 +1006,214 @@ const TaskStatusTbl = (Tile: any) => {
     const data: any = AllapprovalTask.filter((i: any) => { return i.Id != approveItem.Id })
     setapprovalTask(data);
   }
+
+  function getStartingDate(startDateOf: any) {
+    const startingDate = new Date();
+    let formattedDate = startingDate;
+    if (startDateOf == 'This Week') {
+        startingDate.setDate(startingDate.getDate() - startingDate.getDay());
+        formattedDate = startingDate;
+    } else if (startDateOf == 'Today') {
+        formattedDate = startingDate;
+    } else if (startDateOf == 'Yesterday') {
+        startingDate.setDate(startingDate.getDate() - 1);
+        formattedDate = startingDate;
+    } else if (startDateOf == 'This Month') {
+        startingDate.setDate(1);
+        formattedDate = startingDate;
+    } else if (startDateOf == 'Last Month') {
+        const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
+        const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
+        var change = (Moment(startingDateOfLastMonth).add(18, 'days').format())
+        var b = new Date(change)
+        formattedDate = b;
+    } else if (startDateOf == 'Last Week') {
+        const lastWeek = new Date(startingDate.getFullYear(), startingDate.getMonth(), startingDate.getDate() - 7);
+        const startingDateOfLastWeek = new Date(lastWeek.getFullYear(), lastWeek.getMonth(), lastWeek.getDate() - lastWeek.getDay() + 1);
+        formattedDate = startingDateOfLastWeek;
+    }
+
+    return formattedDate;
+}
+
+const filterCurrentUserWorkingTodayTask = (UserId: any) => {
+  let workingTodayTask: any = [];
+  if (ContextData?.AllTaskData?.length > 0) {
+    ContextData?.AllTaskData?.map((task: any) => {
+          const isCurrentUserAssigned = task?.AssignedToIds.includes(UserId)
+          if (task?.IsTodaysTask && (isCurrentUserAssigned)) {
+              workingTodayTask.push(task)
+          }
+      })
+  }
+  return workingTodayTask;
+}
+
+
+
+const loadAllTimeEntry = async () => {
+  let timesheetLists: any = [];
+  let startDate: any = getStartingDate('Today')
+  startDate.setDate(startDate.getDate() - 4);
+  startDate = startDate.toISOString();
+  timesheetLists = JSON.parse(ContextData?.timesheetListConfig[0]?.Configurations);
+
+  if (timesheetLists?.length > 0) {
+      for (const list of timesheetLists) {
+          let web = new Web(list?.siteUrl);
+          try {
+              await web.lists
+                  .getById(list?.listId)
+                  .items.select(list?.query)
+                  .filter(`(Modified ge '${startDate}') and (TimesheetTitle/Id ne null)`)
+                  .getAll().then((timeEntry: any)=>{
+                    requiredTimeEntries = [...requiredTimeEntries, ...timeEntry]
+                  })
+          } catch (error) {
+              console.log(error, 'HHHH Time');
+          }
+      }  
+  }
+};
+
+const filterTodayDraftTimeEntries = (usedFor: any) => {
+  let todayDateToCheck = new Date().setHours(0, 0, 0, 0,)
+  if (usedFor === "TimeEntry"){
+    requiredTimeEntries?.map((item: any) => {
+      let entryDate = new Date(item?.Modified).setHours(0, 0, 0, 0)
+      if (entryDate == todayDateToCheck) {
+          todaysDrafTimeEntry?.push(item);
+      }
+      // item.taskDetails = checkTimeEntrySite(item);
+    });
+  }
+}
   const sendAllWorkingTodayTasks = async (sharingTasks: any) => {
     let to: any = [ContextData.approverEmail];
     let body: any = '';
+    let totalTime = 0;
+    let UserTotalTime = 0
+    let allWorkingTodayTasks: any = []
+    let approverApproveeData: any = ContextData.approverApproveeData
+    await loadAllTimeEntry();
+    filterTodayDraftTimeEntries("TimeEntry")
     let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
     if (confirmation) {
-      var subject = "Today's Working Tasks Under Projects";
       let tasksCopy: any = [];
       let text = '';
-      tasksCopy = sharingTasks;
-      if (tasksCopy?.length > 0) {
-        let taskCount = 0;
-        tasksCopy?.map(async (item: any) => {
-          try {
-            item.smartTime = 0;
-            item.showDesc = '';
-            let memberOnLeave = false;
-            if (!memberOnLeave) {
-              taskCount++;
-              text +=
-                `<tr>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.site} </td>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${ContextData?.siteUrl}/SitePages/Task-Profile.aspx?taskId= ${item?.Id}&Site=${item?.site}> ${item?.Title} </a></p></td>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.Categories} </td>
-                  <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.percentage} </td>
-                  </tr>`;
-            }
-          } catch (error) {
-            console.log(error)
+      approverApproveeData.map((user:any)=> {
+        let body1: any = []
+        tasksCopy = filterCurrentUserWorkingTodayTask(user?.AssingedToUserId)
+        allWorkingTodayTasks = [...allWorkingTodayTasks, ... tasksCopy]
+        if (tasksCopy?.length > 0) {
+          let taskCount = 0;
+          tasksCopy?.map(async (item: any) => {
+            if (item.DueDate != undefined) {
+              item.TaskDueDatenew = Moment(item.DueDate).format("DD/MM/YYYY");
           }
-        })
-        if (taskCount > 0) {
-          body += `<table cellpadding="0" cellspacing="0" align="left" width="100%" border="1" style=" border-color: #444;margin-bottom:10px">
-                        <thead>
-                        <tr>
-                        <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Site</th>
-                        <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;x">Task ID</th>
-                        <th width="500" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Title</th>
-                        <th width="80" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">Category</th>
-                        <th width="40" height="12" align="center" valign="middle" bgcolor="#eeeeee" style="padding:10px 5px;border-top: 0px;border-left: 0px;">% </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        ${text}
-                        </tbody>
-                        </table>`
+          if (item.TaskDueDatenew == undefined || item.TaskDueDatenew == '')
+              item.TaskDueDatenew = '';
+          if (item.Categories == undefined || item.Categories == '')
+              item.Categories = '';
+          if (item.EstimatedTime == undefined || item.EstimatedTime == '' || item.EstimatedTime == null) {
+              item.EstimatedTime = ''
+          }
+          let EstimatedTimeEntry = 0;
+          let EstimatedTimeEntryDesc = '';
+          if (todaysDrafTimeEntry?.length > 0) {
+            todaysDrafTimeEntry?.map((value: any) => {
+              let entryDetails: any = [];
+              try {
+                entryDetails = JSON.parse(value.AdditionalTimeEntry)
+
+              } catch (e){
+
+              }
+              if (entryDetails?.length > 0 && value[`Task${item?.siteType}`] != undefined && value[`Task${item?.siteType}`].Id == item?.Id) {
+                 entryDetails?.map((timeEntry: any) => {
+                  let parts = timeEntry?.TaskDate?.split('/');
+                  let timeEntryDate: any = new Date(parts[2], parts[1] - 1, parts[0]);
+                  if (timeEntryDate?.setHours(0, 0, 0, 0) == new Date().setHours(0, 0, 0, 0) && timeEntry?.AuthorId == user?.AssingedToUserId) {
+                    EstimatedTimeEntryDesc += ' ' + timeEntry?.Description
+                    EstimatedTimeEntry += parseFloat(timeEntry?.TaskTime)
+                    totalTime += Number(timeEntry?.TaskTime)
+                    UserTotalTime += Number(timeEntry?.TaskTime)
+                  }
+                })
+              }
+            })
+          }
+            try {
+              let memberOnLeave = false;
+              if (!memberOnLeave) {
+                taskCount++;
+                text =
+                        `<tr>
+                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${item?.siteType} </td>
+                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.TaskID} </td>
+                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"><p style="margin:0px; color:#333;"><a style="text-decoration: none;" href =${item?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.Id}&Site=${item?.siteType}> ${item?.Title} </a></p></td>
+                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item?.PercentComplete} </td>
+                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px"> ${item.SmartPriority != undefined ? item.SmartPriority : ''} </td>
+                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px">${EstimatedTimeEntry} </td>
+                        <td height="10" align="left" valign="middle" style="border-left: 0px; border-top: 0px; padding: 5px 0px; padding-left:5px; border-right:0px"> ${EstimatedTimeEntryDesc} </td>
+                        </tr>`
+              }
+              body1.push(text)
+            } catch (error) {
+              console.log(error)
+            }
+          })
+          if (taskCount > 0) {
+            body += '<h3><strong>'
+            + user?.Title + ` - ${UserTotalTime} hrs Scheduled`
+            + '</strong></h3>'
+            + '<table style="border: 1px solid #ccc;" border="1" cellspacing="0" cellpadding="0" width="100%">'
+            + '<thead>'
+            + '<tr>'
+            + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Site' + '</th>'
+            + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Task ID' + '</th>'
+            + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Title' + '</th>'
+            + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + '% Complete' + '</th>'
+            + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Smart Priority' + '</th>'
+            + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Estimated Time(Today)' + '</th>'
+            + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Smart Time Description' + '</th>'
+            + '</tr>'
+            + '</thead>'
+            + '<tbody>'
+            + body1
+            + '</tbody>'
+            + '</table>'
+          }
         }
-      }
-      let sendAllTasks = `<span style="font-size: 18px;margin-bottom: 10px;">
+        else {
+          body = '<h3><strong>'
+              + user?.Title 
+              + '</strong></h3>'
+              + '<h4>'
+              + 'No Working Today Tasks Available '
+              + '</h4>'
+        }
+        body1 = []
+      })
+      var subject = `Todays Working Tasks - ${ContextData.currentUserData?.Title} and Approvees - ${Moment(new Date()).zone('Asia/Kolkata').format('DD/MM/YYYY')}: ${allWorkingTodayTasks.length} Tasks`;
+      body = body.replaceAll('>,<', '><').replaceAll(',', '')
+      let sendAllTasks:any = `<span style="font-size: 18px;margin-bottom: 10px;">
             Hi there, <br><br>
-            Below is the working today task of all the team members <strong>(Project Wise):</strong>
+            Below is the working today tasks of the ${ContextData.currentUserData?.Title} and his/her Approvees.
             <p><a href =${ContextData?.siteUrl}/SitePages/Project-Management-Overview.aspx>Click here for flat overview of the today's tasks</a></p>
             </span>
             ${body}
             <h3>
-            Thanks.
+            Thanks,
+            ${ContextData.currentUserData?.Title}
             </h3>`
-      SendEmailFinal(to, subject, sendAllTasks);
+      SendEmailFinal(to, subject, sendAllTasks.replaceAll("," , "  "));
     }
+    requiredTimeEntries = []
+    todaysDrafTimeEntry = []
+    allWorkingTodayTasks = []
   }
+
   const SendEmailFinal = async (to: any, subject: any, body: any) => {
     let sp = spfi().using(spSPFx(ContextData?.propsValue?.Context));
     sp.utility.sendEmail({
@@ -1214,7 +1364,12 @@ const TaskStatusTbl = (Tile: any) => {
                               user?.dates != null && user?.dates?.length > 0 && user?.dates.map((Date: any, index: number) => (
                                 Date.IsShowTask == true && (
                                   <>
-                                    <h3 className="f-15">{user?.Title} {Date?.DisplayDate} Task</h3>
+                                  <div className="alignCenter mb-2 justify-content-between">
+                                  <h3 className="f-15">{user?.Title} {Date?.DisplayDate} Task</h3>
+                                    <span className="alignCenter">
+                                    {<span title={`Share ${config?.WebpartTitle}`} onClick={() => sendAllWorkingTodayTasks(Date?.Tasks)} className="hreflink svg__iconbox svg__icon--share empBg"></span>}
+                                  </span>
+                                  </div>
                                     <div key={index} className="Alltable mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} style={{ height: "300px" }}>
                                       <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" columnSettingIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
                                         callBackData={callBackData} pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
