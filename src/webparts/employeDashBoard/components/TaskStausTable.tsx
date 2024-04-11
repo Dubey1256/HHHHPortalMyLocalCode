@@ -46,6 +46,9 @@ const TaskStatusTbl = (Tile: any) => {
   const [dateRange, setDateRange] = React.useState<any>([]);
   const [isRejectItem, setisRejectItem] = React.useState<any>(undefined);
   const [RefSelectedItem, setRefSelectedItem] = React.useState<any>([]);
+  if (Tile?.smartFavTableConfig != undefined && Tile?.smartFavTableConfig?.length > 0 && childRef?.current != undefined) {
+    childRef?.current?.setSmartFabBasedColumnsSetting(Tile?.smartFavTableConfig)
+  }
   const settings = {
     dots: false, infinite: true, speed: 500, slidesToShow: 6, slidesToScroll: 1, nextArrow: <SamplePrevNextArrow type="next" />, prevArrow: <SamplePrevNextArrow type="prev" />,
     beforeChange: handleBeforeChange,

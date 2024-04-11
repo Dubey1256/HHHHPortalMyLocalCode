@@ -1180,22 +1180,25 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         resetSorting: false,
         resetColumnFilters: false,
-        size: 50
+        size: 50,
+        isColumnVisible: true
       },
       {
         accessorKey: "TaskID",
-        placeholder: "Task Id",
-        header: "",
-        resetColumnFilters: false,
-        resetSorting: false,
-        size: 125,
-        cell: ({ row, getValue }) => (
+                cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
               <ReactPopperTooltipSingleLevel AllListId={AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </>
         ),
+        id:"TaskID",
+        placeholder: "Task Id",
+        header: "",
+        resetColumnFilters: false,
+        resetSorting: false,
+        size: 125,
+        isColumnVisible: true
       },
       {
         accessorFn: (row) => row?.Title,
@@ -1250,6 +1253,7 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         resetSorting: false,
         header: "",
+        isColumnVisible: true
       },
 
       {
@@ -1270,7 +1274,8 @@ const ProjectManagementMain = (props: any) => {
         placeholder: "Portfolio Item",
         resetColumnFilters: false,
         resetSorting: false,
-        header: ""
+        header: "",
+        isColumnVisible: true
       },
       {
         accessorFn: (row) => row?.TaskTypeValue,
@@ -1311,6 +1316,7 @@ const ProjectManagementMain = (props: any) => {
         id: 'Priority',
         header: "",
         resetColumnFilters: false,
+        isColumnVisible: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.PriorityRank == filterValue
         },
@@ -1325,6 +1331,7 @@ const ProjectManagementMain = (props: any) => {
         id: "SmartPriority",
         placeholder: "SmartPriority",
         resetColumnFilters: false,
+        isColumnVisible: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.SmartPriority == filterValue
         },
@@ -1345,7 +1352,9 @@ const ProjectManagementMain = (props: any) => {
         ),
         id: 'DueDate',
         resetColumnFilters: false,
+
         resetSorting: false,
+        isColumnVisible: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.DisplayDueDate?.includes(filterValue)
         },
@@ -1386,6 +1395,7 @@ const ProjectManagementMain = (props: any) => {
         id: 'PercentComplete',
         placeholder: "% Complete",
         resetColumnFilters: false,
+        isColumnVisible: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.PercentComplete == filterValue
         },
@@ -1412,7 +1422,8 @@ const ProjectManagementMain = (props: any) => {
         resetSorting: false,
         placeholder: "TeamMembers",
         header: "",
-        size: 110
+        size: 110,
+        isColumnVisible: true
       },
       {
         accessorFn: (row) => row?.SmartInformationTitle,
@@ -1426,7 +1437,8 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         placeholder: "Remarks",
         header: '',
-        size: 50
+        size: 50,
+        isColumnVisible: true
       },
 
       {
@@ -1455,6 +1467,7 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Created",
+        isColumnVisible: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
             return true
@@ -1491,6 +1504,7 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Modified",
+        isColumnVisible: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
             return true
@@ -1511,6 +1525,7 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         resetColumnFilters: false,
         size: 49,
+        isColumnVisible: true
       },
       {
         header: ({ table }: any) => (
@@ -2057,6 +2072,8 @@ const ProjectManagementMain = (props: any) => {
                                   bulkEditIcon={true} setData={setProjectTableData} setLoaded={setPageLoader}
                                   customTableHeaderButtons={customTableHeaderButtons}
                                   showRestructureButton={true}
+                                  columnSettingIcon={true}
+                                  tableId="pxlandingpage"
                                   switchGroupbyData={switchGroupbyData}
                                   restructureCallBack={callBackData1}
                                   ref={childRef} callChildFunction={callChildFunction}
