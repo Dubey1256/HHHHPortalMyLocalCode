@@ -1,6 +1,7 @@
 
 import * as React from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
+import ReactDOM from "react-dom";
 import * as $ from "jquery";
 import * as Moment from "moment";
 import { Web, sp } from "sp-pnp-js";
@@ -2602,7 +2603,7 @@ const EditTaskPopup = (Items: any) => {
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
                         UpdatedDataObject.SmartPriority = NewSmartPriority;
                         UpdatedDataObject.siteUrl = siteUrls;
-                        UpdatedDataObject.CommentsArray = UpdatedDataObject?.Comments != null  ? typeof UpdatedDataObject?.CommentsArray === "object"? JSON.parse(UpdatedDataObject?.Comments):UpdatedDataObject?.Comments: null
+                        UpdatedDataObject.CommentsArray = UpdatedDataObject?.Comments != null ? typeof UpdatedDataObject?.CommentsArray === "object" ? JSON.parse(UpdatedDataObject?.Comments) : UpdatedDataObject?.Comments : null
                         let WorkingActionData = UpdatedDataObject?.WorkingAction?.length > 0 ? JSON.parse(UpdatedDataObject?.WorkingAction) : [];
                         WorkingActionData?.map((ItemData: any) => {
                             ItemData.InformationData?.map(async (InfoItem: any) => {
@@ -2640,7 +2641,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         // This is used for send MS Teams Notification 
-                        if (TaskCategories !== "Bottleneck" && UpdatedDataObject.Categories.indexOf('Immediate') != -1 && UpdatedDataObject.Categories.indexOf('Design') != -1) {
+                        if (TaskCategories !== "Bottleneck" || UpdatedDataObject.Categories.indexOf('Immediate') != -1 || UpdatedDataObject.Categories.indexOf('Design') != -1) {
                             try {
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
@@ -2706,16 +2707,19 @@ const EditTaskPopup = (Items: any) => {
                                     }
                                 }
 
-                                const SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> 
+                                const emailMessage = GlobalFunctionForUpdateItems?.GenerateMSTeamsNotification(UpdatedDataObject);
+                                const containerDiv = document.createElement('div');
+                                const reactElement = React.createElement(emailMessage?.type, emailMessage?.props);
+                                ReactDOM.render(reactElement, containerDiv);
+
+                                    const SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> 
                                 </br> 
+                                    <b>Task Details :</b> ${containerDiv.innerHTML}
                                     <p>
                                     Task Link:  
                                     <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
-                                     ${UpdatedDataObject.TaskId}-${UpdatedDataObject.Title}
+                                     Click-here
                                     </a>
-                                    </br>
-                                    Task Category: ${TaskCategories}</br>
-                                    Smartpriority: <b>${UpdatedDataObject?.SmartPriority}</b></br>
                                     </p>
                                     <p></p>
                                     <b>
@@ -2740,7 +2744,7 @@ const EditTaskPopup = (Items: any) => {
                             }
                         }
                         let Createtordata: any = []
-                        if (IsTaskStatusUpdated  && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject.Categories.indexOf('Immediate') != -1) {
+                        if (IsTaskStatusUpdated && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject.Categories.indexOf('Immediate') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2766,7 +2770,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
-                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0  && UpdatedDataObject.Categories.indexOf('Immediate') != -1) {
+                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject.Categories.indexOf('Immediate') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2792,7 +2796,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
-                        if (IsTaskStatusUpdated  && checkStatusUpdate == 90 && UpdatedDataObject.Categories.indexOf('Design') != -1) {
+                        if (IsTaskStatusUpdated && checkStatusUpdate == 90 && UpdatedDataObject.Categories.indexOf('Design') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2804,7 +2808,7 @@ const EditTaskPopup = (Items: any) => {
 
                                 let DataForNotification: any = {
                                     ReceiverName: InfoItem?.Title,
-                                    sendUserEmail: ['alina.chyhasova@hochhuth-consulting.de','kristina.kovach@hochhuth-consulting.de'],
+                                    sendUserEmail: ['alina.chyhasova@hochhuth-consulting.de', 'kristina.kovach@hochhuth-consulting.de'],
                                     Context: Items.context,
                                     ActionType: "Design",
                                     ReasonStatement: "",
@@ -2884,7 +2888,7 @@ const EditTaskPopup = (Items: any) => {
                             console.log("No last name found");
                         }
                         let CalculateStatusPercentages: any = TaskDetailsFromCall[0].PercentComplete ? TaskDetailsFromCall[0].PercentComplete
-                                : 0;
+                            : 0;
                         if (IsTaskStatusUpdated && CalculateStatusPercentages == 90 && EmailStatus == true) {
                             setLastUpdateTaskData(TaskDetailsFromCall[0]);
                             ValueStatus = "90";
@@ -3197,13 +3201,13 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
             TaskAssignedTo?.map((taskInfo) => {
-                if(taskInfo.AssingedToUserId != undefined){
-                    AssignedToIds.push(taskInfo.AssingedToUserId);   
+                if (taskInfo.AssingedToUserId != undefined) {
+                    AssignedToIds.push(taskInfo.AssingedToUserId);
                 }
-                else{
+                else {
                     AssignedToIds.push(taskInfo.Id);
                 }
-               
+
             });
         }
 
@@ -3212,10 +3216,10 @@ const EditTaskPopup = (Items: any) => {
                 if (ApproverInfo.AssingedToUserId != undefined) {
                     ApproverIds.push(ApproverInfo.AssingedToUserId)
                 }
-                else{
+                else {
                     ApproverIds.push(ApproverInfo.Id);
                 }
-               
+
             });
         }
 
@@ -3224,10 +3228,10 @@ const EditTaskPopup = (Items: any) => {
                 if (taskInfo.AssingedToUserId != undefined) {
                     TeamMemberIds.push(taskInfo.AssingedToUserId)
                 }
-                else{
+                else {
                     TeamMemberIds.push(taskInfo.Id);
                 }
-               
+
             });
         }
 
@@ -3251,10 +3255,10 @@ const EditTaskPopup = (Items: any) => {
                 if (taskInfo.AssingedToUserId != undefined) {
                     ResponsibleTeamIds.push(taskInfo.AssingedToUserId)
                 }
-                else{
+                else {
                     ResponsibleTeamIds.push(taskInfo.Id);
                 }
-               
+
             });
         }
         if (
@@ -4804,7 +4808,7 @@ const EditTaskPopup = (Items: any) => {
     };
 
 
-   
+
     const SelectApproverFromAutoSuggestion = (ApproverData: any, usedFor: string) => {
         setApproverSearchedData([]);
         setApproverSearchedDataForPopup([]);
@@ -4859,12 +4863,12 @@ const EditTaskPopup = (Items: any) => {
             setWorkingAction([...copyWorkAction]);
             console.log("Bottleneck All Details:", copyWorkAction)
         } else {
-            let ApproverHistoryObject: any 
+            let ApproverHistoryObject: any
             selectApproverFunction(ApproverData);
             setTaskAssignedTo([ApproverData]);
             setTaskTeamMembers([ApproverData]);
             TaskApproverBackupArray = [ApproverData];
-            if(useFor=="Bottleneck"||useFor=="Attention"){
+            if (useFor == "Bottleneck" || useFor == "Attention") {
                 ApproverHistoryObject = {
                     ApproverName: ApproverData.Title,
                     ApprovedDate: Moment(new Date())
@@ -4878,17 +4882,17 @@ const EditTaskPopup = (Items: any) => {
                             : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
                     ApproverSuffix: ApproverData.Suffix,
                     ApproverEmail: ApproverData.Email,
-                };  
-            }else{
+                };
+            } else {
                 StatusOptions?.map((item: any) => {
-                    if (item.value == 1 ) {
+                    if (item.value == 1) {
                         Items.sendApproverMail = true;
                         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: "1" });
                         setPercentCompleteStatus(item.status);
                         setTaskStatus(item.taskStatusComment);
                     }
                 });
-                 ApproverHistoryObject = {
+                ApproverHistoryObject = {
                     ApproverName: ApproverData.Title,
                     ApprovedDate: Moment(new Date())
                         .tz("Europe/Berlin")
@@ -4903,7 +4907,7 @@ const EditTaskPopup = (Items: any) => {
                     ApproverEmail: ApproverData.Email,
                 };
             }
-          
+
             ApproverHistoryData.push(ApproverHistoryObject);
         }
     };
@@ -7174,7 +7178,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 className="hover-text m-1"
                                                                                 onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
                                                                             >
-                                                                            <LuBellPlus></LuBellPlus>
+                                                                                <LuBellPlus></LuBellPlus>
                                                                                 <span className="tooltip-text pop-left">
                                                                                     Send reminder notifications
                                                                                 </span>
@@ -7288,7 +7292,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
                                                                                 className="hover-text m-1"
                                                                             >
-                                                                               <LuBellPlus></LuBellPlus>
+                                                                                <LuBellPlus></LuBellPlus>
                                                                                 <span className="tooltip-text pop-left">
                                                                                     Send reminder notifications
                                                                                 </span>
