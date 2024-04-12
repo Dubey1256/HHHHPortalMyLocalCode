@@ -1721,7 +1721,7 @@ function CreateTaskComponent(props: any) {
                         <div className='row p-0'>
                             <div className='col-sm-6  '>
                                 <div className='input-group'>
-                                    <label className='full-width'>Task Name</label>
+                                    <label className='full-width form-label'>Task Name</label>
                                     <input type="text" placeholder='Enter task Name' className='form-control' value={save.taskName} onChange={(e) => { changeTitle(e) }}></input>
                                 </div>
                             </div>
