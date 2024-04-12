@@ -20,35 +20,47 @@ export default function DocumentSearchPage(Props: any) {
     //#region code to load All Documents By PB
     const LoadDocs = () => {
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
-        web.lists.getById(PageContext.DocumentsListID).items.select("Id,Title,PriorityRank,File/Length,Year,Body,recipients,senderEmail,creationTime,Item_x0020_Cover,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl").filter('FSObjType eq 0').expand("Author,Editor,SharewebTask,Portfolios,File").orderBy("Created", false).getAll()
+        web.lists.getById(PageContext.DocumentsListID).items.select("Id,Title,PriorityRank,File/Length,Year,Body,recipients,senderEmail,creationTime,Item_x0020_Cover,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl").filter('FSObjType eq 0').expand("Author,Editor,Portfolios,File").orderBy("Created", false).getAll()
             .then((response: any) => {
-                let AllProjectData: any = []
-               
-
+            
                 try {
                     response.forEach((Doc: any) => {
+                        let AllProjectData: any = []
                         let projectTitle: any = ''
+                        let projectId: any = ''
+                        
                         Doc?.Title === null ? Doc.Title = Doc?.FileLeafRef : Doc.Title;
                         Doc?.Title !== null ? Doc.Title = Doc.Title.split(".")[0] : Doc.Title;
-                        // Doc.Portfolios.map((item: any) => {
-                        //     mastertaskdata.map((mastertask: any) => {
-                        //         if (mastertask.Id == item.Id && mastertask?.Item_x0020_Type == "Project") {
-                        //             AllProjectData.push(mastertask)
-                        //         }
-                        //     })
-                        // })
-                        // AllProjectData.map((items: any) => {
-                        //     if (items.Title != undefined){
-                        //         projectTitle += items.Title + " ,"
-                        //     }
-                           
-                        // })
-                        // console.log(AllProjectData)
+                        Doc.Portfolios.map((item: any) => {
+                            mastertaskdata.map((mastertask: any) => {
+                                if (mastertask.Id == item.Id && mastertask?.Item_x0020_Type == "Project") {
+                                    AllProjectData.push(mastertask)
+                                }
+                            })
+                        })
+                        AllProjectData.map((items: any,index:any) => {
+                            if (items.Title != undefined && items.Title != null){
+                                projectTitle += items.Title 
+                                if (index < AllProjectData.length - 1) {
+                                    projectTitle += ", ";
+                                }
+                            }
+                            if (items.Id != undefined && items.Id != null){
+                                projectId += items.Id 
+                                if (index < AllProjectData.length - 1) {
+                                    projectId += ", ";
+                                }
+                            }
+                        })
+                       
+                    
+                        console.log(AllProjectData)
                         
                         Doc.CreatedDate = moment(Doc?.Created).format('DD/MM/YYYY');
                         Doc.ModifiedDate = moment(Doc?.Modified).format('DD/MM/YYYY HH:mm')
                         Doc.SiteIcon = PageContext.context._pageContext._web.title;
-                        // Doc.ProjectTitle = projectTitle;
+                        Doc.ProjectTitle = projectTitle;
+                        Doc.projectId = projectId;
                         Doc.AllModifiedImages = [];
                         Doc.AllCreatedImages = [];
                         let CreatedUserObj: any = {};
@@ -106,36 +118,36 @@ export default function DocumentSearchPage(Props: any) {
     }
     useEffect(() => {
         LoadTaskUser()
-        // LoadMasterTaskList()
+        LoadMasterTaskList()
     }, []);
 
-    // const LoadMasterTaskList = () => {
-    //     return new Promise(function (resolve, reject) {
-    //         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/');
-    //         web.lists
-    //             .getById(PageContext.MasterTaskListID).items
-    //             .select(
-    //                 "Id",
-    //                 "Title",
-    //                 "Mileage",
-    //                 "TaskListId",
-    //                 "Item_x0020_Type",
-    //                 "TaskListName",
-    //                 "PortfolioType/Id",
-    //                 "PortfolioType/Title",
-    //                 "PortfolioType/Color",
-    //             ).expand("PortfolioType").top(4999).get()
-    //             .then((dataserviccomponent: any) => {
-    //                 console.log(dataserviccomponent)
-    //                 mastertaskdata = dataserviccomponent;
-    //                 resolve(dataserviccomponent)
+    const LoadMasterTaskList = () => {
+        return new Promise(function (resolve, reject) {
+            let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/');
+            web.lists
+                .getById(PageContext.MasterTaskListID).items
+                .select(
+                    "Id",
+                    "Title",
+                    "Mileage",
+                    "TaskListId",
+                    "Item_x0020_Type",
+                    "TaskListName",
+                    "PortfolioType/Id",
+                    "PortfolioType/Title",
+                    "PortfolioType/Color",
+                ).expand("PortfolioType").top(4999).get()
+                .then((dataserviccomponent: any) => {
+                    console.log(dataserviccomponent)
+                    mastertaskdata = dataserviccomponent;
+                    resolve(dataserviccomponent)
 
-    //             }).catch((error: any) => {
-    //                 console.log(error)
-    //                 reject(error)
-    //             })
-    //     })
-    // }
+                }).catch((error: any) => {
+                    console.log(error)
+                    reject(error)
+                })
+        })
+    }
     //#endregion
     //#region code to edit delete and callback function BY PB
     const closeEditPopup = () => {
@@ -170,30 +182,34 @@ export default function DocumentSearchPage(Props: any) {
             size: 10,
             id: 'Id',
         },
+        
         {
             accessorKey: "FileLeafRef", placeholder: "Title", header: "", id: "FileLeafRef",
             cell: ({ row }) => (
                 <div className='alignCenter '>
+                    <a target="_blank" className='alignCenter' data-interception="off" href={row?.original?.FileDirRef}>                
                     {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'jfif' && <span title={`${row?.original?.File_x0020_Type}`} className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
                     {row?.original?.File_x0020_Type == 'rar' && <span title={`${row?.original?.File_x0020_Type}`} className="svg__iconbox svg__icon--zip "></span>}
                     {row?.original?.File_x0020_Type == 'msg' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--msg "></span> : ''}
                     {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
                     {row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--docx "></span> : ''}
                     {row?.original?.File_x0020_Type == 'jfif' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
-                    <a className='ms-1 wid90' target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.Title} </a>
-
+                    </a>
+                    <a className='ms-1 alignCenter' target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.Title} </a>
+                    
                 </div>
             ),
         },
-        // {
-        //     accessorKey: "ProjectTitle", placeholder: "Project", header: "", size: 120, id: "ProjectTitle", isColumnDefultSortingDesc: true,
-        //     cell: ({ row }) => (
-        //         <>
-        //             {row?.original?.ProjectTitle}
-
-        //         </>
-        //     )
-        // },
+        {
+            accessorKey: "ProjectTitle", placeholder: "Project", header: "", size: 120, id: "ProjectTitle", isColumnDefultSortingDesc: true,
+            cell: ({ row }) => (
+                <>
+                <a target="_blank" data-interception="off" href={`${PageContext?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.projectId}`}>
+                    {row?.original?.ProjectTitle}
+                    </a>
+                </>
+            )
+        },
         {
             accessorKey: "File_x0020_Type", placeholder: "Item Type", header: "", size: 120, id: "File_x0020_Type", isColumnDefultSortingDesc: true,
             cell: ({ row }) => (
