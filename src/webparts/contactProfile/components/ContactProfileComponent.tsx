@@ -2,21 +2,21 @@ import * as React from "react";
 import { useState } from 'react';
 import { Web } from 'sp-pnp-js';
 import EditContactPopup from "../../contactDatabase/components/EditContactPopup";
-let allListId:any={};
+let allListId: any = {};
 const ContactProfileComponent = (props: any) => {
     const baseUrl = props?.props?.Context?.pageContext?._web?.absoluteUrl;
     const MainSiteUrl = props?.props?.Context?.pageContext?.site?.absoluteUrl;
     let webs = new Web(baseUrl);
     const [Contacts, setContacts] = useState(null);
     const [openEditpopup, setopenEditpopup] = useState(false)
-   
+
     React.useEffect(() => {
-        allListId={
-            TeamContactSearchlistIds:props?.props?.TeamContactSearchlistIds,
-            TeamSmartMetadatalistIds:props?.props?.TeamSmartMetadatalistIds,
-            baseUrl:baseUrl,
-            Context:props?.props?.Context
-           }
+        allListId = {
+            TeamContactSearchlistIds: props?.props?.TeamContactSearchlistIds,
+            TeamSmartMetadatalistIds: props?.props?.TeamSmartMetadatalistIds,
+            baseUrl: baseUrl,
+            Context: props?.props?.Context
+        }
         loadContacts()
     }, [])
 
@@ -45,7 +45,8 @@ const ContactProfileComponent = (props: any) => {
         setopenEditpopup(true)
     }
     const EditCallBackItemProfile = (updatedData: any) => {
-        setContacts(updatedData);
+        if (updatedData != "close")
+            setContacts(updatedData);
         setopenEditpopup(false)
     }
 
@@ -53,28 +54,28 @@ const ContactProfileComponent = (props: any) => {
         <>
             <div className="container">
                 <div className="col-sm-12 no-padding smart-folder pagetitle">
-                        <ul className="DisplayInline ps-2">
-                            <span>
-                                <a href={`${baseUrl}/Sitepages/contact-search.aspx`} ><span id="spnsubtopic">Contact Database </span></a>
-                                <span className="right-icon" id="">
-                                    <span> &gt; {Contacts?.FirstName}&nbsp;{Contacts?.Title} <span>{Contacts?.null !== undefined && Contacts?.Suffix !== undefined && Contacts?.Suffix !== '' ? `(${Contacts?.Suffix})` : ''}</span> </span>
-                                </span>
+                    <ul className="DisplayInline ps-2">
+                        <span>
+                            <a href={`${baseUrl}/Sitepages/contacts-search.aspx`} ><span id="spnsubtopic">Contact Database </span></a>
+                            <span className="right-icon" id="">
+                                <span> &gt; {Contacts?.FirstName}&nbsp;{Contacts?.Title} <span>{Contacts?.null !== undefined && Contacts?.Suffix !== undefined && Contacts?.Suffix !== '' ? `(${Contacts?.Suffix})` : ''}</span> </span>
                             </span>
-                        </ul>
+                        </span>
+                    </ul>
                 </div>
                 <table width="100%" style={{ marginTop: '30px' }}>
                     <tbody>
                         <tr>
                             <td>
                                 <h2 className="ml-16 heading">{Contacts?.FirstName}&nbsp;{Contacts?.Title} <span>{Contacts?.Suffix !== null && Contacts?.Suffix !== undefined && Contacts?.Suffix !== '' ? `(${Contacts?.Suffix})` : ''}</span> </h2>
-                                
+
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <div className="leftcol">
                                     <div style={{ lineHeight: '150px', textAlign: 'center' }}>
-                                        <img src={Contacts?.ItemCover === undefined || Contacts?.ItemCover === null || Contacts?.ItemCover?.Url === undefined || Contacts?.ItemCover?.Url === null? `${MainSiteUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg` : Contacts?.ItemCover?.Url} alt="User" />
+                                        <img src={Contacts?.ItemCover === undefined || Contacts?.ItemCover === null || Contacts?.ItemCover?.Url === undefined || Contacts?.ItemCover?.Url === null ? `${MainSiteUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg` : Contacts?.ItemCover?.Url} alt="User" />
                                     </div>
                                     <div style={{ textAlign: 'center' }}>
                                         <a href="javascript:void(0)" className="alignCenter justify-content-center" onClick={() => EditItem()}>
@@ -121,7 +122,7 @@ const ContactProfileComponent = (props: any) => {
                                             <div className="col-md-6 ps-0">
                                                 <div className="contact-info">
                                                     <div className="contact-dtls">
-                                                        <div className="infocontent-pannel"><img title="Email" src={`${baseUrl}/PublishingImages/Icons/24/circle_mail_png.jpg`}/><a href="mailto:{{Contacts?.Email}}">{Contacts?.Email}</a></div>
+                                                        <div className="infocontent-pannel"><img title="Email" src={`${baseUrl}/PublishingImages/Icons/24/circle_mail_png.jpg`} /><a href="mailto:{{Contacts?.Email}}">{Contacts?.Email}</a></div>
                                                     </div>
                                                 </div>
 
@@ -142,7 +143,7 @@ const ContactProfileComponent = (props: any) => {
                                             <div className="col-md-6 ps-0">
                                                 <div className="contact-info">
                                                     <div className="contact-dtls">
-                                                        <div className="infocontent-pannel"> <img title="Address" src={`${baseUrl}/PublishingImages/Icons/24/c_Venue.png`}/>{Contacts?.WorkAddress}</div>
+                                                        <div className="infocontent-pannel"> <img title="Address" src={`${baseUrl}/PublishingImages/Icons/24/c_Venue.png`} />{Contacts?.WorkAddress}</div>
                                                     </div>
                                                 </div>
 
@@ -160,7 +161,7 @@ const ContactProfileComponent = (props: any) => {
                                             <div className="col-md-6 ps-0">
                                                 <div className="contact-info">
                                                     <div className="contact-dtls">
-                                                        <div className="infocontent-pannel"><img title="Webpage" src={`${baseUrl}/PublishingImages/Icons/24/icon_Webpage_png.jpg`}/>   <a href={Contacts?.WebPage?.Url} target="_blank">{Contacts?.WebPage?.Url}</a></div>
+                                                        <div className="infocontent-pannel"><img title="Webpage" src={`${baseUrl}/PublishingImages/Icons/24/icon_Webpage_png.jpg`} />   <a href={Contacts?.WebPage?.Url} target="_blank">{Contacts?.WebPage?.Url}</a></div>
                                                     </div>
                                                 </div>
 
@@ -168,7 +169,7 @@ const ContactProfileComponent = (props: any) => {
                                             <div className="col-md-6 ps-2 pe-0">
                                                 <div className="contact-info">
                                                     <div className="contact-dtls">
-                                                        <div className="infocontent-pannel"><img title="Skype" src={`${baseUrl}/PublishingImages/Icons/24/icon_Skype_png.jpg`}/> <a href={Contacts?.IM} target="_blank">{Contacts?.IM}</a></div>
+                                                        <div className="infocontent-pannel"><img title="Skype" src={`${baseUrl}/PublishingImages/Icons/24/icon_Skype_png.jpg`} /> <a href={Contacts?.IM} target="_blank">{Contacts?.IM}</a></div>
                                                     </div>
                                                 </div>
                                             </div>
