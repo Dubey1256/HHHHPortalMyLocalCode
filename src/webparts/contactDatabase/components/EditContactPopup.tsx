@@ -45,6 +45,8 @@ const EditContactPopup = (props: any) => {
         }
         if (props.page != undefined && props.page != undefined && props.page == "CreateNewContact" || props.page == "CreateContact") {
             props.closeEditpoup(props.page)
+        } if(props.page == "ContactProfile"){
+             props.EditCallBackItemProfile("close")
         } else {
             props.closeEditContactPopup()
         }

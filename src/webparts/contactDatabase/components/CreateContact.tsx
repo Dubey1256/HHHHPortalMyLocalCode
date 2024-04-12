@@ -87,23 +87,15 @@ const CreateContactComponent = (props: any) => {
     const onRenderCustomHeadersmartinfo = () => {
         return (
             <> 
-                <h3>
-                <span className="ml-auto">Create Contact</span><Tooltip ComponentId='696' />
-                </h3>
+                <div className="subheading">
+                    Create Contact
+                </div>
+                <Tooltip ComponentId='696' />
             </>
         );
     };
 
-    const CustomFootersmartinfo=()=>{
-        return(
-            <footer>
-                <div className="col text-end">
-            <button className="btn btn-primary ms-1 mx-2" onClick={saveDataFunction} disabled={isUserExist}>Save</button>
-            <button onClick={() => props.callBack()} className="btn btn-default">Cancel</button>
-            </div>
-        </footer>
-        )
-    }
+    
     return (
         <>
             <Panel
@@ -112,7 +104,6 @@ const CreateContactComponent = (props: any) => {
                 type={PanelType.custom}
                 customWidth="450px"
                 isBlocking={false}
-                onRenderFooterContent={CustomFootersmartinfo}
                 isFooterAtBottom={true}
                 onDismiss={() => props?.callBack()}
             >
@@ -132,6 +123,12 @@ const CreateContactComponent = (props: any) => {
                             : null}
                     </div>
                 </div>
+                <footer>
+                    <div className="col text-end">
+                    <button className="btn btn-primary ms-1 mx-2" onClick={saveDataFunction} disabled={isUserExist}>Save</button>
+                    <button onClick={() => props.callBack()} className="btn btn-default">Cancel</button>
+                    </div>
+                </footer>
                
                 {profileStatus && !newContact && (<EditContactPopup props={contactdata} allListId={props?.allListId} callBack={ClosePopup} closeEditpoup={closeEditpoup} EditCallBackItem={props.EditCallBackItem} page={"CreateContact"} />)}
                 {!profileStatus && newContact && (<EditContactPopup props={contactdata} allListId={props?.allListId} closeEditpoup={closeEditpoup} EditCallBackItem={props.EditCallBackItem} page={"CreateNewContact"} />)}
