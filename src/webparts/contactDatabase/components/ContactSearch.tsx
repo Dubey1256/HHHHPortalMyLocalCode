@@ -158,11 +158,11 @@ const ContactSearch = (props: any) => {
     const sendEmail = () => {
         let emails = '';
         var ContactsNotHavingEmail: any = [];
-        userEmails.map((item: any) => {
+        userEmails?.map((item: any) => {
 
-            if (item.isSelect == true) {
-                item.map((child: any) => {
-                    if (child.Email == null) {
+            if (item?.isSelect == true) {
+                userEmails?.map((child: any) => {
+                    if (child?.Email == null) {
                         ContactsNotHavingEmail.push(child);
 
                     }
