@@ -5,13 +5,15 @@ import { IEmailProperties } from "@pnp/sp/sputilities";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import { Web } from 'sp-pnp-js';
 import moment from 'moment';
-
+import * as Moment from 'moment';
 let percentage = 1;
 const EmailComponenet = (props: any) => {
 
-  const [taskpermission, settaskpermission] = useState(props?.emailStatus!=undefined?props?.emailStatus:null);
+  const [taskpermission, settaskpermission] = useState(props?.emailStatus != undefined ? props?.emailStatus : null);
+  if (props.items != undefined && (props?.items?.TaskID == undefined || props?.items?.TaskID == ''))
+    props.items.TaskID = props.items?.TaskId
   useEffect(() => {
-   
+
     sendEmail(props.emailStatus);
   }, [])
   console.log(props);
@@ -23,17 +25,17 @@ const EmailComponenet = (props: any) => {
       var approvalDataHistory = {
         ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
         Id: props?.currentUser[0].Id,
-        ImageUrl:  props?.currentUser[0].userImage,
-        Title:  props?.currentUser[0].Title,
+        ImageUrl: props?.currentUser[0].userImage,
+        Title: props?.currentUser[0].Title,
         isShowLight: permission,
-        Status:permission=="Approve"?'Approved by':"Rejected by"
-         }
+        Status: permission == "Approve" ? 'Approved by' : "Rejected by"
+      }
       if (items?.FeedBackDescriptions != undefined && items?.FeedBackDescriptions?.length > 0) {
         items?.FeedBackDescriptions?.map((feedback: any) => {
           if (feedback?.Subtext != undefined) {
             feedback?.Subtext?.map((subtext: any) => {
               if (subtext?.isShowLight === "") {
-                if(props?.items["PercentComplete"]==1){
+                if (props?.items["PercentComplete"] == 1) {
                   if (subtext.ApproverData != undefined) {
                     subtext.ApproverData.push(approvalDataHistory)
                   } else {
@@ -48,7 +50,7 @@ const EmailComponenet = (props: any) => {
               }
             })
           }
-          if(props?.items["PercentComplete"]==1){
+          if (props?.items["PercentComplete"] == 1) {
             if (feedback.ApproverData != undefined) {
               feedback.ApproverData.push(approvalDataHistory)
             } else {
@@ -56,7 +58,7 @@ const EmailComponenet = (props: any) => {
               feedback.ApproverData.push(approvalDataHistory);
             }
           }
-         
+
           if (feedback.isShowLight === "") {
 
             feedback.isShowLight = permission
@@ -68,7 +70,6 @@ const EmailComponenet = (props: any) => {
       }
     })
     console.log(feedback);
-
   };
 
   const sendEmail = async (send: any) => {
@@ -104,28 +105,22 @@ const EmailComponenet = (props: any) => {
           FeedBack: feedback?.length > 0 ? JSON.stringify(feedback) : null
         }).then((res: any) => {
           console.log(res);
-          
-          props.approvalcallback()
         })
         .catch((err: any) => {
           console.log(err.message);
         });
     }
-
-
-    console.log(props);
-
     let mention_To: any = [];
-    mention_To.push(props?.items?.Approvee!=undefined?props?.items?.Approvee?.Email:props?.items?.Author[0]?.Name?.replace('{', '').replace('}', '').trim());
+    mention_To.push(props?.items?.Approvee != undefined ? props?.items?.Approvee?.Email : props?.items?.Author[0]?.Name?.replace('{', '').replace('}', '').trim());
     console.log(mention_To);
     if (mention_To.length > 0) {
       let emailprops = {
         To: mention_To,
-        Subject: "[" + props?.items?.siteType + "-" + send + "]" + props?.items?.Title,
+        Subject: "[Approval" + " - " + props.items.siteType + " - " + props.items?.TaskID + " " + props.items.Title + "] Task " + send,
+
         Body: props.items.Title
       }
       console.log(emailprops);
-
       await SendEmailFinal(emailprops);
     }
   }
@@ -137,23 +132,17 @@ const EmailComponenet = (props: any) => {
 
   const SendEmailFinal = async (emailprops: any) => {
     let sp = spfi().using(spSPFx(props.Context));
-    sp.utility.sendEmail({
-      //Body of Email  
+    let data = await sp.utility.sendEmail({
       Body: BindHtmlBody(),
-      //Subject of Email  
       Subject: emailprops.Subject,
-      //Array of string for To of Email  
       To: emailprops.To,
       AdditionalHeaders: {
         "content-type": "text/html"
       },
-    }).then(() => {
-      console.log("Email Sent!");
-      props?.approvalcallback();
-
-    }).catch((err) => {
-      console.log(err.message);
-    });
+    })
+    console.log("Email Sent!");
+    console.log(data);
+    props?.approvalcallback();
   }
   const joinObjectValues = (arr: any) => {
     let val = '';
@@ -168,213 +157,248 @@ const EmailComponenet = (props: any) => {
 
       {props.items != null && props?.items?.Approver != undefined &&
         <div id='htmlMailBodyemail' style={{ display: 'none' }}>
-          <div style={{ marginTop: "2pt" }}>Hi,</div>
+          <div style={{ marginTop: "2pt" }}>Hi {props?.items?.Approvee != undefined ? props?.items?.Approvee?.Title : ''},</div>
           {taskpermission != null && taskpermission == "Approve" && <div style={{ marginTop: "2pt" }}>Your task has been Approved by {props.items?.Approver?.Title},team will process it further.Please refer to the Approved Comments.</div>}
           {taskpermission != null && taskpermission == "Reject" && <div style={{ marginTop: "2pt" }}>Your task has been Rejected by {props?.items?.Approver?.Title},team will process it further. Please refer to the  Rejected Comments.</div>}
 
           <div style={{ marginTop: "11.25pt" }}>
             <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props?.items?.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props?.items["Title"]}</a><u></u><u></u></div>
-         <table cellPadding={0} cellSpacing={0}  width="100%" style={{ width: "100.0%" }}>
-              <tbody>
-                <tr>
-                  <td width="70%" valign="top" style={{ width: '70.0%', padding: '4pt' }}>
-                    <table cellPadding={0} cellSpacing={0}  width="99%" style={{ width: "99.0%" }}>
+          <br />
+          <b><span style={{ fontSize: '10.0pt', color: 'black' }}>Task Details : </span></b>
+          <p></p>
+          <table cellPadding="0" width="100%" style={{ width: "100%" }}>
+            <tbody>
+              <tr>
+                <td width="70%" valign="top" style={{ width: '70.0%', padding: '.75pt .75pt .75pt .75pt' }}>
+                  <table cellPadding="0" width="99%" style={{ width: "99.0%" }}>
+                    <tbody>
+                      <tr>
+                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Task Id:</span></b><u></u><u></u></p>
+                        </td>
+                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props?.items?.TaskId}</span><u></u><u></u></p>
+                        </td>
+                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Component:</span></b><u></u><u></u></p>
+                        </td>
+                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p>{props?.items["Portfolio"] != null &&
+                            <span style={{ fontSize: '10.0pt', color: 'black' }}>
+                              {props?.items["Portfolio"]?.Title}
+                            </span>
+                          }
+                            <span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        </td>
+                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Priority:</span></b><u></u><u></u></p>
+                        </td>
+                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props?.items["Priority"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Start Date:</span></b><u></u><u></u></p>
+                        </td>
+                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props?.items["StartDate"] != null && props?.items["StartDate"] != undefined && props?.items["StartDate"] != "" ? props?.items["StartDate"] : ""}</span><u></u><u></u></p>
+                        </td>
+                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Completion Date:</span></b><u></u><u></u></p>
+                        </td>
+                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props?.items["CompletedDate"] != null && props?.items["CompletedDate"] != undefined && props?.items["CompletedDate"] != "" ? props?.items["CompletedDate"] : ""}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        </td>
+                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Due Date:</span></b><u></u><u></u></p>
+                        </td>
+                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props?.items["DueDate"] != null && props?.items["DueDate"] != undefined && props?.items["DueDate"] != "" ? props?.items["DueDate"] : ''}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Team Members:</span></b><u></u><u></u></p>
+                        </td>
+                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p>{props?.items["TeamMembers"] != null &&
+                            props?.items["TeamMembers"].length > 0 &&
+                            <span style={{ fontSize: '10.0pt', color: 'black' }}>
+                              {joinObjectValues(props?.items["TeamMembers"])}
+                            </span>
+                          }
+                            <span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        </td>
+                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created:</span></b><u></u><u></u></p>
+                        </td>
+                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{Moment(props?.items["Created"]).format("DD-MMMM-YYYY")}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        </td>
+                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created By:</span></b><u></u><u></u></p>
+                        </td>
+                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props?.items["Author"] != null && props?.items["Author"][0] != undefined && props?.items["Author"][0].Title}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Categories:</span></b><u></u><u></u></p>
+                        </td>
+                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props?.items["Categories"]}</span><u></u><u></u></p>
+                        </td>
+                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Status:</span></b><u></u><u></u></p>
+                        </td>
+                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                          {props?.items["Status"]}
+                        </td>
+                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>% Complete:</span></b><u></u><u></u></p>
+                        </td>
+                        <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                          {props?.items["PercentComplete"]}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>URL:</span></b><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        </td>
+                        <td colSpan={7} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>
+                            {props?.items["component_url"] != null &&
+                              <a href={props?.items["component_url"].Url} target="_blank">{props?.items["component_url"].Url}</a>
+                            }</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Smart Priority:</span></b><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        </td>
+                        <td colSpan={7} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                          {props?.items["SmartPriority"]}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  {props?.items["FeedBack"] != null &&
+                    props?.items["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
+                    props?.items["FeedBack"][0]?.FeedBackDescriptions[0].Title?.length > 8 ?
+                    <table cellPadding="0" width="99%" style={{ width: "99.0%" }}>
                       <tbody>
-                       
-                        <tr>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Task Id:</span></b></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p  style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["ID"]}</span></p>
-                          </td>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Component:</span></b></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}>{props.items["Component"] != null &&
-                              props.items["Component"].length > 0 &&
-                              <span style={{ fontSize: '10.0pt', color: 'black' }}>
-                                {joinObjectValues(props.items["Component"])}
-                              </span>
-                            }
-                              </p>
-                          </td>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Priority:</span></b></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items?.Priority}</span></p>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Start Date:</span></b></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items?.StartDate}</span></p>
-                          </td>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Completion Date:</span></b></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items?.CompletedDate}</span></p>
-                          </td>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Due Date:</span></b></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items?.DueDate}</span></p>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Team Members:</span></b></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}>{props.items["TeamMembers"] != null &&
-                              props.items["TeamMembers"].length > 0 &&
-                              <span style={{ fontSize: '10.0pt', color: 'black' }}>
-                                {joinObjectValues(props.items?.TeamMembers)}
-                              </span>
-                            }
-                              </p>
-                          </td>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created By:</span></b></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["StartDate"]}</span></p>
-                          </td>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created:</span></b></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Author"] != null && props.items["Author"].length > 0 && props.items["Author"][0].Title}</span></p>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Categories:</span></b></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Categories"]}</span></p>
-                          </td>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Status:</span></b></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Status"]}</span></p>
-                          </td>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>% Complete:</span></b></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["PercentComplete"]}</span></p>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>URL:</span></b></p>
-                          </td>
-                          <td colSpan={7} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
-                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>
-                              {props.items["component_url"] != null &&
-                                <a href={props.items["component_url"].Url} target="_blank">{props.items["component_url"].Url}</a>
-                              }</span></p>
-                          </td>
-                          <td style={{ padding: '4pt' }}></td>
-                        </tr>
-                   
-                  
-                      </tbody>
-                    </table>
-                    <table cellPadding={0} cellSpacing={0} width="99%" style={{ width: "99.0%" }}>
-                      <tbody>
-                        <tr>
-                          <td style={{ padding: '2pt' }}></td>
-                        </tr>
+                        <td style={{ padding: '0.75pt', whiteSpace: 'nowrap' }}><b><span style={{ fontSize: '10pt', color: 'black' }}>Task Description:</span></b></td>
+                        {props?.items["FeedBack"] != null &&
+                          props?.items["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
+                          props?.items["FeedBack"][0]?.FeedBackDescriptions[0].Title != '' &&
+                          props?.items["FeedBack"][0]?.FeedBackDescriptions.map((fbData: any, i: any) => {
+                            return (<>
+                              <tr>
+                                <td width="50px" align="center" style={{ border: "1px solid rgb(204, 204, 204)" }}>
+                                  <span style={{ fontSize: "10pt", color: "rgb(111, 111, 111)" }}>
+                                    <span>{i + 1}</span> <br />
 
-
-                        {props.items["FeedBack"] != null &&
-                          props.items["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
-                          props.items["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' &&
-                          props.items["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
-                            return <>
-                              <tr >
-                                <td width={"30px"} align='center' style={{border: "1px solid #ccc", }}>
-                                  <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}</span></p>
+                                  </span>
                                 </td>
-                                
-                                <td style={(fbData?.isShowLight=="Reject")?({ background: "rgba(255, 0, 0, 0.09)",border: "1px solid #ccc", padding: "0px 2px 0px 10px"}):(fbData?.isShowLight=="Approve")?({ background: "#00800024",border: "1px solid #ccc", padding: "0px 2px 0px 10px" }):({ background: "#fbfbfb",border: "1px solid #ccc", padding: "0px 2px 0px 10px" })}><span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span>
-                                  {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments']?.map((fbComment: any) => {
-                                    return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt', marginBottom:'5pt'}}>
+                                <td height="40px" style={{ padding: "0px 2px 0px 10px", border: "1px solid #ccc" }}><span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span>
+                                  {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
+                                    return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
                                       <div style={{ marginBottom: '3.75pt' }}>
-                                        <p style={{ marginLeft: '1.5pt'}}>Comment by <span>{fbComment?.AuthorName} - {fbComment?.Created}</span></p>
+                                        <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span>{fbComment.AuthorName} - {fbComment.Created}<u></u><u></u></span></p>
                                       </div>
-                                      <p style={{ marginLeft: '1.5pt'}}><span><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span></span></p>
+                                      <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span><u></u><u></u></span></p>
                                     </div>
-
                                   })}
                                 </td>
                               </tr>
-                              {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
+                              {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map((fbSubData: any, j: any) => {
                                 return <>
-                                  <tr >
-                                    <td width={"30px"} style={{border: "1px solid #ccc"}} align='center'>
-                                      <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.{j + 1}.</span></p>
-                                    </td>
-                                    <td style={fbSubData?.isShowLight=="Reject"?{ background: "rgba(255, 0, 0, 0.09)",border: "1px solid #ccc", padding: "0px 2px 0px 10px"}:(fbSubData?.isShowLight=="Approve")?({ background: "#00800024",border: "1px solid #ccc", padding: "0px 2px 0px 10px" }):{ background: "#fbfbfb",border: "1px solid #ccc", padding: "0px 2px 0px 10px" }}><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
-                                      {fbSubData['Comments'] != null && fbSubData['Comments'].length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
-                                        return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt', marginBottom:'5pt' }}>
-                                          <div style={{ marginBottom: '3.75pt' }}>
-                                            <p style={{ marginLeft: '1.5pt'}}>Comment by<span style={{ fontSize: '10.0pt', color: 'black' }}>{fbSubComment?.AuthorName} - {fbSubComment?.Created}</span></p>
-                                          </div>
-                                          <p style={{ marginLeft: '1.5pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span></span></p>
-                                        </div>
+                                  <tr>
+                                    <td width="50px" align="center" style={{ border: "1px solid rgb(204, 204, 204)" }}>
+                                      <span style={{ fontSize: "10pt", color: "rgb(111, 111, 111)" }}>
+                                        <span>{i + 1}.{j + 1}</span> <br />
 
+                                      </span>
+                                    </td>
+                                    <td height="40px" style={{ padding: "0px 2px 0px 10px", border: "1px solid #ccc" }}
+                                    ><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
+                                      {fbSubData['Comments'] != null && fbSubData['Comments']?.length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
+                                        return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                                          <div style={{ marginBottom: '3.75pt' }}>
+                                            <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}<u></u><u></u></span></p>
+                                          </div>
+                                          <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span><u></u><u></u></span></p>
+                                        </div>
                                       })}
                                     </td>
                                   </tr>
                                 </>
                               })}
-
-
-
-                            </>
+                            </>)
                           })}
-
                       </tbody>
                     </table>
-                  </td>
-                  <td width="22%" valign="top" style={{ width: '22.0%', padding: '4pt' }}>
-                    <table cellPadding={0} cellSpacing={0} width="100%" style={{ width: '100.0%', border: 'solid #dddddd 1.0pt', borderRadius: '4px' }}>
+                    :
+                    null
+                  }
+                </td>
+                {props?.items?.Comments?.length > 0 ?
+                  <td width="22%" style={{ width: '22.0%', padding: '.75pt .75pt .75pt .75pt', verticalAlign: 'top' }}>
+                    <table className='table table-striped ' cellPadding={0} width="100%" style={{ width: '100.0%', border: 'solid #dddddd 1.0pt', borderRadius: '4px', }}>
                       <tbody>
                         <tr>
-                          <td style={{ border: 'none', borderBottom: 'solid #dddddd 1.0pt', background: 'whitesmoke', padding: '4pt' }}>
-                            <p style={{ margin: '4pt 0pt' }}><span style={{ color: "#333333" }}>Comments:</span></p>
+                          <td style={{ border: 'none', borderBottom: 'solid #dddddd 1.0pt', background: '#fff', color: "#f333", padding: '.75pt .75pt .75pt .75pt' }}>
+                            <b style={{ marginBottom: '1.25pt' }}><span style={{ fontSize: '10.0pt', color: 'black' }} >Comments:<u></u><u></u></span></b>
                           </td>
                         </tr>
                         <tr>
-                          <td style={{ border: 'none', padding: '4pt' }}>
-                            {props.items["Comments"]!=""&&props.items["Comments"]!=null&&props.items["Comments"]?.map((cmtData: any, i: any) => {
-                              return <div style={{ border: 'solid #cccccc 1.0pt', padding: '4pt', marginTop: '0pt', marginBottom:'4pt' }}>
-                                <div style={{ marginBottom: "3.75pt" }}>
-                                  <p style={{ margin: '0pt' }}>
-                                    <span style={{ color: 'black' }}>{cmtData?.AuthorName} - {cmtData?.Created}</span></p>
-                                </div>
-                                <p style={{ marginBottom: '4pt' }}>
-                                  <span style={{ color: 'black' }}>{cmtData?.Description}</span></p>
-                              </div>
+                          <td style={{ border: 'none', padding: '.75pt .75pt .75pt .75pt' }}>
+                            {props?.items["Comments"] != undefined && props?.items["Comments"]?.length > 0 && props?.items["Comments"]?.map((cmtData: any, i: any) => {
+                              return (
+                                <>
+                                  <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                                    <div style={{ marginBottom: "3.75pt" }}>
+                                      <p style={{ marginBottom: '1.25pt' }}>
+                                        <span style={{ color: 'black', background: '#fbfbfb' }}>{cmtData.AuthorName} - {cmtData.Created}</span></p>
+                                    </div>
+                                    <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
+                                      <span style={{ color: 'black' }}>{cmtData.Description}</span></p>
+
+                                    {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
+                                      return (
+                                        <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt', marginLeft: '10pt' }}>
+                                          <div style={{ marginBottom: "3.75pt" }}>
+                                            <p style={{ marginBottom: '1.25pt' }}>
+                                              <span style={{ color: 'black', background: '#fbfbfb' }}>{replyData.AuthorName} - {replyData.Created}</span></p>
+                                          </div>
+                                          <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
+                                            <span style={{ color: 'black' }}>{replyData.Description}</span></p>
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                </>
+                              )
                             })}
                           </td>
                         </tr>
                       </tbody>
                     </table>
                   </td>
-                </tr>
-              </tbody>
-            </table>
+                  : null
+                }
+              </tr>
+            </tbody>
+          </table>
+          <p></p>
+          <p style={{ fontSize: '10.0pt', color: 'black' }}>
+            Task Link:
+            <a target="_blank" data-interception="off" href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props?.items?.siteType}`}>Click here</a>
+          </p>
+          <p></p>
+          <span style={{ fontSize: '10.0pt', color: 'black' }}><b>Thanks,<br />Task Management Team</b></span>
 
         </div>
       }
@@ -385,8 +409,8 @@ export default EmailComponenet;
 //(this.approvalcallback() }}  Context={this.props.Context}  currentUser={this.currentUser} items={props.items})
 
 
-//  we have to pass the callback function and context and currentUser and all items 
+//  we have to pass the callback function and context and currentUser and all items
 //    allItems will be an object form .
 //currentUser will be an Array.
-// context will be an object 
+// context will be an object
 //  approvalcallback will be a Function .
