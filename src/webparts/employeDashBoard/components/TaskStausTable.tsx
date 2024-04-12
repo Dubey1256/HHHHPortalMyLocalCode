@@ -1194,13 +1194,14 @@ const filterTodayDraftTimeEntries = (usedFor: any) => {
               + '</h4>'
         }
         body1 = []
+        UserTotalTime = 0
       })
       var subject = `Todays Working Tasks - ${ContextData.currentUserData?.Title} and Approvees - ${Moment(new Date()).zone('Asia/Kolkata').format('DD/MM/YYYY')}: ${allWorkingTodayTasks.length} Tasks`;
       body = body.replaceAll('>,<', '><').replaceAll(',', '')
       let sendAllTasks:any = `<span style="font-size: 18px;margin-bottom: 10px;">
             Hi there, <br><br>
             Below is the working today tasks of the ${ContextData.currentUserData?.Title} and his/her Approvees.
-            <p><a href =${ContextData?.siteUrl}/SitePages/Project-Management-Overview.aspx>Click here for flat overview of the today's tasks</a></p>
+            <p><a href =${ContextData?.siteUrl}/SitePages/PX-Overview.aspx>Click here for flat overview of the today's tasks</a></p>
             </span>
             ${body}
             <h3>
