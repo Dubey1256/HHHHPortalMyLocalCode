@@ -7680,8 +7680,6 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                       </div>
                     ))}
 
-
-
                   </div>
                   
                 );
@@ -7697,8 +7695,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                   <label className="SpfxCheckRadio">
                     <input
                       type="radio"
-                      className="radio"
-                     
+                      className="radio"                 
                       value="Workstream"
                       checked={
                         RestructureChecked[0]?.TaskType?.Id == 3
@@ -7708,8 +7705,8 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                           : false
                       }
                       onChange={(e) => setRestructure(RestructureChecked, 3)}
-                    />
-                    {"Workstream"}
+                       />
+                     {"Workstream"}
                   </label>
                   <label className="SpfxCheckRadio">
                     <input

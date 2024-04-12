@@ -1052,6 +1052,7 @@ function TeamPortlioTable(SelectedProp: any) {
                     if (elem.Title === isUpdated || isUpdated?.toLowerCase() === elem?.Title?.toLowerCase()) {
                         portfolioColor = elem.Color;
                        document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
+                        document?.documentElement?.style?.setProperty('--SiteBlue', elem?.Color);
                     }
                 })
             }
