@@ -234,7 +234,7 @@ const ContactSearch = (props: any) => {
                     <div className="TableContentSection">
                         <div className='Alltable mt-2 mb-2'>
                             <div className='col-md-12 p-0 '>
-                                <GlobalCommanTable fixedWidthTable={true} columns={columns} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} data={allContactData} showHeader={true} callBackData={callBackData} />
+                                <GlobalCommanTable fixedWidthTable={true} columns={columns} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} hideTeamIcon={true} hideOpenNewTableIcon={true} data={allContactData} showHeader={true} callBackData={callBackData} />
                             </div>
                         </div>
                     </div>
