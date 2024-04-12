@@ -361,7 +361,7 @@ const CreateWS = (props: any) => {
             componentDetails = await web.lists
                 .getById(selectedItem.listId)
                 .items
-                .select("FolderID,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,TaskLevel,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                .select("FolderID,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,TaskLevel,FileLeafRef,Title,Id,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
                 .expand("TaskType,ParentTask,Author,Editor,AssignedTo")
                 .filter(("TaskType/Id eq 3") && ("ParentTask/Id eq '" + selectedItem?.Id + "'"))
                 .orderBy("Created", true)
