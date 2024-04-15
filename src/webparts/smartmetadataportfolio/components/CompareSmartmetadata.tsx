@@ -491,7 +491,6 @@ export default function CompareSmartMetaData(Props: any) {
             </div> */}
             {isShowCompare && (<div>
                 <Panel
-                    title="popup-title"
                     isOpen={true}
                     onDismiss={closeComparepopup}
                     type={PanelType.custom}
