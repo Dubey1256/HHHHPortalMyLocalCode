@@ -99,7 +99,6 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
         <>
             <div>
                 <Panel
-                    title="popup-title"
                     isOpen={true}
                     onDismiss={closeDeleteSmartMetaPopup}
                     type={PanelType.custom}
