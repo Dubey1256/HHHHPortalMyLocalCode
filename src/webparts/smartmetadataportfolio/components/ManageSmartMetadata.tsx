@@ -137,6 +137,12 @@ export default function ManageSmartMetadata(selectedProps: any) {
         if (ParentMetaDataItems.length > 0)
             ParentMetaDataItems = [];
         SmartmetadataItems?.filter((comp: any) => {
+            if (comp.TaxType === 'Smart Pages') {
+                comp.href = `${selectedProps?.AllList?.SPSitesListUrl}/SitePages/Pages.aspx?SmartId=${comp.Id}&Item=${comp.Title}`
+            }
+            if (comp.TaxType === 'Topics') {
+                comp.href = `${selectedProps?.AllList?.SPSitesListUrl}/SitePages/Profiles.aspx?SmartId=${comp.Id}&Item=${comp.Title}`
+            }
             if (comp?.TaxType === Tab && comp?.ParentID === 0) {
                 comp['flag'] = true;
                 ParentMetaDataItems.push(comp)
@@ -209,10 +215,12 @@ export default function ManageSmartMetadata(selectedProps: any) {
                             row?.original?.Title != null &&
                             row?.original?.Title != '' ? (
                             <a>
-                                {row?.original?.Title}
-                                {(row?.original?.Description1 !== null && row?.original?.Description1 !== undefined) && <div className='hover-text'>
+                                {row?.original?.TaxType === 'Smart Pages' || row?.original?.TaxType === 'Topics' ? <a className="hreflink" href={row?.original?.href} target="_blank" data-interception="off" rel="noopener noreferrer">
+                                    {row?.original?.Title}
+                                </a> : row?.original?.Title}
+                                {(row?.original?.Description !== null && row?.original?.Description !== undefined) && <div className='hover-text'>
                                     <span className="alignIcon svg__iconbox svg__icon--info"></span>
-                                    <span className='tooltip-text pop-right'>{row?.original?.Description1} </span>
+                                    <span className='tooltip-text pop-right'>{row?.original?.Description} </span>
                                 </div>}
                             </a>
                         ) : null}
@@ -416,7 +424,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             Array = {};
             setRestructureIcon(false)
             setSelectedItem({});
-            LoadSmartMetadata();
+            GetAdminConfig();
         }
     }, []);
     const callChildFunction = (items: any) => {
@@ -545,11 +553,8 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 </section>
                 <ul className="nav nav-tabs" role="tablist">
                     {Tabs?.map((item: any, index: any) => (
-                        <button className={
-                            index === 0
-                                ? "nav-link active"
-                                : "nav-link"
-                        } onClick={() => ShowingTabsData(item.Title)} key={index} data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
+                        <button className={`nav-link ${item.Title === TabSelected ? "active" : ""}`}
+                            onClick={() => ShowingTabsData(item.Title)} key={index} data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
                             {item.Title}
                         </button>
                     ))}
@@ -578,7 +583,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                                     <div className='wrapper'>
                                         {
                                             Smartmetadata &&
-                                            <GlobalCommanTable customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRef} childRefdata={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} categoriesTabName={categoriesTabName} />
+                                            <GlobalCommanTable customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllListId={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRef} childRefdata={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} categoriesTabName={categoriesTabName} />
                                         }
                                     </div>
                                 </div>
@@ -588,7 +593,6 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 </div>
                 {isVisible && (<div>
                     <Panel
-                        title="popup-title"
                         isOpen={true}
                         onDismiss={CloseGenerateJSONpopup}
                         type={PanelType.custom}
