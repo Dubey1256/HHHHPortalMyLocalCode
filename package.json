@@ -74,6 +74,7 @@
     "react-draft-wysiwyg": "^1.15.0",
     "react-fontawesome": "^1.7.1",
     "react-froala-wysiwyg": "^4.1.4",
+    "react-google-charts": "^4.0.1",
     "react-html-parser": "^2.0.2",
     "react-icons": "^4.10.1",
     "react-icons-md": "^1.1.0",
