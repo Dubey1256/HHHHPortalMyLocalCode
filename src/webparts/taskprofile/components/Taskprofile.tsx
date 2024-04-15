@@ -786,7 +786,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         isOpenEditPopup: false,
         TaskDeletedStatus: true,
       })
-      window.location.href = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx";
+   window.location.href = `${this.props?.siteUrl}/SitePages/TaskDashboard.aspx`;;
     }
     if (FunctionType == "Close") {
       this.setState({

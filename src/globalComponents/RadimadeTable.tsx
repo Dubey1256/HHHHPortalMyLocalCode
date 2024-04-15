@@ -2338,7 +2338,7 @@ function ReadyMadeTable(SelectedProp: any) {
         else if (dataToPush?.PortfolioId == SelectedProp?.SelectedItem?.Portfolio?.Id && SelectedProp?.SelectedItem?.TaskType?.Title == "Workstream") {
             arr.push(dataToPush)
          return true;
-        }
+        } 
 
         else if (dataToPush?.PortfolioId === SelectedProp?.SelectedItem?.Id && dataToPush?.TaskTypeId == 2 && dataToPush?.ParentTaskId === null) {
             //   if(SelectedProp?.UsedFrom=='ProjectManagement'){

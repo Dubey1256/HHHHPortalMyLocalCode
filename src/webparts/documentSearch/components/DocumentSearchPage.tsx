@@ -18,7 +18,7 @@ export default function DocumentSearchPage(Props: any) {
     //#region code to load All Documents By PB
     const LoadDocs = () => {
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
-        web.lists.getById(PageContext.DocumentsListID).items.select("Id,Title,PriorityRank,Year,Body,recipients,senderEmail,creationTime,Item_x0020_Cover,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl").filter('FSObjType eq 0').expand("Author,Editor,SharewebTask,Portfolios").orderBy("Created", false).getAll()
+        web.lists.getById(PageContext.DocumentsListID).items.select("Id,Title,PriorityRank,Year,Body,recipients,senderEmail,creationTime,Item_x0020_Cover,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl").filter('FSObjType eq 0').expand("Author,Editor,Portfolios").orderBy("Created", false).getAll()
             .then((response: any) => {
                 try {
                     response.forEach((Doc: any) => {
