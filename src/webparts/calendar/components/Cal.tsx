@@ -781,7 +781,8 @@ const Apps = (props: any) => {
     const eventYear = eventDate.getFullYear(); // Get year of the event
     return { year: eventYear, month: eventMonth };
   }
-  const handleNavigate = (newDate: any) => {
+  const handleNavigate = (newDate: any, newView: any) => {
+    setview(newView || 'months');
     const { year: currentYear, month: currentMonth } = getYearMonthFromDate(newDate);
     const filteredData = events.filter((event: any) => {
       const startDate = getYearMonthFromDate(event.start);

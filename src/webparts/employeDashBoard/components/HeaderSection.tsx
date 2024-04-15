@@ -7,6 +7,7 @@ import { Web } from 'sp-pnp-js';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { GrNext, GrPrevious } from "react-icons/gr";
 import Slider from "react-slick";
+let smartFavTableConfig: any = [];
 let DashboardConfig: any = [];
 const Header = () => {
   const params = new URLSearchParams(window.location.search);
@@ -22,6 +23,7 @@ const Header = () => {
   const [newAnnouncement, setNewAnnouncement] = React.useState('');
   const [, rerender] = React.useReducer(() => ({}), {});
   const [IsShowConfigBtn, setIsShowConfigBtn] = React.useState(false);
+
   let UserGroup: any = ContextData?.AllTaskUser?.filter((x: any) => x.AssingedToUser?.Id === ContextData?.propsValue?.Context._pageContext._legacyPageContext.userId)
   if (ContextData?.DashboardConfig != undefined && ContextData?.DashboardConfig?.length > 0) {
     DashboardConfig = JSON.parse(JSON.stringify(ContextData?.DashboardConfig));
@@ -50,11 +52,18 @@ const Header = () => {
         {type === 'next' ? <GrNext /> : <GrPrevious />}
       </div>) : null;
   }
-  const handleTileClick = (tileName: any) => {
-    if (tileName == 'TimeSheet')
+  const handleTileClick = (tileName: any, config: any) => {
+    if (tileName == 'TimeSheet') {
       setIsOpenTimeSheetPopup(true)
-    else
+    }
+    else {
+      smartFavTableConfig = [];
+      if (config != undefined && config?.configurationData != undefined && config?.configurationData?.length > 0 && config?.configurationData[0]?.smartFabBasedColumnsSetting != undefined && config?.configurationData[0]?.smartFabBasedColumnsSetting != '') {
+        config.configurationData[0].smartFabBasedColumnsSetting.tableId = "DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"
+        smartFavTableConfig.push(config?.configurationData[0]?.smartFabBasedColumnsSetting)
+      }
       setActiveTile(tileName);
+    }
   };
   const openAnnouncementPopup = (event: any) => {
     setIsAnnouncement(true);
@@ -115,7 +124,7 @@ const Header = () => {
     setIsOpenTimeSheetPopup(false)
   }
   useEffect(() => {
-    handleTileClick(ContextData?.ActiveTile)
+    handleTileClick(ContextData?.ActiveTile, undefined)
   }, [ContextData?.ActiveTile]);
 
   return (
@@ -175,7 +184,7 @@ const Header = () => {
                   items?.TileName && (
                     <div
                       key={items.TileName} className={`col alignCenter me-1 mb-3 hreflink p-3 ${activeTile === items.TileName ? 'empBg shadow-sm active empBg' : 'bg-white shadow-sm'}`}
-                      onClick={() => handleTileClick(items.TileName)} >
+                      onClick={() => handleTileClick(items.TileName, items)} >
                       {items.SiteIcon ? (
                         <img width={35} height={35} title={items.TileName} src={items.SiteIcon} alt={items.TileName} />
                       ) : (
@@ -201,7 +210,7 @@ const Header = () => {
                     items?.TileName && (
 
                       <div key={items.TileName} className={`col alignCenter me-1 mb-3 hreflink p-3 ${activeTile === items.TileName ? 'empBg shadow-sm active empBg' : 'bg-white shadow-sm'}`}
-                        onClick={() => handleTileClick(items.TileName)}  >
+                        onClick={() => handleTileClick(items.TileName, items)}  >
                         {items.SiteIcon ? (<img className="imgWid29 pe-1" title={items?.TileName} src={items.SiteIcon} alt={items.TileName} />)
                           :
                           (
@@ -225,7 +234,7 @@ const Header = () => {
             )}
           </div>
 
-          <div className={`col-1 alignCenter hreflink mb-3  ${activeTile === 'TimeSheet' ? 'empBg shadow-sm active empBg' : 'bg-white shadow-sm'}`} onClick={() => handleTileClick('TimeSheet')}   >
+          <div className={`col-1 alignCenter hreflink mb-3  ${activeTile === 'TimeSheet' ? 'empBg shadow-sm active empBg' : 'bg-white shadow-sm'}`} onClick={() => handleTileClick('TimeSheet', undefined)}   >
             <span className="iconSec">
               <span title="TimeSheet" style={{ width: '24px', height: '24px' }} className="svg__iconbox svg__icon--draftOther"></span>
             </span>
@@ -243,7 +252,7 @@ const Header = () => {
             <img className="rounded-circle" title={userName?.Title} width={30} height={30} src={userName?.Item_x0020_Cover?.Url} alt={userName?.Title} />
           </div>
         </div>
-        {DashboardConfig?.length > 0 && <div><TaskStatusTbl activeTile={activeTile} /></div>}
+        {DashboardConfig?.length > 0 && <div><TaskStatusTbl activeTile={activeTile} smartFavTableConfig={smartFavTableConfig} /></div>}
       </section>
       <span>
         {IsOpenTimeSheetPopup == true && <EmployeePieChart IsOpenTimeSheetPopup={IsOpenTimeSheetPopup} Call={() => { CallBack() }} />}

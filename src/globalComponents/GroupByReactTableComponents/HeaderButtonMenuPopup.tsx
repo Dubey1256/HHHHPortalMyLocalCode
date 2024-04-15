@@ -34,12 +34,12 @@ const HeaderButtonMenuPopup = (items: any) => {
             <div className="modal-body modal-body p-0 mt-2 mb-3">
                 <div className="tbl-headings justify-content-between" style={{ background: 'white', borderBottom: "none" }}>
                     <div className="">
-                        {items?.hideTeamIcon != true ? <>
+                        {/* {items?.hideTeamIcon != true ? <>
                             <div className="col-sm-12 p-0">
                                 {items?.selectedRow?.length > 0 ? <div className="alignCenter mb-1"><a className="teamIcon me-1" onClick={() => items?.ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team"></span></a>Create Teams Group</div>
                                     : <div className="alignCenter mb-1"><a className="teamIcon me-1"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team"></span></a>Create Teams Group</div>}
                             </div>
-                        </> : ''}
+                        </> : ''} */}
 
                         {items?.showEmailIcon === true ? <>
                             <div className="col-sm-12 p-0">
