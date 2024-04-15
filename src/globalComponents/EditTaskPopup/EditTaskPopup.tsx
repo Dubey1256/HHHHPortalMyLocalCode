@@ -5870,8 +5870,6 @@ const EditTaskPopup = (Items: any) => {
                                                             }
                                                             placeholder="Search Portfolio Item"
                                                         />
-
-
                                                     )}
                                                     <span className="input-group-text">
                                                         <span
