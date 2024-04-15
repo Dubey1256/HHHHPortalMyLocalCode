@@ -1279,7 +1279,7 @@ const AncTool = (props: any) => {
                                     // Update the document file here
                                     let postData = {
                                         [siteColName]: { "results": resultArray },
-                                        ItemRank: 5,
+                                        ItemRank: LinkDocitemRank,
                                         Title: getUploadedFileName(fileName),
                                         Url: {
                                             "__metadata": { type: "SP.FieldUrlValue" },
