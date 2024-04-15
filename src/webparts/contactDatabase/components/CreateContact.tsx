@@ -43,6 +43,8 @@ const CreateContactComponent = (props: any) => {
         }
         if (data.nodes.length == 0) {
             setUserExits(false);
+        }else{
+            setUserExits(true);
         }
     }
 
@@ -124,7 +126,7 @@ const CreateContactComponent = (props: any) => {
                     </div>
                 </div>
                 <footer>
-                    <div className="col text-end">
+                    <div className="col text-end mt-2">
                     <button className="btn btn-primary ms-1 mx-2" onClick={saveDataFunction} disabled={isUserExist}>Save</button>
                     <button onClick={() => props.callBack()} className="btn btn-default">Cancel</button>
                     </div>
