@@ -263,13 +263,13 @@ const TopNavigation = (dynamicData: any) => {
         href: {
           __metadata: { type: "SP.FieldUrlValue" },
           Description:
-            postData != undefined && postData?.Url != ""
+          (postData != undefined && postData.Url != "" && postData.Url != undefined)
               ? postData?.Url
               : item?.href != null
               ? item?.href.Url
               : "",
           Url:
-            postData != undefined && postData.Url != ""
+          (postData != undefined && postData.Url != "" && postData.Url != undefined)
               ? postData?.Url
               : item?.href != null
               ? item?.href.Url

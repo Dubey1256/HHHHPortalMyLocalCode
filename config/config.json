@@ -442,6 +442,38 @@
           "manifest": "./src/webparts/rootTeamPortfolioTable/RootTeamPortfolioTableWebPart.manifest.json"
         }
       ]
+    },
+    "contact-database-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/contactDatabase/ContactDatabaseWebPart.js",
+          "manifest": "./src/webparts/contactDatabase/ContactDatabaseWebPart.manifest.json"
+        }
+      ]
+    },
+    "contact-profile-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/contactProfile/ContactProfileWebPart.js",
+          "manifest": "./src/webparts/contactProfile/ContactProfileWebPart.manifest.json"
+        }
+      ]
+    },
+    "profiles-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/profiles/ProfilesWebPart.js",
+          "manifest": "./src/webparts/profiles/ProfilesWebPart.manifest.json"
+        }
+      ]
+    },
+    "smartpages-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/smartpages/SmartpagesWebPart.js",
+          "manifest": "./src/webparts/smartpages/SmartpagesWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -520,6 +552,10 @@
     "GroupByComponentsDashboardWebPartStrings": "lib/webparts/groupByComponentsDashboard/loc/{locale}.js",
     "SmartDynamicTableWebPartStrings": "lib/webparts/smartDynamicTable/loc/{locale}.js",
     "TaskProfileTemplateWebPartStrings": "lib/webparts/taskProfileTemplate/loc/{locale}.js",
-    "EmployeeDashboardTemplatedWebPartStrings": "lib/webparts/employeeDashboardTemplated/loc/{locale}.js"
+    "EmployeeDashboardTemplatedWebPartStrings": "lib/webparts/employeeDashboardTemplated/loc/{locale}.js",
+    "ContactDatabaseWebPartStrings": "lib/webparts/contactDatabase/loc/{locale}.js",
+    "ContactProfileWebPartStrings": "lib/webparts/contactProfile/loc/{locale}.js",
+    "SmartpagesWebPartStrings": "lib/webparts/smartpages/loc/{locale}.js",
+    "ProfilesWebPartStrings": "lib/webparts/profiles/loc/{locale}.js"
   }
 }

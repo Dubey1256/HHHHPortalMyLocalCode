@@ -157,8 +157,16 @@ const CreateAllStructureComponent = (props: any) => {
                     var PortfolioStructureId = await getPortfolioStructureId('Component', 'data')
                 }
 
-                let level = PortfolioStructureId[0]?.PortfolioLevel + 1
-                let PortfolioStr = 'C' + level
+                var level:any =''
+                var PortfolioStr = ''
+                if(PortfolioStructureId.length == 0){
+                     level = 1
+                    PortfolioStr = 'C' + level
+                }
+                else{
+                     level = PortfolioStructureId[0]?.PortfolioLevel + 1
+                     PortfolioStr = 'C' + level
+                }
                 const componentItem = {
                     Item_x0020_Type: 'Component',
                     Title: component?.value,
