@@ -2002,6 +2002,7 @@ export default class UserTimeEntry extends React.Component<
             Item.NewCompletedDate = Item.CompletedDate;
             Item.NewCreated = Item.Created;
             Item.projectStructerId = Item?.Project?.PortfolioStructureID
+            Item.ProjectId = Item?.Project?.Id
             Item.SmartPriority =
             globalCommon.calculateSmartPriority(Item);
             if (Item.Created != undefined)
@@ -2107,6 +2108,7 @@ export default class UserTimeEntry extends React.Component<
             filterItem.ProjectTitle = getItem?.Project?.Title;
             filterItem.PortfolioType = getItem?.PortfolioType;
             filterItem.Body = getItem?.Body;
+            filterItem.ProjectId = getItem?.Project?.Id;
             filterItem.descriptionsSearch = getItem?.descriptionsSearch;
             filterItem.FeedBack = getItem?.FeedBack;
             filterItem.TaskType = getItem?.TaskType;
