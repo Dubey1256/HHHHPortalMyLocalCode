@@ -5715,11 +5715,11 @@ const EditTaskPopup = (Items: any) => {
                                                         type="date"
                                                         className="form-control"
                                                         max="9999-12-31"
-                                                        min={
-                                                            EditData.Created
-                                                                ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                                : ""
-                                                        }
+                                                        // min={
+                                                        //     EditData.Created
+                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
+                                                        //         : ""
+                                                        // }
                                                         defaultValue={
                                                             EditData.StartDate
                                                                 ? Moment(EditData.StartDate).format(
@@ -5752,11 +5752,11 @@ const EditTaskPopup = (Items: any) => {
                                                         className="form-control"
                                                         placeholder="Enter Due Date"
                                                         max="9999-12-31"
-                                                        min={
-                                                            EditData.Created
-                                                                ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                                : ""
-                                                        }
+                                                        // min={
+                                                        //     EditData.Created
+                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
+                                                        //         : ""
+                                                        // }
                                                         defaultValue={
                                                             EditData.DueDate
                                                                 ? Moment(EditData.DueDate).format("YYYY-MM-DD")
@@ -5781,11 +5781,11 @@ const EditTaskPopup = (Items: any) => {
                                                         type="date"
                                                         className="form-control"
                                                         max="9999-12-31"
-                                                        min={
-                                                            EditData.Created
-                                                                ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                                : ""
-                                                        }
+                                                        // min={
+                                                        //     EditData.Created
+                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
+                                                        //         : ""
+                                                        // }
                                                         defaultValue={
                                                             EditData.CompletedDate
                                                                 ? Moment(EditData.CompletedDate).format(
