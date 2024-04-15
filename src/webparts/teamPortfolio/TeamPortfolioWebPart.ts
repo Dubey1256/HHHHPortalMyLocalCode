@@ -22,6 +22,7 @@ export interface ITeamPortfolioWebPartProps {
   SmartMetadataListID: "01a34938-8c7e-4ea6-a003-cee649e8c67a";
   SmartHelpListID: '9CF872FC-AFCD-42A5-87C0-AAB0C80C5457';
   PortFolioTypeID: "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
+  AdminconfigrationID:'e968902a-3021-4af2-a30a-174ea95cf8fa';
   // dropdownvalue: string;
   TimeEntry: any;
   SiteCompostion: any;
@@ -48,6 +49,7 @@ export default class TeamPortfolioWebPart extends BaseClientSideWebPart<ITeamPor
         SmartMetadataListID: this.properties.SmartMetadataListID,
         SmartHelpListID: this.properties.SmartHelpListID,
         PortFolioTypeID:this.properties.PortFolioTypeID,
+        AdminconfigrationID:this.properties.AdminconfigrationID,
         Context: this.context,
         // dropdownvalue: this.properties.dropdownvalue,
         TimeEntry: this.properties.TimeEntry,
@@ -142,13 +144,16 @@ export default class TeamPortfolioWebPart extends BaseClientSideWebPart<ITeamPor
                 PropertyPaneTextField("PortFolioTypeID", {
                   label: "Portfolio Type List",
                 }),
+                PropertyPaneTextField("AdminconfigrationID", {
+                  label: "AdminconfigrationID",
+                }),
+                
                 PropertyPaneTextField("TimeEntry", {
                   label: "TimeEntry",
-                }),
-
+                }),  
                 PropertyPaneTextField("SiteCompostion", {
                   label: "SiteCompostion",
-                }),
+                })
               ],
             },
           ],
