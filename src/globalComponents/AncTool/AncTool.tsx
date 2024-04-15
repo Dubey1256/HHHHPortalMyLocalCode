@@ -1279,7 +1279,7 @@ const AncTool = (props: any) => {
                                     // Update the document file here
                                     let postData = {
                                         [siteColName]: { "results": resultArray },
-                                        ItemRank: 5,
+                                        ItemRank: LinkDocitemRank,
                                         Title: getUploadedFileName(fileName),
                                         Url: {
                                             "__metadata": { type: "SP.FieldUrlValue" },
@@ -1865,7 +1865,7 @@ const AncTool = (props: any) => {
             <Modal titleAriaId={`UploadConfirmation`} isOpen={ShowConfirmation} onDismiss={cancelConfirmationPopup} dragOptions={undefined}>
                 <div className='alignCenter pt-2'>
                     <div className='ms-2 subheading'>
-                        {UploadedDocDetails?.length === 1 ? `[${UploadedDocDetails[0]?.fileName} - Upload Confirmation ]` : 'Upload Confirmation'}
+                        {UploadedDocDetails?.length === 1 ? `${UploadedDocDetails[0]?.fileName} - Upload Confirmation` : 'Upload Confirmation'}
                     </div>
                     <span className='me-1' onClick={() => cancelConfirmationPopup()}><i className="svg__iconbox svg__icon--cross dark crossBtn"></i></span>
                 </div>
