@@ -603,9 +603,9 @@ const EditDocumentpanel = (props: any) => {
                               }
                             ></span>
                             <span
-                              title="Project"
+                              title="Portfolio"
                               onClick={(e) =>
-                                openProjectPopup("Project")
+                                opencomonentservicepopup()
                               }
                               className="svg__iconbox svg__icon--editBox"
                             ></span>
