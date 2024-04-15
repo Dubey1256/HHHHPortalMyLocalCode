@@ -231,7 +231,7 @@ const TeamSmartFilter = (item: any) => {
             let configurationData: any[] = [];
             const resultsArray = await Promise.all([
                 await web.lists
-                    .getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID)
+                    .getById(item?.ContextValue?.AdminconfigrationID)
                     .items.getById(parseInt(itemId)).select('Id', 'Title', 'Value', 'Key', 'Description', 'DisplayTitle', 'Configurations').get()
             ]);
             resultsArray.forEach((smart: any) => {
@@ -735,7 +735,10 @@ const TeamSmartFilter = (item: any) => {
                 })
                 if (checkCallData === true) {
                     item?.setLoaded(false);
-                    await item?.LoadAllSiteTasksAllData();
+                  const fetchData= await item?.LoadAllSiteTasksAllData();
+                  if(fetchData?.length===0){
+                    item?.setLoaded(true);
+                  }
                     setLoadeAllData(true);
                 }
             }
@@ -1019,6 +1022,9 @@ const TeamSmartFilter = (item: any) => {
             );
         }
         let allFinalResult = filteredMasterTaskData.concat(filteredTaskData);
+        if(allFinalResult?.length==0){
+            item?.setLoaded(true)
+        }
         setFinalArray(allFinalResult);
         setFirstTimecallFilterGroup(false);
         setItemsQueryBasedCall(false);
@@ -2054,7 +2060,7 @@ const TeamSmartFilter = (item: any) => {
         let copyCreateMeSmartFavorites: any = [];
         let copyEveryoneSmartFavorites: any = [];
         let filter = "Key eq 'Smartfavorites'";
-        web.lists.getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID)
+        web.lists.getById(item?.ContextValue?.AdminconfigrationID)
             .items.select('Id', 'Title', 'Value', 'Key', 'Description', 'DisplayTitle', 'Configurations').filter(filter).get()
             .then((Results: any) => {
                 Results?.map((smart: any) => {
@@ -2116,7 +2122,7 @@ const TeamSmartFilter = (item: any) => {
         let confirmDelete = confirm("Are you sure, you want to delete this?");
         if (confirmDelete) {
             await web.lists
-                .getById(GlobalConstants.SHAREWEB_ADMIN_CONFIGURATIONS_LISTID)
+                .getById(item?.ContextValue?.AdminconfigrationID)
                 .items.getById(itemId.Id)
                 .recycle()
                 .then((i: any) => {
