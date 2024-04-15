@@ -5,7 +5,6 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Web } from 'sp-pnp-js';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import Tooltip from '../../../globalComponents/Tooltip';
-import ImageTabComponenet from '../../taskprofile/components/ImageTabComponent';
 import VersionHistory from '../../../globalComponents/VersionHistroy/VersionHistory';
 import PageLoader from '../../../globalComponents/pageLoader';
 import moment from 'moment';
@@ -707,7 +706,6 @@ export default function SmartMetadataEditPopup(props: any) {
                         </div>
                         <div className={activeTab == 'ImageInfo' ? 'tab-pane fade show active' : 'tab-pane fade show active tab-pane fade'} id="ImageInfo" role="tabpanel" aria-labelledby="ImageInfo">   {activeTab == 'ImageInfo' && (
                             <div className="modal-body" style={{ overflowY: 'auto' }}>
-                                <ImageTabComponenet EditdocumentsData={props?.modalInstance} AllListId={props?.AllList} Context={props?.AllList?.Context} callBack={callBackData} />
                             </div>
                         )}
                         </div>

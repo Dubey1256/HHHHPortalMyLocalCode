@@ -8,6 +8,7 @@ import ImagesC from "../../EditPopupFiles/ImageInformation";
 import Smarttaxonomypopup from './Smarttaxonomypopup';
 import Smartmetadatapickerin from '../../../globalComponents/Smartmetadatapickerindependent/SmartmetadatapickerSingleORMulti'
 import Tooltip from '../../../globalComponents/Tooltip';
+import moment from 'moment';
 let AutoCompleteItemsArray: any = [];
 let tempSmartCategoriesData: any = []
 var tempCategoryData: any = "";
@@ -71,6 +72,14 @@ const EditContactPopup = (props: any) => {
             const select = "WorkCity,WorkFax ,WorkAddress,Id,WorkCountry,Email,FullName,WorkFax,ItemCover,SmartActivities/Id,SmartActivities/Title,SmartCategories/Id,SmartCategories/Title,Attachments,Categories,Company,JobTitle,FirstName,Title,Suffix,WebPage,IM,ol_Department,WorkPhone,CellPhone,HomePhone,WorkZip,Office,Comments,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title";
             const query = `Id eq ${itemId}`;
             const data = await webs.lists.getById(props?.allListId?.TeamContactSearchlistIds).items.select(select).expand('Author', 'Editor', 'SmartActivities', 'SmartCategories').filter(query).get();
+            data.map((Item: any) => {
+                if (Item?.Created != null && Item?.Created != undefined) {
+                    Item.Created = moment(Item?.Created, "DD-MM-YYYY").format("DD/MM/YYYY");
+                }
+                if (Item?.Modified != null && Item?.Modified != undefined) {
+                    Item.Modified = moment(Item?.Modified, "DD-MM-YYYY").format("DD/MM/YYYY");
+                }
+            })
             const contact = data[0];
             if (contact.SmartCategories) {
                 setSmartCategoriesData(contact.SmartCategories)
@@ -414,27 +423,27 @@ const EditContactPopup = (props: any) => {
                                                                     <input type="text" id="WorkCity" className="form-control" defaultValue={contactDetails.WorkCity} onChange={(e) => setContactDetails({ ...contactDetails, WorkCity: e.target.value })} />
                                                                 </div></div>
                                                         </div>
-                                                        <div className="row form-group mt-12">
-                                                            <div className="col-sm-6 ps-0">
+                                                        <div className="row form-group mt-2">
+                                                            <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="Email" className='full-width form-label'>Email</label>
                                                                     <input type="text" id="Email" className="form-control" defaultValue={contactDetails.Email} onChange={(e) => setContactDetails({ ...contactDetails, Email: e.target.value })} />
                                                                 </div>
                                                             </div>
-                                                            <div className="col-sm-6 pe-0">
+                                                            <div className="col-sm-4">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WebPage" className='full-width form-label'>WebPage</label>
                                                                     <input className="form-control" type="text" defaultValue={contactDetails?.WebPage ? contactDetails?.WebPage.Url : ""} onChange={(e) => setContactDetails({ ...contactDetails, WebPage: { ...contactDetails.WebPage, Url: e.target.value } })} />
                                                                 </div>
                                                             </div>
-                                                            <div className="col-sm-6 ps-0">
+                                                            <div className="col-sm-4 pe-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="IM" className='full-width form-label'>Skype</label>
                                                                     <input type="text" id="IM" className="form-control" defaultValue={contactDetails.IM} onChange={(e) => setContactDetails({ ...contactDetails, IM: e.target.value })} />
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div className="row form-group mt-12">
+                                                        <div className="row form-group mt-2">
                                                             <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="Company" className='full-width form-label'>Institution</label>
@@ -451,7 +460,7 @@ const EditContactPopup = (props: any) => {
                                                                     <input type="text" id="ol_Department" className="form-control" defaultValue={contactDetails.ol_Department} onChange={(e) => setContactDetails({ ...contactDetails, ol_Department: e.target.value })} />
                                                                 </div></div>                                             
                                                         </div>
-                                                        <div className="row form-group mt-12">
+                                                        <div className="row form-group mt-2">
                                                             <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WorkPhone" className='full-width form-label'>Business Phone</label>
@@ -468,7 +477,7 @@ const EditContactPopup = (props: any) => {
                                                                     <input type="text" id="HomePhone" className="form-control" defaultValue={contactDetails.HomePhone} onChange={(e) => setContactDetails({ ...contactDetails, HomePhone: e.target.value })} />
                                                                 </div></div>
                                                         </div>
-                                                        <div className="row form-group mt-12">
+                                                        <div className="row form-group mt-2">
                                                             <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WorkZip" className='full-width form-label'>ZIP Code</label>
@@ -485,7 +494,7 @@ const EditContactPopup = (props: any) => {
                                                                     <input type="text" id="WorkCountry" className="form-control" defaultValue={contactDetails.WorkCountry} onChange={(e) => setContactDetails({ ...contactDetails, WorkCountry: e.target.value })} />
                                                                 </div></div>
                                                         </div>
-                                                        <div className="row form-group mt-12">
+                                                        <div className="row form-group mt-2">
                                                             <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="WorkFax" className='full-width form-label'>Fax</label>
@@ -503,7 +512,7 @@ const EditContactPopup = (props: any) => {
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    <div className="col-sm-12 mt-12">
+                                                    <div className="col-sm-12 mt-2">
                                                         <div className="row form-group">
                                                             <div className="col-sm-6 ps-0">
                                                                 <div className="col-sm-12 ps-0">
@@ -539,7 +548,7 @@ const EditContactPopup = (props: any) => {
                                                                             <span onClick={() => openSmartTaxonomyActivity(contactDetails?.SmartActivities)} className="svg__iconbox svg__icon--editBox"></span>
                                                                         </span></div>
                                                                 </div> */}
-                                                                {/* <div className='col-sm-12 mt-12'>
+                                                                {/* <div className='col-sm-12 mt-2'>
                                                                     <div className="input-group">
                                                                         <label className='full-width form-label'>
                                                                             Categories
@@ -601,7 +610,7 @@ const EditContactPopup = (props: any) => {
                                             </tr>
                                             {/* <tr>
                                                 <td>
-                                                    <div className="col-sm-12 mt-12">
+                                                    <div className="col-sm-12 mt-2">
                                                         <div className="row form-group">
                                                             <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
@@ -619,7 +628,7 @@ const EditContactPopup = (props: any) => {
                                                                     <input type="text" id="VerbindungzuOV" className="form-control" defaultValue={contactDetails.VerbindungzuOV} onChange={(e) => setContactDetails({ ...contactDetails, VerbindungzuOV: e.target.value })} />
                                                                 </div></div>
                                                         </div>
-                                                        <div className="row form-group mt-12">
+                                                        <div className="row form-group mt-2">
                                                             <div className="col-sm-4 ps-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="Mitgliederverband" className='full-width form-label'>Mitgliederverband</label>

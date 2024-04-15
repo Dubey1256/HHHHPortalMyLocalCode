@@ -158,11 +158,11 @@ const ContactSearch = (props: any) => {
     const sendEmail = () => {
         let emails = '';
         var ContactsNotHavingEmail: any = [];
-        userEmails.map((item: any) => {
+        userEmails?.map((item: any) => {
 
-            if (item.isSelect == true) {
-                item.map((child: any) => {
-                    if (child.Email == null) {
+            if (item?.isSelect == true) {
+                userEmails?.map((child: any) => {
+                    if (child?.Email == null) {
                         ContactsNotHavingEmail.push(child);
 
                     }
@@ -234,7 +234,7 @@ const ContactSearch = (props: any) => {
                     <div className="TableContentSection">
                         <div className='Alltable mt-2 mb-2'>
                             <div className='col-md-12 p-0 '>
-                                <GlobalCommanTable fixedWidthTable={true} columns={columns} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} data={allContactData} showHeader={true} callBackData={callBackData} />
+                                <GlobalCommanTable fixedWidthTable={true} columns={columns} customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} hideTeamIcon={true} hideOpenNewTableIcon={true} data={allContactData} showHeader={true} callBackData={callBackData} />
                             </div>
                         </div>
                     </div>
