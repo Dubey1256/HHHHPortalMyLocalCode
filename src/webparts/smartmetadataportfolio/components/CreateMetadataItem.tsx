@@ -50,7 +50,7 @@ export default function CreateMetadataItem(props: any) {
                     setEditMetadataPopup(true);
                 } catch (error) {
                     console.error(error);
-                } 
+                }
             } else {
                 if (props?.categoriesTabName?.Id !== undefined && props?.categoriesTabName?.Id !== '') {
                     try {
@@ -97,13 +97,13 @@ export default function CreateMetadataItem(props: any) {
                         "ParentID": SelectedItem[0].Id,
                     });
                     setAddedMetadataItem(addedItem?.data);
-                    closeCreateSmartMetadataPopup();
-                    addItemCallBack(array, false, SelectedItem[0]?.TaxType, undefined, '');
+                    setIsCreatePopupOpen(false);
+                    addItemCallBack(array, false, SelectedItem[0]?.TaxType, '', '');
                 } catch (error) {
                     console.error(error);
                 }
             } else {
-                if (props.categoriesTabName !== undefined && props?.categoriesTabName !== '') {
+                if (props?.categoriesTabName?.Id !== undefined) {
                     try {
                         const web = new Web(props?.AllList?.SPSitesListUrl);
                         const addedItem = await web.lists.getById(SmartMetadataListID).items.add({
@@ -114,12 +114,10 @@ export default function CreateMetadataItem(props: any) {
                             "ParentID": props?.categoriesTabName?.Id
                         });
                         setAddedMetadataItem(addedItem?.data);
-                        closeCreateSmartMetadataPopup();
+                        setIsCreatePopupOpen(false);
                         addItemCallBack(array, false, props?.categoriesTabName?.TaxType, '');
                     } catch (error) {
                         console.error(error);
-                    } finally {
-
                     }
                 } else {
                     try {
@@ -131,7 +129,7 @@ export default function CreateMetadataItem(props: any) {
                             "ParentID": 0
                         });
                         setAddedMetadataItem(addedItem?.data);
-                        closeCreateSmartMetadataPopup();
+                        setIsCreatePopupOpen(false);
                         addItemCallBack(array, false, props?.TabSelected, '');
                     } catch (error) {
                         console.error(error);
