@@ -27,13 +27,13 @@ const CreateContactComponent = (props: any) => {
     }, [props?.data != undefined])
     const searchedName = async (e: any) => {
         setListIsVisible(true);
-        let Key: any = e.target.value.toLowerCase();
+        let Key: any = e.target.value;
         let subString = Key.split(" ");
         setSearchKey({ ...searchKey, Title: subString[0] + " " + subString[1] })
         setSearchKey({ ...searchKey, FirstName: subString })
         const data: any = {
             nodes: listData.filter((items: any) =>
-                items.FullName?.toLowerCase().includes(Key)
+                items.FullName?.toLowerCase().includes(Key.toLowerCase())
             ),
         };
         setSearchedDataName(data.nodes);
@@ -71,10 +71,6 @@ const CreateContactComponent = (props: any) => {
         setProfileStatus(true);
         setContactdata(item);
     }
-    const ClosePopup = useCallback(() => {
-        setProfileStatus(false);
-        props.callBack();
-    }, []);
     const closeEditpoup = (page: any,update:any,updatedetails:any) => {
         if (page == "CreateContact" && update!=="Update") {
             setProfileStatus(false);
@@ -132,7 +128,7 @@ const CreateContactComponent = (props: any) => {
                     </div>
                 </footer>
                
-                {profileStatus && !newContact && (<EditContactPopup props={contactdata} allListId={props?.allListId} callBack={ClosePopup} closeEditpoup={closeEditpoup} EditCallBackItem={props.EditCallBackItem} page={"CreateContact"} />)}
+                {profileStatus && !newContact && (<EditContactPopup props={contactdata} allListId={props?.allListId} closeEditpoup={closeEditpoup} EditCallBackItem={props.EditCallBackItem} page={"CreateContact"} />)}
                 {!profileStatus && newContact && (<EditContactPopup props={contactdata} allListId={props?.allListId} closeEditpoup={closeEditpoup} EditCallBackItem={props.EditCallBackItem} page={"CreateNewContact"} />)}
             </Panel>
         </>
