@@ -46,8 +46,8 @@ const EditContactPopup = (props: any) => {
         }
         if (props.page != undefined && props.page != undefined && props.page == "CreateNewContact" || props.page == "CreateContact") {
             props.closeEditpoup(props.page)
-        } if(props.page == "ContactProfile"){
-             props.EditCallBackItemProfile("close")
+        } if (props.page == "ContactProfile") {
+            props.EditCallBackItemProfile("close")
         } else {
             props.closeEditContactPopup()
         }
@@ -78,6 +78,10 @@ const EditContactPopup = (props: any) => {
                 }
                 if (Item?.Modified != null && Item?.Modified != undefined) {
                     Item.Modified = moment(Item?.Modified, "DD-MM-YYYY").format("DD/MM/YYYY");
+                }
+                if (Item.ItemCover != null && Item.ItemCover != undefined) {
+                    Item.Item_x002d_Image = Item?.ItemCover
+
                 }
             })
             const contact = data[0];
@@ -125,8 +129,8 @@ const EditContactPopup = (props: any) => {
         let AllCategoriesData: any = []
         let CategoriesGroupByData: any = [];
         try {
-             const data = await webs.lists.getById(props?.allListId?.TeamSmartMetadatalistIds).items
-            //const data = await webs.lists.getById("6020CAD5-BBE7-4626-A717-7FAAEDC99BA6").items
+            const data = await webs.lists.getById(props?.allListId?.TeamSmartMetadatalistIds).items
+                //const data = await webs.lists.getById("6020CAD5-BBE7-4626-A717-7FAAEDC99BA6").items
                 .select('Id,Title,TaxType', 'ParentID').top(4999).get();
 
             data.map((taxItem: any) => {
@@ -337,18 +341,18 @@ const EditContactPopup = (props: any) => {
                     <div>Last modified <span> {contactDetails?.Modified}</span>
                         by
                         <span className="primary-color"> {contactDetails?.Editor?.Title}</span>
-                    </div>
-                    <div> <a onClick={() => removeItem()}><i className="ms-Icon ms-Icon--Delete" aria-hidden="true"></i> Delete this item</a></div>
+                    </div>    
+                    <div><a onClick={() => removeItem()} className="hreflink siteColor"><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span><span>Delete This Item</span></a></div>
                 </div>
                 <div className="col text-end">
-                    <a href={`${props?.allListId?.baseUrl}/Lists/Contacts/?ID=${contactDetails.Id}`} target="_blank">Open out-of-the-box form</a>
+                       <a href={`${props?.allListId?.baseUrl}/Sitepages/Contact-Profile.aspx?contactId=${contactDetails.Id}`} target="_blank">Go To Profile Page</a> | <a href={`${props?.allListId?.baseUrl}/Lists/Contacts/?ID=${contactDetails.Id}`} target="_blank">Open out-of-the-box form</a>
                     <button className='btn btn-primary mx-2' onClick={() => UpdateContact(props.props)}>Save</button>
                     <button className='btn btn-default' onClick={() => closeContactPopup()}>Cancel</button>
                 </div>
             </footer>
         )
     }
-   
+
     const onRenderCustomHeaderContactPopup = () => {
         return (
             <>
@@ -453,12 +457,12 @@ const EditContactPopup = (props: any) => {
                                                                 <div className='input-group'>
                                                                     <label htmlFor="JobTitle" className='full-width form-label'>Job Title</label>
                                                                     <input type="text" id="JobTitle" className="form-control" defaultValue={contactDetails.JobTitle} onChange={(e) => setContactDetails({ ...contactDetails, JobTitle: e.target.value })} />
-                                                                </div></div> 
-                                                                <div className="col-sm-4 pe-0">
+                                                                </div></div>
+                                                            <div className="col-sm-4 pe-0">
                                                                 <div className='input-group'>
                                                                     <label htmlFor="ol_Department" className='full-width form-label'>Division</label>
                                                                     <input type="text" id="ol_Department" className="form-control" defaultValue={contactDetails.ol_Department} onChange={(e) => setContactDetails({ ...contactDetails, ol_Department: e.target.value })} />
-                                                                </div></div>                                             
+                                                                </div></div>
                                                         </div>
                                                         <div className="row form-group mt-2">
                                                             <div className="col-sm-4 ps-0">
@@ -672,7 +676,7 @@ const EditContactPopup = (props: any) => {
 
             </Panel>
             {/* {status.taxanomypopup ? <Smarttaxonomypopup popupName="Activities" selectedCountry={currentCountry} callBack={CloseSmarttaxonomypopup} data={ActivityData} updateData={contactDetails} /> : null} */}
-            {status.CountryPopup ? <Smartmetadatapickerin popupName="Contact Countries" AllListId={props?.allListId} usedfor = {"Multi"} TaxType = {"Countries"} selectedCountry={currentCountry} callBack={CloseSmarttaxonomypopup}  updateData={contactDetails} /> : null}
+            {status.CountryPopup ? <Smartmetadatapickerin popupName="Contact Countries" AllListId={props?.allListId} usedfor={"Multi"} TaxType={"Countries"} selectedCountry={currentCountry} callBack={CloseSmarttaxonomypopup} updateData={contactDetails} /> : null}
         </>
 
     );
