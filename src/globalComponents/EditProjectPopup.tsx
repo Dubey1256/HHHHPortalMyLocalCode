@@ -477,7 +477,6 @@ function EditProjectPopup(item: any) {
         "AdminStatus",
         "Background",
         "Help_x0020_Information",
-        "SharewebComponent/Id",
         "TaskCategories/Id",
         "TaskCategories/Title",
         "PriorityRank",
@@ -531,7 +530,6 @@ function EditProjectPopup(item: any) {
         "Editor",
         "ResponsibleTeam",
         "TeamMembers",
-        "SharewebComponent",
         "TaskCategories",
         "Parent"
       )
@@ -1119,7 +1117,7 @@ function EditProjectPopup(item: any) {
       // ClientCategoryId: { "results": RelevantPortfolioIds },
       ServicePortfolioId:
         RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
-      Synonyms: JSON.stringify(Items["Synonyms"]),
+      // Synonyms: JSON.stringify(Items["Synonyms"]),
       Package: Items.Package,
       AdminStatus: Items.AdminStatus,
       Priority: Items.Priority,
