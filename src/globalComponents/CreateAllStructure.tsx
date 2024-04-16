@@ -25,7 +25,7 @@ const CreateAllStructureComponent = (props: any) => {
         isCheckedSub: false,
         isCheckedCompFea: false,
         Feature: [],
-        SubComponent: []
+        SubComponent: [{id:1,value:'',Feature: [{id:1, value:''}]}]
       }]);
     const [Subcomponents, setSubComponents] = React.useState([{ id: 1, value: '' }]);
     const [Feature, setFeature] = React.useState([{ id: 1, value: '' }]);
@@ -67,18 +67,34 @@ const CreateAllStructureComponent = (props: any) => {
 
     const handleAddSubComponent = (componentIndex:any, subComIndex:any, FeaIndex:any, Type:any) => {
         if (Type === 'Component') {
-            const newComponent = {
-                id: components.length + 1,
-                value: '',
-                isCheckedSub: false,
-                isCheckedCompFea: false,
-                Feature: [] as any,
-                SubComponent: [] as any,
-            };
+            let newComponent={}
+            if(props?.SelectedItem?.Item_x0020_Type != 'SubComponent' && props?.SelectedItem != undefined)
+                {
+                     newComponent = {
+                        id: componentIndex + 2,
+                        value: '',
+                        isCheckedSub: false,
+                        isCheckedCompFea: false,
+                        Feature: [] as any,
+                        SubComponent: [{id: components[componentIndex].SubComponent.length + 1, value:''}] as any,
+                    };
+                }
+                else{
+                     newComponent = {
+                        id: componentIndex + 2,
+                        value: '',
+                        isCheckedSub: false,
+                        isCheckedCompFea: false,
+                        Feature: [] as any,
+                        SubComponent: [] as any,
+                    };
+                }
+           
+            
             setComponents([...components, newComponent]);
         } else if (Type === 'SubComponent') {
             const newSubComponent = {
-                id: components[componentIndex].SubComponent.length + 2,
+                id: components[componentIndex].SubComponent.length + 1,
                 isCheckedSub: true,
                 isCheckedSubFea: false,
                 value: '',
@@ -135,7 +151,7 @@ const CreateAllStructureComponent = (props: any) => {
                 updatedComponents[index].isCheckedSub = false;
             }
         } else if (type === 'feature' || type==='ComponentFeature') {
-            if (subIndex !== 0) {
+            if (subIndex !== 0 || type === 'feature') {
                 updatedComponents[index].SubComponent[subIndex].Feature.splice(FeaIndex, 1);
                 if (updatedComponents[index].SubComponent[subIndex].Feature.length < 1) {
                     updatedComponents[index].SubComponent[subIndex].isCheckedSubFea = false;
@@ -193,6 +209,79 @@ const CreateAllStructureComponent = (props: any) => {
                     var createdComponent = await createListItem('Master Tasks', componentItem);
                 }
 
+                  //save features of Component
+                  var compFeatures:any=[];
+                  for (const feature of component?.Feature) {
+                      let FeaPortfolioStr = ''
+                      let fealevel: any = ''
+                      
+                      const PortfolioStructureIdFea = await getPortfolioStructureId('Feature', createdComponent)
+                      if (PortfolioStructureIdFea.length == 0 || PortfolioStructureIdFea == undefined) {
+                          fealevel = 1
+                        
+                              FeaPortfolioStr = createdComponent.PortfolioStructureID + '-' + 'F' + fealevel
+                          
+
+                      }
+                      else{
+                          const parts = PortfolioStructureIdFea[0]?.PortfolioStructureID.split('-');
+                          const prefix = parts[0];
+                          const currentValue = parseInt(parts[1].substring(1)); 
+                          const newValue = currentValue + 1;
+                          FeaPortfolioStr = `${prefix}-S${newValue}`;
+                          fealevel = PortfolioStructureIdSub[0]?.PortfolioLevel + 1
+                      }
+                      // else {
+                      //     fealevel = PortfolioStructureIdFea[0].PortfolioLevel + 1
+                      //     if(props.SelectedItem != undefined){
+                      //         FeaPortfolioStr = props.SelectedItem?.PortfolioStructureID + '-' + 'F' + fealevel
+                      //     }
+                      //     else{
+                      //         if(PortfolioStructureIdFea[0]?.Item_x0020_Type == 'SubComponent'){
+                      //             FeaPortfolioStr = PortfolioStructureIdFea[0]?.PortfolioStructureID + '-' + 'F' + fealevel
+                      //         }
+                      //         else{
+                      //             FeaPortfolioStr = createdSubcomponent?.PortfolioStructureID + '-' + 'F' + fealevel
+                      //         }
+                             
+                      //     }
+                          
+                      // }
+                      count++
+                      const ComponentfeatureItem: any = {
+                          Item_x0020_Type: 'Feature',
+                          Title: feature.value,
+                          ParentId: createdComponent?.Id, // Use the ID of the created subcomponent as ParentId
+                          PortfolioLevel: fealevel,
+                          PortfolioStructureID: FeaPortfolioStr,
+                          PortfolioTypeId: PortfoliotypeData != ''?PortfoliotypeData?.Id:1,
+                      };
+
+                      // Create feature item in SharePoint list
+
+                      const featuredata = await createListItem('Master Tasks', ComponentfeatureItem);
+
+                      const mydata = createdComponent == undefined || createdComponent.length == 0 ? createdComponent : ''
+                      // Add feature to the features array
+                      if (ComponentfeatureItem.Title != "") {
+                          compFeatures.push({
+                              Id: featuredata?.Id,
+                              ID: featuredata?.Id,
+                              Title: ComponentfeatureItem?.Title,
+                              siteType: "Master Tasks",
+                              SiteIconTitle: featuredata?.Item_x0020_Type?.charAt(0),
+                              TaskID: featuredata?.PortfolioStructureID,
+                              Created: Moment(ComponentfeatureItem?.Created).format("DD/MM/YYYY"),
+                              DisplayCreateDate: Moment(ComponentfeatureItem?.Created).format("DD/MM/YYYY"),
+                              Author: { "Id": featuredata?.AuthorId, 'Title': CurrentUserData?.Title, 'autherImage': CurrentUserData?.Item_x0020_Cover?.Url },
+                              PortfolioType: PortfoliotypeData,
+                              PortfolioStructureID:featuredata?.PortfolioStructureID,
+                              Item_x0020_Type :'Feature'
+                          });
+                      }
+
+                  }
+
                 // Save subcomponents
                 const subcomponents = [];
                 for (const subcomponent of component?.SubComponent) {
@@ -235,78 +324,7 @@ const CreateAllStructureComponent = (props: any) => {
                     // Create subcomponent item in SharePoint list
 
                     const createdSubcomponent = await createListItem('Master Tasks', subcomponentItem);
-                    //save features of Component
-                    var compFeatures:any=[];
-                    for (const feature of component?.Feature) {
-                        let FeaPortfolioStr = ''
-                        let fealevel: any = ''
-                        const mydata = createdSubcomponent == undefined || createdSubcomponent.length == 0 ? createdComponent : createdSubcomponent
-                        const PortfolioStructureIdFea = await getPortfolioStructureId('Feature', createdComponent)
-                        if (PortfolioStructureIdFea.length == 0 || PortfolioStructureIdFea == undefined) {
-                            fealevel = 1
-                          
-                                FeaPortfolioStr = createdComponent.PortfolioStructureID + '-' + 'F' + fealevel
-                            
-
-                        }
-                        else{
-                            const parts = PortfolioStructureIdFea[0]?.PortfolioStructureID.split('-');
-                            const prefix = parts[0];
-                            const currentValue = parseInt(parts[1].substring(1)); 
-                            const newValue = currentValue + 1;
-                            FeaPortfolioStr = `${prefix}-S${newValue}`;
-                            fealevel = PortfolioStructureIdSub[0]?.PortfolioLevel + 1
-                        }
-                        // else {
-                        //     fealevel = PortfolioStructureIdFea[0].PortfolioLevel + 1
-                        //     if(props.SelectedItem != undefined){
-                        //         FeaPortfolioStr = props.SelectedItem?.PortfolioStructureID + '-' + 'F' + fealevel
-                        //     }
-                        //     else{
-                        //         if(PortfolioStructureIdFea[0]?.Item_x0020_Type == 'SubComponent'){
-                        //             FeaPortfolioStr = PortfolioStructureIdFea[0]?.PortfolioStructureID + '-' + 'F' + fealevel
-                        //         }
-                        //         else{
-                        //             FeaPortfolioStr = createdSubcomponent?.PortfolioStructureID + '-' + 'F' + fealevel
-                        //         }
-                               
-                        //     }
-                            
-                        // }
-                        count++
-                        const ComponentfeatureItem: any = {
-                            Item_x0020_Type: 'Feature',
-                            Title: feature.value,
-                            ParentId: createdComponent?.Id, // Use the ID of the created subcomponent as ParentId
-                            PortfolioLevel: fealevel,
-                            PortfolioStructureID: FeaPortfolioStr,
-                            PortfolioTypeId: PortfoliotypeData != ''?PortfoliotypeData?.Id:1,
-                        };
-
-                        // Create feature item in SharePoint list
-
-                        const featuredata = await createListItem('Master Tasks', ComponentfeatureItem);
-
-
-                        // Add feature to the features array
-                        if (ComponentfeatureItem.Title != "") {
-                            compFeatures.push({
-                                Id: featuredata?.Id,
-                                ID: featuredata?.Id,
-                                Title: ComponentfeatureItem?.Title,
-                                siteType: "Master Tasks",
-                                SiteIconTitle: featuredata?.Item_x0020_Type?.charAt(0),
-                                TaskID: featuredata?.PortfolioStructureID,
-                                Created: Moment(ComponentfeatureItem?.Created).format("DD/MM/YYYY"),
-                                DisplayCreateDate: Moment(ComponentfeatureItem?.Created).format("DD/MM/YYYY"),
-                                Author: { "Id": ComponentfeatureItem?.AuthorId, 'Title': CurrentUserData?.Title, 'autherImage': CurrentUserData?.Item_x0020_Cover?.Url },
-                                PortfolioType: PortfoliotypeData,
-                                PortfolioStructureID:featuredata?.PortfolioStructureID,
-                                Item_x0020_Type :'Feature'
-                            });
-                        }
-
-                    }
+                  
                     // Save features of Subcomponent
                     var subCompFeatures:any = [];
                     for (const feature of subcomponent?.Feature) {
@@ -426,13 +444,37 @@ const CreateAllStructureComponent = (props: any) => {
                         // })
                     })
                 }
-                else{
-                    val.subRows = compFeatures
+                if(val.compFeatures!=undefined && val.compFeatures.length>0){
+                    val.subRows = val?.compFeatures
+                    
                 }
 
 
             })
-           
+            // hierarchyData?.forEach((val: any) => {
+   
+            //     if (props.SelectedItem !== undefined) {
+            //         val.SelectedItem = props.SelectedItem.Id;
+            //     }
+            
+            //     val.subRows = [];
+            
+            //     if (val.subcomponents && val.subcomponents.length > 0) {
+            //         val.subcomponents.forEach((subComp: any) => {
+                       
+            //             if (subComp.subCompFeatures && subComp.subCompFeatures.length > 0) {
+            //                 subComp.subRows = subComp.subCompFeatures;
+            //             }
+            //         });
+                  
+            //         val.subRows = val.subRows.concat(val.subcomponents);
+            //     }
+            
+            //     if (val.compFeatures && val.compFeatures.length > 0) {
+                  
+            //         val.subRows = val.subRows.concat(val.compFeatures);
+            //     }
+            // });
             props.Close(hierarchyData)
             defaultPortfolioType = ''
             setLoaded(true);
@@ -492,12 +534,13 @@ const CreateAllStructureComponent = (props: any) => {
         //         component.Feature.pop()
         //     }
        
-        if (index == 0) {
+        if (index === 0) {
             if (component.isCheckedSub == true || props?.SelectedItem?.PortfolioType?.Title == 'Component') {
                 
-                if(Subcomponent.Feature.length==0){
-                    Subcomponent.isCheckedSubFea = true;
+                if(Subcomponent.Feature.length==0|| Subcomponent.Feature==undefined){
                     Subcomponent.Feature.push({id:  1, value: ''})
+                    Subcomponent.isCheckedSubFea = true;
+                    
                 }
                 else{
                     Subcomponent.isCheckedSubFea = true;
@@ -521,9 +564,16 @@ const CreateAllStructureComponent = (props: any) => {
             setCount(count + 1)
         }
         else {
-            if (component.isCheckedSub == true) {
-                Subcomponent.Feature.push({id: 1, value: ''})
-                Subcomponent.isCheckedSubFea = true;
+            if (component.isCheckedSub == true&& isFeatureForSubComp) {
+                if(Subcomponent.Feature.length===0)
+                    {
+                        Subcomponent.Feature.push({id: 1, value: ''})
+                        Subcomponent.isCheckedSubFea = true;
+                    }
+                else{
+                    Subcomponent.isCheckedSubFea = true;
+                }
+                
 
             }
             else {
@@ -538,7 +588,7 @@ const CreateAllStructureComponent = (props: any) => {
     const handleSubComponentChange = (index: any, component: any) => {
         // component.SubComponent.pop();
         if (index == 0) {
-            if(component.SubComponent.length===0)
+            if(component.SubComponent.length===0 )
                 {
                     component.isCheckedSub = true;
                     component.SubComponent.push({ id: 1, isCheckedSub: true, value: '', Feature: [{ id: 1, value: '' }] })
