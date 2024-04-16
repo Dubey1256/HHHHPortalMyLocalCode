@@ -17,6 +17,9 @@ import { FaPaperPlane } from "react-icons/fa";
 import EmailComponenet from "../../calendar/components/email";
 import moment from 'moment-timezone';
 import "./style.css";
+import 'core-js/es/object/values';
+import "@pnp/sp/sputilities";
+import { spfi, SPFx as spSPFx } from "@pnp/sp";
 moment.locale("en-GB");
 let createdBY: any,
   modofiedBy: any,
@@ -619,7 +622,7 @@ const Apps = (props: any) => {
     const web = new Web(props.props.siteUrl);
     const regionalSettings = await web.regionalSettings.get(); console.log(regionalSettings);
     const query =
-      "RecurrenceData,Duration,Designation,Author/Title,Editor/Title,Employee/Id,Employee/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo,Color,Created,Modified";
+      "RecurrenceData,Duration,Author/Title,Editor/Title,Employee/Id,Employee/Title,Category,Designation,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,HalfDay,HalfDayTwo,Color,Created,Modified";
     try {
       const results = await web.lists
         .getById(props.props.SmalsusLeaveCalendar)
@@ -665,12 +668,20 @@ const Apps = (props: any) => {
         const currentMonth = currentDate.getMonth() + 1; // Get current month (January is 0, so add 1)
         const currentYear = currentDate.getFullYear(); // Get current year
         const filteredData = events.filter((event: any) => {
-          const eventDate = new Date(event.start); // Assuming event has a 'date' property
-          const eventMonth = eventDate.getMonth() + 1; // Get month of the event
-          const eventYear = eventDate.getFullYear(); // Get year of the event
-          return eventMonth === currentMonth && eventYear === currentYear; // Filter events for current month and year
-        });
+          const startDate = new Date(event.start); // Parse start date
+          const endDate = new Date(event.end);
+          const eventStartYear = startDate.getFullYear();
+          const eventStartMonth = startDate.getMonth() + 1; // Months are zero-based
+          const eventEndYear = endDate.getFullYear();
+          const eventEndMonth = endDate.getMonth() + 1; // Months are zero-based
 
+          return (
+            (eventStartYear === currentYear && eventStartMonth === currentMonth) || // Event starts in current month
+            (eventEndYear === currentYear && eventEndMonth === currentMonth) || // Event ends in current month
+            (eventStartYear < currentYear && eventEndYear > currentYear) || // Event spans across multiple years
+            (eventStartYear === currentYear && eventEndYear === currentYear && eventStartMonth < currentMonth && eventEndMonth > currentMonth) // Event spans across multiple months within the same year
+          );
+        });
         console.log(filteredData); // Display filtered data
         localArr = processDataArray(filteredData);
         setChkName(localArr)
@@ -756,7 +767,7 @@ const Apps = (props: any) => {
         Category: event.Category,
         Duration: event.Duration,
         UID: event.UID,
-        Designation:event.Designation,
+        Designation: event.Designation,
         fRecurrence: event.fRecurrence,
         RecurrenceID: event.RecurrenceID,
         MasterSeriesItemID: event.MasterSeriesItemID
@@ -773,11 +784,12 @@ const Apps = (props: any) => {
     const eventYear = eventDate.getFullYear(); // Get year of the event
     return { year: eventYear, month: eventMonth };
   }
-  const handleNavigate = (newDate: any) => {
+  const handleNavigate = (newDate: any ,newiew:any) => {
+    setview(newiew || 'month')
     const { year: currentYear, month: currentMonth } = getYearMonthFromDate(newDate);
     const filteredData = events.filter((event: any) => {
       const startDate = getYearMonthFromDate(event.start);
-      const endDate = getYearMonthFromDate(event.end); 
+      const endDate = getYearMonthFromDate(event.end);
       return (
         (startDate.year < currentYear || (startDate.year === currentYear && startDate.month <= currentMonth)) &&
         (endDate.year > currentYear || (endDate.year === currentYear && endDate.month >= currentMonth))
@@ -786,6 +798,8 @@ const Apps = (props: any) => {
     localArr = processDataArray(filteredData);
     setRecurringEvents(filteredData);
   };
+
+
   // Handle Show More 
   const handleShowMore = (event: any, date: any) => {
     // console.log
@@ -868,6 +882,7 @@ const Apps = (props: any) => {
     setPeoplePickerShow(false);
     setShowRecurrenceSeriesInfo(false);
     setEditRecurrenceEvent(false);
+    setType(event.Event_x002d_Type);
 
     if (event?.eventType === "Company Holiday" || event?.eventType === "National Holiday") {
       setIsDisableField(true);
@@ -1024,6 +1039,7 @@ const Apps = (props: any) => {
     setInputValueName("");
     setStartDate(null);
     setEndDate(null);
+    setType("");
     sedType("");
     setInputValueReason("");
     setIsDisableField(false);
@@ -1070,22 +1086,25 @@ const Apps = (props: any) => {
     try {
       const web = new Web(props.props.siteUrl);
 
-      const mycolors = (HalfDaye || HalfDayT) ? "#6d36c5" :
+      
         (newEvent.Event_x002d_Type === "Work From Home") ? "#e0a209" :
           ((newEvent.Event_x002d_Type === "Company Holiday") || (newEvent.Event_x002d_Type === "National Holiday")) ? "#228B22" : "";
-
+          let mytitle = newEvent.name + "-" + newEvent.type + "-" + newEvent.title;
+          if (newEvent != undefined && (newEvent?.type == "National Holiday" || newEvent?.type == "Company Holiday")) {
+            mytitle = newEvent.type + "-" + newEvent.title;
+          }
       const addEventItem = {
-        Title: newEvent.Title,
+        Title: mytitle,
         Description: newEvent.Description,
         EventDate: await getUtcTime(newEvent.EventDate),
-        // Event_x002d_Type: newEvent.Event_x002d_Type,
+        Event_x002d_Type: newEvent.Event_x002d_Type,
         EndDate: await getUtcTime(newEvent.EndDate),
         Location: newEvent.Location,
-        // Designation: newEvent.Designation,
+        Designation: newEvent.Designation,
         fAllDayEvent: newEvent.fAllDayEvent,
         fRecurrence: newEvent.fRecurrence,
         EventType: newEvent.EventType,
-        Color: mycolors,
+        // Color: mycolors,
         UID: newEvent.UID,
         HalfDay: HalfDaye,
         HalfDayTwo: HalfDayT,
@@ -1269,6 +1288,114 @@ const Apps = (props: any) => {
       return formattedDater;
     } else return "";
   };
+// for send Email
+const calculateTotalWorkingDays = (matchedData: any) => {
+  const today = new Date();
+
+  return matchedData.reduce((total: any, item: any) => {
+    const endDate = new Date(item.EndDate);
+    const eventDate = new Date(item.EventDate);
+    const timezoneOffset = endDate.getTimezoneOffset();
+    const timezoneOffsetInHours = timezoneOffset / 60;
+    const adjustedEndDate = new Date(endDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
+    const adjustedEventDate: any = new Date(eventDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
+
+    // Filter data based on the event date being in the current year
+    if (adjustedEventDate.getFullYear() === today.getFullYear()) {
+      const adjustedEndDateToToday = today < adjustedEndDate ? today : adjustedEndDate;
+
+      // Set hours to 0 for accurate date comparisons
+      adjustedEndDateToToday.setHours(0);
+      let workingDays = 0;
+      let currentDate = new Date(adjustedEventDate);
+      currentDate.setHours(0);
+
+      while (currentDate <= adjustedEndDateToToday) {
+        const dayOfWeek = currentDate.getDay();
+
+        if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(currentDate, adjustedEndDateToToday)) {
+          // Exclude Sunday (0) and Saturday (6), and the event date and end date if they're both on a weekend
+          if (item?.Event_x002d_Type !== "Work From Home") {
+            if (
+              (item?.HalfDay === true) ||
+              (item?.HalfDayTwo === true)
+            ) {
+              workingDays += 0.5; // Consider half-day
+            } else {
+              workingDays++;
+            }
+          }
+        }
+
+        currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+      }
+
+      return total + workingDays;
+    }
+
+    return total;
+  }, 0);
+};
+const isWeekend = (startDate: any, endDate: any) => {
+  const startDay = startDate.getDay();
+  const endDay = endDate.getDay();
+
+  return (startDay === 0 || startDay === 6) && (endDay === 0 || endDay === 6);
+};
+
+const SendEmail = (EventData:any,MyEventData:any) => {
+  const startDate = new Date(EventData?.start); // Replace 'startDateString' with the actual start date string
+const endDate = new Date(EventData?.end); // Replace 'endDateString' with the actual end date string
+
+
+
+let daysDifference = calculateTotalWorkingDays(MyEventData);
+const formattedstartDate = startDate.toLocaleDateString('en-GB', {
+  weekday: 'short', // short, long
+  year: 'numeric',
+  month: 'short', // numeric, 2-digit, long, short, narrow
+  day: 'numeric', // numeric, 2-digit
+});
+const formattedendDate = endDate.toLocaleDateString('en-GB', {
+  weekday: 'short', // short, long
+  year: 'numeric',
+  month: 'short', // numeric, 2-digit, long, short, narrow
+  day: 'numeric', // numeric, 2-digit
+});
+  let sp = spfi().using(spSPFx(props.Context));
+  let  BindHtmlBody = `<div style="max-width: 600px; margin: 0 auto; background-color: #f7f7f7; padding: 20px; border: 1px solid #ddd;">
+  <div style="padding: 20px; color: #333;">
+    Dear Prashant,<br><br>
+    I am writing to request ${daysDifference} of leave from ${formattedstartDate} to ${formattedendDate} due to ${EventData?.title}.<br><br>
+    I have ensured that my tasks are up to date and arranged coverage during my absence. Your understanding and approval would be greatly appreciated.<br><br>
+    Best regards,<br>
+    ${EventData?.name}
+  </div>
+  <div style="text-align: center; padding: 10px; font-size: 0.8em; color: #666;">
+    This is an automated email notification.
+  </div>
+</div>`
+  let SendEmailMessage =
+    sp.utility
+      .sendEmail({
+        Body: BindHtmlBody,
+        Subject: "Leave Request " + EventData?.EventDate +  EventData?.Description,
+        To: ["prashant.kumar@hochhuth-consulting.de","anubhav.shukla@hochhuth-consulting.de"],
+        // ,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"
+        AdditionalHeaders: {
+          "content-type": "text/html",
+        },
+      })
+      .then(() => {
+        console.log("Email Sent!");
+        alert("Email Sent SuccessFully!");
+      })
+      .catch((error) => {
+        alert("error");
+      });
+};
+// Email End 
+
   const saveEvent = async () => {
     try {
       if (inputValueName?.length > 0 && (dType?.length > 0 || type == "National Holiday" || type == "Company Holiday")) {
@@ -1337,6 +1464,7 @@ const Apps = (props: any) => {
               .getById(props.props.SmalsusLeaveCalendar)
               .items.add(eventData)
               .then(() => {
+                SendEmail(newEvent,eventData)
                 getEvents();
               })
           });
@@ -1428,7 +1556,7 @@ const Apps = (props: any) => {
         Location: newEvent.loc,
         Event_x002d_Type: newEvent.type,
         Description: newEvent.reason,
-        // Designation: newEvent.Designation,
+        Designation: newEvent.Designation,
         EndDate: ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) + " " + (selectedTimeEnd + "" + ":00"),
         EventDate: ConvertLocalTOServerDateToSave(startDate, selectedTime) + " " + (selectedTime + "" + ":00"),
         HalfDay: newEvent.halfdayevent,

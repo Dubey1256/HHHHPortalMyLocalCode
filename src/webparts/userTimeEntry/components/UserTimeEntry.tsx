@@ -26,6 +26,7 @@ import CentralizedSiteComposition from "../../../globalComponents/SiteCompositio
 import ShareTimeSheet from "../../../globalComponents/ShareTimeSheet";
 //import EmployeePieChart from '../../employeDashBoard/components/EmployeePieChart';
 import GraphData from "./GraphicData";
+import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 var AllListId: any;
 var siteConfig: any[] = [];
 var AllPortfolios: any[] = [];
@@ -267,6 +268,7 @@ export default class UserTimeEntry extends React.Component<
                 "Project/Id",
                 "Project/Title",
                 "Project/PriorityRank",
+                "Project/PortfolioStructureID",
                 "ClientCategory",
                 "Comments",
                 "DueDate",
@@ -353,6 +355,12 @@ export default class UserTimeEntry extends React.Component<
                     task.portfolio = task?.Portfolio;
                     task.Status = task?.Status;
                     task.PortfolioTitle = task?.Portfolio?.Title;
+                  }
+                  const title = task?.Project?.Title || '';
+                  const formattedDueDate = Moment(task?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+                  task.joinedData = [];
+                  if (task?.projectStructerId && title || formattedDueDate) {
+                    task.joinedData.push(`Project ${task?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
                   }
                   task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                   task.TeamMembersSearch = "";
@@ -1397,7 +1405,7 @@ export default class UserTimeEntry extends React.Component<
         lastMonth.getMonth(),
         1
       );
-      var change = Moment(startingDateOfLastMonth).add(18, "days").format();
+      var change = Moment(startingDateOfLastMonth).add(25, "days").format();
       var b = new Date(change);
       formattedDate = b;
     } else if (startDateOf == "Last Week") {
@@ -1912,6 +1920,10 @@ export default class UserTimeEntry extends React.Component<
               "TaskCategories/Id",
               "TaskCategories/Title",
               "ParentTask/TaskID",
+              "Project/Id",
+              "Project/Title",
+              "Project/PortfolioStructureID",
+              "Project/PriorityRank",
               "TaskType/Id",
               "TaskType/Title",
               "TaskType/Level",
@@ -1959,6 +1971,7 @@ export default class UserTimeEntry extends React.Component<
             .expand(
               "ParentTask",
               "TaskType",
+              'Project',
               "AssignedTo",
               "Component",
               "AttachmentFiles",
@@ -1988,6 +2001,10 @@ export default class UserTimeEntry extends React.Component<
             }
             Item.NewCompletedDate = Item.CompletedDate;
             Item.NewCreated = Item.Created;
+            Item.projectStructerId = Item?.Project?.PortfolioStructureID
+            Item.ProjectId = Item?.Project?.Id
+            Item.SmartPriority =
+            globalCommon.calculateSmartPriority(Item);
             if (Item.Created != undefined)
               Item.FiltercreatedDate = self.ConvertLocalTOServerDate(
                 Item.Created,
@@ -1998,6 +2015,12 @@ export default class UserTimeEntry extends React.Component<
                 Item.CompletedDate,
                 "DD/MM/YYYY"
               );
+              const title = Item?.Project?.Title || '';
+              const formattedDueDate = Moment(Item?.DueDate, 'DD/MM/YYYY').format('YYYY-MM');
+              Item.joinedData = [];
+              if (Item?.projectStructerId && title || formattedDueDate) {
+                Item.joinedData.push(`Project ${Item?.projectStructerId} - ${title}  ${formattedDueDate == "Invalid date" ? '' : formattedDueDate}`)
+              }
             Item.descriptionsSearch = "";
             if (Item?.FeedBack != undefined) {
               let DiscriptionSearchData: any = "";
@@ -2079,7 +2102,13 @@ export default class UserTimeEntry extends React.Component<
             //filterItem.clientTimeInfo = clientTimeArr;
             filterItem.flag = true;
             filterItem.DisplayTaskId = getItem?.DisplayTaskId;
+            filterItem.joinedData = getItem?.joinedData;
+            filterItem.SmartPriority = getItem?.SmartPriority;
+            filterItem.projectStructerId = getItem?.projectStructerId;
+            filterItem.ProjectTitle = getItem?.Project?.Title;
+            filterItem.PortfolioType = getItem?.PortfolioType;
             filterItem.Body = getItem?.Body;
+            filterItem.ProjectId = getItem?.Project?.Id;
             filterItem.descriptionsSearch = getItem?.descriptionsSearch;
             filterItem.FeedBack = getItem?.FeedBack;
             filterItem.TaskType = getItem?.TaskType;
@@ -2723,14 +2752,14 @@ export default class UserTimeEntry extends React.Component<
         header: "",
         resetSorting: false,
         resetColumnFilters: false,
-        size: 30,
+        size: 60,
       },
       {
         accessorKey: "DisplayTaskId",
         placeholder: "Task",
         id: "DisplayTaskId",
         header: "",
-        size: 90,
+        size: 105,
         cell: (info: any) => (
           <>
             <span className="d-flex">
@@ -2786,7 +2815,7 @@ export default class UserTimeEntry extends React.Component<
             )}
           </span>
         ),
-        size: 275,
+        size: 300,
       },
       {
         accessorFn: (info: any) => info?.ClientCategorySearch,
@@ -2802,14 +2831,14 @@ export default class UserTimeEntry extends React.Component<
         placeholder: "Client Category",
         header: "",
         resetColumnFilters: false,
-        size: 90,
+        size: 105,
       },
       {
         accessorKey: "PercentComplete",
         id: "PercentComplete",
         placeholder: "%",
         header: "",
-        size: 35,
+        size: 50,
       },
       {
         accessorKey: "ComponentName",
@@ -2843,7 +2872,7 @@ export default class UserTimeEntry extends React.Component<
             ></span>
           </>
         ),
-        size: 275,
+        size: 200,
       },
       {
         accessorKey: "Description",
@@ -2871,6 +2900,38 @@ export default class UserTimeEntry extends React.Component<
         placeholder: "Time Description",
         header: "",
       },
+      {
+        accessorFn: (info:any) => info?.projectStructerId + "." + info?.ProjectTitle,
+        cell: (info:any) => (
+            <>
+                {info?.row?.original?.ProjectTitle != (null || undefined) &&
+                    <span ><a style={info?.row?.original?.fontColorTask != undefined ? { color: `${info?.row?.original?.fontColorTask}` } : { color: `${info?.row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/PX-Profile.aspx?ProjectId=${info?.row?.original?.ProjectId}`} >
+                        <ReactPopperTooltip ShareWebId={info?.row?.original?.projectStructerId} projectToolShow={true}  row={info?.row} AllListId={AllListId} /></a></span>
+                }
+            </>
+        ),
+        id: 'ProjectTitle',
+        placeholder: "Project",
+        resetColumnFilters: false,
+        header: "",
+        size: 80,
+        isColumnVisible: true
+      },
+      {
+        accessorKey: "PriorityRank",
+        id: "PriorityRank",
+        placeholder: "TaskPriority",
+        header: "",
+        size: 60,
+      },
+      {
+        accessorKey: "SmartPriority",
+        id: "SmartPriority",
+        placeholder: "SmartPriority",
+        header: "",
+        size: 60,
+      },
+     
       {
         accessorFn: (info: any) => info?.NewTimeEntryDate,
         cell: (info: any) => (
@@ -2917,14 +2978,14 @@ export default class UserTimeEntry extends React.Component<
         placeholder: "Time Entry",
         isColumnDefultSortingDesc: true,
         header: "",
-        size: 91,
+        size: 104,
       },
       {
         accessorKey: "DispEffort",
         id: "DispEffort",
         placeholder: "Time",
         header: "",
-        size: 45,
+        size: 60,
       },
       {
         cell: (info: any) => (
@@ -2952,7 +3013,7 @@ export default class UserTimeEntry extends React.Component<
         resetSorting: false,
         resetColumnFilters: false,
         placeholder: "",
-        size: 25,
+        size: 40,
       },
       {
         cell: (info: any) => (
@@ -2968,7 +3029,7 @@ export default class UserTimeEntry extends React.Component<
         resetSorting: false,
         resetColumnFilters: false,
         placeholder: "",
-        size: 25,
+        size: 40,
       },
     ];
     this.setState({

@@ -26,9 +26,9 @@ let copyDtaArray: any = [];
 let renderData: any = [];
 const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, selectionType, groupedData, showProject }: any) => {
    
-    const childRef = React.useRef<any>();
-    if (childRef != null) {
-        childRefdata = { ...childRef };
+    const portfolioSelectionTableRef = React.useRef<any>();
+    if (portfolioSelectionTableRef != null) {
+        childRefdata = { ...portfolioSelectionTableRef };
     }
     // const [modalIsOpen, setModalIsOpen] = React.useState(true);
     const [OpenAddStructurePopup, setOpenAddStructurePopup] = React.useState(false);
@@ -70,9 +70,9 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         } else {
             // Code to run on subsequent renders (check and uncheck events)
             // For example:
-            if (childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length > 0) {
+            if (portfolioSelectionTableRef?.current?.table?.getSelectedRowModel()?.flatRows?.length > 0) {
                 let allCheckData: any = [];
-                childRef?.current?.table?.getSelectedRowModel()?.flatRows?.forEach((elem: any) => {
+                portfolioSelectionTableRef?.current?.table?.getSelectedRowModel()?.flatRows?.forEach((elem: any) => {
                     allCheckData.push(elem?.original);
                 });
                 setdataUpper(allCheckData);
@@ -80,7 +80,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 setdataUpper([]);
             }
         }
-    }, [initialRender, childRef?.current?.table?.getSelectedRowModel()?.flatRows]);
+    }, [initialRender, portfolioSelectionTableRef?.current?.table?.getSelectedRowModel()?.flatRows]);
     
     // Default selectionType
     
@@ -756,7 +756,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         if (res === "Close") {
             setIsComponent(false);
         } else if (res?.data && res?.data?.ItmesDelete != true && !UpdatedData) {
-            childRef?.current?.setRowSelection({});
+            portfolioSelectionTableRef?.current?.setRowSelection({});
             setIsComponent(false);
 
 
@@ -794,13 +794,13 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     const customTableHeaderButtons1 = (
         <>
             {/* <button type="button" className="btn btn-primary" onClick={() => OpenAddStructureModal()}>{showProject == true?"Add Project":"Add Structure"}</button> */}
-            {  childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length<2 ?
+            {  portfolioSelectionTableRef?.current?.table?.getSelectedRowModel()?.flatRows?.length<2 ?
                 <button type="button" className="btn btn-primary" style={{  color: "#fff" }} title=" Add Structure" onClick={() => OpenAddStructureModal()}>
                     {" "}{showProject == true?"Add PX":"Add Structure"}{" "}</button> :
                 <button type="button" disabled className="btn btn-primary" style={{ color: "#fff" }} title=" Add Structure"> {" "} Add Structure{" "}</button>
             }
 
-            {(childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length ==2) ?
+            {(portfolioSelectionTableRef?.current?.table?.getSelectedRowModel()?.flatRows?.length ==2) ?
                 < button type="button" className="btn btn-primary" title='Compare' style={{color: '#fff' }} onClick={() => openCompareTool()}>Compare</button> :
                 <button type="button" className="btn btn-primary" style={{ color: '#fff' }} disabled={true} >Compare</button>
             }
@@ -839,7 +839,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                     {dataUpper?.length > 0 &&    
     <div className="col-sm-12 p-0 smart">
         <div className="Alltable">
-            {/* <GlobalCommanTable columns={columns} wrapperHeight="240px" showHeader={true} customHeaderButtonAvailable={true} ref={childRef} customTableHeaderButtons={customTableHeaderButtons} defultSelectedPortFolio={dataUpper} data={dataUpper} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={IsSelections} /> */}
+            {/* <GlobalCommanTable columns={columns} wrapperHeight="240px" showHeader={true} customHeaderButtonAvailable={true} ref={portfolioSelectionTableRef} customTableHeaderButtons={customTableHeaderButtons} defultSelectedPortFolio={dataUpper} data={dataUpper} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={IsSelections} /> */}
             <table className="m-0 table w-100">
                 <thead>
                     <tr>
@@ -957,7 +957,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                        
                         <div className="col-sm-12 p-0 smart">
                             <div className="">
-                                <GlobalCommanTable columns={columns}  customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons1}  ref={childRef} showHeader={true} data={data} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={IsSelectionsBelow} />
+                                <GlobalCommanTable columns={columns}  customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons1}  ref={portfolioSelectionTableRef} showHeader={true} data={data} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={IsSelectionsBelow} />
                             </div>
                         </div>
                     </div>
@@ -1003,8 +1003,8 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 />
              
             </Panel>
-            {isProjectopen && <AddProject CallBack={CallBack} items={CheckBoxData} PageName={"ProjectOverview"} AllListId={Dynamic} data={data} />}
-            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={Dynamic} />}
+            {isProjectopen && <AddProject CallBack={CallBack} items={checkedList} PageName={"ProjectOverview"} AllListId={Dynamic} data={data} />}
+            {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={portfolioSelectionTableRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={Dynamic} />}
 
             {IsComponent && (
                 <EditInstitution

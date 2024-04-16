@@ -1681,7 +1681,6 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
 
           // Categories:EditData?.smartCategories != undefined && EditData?.smartCategories != ''?EditData?.smartCategories[0].Title:EditData?.Categories,
           Categories: categoriesItem ? categoriesItem : null,
-          SharewebCategoriesId: { results: CategoryID },
           // ClientCategoryId: { "results": RelevantPortfolioIds },
           ServicePortfolioId:
             RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
@@ -3157,7 +3156,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                               Item Rank
                             </label>
                             <select
-                              className="full_width searchbox_height"
+                              className="w-100" style={{paddingTop:'3px'}}
                               defaultValue={EditData?.ItemRankTitle}
                               onChange={(e) =>
                                 (EditData.ItemRankTitle = e.target.value)
@@ -3184,7 +3183,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                             </select>
                           </div>
                         </div>
-                        <div className="col-4 mt-2">
+                       <div className="col-4 mt-2 ps-0">
                           <div className="input-group">
                             <label className="form-label full-width">
                               Deliverable-Synonyms
@@ -3204,7 +3203,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                             />
                           </div>
                         </div>
-                        <div className="col-4 pe-0 mt-2 ">
+                       <div className="col-4 px-0 mt-2">
                           <div className="input-group">
                             <label className="form-label full-width">
                               Portfolio Item
@@ -3526,7 +3525,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                 <div className="SpfxCheckRadio">
                                   <label key={index}>
                                     <input
-                                      type="radio"
+                                      type="radio" className="radio"
                                       name="percentComplete"
                                       value={item.rank}
                                       defaultChecked={
@@ -3815,7 +3814,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                             );
 
                             return (
-                              <div key={index} className="form-check">
+                             <div key={index} className="form-check mt-2">
                                 <input
                                   className="form-check-input rounded-0"
                                   type="checkbox"
@@ -3981,7 +3980,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                               )}
                             </div>
                           </div>
-                          <div className="col-sm-12 padding-0 input-group">
+                         <div className="col-sm-12 padding-0 input-group mt-2">
                             <label className="full_width">Feature Type </label>
                             {(FeatureTypeData?.length == 0 ||
                               FeatureTypeData[0] == undefined) && (
@@ -4905,7 +4904,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                   </div>
                   <div className="text-left">
                     <a onClick={() => deleteTask()}>
-                      <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
+                       <span style={{marginLeft:'-4px'}} className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
                       Delete This Item
                     </a>
                     <span>

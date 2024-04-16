@@ -1626,13 +1626,13 @@ function reverseArray(arr: any) {
             var listNames = listName;
             var listUri: string = `${RelativeUrl}/Lists/${listNames}`;
           }
-          if (foundCategory) {
+          if (foundCategory.length > 0) {
             let isAvailble = false;
             let count = 0
             mainParentId = foundCategory?.Id;
             mainParentTitle = checkCategories;
            
-              foundCategory?.subRows.forEach(async (items: any) => {
+              foundCategory?.subRows?.forEach(async (items: any) => {
                   if (!isAvailble && items.AuthorId === CurntUserId) {
                       count++;
                       isAvailble = true;
@@ -3816,12 +3816,12 @@ function reverseArray(arr: any) {
       </Panel>
       {isAlertVisible ?
         <CustomAlert
-          hidden={!isAlertVisible}
-          toggleDialog={toggleDialog}
-          message="You are not part of Team members of this site. Please click here to add yourself or contact the site administrator."
-          linkText="Please Click Here!"
-          linkUrl="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskUser-Management.aspx"
-        /> : null
+        hidden={!isAlertVisible}
+        toggleDialog={toggleDialog}
+        message="You are not part of Team members of this site. Please click here to add yourself or contact the site administrator."
+        linkText="Click Here!"
+        linkUrl={`${CurrentSiteUrl}/SitePages/TaskUser-Management.aspx`}
+      /> : null
       }
     </div>
   );

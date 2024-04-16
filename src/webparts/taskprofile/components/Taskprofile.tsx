@@ -43,6 +43,7 @@ import CentralizedSiteComposition from '../../../globalComponents/SiteCompositio
 import { IoHandRightOutline } from 'react-icons/io5';
 import InlineEditingcolumns from '../../../globalComponents/inlineEditingcolumns';
 import * as GlobalFunctionForUpdateItems from '../../../globalComponents/GlobalFunctionForUpdateItems'
+import SmartPriorityHover from '../../../globalComponents/EditTaskPopup/SmartPriorityHover';
 var ClientTimeArray: any = [];
 
 var AllListId: any;
@@ -786,7 +787,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         isOpenEditPopup: false,
         TaskDeletedStatus: true,
       })
-      window.location.href = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx";
+   window.location.href = `${this.props?.siteUrl}/SitePages/TaskDashboard.aspx`;;
     }
     if (FunctionType == "Close") {
       this.setState({
@@ -2216,8 +2217,14 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                         <dt className='bg-Fa'>SmartPriority</dt>
 
                         <dd className='bg-Ff'>
-                          <div className="boldClable" title={this?.state?.Result?.showFormulaOnHover}>
-                            {this.state.Result["SmartPriority"] != undefined ? this.state.Result["SmartPriority"] : 0}
+                          <div className="boldClable" >
+                            <span className={this?.state?.Result["SmartPriority"] != undefined ? "hover-text hreflink m-0 r sxsvc" : "hover-text hreflink m-0 cssc"}>
+                              <>{this.state.Result["SmartPriority"]!= undefined ? this?.state?.Result["SmartPriority"] : 0}</>
+                              <span className="tooltip-text pop-right">
+                                {this.state?.Result?.showFormulaOnHover != undefined ?
+                                  <SmartPriorityHover editValue={this.state.Result} /> : ""}
+                              </span>
+                            </span>
                           </div>
 
                         </dd>

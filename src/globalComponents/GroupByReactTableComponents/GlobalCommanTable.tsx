@@ -1314,36 +1314,36 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                         {/* {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
                                             <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>} */}
 
-                                        {isShowingDataAll === true ? <>
+                                        {isShowingDataAll === true ? <label><label className='alignCenter'>
                                             <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
                                             <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `}/</label>
                                             <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
                                             {/* {index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
-                                        </> :
-                                            <>
+                                        </label></label> :
+                                            <label><label className='alignCenter'>
                                                 <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
                                                 <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `}/</label>
                                                 <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
                                                 {/* {index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
-                                            </>}
+                                                </label></label>}
                                     </>
                                 )
                             })}
                             {items?.taskTypeDataItem?.map((type: any, index: any) => {
                                 return (
                                     <>
-                                        {isShowingDataAll === true ? <>
+                                        {isShowingDataAll === true ? <label><label className='alignCenter'>
                                             <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
                                             <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `}/</label>
                                             <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
                                             {/* {index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
-                                        </> :
-                                            <>
+                                        </label></label> :
+                                            <label><label className='alignCenter'>
                                                 <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
                                                 <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `}/</label>
                                                 <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
                                                 {/* {index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
-                                            </>}
+                                            </label></label>}
                                     </>
                                 )
                             })}
@@ -1661,7 +1661,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 </div>
             </div>
             {
-                showPagination === true && showPaginationSetting === false && (table?.getFilteredRowModel()?.rows?.length > table.getState().pagination.pageSize) ? <div className="d-flex gap-2 items-center mb-3 mx-2">
+                showPagination === true && showPaginationSetting === false && (table?.getFilteredRowModel()?.rows?.length > table.getState().pagination.pageSize) ? <div className="d-flex paginationnav gap-2 items-center mb-3 mx-2">
                     <button
                         className="border"
                         onClick={() => table.setPageIndex(0)}
@@ -1676,7 +1676,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     >
                         <FaChevronLeft />
                     </button>
-                    <span className="flex items-center gap-1">
+                    <span className="flex items-center gap-1 pt-1">
                         <div>Page <strong>
                             {table.getState().pagination.pageIndex + 1} of{' '}
                             {table.getPageCount()}

@@ -5,12 +5,12 @@ import { Panel, PanelType } from "office-ui-fabric-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Web, sp } from "sp-pnp-js";
 import PageLoader from "./pageLoader";
-let defaultPortfolioType = 'Component'
+let defaultPortfolioType = ''
 let PortfoliotypeData: any = '';
 let PortfolioColor: any = ''
 let CurrentUserId: any = ''
 let CurrentUserData: any = ''
-
+let query:any='';
 let isDisable = false
 let isDisableSub = false
 let subCount= 0;
@@ -23,7 +23,17 @@ const CreateAllStructureComponent = (props: any) => {
     const [Subcomponents, setSubComponents] = React.useState([{ id: 1, value: '' }]);
     const [Feature, setFeature] = React.useState([{ id: 1, value: '' }]);
 
-
+    query=window.location.search;
+    const urlParams = new URLSearchParams(query);
+    const portfolioType = urlParams.get('PortfolioType');
+    if(portfolioType!==undefined && portfolioType!=null && portfolioType!='')
+       {
+           defaultPortfolioType=portfolioType;
+       }
+    else
+       {
+           defaultPortfolioType='Component';
+       } 
     React.useEffect(() => {
         if (props.SelectedItem != undefined) {
             if (props.SelectedItem.PortfolioType?.Title == 'Component') {
@@ -109,7 +119,10 @@ const CreateAllStructureComponent = (props: any) => {
             const newSubComponents = [...components];
             //newSubComponents[index].SubComponent.splice(subIndex, 1)
             newSubComponents[index].SubComponent.splice(subIndex, 1)
-            newSubComponents[index].isCheckedSub = false;
+            if (newSubComponents[index].SubComponent.length <= 1) {
+                newSubComponents[index].isCheckedSub = false;
+            }
+            // newSubComponents[index].isCheckedSub = false;
             setSubComponents(newSubComponents);
         }
         if (type === 'feature') {
@@ -144,8 +157,16 @@ const CreateAllStructureComponent = (props: any) => {
                     var PortfolioStructureId = await getPortfolioStructureId('Component', 'data')
                 }
 
-                let level = PortfolioStructureId[0]?.PortfolioLevel + 1
-                let PortfolioStr = 'C' + level
+                var level:any =''
+                var PortfolioStr = ''
+                if(PortfolioStructureId.length == 0){
+                     level = 1
+                    PortfolioStr = 'C' + level
+                }
+                else{
+                     level = PortfolioStructureId[0]?.PortfolioLevel + 1
+                     PortfolioStr = 'C' + level
+                }
                 const componentItem = {
                     Item_x0020_Type: 'Component',
                     Title: component?.value,
@@ -426,7 +447,7 @@ const CreateAllStructureComponent = (props: any) => {
             }
 
             setCount(count + 1)
-        };
+        }
     }
     const handleSubComponentChange = (index: any, component: any) => {
         if (index == 0) {
@@ -438,7 +459,7 @@ const CreateAllStructureComponent = (props: any) => {
             component.SubComponent.push({ id: component.SubComponent.length + 1, isCheckedSub: true, value: '', Feature: [{ id: 1, value: '' }] })
             component.isCheckedSub = true;
             setCount(count + 1)
-        };
+        }
     }
     const CheckPortfolioType = (item: any) => {
         PortfoliotypeData = item;
@@ -686,7 +707,7 @@ const CreateAllStructureComponent = (props: any) => {
                         value={Subcomponent.value}
                         onChange={(event) => handleInputChange(index, indexSub, 0, event, 'subcomponent')}
                     />
-                    {component.SubComponent.length == 1 && <span onClick={() => handleDelete(index, indexSub, 0, 'subcomponent')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>}
+                  {/* {component.SubComponent.length == 1 && <span onClick={() => handleDelete(index, indexSub, 0, 'subcomponent')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>} */}
                     {indexSub === component.SubComponent.length - 1 && (
                         <div className="input-group-append alignCenter">
                             <span onClick={() => handleAddSubComponent(index, indexSub, 0, 'SubComponent')} title="Add" className="svg__iconbox mx-1 svg__icon--Plus hreflink"></span>
@@ -713,7 +734,7 @@ const CreateAllStructureComponent = (props: any) => {
                                 value={Features.value}
                                 onChange={(event) => handleInputChange(index, indexSub, indexFea, event, 'feature')}
                             />
-                            {Subcomponent.Feature.length == 1 && <span onClick={() => handleDelete(index, indexSub, indexFea, 'feature')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>}
+                            {Subcomponent.Feature.length == 1 && (component.isCheckedFea===true || Subcomponent.isCheckedFea===true) &&  <span onClick={() => handleDelete(index, indexSub, indexFea, 'feature')} title="Delete" className="svg__iconbox svg__icon--trash hreflink"></span>}
                             {indexFea === Subcomponent.Feature.length - 1 && (
                                 <div className="input-group-append alignCenter">
                                     <span onClick={() => handleAddSubComponent(index, indexSub, indexFea, 'Feature')} title="Add" className="svg__iconbox mx-1 svg__icon--Plus hreflink"></span>

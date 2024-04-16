@@ -1,6 +1,7 @@
 
 import * as React from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
+import ReactDOM from "react-dom";
 import * as $ from "jquery";
 import * as Moment from "moment";
 import { Web, sp } from "sp-pnp-js";
@@ -18,7 +19,7 @@ import {
     Panel,
     PanelType
 } from "office-ui-fabric-react";
-
+import { LuBellPlus } from "react-icons/lu";
 import { FaExpandAlt } from "react-icons/fa";
 import { RiDeleteBin6Line, RiH6 } from "react-icons/ri";
 import { SlArrowDown, SlArrowRight, SlUserUnfollow } from "react-icons/sl";
@@ -39,6 +40,7 @@ import EmailNotificationMail from "./EmailNotificationMail";
 import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
+import SmartPriorityHover from "./SmartPriorityHover";
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -676,7 +678,7 @@ const EditTaskPopup = (Items: any) => {
                     TaxonomyItems.push(item);
                 }
                 uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
-                    return array.indexOf(val) == id;
+                    return array?.indexOf(val) == id;
                 });
             }
         });
@@ -1073,13 +1075,13 @@ const EditTaskPopup = (Items: any) => {
                         let tempArray: any = [];
                         const TaskApproverBackupTemp = TaskApproverBackupArray?.filter(
                             (val: any, id: any, array: any) => {
-                                return array.indexOf(val) == id;
+                                return array?.indexOf(val) == id;
                             }
                         );
                         const TaskCreatorApproverBackupTemp =
                             TaskCreatorApproverBackupArray?.filter(
                                 (val: any, id: any, array: any) => {
-                                    return array.indexOf(val) == id;
+                                    return array?.indexOf(val) == id;
                                 }
                             );
 
@@ -1205,7 +1207,7 @@ const EditTaskPopup = (Items: any) => {
                 ) {
                     const finalData = TaskCreatorApproverBackupArray?.filter(
                         (val: any, id: any, array: any) => {
-                            return array.indexOf(val) == id;
+                            return array?.indexOf(val) == id;
                         }
                     );
                     TaskCreatorApproverBackupArray = finalData;
@@ -1516,7 +1518,7 @@ const EditTaskPopup = (Items: any) => {
                                 LinkedPortfolioDataBackup.concat(DataItem);
                             const finalData = LinkedPortfolioDataBackup?.filter(
                                 (val: any, id: any, array: any) => {
-                                    return array.indexOf(val) == id;
+                                    return array?.indexOf(val) == id;
                                 }
                             );
                             setLinkedPortfolioData(finalData);
@@ -1825,7 +1827,7 @@ const EditTaskPopup = (Items: any) => {
                     // }
                     const finalData = tempArray.filter(
                         (val: any, id: any, array: any) => {
-                            return array.indexOf(val) == id;
+                            return array?.indexOf(val) == id;
                         }
                     );
 
@@ -2283,7 +2285,7 @@ const EditTaskPopup = (Items: any) => {
                     });
                 }
                 const finalData = tempArray.filter((val: any, id: any, array: any) => {
-                    return array.indexOf(val) == id;
+                    return array?.indexOf(val) == id;
                 });
                 setTaskAssignedTo(finalData);
                 setTaskTeamMembers(finalData);
@@ -2602,7 +2604,7 @@ const EditTaskPopup = (Items: any) => {
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
                         UpdatedDataObject.SmartPriority = NewSmartPriority;
                         UpdatedDataObject.siteUrl = siteUrls;
-                        UpdatedDataObject.CommentsArray = UpdatedDataObject?.Comments != null  ? typeof UpdatedDataObject?.CommentsArray === "object"? JSON.parse(UpdatedDataObject?.Comments):UpdatedDataObject?.Comments: null
+                        UpdatedDataObject.CommentsArray = UpdatedDataObject?.Comments != null ? typeof UpdatedDataObject?.CommentsArray === "object" ? JSON.parse(UpdatedDataObject?.Comments) : UpdatedDataObject?.Comments : null
                         let WorkingActionData = UpdatedDataObject?.WorkingAction?.length > 0 ? JSON.parse(UpdatedDataObject?.WorkingAction) : [];
                         WorkingActionData?.map((ItemData: any) => {
                             ItemData.InformationData?.map(async (InfoItem: any) => {
@@ -2640,31 +2642,31 @@ const EditTaskPopup = (Items: any) => {
 
 
                         // This is used for send MS Teams Notification 
-                        if (TaskCategories !== "Bottleneck" && UpdatedDataObject.Categories.indexOf('Immediate') != -1 && UpdatedDataObject.Categories.indexOf('Design') != -1) {
+                        if (TaskCategories !== "Bottleneck" &&  UpdatedDataObject?.Categories?.indexOf('Immediate') != -1 && UpdatedDataObject?.Categories?.indexOf('Design') != -1) {
                             try {
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
                                 const addEmailAndUserName = (userItem: any) => {
-                                    if (userItem.AssingedToUserId !== currentUserId) {
+                                    if (userItem?.AssingedToUserId !== currentUserId) {
                                         sendUserEmails.push(userItem.Email);
-                                        AssignedUserName = AssignedUserName ? "Team" : userItem.Title;
+                                        AssignedUserName = AssignedUserName ? "Team" : userItem?.Title;
                                     }
                                 };
 
                                 if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
                                     taskUsers?.forEach((allUserItem: any) => {
-                                        if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                        if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
                                             addEmailAndUserName(allUserItem);
                                         }
                                     });
                                 } else {
-                                    const usersToCheck = TeamLeaderChanged && TeamMemberChanged ? TaskResponsibleTeam.concat(TaskAssignedTo) :
+                                    const usersToCheck = TeamLeaderChanged && TeamMemberChanged ? TaskResponsibleTeam?.concat(TaskAssignedTo) :
                                         TeamLeaderChanged ? UpdatedDataObject?.ResponsibleTeam :
                                             TeamMemberChanged || IsTaskStatusUpdated ? TaskAssignedTo : [];
 
                                     usersToCheck.forEach((userDtl: any) => {
                                         taskUsers?.forEach((allUserItem: any) => {
-                                            if (userDtl.Id === allUserItem.AssingedToUserId) {
+                                            if (userDtl.Id === allUserItem?.AssingedToUserId) {
                                                 addEmailAndUserName(allUserItem);
                                             }
                                         });
@@ -2672,7 +2674,7 @@ const EditTaskPopup = (Items: any) => {
                                 }
                                 let CommonMsg = '';
                                 const sendMSGCheck = (checkStatusUpdate === 80 || checkStatusUpdate === 70) && IsTaskStatusUpdated;
-                                const SendUserEmailFinal: any = sendUserEmails.filter((item: any, index: any) => sendUserEmails.indexOf(item) === index);
+                                const SendUserEmailFinal: any = sendUserEmails?.filter((item: any, index: any) => sendUserEmails?.indexOf(item) === index);
                                 if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
                                     CommonMsg = ` Task created from your end has been set to 8%. Please take necessary action.`;
                                     let functionType: any = '';
@@ -2706,16 +2708,19 @@ const EditTaskPopup = (Items: any) => {
                                     }
                                 }
 
+                                const emailMessage = GlobalFunctionForUpdateItems?.GenerateMSTeamsNotification(UpdatedDataObject);
+                                const containerDiv = document.createElement('div');
+                                const reactElement = React.createElement(emailMessage?.type, emailMessage?.props);
+                                ReactDOM.render(reactElement, containerDiv);
+
                                 const SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> 
                                 </br> 
+                                    ${containerDiv.innerHTML}
                                     <p>
                                     Task Link:  
-                                    <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
-                                     ${UpdatedDataObject.TaskId}-${UpdatedDataObject.Title}
+                                    <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
+                                     Click-here
                                     </a>
-                                    </br>
-                                    Task Category: ${TaskCategories}</br>
-                                    Smartpriority: <b>${UpdatedDataObject?.SmartPriority}</b></br>
                                     </p>
                                     <p></p>
                                     <b>
@@ -2740,9 +2745,9 @@ const EditTaskPopup = (Items: any) => {
                             }
                         }
                         let Createtordata: any = []
-                        if (IsTaskStatusUpdated  && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject.Categories.indexOf('Immediate') != -1) {
+                        if (IsTaskStatusUpdated  && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject?.Categories?.indexOf('Immediate') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
-                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
                                 }
 
@@ -2766,9 +2771,9 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
-                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0  && UpdatedDataObject.Categories.indexOf('Immediate') != -1) {
+                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.indexOf('Immediate') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
-                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
                                 }
 
@@ -2792,7 +2797,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
-                        if (IsTaskStatusUpdated  && checkStatusUpdate == 90 && UpdatedDataObject.Categories.indexOf('Design') != -1) {
+                        if (IsTaskStatusUpdated && checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.indexOf('Design') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2804,7 +2809,7 @@ const EditTaskPopup = (Items: any) => {
 
                                 let DataForNotification: any = {
                                     ReceiverName: InfoItem?.Title,
-                                    sendUserEmail: ['alina.chyhasova@hochhuth-consulting.de','kristina.kovach@hochhuth-consulting.de'],
+                                    sendUserEmail: ['alina.chyhasova@hochhuth-consulting.de', 'kristina.kovach@hochhuth-consulting.de'],
                                     Context: Items.context,
                                     ActionType: "Design",
                                     ReasonStatement: "",
@@ -2819,7 +2824,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
-                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject.Categories.indexOf('Design') != -1) {
+                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.indexOf('Design') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2877,14 +2882,14 @@ const EditTaskPopup = (Items: any) => {
                                 //EditData.TaskApprovers.push(EditData?.Author)
                             }
                         }
-                        let spaceIndex = EditData.TaskCreatorData[0]?.Title.lastIndexOf(' ');
+                        let spaceIndex = EditData.TaskCreatorData[0]?.Title?.lastIndexOf(' ');
                         if (spaceIndex !== -1) {
-                            TaskDetailsFromCall[0].CreatorTitle = EditData.TaskCreatorData[0]?.Title.substring(0, spaceIndex);
+                            TaskDetailsFromCall[0].CreatorTitle = EditData.TaskCreatorData[0]?.Title?.substring(0, spaceIndex);
                         } else {
                             console.log("No last name found");
                         }
                         let CalculateStatusPercentages: any = TaskDetailsFromCall[0].PercentComplete ? TaskDetailsFromCall[0].PercentComplete
-                                : 0;
+                            : 0;
                         if (IsTaskStatusUpdated && CalculateStatusPercentages == 90 && EmailStatus == true) {
                             setLastUpdateTaskData(TaskDetailsFromCall[0]);
                             ValueStatus = "90";
@@ -2937,7 +2942,7 @@ const EditTaskPopup = (Items: any) => {
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
                             }
-                            if (TaskDetailsFromCall[0].Categories.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
+                            if (TaskDetailsFromCall[0]?.Categories?.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
                                 ValueStatus = CalculateStatusPercentage;
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
@@ -3064,7 +3069,7 @@ const EditTaskPopup = (Items: any) => {
             if (ApproverData == undefined && ApproverData.length == 0) {
                 const finalData = tempArrayApprover.filter(
                     (val: any, id: any, array: any) => {
-                        return array.indexOf(val) == id;
+                        return array?.indexOf(val) == id;
                     }
                 );
                 TaskAssignedTo = finalData;
@@ -3197,13 +3202,13 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
             TaskAssignedTo?.map((taskInfo) => {
-                if(taskInfo.AssingedToUserId != undefined){
-                    AssignedToIds.push(taskInfo.AssingedToUserId);   
+                if (taskInfo.AssingedToUserId != undefined) {
+                    AssignedToIds.push(taskInfo.AssingedToUserId);
                 }
-                else{
+                else {
                     AssignedToIds.push(taskInfo.Id);
                 }
-               
+
             });
         }
 
@@ -3212,10 +3217,10 @@ const EditTaskPopup = (Items: any) => {
                 if (ApproverInfo.AssingedToUserId != undefined) {
                     ApproverIds.push(ApproverInfo.AssingedToUserId)
                 }
-                else{
+                else {
                     ApproverIds.push(ApproverInfo.Id);
                 }
-               
+
             });
         }
 
@@ -3224,10 +3229,10 @@ const EditTaskPopup = (Items: any) => {
                 if (taskInfo.AssingedToUserId != undefined) {
                     TeamMemberIds.push(taskInfo.AssingedToUserId)
                 }
-                else{
+                else {
                     TeamMemberIds.push(taskInfo.Id);
                 }
-               
+
             });
         }
 
@@ -3251,10 +3256,10 @@ const EditTaskPopup = (Items: any) => {
                 if (taskInfo.AssingedToUserId != undefined) {
                     ResponsibleTeamIds.push(taskInfo.AssingedToUserId)
                 }
-                else{
+                else {
                     ResponsibleTeamIds.push(taskInfo.Id);
                 }
-               
+
             });
         }
         if (
@@ -3716,7 +3721,7 @@ const EditTaskPopup = (Items: any) => {
                     PhoneCount = PhoneCount + 1;
                 }
             });
-            if (ApprovedStatusCount == 0 && EditDataBackup?.PercentComplete != 0) {
+            if (ApprovedStatusCount == 0 && EditDataBackup?.PercentComplete > 0 && EditDataBackup?.PercentComplete < 5 && IsTaskStatusUpdated) {
                 let teamMember = [];
                 let AssignedTo = [];
                 if (EditDataBackup?.Categories?.includes("Approval")) {
@@ -3745,7 +3750,7 @@ const EditTaskPopup = (Items: any) => {
             else {
                 let teamMember = [];
                 let AssignedTo = [];
-                if (EditDataBackup?.Categories?.includes("Approval") && EditDataBackup?.PercentComplete != 0) {
+                if (EditDataBackup?.Categories?.includes("Approval") && EditDataBackup?.PercentComplete > 0 && EditDataBackup?.PercentComplete <  5  && IsTaskStatusUpdated) {
                     teamMember.push(currentUserBackupArray?.[0]?.AssingedToUser)
                     AssignedTo.push(currentUserBackupArray?.[0]?.AssingedToUser)
                     setTaskAssignedTo(AssignedTo)
@@ -4804,7 +4809,7 @@ const EditTaskPopup = (Items: any) => {
     };
 
 
-   
+
     const SelectApproverFromAutoSuggestion = (ApproverData: any, usedFor: string) => {
         setApproverSearchedData([]);
         setApproverSearchedDataForPopup([]);
@@ -4859,12 +4864,12 @@ const EditTaskPopup = (Items: any) => {
             setWorkingAction([...copyWorkAction]);
             console.log("Bottleneck All Details:", copyWorkAction)
         } else {
-            let ApproverHistoryObject: any 
+            let ApproverHistoryObject: any
             selectApproverFunction(ApproverData);
             setTaskAssignedTo([ApproverData]);
             setTaskTeamMembers([ApproverData]);
             TaskApproverBackupArray = [ApproverData];
-            if(useFor=="Bottleneck"||useFor=="Attention"){
+            if (useFor == "Bottleneck" || useFor == "Attention") {
                 ApproverHistoryObject = {
                     ApproverName: ApproverData.Title,
                     ApprovedDate: Moment(new Date())
@@ -4878,17 +4883,17 @@ const EditTaskPopup = (Items: any) => {
                             : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
                     ApproverSuffix: ApproverData.Suffix,
                     ApproverEmail: ApproverData.Email,
-                };  
-            }else{
+                };
+            } else {
                 StatusOptions?.map((item: any) => {
-                    if (item.value == 1 ) {
+                    if (item.value == 1) {
                         Items.sendApproverMail = true;
                         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: "1" });
                         setPercentCompleteStatus(item.status);
                         setTaskStatus(item.taskStatusComment);
                     }
                 });
-                 ApproverHistoryObject = {
+                ApproverHistoryObject = {
                     ApproverName: ApproverData.Title,
                     ApprovedDate: Moment(new Date())
                         .tz("Europe/Berlin")
@@ -4903,7 +4908,7 @@ const EditTaskPopup = (Items: any) => {
                     ApproverEmail: ApproverData.Email,
                 };
             }
-          
+
             ApproverHistoryData.push(ApproverHistoryObject);
         }
     };
@@ -6428,11 +6433,13 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="col-md-6">
                                                         <div className="input-group">
                                                             <label className="form-label full-width">SmartPriority</label>
-                                                            <div className="bg-e9 w-100 py-1 px-2">
+                                                            <div className="bg-e9 w-100 py-1 px-2" style={{border:'1px solid #CDD4DB'}}>
                                                                 <span className={EditData?.SmartPriority != undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
                                                                     <>{EditData?.SmartPriority != undefined ? EditData?.SmartPriority : 0}</>
                                                                     <span className="tooltip-text pop-right">
-                                                                        {EditData?.showFormulaOnHover != undefined ? EditData?.showFormulaOnHover : ""}
+                                                                        {EditData?.showFormulaOnHover != undefined ?
+                                                
+                                                                        <SmartPriorityHover editValue={EditData}/> : ""}
                                                                     </span>
                                                                 </span>
                                                             </div>
@@ -7171,10 +7178,10 @@ const EditTaskPopup = (Items: any) => {
 
                                                                         <div className="alignCenter">
                                                                             <span
-                                                                                className="hover-text m-0 alignIcon"
+                                                                                className="hover-text m-1"
                                                                                 onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
                                                                             >
-                                                                                <span className="svg__iconbox svg__icon--clock dark"></span>
+                                                                                <LuBellPlus></LuBellPlus>
                                                                                 <span className="tooltip-text pop-left">
                                                                                     Send reminder notifications
                                                                                 </span>
@@ -7286,9 +7293,9 @@ const EditTaskPopup = (Items: any) => {
                                                                         <div className="alignCenter">
                                                                             <span
                                                                                 onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
-                                                                                className="hover-text m-0 alignIcon"
+                                                                                className="hover-text m-1"
                                                                             >
-                                                                                <span className="svg__iconbox svg__icon--clock dark"></span>
+                                                                                <LuBellPlus></LuBellPlus>
                                                                                 <span className="tooltip-text pop-left">
                                                                                     Send reminder notifications
                                                                                 </span>
