@@ -22,9 +22,11 @@ export default function DocumentSearchPage(Props: any) {
             .then((response: any) => {
                 try {
                     response.forEach((Doc: any) => {
+                      
                         Doc?.Title === null ? Doc.Title = Doc?.FileLeafRef : '';
-                        Doc.CreatedDate = moment(Doc?.Created).format('DD/MM/YYYY');
-                        Doc.ModifiedDate = moment(Doc?.Modified).format('DD/MM/YYYY HH:mm')
+                        Doc.DocumentUrl = Doc?.FileLeafRef;
+                        Doc.CreatedDate = (moment(Doc?.Created).format('DD/MM/YYYY'));
+                        Doc.ModifiedDate = (moment(Doc?.Modified).format('DD/MM/YYYY HH:mm'))
                         Doc.SiteIcon = PageContext.context._pageContext._web.title;
                         Doc.AllModifiedImages = [];
                         Doc.AllCreatedImages = [];
@@ -128,7 +130,7 @@ export default function DocumentSearchPage(Props: any) {
             ),
         },
         {
-            accessorKey: "FileLeafRef", placeholder: "Document Url", header: "", id: "FileLeafRef",
+            accessorKey: "DocumentUrl", placeholder: "Document Url", header: "", id: "DocumentUrl",
             cell: ({ row }) => (
                 <div className='alignCenter '>
                     {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'jfif' && <span title={`${row?.original?.File_x0020_Type}`} className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
@@ -137,12 +139,12 @@ export default function DocumentSearchPage(Props: any) {
                     {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
                     {row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--docx "></span> : ''}
                     {row?.original?.File_x0020_Type == 'jfif' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
-                    <a className='ms-1 wid90' target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>
+                    <a className='ms-1 wid90' target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.DocumentUrl} </a>
                 </div>
           ),
         },
         {
-            accessorKey: "Created", placeholder: "Created Date", header: "", size: 120, id: "Created", isColumnDefultSortingDesc: true,
+            accessorKey: "CreatedDate", placeholder: "Created Date", header: "", size: 120, id: "CreatedDate", isColumnDefultSortingDesc: true,
             cell: ({ row }) => (
                 <>
                     {row?.original?.CreatedDate}
@@ -155,7 +157,7 @@ export default function DocumentSearchPage(Props: any) {
             ),
         },
         {
-            accessorKey: "Modified", placeholder: "Modified Date", header: "", size: 172, id: "Modified",
+            accessorKey: "ModifiedDate", placeholder: "Modified Date", header: "", size: 172, id: "ModifiedDate",
             cell: ({ row }) => (
                 <>
                     {row?.original?.ModifiedDate}
@@ -213,3 +215,4 @@ export default function DocumentSearchPage(Props: any) {
             }    </>
     )
 }
+

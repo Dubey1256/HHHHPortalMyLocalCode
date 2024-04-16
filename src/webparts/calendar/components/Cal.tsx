@@ -17,6 +17,9 @@ import { FaPaperPlane } from "react-icons/fa";
 import EmailComponenet from "../../calendar/components/email";
 import moment from 'moment-timezone';
 import "./style.css";
+import 'core-js/es/object/values';
+import "@pnp/sp/sputilities";
+import { spfi, SPFx as spSPFx } from "@pnp/sp";
 moment.locale("en-GB");
 let createdBY: any,
   modofiedBy: any,
@@ -1285,6 +1288,114 @@ const Apps = (props: any) => {
       return formattedDater;
     } else return "";
   };
+// for send Email
+const calculateTotalWorkingDays = (matchedData: any) => {
+  const today = new Date();
+
+  return matchedData.reduce((total: any, item: any) => {
+    const endDate = new Date(item.EndDate);
+    const eventDate = new Date(item.EventDate);
+    const timezoneOffset = endDate.getTimezoneOffset();
+    const timezoneOffsetInHours = timezoneOffset / 60;
+    const adjustedEndDate = new Date(endDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
+    const adjustedEventDate: any = new Date(eventDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
+
+    // Filter data based on the event date being in the current year
+    if (adjustedEventDate.getFullYear() === today.getFullYear()) {
+      const adjustedEndDateToToday = today < adjustedEndDate ? today : adjustedEndDate;
+
+      // Set hours to 0 for accurate date comparisons
+      adjustedEndDateToToday.setHours(0);
+      let workingDays = 0;
+      let currentDate = new Date(adjustedEventDate);
+      currentDate.setHours(0);
+
+      while (currentDate <= adjustedEndDateToToday) {
+        const dayOfWeek = currentDate.getDay();
+
+        if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(currentDate, adjustedEndDateToToday)) {
+          // Exclude Sunday (0) and Saturday (6), and the event date and end date if they're both on a weekend
+          if (item?.Event_x002d_Type !== "Work From Home") {
+            if (
+              (item?.HalfDay === true) ||
+              (item?.HalfDayTwo === true)
+            ) {
+              workingDays += 0.5; // Consider half-day
+            } else {
+              workingDays++;
+            }
+          }
+        }
+
+        currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+      }
+
+      return total + workingDays;
+    }
+
+    return total;
+  }, 0);
+};
+const isWeekend = (startDate: any, endDate: any) => {
+  const startDay = startDate.getDay();
+  const endDay = endDate.getDay();
+
+  return (startDay === 0 || startDay === 6) && (endDay === 0 || endDay === 6);
+};
+
+const SendEmail = (EventData:any,MyEventData:any) => {
+  const startDate = new Date(EventData?.start); // Replace 'startDateString' with the actual start date string
+const endDate = new Date(EventData?.end); // Replace 'endDateString' with the actual end date string
+
+
+
+let daysDifference = calculateTotalWorkingDays(MyEventData);
+const formattedstartDate = startDate.toLocaleDateString('en-GB', {
+  weekday: 'short', // short, long
+  year: 'numeric',
+  month: 'short', // numeric, 2-digit, long, short, narrow
+  day: 'numeric', // numeric, 2-digit
+});
+const formattedendDate = endDate.toLocaleDateString('en-GB', {
+  weekday: 'short', // short, long
+  year: 'numeric',
+  month: 'short', // numeric, 2-digit, long, short, narrow
+  day: 'numeric', // numeric, 2-digit
+});
+  let sp = spfi().using(spSPFx(props.Context));
+  let  BindHtmlBody = `<div style="max-width: 600px; margin: 0 auto; background-color: #f7f7f7; padding: 20px; border: 1px solid #ddd;">
+  <div style="padding: 20px; color: #333;">
+    Dear Prashant,<br><br>
+    I am writing to request ${daysDifference} of leave from ${formattedstartDate} to ${formattedendDate} due to ${EventData?.title}.<br><br>
+    I have ensured that my tasks are up to date and arranged coverage during my absence. Your understanding and approval would be greatly appreciated.<br><br>
+    Best regards,<br>
+    ${EventData?.name}
+  </div>
+  <div style="text-align: center; padding: 10px; font-size: 0.8em; color: #666;">
+    This is an automated email notification.
+  </div>
+</div>`
+  let SendEmailMessage =
+    sp.utility
+      .sendEmail({
+        Body: BindHtmlBody,
+        Subject: "Leave Request " + EventData?.EventDate +  EventData?.Description,
+        To: ["prashant.kumar@hochhuth-consulting.de","anubhav.shukla@hochhuth-consulting.de"],
+        // ,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"
+        AdditionalHeaders: {
+          "content-type": "text/html",
+        },
+      })
+      .then(() => {
+        console.log("Email Sent!");
+        alert("Email Sent SuccessFully!");
+      })
+      .catch((error) => {
+        alert("error");
+      });
+};
+// Email End 
+
   const saveEvent = async () => {
     try {
       if (inputValueName?.length > 0 && (dType?.length > 0 || type == "National Holiday" || type == "Company Holiday")) {
@@ -1353,6 +1464,7 @@ const Apps = (props: any) => {
               .getById(props.props.SmalsusLeaveCalendar)
               .items.add(eventData)
               .then(() => {
+                SendEmail(newEvent,eventData)
                 getEvents();
               })
           });
@@ -1444,7 +1556,7 @@ const Apps = (props: any) => {
         Location: newEvent.loc,
         Event_x002d_Type: newEvent.type,
         Description: newEvent.reason,
-        // Designation: newEvent.Designation,
+        Designation: newEvent.Designation,
         EndDate: ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) + " " + (selectedTimeEnd + "" + ":00"),
         EventDate: ConvertLocalTOServerDateToSave(startDate, selectedTime) + " " + (selectedTime + "" + ":00"),
         HalfDay: newEvent.halfdayevent,

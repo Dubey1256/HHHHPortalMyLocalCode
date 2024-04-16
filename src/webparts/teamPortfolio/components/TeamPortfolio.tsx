@@ -19,6 +19,8 @@ export default class TeamPortfolio extends React.Component<ITeamPortfolioProps, 
       SmartMetadataListID,
       PortFolioTypeID,
       SmartHelpListID,
+      AdminconfigrationID
+      
     } = this.props;
 
     return (
