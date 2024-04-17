@@ -181,9 +181,11 @@ export const Modified = (props: any) => {
           getCurrentData(check);
         })
         allSite.noRepeat = true;
+        allSite.firstRepeat = true;
         allSite.allNorepeat = true;
       } else {
         allSite.allNorepeat = false;
+        allSite.firstRepeat = false;
       }
     }
     if (allSite.AllTask != true) {
@@ -494,12 +496,13 @@ export const Modified = (props: any) => {
       if (allSite.TabName == 'ALL') {
         duplicate.map((dupData: any) => {
           dupData.map((items: any) => {
-            if (items.siteType != 'DOCUMENTS' && items.siteType != 'FOLDERS' && items.siteType != 'COMPONENTS' && items.siteType != 'SERVICES') {
+            if (items.siteType != 'DOCUMENTS' && items.siteType != 'FOLDERS' && items.siteType != 'COMPONENTS' && items.siteType != 'SERVICES' && items.siteType != "Master Tasks") {
               duplicateValue.push(items)
             }
           })
         })
-        if (allSite.allNorepeat != true) {
+
+        if (allSite.allNorepeat != true || allSite.firstRepeat == true) {
           setallSiteData(duplicateValue)
 
           setTimeout(() => {
@@ -704,7 +707,7 @@ export const Modified = (props: any) => {
     else {
       duplicate.map((dupdata: any) => {
         dupdata.map((data: any) => {
-          if (type == 'ALL' && data.siteType != 'DOCUMENTS' && data.siteType != 'FOLDERS' && data.siteType != 'COMPONENTS' && data.siteType != 'SERVICES') {
+          if (type == 'ALL' && data.siteType != 'DOCUMENTS' && data.siteType != 'FOLDERS' && data.siteType != 'COMPONENTS' && data.siteType != 'SERVICES' && data.siteType == "Master Tasks") {
             storeServices.push(data)
           }
           if (data.siteType == type) {
@@ -1732,10 +1735,21 @@ export const Modified = (props: any) => {
         },
         {
           accessorKey: "Title",
-          cell: ({ row }) => (<>
-            <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
+          cell: ({ row }) => (
+            <div className="alignCenter">
+              <span className={row.original.Title!= undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
+                <>{row.original.Title != undefined ?<a className="manageText" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
               {row.original.Title}
-            </a>
+              </a> : ''}</>
+                <span className="tooltip-text pop-right">
+                  {row.original.Title != undefined ?
+
+                       row.original.Title : ""}
+                </span>
+              </span>
+              {/* <a className="manageText" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
+                {row.original.Tiltle}
+              </a> */}
             {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>}
             </>
           ),
