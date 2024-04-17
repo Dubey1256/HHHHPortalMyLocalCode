@@ -202,6 +202,7 @@ const EditContactPopup = (props: any) => {
         return Ids;
     }
     const UpdateContact = function (Item: any) {
+        let flag = false
         try {
             if (contactDetails?.Item_x002d_Image != undefined && contactDetails?.Item_x002d_Image?.Url != undefined) {
                 contactDetails.ItemCover = contactDetails?.Item_x002d_Image
@@ -242,12 +243,15 @@ const EditContactPopup = (props: any) => {
             if (props.page != undefined && props.page != undefined && props.page == "ContactProfile") {
                 props.EditCallBackItemProfile(contactDetails);
             }
-            if (props.page != undefined && props.page != undefined && props.page == "CreateNewContact" || props.page == "CreateContact") {
+            else if (props.page != undefined && props.page != undefined && props.page == "CreateNewContact" || props.page == "CreateContact") {
+                flag = true
                 props.closeEditpoup(props.page, "Update", contactDetails)
             } else {
+                flag = true
                 props.EditCallBackItem(contactDetails)
             }
-            closeContactPopup()
+            if (!flag)
+                closeContactPopup()
         } catch (error) {
             console.error('Error updating contact details:', error);
         }
@@ -341,11 +345,11 @@ const EditContactPopup = (props: any) => {
                     <div>Last modified <span> {contactDetails?.Modified}</span>
                         by
                         <span className="primary-color"> {contactDetails?.Editor?.Title}</span>
-                    </div>    
+                    </div>
                     <div><a onClick={() => removeItem()} className="hreflink siteColor"><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span><span>Delete This Item</span></a></div>
                 </div>
                 <div className="col text-end">
-                       <a href={`${props?.allListId?.baseUrl}/Sitepages/Contact-Profile.aspx?contactId=${contactDetails.Id}`} target="_blank">Go To Profile Page</a> | <a href={`${props?.allListId?.baseUrl}/Lists/Contacts/?ID=${contactDetails.Id}`} target="_blank">Open out-of-the-box form</a>
+                    <a href={`${props?.allListId?.baseUrl}/Sitepages/Contact-Profile.aspx?contactId=${contactDetails.Id}`} target="_blank">Go To Profile Page</a> | <a href={`${props?.allListId?.baseUrl}/Lists/Contacts/?ID=${contactDetails.Id}`} target="_blank">Open out-of-the-box form</a>
                     <button className='btn btn-primary mx-2' onClick={() => UpdateContact(props.props)}>Save</button>
                     <button className='btn btn-default' onClick={() => closeContactPopup()}>Cancel</button>
                 </div>
