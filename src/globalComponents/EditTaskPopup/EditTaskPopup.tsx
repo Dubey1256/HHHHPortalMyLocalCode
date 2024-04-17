@@ -40,6 +40,7 @@ import EmailNotificationMail from "./EmailNotificationMail";
 import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
+import SmartPriorityHover from "./SmartPriorityHover";
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -2641,7 +2642,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         // This is used for send MS Teams Notification 
-                        if (TaskCategories !== "Bottleneck" || UpdatedDataObject?.Categories?.indexOf('Immediate') != -1 || UpdatedDataObject?.Categories?.indexOf('Design') != -1) {
+                        if (TaskCategories !== "Bottleneck" &&  UpdatedDataObject?.Categories?.indexOf('Immediate') != -1 && UpdatedDataObject?.Categories?.indexOf('Design') != -1) {
                             try {
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
@@ -2744,7 +2745,7 @@ const EditTaskPopup = (Items: any) => {
                             }
                         }
                         let Createtordata: any = []
-                        if (IsTaskStatusUpdated && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject?.Categories?.indexOf('Immediate') != -1) {
+                        if (IsTaskStatusUpdated  && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject?.Categories?.indexOf('Immediate') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2941,7 +2942,7 @@ const EditTaskPopup = (Items: any) => {
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
                             }
-                            if (TaskDetailsFromCall[0].Categories?.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
+                            if (TaskDetailsFromCall[0]?.Categories?.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
                                 ValueStatus = CalculateStatusPercentage;
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
@@ -3720,7 +3721,7 @@ const EditTaskPopup = (Items: any) => {
                     PhoneCount = PhoneCount + 1;
                 }
             });
-            if (ApprovedStatusCount == 0 && EditDataBackup?.PercentComplete != 0) {
+            if (ApprovedStatusCount == 0 && EditDataBackup?.PercentComplete > 0 && EditDataBackup?.PercentComplete < 5 && IsTaskStatusUpdated) {
                 let teamMember = [];
                 let AssignedTo = [];
                 if (EditDataBackup?.Categories?.includes("Approval")) {
@@ -3749,7 +3750,7 @@ const EditTaskPopup = (Items: any) => {
             else {
                 let teamMember = [];
                 let AssignedTo = [];
-                if (EditDataBackup?.Categories?.includes("Approval") && EditDataBackup?.PercentComplete != 0) {
+                if (EditDataBackup?.Categories?.includes("Approval") && EditDataBackup?.PercentComplete > 0 && EditDataBackup?.PercentComplete <  5  && IsTaskStatusUpdated) {
                     teamMember.push(currentUserBackupArray?.[0]?.AssingedToUser)
                     AssignedTo.push(currentUserBackupArray?.[0]?.AssingedToUser)
                     setTaskAssignedTo(AssignedTo)
@@ -5715,11 +5716,11 @@ const EditTaskPopup = (Items: any) => {
                                                         type="date"
                                                         className="form-control"
                                                         max="9999-12-31"
-                                                        min={
-                                                            EditData.Created
-                                                                ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                                : ""
-                                                        }
+                                                        // min={
+                                                        //     EditData.Created
+                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
+                                                        //         : ""
+                                                        // }
                                                         defaultValue={
                                                             EditData.StartDate
                                                                 ? Moment(EditData.StartDate).format(
@@ -5752,11 +5753,11 @@ const EditTaskPopup = (Items: any) => {
                                                         className="form-control"
                                                         placeholder="Enter Due Date"
                                                         max="9999-12-31"
-                                                        min={
-                                                            EditData.Created
-                                                                ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                                : ""
-                                                        }
+                                                        // min={
+                                                        //     EditData.Created
+                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
+                                                        //         : ""
+                                                        // }
                                                         defaultValue={
                                                             EditData.DueDate
                                                                 ? Moment(EditData.DueDate).format("YYYY-MM-DD")
@@ -5781,11 +5782,11 @@ const EditTaskPopup = (Items: any) => {
                                                         type="date"
                                                         className="form-control"
                                                         max="9999-12-31"
-                                                        min={
-                                                            EditData.Created
-                                                                ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                                : ""
-                                                        }
+                                                        // min={
+                                                        //     EditData.Created
+                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
+                                                        //         : ""
+                                                        // }
                                                         defaultValue={
                                                             EditData.CompletedDate
                                                                 ? Moment(EditData.CompletedDate).format(
@@ -6432,11 +6433,13 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="col-md-6">
                                                         <div className="input-group">
                                                             <label className="form-label full-width">SmartPriority</label>
-                                                            <div className="bg-e9 w-100 py-1 px-2">
+                                                            <div className="bg-e9 w-100 py-1 px-2" style={{border:'1px solid #CDD4DB'}}>
                                                                 <span className={EditData?.SmartPriority != undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
                                                                     <>{EditData?.SmartPriority != undefined ? EditData?.SmartPriority : 0}</>
                                                                     <span className="tooltip-text pop-right">
-                                                                        {EditData?.showFormulaOnHover != undefined ? EditData?.showFormulaOnHover : ""}
+                                                                        {EditData?.showFormulaOnHover != undefined ?
+                                                
+                                                                        <SmartPriorityHover editValue={EditData}/> : ""}
                                                                     </span>
                                                                 </span>
                                                             </div>
@@ -8080,13 +8083,13 @@ const EditTaskPopup = (Items: any) => {
                                                                     type="date"
                                                                     className="form-control"
                                                                     max="9999-12-31"
-                                                                    min={
-                                                                        EditData.Created
-                                                                            ? Moment(EditData.Created).format(
-                                                                                "YYYY-MM-DD"
-                                                                            )
-                                                                            : ""
-                                                                    }
+                                                                    // min={
+                                                                    //     EditData.Created
+                                                                    //         ? Moment(EditData.Created).format(
+                                                                    //             "YYYY-MM-DD"
+                                                                    //         )
+                                                                    //         : ""
+                                                                    // }
                                                                     defaultValue={
                                                                         EditData.StartDate
                                                                             ? Moment(EditData.StartDate).format(
@@ -8119,13 +8122,13 @@ const EditTaskPopup = (Items: any) => {
                                                                     className="form-control"
                                                                     placeholder="Enter Due Date"
                                                                     max="9999-12-31"
-                                                                    min={
-                                                                        EditData.Created
-                                                                            ? Moment(EditData.Created).format(
-                                                                                "YYYY-MM-DD"
-                                                                            )
-                                                                            : ""
-                                                                    }
+                                                                    // min={
+                                                                    //     EditData.Created
+                                                                    //         ? Moment(EditData.Created).format(
+                                                                    //             "YYYY-MM-DD"
+                                                                    //         )
+                                                                    //         : ""
+                                                                    // }
                                                                     defaultValue={
                                                                         EditData.DueDate
                                                                             ? Moment(EditData.DueDate).format(
@@ -8152,13 +8155,13 @@ const EditTaskPopup = (Items: any) => {
                                                                     type="date"
                                                                     className="form-control"
                                                                     max="9999-12-31"
-                                                                    min={
-                                                                        EditData.Created
-                                                                            ? Moment(EditData.Created).format(
-                                                                                "YYYY-MM-DD"
-                                                                            )
-                                                                            : ""
-                                                                    }
+                                                                    // min={
+                                                                    //     EditData.Created
+                                                                    //         ? Moment(EditData.Created).format(
+                                                                    //             "YYYY-MM-DD"
+                                                                    //         )
+                                                                    //         : ""
+                                                                    // }
                                                                     defaultValue={
                                                                         EditData.CompletedDate
                                                                             ? Moment(EditData.CompletedDate).format(

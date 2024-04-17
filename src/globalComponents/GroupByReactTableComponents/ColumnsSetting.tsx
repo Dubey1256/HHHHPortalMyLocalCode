@@ -18,11 +18,14 @@ const ColumnsSetting = (props: any) => {
     const [columanSize, setcolumnsSize] = React.useState<any>([]);
     const [propColumns, setPropColumns] = React.useState([])
     const [columnSorting, setColumnSorting] = React.useState<any>({});
-    const [columnOrderValue, setColumnOrderValue] = React.useState<string[]>([]);
+    const [columnOrderValue, setColumnOrderValue] = React.useState([]);
     const [draggedIndex, setDraggedIndex] = React.useState(null);
     const [editMode, setEditMode] = React.useState(false);
     const [tableHeightValue, setTableHeightValue] = React.useState(props?.tableHeight);
     const [tablePageSize, setTablePageSize] = React.useState(props?.tableSettingPageSize);
+    const [showProgress, setShowProgress] = React.useState(props?.showProgres);
+    const rerender = React.useReducer(() => ({}), {})[1]
+    // const [showTilesView, setShowTilesView] = React.useState<any>(false);
     let columnIndexPostion = 0;
     let tableId = props?.tableId
     React.useEffect(() => {
@@ -117,6 +120,17 @@ const ColumnsSetting = (props: any) => {
                     }
                 }
             }
+            try {
+                if (columnSettingVisibility?.showProgress === true) {
+                    updatedData.PercentComplete = false
+                    updatedData.showProgress = true
+                } else if (columnSettingVisibility?.PercentComplete === true) {
+                    updatedData.PercentComplete = true
+                    updatedData.showProgress = false
+                }
+            } catch (error) {
+
+            }
             let preSetColumnSettingVisibility: any = {
                 columnSettingVisibility: updatedData,
                 showHeader: showHeader,
@@ -125,6 +139,8 @@ const ColumnsSetting = (props: any) => {
                 tableId: props?.tableId,
                 columnOrderValue: columnOrderValue,
                 tableHeightValue: tableHeightValue,
+                showProgress: showProgress,
+                // showTilesView: showTilesView
 
             }
             if (tablePageSize > 0) {
@@ -171,6 +187,8 @@ const ColumnsSetting = (props: any) => {
                 tableId: props?.tableId,
                 columnOrderValue: columnOrderValue,
                 tableHeightValue: tableHeightValue,
+                showProgress: showProgress,
+                // showTilesView: showTilesView
             }
             if (tablePageSize > 0) {
                 columnsVisibllityDataAll.showPageSizeSetting = {
@@ -213,7 +231,21 @@ const ColumnsSetting = (props: any) => {
                 });
                 // props?.columnSettingCallBack(columnsVisibllityDataAll)
             };
+
+            try {
+                if (columnSettingVisibility?.showProgress === true) {
+                    columnsVisibllityDataAll.columnSettingVisibility.PercentComplete = false
+                    columnsVisibllityDataAll.columnSettingVisibility.showProgress = true
+                } else if (columnSettingVisibility?.PercentComplete === true) {
+                    columnsVisibllityDataAll.columnSettingVisibility.PercentComplete = true
+                    columnsVisibllityDataAll.columnSettingVisibility.showProgress = false
+                }
+            } catch (error) {
+
+            }
+
             props?.columnSettingCallBack(columnsVisibllityDataAll);
+
         } else if (props?.smartFabBasedColumnsSettingToggle === true) {
             const updatedData = { ...props?.columnVisibilityData };
             for (let key in columnSettingVisibility) {
@@ -233,6 +265,8 @@ const ColumnsSetting = (props: any) => {
                 tableId: props?.tableId,
                 columnOrderValue: columnOrderValue,
                 tableHeightValue: tableHeightValue,
+                showProgress: showProgress,
+                // showTilesView: showTilesView
 
             }
             if (tablePageSize > 0) {
@@ -262,12 +296,28 @@ const ColumnsSetting = (props: any) => {
             }));
             propColumns?.forEach((element: any) => {
                 if (element.id === item.id) {
-                    return element.isColumnVisible = checked
+                    return element.isColumnVisible = checked;
                 }
             });
+            if (item.id === "showProgress") {
+                setShowProgress(checked);
+                propColumns?.forEach((elem: any) => {
+                    if (item.id === "showProgress" && elem.id === "PercentComplete" && checked === true) {
+                        return elem.isColumnVisible = false;
+                    }
+                });
+            }
+            if (item.id === "PercentComplete") {
+                setShowProgress(false);
+                propColumns?.forEach((elem: any) => {
+                    if (item.id === "PercentComplete" && elem.id === "showProgress" && checked === true) {
+                        return elem.isColumnVisible = false;
+                    }
+                });
+            }
         } else {
             propColumns?.forEach((element: any) => {
-                if ((element.id != "Title" && element.id != "portfolioItemsSearch" && element.id != "TaskID" && element.id != "descriptionsSearch" && element.id != "commentsSearch" && element.id != "timeSheetsDescriptionSearch") || (element.id === "timeSheetsDescriptionSearch" && element.columnHide === false)) {
+                if ((element.id != "Title" && element.id != "portfolioItemsSearch" && element.id != "TaskID" && element.id != "descriptionsSearch" && element.id != "commentsSearch" && element.id != "timeSheetsDescriptionSearch" && element.id != "showProgress") || (element.id === "timeSheetsDescriptionSearch" && element.columnHide === false)) {
                     element.isColumnVisible = checked
                     setColumnSettingVisibility((prevCheckboxes: any) => ({
                         ...prevCheckboxes,
@@ -292,8 +342,11 @@ const ColumnsSetting = (props: any) => {
     const handleCheckboxChange = (event: any) => {
         setShowHeader(event.target.checked);
     };
+    // const handleToggleViewTailView = () => {
+    //     setShowTilesView(!showTilesView);
+    // };
 
-    const handleSave = async (event: any) => {
+    const handleSave = async (widthCol: any, event: any) => {
         if (Object?.keys(widthCol)?.length > 0 && event.id === widthCol.id) {
             let width = { size: widthCol.size, id: event.id };
             const isDuplicate = columanSize?.some((item: any) => item.id === event.id);
@@ -308,28 +361,29 @@ const ColumnsSetting = (props: any) => {
                 event.size = parseInt(widthCol.size)
                 setcolumnsSize((prevColumnSize: any) => [...prevColumnSize, width]);
             }
-            setEditing({});
-            setWidthCol({});
+            // setEditing({});
+            // setWidthCol({});
         }
-    };
-    const handleCancel = (columnId: any) => {
-        setEditing((prevEditingColumns: any) => ({
-            ...prevEditingColumns,
-            [columnId]: false
-        }));
-        setWidthCol({});
-    };
-    const handleEdit = (columnId: any) => {
-        setEditing((prevEditingColumns: any) => ({
-            ...prevEditingColumns,
-            [columnId]: true
-        }));
-
     };
     const handleChangeWidth = (event: any, value: any) => {
         let width = { size: event.target.value, id: value.id }
-        setWidthCol(width)
+        // setWidthCol(width);
+        handleSave(width, value);
     };
+    // const handleCancel = (columnId: any) => {
+    //     setEditing((prevEditingColumns: any) => ({
+    //         ...prevEditingColumns,
+    //         [columnId]: false
+    //     }));
+    //     setWidthCol({});
+    // };
+    // const handleEdit = (columnId: any) => {
+    //     setEditing((prevEditingColumns: any) => ({
+    //         ...prevEditingColumns,
+    //         [columnId]: true
+    //     }));
+    // };
+
     const handleSortClick = (columnId: string, currentSorting: any) => {
         let newSorting: any;
         setColumnSorting({})
@@ -359,8 +413,37 @@ const ColumnsSetting = (props: any) => {
             newColumns.splice(index, 0, draggedColumn);
             setColumnOrderValue(newColumns);
             setDraggedIndex(index);
+
+            // let sortedColumn: any = [];
+            // columnOrderValue?.forEach((orderItem: any) => {
+            //     for (let i = 0; i < propColumns?.length; i++) {
+            //         if (propColumns[i].id === orderItem.id) {
+            //             sortedColumn.push({ ...propColumns[i] });
+            //             break;
+            //         }
+            //     }
+            // });
+            // setPropColumns(sortedColumn);
+            // rerender();
         }
     };
+
+    React.useEffect(() => {
+        let sortedColumn: any = [];
+        if (columnOrderValue?.length > 0) {
+            columnOrderValue?.forEach((orderItem: any) => {
+                for (let i = 0; i < propColumns?.length; i++) {
+                    if (propColumns[i].id === orderItem.id) {
+                        sortedColumn.push({ ...propColumns[i] });
+                        break;
+                    }
+                }
+            });
+            setPropColumns(sortedColumn);
+            rerender();
+        }
+    }, [columnOrderValue])
+
     const handleDragEnd = () => {
         setDraggedIndex(null);
     };
@@ -424,26 +507,32 @@ const ColumnsSetting = (props: any) => {
                                             {propColumns?.map((column: any) => {
                                                 return (
                                                     <>
-                                                        {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <tr key={column?.id} style={columnSorting[column?.id]?.asc === true || columnSorting[column.id]?.desc === true ? { background: "#ddd" } : {}}>
+                                                        {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && column.id != "showProgress") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <tr key={column?.id} style={columnSorting[column?.id]?.asc === true || columnSorting[column.id]?.desc === true ? { background: "#ddd" } : {}}>
                                                             <td style={{ width: "40%" }}>
-                                                                {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <div className="alignCenter">
+                                                                {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && column.id != "showProgress") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <div className="alignCenter">
                                                                     <input className="form-check-input cursor-pointer me-1" id={column.id} type='checkbox' disabled={column?.id === "Title" || column?.id === "TaskID" || column?.id === "portfolioItemsSearch" ? true : false} checked={column?.isColumnVisible}
                                                                         onChange={(e: any) => coustomColumnsSetting(column, event)} name={column.id}
                                                                     />
                                                                     <ColumnSettingSortingToolTip columnSorting={columnSorting} column={column} placeholder={column?.placeholder} handleSortClick={handleSortClick} />
+
+                                                                    {column?.showProgressBar && <><input name="showProgress" className="form-check-input cursor-pointer me-1 mx-2" id="showProgress" type='checkbox' checked={showProgress} onChange={(e: any) => coustomColumnsSetting(column = { id: "showProgress" }, event)} /><span>Show Progress Bar</span></>}
+
                                                                 </div> : ""}
                                                             </td>
                                                             <td style={{ width: "30%" }}>
-                                                                {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <div className="alignCenter">
-                                                                    <div title={column?.placeholder} className="columnSettingWidth" style={(column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" } : { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px", background: "gray", color: "white" }}>{column?.size}</div>
-                                                                    {!editing[column?.id] && ((column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? (<div className="pencil-icons" onClick={() => handleEdit(column.id)}> <span className="svg__iconbox svg__icon--editBox"></span></div>) : (!editing[column?.id] && (<div className="pencil-icons"> <span style={{ background: "gray" }} className="svg__iconbox svg__icon--editBox"></span></div>)))}
-                                                                    {editing[column?.id] && (
+                                                                {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && column.id != "showProgress") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <div className="alignCenter">
+                                                                    {/* <div title={column?.placeholder} className="columnSettingWidth" style={(column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" } : { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px", background: "gray", color: "white" }}>
+                                                                    </div> */}
+                                                                    <input className="columnSettingWidth ms-1" disabled={(column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? false : true} style={(column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" } : { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px", background: "#ddd" }} value={column?.size} type="number" placeholder={`${column?.placeholder}`} title={column?.placeholder} onChange={(e: any) => handleChangeWidth(e, column)} />
+
+                                                                    {/* {!editing[column?.id] && ((column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? (<div className="pencil-icons" onClick={() => handleEdit(column.id)}> <span className="svg__iconbox svg__icon--editBox"></span></div>) : (!editing[column?.id] && (<div className="pencil-icons"> <span style={{ background: "gray" }} className="svg__iconbox svg__icon--editBox"></span></div>)))} */}
+                                                                    {/* {editing[column?.id] && (
                                                                         <div className="alignCenter">
                                                                             <input style={{ width: "36%", height: "27px" }} value={widthCol?.size} type="number" className="ms-1" placeholder={`${column?.placeholder}`} title={column?.placeholder} onChange={(e: any) => handleChangeWidth(e, column)} />
                                                                             <span onClick={() => handleSave(column)} className="svg__iconbox svg__icon--Save"></span>
                                                                             <span onClick={() => handleCancel(column.id)} className="svg__iconbox svg__icon--cross"></span>
                                                                         </div>
-                                                                    )}
+                                                                    )} */}
                                                                 </div> : ""}
                                                             </td>
                                                         </tr> : ""}
@@ -458,7 +547,7 @@ const ColumnsSetting = (props: any) => {
                                         <tbody className="border-0">
                                             {columnOrderValue?.map((column1: any, index: any) => (
                                                 <>
-                                                    {(column1?.placeholder != undefined && column1?.placeholder !== '' && column1.id != "descriptionsSearch" && column1.id != "commentsSearch" && column1.id != "timeSheetsDescriptionSearch") || (column1.id === "timeSheetsDescriptionSearch" && propColumns?.some((elem:any)=> elem.id === column1.id && elem?.columnHide === false )) ? (
+                                                    {(column1?.placeholder != undefined && column1?.placeholder !== '' && column1.id != "descriptionsSearch" && column1.id != "commentsSearch" && column1.id != "timeSheetsDescriptionSearch" && column1.id != "showProgress") || (column1.id === "timeSheetsDescriptionSearch" && propColumns?.some((elem: any) => elem.id === column1.id && elem?.columnHide === false)) ? (
                                                         <tr
                                                             key={index}
                                                             className={`px-1 ${index === draggedIndex ? "dragged" : ""}`}
@@ -468,7 +557,7 @@ const ColumnsSetting = (props: any) => {
                                                             onDragEnd={handleDragEnd}
                                                             style={columnSorting[column1.id]?.asc === true || columnSorting[column1.id]?.desc === true ? { cursor: "grab", background: "#ddd" } : { cursor: "grab" }}
                                                         >
-                                                            <td style={{ width: "80%" }}>{column1?.placeholder}</td>
+                                                            {/* <td style={{ width: "80%" }}>{column1?.placeholder}</td> */}
                                                             <td style={{ width: "20%" }}>{++columnIndexPostion}</td>
                                                         </tr>
                                                     ) : ""}
@@ -520,11 +609,18 @@ const ColumnsSetting = (props: any) => {
                     </div>
 
                     <div className="col-sm-2">
-                        <div style={{ fontWeight: 300, fontSize: "21px", display: 'contents' }} className="siteColor">Table Page Size</div>
+                        <div style={{ fontWeight: 300, fontSize: "21px", display: 'contents' }} className="siteColor">Page Size</div>
                         <div className=" d-flex">
                             <input style={{ width: "36%", height: "27px" }} type="number" className="ms-1" value={tablePageSize} onChange={(e) => setTablePageSize(e.target.value)} />
                         </div>
                     </div>
+
+                    {/* <div className="col-sm-2">
+                        <div style={{ fontWeight: 300, fontSize: "21px", display: 'contents' }}><span className="siteColor">Views</span></div>
+                        <div>
+                            <label><input className="form-check-input cursor-pointer me-1" type="checkbox" checked={showTilesView} onChange={handleToggleViewTailView} name="showTilesView" />Tile View</label>
+                        </div>
+                    </div> */}
 
                 </div>
             </div>
