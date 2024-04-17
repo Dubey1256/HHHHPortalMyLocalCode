@@ -2642,7 +2642,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         // This is used for send MS Teams Notification 
-                        if (TaskCategories !== "Bottleneck" &&  UpdatedDataObject?.Categories?.indexOf('Immediate') != -1 && UpdatedDataObject?.Categories?.indexOf('Design') != -1) {
+                        if (UpdatedDataObject?.Categories?.indexOf('Immediate') != -1 || UpdatedDataObject?.Categories?.indexOf('Design') != -1) {
                             try {
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
@@ -5871,8 +5871,6 @@ const EditTaskPopup = (Items: any) => {
                                                             }
                                                             placeholder="Search Portfolio Item"
                                                         />
-
-
                                                     )}
                                                     <span className="input-group-text">
                                                         <span
