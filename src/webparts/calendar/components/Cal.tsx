@@ -1310,7 +1310,6 @@ const calculateTotalWorkingDays = (matchedData: any) => {
       let currentDate = new Date(adjustedEventDate);
       currentDate.setHours(0);
 
-      while (currentDate <= adjustedEndDateToToday) {
         const dayOfWeek = currentDate.getDay();
 
         if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(currentDate, adjustedEndDateToToday)) {
@@ -1328,7 +1327,7 @@ const calculateTotalWorkingDays = (matchedData: any) => {
         }
 
         currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
-      }
+      
 
       return total + workingDays;
     }
@@ -1349,7 +1348,7 @@ const endDate = new Date(EventData?.end); // Replace 'endDateString' with the ac
 
 
 
-let daysDifference = calculateTotalWorkingDays(MyEventData);
+let daysDifference = calculateTotalWorkingDays([MyEventData]);
 const formattedstartDate = startDate.toLocaleDateString('en-GB', {
   weekday: 'short', // short, long
   year: 'numeric',
