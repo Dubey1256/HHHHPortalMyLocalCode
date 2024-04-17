@@ -98,7 +98,13 @@ export default function ManageSmartMetadata(selectedProps: any) {
         try {
             let web = new Web(selectedProps?.AllList?.SPSitesListUrl);
             const AllMetaDataItems = await web.lists.getById(selectedProps?.AllList?.SmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderby=Title&$filter=isDeleted ne 1").getAll();
-            SmartmetadataItems = SmartmetadataItems.concat(AllMetaDataItems)
+            const modifiedItems = AllMetaDataItems.map((item: any) => {
+                return {
+                    ...item,
+                    Item_x002d_Image: item.ItemCover // Assuming ItemCover is the property you want to rename
+                };
+            });
+            SmartmetadataItems = SmartmetadataItems.concat(modifiedItems)
             if (TabsData.length > 0) {
                 TabsData.filter((item: any) => {
                     if (UrlTabName !== null) {
@@ -346,10 +352,12 @@ export default function ManageSmartMetadata(selectedProps: any) {
         childRefdata?.current?.setRowSelection({});
     }
     const CloseEditSmartMetaPopup = () => {
+        setSmartmetadataAdd(false);
         setSmartMetadataEditPopupOpen(false);
         childRefdata?.current?.setRowSelection({});
     };
     const CloseDeleteSmartMetaPopup = () => {
+        setSmartmetadataAdd(false);
         setSmartMetadataDeletePopupOpen(false);
         childRefdata?.current?.setRowSelection({});
     };
@@ -420,6 +428,9 @@ export default function ManageSmartMetadata(selectedProps: any) {
             setRestructureIcon(true);
         }
         if (Taxtype) {
+            setSmartmetadataAdd(false)
+            setSmartmetadataCompare(false)
+            setSmartmetadataRestructure(false)
             SmartmetadataItems = [];
             Array = {};
             setRestructureIcon(false)

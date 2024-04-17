@@ -9,6 +9,7 @@ import VersionHistory from '../../../globalComponents/VersionHistroy/VersionHist
 import PageLoader from '../../../globalComponents/pageLoader';
 import moment from 'moment';
 import * as globalCommon from '../../../globalComponents/globalCommon'
+import ImagetabFunction from '../../EditPopupFiles/ImageInformation';
 let modaltype: any;
 let SitesConfig: any[] = []
 let allSitesTask: any[] = []
@@ -706,6 +707,11 @@ export default function SmartMetadataEditPopup(props: any) {
                         </div>
                         <div className={activeTab == 'ImageInfo' ? 'tab-pane fade show active' : 'tab-pane fade show active tab-pane fade'} id="ImageInfo" role="tabpanel" aria-labelledby="ImageInfo">   {activeTab == 'ImageInfo' && (
                             <div className="modal-body" style={{ overflowY: 'auto' }}>
+                                <ImagetabFunction EditdocumentsData={props?.modalInstance}
+                                    setData={setSmartTaxonomyItem}
+                                    Context={props?.AllList?.Context}
+                                    callBack={callBackData}
+                                />
                             </div>
                         )}
                         </div>
