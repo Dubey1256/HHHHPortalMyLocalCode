@@ -1305,17 +1305,17 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                             <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>} */}
 
                                         {isShowingDataAll === true ? <label><label className='alignCenter'>
-                                            <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
+                                            <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons'>{`${type?.Title == 'Sprint' ? 'X' : type?.Title?.charAt(0)}`}</label>
                                             <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `}/</label>
                                             <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
                                             {/* {index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
                                         </label></label> :
                                             <label><label className='alignCenter'>
-                                                <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
+                                                <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons'>{`${type?.Title == 'Sprint' ? 'X' : type?.Title?.charAt(0)}`}</label>
                                                 <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `}/</label>
                                                 <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
                                                 {/* {index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
-                                                </label></label>}
+                                            </label></label>}
                                     </>
                                 )
                             })}
@@ -1505,7 +1505,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </a>}
 
                     {items?.showFilterIcon === true && <><a className='smartTotalTime hreflink' title='Filter all task' style={{ color: `${portfolioColor}` }} onClick={() => openCreationAllStructure("loadFilterTask")}><RiFilter3Fill style={{ color: `${portfolioColor}` }} /></a></>}
-                    {items?.columnSettingIcon === true && <><a className='smartTotalTime hreflink' title='Column setting' style={{ color: `${portfolioColor}` }}  onClick={() => openTableSettingPopup("tableBased")}><AiFillSetting style={{ color: `${portfolioColor}` }} /></a></>}
+                    {items?.columnSettingIcon === true && <><a className='smartTotalTime hreflink' title='Column setting' style={{ color: `${portfolioColor}` }} onClick={() => openTableSettingPopup("tableBased")}><AiFillSetting style={{ color: `${portfolioColor}` }} /></a></>}
                     <Tooltip ComponentId={5756} />
                 </span>
             </div >}
@@ -1705,9 +1705,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
             {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} /> : ''}
             {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCount={selectedFilterCount} setSelectedFilterCount={setSelectedFilterCount} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
             {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
-            {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} bulkEditingCongration={bulkEditingCongration}/>}
-            {columnSettingPopup && <ColumnsSetting ContextValue={items?.AllListId} settingConfrigrationData={settingConfrigrationData} tableSettingPageSize={tableSettingPageSize} tableHeight={parentRef?.current?.style?.height} columnOrder={columnOrder} setSorting={setSorting} sorting={sorting} headerGroup={table?.getHeaderGroups()} tableId={items?.tableId} showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility} 
-            smartFabBasedColumnsSettingToggle={smartFabBasedColumnsSettingToggle} setSmartFabBasedColumnsSettingToggle={setSmartFabBasedColumnsSettingToggle} />}
+            {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} bulkEditingCongration={bulkEditingCongration} />}
+            {columnSettingPopup && <ColumnsSetting ContextValue={items?.AllListId} settingConfrigrationData={settingConfrigrationData} tableSettingPageSize={tableSettingPageSize} tableHeight={parentRef?.current?.style?.height} columnOrder={columnOrder} setSorting={setSorting} sorting={sorting} headerGroup={table?.getHeaderGroups()} tableId={items?.tableId} showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility}
+                smartFabBasedColumnsSettingToggle={smartFabBasedColumnsSettingToggle} setSmartFabBasedColumnsSettingToggle={setSmartFabBasedColumnsSettingToggle} />}
 
             {coustomButtonMenuPopup && <HeaderButtonMenuPopup isOpen={coustomButtonMenuPopup} coustomButtonMenuToolBoxCallback={coustomButtonMenuToolBoxCallback} setCoustomButtonMenuPopup={setCoustomButtonMenuPopup}
                 selectedRow={table?.getSelectedRowModel()?.flatRows} ShowTeamFunc={ShowTeamFunc} portfolioColor={portfolioColor}

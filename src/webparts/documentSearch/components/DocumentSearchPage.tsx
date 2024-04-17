@@ -1,10 +1,15 @@
+
 import React, { useEffect, useState } from 'react'
 import { Web } from 'sp-pnp-js';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
 import EditDocument from '../../taskprofile/components/EditDocunentPanel';
 import moment from 'moment';
+import { Items } from '@pnp/sp/items';
 var TaskUser: any = []
+let arr: any = []
+let mastertaskdata: any = []
+// let isColumnDefultSortingDesc: any = false;
 export default function DocumentSearchPage(Props: any) {
     //#region Required Varibale on Page load BY PB
     var AllListId = Props.Selectedprops
@@ -18,16 +23,96 @@ export default function DocumentSearchPage(Props: any) {
     //#region code to load All Documents By PB
     const LoadDocs = () => {
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
-        web.lists.getById(PageContext.DocumentsListID).items.select("Id,Title,PriorityRank,Year,Body,recipients,senderEmail,creationTime,Item_x0020_Cover,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl").filter('FSObjType eq 0').expand("Author,Editor,Portfolios").orderBy("Created", false).getAll()
+        web.lists.getById(PageContext.DocumentsListID).items.select("Id,Title,PriorityRank,File/Length,Year,Body,recipients,senderEmail,creationTime,Item_x0020_Cover,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl").filter('FSObjType eq 0').expand("Author,Editor,Portfolios,File").orderBy("Created", false).getAll()
             .then((response: any) => {
+
                 try {
                     response.forEach((Doc: any) => {
-                      
-                        Doc?.Title === null ? Doc.Title = Doc?.FileLeafRef : '';
-                        Doc.DocumentUrl = Doc?.FileLeafRef;
-                        Doc.CreatedDate = (moment(Doc?.Created).format('DD/MM/YYYY'));
-                        Doc.ModifiedDate = (moment(Doc?.Modified).format('DD/MM/YYYY HH:mm'))
+                        let AllProjectData: any = []
+                        let projectTitle: any = ''
+                        let Project: any = " "
+                        let projectId: any = ''
+                        let AllPortfolioData: any = []
+                        let portfolioTitle: any = ''
+                        let portfolioId: any = ''
+                        let Portfolioss: any = " "
+
+                        Doc?.Title === null ? Doc.Title = Doc?.FileLeafRef : Doc.Title;
+                        Doc.Title = Doc?.FileLeafRef
+                        Doc?.Title !== null ? Doc.Title = Doc.Title.split(".")[0] : Doc.Title;
+                        Doc.Portfolios.map((item: any) => {
+                            mastertaskdata.map((mastertask: any) => {
+                                if (mastertask.Id == item.Id && mastertask?.Item_x0020_Type == "Project") {
+                                    AllProjectData.push(mastertask)
+                                }
+                            })
+                        })
+                        AllProjectData.map((items: any, index: any) => {
+                            if (items.Title != undefined && items.Title != null) {
+                                // items.href = `${PageContext?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${items.Id}`
+
+                                projectTitle += items.Title
+                                if (index < AllProjectData.length - 1) {
+                                    projectTitle += ", ";
+                                    Project = projectTitle
+                                }
+                                projectTitle = projectTitle.split(",")
+                            }
+                            if (items.Id != undefined && items.Id != null) {
+                                projectId += items.Id
+                                if (index < AllProjectData.length - 1) {
+                                    projectId += ", ";
+                                }
+                            }
+                            projectId = projectId.split(",")
+                        })
+                        // For tasks start data-----
+                        Doc.Portfolios.map((itemss: any) => {
+                            mastertaskdata.map((mastertasks: any) => {
+                                if (mastertasks.Id == itemss.Id && mastertasks?.Item_x0020_Type != "Project") {
+                                    AllPortfolioData.push(mastertasks)
+                                }
+                            })
+                        })
+                        AllPortfolioData.map((itm: any, index: any) => {
+                            if (itm.Title != undefined && itm.Title != null) {
+                                // items.href = `${PageContext?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${items.Id}`
+
+                                portfolioTitle += itm.Title
+                                if (index < AllPortfolioData.length - 1) {
+                                    portfolioTitle += ", ";
+                                    Portfolioss = portfolioTitle
+                                }
+                                portfolioTitle = portfolioTitle.split(",")
+                            }
+                            if (itm.Id != undefined && itm.Id != null) {
+                                portfolioId += itm.Id
+                                if (index < AllPortfolioData.length - 1) {
+                                    portfolioId += ", ";
+                                }
+                            }
+                            portfolioId = portfolioId.split(",")
+                        })
+
+
+                        console.log(AllPortfolioData)
+                        // For tasks end -----
+                        console.log(AllProjectData)
+                        Doc.ProjectPortfolioTitle =
+                            Doc.CreatedDate = moment(Doc?.Created).format('DD/MM/YYYY');
+                        Doc.ModifiedDate = moment(Doc?.Modified).format('DD/MM/YYYY HH:mm')
                         Doc.SiteIcon = PageContext.context._pageContext._web.title;
+                        Doc.ProjectTitle = projectTitle;
+                        Doc.portfolioTitle = portfolioTitle
+                        Doc.Portfolioss = Portfolioss;
+                        // let combinedTitle = [...Project, ...Portfolioss];
+                        // Doc.ProjectPortfolioTitle = combinedTitle;
+                        Doc.projectId = projectId;
+                        Doc.Project = Project;
+                        Doc.portfolioId = portfolioId;
+                        Doc.FileSize = `${Math.ceil(Doc?.File?.Length / 1024)} KB`;
+                        // Doc.Project = [{Title:projectTitle,Id:projectId}]
+                        // Doc.href = projectId;
                         Doc.AllModifiedImages = [];
                         Doc.AllCreatedImages = [];
                         let CreatedUserObj: any = {};
@@ -72,9 +157,11 @@ export default function DocumentSearchPage(Props: any) {
     }
     //#endregion
     //#region code to load TaskUser By PB
+
+
     const LoadTaskUser = () => {
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
-        web.lists.getById(PageContext.TaskUsertListID).items.select('Id,Suffix,Title,SortOrder,Item_x0020_Cover,AssingedToUserId,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType').expand('AssingedToUser').getAll().then((response: any) => {
+        web.lists.getById(PageContext.TaskUsertListID).items.select('Id,Suffix,Title,SortOrder,Item_x0020_Type,Item_x0020_Cover,AssingedToUserId,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType').expand('AssingedToUser').getAll().then((response: any) => {
             TaskUser = response;
             LoadDocs();
         }).catch((error: any) => {
@@ -83,7 +170,36 @@ export default function DocumentSearchPage(Props: any) {
     }
     useEffect(() => {
         LoadTaskUser()
+        LoadMasterTaskList()
     }, []);
+
+    const LoadMasterTaskList = () => {
+        return new Promise(function (resolve, reject) {
+            let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/');
+            web.lists
+                .getById(PageContext.MasterTaskListID).items
+                .select(
+                    "Id",
+                    "Title",
+                    "Mileage",
+                    "TaskListId",
+                    "Item_x0020_Type",
+                    "TaskListName",
+                    "PortfolioType/Id",
+                    "PortfolioType/Title",
+                    "PortfolioType/Color",
+                ).expand("PortfolioType").top(4999).get()
+                .then((dataserviccomponent: any) => {
+                    console.log(dataserviccomponent)
+                    mastertaskdata = dataserviccomponent;
+                    resolve(dataserviccomponent)
+
+                }).catch((error: any) => {
+                    console.log(error)
+                    reject(error)
+                })
+        })
+    }
     //#endregion
     //#region code to edit delete and callback function BY PB
     const closeEditPopup = () => {
@@ -118,33 +234,123 @@ export default function DocumentSearchPage(Props: any) {
             size: 10,
             id: 'Id',
         },
+
         {
             accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
             cell: ({ row }) => (
                 <div className='alignCenter '>
-                    <a target="_blank" data-interception="off" href={row?.original?.FileDirRef}>
-                        <span className="alignIcon svg__iconbox svg__icon--folder"></span>
-                        {row?.original?.Title ? <a className='ms-1 ' title={row?.original?.Title} target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.Title} </a> : <a className='ms-1 ' title={row?.original?.FileDirRef} target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.FileLeafRef} </a>}
+                    <a target="_blank" className='alignCenter' data-interception="off" href={row?.original?.FileDirRef}>
+                        {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'jfif' && <span title={`${row?.original?.File_x0020_Type}`} className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
+                        {row?.original?.File_x0020_Type == 'rar' && <span title={`${row?.original?.File_x0020_Type}`} className="svg__iconbox svg__icon--zip "></span>}
+                        {row?.original?.File_x0020_Type == 'msg' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--msg "></span> : ''}
+                        {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
+                        {row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--docx "></span> : ''}
+                        {row?.original?.File_x0020_Type == 'jfif' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
                     </a>
+                    <a className='ms-1 alignCenter' target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.Title} </a>
+
                 </div>
             ),
         },
         {
-            accessorKey: "DocumentUrl", placeholder: "Document Url", header: "", id: "DocumentUrl",
-            cell: ({ row }) => (
-                <div className='alignCenter '>
-                    {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && row?.original?.File_x0020_Type != 'jfif' && <span title={`${row?.original?.File_x0020_Type}`} className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>}
-                    {row?.original?.File_x0020_Type == 'rar' && <span title={`${row?.original?.File_x0020_Type}`} className="svg__iconbox svg__icon--zip "></span>}
-                    {row?.original?.File_x0020_Type == 'msg' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--msg "></span> : ''}
-                    {row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
-                    {row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--docx "></span> : ''}
-                    {row?.original?.File_x0020_Type == 'jfif' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
-                    <a className='ms-1 wid90' target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.DocumentUrl} </a>
-                </div>
-          ),
+            accessorKey: "Project",
+            placeholder: "Project",
+            header: "",
+            size: 120,
+            id: "Project",
+            // isColumnDefultSortingDesc: true,
+            cell: ({ row }) => {
+                const projectTitles = row?.original?.ProjectTitle;
+                const projectIds = row?.original?.projectId;
+                const portfoliosTitle = row?.original?.portfolioTitle;
+                const portfolioIdss = row?.original?.portfolioId
+                let combinedChildren:any=[];
+                if (!Array.isArray(projectTitles) || !Array.isArray(projectIds) || projectTitles.length !== projectIds.length) {
+                    return null;
+                }
+                if (!Array.isArray(portfoliosTitle) || !Array.isArray(portfolioIdss) || portfoliosTitle.length !== portfolioIdss.length) {
+                    return null;
+                }
+
+
+                const projectLinks = projectTitles.map((title: any, index: number) => {
+                    const projectId = projectIds[index].trim();
+
+                    return (
+                        <React.Fragment key={index}>
+                            <a
+                                target="_blank"
+                                data-interception="off"
+                                href={`${PageContext?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${projectId}`}>
+                                {title}
+                            </a>
+                            {index < projectTitles.length - 1 && ', '}
+                        </React.Fragment>
+                    );
+                });
+                const portfolioLinks = portfoliosTitle?.map((title: any, index: number) => {
+                    const portfolioId = portfolioIdss[index].trim();
+
+                    return (
+                        <React.Fragment key={index}>
+                            <a
+                                target="_blank"
+                                data-interception="off"
+                                href={`${PageContext?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${portfolioId}`}>
+                                {title}
+                            </a>
+                            {index < projectTitles.length - 1 && ', '}
+                        </React.Fragment>
+                    );
+                });
+                projectLinks.forEach(item => {
+                    if (item?.props?.children && item?.props?.children.length > 0 && item?.props?.children[0]?.props && item?.props?.children[0]?.props?.children) {
+                        combinedChildren.push(item.props?.children[0]?.props?.children);
+                    }
+                });
+                // projectLinks.forEach(item => {
+                //     if (item?.props?.children && item?.props?.children.length > 0 && item?.props?.children[0]?.props && item?.props?.children[0]?.props?.children) {
+                //         combinedChildren.push(
+                //             <a key={item.props.children[0].props.children.href} href={item.props.children[0].props.children.href}>
+                //                 {item.props.children[0].props.children.text}
+                //             </a>
+                //         );
+                //     }
+                // });
+                
+                portfolioLinks.forEach(item => {
+                    if (item?.props?.children && item?.props?.children.length > 0 && item?.props?.children[0]?.props && item?.props?.children[0]?.props?.children) {
+                        combinedChildren.push(item?.props?.children[0]?.props?.children);
+                    }
+                });
+                
+                var concatenatedString = combinedChildren.join(', ');
+                
+                console.log(concatenatedString);
+
+                return <>{concatenatedString}</>
+            }
         },
         {
-            accessorKey: "CreatedDate", placeholder: "Created Date", header: "", size: 120, id: "CreatedDate", isColumnDefultSortingDesc: true,
+            accessorKey: "File_x0020_Type", placeholder: "File Type", header: "", size: 120, id: "File_x0020_Type",
+            cell: ({ row }) => (
+                <>
+                    {row?.original?.File_x0020_Type}
+
+                </>
+            )
+        },
+        {
+            accessorKey: "FileSize", placeholder: "File Size", header: "", size: 120, id: "FileSize",
+            cell: ({ row }) => (
+                <>
+                    {Math.ceil(row?.original?.File?.Length / 1024)} KB
+
+                </>
+            )
+        },
+        {
+            accessorKey: "Created",
             cell: ({ row }) => (
                 <>
                     {row?.original?.CreatedDate}
@@ -155,9 +361,17 @@ export default function DocumentSearchPage(Props: any) {
                     ))}
                 </>
             ),
+            placeholder: "Created Date", header: "", size: 120, id: "CreatedDate", isColumnDefultSortingDesc: true,
+            filterFn: (row: any, columnId: any, filterValue: any) => {
+                if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.CreatedDate?.includes(filterValue)) {
+                    return true
+                } else {
+                    return false
+                }
+            },
         },
         {
-            accessorKey: "ModifiedDate", placeholder: "Modified Date", header: "", size: 172, id: "ModifiedDate",
+            accessorKey: "Modified",
             cell: ({ row }) => (
                 <>
                     {row?.original?.ModifiedDate}
@@ -168,6 +382,15 @@ export default function DocumentSearchPage(Props: any) {
                     ))}
                 </>
             ),
+            placeholder: "Modified Date", header: "", size: 172, id: "ModifiedDate",
+            filterFn: (row: any, columnId: any, filterValue: any) => {
+                if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.ModifiedDate?.includes(filterValue)) {
+                    return true
+                } else {
+                    return false
+                }
+            },
+
         },
         {
             cell: ({ row }) => (
@@ -190,8 +413,9 @@ export default function DocumentSearchPage(Props: any) {
     //#endregion
     return (
         <>
+
             <div className="col-sm-12 clearfix">
-                <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
+                <h2 className="d-flex justify-content-between heading align-items-center siteColor serviceColor_Active">
                     <div>Document Search
                     </div>
                     <div className="text-end fs-6">
@@ -215,4 +439,3 @@ export default function DocumentSearchPage(Props: any) {
             }    </>
     )
 }
-
