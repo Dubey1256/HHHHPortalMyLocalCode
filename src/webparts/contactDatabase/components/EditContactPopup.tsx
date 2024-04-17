@@ -130,7 +130,6 @@ const EditContactPopup = (props: any) => {
         let CategoriesGroupByData: any = [];
         try {
             const data = await webs.lists.getById(props?.allListId?.TeamSmartMetadatalistIds).items
-                //const data = await webs.lists.getById("6020CAD5-BBE7-4626-A717-7FAAEDC99BA6").items
                 .select('Id,Title,TaxType', 'ParentID').top(4999).get();
 
             data.map((taxItem: any) => {
