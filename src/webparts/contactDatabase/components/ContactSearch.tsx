@@ -42,6 +42,7 @@ const ContactSearch = (props: any) => {
                             item.Status = i.Title
                     })
                 }
+                item.Title = item.FirstName + ' ' + item.Title
             })
             backupallContact = data
             setallContactData(data)
@@ -55,7 +56,7 @@ const ContactSearch = (props: any) => {
     }
     const closeEditContactPopup = (item: any) => {
         setEditPopupflag(false)
-        getAllContact();
+        EditCallBackItem(item)
     }
     const ClosePopup = useCallback(() => {
         setSelectCreateContact(false)
@@ -190,15 +191,20 @@ const ContactSearch = (props: any) => {
         console.log(data)
     }
     const EditCallBackItem = (updateData: any) => {
-        let backupAllContactData = [...allContactData]; // Create a shallow copy of the original array
+        setEditPopupflag(false)
+        let backupAllContactData = [...allContactData];
         if (updateData !== undefined && updateData !== null) {
-            backupAllContactData = backupAllContactData.map((item) => {
+            let idExists = false;
+            backupAllContactData.forEach((item, index) => {
                 if (updateData.Id === item.Id) {
-                    return updateData; // Replace the item with updateData if IDs match
-                } else {
-                    return item; // Otherwise, return the original item
+                    updateData.FullName = updateData.FirstName + ' ' + updateData.Title
+                    backupAllContactData[index] = updateData;
+                    idExists = true;
                 }
             });
+            if (!idExists) {
+                backupAllContactData.push(updateData);
+            }
         } else {
             getAllContact();
         }
