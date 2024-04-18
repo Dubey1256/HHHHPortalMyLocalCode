@@ -1270,7 +1270,7 @@ const ProjectManagementMain = (props: any) => {
             </span>
           </a>
         ),
-        id: "Portfolio",
+        id: "PortfolioTitle",
         placeholder: "Portfolio Item",
         resetColumnFilters: false,
         resetSorting: false,
@@ -1313,7 +1313,7 @@ const ProjectManagementMain = (props: any) => {
           </span>
         ),
         placeholder: "Priority",
-        id: 'Priority',
+        id: 'PriorityRank',
         header: "",
         resetColumnFilters: false,
         isColumnVisible: true,
@@ -1432,7 +1432,7 @@ const ProjectManagementMain = (props: any) => {
             &nbsp; {row?.original?.SmartInformation?.length > 0 ? <span onClick={() => openRemark(row?.original)} className="commentDetailFill-active"><BiCommentDetail /></span> : <span onClick={() => openRemark(row?.original)} className="commentDetailFill"><BiCommentDetail /></span>}
           </span>
         ),
-        id: 'SmartInformation',
+        id: 'SmartInformationTitle',
         resetSorting: false,
         resetColumnFilters: false,
         placeholder: "Remarks",
