@@ -1917,7 +1917,10 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
                 result.FeatureTypeTitle = result?.FeatureType?.Title
             }
 
-
+            result.PortfolioTitle=''
+            result.TaskTypeValue=''
+            result.SmartInformationTitle=''
+            result.SmartPriority=''
             result.descriptionsSearch = '';
             result.commentsSearch = "";
             result.descriptionsDeliverablesSearch = '';
