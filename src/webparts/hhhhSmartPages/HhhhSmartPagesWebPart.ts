@@ -8,24 +8,24 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'ProfilesWebPartStrings';
-import Profiles from './components/Profiles';
-import { IProfilesProps } from './components/IProfilesProps';
+import * as strings from 'HhhhSmartPagesWebPartStrings';
+import HhhhSmartPages from './components/HhhhSmartPages';
+import { IHhhhSmartPagesProps } from './components/IHhhhSmartPagesProps';
 
-export interface IProfilesWebPartProps {
+export interface IHhhhSmartPagesWebPartProps {
   description: string;
   SitesListUrl: any,
   SmartMetadataListID: any;
 }
 
-export default class ProfilesWebPart extends BaseClientSideWebPart<IProfilesWebPartProps> {
+export default class HhhhSmartPagesWebPart extends BaseClientSideWebPart<IHhhhSmartPagesWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IProfilesProps> = React.createElement(
-      Profiles,
+    const element: React.ReactElement<IHhhhSmartPagesProps> = React.createElement(
+      HhhhSmartPages,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
@@ -61,6 +61,7 @@ export default class ProfilesWebPart extends BaseClientSideWebPart<IProfilesWebP
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
+           
             default:
               environmentMessage = strings.UnknownEnvironment;
           }
