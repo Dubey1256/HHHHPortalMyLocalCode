@@ -61,9 +61,7 @@ export default class HhhhSmartPagesWebPart extends BaseClientSideWebPart<IHhhhSm
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
-            case 'TeamsModern':
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
-              break;
+           
             default:
               environmentMessage = strings.UnknownEnvironment;
           }
