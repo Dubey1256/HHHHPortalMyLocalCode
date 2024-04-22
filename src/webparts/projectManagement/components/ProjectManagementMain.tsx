@@ -446,6 +446,9 @@ const ProjectManagementMain = (props: any) => {
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
     if (elem?.TaskType != undefined) {
       setCheckedList(elem)
+    } else if (elem?.TaskType == undefined) {
+      setCheckedList(elem)
+      selectedItem = elem
     } else {
       setCheckedList({})
     }

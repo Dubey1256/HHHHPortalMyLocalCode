@@ -962,7 +962,7 @@ const TaskDashboard = (props: any) => {
 
             },
             {
-                accessorFn: (row) => row?.DisplayCreateDate,
+                accessorFn: (row) => row?.Created,
                 cell: ({ row, getValue }) => (
                     <span draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
                         <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
@@ -1159,7 +1159,7 @@ const TaskDashboard = (props: any) => {
                 size: 55
             },
             {
-                accessorFn: (row) => row?.DisplayCreateDate,
+                accessorFn: (row) => row?.Created,
                 cell: ({ row, getValue }) => (
                     <span>
                         <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
