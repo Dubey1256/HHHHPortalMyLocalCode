@@ -600,6 +600,26 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }
   }
   private setMentionValue(e: any) {
+    try {
+      const matches = e.target.value.split("@[")
+      this.topCommenters?.map((topCmnt: any, i: any) => {
+        const element = document.getElementById(topCmnt?.id);
+        if (element)
+          element.classList.remove("active");
+        if (matches) {
+          matches?.map((Email: any) => {
+            if (Email != undefined && Email != '' && topCmnt?.id.toLowerCase().indexOf(Email?.toLowerCase()) > -1) {
+              if (element) {
+                element.classList.add("active");
+              }
+            }
+          })
+        }
+      })
+
+    } catch (e) {
+      console.log(e)
+    }
     if (this.state?.Result != undefined && this.state?.Result?.Comments != undefined && this.state?.Result?.Comments?.length > 0) {
       this.state?.Result?.Comments?.forEach((element: any) => {
         element.isReplyMsg = false;
@@ -920,8 +940,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               </div>
               {/* onKeyDown={this.handleKeyDown} onMouseDown={this.handleMouseClick} */}
               <span className='clintlist'>
-                <MentionsInput   placeholder='Recipients Name' value={this.state?.mentionValue ? this.state?.mentionValue : ""} onChange={(e) => this.setMentionValue(e)}
-                  className="form-control  "
+                <MentionsInput placeholder='Recipients Name' value={this.state?.mentionValue ? this.state?.mentionValue : ""} onChange={(e) => this.setMentionValue(e)}
+                  className="form-control"
                   classNames={mentionClass}>
                   <Mention trigger="@" data={this.mentionUsers} appendSpaceOnAdd={true} />
                   {/* {this.state.keyPressed && this.mentionUsers && this.state?.mentionValue ? 
