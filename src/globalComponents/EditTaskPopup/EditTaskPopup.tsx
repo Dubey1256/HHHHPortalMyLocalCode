@@ -2642,7 +2642,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         // This is used for send MS Teams Notification 
-                        if (UpdatedDataObject?.Categories?.indexOf('Immediate') != -1 || UpdatedDataObject?.Categories?.indexOf('Design') != -1) {
+                       
                             try {
                                 const sendUserEmails: string[] = [];
                                 let AssignedUserName = '';
@@ -2675,6 +2675,7 @@ const EditTaskPopup = (Items: any) => {
                                 let CommonMsg = '';
                                 const sendMSGCheck = (checkStatusUpdate === 80 || checkStatusUpdate === 70) && IsTaskStatusUpdated;
                                 const SendUserEmailFinal: any = sendUserEmails?.filter((item: any, index: any) => sendUserEmails?.indexOf(item) === index);
+
                                 if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
                                     CommonMsg = ` Task created from your end has been set to 8%. Please take necessary action.`;
                                     let functionType: any = '';
@@ -2691,7 +2692,9 @@ const EditTaskPopup = (Items: any) => {
                                         ReceiverName: AssignedUserName
                                     }
                                     GlobalFunctionForUpdateItems.SendEmailNotificationForIRCTasksAndPriorityCheck(RequiredDataForNotification);
-                                } else if (TeamMemberChanged && TeamLeaderChanged) {
+                                } 
+                                
+                                else if (TeamMemberChanged && TeamLeaderChanged) {
                                     CommonMsg = `You have been marked as TL/working member in the below task. Please take necessary action.`;
                                 } else if (TeamMemberChanged) {
                                     CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`;
@@ -2707,7 +2710,7 @@ const EditTaskPopup = (Items: any) => {
                                             break;
                                     }
                                 }
-
+                                
                                 const emailMessage = GlobalFunctionForUpdateItems?.GenerateMSTeamsNotification(UpdatedDataObject);
                                 const containerDiv = document.createElement('div');
                                 const reactElement = React.createElement(emailMessage?.type, emailMessage?.props);
@@ -2743,7 +2746,7 @@ const EditTaskPopup = (Items: any) => {
                             } catch (error) {
                                 console.log("Error", error.message);
                             }
-                        }
+                        
                         let Createtordata: any = []
                         if (IsTaskStatusUpdated  && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject?.Categories?.indexOf('Immediate') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
@@ -2797,6 +2800,7 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
+
                         if (IsTaskStatusUpdated && checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.indexOf('Design') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
@@ -2808,8 +2812,8 @@ const EditTaskPopup = (Items: any) => {
                             Createtordata?.map((InfoItem: any) => {
 
                                 let DataForNotification: any = {
-                                    ReceiverName: InfoItem?.Title,
-                                    sendUserEmail: ['alina.chyhasova@hochhuth-consulting.de', 'kristina.kovach@hochhuth-consulting.de'],
+                                    ReceiverName: 'kristina',
+                                    sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
                                     Context: Items.context,
                                     ActionType: "Design",
                                     ReasonStatement: "",
@@ -2824,7 +2828,8 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
-                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.indexOf('Design') != -1) {
+
+                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2835,10 +2840,38 @@ const EditTaskPopup = (Items: any) => {
                             Createtordata?.map((InfoItem: any) => {
 
                                 let DataForNotification: any = {
-                                    ReceiverName: InfoItem?.Title,
-                                    sendUserEmail: [InfoItem?.Email],
+                                    ReceiverName: 'Robert',
+                                    sendUserEmail: ['robert.ungethuem@hochhuth-consulting.de'],
                                     Context: Items.context,
-                                    ActionType: "Design",
+                                    ActionType: "User Experience - UX",
+                                    ReasonStatement: "",
+                                    UpdatedDataObject: UpdatedDataObject
+                                }
+                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    console.log("Ms Teams Notifications send")
+                                })
+
+                            })
+
+
+
+                        }
+
+                        if (checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
+                            taskUsers?.forEach((allUserItem: any) => {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                    Createtordata.push(allUserItem);
+                                }
+
+                            });
+
+                            Createtordata?.map((InfoItem: any) => {
+
+                                let DataForNotification: any = {
+                                    ReceiverName: 'kristina',
+                                    sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
+                                    Context: Items.context,
+                                    ActionType: "User Experience - UX",
                                     ReasonStatement: "",
                                     UpdatedDataObject: UpdatedDataObject
                                 }
