@@ -2,30 +2,30 @@ import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
-  IPropertyPaneConfiguration,
+  type IPropertyPaneConfiguration,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'ContactProfileWebPartStrings';
-import ContactProfile from './components/ContactProfile';
-import { IContactProfileProps } from './components/IContactProfileProps';
+import * as strings from 'HhhhcontactprofileWebPartStrings';
+import Hhhhcontactprofile from './components/Hhhhcontactprofile';
+import { IHhhhcontactprofileProps } from './components/IHhhhcontactprofileProps';
 
-export interface IContactProfileWebPartProps {
+export interface IHhhhcontactprofileWebPartProps {
   description: string;
   TeamContactSearchlistIds:"ee0d83a2-d7ae-4629-989d-b8bbf18e2311"
   TeamSmartMetadatalistIds:"c8ce47a9-3159-44f2-aeae-5f56501d8e9d"
 }
 
-export default class ContactProfileWebPart extends BaseClientSideWebPart<IContactProfileWebPartProps> {
+export default class HhhhcontactprofileWebPart extends BaseClientSideWebPart<IHhhhcontactprofileWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IContactProfileProps> = React.createElement(
-      ContactProfile,
+    const element: React.ReactElement<IHhhhcontactprofileProps> = React.createElement(
+      Hhhhcontactprofile,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
@@ -62,10 +62,9 @@ export default class ContactProfileWebPart extends BaseClientSideWebPart<IContac
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
-              break;
+           
             default:
-              throw new Error('Unknown host');
+              environmentMessage = strings.UnknownEnvironment;
           }
 
           return environmentMessage;

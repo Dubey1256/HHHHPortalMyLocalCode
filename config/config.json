@@ -469,6 +469,14 @@
           "manifest": "./src/webparts/hhhcontact/HhhcontactWebPart.manifest.json"
         }
       ]
+    },
+    "hhhhcontactprofile-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/hhhhcontactprofile/HhhhcontactprofileWebPart.js",
+          "manifest": "./src/webparts/hhhhcontactprofile/HhhhcontactprofileWebPart.manifest.json"
+        }
+      ]
     }
    
   },
@@ -551,6 +559,8 @@
     "HhhhSmartPagesWebPartStrings": "lib/webparts/hhhhSmartPages/loc/{locale}.js",
     "HhhhSmartMetadataPortfolioWebPartStrings": "lib/webparts/hhhhSmartMetadataPortfolio/loc/{locale}.js",
     "HhhhProfileWebPartStrings": "lib/webparts/hhhhProfile/loc/{locale}.js",
-    "HhhcontactWebPartStrings": "lib/webparts/hhhcontact/loc/{locale}.js"
+    "HhhcontactWebPartStrings": "lib/webparts/hhhcontact/loc/{locale}.js",
+    "HhhhcontactprofileWebPartStrings": "lib/webparts/hhhhcontactprofile/loc/{locale}.js"
+ 
   }
 }

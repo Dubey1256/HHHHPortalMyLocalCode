@@ -1,4 +1,4 @@
-export interface IContactProfileProps {
+export interface IHhhhcontactprofileProps {
   description: string;
   isDarkTheme: boolean;
   environmentMessage: string;
