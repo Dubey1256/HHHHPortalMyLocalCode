@@ -901,7 +901,7 @@ const AncTool = (props: any) => {
             if (!isNaN(sizeInMB)) {
                 return `${sizeInMB.toFixed(2)} MB`;
             } else {
-                return `1.2 MB`;
+                return `112 KB`;
             }
         }
     };

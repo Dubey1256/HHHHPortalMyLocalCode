@@ -1971,7 +1971,11 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                   }
                   {this.currentUser != undefined && this.state.sendMail && this.state.emailStatus != "" && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props.Context} emailStatus={this.state.emailStatus} currentUser={this.currentUser} items={this.state.Result} />}
                 </span>
-                <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>
+                {!( this?.state?.Result["siteUrl"].includes('GrueneWeltweit')) ? (
+                    <span className="text-end fs-6">
+                      <a className='oldtitle' target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a>
+                    </span>
+                  ) : null}
 
               </h2>
             </section>
@@ -2233,7 +2237,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       <dl>
                         <dt className='bg-Fa'>Created</dt>
                         <dd className='bg-Ff alignCenter'>
-                          {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MM/YYYY") : ""}
+                          {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MMM/YYYY") : ""}
                           {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
                             <a title={this.state.Result["Author"][0].Title} className='alignCenter ms-1'>
                               {this.state.Result["Author"][0].userImage !== "" && <img className="workmember hreflink " src={this.state.Result["Author"][0].userImage} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, this.state.Result["Author"][0]?.Id)} ></img>
