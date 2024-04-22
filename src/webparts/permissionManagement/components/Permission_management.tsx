@@ -9,7 +9,7 @@ import {
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import { Web, sp } from "sp-pnp-js";
 import EditPage from "../../../globalComponents/EditPanelPage/EditPage";
-// import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
+import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 
 var id: any = [];
 const Permission_management = (props: any) => {
@@ -28,7 +28,8 @@ const Permission_management = (props: any) => {
   const [headerChange, setHeaderChange]: any = useState("");
   const [selectedPeople, setSelectedPeople] = useState([]);
   const [checkUserPermission, setCheckUserPermission]: any = useState([]);
-
+  const [approver, setApprover] = useState([]);
+  const [disabled, setDisabled]= useState(true);
   useEffect(() => {
     taskUserData();
     getData();
@@ -230,7 +231,7 @@ const Permission_management = (props: any) => {
   };
 
   const checkUser = async () => {
-    const filteredSuggestions : any= taskUser.filter((suggestion: any) =>
+    const filteredSuggestions: any = taskUser.filter((suggestion: any) =>
       selectedPeople.some(
         (limitedItem: any) => limitedItem.secondaryText == suggestion.Email
       )
@@ -271,9 +272,9 @@ const Permission_management = (props: any) => {
         },
       });
     });
-    const newArrayWithoutDuplicates = commanArray.filter((obj : any, index : any, self: any) =>
-  index === self.findIndex((o: any) => o.Id === obj.Id)
-);
+    const newArrayWithoutDuplicates = commanArray.filter((obj: any, index: any, self: any) =>
+      index === self.findIndex((o: any) => o.Id === obj.Id)
+    );
     // const newArrayWithoutDuplicates : any= Array.from(new Set(commanArray.map((obj:any) => obj.Id))).map((Id:any) => commanArray.find((obj:any) => obj.Id === Id));
     setPermissionUserGroup(newArrayWithoutDuplicates);
   };
@@ -378,7 +379,7 @@ const Permission_management = (props: any) => {
     [data]
   );
 
-  const callBackData = () => {};
+  const callBackData = () => { };
 
   const handleInputChange = (e: any) => {
     const value = e.target.value;
@@ -423,7 +424,60 @@ const Permission_management = (props: any) => {
   };
 
   const handlePeoplePickerChange = (items: any) => {
+    setDisabled(false);
     setSelectedPeople(items);
+    if(items.length == 0)
+      setDisabled(true);
+  };
+  const getUserInfo = async (userMail: string) => {
+    const userEndPoint: any = `${props.context?.pageContext?.web?.absoluteUrl}/_api/Web/EnsureUser`;
+
+    const userData: string = JSON.stringify({ 
+      logonName: userMail,
+    });
+
+    const userReqData = {
+      body: userData,
+    };
+
+    const resUserInfo = await props.context?.spHttpClient.post(
+      userEndPoint,
+      SPHttpClient.configurations.v1,
+      userReqData
+    );
+    const userInfo = await resUserInfo.json();
+
+    return userInfo;
+  };
+  const ApproverFunction = async (items: any[]) => {
+    let userId: number = undefined;
+    let userTitle: any;
+    let userSuffix: string = undefined;
+    let userMail: any
+    let userInfo: any
+    if (items.length > 0) {
+        const approvers = await Promise.all(items.map(async (selectedusers) => {
+            userMail = selectedusers?.id.split("|")[2];
+            userInfo = await getUserInfo(userMail);
+            userId = userInfo.Id;
+            userTitle = userInfo.Title;
+            userSuffix = userTitle
+                .split(" ")
+                .map((i: any) => i.charAt(0))
+                .join("");
+            
+            return {
+                userId: userId,
+                userTitle: userTitle,
+                userSuffix: userSuffix
+            };
+        }));
+      setApprover(approvers);
+      setSelectedPeople(approvers);
+    } else {
+      setApprover([]);
+      setSelectedPeople([]);
+    }
   };
 
   return (
@@ -432,8 +486,8 @@ const Permission_management = (props: any) => {
         <div className="alignCenter">
           <h2 className="heading">
             {headerChange != undefined &&
-            headerChange != null &&
-            headerChange != ""
+              headerChange != null &&
+              headerChange != ""
               ? headerChange
               : "Permission-Management"}{" "}
           </h2>
@@ -629,6 +683,7 @@ const Permission_management = (props: any) => {
 
       <Panel
         onRenderHeader={onRenderCustomCalculateSC}
+        className='PresetDate'
         type={PanelType.large}
         isOpen={truePanel}
         isBlocking={false}
@@ -672,6 +727,7 @@ const Permission_management = (props: any) => {
 
       <Panel
         onRenderHeader={onRenderCustomCalculateSC1}
+        className='PresetDate'
         type={PanelType.medium}
         isOpen={addUser}
         isBlocking={false}
@@ -698,9 +754,8 @@ const Permission_management = (props: any) => {
               ></span>
             )}
           </div>
-          <div className="SmartTableOnTaskPopup w-50">
+          {suggestions.map((suggestion: any, index: any) => (<div className="SmartTableOnTaskPopup w-50">
             <ul className="list-group">
-              {suggestions.map((suggestion: any, index: any) => (
                 <li
                   className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
                   key={index}
@@ -708,9 +763,8 @@ const Permission_management = (props: any) => {
                 >
                   {suggestion?.Title}
                 </li>
-              ))}
             </ul>
-          </div>
+          </div>))}
         </div>
         <footer className="mt-4 text-end">
           <button className="me-2 btn btn-primary" onClick={postUser}>
@@ -764,6 +818,9 @@ const Permission_management = (props: any) => {
                     defaultSelectedUsers={selectedPeople}
                     context={props?.context?.context}
                   />
+                    {/* <PeoplePicker context={props?.context?.context} titleText="" 
+                      personSelectionLimit={4}  principalTypes={[PrincipalType.User]} resolveDelay={1000} onChange={(items) => ApproverFunction(items)}
+                      defaultSelectedUsers={emails.length > 0 ? emails : []} /> */}
                 </div>
               </div>
               {/* <div className="SmartTableOnTaskPopup w-50">
@@ -777,8 +834,8 @@ const Permission_management = (props: any) => {
             </div>
             <div className="col-sm-3 mt-1">
               <div className="mt-1">
-                <label className="full-width form-label"></label>
-                <button
+                <label className="full-width form-label" onChange={handlePeoplePickerChange}></label>
+                <button disabled={disabled}
                   className="btnCol mt-1 btn btn-primary"
                   onClick={() => checkUser()}
                 >
@@ -806,6 +863,8 @@ const Permission_management = (props: any) => {
               setCheckPermission(false),
                 setSuggestions([]),
                 setPermissionUserGroup([]),
+                setSelectedPeople([]),
+                setDisabled(true),
                 setInputValue({ ...inputValue, Title: "" });
             }}
           >

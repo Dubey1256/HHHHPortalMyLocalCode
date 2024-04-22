@@ -380,7 +380,7 @@ const CreateWS = (props: any) => {
               
             }
         }
-        inputFields?.map((inputValue: any, index: any) => {
+        inputFields?.map(async(inputValue: any, index: any) => {
             let taskLevel = WorstreamLatestId++;
             let priorityRank = 4;
             let priority = '';
@@ -480,7 +480,7 @@ const CreateWS = (props: any) => {
             if (postdata?.Sitestagging == false) {
                 postdata.Sitestagging = null
             }
-            web.lists.getById(selectedItem.listId).items.add(postdata).then(async (res: any) => {
+         await   web.lists.getById(selectedItem.listId).items.add(postdata).then(async (res: any) => {
                 console.log(res)
                 let item: any = {};
                 if (res?.data) {

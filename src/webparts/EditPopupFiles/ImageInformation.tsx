@@ -14,7 +14,8 @@ let imgdefaultContent="";
 
 let count = 20;
 const ImagetabFunction = (props: any) => {
-    const [editData, setEditData] = useState(props.EditdocumentsData)
+    const [editData, setEditData] = useState<any>(props?.EditdocumentsData)
+    const Item_x002d_Image = {Item_x002d_Image:props?.EditdocumentsData};
     const [selectfolder, setSelectfolder] = useState("Logos");
     const [chooseExistingFile, setChooseExistingFile] = useState({
         ChooseExistinglogo: [], ChooseExistingCover: [], ChooseExistingImages1: []
@@ -23,15 +24,11 @@ const ImagetabFunction = (props: any) => {
     const [uploadedImage, setUploadedImage] = useState(null);
     const [uploadedImageUrl, setUploadedImageUrl] = useState("");
     const [loadedImages, setLoadedImages] = useState([]);
-    console.log(props)
-    console.log(props)
     React.useEffect(() => {
-     
-
+        setEditData(Item_x002d_Image);
         getAllImageData()
     }, []);
 
-  
     const getAllImageData = async () => {
         const web = new Web(props.Context.pageContext.web.absoluteUrl);
         var data = ["Logos", "Covers", "Page-Images"]
@@ -241,8 +238,13 @@ const ImagetabFunction = (props: any) => {
         } else {
             let taskItem = { ...editData };
             taskItem.Item_x002d_Image = null;
-            setEditData(taskItem)
+            taskItem.Item_x0020_Cover = null;
+            setEditData(taskItem)            
             props.setData(taskItem)
+            props.setToUpdate.Item_x0020_Cover = null;
+               
+            // props.setToUpdate((prev:any) => [...prev, {...prev, Item_x0020_Cover: prev?.Item_x0020_Cover !== null ? null : prev.Item_x0020_Cover}]);
+            // props.callBack();   
         }
     }
     //==================existing ImgaeUpload===========================
@@ -376,10 +378,21 @@ const ImagetabFunction = (props: any) => {
                                 </Nav.Item>
 
                                 <div className='mt-1 me-1'>
-                                    {editData.Item_x002d_Image != undefined && <div><div><img className="img-fluid" src={editData?.Item_x002d_Image?.Url} /></div>
-                                        <span><a href={editData?.Item_x002d_Image?.Url} target="_blank" data-interception="off"><span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span></a></span>
+                                    {editData.Item_x002d_Image != undefined && editData.Item_x002d_Image.Url != null &&
+                                    <div>
+                                        <div>
+                                            <img className="img-fluid" src={editData?.Item_x002d_Image?.Url} />
+                                        </div>
+                                        <span>
+                                            <a href={editData?.Item_x002d_Image?.Url} target="_blank" data-interception="off">
+                                                {/* <span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span> */}
+                                            </a>
+                                        </span>
+                                        <span>
+                                            <a className="text-center" target="_blank" href='https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/NewUsersImages'>Image Folder</a>
+                                        </span>
                                     </div>}
-                           
+                                    
                                 </div>
                                 <div className='mt-2 text-center'><span className="alignIcon svg__iconbox svg__icon--cross dark hreflink" onClick={() => clearImage(editData?.Item_x002d_Image?.itemCoverId)}></span>Clear Image</div>
                             </Nav>

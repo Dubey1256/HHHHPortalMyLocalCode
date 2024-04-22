@@ -54,7 +54,9 @@ const EditDocumentpanel = (props: any) => {
         .expand('Author,Editor,Portfolios')
         .get()
         .then((Data) => {
-          Data.Title = getUploadedFileName(Data?.Title);
+          if(Data?.Title.includes(Data?.File_x0020_Type)){
+            Data.Title = getUploadedFileName(Data?.Title);
+          }
           Data.siteType = 'sp';
           Data.docTitle = getUploadedFileName(Data?.FileLeafRef);
           Data.Item_x002d_Image = Data?.Item_x0020_Cover
@@ -542,135 +544,16 @@ const EditDocumentpanel = (props: any) => {
                   </select>
                 </div>
               </div>
-              <div className='d-flex mt-3'>
-                <div className="input-group"><label className="full-width ">Title </label>
+              <div className='row mt-3'>
+                <div className="col-sm-6">
+                  <div className='input-group'>
+                  <label className="full-width ">Title </label>
                   <input type="text" className="form-control" value={EditdocumentsData?.Title}
                     onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value })}
                   />
                 </div>
-                {/* <div className="input-group mx-4">
-                  <label className="form-label full-width">
-                    Portfolios
-                  </label>
-
-                  {EditdocumentsData?.Portfolios != undefined &&
-                    EditdocumentsData?.Portfolios?.map((portfolio: any) => {
-                      return (
-                        <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
-                          <a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${portfolio?.Id}`}>{portfolio?.Title}</a>
-                          <a>
-                            <span className="bg-light svg__icon--cross svg__iconbox" onClick={() => DeleteTagPortfolios(portfolio?.Id)}></span>
-                          </a></div>
-                      )
-                    })
-                  }
-
-                  {EditdocumentsData?.Portfolios?.length == 0 &&
-
-                    <input type="text" className="form-control" readOnly />}
-                  <span className="input-group-text" title="Linked Component Task Popup">
-                    <span className="svg__iconbox svg__icon--editBox" onClick={(e) => opencomonentservicepopup()}></span>
-                  </span>
-                </div> */}
-                <div className="input-group mx-4">
-                  <label className="form-label full-width">
-                    Portfolios
-                  </label>
-                  {EditdocumentsData?.Portfolios != undefined && EditdocumentsData?.Portfolios?.length == 1 ? (
-                    EditdocumentsData?.Portfolios?.map((portfolio: any, index: any) => {
-
-                      return (
-                        <div
-                          className="full-width replaceInput alignCenter"
-                          key={index}
-                        >
-                          <a
-                            href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${portfolio.Id}`}
-                            className="textDotted hreflink"
-                            data-interception="off"
-                            target="_blank"
-                          >
-                            {portfolio?.Title}
-                          </a>
-                          <span
-                            className="input-group-text"
-                            placeholder="Project"
-                          >
-                            <span
-                              className="bg-dark svg__icon--cross svg__iconbox"
-                              onClick={() =>
-                                DeleteTagPortfolios([portfolio?.Id])
-                              }
-                            ></span>
-                            <span
-                              title="Portfolio"
-                              onClick={(e) =>
-                                openProjectPopup("Portfolio")
-                              }
-                              className="svg__iconbox svg__icon--editBox"
-                            ></span>
-                          </span>
-                        </div>
-                      )
-                    })
-                  ) : (
-                    <>
-                      <input
-                        type="text"
-                        className="form-control"
-                        readOnly
-                      />
-                      <span
-                        className="input-group-text"
-                        placeholder="Linked Component Task Popup"
-                      >
-                        <span
-                          onClick={(e) => opencomonentservicepopup()
-                          }
-                          className="svg__iconbox svg__icon--editBox"
-                        ></span>
-                      </span>
-                    </>
-                  )}
-
-                  <div className="col-sm-12  inner-tabb">
-                    {EditdocumentsData?.Portfolios != undefined && EditdocumentsData?.Portfolios?.length > 1 ? (
-                      <div className="w=100">
-                        {EditdocumentsData?.Portfolios?.map((itemss: any, Index: any) => (
-                          <div
-                            className="block d-flex justify-content-between mb-1"
-                            key={Index}
-                          >
-                            <a
-                              href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${itemss.Id}`}
-                              className="wid-90 light"
-                              data-interception="off"
-                              target="_blank"
-                            >
-                              {itemss?.Title}
-                            </a>
-                            <a className="text-end">
-                              {" "}
-                              <span
-                                className="bg-light svg__icon--cross svg__iconbox"
-                                onClick={() =>
-                                  DeleteTagPortfolios([itemss?.Id])
-                                }
-                              ></span>
-                            </a>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      ""
-                    )}
-                  </div>
-                </div>
-
-              </div>
-              {/* -------For Project--- */}
-              <div className="col-sm-4 mt-2">
-                <div className="col-sm-12 padding-0 input-group">
+                {/* -------For Project--- */}
+                <div className="input-group">
                   <label className="full_width">Project</label>
 
                   {projectdata != undefined && projectdata.length == 1 ? (
@@ -781,8 +664,132 @@ const EditDocumentpanel = (props: any) => {
                     )}
                   </div>
                 </div>
-              </div>
 
+                </div>
+                <div className="col-sm-6">
+                <div className="input-group">
+                  <label className="form-label full-width">
+                    Portfolios
+                  </label>
+                  {EditdocumentsData?.Portfolios != undefined && EditdocumentsData?.Portfolios?.length == 1 ? (
+                    EditdocumentsData?.Portfolios?.map((portfolio: any, index: any) => {
+
+                      return (
+                        <div
+                          className="full-width replaceInput alignCenter"
+                          key={index}
+                        >
+                          <a
+                            href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${portfolio.Id}`}
+                            className="textDotted hreflink"
+                            data-interception="off"
+                            target="_blank"
+                          >
+                            {portfolio?.Title}
+                          </a>
+                          <span
+                            className="input-group-text"
+                            placeholder="Project"
+                          >
+                            <span
+                              className="bg-dark svg__icon--cross svg__iconbox"
+                              onClick={() =>
+                                DeleteTagPortfolios([portfolio?.Id])
+                              }
+                            ></span>
+                            <span
+                              title="Portfolio"
+                               onClick={(e) => opencomonentservicepopup()
+                          }
+                              className="svg__iconbox svg__icon--editBox"
+                            ></span>
+                          </span>
+                        </div>
+                      )
+                    })
+                  ) : (
+                    <>
+                      <input
+                        type="text"
+                        className="form-control"
+                        readOnly
+                      />
+                      <span
+                        className="input-group-text"
+                        placeholder="Linked Component Task Popup"
+                      >
+                        <span
+                          onClick={(e) => opencomonentservicepopup()
+                          }
+                          className="svg__iconbox svg__icon--editBox"
+                        ></span>
+                      </span>
+                    </>
+                  )}
+                 
+                  <div className="col-sm-12  inner-tabb">
+                    {EditdocumentsData?.Portfolios != undefined && EditdocumentsData?.Portfolios?.length > 1 ? (
+                      <div className="w=100">
+                        {EditdocumentsData?.Portfolios?.map((itemss: any, Index: any) => (
+                          <div
+                            className="block d-flex justify-content-between mb-1"
+                            key={Index}
+                          >
+                            <a
+                              href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${itemss.Id}`}
+                              className="wid-90 light"
+                              data-interception="off"
+                              target="_blank"
+                            >
+                              {itemss?.Title}
+                            </a>
+                            <a className="text-end">
+                              {" "}
+                              <span
+                                className="bg-light svg__icon--cross svg__iconbox"
+                                onClick={() =>
+                                  DeleteTagPortfolios([itemss?.Id])
+                                }
+                              ></span>
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                 
+                  {/* {EditdocumentsData?.Portfolios?.length == 0 && (
+                    <>
+                      <input
+                        type="text"
+                        className="form-control"
+                        readOnly
+                      />
+                      <span
+                        className="input-group-text"
+                        placeholder="Linked Component Task Popup"
+                      >
+                        <span
+                          onClick={(e) => opencomonentservicepopup()
+                          }
+                          className="svg__iconbox svg__icon--editBox"
+                        ></span>
+                      </span>
+                    </>
+                  )} */}
+
+                  {/* {EditdocumentsData?.Portfolios?.length == 0 &&
+
+                    <input type="text" className="form-control" readOnly />}
+                  <span className="input-group-text" title="Linked Component Task Popup">
+                    <span className="svg__iconbox svg__icon--editBox" onClick={(e) => opencomonentservicepopup()}></span>
+                  </span> */}
+                </div></div>
+
+              </div>
+              
 
               {/* ------end project--- */}
 
