@@ -1917,7 +1917,10 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
                 result.FeatureTypeTitle = result?.FeatureType?.Title
             }
 
-
+            result.PortfolioTitle=''
+            result.TaskTypeValue=''
+            result.SmartInformationTitle=''
+            result.SmartPriority=''
             result.descriptionsSearch = '';
             result.commentsSearch = "";
             result.descriptionsDeliverablesSearch = '';
@@ -3356,7 +3359,7 @@ export const findTaskCategoryParent = (taskCategories: any, result: any) => {
         let newTaskCat = taskCategories?.filter((val: any) => result?.TaskCategories?.some((elem: any) => val.Id === elem.Id));
         newTaskCat.map((elemVal: any) => {
             if (result[elemVal?.Parent?.Title]) {
-                result[elemVal?.Parent?.Title] += ` ${elemVal?.Title}`
+                result[elemVal?.Parent?.Title] +=' '+` ${elemVal?.Title}`
             } else {
                 result[elemVal?.Parent?.Title] = elemVal?.Title;
             }

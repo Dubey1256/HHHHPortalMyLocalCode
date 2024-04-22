@@ -1330,12 +1330,18 @@ const calculateTotalWorkingDays = (matchedData: any) => {
         currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
       }
 
+      // Add one day if start and end dates are the same
+      if (adjustedEventDate.getTime() === adjustedEndDateToToday.getTime()) {
+        workingDays += 1;
+      }
+
       return total + workingDays;
     }
 
     return total;
   }, 0);
 };
+
 const isWeekend = (startDate: any, endDate: any) => {
   const startDay = startDate.getDay();
   const endDay = endDate.getDay();
@@ -1343,30 +1349,30 @@ const isWeekend = (startDate: any, endDate: any) => {
   return (startDay === 0 || startDay === 6) && (endDay === 0 || endDay === 6);
 };
 
-const SendEmail = (EventData:any,MyEventData:any) => {
-  const startDate = new Date(EventData?.start); // Replace 'startDateString' with the actual start date string
-const endDate = new Date(EventData?.end); // Replace 'endDateString' with the actual end date string
+const SendEmail = (EventData: any, MyEventData: any) => {
+  const startDate = new Date(EventData?.start);
+  const endDate = new Date(EventData?.end);
 
+  let daysDifference = calculateTotalWorkingDays([MyEventData]);
+  const formattedstartDate = startDate.toLocaleDateString('en-GB', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+  const formattedendDate = endDate.toLocaleDateString('en-GB', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
 
+  let sp = spfi().using(spSPFx(props?.props?.context));
 
-let daysDifference = calculateTotalWorkingDays(MyEventData);
-const formattedstartDate = startDate.toLocaleDateString('en-GB', {
-  weekday: 'short', // short, long
-  year: 'numeric',
-  month: 'short', // numeric, 2-digit, long, short, narrow
-  day: 'numeric', // numeric, 2-digit
-});
-const formattedendDate = endDate.toLocaleDateString('en-GB', {
-  weekday: 'short', // short, long
-  year: 'numeric',
-  month: 'short', // numeric, 2-digit, long, short, narrow
-  day: 'numeric', // numeric, 2-digit
-});
-  let sp = spfi().using(spSPFx(props.Context));
-  let  BindHtmlBody = `<div style="max-width: 600px; margin: 0 auto; background-color: #f7f7f7; padding: 20px; border: 1px solid #ddd;">
+  let BindHtmlBody = `<div style="max-width: 600px; margin: 0 auto; background-color: #f7f7f7; padding: 20px; border: 1px solid #ddd;">
   <div style="padding: 20px; color: #333;">
     Dear Prashant,<br><br>
-    I am writing to request ${daysDifference} of leave from ${formattedstartDate} to ${formattedendDate} due to ${EventData?.title}.<br><br>
+    I am writing to request ${daysDifference} day of leave from ${formattedstartDate} to ${formattedendDate} due to ${EventData?.title}.<br><br>
     I have ensured that my tasks are up to date and arranged coverage during my absence. Your understanding and approval would be greatly appreciated.<br><br>
     Best regards,<br>
     ${EventData?.name}
@@ -1374,26 +1380,28 @@ const formattedendDate = endDate.toLocaleDateString('en-GB', {
   <div style="text-align: center; padding: 10px; font-size: 0.8em; color: #666;">
     This is an automated email notification.
   </div>
-</div>`
+</div>`;
+
   let SendEmailMessage =
     sp.utility
       .sendEmail({
         Body: BindHtmlBody,
-        Subject: "Leave Request " + EventData?.EventDate +  EventData?.Description,
-        To: ["prashant.kumar@hochhuth-consulting.de","anubhav.shukla@hochhuth-consulting.de"],
-        // ,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"
+        Subject: "Leave Request - " + EventData?.name + EventData?.title , // Modified subject
+        To: ["prashant.kumar@hochhuth-consulting.de", "anubhav.shukla@hochhuth-consulting.de"],
         AdditionalHeaders: {
           "content-type": "text/html",
         },
       })
       .then(() => {
         console.log("Email Sent!");
-        alert("Email Sent SuccessFully!");
+        alert("Email Sent Successfully!");
       })
       .catch((error) => {
-        alert("error");
+        console.error("Error sending email:", error); // Log the error
+        alert("Error sending email. Please try again."); // Alert user about the error
       });
 };
+
 // Email End 
 
   const saveEvent = async () => {

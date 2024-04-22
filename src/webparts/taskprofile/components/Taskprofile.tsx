@@ -2655,7 +2655,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                             </div>
                                             {this.state.showhideCommentBoxIndex == i && <div className='SpfxCheckRadio'>
                                               <div className="col-sm-12 mt-2 p-0" style={{ display: this.state.showcomment }} >
-                                                {this.state.Result["Approver"] != "" && this.state.Result["Approver"] != undefined && (this.state.Result["Approver"]?.AssingedToUser?.Id == this?.currentUser[0]?.Id || (this.state.Result["Approver"]?.Approver?.length>0 &&this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='checkbox' name='approval' checked={this.state.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target.checked })} />
+                                                {this.state.Result["Approver"] != "" && this.state.Result["Approver"] != undefined && (this.state.Result["Approver"]?.AssingedToUser?.Id == this?.currentUser[0]?.Id || (this.state.Result["Approver"]?.Approver?.length>0 &&this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' name='approval' checked={this.state.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target.checked })} />
                                                   Mark as Approval Comment</label>}
                                               </div>
                                               <div className="align-items-center d-flex"
@@ -2815,7 +2815,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                               </div>
                                               {this.state?.subchildcomment == j && this.state?.subchildParentIndex == i ? <div className='SpfxCheckRadio' >
                                                 <div className="col-sm-12 mt-2 p-0  ">
-                                                  {this.state.Result["Approver"] != "" && this.state.Result["Approver"] != undefined && (this.state.Result["Approver"]?.AssingedToUser?.Id == this.currentUser[0]?.Id || (this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='checkbox' checked={this.state?.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target?.checked })} />Mark as Approval Comment</label>}
+                                                  {this.state.Result["Approver"] != "" && this.state.Result["Approver"] != undefined && (this.state.Result["Approver"]?.AssingedToUser?.Id == this.currentUser[0]?.Id || (this.state.Result["Approver"]?.Approver[0]?.Id == this?.currentUser[0]?.Id)) && <label className='label--checkbox'><input type='checkbox' className='form-check-input me-1' checked={this.state?.ApprovalCommentcheckbox} onChange={(e) => this.setState({ ApprovalCommentcheckbox: e.target?.checked })} />Mark as Approval Comment</label>}
 
                                                 </div>
 

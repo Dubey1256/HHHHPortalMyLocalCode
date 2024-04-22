@@ -75,7 +75,7 @@ const ContactProfileComponent = (props: any) => {
                             <td>
                                 <div className="leftcol">
                                     <div style={{ lineHeight: '150px', textAlign: 'center' }}>
-                                        <img src={Contacts?.ItemCover === undefined || Contacts?.ItemCover === null || Contacts?.ItemCover?.Url === undefined || Contacts?.ItemCover?.Url === null ? `${MainSiteUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg` : Contacts?.ItemCover?.Url} alt="User" />
+                                        <img className="img-fluid" src={Contacts?.ItemCover === undefined || Contacts?.ItemCover === null || Contacts?.ItemCover?.Url === undefined || Contacts?.ItemCover?.Url === null ? `${MainSiteUrl}/SiteCollectionImages/ICONS/32/icon_user.jpg` : Contacts?.ItemCover?.Url} alt="User" />
                                     </div>
                                     <div style={{ textAlign: 'center' }}>
                                         <a href="javascript:void(0)" className="alignCenter justify-content-center" onClick={() => EditItem()}>

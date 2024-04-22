@@ -65,9 +65,8 @@ export const Modified = (props: any) => {
 
 
   const getAllUsers = async () => {
-
-
-    Users = await globalCommon.loadTaskUsers();
+    let web = new Web(baseUrl);
+    Users = await web.lists.getById(props?.props?.TaskUsertListID).items.select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver").get();
     setAllUsers(Users)
     if (baseUrl.toLowerCase().includes("gmbh")) {
       setGmbhSite(true)
@@ -178,9 +177,11 @@ export const Modified = (props: any) => {
           getCurrentData(check);
         })
         allSite.noRepeat = true;
+        allSite.firstRepeat = true;
         allSite.allNorepeat = true;
       } else {
         allSite.allNorepeat = false;
+        allSite.firstRepeat = false;
       }
     }
     if (allSite.AllTask != true) {
@@ -491,12 +492,13 @@ export const Modified = (props: any) => {
       if (allSite.TabName == 'ALL') {
         duplicate.map((dupData: any) => {
           dupData.map((items: any) => {
-            if (items.siteType != 'DOCUMENTS' && items.siteType != 'FOLDERS' && items.siteType != 'COMPONENTS' && items.siteType != 'SERVICES') {
+            if (items.siteType != 'DOCUMENTS' && items.siteType != 'FOLDERS' && items.siteType != 'COMPONENTS' && items.siteType != 'SERVICES' && items.siteType != "Master Tasks") {
               duplicateValue.push(items)
             }
           })
         })
-        if (allSite.allNorepeat != true) {
+
+        if (allSite.allNorepeat != true || allSite.firstRepeat == true) {
           setallSiteData(duplicateValue)
 
           setTimeout(() => {
@@ -536,7 +538,7 @@ export const Modified = (props: any) => {
     if (event.target.checked && serviceChecked == true) {
       duplicate.map((dupdata: any) => {
         dupdata.map((item: any) => {
-          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
+          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES' && item.siteType != "Master Tasks") {
             masterTaskData.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
@@ -582,7 +584,7 @@ export const Modified = (props: any) => {
     else if (event.target.checked == false && serviceChecked == true) {
       duplicate.map((dupdata: any) => {
         dupdata.map((item: any) => {
-          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
+          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES' &&  item.siteType != "Master Tasks") {
             masterTaskData.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue.PortfolioType?.Title == 'Service') {
@@ -609,7 +611,7 @@ export const Modified = (props: any) => {
     else if (event.target.checked == false) {
       duplicate.map((dupdata: any) => {
         dupdata.map((data: any) => {
-          if (type == 'ALL' && data.siteType != 'DOCUMENTS' && data.siteType != 'FOLDERS' && data.siteType != 'COMPONENTS' && data.siteType != 'SERVICES') {
+          if (type == 'ALL' && data.siteType != 'DOCUMENTS' && data.siteType != 'FOLDERS' && data.siteType != 'COMPONENTS' && data.siteType != 'SERVICES'  && data.siteType != "Master Tasks") {
             storeComponent.push(data)
           }
           else if (data.siteType == type) {
@@ -628,7 +630,7 @@ export const Modified = (props: any) => {
     if (event.target.checked && componentChecked == true) {
       duplicate.map((dupdata: any) => {
         dupdata.map((item: any) => {
-          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
+          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES' && item.siteType != "Master Tasks") {
             masterTaskData.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
@@ -676,7 +678,7 @@ export const Modified = (props: any) => {
     else if (event.target.checked == false && componentChecked == true) {
       duplicate.map((dupdata: any) => {
         dupdata.map((item: any) => {
-          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
+          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES' && item.siteType != "Master Tasks") {
             masterTaskData.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
@@ -701,7 +703,7 @@ export const Modified = (props: any) => {
     else {
       duplicate.map((dupdata: any) => {
         dupdata.map((data: any) => {
-          if (type == 'ALL' && data.siteType != 'DOCUMENTS' && data.siteType != 'FOLDERS' && data.siteType != 'COMPONENTS' && data.siteType != 'SERVICES') {
+          if (type == 'ALL' && data.siteType != 'DOCUMENTS' && data.siteType != 'FOLDERS' && data.siteType != 'COMPONENTS' && data.siteType != 'SERVICES' && data.siteType == "Master Tasks") {
             storeServices.push(data)
           }
           if (data.siteType == type) {
@@ -867,7 +869,7 @@ export const Modified = (props: any) => {
           id: 'Id',
         },
         {
-          accessorKey: "FileLeafRef", placeholder: "Title", header: "",
+          accessorKey: "Title", placeholder: "Title", header: "",
           cell: ({ row }) =>
             <div className="alignCenter">
               {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ? <a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</> : undefined}
@@ -964,7 +966,7 @@ export const Modified = (props: any) => {
           id: 'Id',
         },
         {
-          accessorKey: "FileLeafRef", placeholder: "Title", header: "", id: "FileLeafRef",
+          accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
           cell: ({ row }) =>
             <div className="alignCenter">
               {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ? <a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</> : undefined}
@@ -1729,12 +1731,21 @@ export const Modified = (props: any) => {
         },
         {
           accessorKey: "Title",
-          cell: ({ row }) => (<>
-            <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
+          cell: ({ row }) => (
+            <div className="alignCenter">
+              <span className={row.original.Title!= undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
+                <>{row.original.Title != undefined ?<a className="manageText" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
               {row.original.Title}
-            </a>
+              </a> : ''}</>
+                <span className="tooltip-text pop-right">
+                  {row.original.Title != undefined ?
+
+                       row.original.Title : ""}
+                </span>
+              </span>
+             
             {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>}
-            </>
+            </div>
           ),
           id: "Title",
           placeholder: "Title", header: "",

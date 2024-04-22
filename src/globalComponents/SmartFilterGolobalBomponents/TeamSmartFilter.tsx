@@ -2157,8 +2157,8 @@ const TeamSmartFilter = (item: any) => {
                             <div className="togglebox">
                                 <div className='alignCenter justify-content-between col-sm-12'>
                                     <div className='alignCenter col-sm-8' style={{ color: `${portfolioColor}` }} onClick={() => { toggleIcon(); toggleAllExpendCloseUpDown(iconIndex) }}>
-                                        {icons[iconIndex]} <span className="f-16 fw-semibold hreflink ms-1 pe-2 allfilter">All Filters - </span>
-                                        <div className="ms-2 f-14" style={{ color: "#333333" }}>{sitesCountInfo + ' ' + projectCountInfo + ' ' + CategoriesandStatusInfo + ' ' + clientCategoryCountInfo + ' ' + teamMembersCountInfo + ' ' + dateCountInfo}</div>
+                                        {icons[iconIndex]} <span className="f-16 fw-semibold hreflink ms-1 pe-2 allfilter">All Filters -</span>
+                                        <div className="f-14" style={{ color: "#333333" }}>{sitesCountInfo + ' ' + projectCountInfo + ' ' + CategoriesandStatusInfo + ' ' + clientCategoryCountInfo + ' ' + teamMembersCountInfo + ' ' + dateCountInfo}</div>
                                     </div>
                                     <div className='alignCenter col-sm-4'>
                                         <div className='ml-auto alignCenter'>
@@ -2771,7 +2771,7 @@ const TeamSmartFilter = (item: any) => {
 
                                         </Col>
                                         <div>
-                                            <Row>
+                                            <div className='alignCenter gap-4'>
                                                 <div className="col-2 dateformate ps-0" style={{ width: "160px" }}>
                                                     <div className="input-group">
                                                         <label className='mb-1 form-label full-width'>Start Date</label>
@@ -2807,9 +2807,9 @@ const TeamSmartFilter = (item: any) => {
                                                     </div>
                                                 </div>
                                                 <div className="col-2 mt-2 m-0 pull-left">
-                                                    <label className="hreflink pt-4" title="Clear Date Filters" onClick={clearDateFilters} ><strong style={{ color: `${portfolioColor}` }} >Clear</strong></label>
+                                                    <label className="hreflink pt-3" title="Clear Date Filters" onClick={clearDateFilters} ><strong style={{ color: `${portfolioColor}` }} >Clear</strong></label>
                                                 </div>
-                                            </Row>
+                                            </div>
                                         </div>
                                     </div>
                                 </div> : ""}

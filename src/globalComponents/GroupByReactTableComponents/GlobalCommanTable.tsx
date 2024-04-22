@@ -42,6 +42,7 @@ import HeaderButtonMenuPopup from './HeaderButtonMenuPopup';
 import { Web } from 'sp-pnp-js';
 import { TbChevronDown, TbChevronUp, TbSelector } from 'react-icons/tb';
 import { myContextValue } from '../globalCommon';
+import ProgressBar from 'react-bootstrap/ProgressBar';
 // import TileBasedTasks from './TileBasedTasks';
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -305,6 +306,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [tableSettingPageSize, setTableSettingPageSize] = React.useState(items?.pageSize ? items?.pageSize : 0);
     const [smartFabBasedColumnsSettingToggle, setSmartFabBasedColumnsSettingToggle] = React.useState(false);
     const [smartFabBasedColumnsSetting, setSmartFabBasedColumnsSetting] = React.useState(items?.smartFavTableConfig != undefined && items?.smartFavTableConfig?.length > 0 ? items?.smartFavTableConfig : []);
+    const [showProgress, setShowProgress] = React.useState(false);
     // const [settingConfrigrationData, setSettingConfrigrationData] = React.useState([]);
     let MyContextdata: any = React.useContext(myContextValue)
     React.useEffect(() => {
@@ -525,6 +527,11 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 setWrapperHeight(preSetColumnOrdring?.tableHeightValue);
             } else {
                 setWrapperHeight(items?.wrapperHeight);
+            }
+            if (preSetColumnOrdring?.showProgress === true) {
+                setShowProgress(true)
+            } else {
+                setShowProgress(false)
             }
             try {
                 if ((Object.keys(preSetColumnSettingVisibility) != null && Object.keys(preSetColumnSettingVisibility) != undefined) && Object.keys(preSetColumnSettingVisibility)?.length > 0 && preSetColumnOrdring?.tableId === items?.tableId) {
@@ -840,8 +847,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
             isShowingDataAll = true;
         }
     }, [table?.getRowModel()?.rows])
-
-
 
     const CheckDataPrepre = () => {
         let itrm: any;
@@ -1246,6 +1251,11 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     })
                 })
             }
+            if (eventSetting?.showProgress === true) {
+                setShowProgress(true)
+            } else {
+                setShowProgress(false)
+            }
             if (eventSetting?.columnOrderValue?.length > 0) {
                 const colValue = eventSetting?.columnOrderValue?.map((elem: any) => elem.id);
                 setColumnOrder(colValue);
@@ -1269,7 +1279,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             }
             setColumnVisibility((prevCheckboxes: any) => ({ ...prevCheckboxes, ...eventSetting?.columnSettingVisibility }));
             setShowHeaderLocalStored(eventSetting?.showHeader);
-            setShowTilesView(eventSetting?.showTilesView);
+            // setShowTilesView(eventSetting?.showTilesView);
             await fetchSettingConfrigrationData(callBack);
         } else {
             setColumnSettingPopup(false)
@@ -1418,7 +1428,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             <button type="button" disabled className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: "#fff" }} title=" Add Structure"> {" "} Add Structure{" "}</button>
                         )}
 
-                        {items?.protfolioProfileButton != true && items?.hideAddActivityBtn != true && <>{table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
+                        {items?.protfolioProfileButton != true && items?.hideAddActivityBtn != true && <>{table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
                             <button type="button" className="btn btn-primary" style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} disabled={true} > Add Activity-Task</button>}</>}
 
                         {items?.protfolioProfileButton === true && items?.hideAddActivityBtn != true && <>{items?.protfolioProfileButton === true && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType?.Title != "Task" && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Sprint" ? <button type="button" className="btn btn-primary" title='Add Activity' style={{ backgroundColor: `${portfolioColor}`, borderColor: `${portfolioColor}`, color: '#fff' }} onClick={() => openCreationAllStructure("Add Activity-Task")}>Add Activity-Task</button> :
@@ -1485,27 +1495,27 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         <i className="fa fa-cog brush hreflink" aria-hidden="true"></i>
                     </a>}
 
-                    {items?.showCatIcon != true ? <a className='excal hreflink' title='Export to Excel' onClick={() => exportToExcel()}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a> :
-                        <a className='excal' title='Export to Excel' onClick={items?.exportToExcelCategoryReport}><RiFileExcel2Fill style={{ color: `${portfolioColor}` }} /></a>}
+                    {items?.showCatIcon != true ? <a className='excal hreflink' title='Export to Excel' onClick={() => exportToExcel()}><RiFileExcel2Fill /></a> :
+                        <a className='excal' title='Export to Excel' onClick={items?.exportToExcelCategoryReport}><RiFileExcel2Fill /></a>}
 
-                    {items?.SmartTimeIconShow === true && items?.AllListId?.isShowTimeEntry === true && <a className='smartTotalTime hreflink' title="Load SmartTime of AWT" onClick={() => openCreationAllStructure("Smart-Time")} > <BsClockHistory style={{ color: `${portfolioColor}` }} /></a>}
+                    {items?.SmartTimeIconShow === true && items?.AllListId?.isShowTimeEntry === true && <a className='smartTotalTime hreflink' title="Load SmartTime of AWT" onClick={() => openCreationAllStructure("Smart-Time")} > <BsClockHistory /></a>}
 
-                    {items?.flatView === true && items?.updatedSmartFilterFlatView === false && <>{items?.clickFlatView === false ? <a className='smartTotalTime hreflink' title='Switch to Flat-View' style={{ color: `${portfolioColor}` }} onClick={() => openCreationAllStructure("Flat-View")}><BsList style={{ color: `${portfolioColor}` }} /></a> :
-                        <a className='smartTotalTime' title='Switch to Groupby View' style={{ color: `${portfolioColor}` }} onClick={() => openCreationAllStructure("Groupby-View")}><FaListAlt style={{ color: `${portfolioColor}` }} /></a>}</>}
+                    {items?.flatView === true && items?.updatedSmartFilterFlatView === false && <>{items?.clickFlatView === false ? <a className='smartTotalTime hreflink' title='Switch to Flat-View' onClick={() => openCreationAllStructure("Flat-View")}><BsList /></a> :
+                        <a className='smartTotalTime' title='Switch to Groupby View' onClick={() => openCreationAllStructure("Groupby-View")}><FaListAlt /></a>}</>}
 
-                    {items?.flatView === true && items?.updatedSmartFilterFlatView === true && <a className='smartTotalTime hreflink' title='deactivated to Groupby View'><FaListAlt style={{ color: `${portfolioColor}` }} /></a>}
-                    <a className='brush'><i className="fa fa-paint-brush hreflink" style={{ color: `${portfolioColor}` }} aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); setRowSelection({}); }}></i></a>
+                    {items?.flatView === true && items?.updatedSmartFilterFlatView === true && <a className='smartTotalTime hreflink' title='deactivated to Groupby View'><FaListAlt /></a>}
+                    <a className='brush'><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); setRowSelection({}); }}></i></a>
                     <a className='Prints' onClick={() => downloadPdf()}>
-                        <i className="fa fa-print" aria-hidden="true" style={{ color: `${portfolioColor}` }} title="Print"></i>
+                        <i className="fa fa-print" aria-hidden="true" title="Print"></i>
                     </a>
-                    {items?.bulkEditIcon === true && <a className='smartTotalTime hreflink' title='Bulk editing setting' onClick={() => bulkEditingSettingPopupEvent()} ><RiListSettingsFill style={{ color: `${portfolioColor}` }} /></a>}
+                    {items?.bulkEditIcon === true && <a className='smartTotalTime hreflink' title='Bulk editing setting' onClick={() => bulkEditingSettingPopupEvent()} ><RiListSettingsFill /></a>}
 
-                    {expandIcon === true && <a className="expand" title="Expand table section" style={{ color: `${portfolioColor}` }}>
+                    {expandIcon === true && <a className="expand" title="Expand table section">
                         <ExpndTable prop={expndpopup} prop1={tablecontiner} />
                     </a>}
 
-                    {items?.showFilterIcon === true && <><a className='smartTotalTime hreflink' title='Filter all task' style={{ color: `${portfolioColor}` }} onClick={() => openCreationAllStructure("loadFilterTask")}><RiFilter3Fill style={{ color: `${portfolioColor}` }} /></a></>}
-                    {items?.columnSettingIcon === true && <><a className='smartTotalTime hreflink' title='Column setting' style={{ color: `${portfolioColor}` }}  onClick={() => openTableSettingPopup("tableBased")}><AiFillSetting style={{ color: `${portfolioColor}` }} /></a></>}
+                    {items?.showFilterIcon === true && <><a className='smartTotalTime hreflink' title='Filter all task' onClick={() => openCreationAllStructure("loadFilterTask")}><RiFilter3Fill /></a></>}
+                    {items?.columnSettingIcon === true && <><a className='smartTotalTime hreflink' title='Column setting' onClick={() => openTableSettingPopup("tableBased")}><AiFillSetting /></a></>}
                     <Tooltip ComponentId={5756} />
                 </span>
             </div >}
@@ -1705,9 +1715,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
             {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} /> : ''}
             {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCount={selectedFilterCount} setSelectedFilterCount={setSelectedFilterCount} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
             {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
-            {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} bulkEditingCongration={bulkEditingCongration}/>}
-            {columnSettingPopup && <ColumnsSetting ContextValue={items?.AllListId} settingConfrigrationData={settingConfrigrationData} tableSettingPageSize={tableSettingPageSize} tableHeight={parentRef?.current?.style?.height} columnOrder={columnOrder} setSorting={setSorting} sorting={sorting} headerGroup={table?.getHeaderGroups()} tableId={items?.tableId} showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility} 
-            smartFabBasedColumnsSettingToggle={smartFabBasedColumnsSettingToggle} setSmartFabBasedColumnsSettingToggle={setSmartFabBasedColumnsSettingToggle} />}
+            {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} bulkEditingCongration={bulkEditingCongration} />}
+            {columnSettingPopup && <ColumnsSetting showProgres={showProgress} ContextValue={items?.AllListId} settingConfrigrationData={settingConfrigrationData} tableSettingPageSize={tableSettingPageSize} tableHeight={parentRef?.current?.style?.height} columnOrder={columnOrder} setSorting={setSorting} sorting={sorting} headerGroup={table?.getHeaderGroups()} tableId={items?.tableId} showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility}
+                smartFabBasedColumnsSettingToggle={smartFabBasedColumnsSettingToggle} setSmartFabBasedColumnsSettingToggle={setSmartFabBasedColumnsSettingToggle} />}
 
             {coustomButtonMenuPopup && <HeaderButtonMenuPopup isOpen={coustomButtonMenuPopup} coustomButtonMenuToolBoxCallback={coustomButtonMenuToolBoxCallback} setCoustomButtonMenuPopup={setCoustomButtonMenuPopup}
                 selectedRow={table?.getSelectedRowModel()?.flatRows} ShowTeamFunc={ShowTeamFunc} portfolioColor={portfolioColor}

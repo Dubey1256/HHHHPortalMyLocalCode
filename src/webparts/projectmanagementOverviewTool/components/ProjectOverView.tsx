@@ -1650,10 +1650,40 @@ export default function ProjectOverview(props: any) {
                     }
                     items.TeamMembersSearch = "";
                     items.AssignedToIds = [];
-
+                    if (items.AssignedTo != undefined) {
+                        items?.AssignedTo?.map((taskUser: any) => {
+                            items.AssignedToIds.push(taskUser?.Id)
+                            AllTaskUsers.map((user: any) => {
+                                if (user.AssingedToUserId == taskUser.Id) {
+                                    if (user?.Title != undefined) {
+                                        items.TeamMembersSearch =
+                                            items.TeamMembersSearch + " " + user?.Title;
+                                    }
+                                }
+                            });
+                        });
+                    }
 
                     items.TaskID = globalCommon.getTaskId(items);
+                    AllTaskUsers?.map((user: any) => {
+                        if (user.AssingedToUserId == items.Author.Id) {
+                            items.createdImg = user?.Item_x0020_Cover?.Url;
+                        }
+                        if (items.TeamMembers != undefined) {
+                            items.TeamMembers.map((taskUser: any) => {
+                                var newuserdata: any = {};
+                                if (user.AssingedToUserId == taskUser.Id) {
+                                    newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
+                                    newuserdata["Suffix"] = user?.Suffix;
+                                    newuserdata["Title"] = user?.Title;
+                                    newuserdata["UserId"] = user?.AssingedToUserId;
+                                    items["Usertitlename"] = user?.Title;
+                                    items.AllTeamMember.push(newuserdata);
+                                }
 
+                            });
+                        }
+                    });
                     AllTask.push(items);
                 });
 
