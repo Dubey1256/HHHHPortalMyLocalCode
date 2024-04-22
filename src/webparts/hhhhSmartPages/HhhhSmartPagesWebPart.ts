@@ -2,50 +2,38 @@ import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
-  IPropertyPaneConfiguration,
+  type IPropertyPaneConfiguration,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'SmartmetadataportfolioWebPartStrings';
-import Smartmetadataportfolio from './components/Smartmetadataportfolio';
-import { ISmartmetadataportfolioProps } from './components/ISmartmetadataportfolioProps';
+import * as strings from 'HhhhSmartPagesWebPartStrings';
+import HhhhSmartPages from './components/HhhhSmartPages';
+import { IHhhhSmartPagesProps } from './components/IHhhhSmartPagesProps';
 
-export interface ISmartmetadataportfolioWebPartProps {
-  SPSiteConfigListID: string;
-  SPSitesListUrl: string;
-  SmartMetadataListID: string;
-  SPTopNavigationListID: string;
-  TaskUsertListID: string
+export interface IHhhhSmartPagesWebPartProps {
   description: string;
-  PageUrl: any
-  siteUrl: any
-  Context: any
+  SitesListUrl: any,
+  SmartMetadataListID: any;
 }
 
-export default class SmartmetadataportfolioWebPart extends BaseClientSideWebPart<ISmartmetadataportfolioWebPartProps> {
+export default class HhhhSmartPagesWebPart extends BaseClientSideWebPart<IHhhhSmartPagesWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<ISmartmetadataportfolioProps> = React.createElement(
-      Smartmetadataportfolio,
+    const element: React.ReactElement<IHhhhSmartPagesProps> = React.createElement(
+      HhhhSmartPages,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        SPSitesListUrl: this.context.pageContext.web.absoluteUrl,
-        SPSiteConfigListID: this.properties.SPSiteConfigListID,
+        SitesListUrl: this.context.pageContext.web.absoluteUrl,
         SmartMetadataListID: this.properties.SmartMetadataListID,
-        SPTopNavigationListID: this.properties.SPTopNavigationListID,
-        TaskUsertListID: this.properties.TaskUsertListID,
-        PageUrl: this.context?.pageContext?.site?.serverRequestPath,
-        siteUrl: this.context.pageContext.web.absoluteUrl,
-        Context: this.context
       }
     );
 
@@ -53,16 +41,38 @@ export default class SmartmetadataportfolioWebPart extends BaseClientSideWebPart
   }
 
   protected onInit(): Promise<void> {
-    this._environmentMessage = this._getEnvironmentMessage();
-    return super.onInit();
+    return this._getEnvironmentMessage().then(message => {
+      this._environmentMessage = message;
+    });
   }
 
-  private _getEnvironmentMessage(): string {
-    if (!!this.context.sdks.microsoftTeams) { // running in Teams
-      return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
+
+
+  private _getEnvironmentMessage(): Promise<string> {
+    if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
+      return this.context.sdks.microsoftTeams.teamsJs.app.getContext()
+        .then(context => {
+          let environmentMessage: string = '';
+          switch (context.app.host.name) {
+            case 'Office': // running in Office
+              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOffice : strings.AppOfficeEnvironment;
+              break;
+            case 'Outlook': // running in Outlook
+              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
+              break;
+            case 'Teams': // running in Teams
+            case 'TeamsModern':
+              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
+              break;
+            default:
+              environmentMessage = strings.UnknownEnvironment;
+          }
+
+          return environmentMessage;
+        });
     }
 
-    return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment;
+    return Promise.resolve(this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment);
   }
 
   protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {
@@ -102,17 +112,8 @@ export default class SmartmetadataportfolioWebPart extends BaseClientSideWebPart
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('SPSiteConfigListID', {
-                  label: 'SPSiteConfigListID'
-                }),
                 PropertyPaneTextField('SmartMetadataListID', {
                   label: 'SmartMetadataListID'
-                }),
-                PropertyPaneTextField('SPTopNavigationListID', {
-                  label: 'SPTopNavigationListID'
-                }),
-                PropertyPaneTextField('TaskUsertListID', {
-                  label: 'TaskUsertListID'
                 }),
               ]
             }

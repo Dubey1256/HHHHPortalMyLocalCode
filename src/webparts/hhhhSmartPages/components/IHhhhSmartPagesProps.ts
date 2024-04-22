@@ -1,4 +1,4 @@
-export interface ISmartpagesProps {
+export interface IHhhhSmartPagesProps {
   description: string;
   isDarkTheme: boolean;
   environmentMessage: string;

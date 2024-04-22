@@ -1,4 +1,4 @@
-declare interface IProfilesWebPartStrings {
+declare interface IHhhhProfileWebPartStrings {
   PropertyPaneDescription: string;
   BasicGroupName: string;
   DescriptionFieldLabel: string;
@@ -13,7 +13,7 @@ declare interface IProfilesWebPartStrings {
   UnknownEnvironment: string;
 }
 
-declare module 'ProfilesWebPartStrings' {
-  const strings: IProfilesWebPartStrings;
+declare module 'HhhhProfileWebPartStrings' {
+  const strings: IHhhhProfileWebPartStrings;
   export = strings;
 }
