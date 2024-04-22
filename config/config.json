@@ -429,14 +429,7 @@
         }
       ]
     },
-    "contact-database-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/contactDatabase/ContactDatabaseWebPart.js",
-          "manifest": "./src/webparts/contactDatabase/ContactDatabaseWebPart.manifest.json"
-        }
-      ]
-    },
+    
     "contact-profile-web-part": {
       "components": [
         {
@@ -466,6 +459,14 @@
         {
           "entrypoint": "./lib/webparts/hhhhProfile/HhhhProfileWebPart.js",
           "manifest": "./src/webparts/hhhhProfile/HhhhProfileWebPart.manifest.json"
+        }
+      ]
+    },
+    "hhhcontact-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/hhhcontact/HhhcontactWebPart.js",
+          "manifest": "./src/webparts/hhhcontact/HhhcontactWebPart.manifest.json"
         }
       ]
     }
@@ -546,10 +547,10 @@
     "SmartDynamicTableWebPartStrings": "lib/webparts/smartDynamicTable/loc/{locale}.js",
     "TaskProfileTemplateWebPartStrings": "lib/webparts/taskProfileTemplate/loc/{locale}.js",
     "EmployeeDashboardTemplatedWebPartStrings": "lib/webparts/employeeDashboardTemplated/loc/{locale}.js",
-    "ContactDatabaseWebPartStrings": "lib/webparts/contactDatabase/loc/{locale}.js",
     "ContactProfileWebPartStrings": "lib/webparts/contactProfile/loc/{locale}.js",
     "HhhhSmartPagesWebPartStrings": "lib/webparts/hhhhSmartPages/loc/{locale}.js",
     "HhhhSmartMetadataPortfolioWebPartStrings": "lib/webparts/hhhhSmartMetadataPortfolio/loc/{locale}.js",
-    "HhhhProfileWebPartStrings": "lib/webparts/hhhhProfile/loc/{locale}.js"
+    "HhhhProfileWebPartStrings": "lib/webparts/hhhhProfile/loc/{locale}.js",
+    "HhhcontactWebPartStrings": "lib/webparts/hhhcontact/loc/{locale}.js"
   }
 }
