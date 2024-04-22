@@ -1,4 +1,4 @@
-declare interface ISmartpagesWebPartStrings {
+declare interface IHhhhSmartPagesWebPartStrings {
   PropertyPaneDescription: string;
   BasicGroupName: string;
   DescriptionFieldLabel: string;
@@ -13,7 +13,7 @@ declare interface ISmartpagesWebPartStrings {
   UnknownEnvironment: string;
 }
 
-declare module 'SmartpagesWebPartStrings' {
-  const strings: ISmartpagesWebPartStrings;
+declare module 'HhhhSmartPagesWebPartStrings' {
+  const strings: IHhhhSmartPagesWebPartStrings;
   export = strings;
 }

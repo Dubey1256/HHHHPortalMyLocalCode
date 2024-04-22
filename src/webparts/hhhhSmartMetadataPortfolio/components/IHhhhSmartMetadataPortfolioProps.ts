@@ -1,4 +1,4 @@
-export interface ISmartmetadataportfolioProps {
+export interface IHhhhSmartMetadataPortfolioProps {
   description: string;
   isDarkTheme: boolean;
   environmentMessage: string;
