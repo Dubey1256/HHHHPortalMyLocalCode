@@ -1751,7 +1751,7 @@ export const Modified = (props: any) => {
                 {row.original.Tiltle}
               </a> */}
             {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>}
-            </>
+            </div>
           ),
           id: "Title",
           placeholder: "Title", header: "",
