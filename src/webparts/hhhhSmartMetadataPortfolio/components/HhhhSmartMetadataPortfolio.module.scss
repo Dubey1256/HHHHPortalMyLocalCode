@@ -1,9 +1,9 @@
 @import '~@fluentui/react/dist/sass/References.scss';
 
-.smartpages {
+.hhhhSmartMetadataPortfolio {
   overflow: hidden;
   padding: 1em;
-  color: "[theme:bodyText, default: #212529]";
+  color: "[theme:bodyText, default: #323130]";
   color: var(--bodyText);
   &.teams {
     font-family: $ms-font-family-fallbacks;
@@ -27,7 +27,7 @@
 
     &:hover {
       text-decoration: underline;
-      color: "[theme:linkHovered, default: #005437 ]";
+      color: "[theme:linkHovered, default: #014446]";
       color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
     }
   }

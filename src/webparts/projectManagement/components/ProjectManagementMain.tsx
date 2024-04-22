@@ -892,7 +892,7 @@ const closeActivity = () => {
       })
       allSprints = allSprints.concat(allActivities);
       allSprints = allSprints.concat(allWorkStream);
-      AllTask = AllTask.filter((item: any) => item?.isTaskPushed !== true);
+      AllTask = AllTask.filter((item: any) => item?.isTaskPushed !== true && item?.Project?.Id == projectData?.Id);
       allSprints = allSprints.concat(AllTask);
       allBackupSprintAndTask = allSprints
       setProjectTableData(allSprints);

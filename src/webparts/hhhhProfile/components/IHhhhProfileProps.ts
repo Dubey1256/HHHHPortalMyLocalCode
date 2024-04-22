@@ -1,4 +1,4 @@
-export interface IProfilesProps {
+export interface IHhhhProfileProps {
   description: string;
   isDarkTheme: boolean;
   environmentMessage: string;
