@@ -243,15 +243,28 @@ export default function DocumentSearchPage(Props: any) {
             cell: ({ row }) => (
                 <div className='alignCenter '>
                     <a target="_blank" className='alignCenter' data-interception="off" href={row?.original?.FileDirRef}>
-                        {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && (row?.original?.File_x0020_Type != 'jfif' && (row?.original?.File_x0020_Type == null ? (<span className=" svg__iconbox svg__icon--unknownFile "></span>) : (<span title={`${row?.original?.File_x0020_Type}`} className={` svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}></span>)))}
+                        {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && (row?.original?.File_x0020_Type != 'jfif' && (row?.original?.File_x0020_Type === 'fig' || row?.original?.File_x0020_Type === 'mp4' ? (
+                            <span title={`${row?.original?.File_x0020_Type}`} className="svg__iconbox svg__icon--unknownFile"></span>
+                        ) : (
+                            <>
+                                {row?.original?.File_x0020_Type == null ? (
+                                    <span className="svg__iconbox svg__icon--unknownFile">
+                                    </span>
+                                ) :
+                                    (
+                                        <span title={`${row?.original?.File_x0020_Type}`} className={`svg__iconbox svg__icon--${row?.original?.File_x0020_Type}`}>
+                                        </span>
+                                    )}
+                            </>
+                        )))}
                         {row?.original?.File_x0020_Type == 'rar' && <span title={`${row?.original?.File_x0020_Type}`} className="svg__iconbox svg__icon--zip "></span>}
                         {row?.original?.File_x0020_Type == 'msg' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--msg "></span> : ''}
                         {(row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg') ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
                         {(row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx') ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--docx "></span> : ''}
                         {row?.original?.File_x0020_Type == 'jfif' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
-                        {/* {row?.original?.File_x0020_Type == null ? <span className=" svg__iconbox svg__icon--unknownFile "></span> : ''} */}
                     </a>
                     <a className='ms-1 alignCenter' target="_blank" data-interception="off" href={`${row?.original?.EncodedAbsUrl}?web=1`}> {row?.original?.Title} </a>
+
 
                 </div>
             ),
