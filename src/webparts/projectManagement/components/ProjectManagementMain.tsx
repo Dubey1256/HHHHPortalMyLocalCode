@@ -1050,7 +1050,7 @@ const closeActivity = () => {
       setIsOpenWorkstream(false)
       setActivityPopup(false)
     }
-    if (propsItems?.data && propsItems?.data?.ItmesDelete != true && (propsItems?.data?.TaskType?.Id == 2 || propsItems?.data?.TaskType?.Id == 3)) {
+    if (propsItems?.data && propsItems?.data?.ItmesDelete != true && (propsItems?.data.TaskTypeId == 1 || propsItems?.data?.TaskType?.Id == 2 || propsItems?.data?.TaskType?.Id == 3)) {
       setIsOpenActivity(false)
       setIsOpenWorkstream(false)
       setActivityPopup(false)
