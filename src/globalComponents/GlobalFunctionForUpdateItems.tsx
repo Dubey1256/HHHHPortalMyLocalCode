@@ -2125,11 +2125,11 @@ export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredD
         let messageContent = '';
 
         if (usedFor === "Information-Request") {
-            emailSubject = `[Information Request - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title} - Request is completed`;
+            emailSubject = `[Information Request - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}- ${ItemDetails?.Title}] - Request is completed`;
             messageContent = 'Task created from your end for Information Request has been completed. Please take necessary action';
         }
         if (usedFor === "Priority-Check") {
-            emailSubject = `[Task Priority Check - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title}. Please have a look`;
+            emailSubject = `[Task Priority Check - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}- ${ItemDetails?.Title}]. Please have a look`;
             messageContent = 'Task created from your end has been set to 8%. Please take necessary action';
         }
 
