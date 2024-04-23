@@ -8,7 +8,8 @@ import moment from 'moment';
 import * as Moment from 'moment';
 let percentage = 1;
 const EmailComponenet = (props: any) => {
-
+  const [Status, setStatus] = useState('')
+  const [percent, setPercent] = useState(1)
   const [taskpermission, settaskpermission] = useState(props?.emailStatus != undefined ? props?.emailStatus : null);
   if (props.items != undefined && (props?.items?.TaskID == undefined || props?.items?.TaskID == ''))
     props.items.TaskID = props.items?.TaskId
@@ -87,12 +88,16 @@ const EmailComponenet = (props: any) => {
       percentageComplete = 0.03;
       percentage = 3;
       taskStatus = "Approved"
+      setStatus(taskStatus)
+      setPercent(percentage)
     }
     if (send == "Rejected" || send == "Maybe" || send == "Reject") {
       settaskpermission("Reject");
       percentageComplete = 0.02;
       taskStatus = "Follow Up"
       percentage = 2;
+      setStatus(taskStatus);
+      setPercent(percentage);
     }
     if (send == "Approved" || send == "Rejected") {
       const feedback: any = props.items?.FeedBack != null ? props.items?.FeedBack : null;
@@ -255,13 +260,13 @@ const EmailComponenet = (props: any) => {
                           <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Status:</span></b><u></u><u></u></p>
                         </td>
                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                          {props?.items["Status"]}
+                          {Status}
                         </td>
                         <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                           <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>% Complete:</span></b><u></u><u></u></p>
                         </td>
                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                          {props?.items["PercentComplete"]}
+                          {percent}
                         </td>
                       </tr>
                       <tr>
