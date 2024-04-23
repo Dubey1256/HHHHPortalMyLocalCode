@@ -338,7 +338,9 @@ export default function DocumentSearchPage(Props: any) {
                         {combinedChildren.map((text, index) => (
                             <React.Fragment key={index}>
                                 <a
-                                    onClick={() => handleClick(combinedUrls[index])}
+                                    target="_blank"
+                                    data-interception="off"
+                                    href={combinedUrls[index]}
                                     style={{ cursor: "pointer" }}>
                                     {text}
                                 </a>
