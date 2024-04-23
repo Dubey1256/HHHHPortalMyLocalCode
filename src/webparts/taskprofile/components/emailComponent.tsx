@@ -161,8 +161,9 @@ const EmailComponenet = (props: any) => {
           {taskpermission != null && taskpermission == "Approve" && <div style={{ marginTop: "2pt" }}>Your task has been Approved by {props.items?.Approver?.Title},team will process it further.Please refer to the Approved Comments.</div>}
           {taskpermission != null && taskpermission == "Reject" && <div style={{ marginTop: "2pt" }}>Your task has been Rejected by {props?.items?.Approver?.Title},team will process it further. Please refer to the  Rejected Comments.</div>}
 
-          <div style={{ marginTop: "11.25pt" }}>
-            <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props?.items?.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props?.items["Title"]}</a><u></u><u></u></div>
+          {/* <div style={{ marginTop: "11.25pt" }}>
+            <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props?.items?.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props?.items["Title"]}</a><u></u><u></u>
+            </div> */}
           <br />
           <b><span style={{ fontSize: '10.0pt', color: 'black' }}>Task Details : </span></b>
           <p></p>
