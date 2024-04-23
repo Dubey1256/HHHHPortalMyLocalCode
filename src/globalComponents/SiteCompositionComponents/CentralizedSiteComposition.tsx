@@ -374,6 +374,21 @@ const CentralizedSiteComposition = (Props: any) => {
                     }
                 }, 1000);
             }
+
+            if (SelectedItemDetails.ClientCategory?.length > 0) {
+                let TempCCItems: any = [];
+                AllClientCategoryDataBackup?.map((AllCCItem: any) => {
+                    SelectedItemDetails.ClientCategory?.map((SelectedCCItem: any) => {
+                        if (SelectedCCItem?.Id == AllCCItem?.Id) {
+                            TempCCItems.push(AllCCItem);
+                            AllCCItem.checked = true;
+                            AllClientCategoryBucket.push(AllCCItem);
+                        }
+                    })
+                })
+                ClientCategoryTemp = TempCCItems;
+            }
+
             if (SelectedItemDetails.Sitestagging?.length > 0) {
                 SiteCompositionTemp = JSON.parse(SelectedItemDetails.Sitestagging);
                 // setSiteCompositionJSON(SiteCompositionTemp);
@@ -394,6 +409,18 @@ const CentralizedSiteComposition = (Props: any) => {
                 GlobalCount = 1;
             }
 
+            let TempArraySC: any = [];
+            SiteCompositionTemp?.map((SCItemsData: any) => {
+                ClientCategoryTemp?.map((TaggedCCData: any) => {
+                    if (SCItemsData.Title == TaggedCCData.siteName) {
+                        SCItemsData.TaggedCCTitle = TaggedCCData.Title;
+                        TempArraySC.push(SCItemsData);
+                    }
+                })
+            })
+
+
+
             if (SiteCompositionTemp?.length > 0) {
                 AllSiteDataBackup?.map((SiteData: any) => {
                     SiteCompositionTemp?.map((SelectedSC: any) => {
@@ -401,24 +428,12 @@ const CentralizedSiteComposition = (Props: any) => {
                             SiteData.BtnStatus = true;
                             SiteData.ClienTimeDescription = SelectedSC.ClienTimeDescription;
                             SiteData.Date = SelectedSC.Date;
+                            SiteData.TaggedCCTitle = SelectedSC.TaggedCCTitle;
+
                         }
                     })
                 })
                 setAllSiteData([...AllSiteDataBackup])
-            }
-
-            if (SelectedItemDetails.ClientCategory?.length > 0) {
-                let TempCCItems: any = [];
-                AllClientCategoryDataBackup?.map((AllCCItem: any) => {
-                    SelectedItemDetails.ClientCategory?.map((SelectedCCItem: any) => {
-                        if (SelectedCCItem?.Id == AllCCItem?.Id) {
-                            TempCCItems.push(AllCCItem);
-                            AllCCItem.checked = true;
-                            AllClientCategoryBucket.push(AllCCItem);
-                        }
-                    })
-                })
-                ClientCategoryTemp = TempCCItems;
             }
             SelectedItemDetails.Id = ItemDetails?.Id;
             SelectedItemDetails.listId = ItemDetails?.listId;
@@ -1799,8 +1814,8 @@ const CentralizedSiteComposition = (Props: any) => {
     }, [])
 
 
-
     // This is used for update site composition 
+
     const UpdateSiteCompositionButtonFunction = () => {
         if (SelectedChildItems?.length > 0) {
             let FindPreparedData: any = filterUpdatedSiteCompositions();
@@ -1808,6 +1823,22 @@ const CentralizedSiteComposition = (Props: any) => {
             let siteSettingData: any = FindPreparedData?.siteSetting;
             let checkIsSCProtected: any = false;
             SelectedChildItems?.map((SelectedItem: any) => {
+                if (SelectedItem.TaskType?.Title?.length > 1) {
+                    if (SelectedItem?.siteType?.toLocaleLowerCase() !== "shareweb") {
+                        if (SelectedItem?.siteType != undefined) {
+                            let SCDummyJSON: any = {
+                                ClienTimeDescription: "100",
+                                Title: SelectedItem?.siteType,
+                                localSiteComposition: true,
+                                SiteImages: SelectedItem?.siteIcon,
+                                Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
+                            }
+                            SiteCompositionData = [SCDummyJSON]
+                        }
+                        let tempSiteSetting: any = [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]
+                        siteSettingData = tempSiteSetting;
+                    }
+                }
                 SelectedItem.Sitestagging = SiteCompositionData?.length > 0 ? JSON.stringify(SiteCompositionData) : "";
                 SelectedItem.IsSCUpdatedInline = true;
                 if (siteSettingData != undefined) {
@@ -1839,7 +1870,23 @@ const CentralizedSiteComposition = (Props: any) => {
             let FindPreparedData: any = filterUpdatedSiteCompositions();
             let ClientCategoryData: any = FindPreparedData?.ClientCategories;
             SelectedChildItems?.map((SelectedItem: any) => {
-                SelectedItem.ClientCategory = ClientCategoryData?.length > 0 ? ClientCategoryData : [];
+                let tempCCItem: any = [];
+                ClientCategoryData?.map((CCItems: any) => {
+                    if (SelectedItem.TaskType?.Title?.length > 1) {
+                        if (SelectedItem?.siteType?.toLocaleLowerCase() !== "shareweb") {
+                            if (CCItems.siteName == SelectedItem?.siteType) {
+                                tempCCItem.push(CCItems);
+                            }
+                        }
+                    }
+                })
+
+                if (SelectedItem?.siteType?.toLocaleLowerCase() !== "shareweb") {
+                    SelectedItem.ClientCategory = tempCCItem;
+                } else {
+                    SelectedItem.ClientCategory = ClientCategoryData?.length > 0 ? ClientCategoryData : [];
+                }
+
                 SelectedItem.IsCCUpdatedInline = true;
             })
             setData([...data]);
@@ -1859,9 +1906,43 @@ const CentralizedSiteComposition = (Props: any) => {
             let ClientCategoryData: any = FindPreparedData?.ClientCategories;
             let checkIsSCProtected: any = false;
             SelectedChildItems?.map((SelectedItem: any) => {
-                SelectedItem.ClientCategory = ClientCategoryData?.length > 0 ? ClientCategoryData : [];
-                SelectedItem.Sitestagging = SiteCompositionData?.length > 0 ? JSON.stringify(SiteCompositionData) : "";
                 SelectedItem.IsBothUpdatedInline = true;
+                // This is for the SC 
+                if (SelectedItem.TaskType?.Title?.length > 1) {
+                    if (SelectedItem?.siteType?.toLocaleLowerCase() !== "shareweb") {
+                        if (SelectedItem?.siteType != undefined) {
+                            let SCDummyJSON: any = {
+                                ClienTimeDescription: "100",
+                                Title: SelectedItem?.siteType,
+                                localSiteComposition: true,
+                                SiteImages: SelectedItem?.siteIcon,
+                                Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
+                            }
+                            SiteCompositionData = [SCDummyJSON]
+                        }
+                        let tempSiteSetting: any = [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]
+                        siteSettingData = tempSiteSetting;
+                    }
+                }
+                SelectedItem.Sitestagging = SiteCompositionData?.length > 0 ? JSON.stringify(SiteCompositionData) : "";
+
+                // This is fir CC 
+                let tempCCItem: any = [];
+                ClientCategoryData?.map((CCItems: any) => {
+                    if (SelectedItem.TaskType?.Title?.length > 1) {
+                        if (SelectedItem?.siteType?.toLocaleLowerCase() !== "shareweb") {
+                            if (CCItems.siteName == SelectedItem?.siteType) {
+                                tempCCItem.push(CCItems);
+                            }
+                        }
+                    }
+                })
+
+                if (SelectedItem?.siteType?.toLocaleLowerCase() !== "shareweb") {
+                    SelectedItem.ClientCategory = tempCCItem;
+                } else {
+                    SelectedItem.ClientCategory = ClientCategoryData?.length > 0 ? ClientCategoryData : [];
+                }
                 if (siteSettingData != undefined) {
                     if (siteSettingData?.length > 0) {
                         checkIsSCProtected = siteSettingData[0].Protected;
@@ -1880,7 +1961,7 @@ const CentralizedSiteComposition = (Props: any) => {
             })
             setData([...data]);
         } else {
-            alert("Before performing this operation, select a data item from the table")
+            alert("Before performing this operation, select a data item from the table");
         }
     }
 
@@ -1898,8 +1979,6 @@ const CentralizedSiteComposition = (Props: any) => {
     }
 
     // END of Function Code 
-
-
 
     return (
         <section>
@@ -1992,7 +2071,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                         onClick={(e) => AddSiteCompositionFunction(siteData.Title)}
                                                                     />
                                                                 </td>
-                                                                <td className="m-0 p-0 align-middle" style={{ width: "60%" }}>
+                                                                <td className="m-0 p-0 align-middle" style={{ width: "30%" }}>
                                                                     <div className="alignCenter">
                                                                         <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} className="mx-2 workmember" />
                                                                         {siteData.Title}
@@ -2064,6 +2143,9 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                     :
                                                                     null
                                                                 }
+                                                                <td className="m-0 align-middle" style={{ width: "30%" }}>
+                                                                    {siteData.TaggedCCTitle}
+                                                                </td>
                                                             </tr>
                                                         )
                                                     }
@@ -2239,9 +2321,9 @@ const CentralizedSiteComposition = (Props: any) => {
 
                                 </div>
                                 <div>
-                                    <button className="btn btn-primary px-3 " onClick={UpdateSiteCompositionButtonFunction}>Update Site Composition</button>
-                                    <button className="btn btn-primary px-3 mx-2" onClick={UpdateClientCategoriesButtonFunction}>Update Client Categories</button>
-                                    <button className="btn btn-primary px-3 me-2" onClick={UpdateBothButtonFunction}>Update Both</button>
+                                    <button className="btn btn-primary px-3 " onClick={UpdateSiteCompositionButtonFunction}>Apply Site Composition</button>
+                                    <button className="btn btn-primary px-3 mx-2" onClick={UpdateClientCategoriesButtonFunction}>Apply Client Categories</button>
+                                    <button className="btn btn-primary px-3 me-2" onClick={UpdateBothButtonFunction}>Apply Both</button>
                                     <button className="btn btn-primary px-3 " onClick={() => ResetDataButtonFunction(flatView)}>Reset</button>
                                 </div>
                                 <div className="alignCenter">

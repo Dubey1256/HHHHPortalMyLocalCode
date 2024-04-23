@@ -8,33 +8,44 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'SmartpagesWebPartStrings';
-import Smartpages from './components/Smartpages';
-import { ISmartpagesProps } from './components/ISmartpagesProps';
+import * as strings from 'HhhhSmartMetadataPortfolioWebPartStrings';
+import HhhhSmartMetadataPortfolio from './components/HhhhSmartMetadataPortfolio';
+import { IHhhhSmartMetadataPortfolioProps } from './components/IHhhhSmartMetadataPortfolioProps';
 
-export interface ISmartpagesWebPartProps {
+export interface IHhhhSmartMetadataPortfolioWebPartProps {
+  SPSiteConfigListID: string;
+  SPSitesListUrl: string;
+  SmartMetadataListID: string;
+  SPTopNavigationListID: string;
+  TaskUsertListID: string
   description: string;
-  SitesListUrl: any,
-  SmartMetadataListID: any;
-
+  PageUrl: any
+  siteUrl: any
+  Context: any
 }
 
-export default class SmartpagesWebPart extends BaseClientSideWebPart<ISmartpagesWebPartProps> {
+export default class HhhhSmartMetadataPortfolioWebPart extends BaseClientSideWebPart<IHhhhSmartMetadataPortfolioWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<ISmartpagesProps> = React.createElement(
-      Smartpages,
+    const element: React.ReactElement<IHhhhSmartMetadataPortfolioProps> = React.createElement(
+      HhhhSmartMetadataPortfolio,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        SitesListUrl: this.context.pageContext.web.absoluteUrl,
+        SPSitesListUrl: this.context.pageContext.web.absoluteUrl,
+        SPSiteConfigListID: this.properties.SPSiteConfigListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
+        SPTopNavigationListID: this.properties.SPTopNavigationListID,
+        TaskUsertListID: this.properties.TaskUsertListID,
+        PageUrl: this.context?.pageContext?.site?.serverRequestPath,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        Context: this.context
       }
     );
 
@@ -62,6 +73,7 @@ export default class SmartpagesWebPart extends BaseClientSideWebPart<ISmartpages
               environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
               break;
             case 'Teams': // running in Teams
+           
             default:
               environmentMessage = strings.UnknownEnvironment;
           }
@@ -110,8 +122,17 @@ export default class SmartpagesWebPart extends BaseClientSideWebPart<ISmartpages
             {
               groupName: strings.BasicGroupName,
               groupFields: [
+                PropertyPaneTextField('SPSiteConfigListID', {
+                  label: 'SPSiteConfigListID'
+                }),
                 PropertyPaneTextField('SmartMetadataListID', {
                   label: 'SmartMetadataListID'
+                }),
+                PropertyPaneTextField('SPTopNavigationListID', {
+                  label: 'SPTopNavigationListID'
+                }),
+                PropertyPaneTextField('TaskUsertListID', {
+                  label: 'TaskUsertListID'
                 }),
               ]
             }
