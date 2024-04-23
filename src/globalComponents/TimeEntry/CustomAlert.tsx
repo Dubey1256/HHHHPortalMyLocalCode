@@ -4,7 +4,7 @@ const CustomAlert = ({ hidden, toggleDialog, message, linkText, linkUrl }:any) =
   const messageParts = message.split("click here");
 
   return (
-    <div style={{ display: hidden ? 'none' : 'block', position: 'fixed', top: '10%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'White', borderRadius: '10px', padding: '20px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.4)', zIndex: 999, maxWidth:600 }}>
+    <div style={{ display: hidden ? 'none' : 'block', position: 'fixed', top: '10%', left: '40%', transform: 'translate(-50%, -50%)', backgroundColor: 'White', borderRadius: '10px', padding: '20px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.4)', zIndex: 999, maxWidth:600 }}>
       <h4 style={{ marginBottom: '10px', marginTop:"0px",fontWeight:600 }}>Alert</h4>
       <p style={{ margin: '0' }}>
         {messageParts[0]}

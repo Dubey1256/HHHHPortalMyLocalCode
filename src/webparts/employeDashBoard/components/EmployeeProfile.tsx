@@ -22,7 +22,6 @@ let timeSheetConfig: any = {};
 let TimeSheetLists: any = [];
 let dates: any = [];
 let AllTimeEntry: any = [];
-let timeSheetConfigData: any = []
 const EmployeProfile = (props: any) => {
   const params = new URLSearchParams(window.location.search);
   let DashboardId: any = params.get('DashBoardId');
@@ -31,7 +30,7 @@ const EmployeProfile = (props: any) => {
   const [data, setData]: any = React.useState({ AllTaskUser: [] });
   const [currentTime, setCurrentTime]: any = useState([]);
   const [annouceMents, setAnnouceMents]: any = useState([]);
-  const [approverEmail, setApproverEmail]: any = useState();
+  const [approverEmail, setApproverEmail]: any = useState([]);
   const [timesheetListConfig, setTimesheetListConfig] = React.useState<any>()
   const [smartmetaDataDetails, setSmartmetaDataDetails] = React.useState([])
   const [IsCallContext, setIsCallContext] = React.useState(false)
@@ -218,8 +217,8 @@ const EmployeProfile = (props: any) => {
   }
   const smartMetaData = async () => {
     var AllsiteData: any = []
-    timeSheetConfigData = await globalCommon?.loadSmartMetadata(props?.props, 'timesheetListConfigrations')
-    // setTimesheetListConfig(timesheetListConfig)
+    var timesheetListConfig = await globalCommon?.loadSmartMetadata(props?.props, 'timesheetListConfigrations')
+    setTimesheetListConfig(timesheetListConfig)
     AllsiteData = await globalCommon?.loadSmartMetadata(props?.props, 'Sites')
     AllsiteData = AllsiteData?.filter((item: any) => item.Title != "" && item.Title != "Master Tasks" && item.Title != "SDC Sites" && item.Title != "Offshore Tasks" && item.Configurations != null)
     setAllSite(AllsiteData)
@@ -248,20 +247,20 @@ const EmployeProfile = (props: any) => {
         }
         if (currentUserId == item?.AssingedToUser?.Id && currentUserId != undefined) {
           currentUserData = item;
-        }  
-          if (currentUserData?.Approver?.length > 0 && currentUserData?.Approver?.length != undefined && currentUserData?.Approver?.length != null){
+          if (item?.Approver?.length > 0 && item?.Approver?.length != undefined && item?.Approver?.length != null)
             mailApprover = item?.Approver[0];
-        }
-          else{
-          mailApprover = null;
+          else
+            mailApprover = null;
           smartMetaData()
         }
         if (mailApprover != undefined && mailApprover != null) {
-            taskUsers.map((items:any)=> {
-              if (mailApprover.Id == items.AssingedToUserId && items.Email != undefined && items.Email != null){
-                setApproverEmail(items.Email)
-              }
-            })  
+          if (mailApprover.Id == item.AssingedToUserId && item.Email != undefined && item.Email != null)
+            setApproverEmail(item.Email);
+          else
+            setApproverEmail("");
+        }
+        else {
+          setApproverEmail("");
         }
         item.expanded = false;
       })
@@ -671,10 +670,6 @@ const EmployeProfile = (props: any) => {
               items.EstimatedTime += Number(time?.EstimatedTime)
             })
           }
-          items.AssignedToIds = [];
-          items?.AssignedTo?.map((assignedUser: any) => {
-            items.AssignedToIds.push(assignedUser.Id)
-          });
           items.portfolioItemsSearch = '';
           if (items?.TaskType) {
             items.portfolioItemsSearch = items?.TaskType?.Title;
@@ -1085,7 +1080,7 @@ const EmployeProfile = (props: any) => {
   return (
     <>
       {progressBar && <PageLoader />}
-      <myContextValue.Provider value={{ ...myContextValue, AllTaskData: allData,  AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, approverApproveeData: LoginUserTeamMembers, AlltaskData: data, timesheetListConfig: timeSheetConfigData, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
+      <myContextValue.Provider value={{ ...myContextValue, AllTimeEntry: AllTimeEntry, DataRange: dates, AllMetadata: smartmetaDataDetails, DashboardId: DashboardId, DashboardTitle: DashboardTitle, GroupByUsers: GroupByUsers, ActiveTile: ActiveTile, approverEmail: approverEmail, propsValue: props.props, currentTime: currentTime, annouceMents: annouceMents, siteUrl: props?.props?.siteUrl, AllSite: AllSite, currentUserData: currentUserData, AlltaskData: data, timesheetListConfig: timesheetListConfig, AllMasterTasks: AllMasterTasks, AllTaskUser: taskUsers, DashboardConfig: DashboardConfig, DashboardConfigBackUp: DashboardConfigBackUp, callbackFunction: callbackFunction }}>
         <div> <Header /></div>
         {IsCallContext == true && <TaskStatusTbl />}
       </myContextValue.Provider >

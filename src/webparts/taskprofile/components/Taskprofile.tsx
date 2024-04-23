@@ -750,7 +750,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .items
       .getById(this.state?.itemID)
       .update({
-        FeedBack: JSON.stringify(this.state?.Result?.FeedBack)
+        FeedBack: JSON.stringify(this.state?.Result?.FeedBack),
+        Status:this?.state?.Result?.Status
       });
 
     this.setState({
@@ -1161,23 +1162,30 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         tempData.ApproverData.push(approvalDataHistory)
       }
 
-
+      var data :any= this.state.Result;
+      
       if (tempData?.ApproverData != undefined && tempData?.ApproverData?.length > 0) {
         tempData?.ApproverData?.forEach((ba: any) => {
           if (ba.isShowLight == 'Reject') {
-            ba.Status = 'Rejected by'
+          
+            data.Status="Follow Up",
+             ba.Status = 'Rejected by'
           }
           if (ba.isShowLight == 'Approve') {
-            ba.Status = 'Approved by '
+            ba.Status = 'Approved by'
+            data.Status="Approved"
           }
           if (ba.isShowLight == 'Maybe') {
+            data.Status="Follow Up",
             ba.Status = 'For discussion with'
           }
 
 
         })
       }
-
+      this.setState({
+        Result: data,
+      }),
       console.log(tempData);
       console.log(this.state.Result["FeedBack"][0]?.FeedBackDescriptions);
       await this.onPost();
@@ -1210,22 +1218,28 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
         tempData.Subtext[subchileindex].ApproverData = [];
         tempData.Subtext[subchileindex].ApproverData.push(approvalDataHistory)
       }
-
+      var data :any= this.state.Result;
       if (tempData?.Subtext[subchileindex] != undefined && tempData?.Subtext[subchileindex]?.ApproverData != undefined) {
         tempData?.Subtext[subchileindex]?.ApproverData?.forEach((ba: any) => {
           if (ba.isShowLight == 'Reject') {
+            data.Status="Follow Up",
             ba.Status = 'Rejected by'
           }
           if (ba.isShowLight == 'Approve') {
+            data.Status="Approved"
             ba.Status = 'Approved by '
           }
           if (ba.isShowLight == 'Maybe') {
+            data.Status="Follow Up",
             ba.Status = 'For discussion with'
           }
 
 
         })
       }
+      this.setState({
+        Result: data,
+      }),
       console.log(tempData);
       console.log(this.state.Result["FeedBack"][0]?.FeedBackDescriptions);
       console.log(this.state?.emailcomponentopen)
@@ -1971,7 +1985,11 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                   }
                   {this.currentUser != undefined && this.state.sendMail && this.state.emailStatus != "" && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props.Context} emailStatus={this.state.emailStatus} currentUser={this.currentUser} items={this.state.Result} />}
                 </span>
-                <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>
+                {!( this?.state?.Result["siteUrl"]?.includes('GrueneWeltweit')) ? (
+                    <span className="text-end fs-6">
+                      <a className='oldtitle' target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a>
+                    </span>
+                  ) : null}
 
               </h2>
             </section>
@@ -2233,7 +2251,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       <dl>
                         <dt className='bg-Fa'>Created</dt>
                         <dd className='bg-Ff alignCenter'>
-                          {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MM/YYYY") : ""}
+                          {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MMM/YYYY") : ""}
                           {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
                             <a title={this.state.Result["Author"][0].Title} className='alignCenter ms-1'>
                               {this.state.Result["Author"][0].userImage !== "" && <img className="workmember hreflink " src={this.state.Result["Author"][0].userImage} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, this.state.Result["Author"][0]?.Id)} ></img>
