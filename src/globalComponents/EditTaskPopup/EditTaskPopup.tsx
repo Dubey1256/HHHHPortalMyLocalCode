@@ -99,7 +99,7 @@ const EditTaskPopup = (Items: any) => {
     // Items.Items.Id = Items?.Items?.ID;
     Items.Items.Id =
         Items.Items.Id != undefined ? Items.Items.Id : Items.Items.ID;
-    let ShareWebConfigData: any = [];
+    let SiteWebConfigData: any = [];
     const [TaskImages, setTaskImages] = useState([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
     const [IsComponentPicker, setIsComponentPicker] = useState(false);
@@ -445,7 +445,7 @@ const EditTaskPopup = (Items: any) => {
                     tempArray.push(site);
                 }
                 if (site.Title !== undefined && site.Title == "Shareweb") {
-                    ShareWebConfigData = site.Configurations;
+                    SiteWebConfigData = site.Configurations;
                 }
             });
             setSiteTypes(tempArray);
@@ -2735,8 +2735,8 @@ const EditTaskPopup = (Items: any) => {
 
                             if ((sendMSGCheck || SendMsgToAuthor || TeamMemberChanged || TeamLeaderChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
                                 if (sendUserEmails.length > 0) {
-                                    // await sendTeamMessagePromise(SendUserEmailFinal, SendMessage, Items.context)
-                                    globalCommon.SendTeamMessage(SendUserEmailFinal, SendMessage, Items.context).then(() => {
+                                    // await sendTeamMessagePromise(SendUserEmailFinal, SendMessage, Items.context,AllListIdData)
+                                    globalCommon.SendTeamMessage(SendUserEmailFinal, SendMessage, Items.context, AllListIdData).then(() => {
                                         console.log("MS Teams Message Send Succesfully !!!!")
                                     }).catch((error) => {
                                         console.log("MS Teams Message Not Send !!!!", error.message)
@@ -5754,9 +5754,11 @@ const EditTaskPopup = (Items: any) => {
                                                         //         ? Moment(EditData.Created).format("YYYY-MM-DD")
                                                         //         : ""
                                                         // }
-                                                        value={
+                                                        defaultValue={
                                                             EditData.StartDate
-                                                                ? Moment(EditData.StartDate).format("YYYY-MM-DD")
+                                                                ? Moment(EditData.StartDate).format(
+                                                                    "YYYY-MM-DD"
+                                                                )
                                                                 : ""
                                                         }
                                                         onChange={(e) =>
@@ -5789,7 +5791,7 @@ const EditTaskPopup = (Items: any) => {
                                                         //         ? Moment(EditData.Created).format("YYYY-MM-DD")
                                                         //         : ""
                                                         // }
-                                                        value={
+                                                        defaultValue={
                                                             EditData.DueDate
                                                                 ? Moment(EditData.DueDate).format("YYYY-MM-DD")
                                                                 : ""
@@ -5804,17 +5806,25 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                             </div>
                                             <div className="col-6 ps-0 mt-2">
-                                                <div className="input-group">
+                                                <div className="input-group ">
                                                     <label className="form-label full-width">
-                                                        Completed Date
+                                                        {" "}
+                                                        Completed Date{" "}
                                                     </label>
                                                     <input
                                                         type="date"
                                                         className="form-control"
                                                         max="9999-12-31"
-                                                        value={
+                                                        // min={
+                                                        //     EditData.Created
+                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
+                                                        //         : ""
+                                                        // }
+                                                        defaultValue={
                                                             EditData.CompletedDate
-                                                                ? Moment(EditData.CompletedDate).format("YYYY-MM-DD")
+                                                                ? Moment(EditData.CompletedDate).format(
+                                                                    "YYYY-MM-DD"
+                                                                )
                                                                 : ""
                                                         }
                                                         onChange={(e) =>
@@ -5826,7 +5836,6 @@ const EditTaskPopup = (Items: any) => {
                                                     />
                                                 </div>
                                             </div>
-
                                             <div className="col-6 ps-0 pe-0 mt-2">
                                                 <div className="input-group">
                                                     <label className="form-label full-width">
