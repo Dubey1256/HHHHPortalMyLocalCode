@@ -741,12 +741,12 @@ export const loadTaskUsers = async () => {
     return taskUser;
 }
 export const loadAllTaskUsers = async (AllListId: any) => {
-
+  
     let taskUser;
     try {
         let web = new Web(AllListId?.siteUrl);
         taskUser = await web.lists
-            .getById(AllListId?.TaskUsertListID)
+            .getById(AllListId?.TaskUsertListID!==undefined? AllListId?.TaskUsertListID:AllListId?.TaskUserListId)
             .items
             .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name,UserGroup/Id,UserGroup/Title,TeamLeader/Id,TeamLeader/Title&$expand=UserGroup,AssingedToUser,Approver,TeamLeader").get();
     }
