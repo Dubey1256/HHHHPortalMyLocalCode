@@ -184,10 +184,10 @@ function ComponentTable(SelectedProp: any) {
     const [filterItems, setfilterItems] = React.useState([])
     // const [AllMetadata, setMetadata] = React.useState([])
     const [IsComponent, setIsComponent] = React.useState(false);
-    const [SharewebComponent, setSharewebComponent] = React.useState('');
+    const [CMSToolComponent, setCMSToolComponent] = React.useState('');
     const [IsTask, setIsTask] = React.useState(false);
-    const [SharewebTask, setSharewebTask] = React.useState('');
-    const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([])
+    const [CMSTask, setCMSTask] = React.useState('');
+    const [cmsTimeComponent, setCmsTimeComponent] = React.useState([])
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
     const [ShowSelectdSmartfilter, setShowSelectdSmartfilter] = React.useState([]);
     const [checked, setchecked] = React.useState([]);
@@ -713,13 +713,7 @@ function ComponentTable(SelectedProp: any) {
         else {
             setData((data) => [...TotalArrayBackup])
         }
-        //  setData((data) =>[...data])
-        //  getFilterLength();
-        //  getOtherSorting('TaskID', false);
-        //   $scope.ValueTitle = undefined;
-        // $scope.ShowhideAccordingTitle = undefined;
-        //document.getElementById("myDropdown1").style.display = "none";
-        //  SharewebCommonFactoryService.hideProgressBar();
+      
     }
 
     const CreateMeetingPopups = (item: any) => {
@@ -1620,7 +1614,7 @@ function ComponentTable(SelectedProp: any) {
             //  ungetFilterLength();
             // setData(data => ([...maidataBackup]));
             setData(maidataBackup);
-            //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
+        
         }
         // setData(data => ([...maidataBackup]));
         // console.log($scope.ComponetsData['allComponentItemWithStructure']);
@@ -2009,7 +2003,7 @@ function ComponentTable(SelectedProp: any) {
                     if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
-                            task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.TaskID;
+                            task.ShowTooltipCMSToolId = crntItem.PortfolioStructureID + '-' + task.TaskID;
                         }
                         if (crntItem.Portfolio_x0020_Type == 'Service') {
                             task.isService = true;
@@ -2039,7 +2033,7 @@ function ComponentTable(SelectedProp: any) {
                     if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
-                            task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.TaskID;
+                            task.ShowTooltipCMSToolId = crntItem.PortfolioStructureID + '-' + task.TaskID;
                         }
                         if (crntItem.Portfolio_x0020_Type == 'Events') {
                             task.isService = true;
@@ -2067,7 +2061,7 @@ function ComponentTable(SelectedProp: any) {
                     if (componentItem?.Id == crntItem?.Id) {
                         if (crntItem.PortfolioStructureID != undefined && crntItem.PortfolioStructureID != '') {
                             task.PortfolioStructureID = crntItem.PortfolioStructureID;
-                            task.ShowTooltipSharewebId = crntItem.PortfolioStructureID + '-' + task.TaskID;
+                            task.ShowTooltipCMSToolId = crntItem.PortfolioStructureID + '-' + task.TaskID;
                         }
                         if (crntItem.Portfolio_x0020_Type == 'Component') {
                             task.isService = true;
@@ -2581,11 +2575,11 @@ function ComponentTable(SelectedProp: any) {
 
     const EditData = (e: any, item: any) => {
         // setIsTimeEntry(true);
-        setSharewebTimeComponent(item);
+        setCmsTimeComponent(item);
     }
     const EditDataTimeEntryData = (e: any, item: any) => {
         setIsTimeEntry(true);
-        setSharewebTimeComponent(item);
+        setCmsTimeComponent(item);
     }
 
     const handleTitle = (e: any) => {
@@ -2751,13 +2745,13 @@ function ComponentTable(SelectedProp: any) {
         item['listName'] = 'Master Tasks';
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);
-        setSharewebComponent(item);
+        setCMSToolComponent(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
     const EditItemTaskPopup = (item: any) => {
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsTask(true);
-        setSharewebTask(item);
+        setCMSTask(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
     // const onChangeHandler = (itrm: any, child: any, e: any) => {
@@ -3006,7 +3000,7 @@ function ComponentTable(SelectedProp: any) {
             }
             setData((array) => [...array]);
             if (item.CreateOpenType != undefined && item.CreateOpenType === 'CreatePopup') {
-                setSharewebComponent(item.CreatedItem[0].data)
+                setCMSToolComponent(item.CreatedItem[0].data)
                 setIsComponent(true);
             }
             refreshData()
@@ -3061,12 +3055,12 @@ function ComponentTable(SelectedProp: any) {
             checkedList[0].childs.unshift(item.data);
         else array.unshift(item.data);
 
-        setSharewebComponent(item.data)
+        setCMSToolComponent(item.data)
         setIsComponent(true);
         setData((array) => [...array]);
         refreshData()
         rerender()
-        // setSharewebComponent(item);
+        // setCMSToolComponent(item);
     }, []);
     const buttonRestructuring = () => {
         var ArrayTest: any = [];
@@ -4167,7 +4161,7 @@ function ComponentTable(SelectedProp: any) {
                                                             </span>
                                                         </label>
                                                         <input type="text" className="form-control ui-autocomplete-input"
-                                                            id="txtSharewebComponent" ng-model="SearchComponent"
+                                                            id="txtCMSToolComponent" ng-model="SearchComponent"
                                                         /><span role="status" aria-live="polite"
                                                             className="ui-helper-hidden-accessible"></span>
                                                     </div>
@@ -4190,7 +4184,7 @@ function ComponentTable(SelectedProp: any) {
                                                             </span>
                                                         </label>
                                                         <input type="text" className="form-control ui-autocomplete-input"
-                                                            id="txtServiceSharewebComponent" ng-model="SearchService"
+                                                            id="txtServiceCMSToolComponent" ng-model="SearchService"
                                                         /><span role="status" aria-live="polite"
                                                             className="ui-helper-hidden-accessible"></span>
                                                     </div>
@@ -4687,9 +4681,9 @@ function ComponentTable(SelectedProp: any) {
                         </div></section>
                 </div></section>
 
-            {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={SelectedProp.SelectedProp}  context={SelectedProp.SelectedProp.context}></EditTaskPopup>}
-            {IsComponent && <EditInstituton item={SharewebComponent} Calls={Call} showProgressBar={showProgressBar} SelectD={SelectedProp}> </EditInstituton>}
-            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}  Context={SelectedProp.SelectedProp.context}></TimeEntryPopup>}
+            {IsTask && <EditTaskPopup Items={CMSTask} Call={Call} AllListId={SelectedProp.SelectedProp}  context={SelectedProp.SelectedProp.context}></EditTaskPopup>}
+            {IsComponent && <EditInstituton item={CMSToolComponent} Calls={Call} showProgressBar={showProgressBar} SelectD={SelectedProp}> </EditInstituton>}
+            {IsTimeEntry && <TimeEntryPopup props={cmsTimeComponent} CallBackTimeEntry={TimeEntryCallBack}  Context={SelectedProp.SelectedProp.context}></TimeEntryPopup>}
             {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks} SelectedProp={SelectedProp}></CreateActivity>}
             {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data} SelectedProp={SelectedProp}></CreateWS>}
             <Panel headerText={` Create Component `} type={PanelType.large} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>

@@ -168,68 +168,7 @@ function Main() {
     );
   };
 
-  //   const UpdateListItemByListId = (baseUrl:any, listId:any, data:any, itemId:any) => {
-  //     let url = baseUrl + listEndPoint + "/getById('" + listId + "')/GetItemById(" + itemId + ")";
-  //     return (data, url);
-  // };
 
-  // const SaveItem = (item:any) => {
-
-  //     let NewListName = item.ListName;
-  //     if (item.ListName === 'Master Tasks' || item.ListName === 'Small Projects') {
-  //         NewListName = NewListName.replace(' ', '_x0020_');
-  //     }
-  //     else if (item.ListName === 'Offshore Tasks') {
-  //         NewListName = 'SharewebQA';
-  //     }
-  //     else if (item.ListName === 'Images') {
-  //         NewListName = 'PublishingImages';
-  //         NewListName = "SP.Data." + NewListName + 'Item';
-  //     }
-
-  //     if (item.ListName !== undefined && item.ListName === 'Documents') {
-  //         NewListName = "SP.Data." + NewListName + 'Item';
-  //     }
-  //     if (item.ListName != undefined && item.ListName != 'Images' && item.ListName != 'Documents'){
-  //         NewListName = "SP.Data." + NewListName + 'ListItem';
-  //     }
-
-  //     let metadata = item.ListName === "News" ? "SP.Data.AnnouncementsListItem" : NewListName;
-  //     let ItemListId = item.listID;
-  //     const URL = window.location.href.split("/_layouts/");
-  //     item.siteURL = URL;
-  //     let itemsiteurl = item.siteURL;
-  //     let postData = {
-  //         __metadata: { 'type': metadata },
-  //         DoNotAllow: true
-  //     };
-  //     UpdateListItemByListId(itemsiteurl, ItemListId, postData, item.Id)
-  //         .then(function (response) {
-  //             angular.forEach($scope.ListsData, function (project, index) {
-  //                 if (project.Id == item.Id) {
-  //                     $scope.ListsData.splice(index, 1);
-  //                 }
-  //             })
-  //             angular.forEach($scope.AllListsData, function (proj, index) {
-  //                 if (proj.Id == item.Id) {
-  //                     $scope.AllListsData.splice(index, 1);
-  //                 }
-  //             })
-  //         },
-  //             function (error) {
-  //                 SharewebCommonFactoryService.cancelPagePopup()
-  //             });
-  //     SharewebCommonFactoryService.hideProgressBar();
-  // }
-  // const MoveItems = (item:any)=> {
-  //   let flag = confirm("Are you sure, Do not show this item further on this page?");
-  //   if (flag)
-  //       SaveItem(item);
-  // }
-
-  // const removeTask = (item: any) => {
-  //   console.log(item);
-  // };
 
   const removeTask = async (item: any) => {
     let confirmation = confirm(

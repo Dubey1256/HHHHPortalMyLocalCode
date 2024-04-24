@@ -4,7 +4,6 @@ import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
 import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 import Button from 'react-bootstrap/Button';
-import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent';
 import PortfolioTagging from './PortfolioTagging';
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 import * as globalCommon from "../../../globalComponents/globalCommon";
@@ -16,7 +15,7 @@ const AddProject = (props: any) => {
     const [title, settitle] = React.useState('')
     const [lgShow, setLgShow] = useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
-    const [ShareWebComponent, setShareWebComponent] = React.useState('');
+    const [CMSToolComponent, setCMSToolComponent] = React.useState('');
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [selectedItem, setSetSelectedItem]: any = React.useState(undefined);
     const [IsPortfolio, setIsPortfolio] = React.useState(false);
@@ -276,7 +275,7 @@ const AddProject = (props: any) => {
 
         portfolioType = type;
         setIsPortfolio(true);
-        setShareWebComponent(item);
+        setCMSToolComponent(item);
     };
     const onRenderCustomHeader = (
     ) => {
@@ -380,14 +379,14 @@ const AddProject = (props: any) => {
             </Panel>
             {IsPortfolio && (
                 <ServiceComponentPortfolioPopup
-                    props={ShareWebComponent}
+                    props={CMSToolComponent}
                     Dynamic={props?.AllListId}
                     ComponentType={portfolioType}
                     Call={ComponentServicePopupCallBack}
                     selectionType={"Multi"}
                 ></ServiceComponentPortfolioPopup>
             )}
-            {/* {IsPortfolio && <PortfolioTagging props={ShareWebComponent} AllListId={props?.AllListId} type={portfolioType} Call={Call}></PortfolioTagging>} */}
+            {/* {IsPortfolio && <PortfolioTagging props={CMSToolComponent} AllListId={props?.AllListId} type={portfolioType} Call={Call}></PortfolioTagging>} */}
         </>
     )
 }

@@ -19,7 +19,7 @@ const EditDocumentpanel = (props: any) => {
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = React.useState(false);
   const [isopenprojectservicepopup, setisopenprojectservicepopup] = React.useState(false);
   const [projectdata, setProjectData] = React.useState([]);
-  const [SharewebComponentProjectpopup, setSharewebComponentProjectpopup] = React.useState("");
+  const [CMSToolComponentProjectpopup, setCMSToolComponentProjectpopup] = React.useState("");
   const [allProjectDaata, SetAllProjectDaata] = React.useState([]);
   const [ProjectSearchKey, setProjectSearchKey] = React.useState("");
   const [searchedProjectDaata, setSearchedProjectDaata] = React.useState([]);
@@ -425,7 +425,7 @@ const EditDocumentpanel = (props: any) => {
   const openProjectPopup = (itemm: any) => {
     setisopenprojectservicepopup(true);
     mydataa.push(props?.editData?.Id);
-    setSharewebComponentProjectpopup(itemm);
+    setCMSToolComponentProjectpopup(itemm);
   };
 
   const callServiceComponents = React.useCallback(

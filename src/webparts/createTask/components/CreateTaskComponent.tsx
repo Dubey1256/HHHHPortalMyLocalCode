@@ -76,7 +76,7 @@ function CreateTaskComponent(props: any) {
     const [isActiveCategory, setIsActiveCategory] = React.useState(false);
     const [selectedProjectData, setSelectedProjectData]: any = React.useState({});
     const [activeCategory, setActiveCategory] = React.useState([]);
-    const [ShareWebComponent, setShareWebComponent] = React.useState('');
+    const [CMSToolComponent, setCMSToolComponent] = React.useState('');
     const [refreshPage, setRefreshPage] = React.useState(false);
     const [burgerMenuTaskDetails, setBurgerMenuTaskDetails]: any = React.useState({
         ComponentID: undefined,
@@ -144,12 +144,12 @@ function CreateTaskComponent(props: any) {
         if (Type == 'Component') {
             setIsOpenPortfolio(true);
             setOpenPortfolioType(Type)
-            setShareWebComponent(item);
+            setCMSToolComponent(item);
         }
         if (Type == 'Project') {
             setProjectManagementPopup(true)
             setOpenPortfolioType(Type)
-            setShareWebComponent(item);
+            setCMSToolComponent(item);
         }
     }
 
@@ -980,7 +980,7 @@ function CreateTaskComponent(props: any) {
                         PortfolioId: portfolioId,
                         TeamMembersId: { "results": TeamMembersIds },
                         ProjectId: ProjectId,
-                        // SharewebComponentId: { "results": $scope.SharewebComponent },
+                        // CMSToolComponentId: { "results": $scope.CMSToolComponent },
                         TaskCategoriesId: { "results": taskCat },
                         ClientCategoryId: { "results": selectedCC },
                         // LinkServiceTaskId: { "results": $scope.SaveServiceTaskItemId },
@@ -2011,7 +2011,7 @@ function CreateTaskComponent(props: any) {
 
                 {(IsOpenPortfolio || ProjectManagementPopup) && (
                     <ServiceComponentPortfolioPopup
-                        props={ShareWebComponent}
+                        props={CMSToolComponent}
                         Dynamic={AllListId}
                         Call={ComponentServicePopupCallBack}
                         selectionType={"Single"}

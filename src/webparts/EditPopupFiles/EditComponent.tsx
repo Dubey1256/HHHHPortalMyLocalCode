@@ -33,7 +33,7 @@ var PostBody = "";
 var AllUsers: any = [];
 var Assin: any = [];
 var AssignedToIds: any = [];
-var GlobalServiceAndComponentData : any = [];
+var GlobalServiceAndComponentData: any = [];
 var ResponsibleTeamIds: any = [];
 var SiteTypeBackupArray: any = [];
 var TeamMemberIds: any = [];
@@ -45,6 +45,7 @@ var selectedClientCategoryData: any = [];
 var AllClientCategoryDataBackup: any = [];
 let AutoCompleteItemsArray: any = [];
 var AllClientCategory: any = [];
+let smartmetaDetails: any = [];
 let ShowCategoryDatabackup: any = [];
 let subCategories: any = [];
 let IsapprovalTask = false;
@@ -54,7 +55,7 @@ let componentDetailsData: any = [];
 let count = 0;
 let ID: any;
 
-function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
+function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: any) {
   // var AssignedToIds: any = [];
   ResponsibleTeamIds = [];
   AssignedToIds = [];
@@ -88,12 +89,12 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
   const [isDropItemRes, setisDropItemRes] = React.useState(false);
   const [EditData, setEditData] = React.useState<any>({});
   const [modalIsOpen, setModalIsOpen] = React.useState(false);
-  const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
+  const [CMSItemRank, setCMSItemRank] = React.useState([]);
   const [isOpenPicker, setIsOpenPicker] = React.useState(false);
   const [IsComponent, setIsComponent] = React.useState(false);
   const [isopenProjectpopup, setisopenProjectpopup] = React.useState(false);
-  const [SharewebComponent, setSharewebComponent] = React.useState("");
-  const [SharewebCategory, setSharewebCategory] = React.useState("");
+  const [CMSToolComponent, setCMSToolComponent] = React.useState("");
+  const [TaskCat, setTaskCat] = React.useState("");
   const [CollapseExpend, setCollapseExpend] = React.useState(true);
   let [CategoriesData, setCategoriesData] = React.useState([]);
   const TeamConfigInfo = item;
@@ -111,7 +112,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
   const [AssignUser, setAssignUser] = React.useState(undefined);
   const [allProjectData, SetAllProjectData] = React.useState([]);
   const [SearchedServiceCompnentData, setSearchedServiceCompnentData] =
-  React.useState<any>([]);
+    React.useState<any>([]);
   const [searchedProjectData, setSearchedProjectData] = React.useState([]);
   const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
   const [IsService, setIsService] = React.useState(false);
@@ -364,39 +365,39 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
     );
 
     if (CallBackData?.AllData != undefined && CallBackData?.AllData?.length > 0) {
-              GlobalServiceAndComponentData = CallBackData.AllData;
-              SetAllProjectData(CallBackData?.FlatProjectData);
-              // AllProjectBackupArray = CallBackData?.FlatProjectData;
-          }
+      GlobalServiceAndComponentData = CallBackData.AllData;
+      SetAllProjectData(CallBackData?.FlatProjectData);
+      // AllProjectBackupArray = CallBackData?.FlatProjectData;
+    }
   };
 
   const autoSuggestionsForServiceAndComponent = (e: any, usedFor: any) => {
     let SearchedKeyWord: any = e.target.value;
     let TempArray: any = [];
     if (SearchedKeyWord.length > 0) {
-        if (
-            GlobalServiceAndComponentData != undefined &&
-            GlobalServiceAndComponentData.length > 0
-        ) {
-            GlobalServiceAndComponentData.map((AllDataItem: any) => {
-                if (
-                    AllDataItem.Path?.toLowerCase()?.includes(
-                        SearchedKeyWord.toLowerCase()
-                    )
-                ) {
-                    TempArray.push(AllDataItem);
-                }
-            });
+      if (
+        GlobalServiceAndComponentData != undefined &&
+        GlobalServiceAndComponentData.length > 0
+      ) {
+        GlobalServiceAndComponentData.map((AllDataItem: any) => {
+          if (
+            AllDataItem.Path?.toLowerCase()?.includes(
+              SearchedKeyWord.toLowerCase()
+            )
+          ) {
+            TempArray.push(AllDataItem);
+          }
+        });
+      }
+      if (TempArray != undefined && TempArray.length > 0) {
+        if (usedFor == "Portfolio") {
+          setSearchedServiceCompnentData(TempArray);
         }
-        if (TempArray != undefined && TempArray.length > 0) {
-            if (usedFor == "Portfolio") {
-                setSearchedServiceCompnentData(TempArray);
-            }
-        }
+      }
     } else {
-        setSearchedServiceCompnentData([]);
+      setSearchedServiceCompnentData([]);
     }
-};
+  };
 
   React.useEffect(() => {
     GetAllComponentAndServiceData();
@@ -456,12 +457,12 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
       }
       if (type == "Single" && functionType == "Save") {
         if (item1 != undefined && item1.length > 0) {
-            if(item1[0]?.length != undefined && item1[0]?.length > 1){
-              setLinkedComponentData(item1[0].map((item:any) => item.original));
-            }else{
-              setLinkedComponentData(item1);
-            }
-          
+          if (item1[0]?.length != undefined && item1[0]?.length > 1) {
+            setLinkedComponentData(item1[0].map((item: any) => item.original));
+          } else {
+            setLinkedComponentData(item1);
+          }
+
           setSearchedServiceCompnentData([]);
         } else {
           if (item1 != undefined) {
@@ -580,42 +581,25 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
     }
     return json;
   };
-  var LIST_CONFIGURATIONS_TASKS =
-    '[{"Title":"Gruene","listId":"2302E0CD-F41A-4855-A518-A2B1FD855E4C","siteName":"Gruene","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.gruene-washington.de","MetadataName":"SP.Data.GrueneListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/logo-gruene.png"},{"Title":"DE","listId":"3204D169-62FD-4240-831F-BCDDA77F5028","siteName":"DE","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/Development-Effectiveness","MetadataName":"SP.Data.DEListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_de.png"},{"Title":"DRR","listId":"CCBCBAFE-292E-4384-A800-7FE0AAB1F70A","siteName":"DRR","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"","MetadataName":"SP.Data.DRRListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_drr.png"},{"Title":"Education","listId":"CF45B0AD-7BFF-4778-AF7A-7131DAD2FD7D","siteName":"Education","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/education","MetadataName":"SP.Data.EducationListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_education.png"},{"Title":"EI","listId":"E0E1FC6E-0E3E-47F5-8D4B-2FBCDC3A5BB7","siteName":"EI","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/ei","MetadataName":"SP.Data.EIListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_ei.png"},{"Title":"EPS","listId":"EC6F0AE9-4D2C-4943-9E79-067EC77AA613","siteName":"EPS","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/eps","MetadataName":"SP.Data.EPSListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_eps.png"},{"Title":"Gender","listId":"F8FD0ADA-0F3C-40B7-9914-674F63F72ABA","siteName":"Gender","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"","MetadataName":"SP.Data.GenderListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_gender.png"},{"Title":"Health","listId":"E75C6AA9-E987-43F1-84F7-D1818A862076","siteName":"Health","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/Health","MetadataName":"SP.Data.HealthListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_health.png"},{"Title":"HHHH","listId":"091889BD-5339-4D11-960E-A8FF38DF414B","siteName":"HHHH","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://hhhhteams.sharepoint.com/sites/HHHH","MetadataName":"SP.Data.HHHHListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png"},{"Title":"KathaBeck","listId":"beb3d9d7-daf3-4c0f-9e6b-fd36d9290fb9","siteName":null,"siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://kathabeck.sharepoint.com/sites/TeamK4Bundestag","MetadataName":"SP.Data.KathaBeckListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png"},{"Title":"QA","listId":"61B71DBD-7463-4B6C-AF10-6609A23AE650","siteName":"QA","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/qa","MetadataName":"SP.Data.QAListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_qa.png"},{"Title":"ALAKDigital","listId":"d70271ae-3325-4fac-9893-147ee0ba9b4d","siteName":"ALAKDigital","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/ei/digitaladministration","MetadataName":"SP.Data.ALAKDigitalListItem","TimesheetListName":"TasksTimesheet2","TimesheetListId":"9ED5C649-3B4E-42DB-A186-778BA43C5C93","TimesheetListmetadata":"SP.Data.TasksTimesheet2ListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_DA.png"},{"Title":"Shareweb","listId":"B7198F49-D58B-4D0A-ADAD-11995F6FADE0","siteName":"Shareweb","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/joint","MetadataName":"SP.Data.SharewebListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_shareweb.png"},{"Title":"Small Projects","listId":"3AFC4CEE-1AC8-4186-B139-531EBCEEA0DE","siteName":"Small Projects","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"","MetadataName":"SP.Data.Small_x0020_ProjectsListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/small_project.png"},{"Title":"Offshore Tasks","listId":"BEB90492-2D17-4F0C-B332-790BA9E0D5D4","siteName":"Offshore Tasks","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://hhhhteams.sharepoint.com/sites/HHHH","MetadataName":"SP.Data.SharewebQAListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/offshore_Tasks.png"},{"Title":"Migration","listId":"D1A5AC25-3DC2-4939-9291-1513FE5AC17E","siteName":"Migration","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/Migration","MetadataName":"SP.Data.MigrationListItem","TimesheetListName":"TasksTimesheet2","TimesheetListId":"9ED5C649-3B4E-42DB-A186-778BA43C5C93","TimesheetListmetadata":"SP.Data.TasksTimesheet2ListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png"},{"Title":"Master Tasks","listId":"EC34B38F-0669-480A-910C-F84E92E58ADF","siteName":"Master Tasks","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"","MetadataName":"SP.Data.Master_x0020_TasksListItem","ImageUrl":"","ImageInformation":[{"ItemType":"Component","PortfolioType":"Component","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png"},{"ItemType":"SubComponent","PortfolioType":"Component","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png"},{"ItemType":"Feature","PortfolioType":"Component","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png"},{"ItemType":"Component","PortfolioType":"Service","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"},{"ItemType":"SubComponent","PortfolioType":"Service","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png"},{"ItemType":"Feature","PortfolioType":"Service","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png"},{"ItemType":"Component","PortfolioType":"Events","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Event_Icons/component_icon.png"},{"ItemType":"SubComponent","PortfolioType":"Events","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Event_Icons/SubComponent_icon.png"},{"ItemType":"Feature","PortfolioType":"Events","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Event_Icons/feature_icon.png"}]}]';
-  var GetIconImageUrl = function (listName: any, listUrl: any, Item: any) {
-    var IconUrl = "";
+  const GetSiteIcon = (listName: string) => {
+    console.log(this.state.Result)
     if (listName != undefined) {
-      let TaskListsConfiguration = parseJSON(LIST_CONFIGURATIONS_TASKS);
-      let TaskListItem = TaskListsConfiguration.filter(function (
-        filterItem: any
-      ) {
-        let SiteRelativeUrl = filterItem.siteUrl;
-        return (
-          filterItem.Title.toLowerCase() == listName.toLowerCase() &&
-          SiteRelativeUrl.toLowerCase() == listUrl.toLowerCase()
-        );
-      });
-      if (TaskListItem.length > 0) {
-        if (Item == undefined) {
-          IconUrl = TaskListItem[0].ImageUrl;
-        } else if (TaskListItem[0].ImageInformation != undefined) {
-          var IconUrlItem = TaskListItem[0].ImageInformation.filter(function (
-            index: any,
-            filterItem: any
-          ) {
-            return (
-              filterItem.ItemType == Item.Item_x0020_Type &&
-              filterItem.PortfolioType == Item.Portfolio_x0020_Type
-            );
-          });
-          if (IconUrlItem != undefined && IconUrlItem.length > 0) {
-            IconUrl = IconUrlItem[0].ImageUrl;
+      let siteicon = '';
+      smartmetaDetails?.map((icondata: any) => {
+        if (icondata.Title != undefined) {
+          if (icondata.Title.toLowerCase() == listName?.toLowerCase() && icondata.Item_x0020_Cover != undefined) {
+            siteicon = icondata.Item_x0020_Cover.Url
+          }
+          if (icondata.Title.toLowerCase() == listName?.toLowerCase() && icondata.Item_x005F_x0020_Cover != undefined) {
+            siteicon = icondata.Item_x005F_x0020_Cover.Url
           }
         }
-      }
+      })
+
+      return siteicon;
     }
-    return IconUrl;
-  };
+
+  }
 
   const getpriority = function (item: any) {
     if (item.PriorityRank >= 0 && item.PriorityRank <= 3) {
@@ -629,9 +613,9 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
     }
   };
 
-  
+
   var getMasterTaskListTasks = async function () {
-    //  var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,DeliverableSynonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title";
+    //  var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,DeliverableSynonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,AdminNotes,AdminStatus,Background,Help_x0020_Information,CMSToolComponent/Id,TaskCategories/Id,TaskCategories/Title,PriorityRank,Reference_x0020_Item_x0020_Json,TeamMembers/Title,TeamMembers/Name,Component/Id,Component/Title,Component/ItemType,TeamMembers/Id,Item_x002d_Image,ComponentLink,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title";
 
     let componentDetails: any = [];
 
@@ -943,16 +927,12 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
       item.siteUrl = RequireData.siteUrl;
       item["SiteIcon"] =
         item.siteType == "Master Tasks"
-          ? GetIconImageUrl(
-              item.siteType,
-              "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
-              undefined
-            )
-          : GetIconImageUrl(
-              item.siteType,
-              "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
-              undefined
-            );
+          ? GetSiteIcon(
+            item.siteType
+          )
+          : GetSiteIcon(
+            item.siteType
+          );
       if (item.Synonyms != undefined && item.Synonyms.length > 0) {
         item.Synonyms = JSON.parse(item.Synonyms);
       }
@@ -1091,7 +1071,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
   };
   var ListId: any = "";
   var CurrentSiteUrl: any = "";
-  //var SharewebItemRank: any = '';
+  //var CMSItemRank: any = '';
   const [state, setState] = React.useState("state");
 
   const loadDataOnlyOnce = React.useCallback(() => {
@@ -1103,7 +1083,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
   const site: any = [];
   const siteDetail: any = [];
   const GetSmartmetadata = async () => {
-    let smartmetaDetails = [];
+    smartmetaDetails = [];
     subCategories = [];
     var TaskTypes: any = [];
     var Task: any = [];
@@ -1224,7 +1204,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
           { rankTitle: "(1) Archive", rank: 1 },
           { rankTitle: "(0) No Show", rank: 0 },
         ]);
-        setSharewebItemRank(TaskItemRank[0]);
+        setCMSItemRank(TaskItemRank[0]);
         loadAllClientCategoryData("Client Category");
       }
     };
@@ -1233,14 +1213,14 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
 
   const EditComponent = (items: any) => {
     setIsComponent(true);
-    setSharewebComponent(items);
+    setCMSToolComponent(items);
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
 
   const openPortfolioPopup = (itemm: any) => {
     setisopenProjectpopup(true);
     mydata.push(item.Id);
-    setSharewebComponent(itemm);
+    setCMSToolComponent(itemm);
   };
 
   const callServiceComponent = React.useCallback(
@@ -1495,10 +1475,10 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
       } else item["Synonyms"] = [];
       flag
         ? item["Synonyms"].push({
-            status: true,
-            Title: item.SynonymsTitle,
-            Id: "",
-          })
+          status: true,
+          Title: item.SynonymsTitle,
+          Id: "",
+        })
         : null;
       item.SynonymsTitle = "";
     }
@@ -1653,7 +1633,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
         Items.ItemRankTitle != undefined &&
         Items.ItemRankTitle != "Select Item Rank"
       )
-        var ItemRank = SharewebItemRank.filter(
+        var ItemRank = CMSItemRank.filter(
           (option: { rankTitle: any }) =>
             option.rankTitle == Items.ItemRankTitle
         )[0].rank;
@@ -1727,7 +1707,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
           },
           TechnicalExplanations:
             PostTechnicalExplanations != undefined &&
-            PostTechnicalExplanations != ""
+              PostTechnicalExplanations != ""
               ? PostTechnicalExplanations
               : EditData?.TechnicalExplanations,
           Deliverables:
@@ -1736,17 +1716,17 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
               : EditData?.Deliverables,
           Short_x0020_Description_x0020_On:
             PostShort_x0020_Description_x0020_On != undefined &&
-            PostShort_x0020_Description_x0020_On != ""
+              PostShort_x0020_Description_x0020_On != ""
               ? PostShort_x0020_Description_x0020_On
               : EditData?.Short_x0020_Description_x0020_On,
           Help_x0020_Information:
             PostHelp_x0020_Information != undefined &&
-            PostHelp_x0020_Information != ""
+              PostHelp_x0020_Information != ""
               ? PostHelp_x0020_Information
               : EditData?.Help_x0020_Information,
           HelpInformation:
             PostHelp_x0020_Information != undefined &&
-            PostHelp_x0020_Information != ""
+              PostHelp_x0020_Information != ""
               ? PostHelp_x0020_Information
               : EditData?.HelpInformation,
           Body:
@@ -1849,7 +1829,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
   };
   const EditComponentPicker = (item: any) => {
     setIsComponentPicker(true);
-    setSharewebCategory(item);
+    setTaskCat(item);
   };
   const opensmartmetadatapopup = (item: any) => {
     setSmartdatapopup(true);
@@ -2019,36 +1999,36 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
               </li>
               {(EditData?.Item_x0020_Type == "SubComponent" ||
                 EditData?.Item_x0020_Type == "Feature") && (
-                <>
-                  {" "}
-                  <li>
-                    {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                    {EditData?.Parent != undefined &&
-                      ParentData != undefined &&
-                      ParentData.length != 0 && (
+                  <>
+                    {" "}
+                    <li>
+                      {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                      {EditData?.Parent != undefined &&
+                        ParentData != undefined &&
+                        ParentData.length != 0 && (
+                          <a
+                            target="_blank"
+                            data-interception="off"
+                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
+                          >
+                            {ParentData[0].Parent.Title}
+                          </a>
+                        )}
+                    </li>
+                    <li>
+                      {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                      {EditData?.Parent != undefined && (
                         <a
                           target="_blank"
                           data-interception="off"
-                          href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
+                          href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent.Id}`}
                         >
-                          {ParentData[0].Parent.Title}
+                          {EditData?.Parent.Title}
                         </a>
                       )}
-                  </li>
-                  <li>
-                    {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                    {EditData?.Parent != undefined && (
-                      <a
-                        target="_blank"
-                        data-interception="off"
-                        href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent.Id}`}
-                      >
-                        {EditData?.Parent.Title}
-                      </a>
-                    )}
-                  </li>
-                </>
-              )}
+                    </li>
+                  </>
+                )}
 
               <li>
                 {EditData?.Item_x0020_Type == "Feature" && (
@@ -2594,7 +2574,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
 
     return previous;
   },
-  []);
+    []);
   const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
     setCategorySearchKey("");
 
@@ -2977,7 +2957,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                             .then(async (res: any) => {
                               setChangeType(false);
                             })
-                            .catch((err: any) => {});
+                            .catch((err: any) => { });
                         }
                       });
                     } else {
@@ -3003,11 +2983,10 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
     <>
       {console.log("All Done")}
       <Panel
-        className={`${
-          EditData?.Portfolio_x0020_Type == "Service"
+        className={`${EditData?.Portfolio_x0020_Type == "Service"
             ? " serviepannelgreena"
             : ""
-        }`}
+          }`}
         headerText={`${EditData?.Portfolio_x0020_Type}-Portfolio > ${EditData?.Title}`}
         isOpen={modalIsOpen}
         onDismiss={setModalIsOpenToFalse}
@@ -3156,7 +3135,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                               Item Rank
                             </label>
                             <select
-                              className="w-100" style={{paddingTop:'3px'}}
+                              className="w-100" style={{ paddingTop: '3px' }}
                               defaultValue={EditData?.ItemRankTitle}
                               onChange={(e) =>
                                 (EditData.ItemRankTitle = e.target.value)
@@ -3167,8 +3146,8 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                   ? "select Item Rank"
                                   : EditData?.ItemRankTitle}
                               </option>
-                              {SharewebItemRank &&
-                                SharewebItemRank.map(function (h: any, i: any) {
+                              {CMSItemRank &&
+                                CMSItemRank.map(function (h: any, i: any) {
                                   return (
                                     <option
                                       key={i}
@@ -3183,7 +3162,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                             </select>
                           </div>
                         </div>
-                       <div className="col-4 mt-2 ps-0">
+                        <div className="col-4 mt-2 ps-0">
                           <div className="input-group">
                             <label className="form-label full-width">
                               Deliverable-Synonyms
@@ -3203,7 +3182,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                             />
                           </div>
                         </div>
-                       <div className="col-4 px-0 mt-2">
+                        <div className="col-4 px-0 mt-2">
                           <div className="input-group">
                             <label className="form-label full-width">
                               Portfolio Item
@@ -3211,44 +3190,44 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
 
                             {(linkedComponentData?.length == 0 ||
                               linkedComponentData.length !== 1) && (
-                              <>
-                                <input type="text" className="form-control"     onChange={(e) =>
-                                                                autoSuggestionsForServiceAndComponent(
-                                                                    e,
-                                                                    "Portfolio"
-                                                                )
-                                                            }/>
-                                <span
-                                  className="input-group-text"
-                                  placeholder="Portfolio Item"
-                                >
+                                <>
+                                  <input type="text" className="form-control" onChange={(e) =>
+                                    autoSuggestionsForServiceAndComponent(
+                                      e,
+                                      "Portfolio"
+                                    )
+                                  } />
                                   <span
-                                    onClick={(e) => EditComponent(EditData)}
-                                    className="svg__iconbox svg__icon--editBox"
+                                    className="input-group-text"
+                                    placeholder="Portfolio Item"
                                   >
-                                    {" "}
+                                    <span
+                                      onClick={(e) => EditComponent(EditData)}
+                                      className="svg__iconbox svg__icon--editBox"
+                                    >
+                                      {" "}
+                                    </span>
                                   </span>
-                                </span>
-                              </>
-                            )}
-                             {SearchedServiceCompnentData?.length > 0 ? (
-                                                        <div className="SmartTableOnTaskPopup">
-                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                {SearchedServiceCompnentData.map((Item: any) => {
-                                                                    return (
-                                                                        <li
-                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
-                                                                            key={Item.id}
-                                                                            onClick={() => Call( [Item] , "Single","Save")}>
-                                                                            <a>{Item.Path}</a>
-                                                                        </li>
-                                                                    );
-                                                                })}
-                                                            </ul>
-                                                        </div> ) : null} </div>
+                                </>
+                              )}
+                            {SearchedServiceCompnentData?.length > 0 ? (
+                              <div className="SmartTableOnTaskPopup">
+                                <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                  {SearchedServiceCompnentData.map((Item: any) => {
+                                    return (
+                                      <li
+                                        className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                        key={Item.id}
+                                        onClick={() => Call([Item], "Single", "Save")}>
+                                        <a>{Item.Path}</a>
+                                      </li>
+                                    );
+                                  })}
+                                </ul>
+                              </div>) : null} </div>
 
                           {linkedComponentData &&
-                          linkedComponentData.length == 1 ? (
+                            linkedComponentData.length == 1 ? (
                             <div>
                               {linkedComponentData?.map(
                                 (items: any, Index: any) => (
@@ -3265,7 +3244,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                       {items?.Title}
                                     </a>
                                     <span className="alignCenter" placeholder="Project">
-                                    <span
+                                      <span
                                         className="bg-dark svg__icon--cross svg__iconbox"
                                         onClick={() =>
                                           setLinkedComponentData([])
@@ -3277,7 +3256,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                       >
                                         {" "}
                                       </span>
-                                      
+
                                     </span>
                                   </div>
                                 )
@@ -3288,7 +3267,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                           )}
 
                           {linkedComponentData &&
-                          linkedComponentData.length > 1 ? (
+                            linkedComponentData.length > 1 ? (
                             <div className="w=100">
                               {linkedComponentData?.map(
                                 (items: any, Index: any) => (
@@ -3313,7 +3292,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                         }
                                       ></span>
                                     </a>
-                                   
+
                                   </div>
                                 )
                               )}
@@ -3327,35 +3306,35 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                             <div>
                               {smartComponentData
                                 ? smartComponentData?.map((com: any) => {
-                                    return (
-                                      <>
-                                        <div className="">
-                                          <div
-                                            className="d-flex Component-container-edit-task block "
-                                            style={{ width: "81%" }}
+                                  return (
+                                    <>
+                                      <div className="">
+                                        <div
+                                          className="d-flex Component-container-edit-task block "
+                                          style={{ width: "81%" }}
+                                        >
+                                          <a
+                                            style={{
+                                              color: "#fff !important",
+                                            }}
+                                            target="_blank"
+                                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
                                           >
-                                            <a
-                                              style={{
-                                                color: "#fff !important",
-                                              }}
-                                              target="_blank"
-                                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
-                                            >
-                                              {com.Title}
-                                            </a>
-                                            <a>
-                                              <span
-                                                className="bg-light svg__iconbox svg__icon--cross"
-                                                onClick={() =>
-                                                  setSmartComponentData([])
-                                                }
-                                              ></span>
-                                            </a>
-                                          </div>
+                                            {com.Title}
+                                          </a>
+                                          <a>
+                                            <span
+                                              className="bg-light svg__iconbox svg__icon--cross"
+                                              onClick={() =>
+                                                setSmartComponentData([])
+                                              }
+                                            ></span>
+                                          </a>
                                         </div>
-                                      </>
-                                    );
-                                  })
+                                      </div>
+                                    </>
+                                  );
+                                })
                                 : null}
                             </div>
                           </div>
@@ -3395,8 +3374,8 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                               defaultValue={
                                 EditData?.DueDate
                                   ? moment(EditData?.DueDate).format(
-                                      "YYYY-MM-DD"
-                                    )
+                                    "YYYY-MM-DD"
+                                  )
                                   : ""
                               }
                               onChange={(e) =>
@@ -3421,8 +3400,8 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                               defaultValue={
                                 EditData?.CompletedDate
                                   ? moment(EditData?.CompletedDate).format(
-                                      "YYYY-MM-DD"
-                                    )
+                                    "YYYY-MM-DD"
+                                  )
                                   : ""
                               }
                               onChange={(e) =>
@@ -3719,28 +3698,28 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                             {(CategoriesData?.length == 0 ||
                               CategoriesData[0] == undefined ||
                               CategoriesData?.length > 1) && (
-                              <>
-                                <input
-                                  type="text"
-                                  className="ui-autocomplete-input form-control"
-                                  id="txtCategories"
-                                  value={categorySearchKey}
-                                  onChange={(e) =>
-                                    autoSuggestionsForCategory(e)
-                                  }
-                                />
-                                <span className="input-group-text">
-                                  <span
-                                    title="Edit Categories"
-                                    onClick={() => EditComponentPicker(item)}
-                                    className="svg__iconbox svg__icon--editBox"
-                                  ></span>
-                                </span>
-                              </>
-                            )}
+                                <>
+                                  <input
+                                    type="text"
+                                    className="ui-autocomplete-input form-control"
+                                    id="txtCategories"
+                                    value={categorySearchKey}
+                                    onChange={(e) =>
+                                      autoSuggestionsForCategory(e)
+                                    }
+                                  />
+                                  <span className="input-group-text">
+                                    <span
+                                      title="Edit Categories"
+                                      onClick={() => EditComponentPicker(item)}
+                                      className="svg__iconbox svg__icon--editBox"
+                                    ></span>
+                                  </span>
+                                </>
+                              )}
                             {CategoriesData &&
-                            CategoriesData?.length == 1 &&
-                            CategoriesData != undefined ? (
+                              CategoriesData?.length == 1 &&
+                              CategoriesData != undefined ? (
                               <div className="full-width">
                                 {CategoriesData?.map(
                                   (type: any, index: number) => {
@@ -3750,63 +3729,63 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                           (selectedCat: any) =>
                                             selectedCat?.Title == type?.Title
                                         ) && (
-                                          <div className="full-width replaceInput alignCenter">
-                                            <a
-                                              style={{
-                                                color: "#fff !important",
-                                              }}
-                                              target="_blank"
-                                              className="textDotted hreflink"
-                                              data-interception="off"
-                                              href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?${item?.Id}`}
-                                            >
-                                              {type.Title}
-                                            </a>
-                                            <span className="input-group-text">
-                                              {/* <span className="dark mini svg__iconbox svg__icon--cross"
+                                            <div className="full-width replaceInput alignCenter">
+                                              <a
+                                                style={{
+                                                  color: "#fff !important",
+                                                }}
+                                                target="_blank"
+                                                className="textDotted hreflink"
+                                                data-interception="off"
+                                                href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?${item?.Id}`}
+                                              >
+                                                {type.Title}
+                                              </a>
+                                              <span className="input-group-text">
+                                                {/* <span className="dark mini svg__iconbox svg__icon--cross"
                                                                                 onClick={() => deleteCategories(type?.Id)}
                                                                             ></span> */}
-                                              <span
-                                                title="Edit Categories"
-                                                onClick={() =>
-                                                  EditComponentPicker(item)
-                                                }
-                                                className="svg__iconbox svg__icon--editBox"
-                                              ></span>
-                                            </span>
+                                                <span
+                                                  title="Edit Categories"
+                                                  onClick={() =>
+                                                    EditComponentPicker(item)
+                                                  }
+                                                  className="svg__iconbox svg__icon--editBox"
+                                                ></span>
+                                              </span>
 
-                                            {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
-                                          </div>
-                                        )}
+                                              {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
+                                            </div>
+                                          )}
                                       </>
                                     );
                                   }
                                 )}
-                             
+
                               </div>
                             ) : null}
-                               {SearchedCategoryData?.length > 0 ? (
-                                  <div className="SmartTableOnTaskPopup">
-                                    <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                      {SearchedCategoryData.map((item: any) => {
-                                        return (
-                                          <li
-                                            className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
-                                            key={item.id}
-                                            onClick={() =>
-                                              setSelectedCategoryData(
-                                                [item],
-                                                "For-Auto-Search"
-                                              )
-                                            }
-                                          >
-                                            <a>{item.Newlabel}</a>
-                                          </li>
-                                        );
-                                      })}
-                                    </ul>
-                                  </div>
-                                ) : null}
+                            {SearchedCategoryData?.length > 0 ? (
+                              <div className="SmartTableOnTaskPopup">
+                                <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                  {SearchedCategoryData.map((item: any) => {
+                                    return (
+                                      <li
+                                        className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                        key={item.id}
+                                        onClick={() =>
+                                          setSelectedCategoryData(
+                                            [item],
+                                            "For-Auto-Search"
+                                          )
+                                        }
+                                      >
+                                        <a>{item.Newlabel}</a>
+                                      </li>
+                                    );
+                                  })}
+                                </ul>
+                              </div>
+                            ) : null}
                           </div>
                           {instantCategories?.map((item: any, index: any) => {
                             const isChecked = CategoriesData?.some(
@@ -3814,7 +3793,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                             );
 
                             return (
-                             <div key={index} className="form-check mt-2">
+                              <div key={index} className="form-check mt-2">
                                 <input
                                   className="form-check-input rounded-0"
                                   type="checkbox"
@@ -3827,8 +3806,8 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                           })}
                         </div>
                         {CategoriesData &&
-                        CategoriesData.length > 1 &&
-                        CategoriesData != undefined ? (
+                          CategoriesData.length > 1 &&
+                          CategoriesData != undefined ? (
                           <div>
                             {CategoriesData?.map((type: any, index: number) => {
                               return (
@@ -3837,24 +3816,24 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                     (selectedCat: any) =>
                                       selectedCat?.Title == type?.Title
                                   ) && (
-                                    <div className="block d-flex full-width justify-content-between mb-1 p-2">
-                                      <a
-                                        style={{ color: "#fff !important" }}
-                                        target="_blank"
-                                        data-interception="off"
-                                        href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?${item?.Id}`}
-                                      >
-                                        {type.Title}
-                                      </a>
-                                      <span
-                                        className="bg-light svg__iconbox svg__icon--cross"
-                                        onClick={() =>
-                                          deleteCategories(type?.Id)
-                                        }
-                                      ></span>
-                                      {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
-                                    </div>
-                                  )}
+                                      <div className="block d-flex full-width justify-content-between mb-1 p-2">
+                                        <a
+                                          style={{ color: "#fff !important" }}
+                                          target="_blank"
+                                          data-interception="off"
+                                          href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?${item?.Id}`}
+                                        >
+                                          {type.Title}
+                                        </a>
+                                        <span
+                                          className="bg-light svg__iconbox svg__icon--cross"
+                                          onClick={() =>
+                                            deleteCategories(type?.Id)
+                                          }
+                                        ></span>
+                                        {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
+                                      </div>
+                                    )}
                                 </>
                               );
                             })}
@@ -3862,29 +3841,29 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                         ) : null}
                         <div className="col-sm-12 mt-2">
                           <div className="col-sm-12 padding-0 input-group">
-                          <label className="full_width">Project</label>
+                            <label className="full_width">Project</label>
                             {(filterdata?.length == 0 ||
                               filterdata.length !== 1) && (
-                              <>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  onChange={(e) => autoSuggestionsForProject(e)}
-                                />
-                                <span
-                                  className="input-group-text"
-                                  placeholder="Project"
-                                >
+                                <>
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    onChange={(e) => autoSuggestionsForProject(e)}
+                                  />
                                   <span
-                                    title="Project"
-                                    onClick={(e) =>
-                                      openPortfolioPopup("Project")
-                                    }
-                                    className="svg__iconbox svg__icon--editBox"
-                                  ></span>
-                                </span>
-                              </>
-                            )}
+                                    className="input-group-text"
+                                    placeholder="Project"
+                                  >
+                                    <span
+                                      title="Project"
+                                      onClick={(e) =>
+                                        openPortfolioPopup("Project")
+                                      }
+                                      className="svg__iconbox svg__icon--editBox"
+                                    ></span>
+                                  </span>
+                                </>
+                              )}
 
                             {filterdata && filterdata.length == 1 ? (
                               //    "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=4310"
@@ -3980,34 +3959,34 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                               )}
                             </div>
                           </div>
-                         <div className="col-sm-12 padding-0 input-group mt-2">
+                          <div className="col-sm-12 padding-0 input-group mt-2">
                             <label className="full_width">Feature Type </label>
                             {(FeatureTypeData?.length == 0 ||
                               FeatureTypeData[0] == undefined) && (
-                              <>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  onChange={(e) =>
-                                    autoSuggestionsForFeatureType(e)
-                                  }
-                                />
-                                <span
-                                  className="input-group-text"
-                                  placeholder="Feature Type"
-                                >
-                                  <span
-                                    title="Feature Type"
-                                    onClick={(e) =>
-                                      opensmartmetadatapopup(
-                                        EditData?.FeatureType
-                                      )
+                                <>
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    onChange={(e) =>
+                                      autoSuggestionsForFeatureType(e)
                                     }
-                                    className="svg__iconbox svg__icon--editBox"
-                                  ></span>
-                                </span>
-                              </>
-                            )}
+                                  />
+                                  <span
+                                    className="input-group-text"
+                                    placeholder="Feature Type"
+                                  >
+                                    <span
+                                      title="Feature Type"
+                                      onClick={(e) =>
+                                        opensmartmetadatapopup(
+                                          EditData?.FeatureType
+                                        )
+                                      }
+                                      className="svg__iconbox svg__icon--editBox"
+                                    ></span>
+                                  </span>
+                                </>
+                              )}
 
                             {FeatureTypeData &&
                               FeatureTypeData?.length == 1 &&
@@ -4112,13 +4091,13 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                 ></span>
                               </a>
                               {composition &&
-                              EditData?.siteCompositionData?.length > 0 &&
-                              EditData?.siteCompositionData?.length > 0 ? (
+                                EditData?.siteCompositionData?.length > 0 &&
+                                EditData?.siteCompositionData?.length > 0 ? (
                                 <div className="spxdropdown-menu">
                                   <ul>
                                     {EditData?.siteCompositionData !=
                                       undefined &&
-                                    EditData?.siteCompositionData?.length >
+                                      EditData?.siteCompositionData?.length >
                                       0 ? (
                                       <>
                                         {EditData?.siteCompositionData?.map(
@@ -4137,41 +4116,41 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
 
                                                 {SiteDtls.ClienTimeDescription !=
                                                   undefined && (
-                                                  <span className="mx-2">
-                                                    {Number(
-                                                      SiteDtls.ClienTimeDescription
-                                                    ).toFixed(2)}
-                                                    %
-                                                  </span>
-                                                )}
+                                                    <span className="mx-2">
+                                                      {Number(
+                                                        SiteDtls.ClienTimeDescription
+                                                      ).toFixed(2)}
+                                                      %
+                                                    </span>
+                                                  )}
 
                                                 <span className="d-inline">
                                                   {SiteDtls.ClientCategory !=
                                                     undefined &&
-                                                  SiteDtls.ClientCategory
-                                                    .length > 0
+                                                    SiteDtls.ClientCategory
+                                                      .length > 0
                                                     ? SiteDtls.ClientCategory?.map(
-                                                        (
-                                                          clientcat: any,
-                                                          Index: any
-                                                        ) => {
-                                                          return (
-                                                            <div
-                                                              className={
-                                                                Index ==
+                                                      (
+                                                        clientcat: any,
+                                                        Index: any
+                                                      ) => {
+                                                        return (
+                                                          <div
+                                                            className={
+                                                              Index ==
                                                                 SiteDtls
                                                                   .ClientCategory
                                                                   ?.length -
-                                                                  1
-                                                                  ? "mb-0"
-                                                                  : "mb-0 border-bottom"
-                                                              }
-                                                            >
-                                                              {clientcat.Title}
-                                                            </div>
-                                                          );
-                                                        }
-                                                      )
+                                                                1
+                                                                ? "mb-0"
+                                                                : "mb-0 border-bottom"
+                                                            }
+                                                          >
+                                                            {clientcat.Title}
+                                                          </div>
+                                                        );
+                                                      }
+                                                    )
                                                     : null}
                                                 </span>
                                               </li>
@@ -4255,11 +4234,10 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                 <label className="toggler full_width">
                                   <div className="alignCenter">
                                     Admin Notes{" "}
-                                    {`(${
-                                      EditData?.AdminNotes?.length != undefined
+                                    {`(${EditData?.AdminNotes?.length != undefined
                                         ? EditData?.AdminNotes?.length
                                         : 0
-                                    })`}
+                                      })`}
                                     <span className="ml-auto"></span>
                                   </div>
                                 </label>
@@ -4282,11 +4260,10 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                 <label className="toggler full_width">
                                   <div className="alignCenter">
                                     Description{" "}
-                                    {`(${
-                                      EditData?.Bodylength?.length != undefined
+                                    {`(${EditData?.Bodylength?.length != undefined
                                         ? EditData?.Bodylength?.length
                                         : 0
-                                    })`}{" "}
+                                      })`}{" "}
                                     <span className="ml-auto">
                                       <input
                                         type="checkbox"
@@ -4320,15 +4297,14 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                 <label className="toggler full_width">
                                   <div className="alignCenter">
                                     Short Description{" "}
-                                    {`(${
-                                      EditData
+                                    {`(${EditData
                                         ?.Short_x0020_Description_x0020_Onlength
                                         ?.length != undefined
                                         ? EditData
-                                            ?.Short_x0020_Description_x0020_Onlength
-                                            ?.length
+                                          ?.Short_x0020_Description_x0020_Onlength
+                                          ?.length
                                         : 0
-                                    })`}{" "}
+                                      })`}{" "}
                                     <span className="ml-auto">
                                       <input
                                         type="checkbox"
@@ -4346,7 +4322,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                   <HtmlEditorCard
                                     editorValue={
                                       EditData?.Short_x0020_Description_x0020_On !=
-                                      undefined
+                                        undefined
                                         ? EditData?.Short_x0020_Description_x0020_On
                                         : ""
                                     }
@@ -4363,11 +4339,10 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                 <label className="toggler full_width">
                                   <div className="alignCenter">
                                     Background{" "}
-                                    {`(${
-                                      EditData?.Background?.length != undefined
+                                    {`(${EditData?.Background?.length != undefined
                                         ? EditData?.Background?.length
                                         : 0
-                                    })`}
+                                      })`}
                                     <span className="ml-auto">
                                       <input
                                         type="checkbox"
@@ -4398,11 +4373,10 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                 <label className="toggler full_width">
                                   <div className="alignCenter">
                                     Idea{" "}
-                                    {`(${
-                                      EditData?.Idea?.length != undefined
+                                    {`(${EditData?.Idea?.length != undefined
                                         ? EditData?.Idea?.length
                                         : 0
-                                    })`}{" "}
+                                      })`}{" "}
                                     <span className="ml-auto">
                                       <input
                                         type="checkbox"
@@ -4434,11 +4408,10 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                 <label className="toggler full_width">
                                   <div className="alignCenter">
                                     Value Added{" "}
-                                    {`(${
-                                      EditData?.ValueAdded?.length != undefined
+                                    {`(${EditData?.ValueAdded?.length != undefined
                                         ? EditData?.ValueAdded?.length
                                         : 0
-                                    })`}
+                                      })`}
                                     <span className="ml-auto alignCenter">
                                       <input
                                         type="checkbox"
@@ -4471,12 +4444,11 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                                   <div className="alignCenter">
                                     {" "}
                                     Deliverables{" "}
-                                    {`(${
-                                      EditData?.Deliverableslength?.length !=
-                                      undefined
+                                    {`(${EditData?.Deliverableslength?.length !=
+                                        undefined
                                         ? EditData?.Deliverableslength?.length
                                         : 0
-                                    })`}
+                                      })`}
                                     <span className="alignCenter ml-auto">
                                       <input
                                         type="checkbox"
@@ -4523,12 +4495,11 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                         <label className="toggler full_width">
                           <div className="alignCenter">
                             Technical Concept{" "}
-                            {`(${
-                              EditData?.TechnicalExplanationslength?.length !=
-                              undefined
+                            {`(${EditData?.TechnicalExplanationslength?.length !=
+                                undefined
                                 ? EditData?.TechnicalExplanationslength?.length
                                 : 0
-                            })`}{" "}
+                              })`}{" "}
                             <span className="ml-auto">
                               <input
                                 type="checkbox"
@@ -4573,13 +4544,12 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                           <label className="toggler full_width">
                             <div className="alignCenter">
                               Help Information{" "}
-                              {`(${
-                                EditData?.Help_x0020_Informationlength
+                              {`(${EditData?.Help_x0020_Informationlength
                                   ?.length != undefined
                                   ? EditData?.Help_x0020_Informationlength
-                                      ?.length
+                                    ?.length
                                   : 0
-                              })`}
+                                })`}
                               <span className="alignCenter ml-auto">
                                 <input
                                   type="checkbox"
@@ -4624,42 +4594,42 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                               (elem: any) => elem?.ComponentsId != undefined
                             ).map((item: any) =>
                               CompoenetItem[0]?.Id ===
-                              item.ComponentsId?.results[0]
+                                item.ComponentsId?.results[0]
                                 ? item.ItemType === "Question" && (
-                                    <div key={item.Id}>
-                                      <details open>
-                                        <summary>
-                                          <label className="toggler full_width alignCenter">
-                                            <span className="pull-left">
-                                              {item.Title}
-                                            </span>
+                                  <div key={item.Id}>
+                                    <details open>
+                                      <summary>
+                                        <label className="toggler full_width alignCenter">
+                                          <span className="pull-left">
+                                            {item.Title}
+                                          </span>
 
-                                            <div className="ml-auto alignCenter">
-                                              <span
-                                                className="svg__iconbox svg__icon--edit hreflink"
-                                                onClick={() =>
-                                                  editQuestionHandler(item)
-                                                }
-                                              >
-                                                Edit
-                                              </span>
-                                              <span
-                                                className="svg__iconbox svg__icon--cross hreflink"
-                                                onClick={() =>
-                                                  deleteHandler(item.Id)
-                                                }
-                                              >
-                                                Delete
-                                              </span>
-                                            </div>
-                                          </label>
-                                        </summary>
-                                        <div className="border border-top-0 p-2">
-                                          {item.Body?.replace(/<[^>]*>/g, "")}
-                                        </div>
-                                      </details>
-                                    </div>
-                                  )
+                                          <div className="ml-auto alignCenter">
+                                            <span
+                                              className="svg__iconbox svg__icon--edit hreflink"
+                                              onClick={() =>
+                                                editQuestionHandler(item)
+                                              }
+                                            >
+                                              Edit
+                                            </span>
+                                            <span
+                                              className="svg__iconbox svg__icon--cross hreflink"
+                                              onClick={() =>
+                                                deleteHandler(item.Id)
+                                              }
+                                            >
+                                              Delete
+                                            </span>
+                                          </div>
+                                        </label>
+                                      </summary>
+                                      <div className="border border-top-0 p-2">
+                                        {item.Body?.replace(/<[^>]*>/g, "")}
+                                      </div>
+                                    </details>
+                                  </div>
+                                )
                                 : null
                             )}
 
@@ -4667,48 +4637,48 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                               (elem: any) => elem.ComponentsId === undefined
                             ).map((filteredItem: any) =>
                               filteredItem?.Components != undefined &&
-                              CompoenetItem[0]?.Id ===
+                                CompoenetItem[0]?.Id ===
                                 filteredItem?.Components[0]?.Id
                                 ? filteredItem.ItemType === "Question" && (
-                                    <div key={filteredItem.Id}>
-                                      <details open>
-                                        <summary>
-                                          <label className="toggler full_width alignCenter">
-                                            <span className="pull-left">
-                                              {filteredItem.Title}
-                                            </span>
+                                  <div key={filteredItem.Id}>
+                                    <details open>
+                                      <summary>
+                                        <label className="toggler full_width alignCenter">
+                                          <span className="pull-left">
+                                            {filteredItem.Title}
+                                          </span>
 
-                                            <div className="ml-auto alignCenter">
-                                              <span
-                                                className="svg__iconbox svg__icon--edit hreflink"
-                                                onClick={() =>
-                                                  editQuestionHandler(
-                                                    filteredItem
-                                                  )
-                                                }
-                                              >
-                                                Edit
-                                              </span>
-                                              <span
-                                                className="svg__iconbox svg__icon--cross hreflink"
-                                                onClick={() =>
-                                                  deleteHandler(filteredItem.Id)
-                                                }
-                                              >
-                                                Delete
-                                              </span>
-                                            </div>
-                                          </label>
-                                        </summary>
-                                        <div className="border border-top-0 p-2">
-                                          {filteredItem.Body?.replace(
-                                            /<[^>]*>/g,
-                                            ""
-                                          )}
-                                        </div>
-                                      </details>
-                                    </div>
-                                  )
+                                          <div className="ml-auto alignCenter">
+                                            <span
+                                              className="svg__iconbox svg__icon--edit hreflink"
+                                              onClick={() =>
+                                                editQuestionHandler(
+                                                  filteredItem
+                                                )
+                                              }
+                                            >
+                                              Edit
+                                            </span>
+                                            <span
+                                              className="svg__iconbox svg__icon--cross hreflink"
+                                              onClick={() =>
+                                                deleteHandler(filteredItem.Id)
+                                              }
+                                            >
+                                              Delete
+                                            </span>
+                                          </div>
+                                        </label>
+                                      </summary>
+                                      <div className="border border-top-0 p-2">
+                                        {filteredItem.Body?.replace(
+                                          /<[^>]*>/g,
+                                          ""
+                                        )}
+                                      </div>
+                                    </details>
+                                  </div>
+                                )
                                 : null
                             )}
 
@@ -4744,42 +4714,42 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                             (elem: any) => elem?.ComponentsId != undefined
                           ).map((item: any) =>
                             CompoenetItem[0]?.Id ===
-                            item.ComponentsId?.results[0]
+                              item.ComponentsId?.results[0]
                               ? item.ItemType === "Help" && (
-                                  <div key={item.Id}>
-                                    <details open>
-                                      <summary>
-                                        <label className="toggler full_width alignCenter">
-                                          <span className="pull-left">
-                                            {item.Title}
-                                          </span>
+                                <div key={item.Id}>
+                                  <details open>
+                                    <summary>
+                                      <label className="toggler full_width alignCenter">
+                                        <span className="pull-left">
+                                          {item.Title}
+                                        </span>
 
-                                          <div className="ml-auto alignCenter">
-                                            <span
-                                              className="svg__iconbox svg__icon--edit hreflink"
-                                              onClick={() =>
-                                                editHelpHandler(item)
-                                              }
-                                            >
-                                              Edit
-                                            </span>
-                                            <span
-                                              className="svg__iconbox svg__icon--cross hreflink"
-                                              onClick={() =>
-                                                deleteHandler(item.Id)
-                                              }
-                                            >
-                                              Delete
-                                            </span>
-                                          </div>
-                                        </label>
-                                      </summary>
-                                      <div className="border border-top-0 p-2">
-                                        {item.Body?.replace(/<[^>]*>/g, "")}
-                                      </div>
-                                    </details>
-                                  </div>
-                                )
+                                        <div className="ml-auto alignCenter">
+                                          <span
+                                            className="svg__iconbox svg__icon--edit hreflink"
+                                            onClick={() =>
+                                              editHelpHandler(item)
+                                            }
+                                          >
+                                            Edit
+                                          </span>
+                                          <span
+                                            className="svg__iconbox svg__icon--cross hreflink"
+                                            onClick={() =>
+                                              deleteHandler(item.Id)
+                                            }
+                                          >
+                                            Delete
+                                          </span>
+                                        </div>
+                                      </label>
+                                    </summary>
+                                    <div className="border border-top-0 p-2">
+                                      {item.Body?.replace(/<[^>]*>/g, "")}
+                                    </div>
+                                  </details>
+                                </div>
+                              )
                               : null
                           )}
 
@@ -4787,46 +4757,46 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                             (elem: any) => elem?.ComponentsId === undefined
                           ).map((filteredItem: any) =>
                             filteredItem?.Components != undefined &&
-                            CompoenetItem[0]?.Id ===
+                              CompoenetItem[0]?.Id ===
                               filteredItem?.Components[0]?.Id
                               ? filteredItem.ItemType === "Help" && (
-                                  <div key={filteredItem.Id}>
-                                    <details open>
-                                      <summary>
-                                        <label className="toggler full_width alignCenter">
-                                          <span className="pull-left">
-                                            {filteredItem.Title}
-                                          </span>
+                                <div key={filteredItem.Id}>
+                                  <details open>
+                                    <summary>
+                                      <label className="toggler full_width alignCenter">
+                                        <span className="pull-left">
+                                          {filteredItem.Title}
+                                        </span>
 
-                                          <div className="ml-auto alignCenter">
-                                            <span
-                                              className="svg__iconbox svg__icon--edit hreflink"
-                                              onClick={() =>
-                                                editHelpHandler(filteredItem)
-                                              }
-                                            >
-                                              Edit
-                                            </span>
-                                            <span
-                                              className="svg__iconbox svg__icon--cross hreflink"
-                                              onClick={() =>
-                                                deleteHandler(filteredItem.Id)
-                                              }
-                                            >
-                                              Delete
-                                            </span>
-                                          </div>
-                                        </label>
-                                      </summary>
-                                      <div className="border border-top-0 p-2">
-                                        {filteredItem.Body?.replace(
-                                          /<[^>]*>/g,
-                                          ""
-                                        )}
-                                      </div>
-                                    </details>
-                                  </div>
-                                )
+                                        <div className="ml-auto alignCenter">
+                                          <span
+                                            className="svg__iconbox svg__icon--edit hreflink"
+                                            onClick={() =>
+                                              editHelpHandler(filteredItem)
+                                            }
+                                          >
+                                            Edit
+                                          </span>
+                                          <span
+                                            className="svg__iconbox svg__icon--cross hreflink"
+                                            onClick={() =>
+                                              deleteHandler(filteredItem.Id)
+                                            }
+                                          >
+                                            Delete
+                                          </span>
+                                        </div>
+                                      </label>
+                                    </summary>
+                                    <div className="border border-top-0 p-2">
+                                      {filteredItem.Body?.replace(
+                                        /<[^>]*>/g,
+                                        ""
+                                      )}
+                                    </div>
+                                  </details>
+                                </div>
+                              )
                               : null
                           )}
 
@@ -4904,7 +4874,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                   </div>
                   <div className="text-left">
                     <a onClick={() => deleteTask()}>
-                       <span style={{marginLeft:'-4px'}} className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
+                      <span style={{ marginLeft: '-4px' }} className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
                       Delete This Item
                     </a>
                     <span>
@@ -4946,9 +4916,8 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
                         ></span>
                       </span>
                       <a
-                        href={`mailto:?subject=${"Test"}&body=${
-                          EditData?.ComponentLink
-                        }`}
+                        href={`mailto:?subject=${"Test"}&body=${EditData?.ComponentLink
+                          }`}
                       >
                         {" "}
                         Share This Task ||
@@ -4984,7 +4953,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
 
             {IsComponent ? (
               <ServiceComponentPortfolioPopup
-                props={SharewebComponent}
+                props={CMSToolComponent}
                 Dynamic={RequireData}
                 ComponentType={"Component"}
                 Call={Call}
@@ -5008,7 +4977,7 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
 
             {IsComponentPicker && (
               <Picker
-                props={SharewebCategory}
+                props={TaskCat}
                 Call={Call}
                 usedFor="Task-Footertable"
                 selectedCategoryData={CategoriesData}
@@ -5312,11 +5281,10 @@ function EditInstitution({item,SelectD,Calls,usedFor,portfolioTypeData,}: any) {
       </Panel>
       {/*change portfolio type */}
       <Panel
-        className={`${
-          EditData?.Portfolio_x0020_Type == "Service"
+        className={`${EditData?.Portfolio_x0020_Type == "Service"
             ? " serviepannelgreena"
             : ""
-        }`}
+          }`}
         onRenderHeader={onRenderHeaderChangeParent}
         isOpen={changeType}
         onDismiss={() => {
