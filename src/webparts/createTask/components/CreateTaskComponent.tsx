@@ -24,7 +24,7 @@ let TeamMessagearray: any = [];
 let AllComponents: any = []
 let taskUsers: any = [];
 let ClientActivityJson: any = null;
- let taskCreated = false;
+let taskCreated = false;
 let createdTask: any = {}
 let IsapprovalTask = false
 let QueryPortfolioId: any = null;
@@ -76,7 +76,7 @@ function CreateTaskComponent(props: any) {
     const [isActiveCategory, setIsActiveCategory] = React.useState(false);
     const [selectedProjectData, setSelectedProjectData]: any = React.useState({});
     const [activeCategory, setActiveCategory] = React.useState([]);
-    const [ShareWebComponent, setShareWebComponent] = React.useState('');
+    const [CMSToolComponent, setCMSToolComponent] = React.useState('');
     const [refreshPage, setRefreshPage] = React.useState(false);
     const [burgerMenuTaskDetails, setBurgerMenuTaskDetails]: any = React.useState({
         ComponentID: undefined,
@@ -93,9 +93,9 @@ function CreateTaskComponent(props: any) {
         try {
             $("#spPageCanvasContent").removeClass();
             $("#spPageCanvasContent").addClass("hundred");
-          } catch (e) {
+        } catch (e) {
             console.log(e);
-          }
+        }
         AllListId = {
             MasterTaskListID: props?.SelectedProp?.MasterTaskListID,
             TaskUsertListID: props?.SelectedProp?.TaskUsertListID,
@@ -144,12 +144,12 @@ function CreateTaskComponent(props: any) {
         if (Type == 'Component') {
             setIsOpenPortfolio(true);
             setOpenPortfolioType(Type)
-            setShareWebComponent(item);
+            setCMSToolComponent(item);
         }
         if (Type == 'Project') {
             setProjectManagementPopup(true)
             setOpenPortfolioType(Type)
-            setShareWebComponent(item);
+            setCMSToolComponent(item);
         }
     }
 
@@ -751,7 +751,7 @@ function CreateTaskComponent(props: any) {
             return Promise.reject(error);
         }
     }
-    
+
     const getChilds = (item: any, items: any) => {
         item.childs = [];
         items?.map((childItem: any) => {
@@ -881,16 +881,19 @@ function CreateTaskComponent(props: any) {
                     try {
                         if (selectedPortfolio !== undefined && selectedPortfolio.length >= 0) {
                             $.each(selectedPortfolio, function (index: any, smart: any) {
-                                if(smart?.AssignedTo && smart?.AssignedTo?.length>0){
-                                    smart?.AssignedTo.forEach(function(i:any){
-                                        ResponsibleIds.push(i.Id)
-                                    })
-                                 }
-                                 if(smart?.TeamMembers && smart?.TeamMembers?.length>0){
-                                    smart?.TeamMembers.forEach(function(i:any){
-                                        TeamMembersIds.push(i.Id)
-                                    })
-                                 }
+                                if (CategoryTitle?.indexOf("User Experience - UX") < 0) {
+                                    if (smart?.AssignedTo && smart?.AssignedTo?.length > 0) {
+                                        smart?.AssignedTo.forEach(function (i: any) {
+                                            ResponsibleIds.push(i.Id)
+                                        })
+                                    }
+                                    if (smart?.TeamMembers && smart?.TeamMembers?.length > 0) {
+                                        smart?.TeamMembers.forEach(function (i: any) {
+                                            TeamMembersIds.push(i.Id)
+                                        })
+                                    }
+                                }
+
                                 selectedComponent.push(smart.Id);
                                 portfolioId = smart?.Id
                                 if (selectedSite?.Parent?.Title == "SDC Sites") {
@@ -977,7 +980,7 @@ function CreateTaskComponent(props: any) {
                         PortfolioId: portfolioId,
                         TeamMembersId: { "results": TeamMembersIds },
                         ProjectId: ProjectId,
-                        // SharewebComponentId: { "results": $scope.SharewebComponent },
+                        // CMSToolComponentId: { "results": $scope.CMSToolComponent },
                         TaskCategoriesId: { "results": taskCat },
                         ClientCategoryId: { "results": selectedCC },
                         // LinkServiceTaskId: { "results": $scope.SaveServiceTaskItemId },
@@ -1025,7 +1028,7 @@ function CreateTaskComponent(props: any) {
                         let newTitle = data?.data?.Title
                         let CreatedTaskID = data?.data?.Id
                         data.data.siteType = save.siteType;
-                        if (CategoryTitle?.indexOf('Immediate') > -1 || CategoryTitle?.indexOf("Email Notification") > -1) {
+                        if (CategoryTitle?.indexOf('Immediate') > -1 || CategoryTitle?.indexOf('Email Notification') > -1) {
                             let listID = '3BBA0B9A-4A9F-4CE0-BC15-61F4F550D556'
                             var postData = {
                                 __metadata: { 'type': 'SP.Data.ImmediateNotificationsListItem' },
@@ -1034,10 +1037,14 @@ function CreateTaskComponent(props: any) {
                                 "Site": save.siteType
                             };
                             await createTaskByListId(selectedSite?.siteUrl?.Url, listID, postData, save.siteType)
-                            await globalCommon?.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, undefined, 'Immediate', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
-                                console.log(response);
-                            });;
                         }
+                        //     if(CategoryTitle?.indexOf('Immediate') > -1 ){
+                        //         await globalCommon?.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, undefined, 'Immediate', taskUsers, props?.SelectedProp?.Context).then((response: any) => {
+                        //             console.log(response);
+                        //         });;
+                        //     }
+
+                        // }
                         if (CategoryTitle?.indexOf('Immediate') < -1) {
                             setSendApproverMail(true);
                         }
@@ -1083,9 +1090,8 @@ function CreateTaskComponent(props: any) {
                                 });
                                 if (sendUserEmail?.length > 0) {
                                     await globalCommon.SendTeamMessage(
-                                        sendUserEmail,
-                                        TeamMsg,
-                                        props.SelectedProp.Context
+                                        sendUserEmail, TeamMsg, props.SelectedProp.Context,
+                                        AllListId
                                     );
                                 }
 
@@ -1415,7 +1421,7 @@ function CreateTaskComponent(props: any) {
                 hasCustomExpanded: false,
                 hasExpanded: false,
                 isHeaderNotAvlable: true,
-                size:30,
+                size: 30,
                 id: 'Id',
             },
             , {
@@ -1432,7 +1438,7 @@ function CreateTaskComponent(props: any) {
             },
             {
                 accessorKey: "TaskID",
-                id:'TaskID',
+                id: 'TaskID',
                 placeholder: "Task Id",
                 header: "",
                 resetColumnFilters: false,
@@ -1461,10 +1467,10 @@ function CreateTaskComponent(props: any) {
                                 >
                                     {row?.original?.Title}
                                 </a>
-                               
+
                             </span>
                             <span className='mt-1'>
-                            {row?.original?.descriptionsSearch !== null && row?.original?.descriptionsSearch != '' && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />}</span>
+                                {row?.original?.descriptionsSearch !== null && row?.original?.descriptionsSearch != '' && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />}</span>
                         </div>
                     </>
                 ),
@@ -1517,7 +1523,7 @@ function CreateTaskComponent(props: any) {
                 header: "",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 60
+                size: 42
             },
             {
                 accessorFn: (row) => row?.DueDate,
@@ -1567,7 +1573,7 @@ function CreateTaskComponent(props: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
-                size: 55
+                size: 42
             },
             {
                 accessorFn: (row) => row?.Created,
@@ -1749,20 +1755,20 @@ function CreateTaskComponent(props: any) {
                                             className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
                                     {SearchedServiceCompnentData?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
-                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                            {SearchedServiceCompnentData.map((Item: any) => {
-                                                return (
-                                                    <li className='hreflink list-group-item rounded-0 list-group-item-action p-1' key={Item.id} onClick={() => ComponentServicePopupCallBack([Item], undefined, undefined)} >
-                                                        <a>{Item.Path}</a>
-                                                    </li>
-                                                )
-                                            }
-                                            )}
-                                        </ul>
-                                    </div>) : null}
+                                        <div className="SmartTableOnTaskPopup">
+                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                {SearchedServiceCompnentData.map((Item: any) => {
+                                                    return (
+                                                        <li className='hreflink list-group-item rounded-0 list-group-item-action p-1' key={Item.id} onClick={() => ComponentServicePopupCallBack([Item], undefined, undefined)} >
+                                                            <a>{Item.Path}</a>
+                                                        </li>
+                                                    )
+                                                }
+                                                )}
+                                            </ul>
+                                        </div>) : null}
                                 </div>
-                               
+
 
 
                             </div>
@@ -1790,20 +1796,20 @@ function CreateTaskComponent(props: any) {
                                             className="svg__iconbox svg__icon--editBox"></span>
                                     </span>
                                     {SearchedProjectItems?.length > 0 ? (
-                                    <div className="SmartTableOnTaskPopup">
-                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                            {SearchedProjectItems.map((Item: any) => {
-                                                return (
-                                                    <li className='hreflink list-group-item rounded-0 list-group-item-action p-1' key={Item.id} onClick={() => ComponentServicePopupCallBack([Item], undefined, undefined)} >
-                                                        <a>{Item.Path}</a>
-                                                    </li>
-                                                )
-                                            }
-                                            )}
-                                        </ul>
-                                    </div>) : null}
+                                        <div className="SmartTableOnTaskPopup">
+                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                {SearchedProjectItems.map((Item: any) => {
+                                                    return (
+                                                        <li className='hreflink list-group-item rounded-0 list-group-item-action p-1' key={Item.id} onClick={() => ComponentServicePopupCallBack([Item], undefined, undefined)} >
+                                                            <a>{Item.Path}</a>
+                                                        </li>
+                                                    )
+                                                }
+                                                )}
+                                            </ul>
+                                        </div>) : null}
                                 </div>
-                               
+
 
 
                             </div>
@@ -2005,7 +2011,7 @@ function CreateTaskComponent(props: any) {
 
                 {(IsOpenPortfolio || ProjectManagementPopup) && (
                     <ServiceComponentPortfolioPopup
-                        props={ShareWebComponent}
+                        props={CMSToolComponent}
                         Dynamic={AllListId}
                         Call={ComponentServicePopupCallBack}
                         selectionType={"Single"}
@@ -2014,7 +2020,7 @@ function CreateTaskComponent(props: any) {
                     />
                 )}
                 {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup context={props?.SelectedProp.Context} SDCTaskDetails={burgerMenuTaskDetails}
-                    sendApproverMail={sendApproverMail} AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
+                    sendApproverMail={sendApproverMail} AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} pageType={'createTask'} /> : ''}
             </div >
             {(SuggestedProjectsOfporfolio?.length > 0 || relevantProjects?.length > 0) ?
                 <span className="ms-4">
