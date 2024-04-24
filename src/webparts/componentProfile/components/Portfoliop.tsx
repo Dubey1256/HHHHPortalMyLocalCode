@@ -423,7 +423,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
   const [keydoc, Setkeydoc] = React.useState([]);
   const [FileDirRef, SetFileDirRef] = React.useState("");
   const [IsComponent, setIsComponent] = React.useState(false);
-  const [SharewebComponent, setSharewebComponent] = React.useState("");
+  const [CMSToolComponent, setCMSToolComponent] = React.useState("");
   const [showBlock, setShowBlock] = React.useState(false);
   const [IsTask, setIsTask] = React.useState(false);
   const [enable, setenable] = React.useState(true);
@@ -871,7 +871,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
     item["siteUrl"] = web;
     item["listName"] = ContextValue.MasterTaskListID;
     setIsComponent(true);
-    setSharewebComponent(item);
+    setCMSToolComponent(item);
   };
   const Call = React.useCallback((item1) => {
     count++;
@@ -1355,7 +1355,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                             <span>
                               {data.map((item: any, index: any) => (
                                 <ReactPopperTooltipSingleLevel
-                                  ShareWebId={item?.PortfolioStructureID}
+                                  CMSToolId={item?.PortfolioStructureID}
                                   row={item}
                                   singleLevel={true}
                                   masterTaskData={AllMasterTaskData}
@@ -2264,7 +2264,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
 
         {IsComponent && (
           <EditInstituton
-            item={SharewebComponent}
+            item={CMSToolComponent}
             SelectD={SelectedProp}
             Calls={Call}
             portfolioTypeData={portfolioTyped}

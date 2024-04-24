@@ -156,8 +156,8 @@ export default function GetDraft(search: any) {
                                     item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
                                 else
                                     item.PercentComplete = '';
-                                //This function is used for getting Shareweb Id,
-                                item.TaskID = getSharewebId(item)
+                                //This function is used for getting  Id,
+                                item.TaskID = getCMSToolId(item)
                                 //******End*********
 
                                 // *******************Item Categories-*******************
@@ -188,7 +188,7 @@ export default function GetDraft(search: any) {
         setAllSitesTask(TempArray);
     }
     // ------This function is used for getting ShareFweb Id--------
-    const getSharewebId = function (item: any) {
+    const getCMSToolId = function (item: any) {
         var TaskID = undefined;
         if (item != undefined && item.TaskType != undefined && item.TaskType.Title == undefined) {
             TaskID = 'T' + item.Id;
@@ -352,7 +352,7 @@ export default function GetDraft(search: any) {
         // -------------Update call draft categories--------------
         var postData = {
             "Categories": recviedClicked.updateCategories,
-            SharewebCategoriesId: { "results": recviedClicked.updatedId },
+            TaskCategoriesId: { "results": recviedClicked.updatedId },
         };
         const updateData = (subchild: any, AllMetaData: any) => {
             let web = new Web(baseUrl);

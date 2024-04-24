@@ -76,7 +76,7 @@ export interface IUserTimeEntryState {
   IsTimeEntry: boolean;
   showShareTimesheet: boolean;
   disableProperty: boolean;
-  SharewebTimeComponent: any;
+  cmsTimeComponent: any;
   AllMetadata: any;
   isDirectPopup: boolean;
   TimeSheetLists: any;
@@ -134,7 +134,7 @@ export default class UserTimeEntry extends React.Component<
       IsCheckedService: true,
       selectedRadio: "ThisWeek",
       IsTimeEntry: false,
-      SharewebTimeComponent: {},
+      cmsTimeComponent: {},
       AllMetadata: [],
       isDirectPopup: false,
       TimeSheetLists: [],
@@ -1851,7 +1851,7 @@ export default class UserTimeEntry extends React.Component<
     getAllTimeEntry: any
   ) {
     let callcount = 0;
-    let AllSharewebSiteTasks: any = [];
+    let AllSiteTask: any = [];
     let AllTimeEntryItem: any = [];
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
     if (filterItemTimeTab.length > 0) {
@@ -1888,7 +1888,7 @@ export default class UserTimeEntry extends React.Component<
         //       }).join('');
         //       Item.descriptionsSearch = DiscriptionSearchData
         //     }
-        //     AllSharewebSiteTasks.push(Item);
+        //     AllSiteTask.push(Item);
         //   })
         // }
 
@@ -2043,7 +2043,7 @@ export default class UserTimeEntry extends React.Component<
                 }).join("");
               Item.descriptionsSearch = DiscriptionSearchData;
             }
-            AllSharewebSiteTasks.push(Item);
+            AllSiteTask.push(Item);
           });
         }
       }
@@ -2052,7 +2052,7 @@ export default class UserTimeEntry extends React.Component<
         filterItem.ClientCategorySearch = "";
         filterItem.clientCategory = "";
         filterItem.clientCategoryIds = "";
-        AllSharewebSiteTasks.forEach(function (copygetval: any) {
+        AllSiteTask.forEach(function (copygetval: any) {
           var getItem: any = JSON.stringify(copygetval);
           getItem = globalCommon.parseJSON(getItem);
           if (
@@ -2700,7 +2700,7 @@ export default class UserTimeEntry extends React.Component<
       IsTimeEntry: true,
     });
     this.setState({
-      SharewebTimeComponent: item,
+      cmsTimeComponent: item,
     });
   };
   private TimeEntryCallBack() {
@@ -2765,7 +2765,7 @@ export default class UserTimeEntry extends React.Component<
             <span className="d-flex">
               <ReactPopperTooltipSingleLevel
                 AllListId={AllListId}
-                ShareWebId={info?.row?.original?.DisplayTaskId}
+                CMSToolId={info?.row?.original?.DisplayTaskId}
                 row={info?.row?.original}
                 singleLevel={true}
                 masterTaskData={AllPortfolios}
@@ -2906,7 +2906,7 @@ export default class UserTimeEntry extends React.Component<
             <>
                 {info?.row?.original?.ProjectTitle != (null || undefined) &&
                     <span ><a style={info?.row?.original?.fontColorTask != undefined ? { color: `${info?.row?.original?.fontColorTask}` } : { color: `${info?.row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/PX-Profile.aspx?ProjectId=${info?.row?.original?.ProjectId}`} >
-                        <ReactPopperTooltip ShareWebId={info?.row?.original?.projectStructerId} projectToolShow={true}  row={info?.row} AllListId={AllListId} /></a></span>
+                        <ReactPopperTooltip CMSToolId={info?.row?.original?.projectStructerId} projectToolShow={true}  row={info?.row} AllListId={AllListId} /></a></span>
                 }
             </>
         ),
@@ -4047,7 +4047,7 @@ export default class UserTimeEntry extends React.Component<
         )}
         {this.state.IsTimeEntry && (
           <TimeEntryPopup
-            props={this.state.SharewebTimeComponent}
+            props={this.state.cmsTimeComponent}
             CallBackTimeEntry={this.TimeEntryCallBack}
             Context={this?.props?.Context}
           ></TimeEntryPopup>
