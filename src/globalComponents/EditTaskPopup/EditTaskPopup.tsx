@@ -50,7 +50,7 @@ var CommentBoxData: any = [];
 var SubCommentBoxData: any = [];
 var timesheetData: any = [];
 var updateFeedbackArray: any = [];
-let tempShareWebTypeData: any = [];
+let BackupTaskCategoriesData: any = [];
 var tempCategoryData: any = "";
 var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
@@ -109,7 +109,7 @@ const EditTaskPopup = (Items: any) => {
     const [TaggedPortfolioData, setTaggedPortfolioData] = useState([]);
     const [linkedPortfolioData, setLinkedPortfolioData] = useState([]);
     const [CategoriesData, setCategoriesData] = useState("");
-    const [ShareWebTypeData, setShareWebTypeData] = useState([]);
+    const [TaskCategoriesData, setTaskCategoriesData] = useState([]);
     const [BasicImageData, setBasicImageData] = useState([]);
     const [AllCategoryData, setAllCategoryData] = useState([]);
     const [SearchedCategoryData, setSearchedCategoryData] = useState([]);
@@ -1228,9 +1228,9 @@ const EditTaskPopup = (Items: any) => {
                 ) {
                     let tempArray: any = [];
                     tempArray = item.TaskCategories;
-                    setShareWebTypeData(item.TaskCategories);
+                    setTaskCategoriesData(item.TaskCategories);
                     tempArray?.map((tempData: any) => {
-                        tempShareWebTypeData.push(tempData);
+                        BackupTaskCategoriesData.push(tempData);
                     });
                 }
                 if (item.RelevantPortfolio?.length > 0) {
@@ -1582,8 +1582,8 @@ const EditTaskPopup = (Items: any) => {
     const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         setIsComponentPicker(false);
         let uniqueIds: any = {};
-        let checkForOnHoldAndBottleneck: any = tempShareWebTypeData?.some((category: any) => category.Title === "On-Hold" && category.Title === "Bottleneck");
-        let checkForDesign: any = tempShareWebTypeData?.some((category: any) => category.Title === "Design");
+        let checkForOnHoldAndBottleneck: any = BackupTaskCategoriesData?.some((category: any) => category.Title === "On-Hold" && category.Title === "Bottleneck");
+        let checkForDesign: any = BackupTaskCategoriesData?.some((category: any) => category.Title === "Design");
         if (usedFor == "For-Panel") {
             let TempArrya: any = [];
             selectCategoryData?.map((selectedData: any) => {
@@ -1614,7 +1614,7 @@ const EditTaskPopup = (Items: any) => {
                     setSendCategoryName(selectedData?.Title);
                 }
             })
-            tempShareWebTypeData = TempArrya;
+            BackupTaskCategoriesData = TempArrya;
         } else {
             selectCategoryData.forEach((existingData: any) => {
                 if ((existingData.Title == "On-Hold" || existingData.Title == "Bottleneck") && !checkForOnHoldAndBottleneck) {
@@ -1622,21 +1622,21 @@ const EditTaskPopup = (Items: any) => {
                     setOnHoldPanel(true);
                     setSendCategoryName(existingData.Title)
                 } else {
-                    tempShareWebTypeData.push(existingData);
+                    BackupTaskCategoriesData.push(existingData);
                 }
             });
         }
-        const result: any = tempShareWebTypeData.filter((item: any) => {
+        const result: any = BackupTaskCategoriesData.filter((item: any) => {
             if (!uniqueIds[item.Id]) {
                 uniqueIds[item.Id] = true;
                 return true;
             }
             return false;
         });
-        tempShareWebTypeData = result;
+        BackupTaskCategoriesData = result;
         let updatedItem = {
             ...EditDataBackup,
-            TaskCategories: tempShareWebTypeData,
+            TaskCategories: BackupTaskCategoriesData,
         };
         let SmartPriority = globalCommon.calculateSmartPriority(updatedItem)
         updatedItem = {
@@ -1658,7 +1658,7 @@ const EditTaskPopup = (Items: any) => {
             setApproverData([]);
         }
         if (usedFor === "For-Panel" || usedFor === "For-Auto-Search") {
-            setShareWebTypeData(result);
+            setTaskCategoriesData(result);
             if (usedFor === "For-Auto-Search") {
                 setSearchedCategoryData([]);
                 setCategorySearchKey("");
@@ -1675,16 +1675,16 @@ const EditTaskPopup = (Items: any) => {
         setOnHoldPanel(false);
         if (usedFor == "Save") {
             let uniqueIds: any = {};
-            tempShareWebTypeData.push(onHoldCategory[0]);
-            const result: any = tempShareWebTypeData.filter((item: any) => {
+            BackupTaskCategoriesData.push(onHoldCategory[0]);
+            const result: any = BackupTaskCategoriesData.filter((item: any) => {
                 if (!uniqueIds[item.Id]) {
                     uniqueIds[item.Id] = true;
                     return true;
                 }
                 return false;
             });
-            tempShareWebTypeData = result;
-            setShareWebTypeData(result);
+            BackupTaskCategoriesData = result;
+            setTaskCategoriesData(result);
         }
         onHoldCategory = [];
     }, []);
@@ -1714,11 +1714,11 @@ const EditTaskPopup = (Items: any) => {
     const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
         let tempString: any;
         let tempArray2: any = [];
-        tempShareWebTypeData = [];
-        ShareWebTypeData?.map((dataType: any) => {
+        BackupTaskCategoriesData = [];
+        TaskCategoriesData?.map((dataType: any) => {
             if (dataType.Id != TypeId) {
                 tempArray2.push(dataType);
-                tempShareWebTypeData.push(dataType);
+                BackupTaskCategoriesData.push(dataType);
             }
         });
         if (tempArray2 != undefined && tempArray2.length > 0) {
@@ -1731,7 +1731,7 @@ const EditTaskPopup = (Items: any) => {
         }
         setCategoriesData(tempString);
         tempCategoryData = tempString;
-        setShareWebTypeData(tempArray2);
+        setTaskCategoriesData(tempArray2);
     };
     const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
         isApprovalByStatus = false;
@@ -1776,10 +1776,10 @@ const EditTaskPopup = (Items: any) => {
                 setCategoriesData(category);
                 tempCategoryData = category;
                 if (
-                    tempShareWebTypeData != undefined &&
-                    tempShareWebTypeData.length > 0
+                    BackupTaskCategoriesData != undefined &&
+                    BackupTaskCategoriesData.length > 0
                 ) {
-                    tempShareWebTypeData.map((tempItem: any) => {
+                    BackupTaskCategoriesData.map((tempItem: any) => {
                         if (tempItem.Title == type) {
                             CheckTaagedCategory = false;
                         }
@@ -1792,14 +1792,14 @@ const EditTaskPopup = (Items: any) => {
                     AutoCompleteItemsArray.map((dataItem: any) => {
                         if (dataItem.Title == type) {
                             if (CheckTaagedCategory) {
-                                ShareWebTypeData.push(dataItem);
-                                tempShareWebTypeData.push(dataItem);
+                                TaskCategoriesData.push(dataItem);
+                                BackupTaskCategoriesData.push(dataItem);
 
                             }
                         }
                     });
                 }
-                // setSearchedCategoryData(tempShareWebTypeData);
+                // setSearchedCategoryData(BackupTaskCategoriesData);
                 if (type == "Phone") {
                     setPhoneStatus(true);
                 }
@@ -1862,7 +1862,7 @@ const EditTaskPopup = (Items: any) => {
         }
         let updatedItem = {
             ...EditDataBackup,
-            TaskCategories: tempShareWebTypeData,
+            TaskCategories: BackupTaskCategoriesData,
         };
         let SmartPriority = globalCommon.calculateSmartPriority(updatedItem)
         updatedItem = {
@@ -2443,13 +2443,13 @@ const EditTaskPopup = (Items: any) => {
     const setModalIsOpenToFalse = () => {
         Items.Call("Close");
         // callBack();
-        tempShareWebTypeData = [];
+        BackupTaskCategoriesData = [];
         AllMetaData = [];
         taskUsers = [];
         CommentBoxData = [];
         SubCommentBoxData = [];
         updateFeedbackArray = [];
-        tempShareWebTypeData = [];
+        BackupTaskCategoriesData = [];
         tempCategoryData = [];
         SiteTypeBackupArray = [];
         currentUserBackupArray = [];
@@ -2629,7 +2629,7 @@ const EditTaskPopup = (Items: any) => {
                             UpdateWorkinActionJSON(WorkingActionData);
                         }
                         const uniqueIds: any = {};
-                        const result = tempShareWebTypeData.filter((item: any) => {
+                        const result = BackupTaskCategoriesData.filter((item: any) => {
                             if (!uniqueIds[item.Id]) {
                                 uniqueIds[item.Id] = true;
                                 return true;
@@ -2932,13 +2932,13 @@ const EditTaskPopup = (Items: any) => {
                         if (usedFor == "Image-Tab") {
                             GetExtraLookupColumnData();
                         } else {
-                            tempShareWebTypeData = [];
+                            BackupTaskCategoriesData = [];
                             AllMetaData = [];
                             taskUsers = [];
                             CommentBoxData = [];
                             SubCommentBoxData = [];
                             updateFeedbackArray = [];
-                            tempShareWebTypeData = [];
+                            BackupTaskCategoriesData = [];
                             tempCategoryData = "";
                             SiteTypeBackupArray = [];
                             currentUserBackupArray = [];
@@ -3205,7 +3205,7 @@ const EditTaskPopup = (Items: any) => {
         let CategoriesTitle: any = "";
         let uniqueIds: any = {};
 
-        const result: any = tempShareWebTypeData.filter((item: any) => {
+        const result: any = BackupTaskCategoriesData.filter((item: any) => {
             if (!uniqueIds[item.Id]) {
                 uniqueIds[item.Id] = true;
                 return true;
@@ -5945,7 +5945,7 @@ const EditTaskPopup = (Items: any) => {
                                                     <label className="form-label full-width">
                                                         Categories
                                                     </label>
-                                                    {ShareWebTypeData?.length > 1 ? <>
+                                                    {TaskCategoriesData?.length > 1 ? <>
                                                         <input
                                                             type="text"
                                                             className="form-control"
@@ -5976,7 +5976,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 </ul>
                                                             </div>
                                                         ) : null}
-                                                        {ShareWebTypeData?.map(
+                                                        {TaskCategoriesData?.map(
                                                             (type: any, index: number) => {
                                                                 if (
                                                                     type.Title != "Phone" &&
@@ -6009,10 +6009,10 @@ const EditTaskPopup = (Items: any) => {
                                                             }
                                                         )}</> :
                                                         <>
-                                                            {ShareWebTypeData?.length == 1 ?
+                                                            {TaskCategoriesData?.length == 1 ?
 
                                                                 <div className="full-width">
-                                                                    {ShareWebTypeData?.map((CategoryItem: any) => {
+                                                                    {TaskCategoriesData?.map((CategoryItem: any) => {
                                                                         return (
                                                                             <div className="full-width replaceInput alignCenter">
                                                                                 <a
@@ -6126,10 +6126,10 @@ const EditTaskPopup = (Items: any) => {
                                                             />
                                                             <label>Immediate</label>
                                                         </div>
-                                                        {/* {ShareWebTypeData != undefined &&
-                                                            ShareWebTypeData?.length > 0 ? (
+                                                        {/* {TaskCategoriesData != undefined &&
+                                                            TaskCategoriesData?.length > 0 ? (
                                                             <div>
-                                                                {ShareWebTypeData?.map(
+                                                                {TaskCategoriesData?.map(
                                                                     (type: any, index: number) => {
                                                                         if (
                                                                             type.Title != "Phone" &&
@@ -7691,7 +7691,7 @@ const EditTaskPopup = (Items: any) => {
                     {IsComponentPicker && (
                         <Picker
                             props={EditData}
-                            selectedCategoryData={ShareWebTypeData}
+                            selectedCategoryData={TaskCategoriesData}
                             usedFor="Task-Popup"
                             siteUrls={siteUrls}
                             AllListId={AllListIdData}
@@ -8321,7 +8321,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <label className="form-label full-width">
                                                                     Categories
                                                                 </label>
-                                                                {ShareWebTypeData?.length > 1 ? <>
+                                                                {TaskCategoriesData?.length > 1 ? <>
                                                                     <input
                                                                         type="text"
                                                                         className="form-control"
@@ -8352,7 +8352,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             </ul>
                                                                         </div>
                                                                     ) : null}
-                                                                    {ShareWebTypeData?.map(
+                                                                    {TaskCategoriesData?.map(
                                                                         (type: any, index: number) => {
                                                                             if (
                                                                                 type.Title != "Phone" &&
@@ -8385,10 +8385,10 @@ const EditTaskPopup = (Items: any) => {
                                                                         }
                                                                     )}</> :
                                                                     <>
-                                                                        {ShareWebTypeData?.length == 1 ?
+                                                                        {TaskCategoriesData?.length == 1 ?
 
                                                                             <div className="full-width">
-                                                                                {ShareWebTypeData?.map((CategoryItem: any) => {
+                                                                                {TaskCategoriesData?.map((CategoryItem: any) => {
                                                                                     return (
                                                                                         <div className="full-width replaceInput alignCenter">
                                                                                             <a
@@ -8513,10 +8513,10 @@ const EditTaskPopup = (Items: any) => {
                                                                         />
                                                                         <label>Immediate</label>
                                                                     </div>
-                                                                    {ShareWebTypeData != undefined &&
-                                                                        ShareWebTypeData?.length > 0 ? (
+                                                                    {TaskCategoriesData != undefined &&
+                                                                        TaskCategoriesData?.length > 0 ? (
                                                                         <div>
-                                                                            {ShareWebTypeData?.map(
+                                                                            {TaskCategoriesData?.map(
                                                                                 (type: any, index: number) => {
                                                                                     if (
                                                                                         type.Title != "Phone" &&
