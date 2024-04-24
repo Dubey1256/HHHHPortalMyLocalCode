@@ -441,7 +441,7 @@ const TaskStatusTbl = (Tile: any) => {
                 <p>${RejectedItem?.RejectedDetails?.RejectedComment}</p>
                 </br>
                 <p>Thanks,</p>`
-                await globalCommon.SendTeamMessage(sendUserEmail, TeamMsg, ContextData?.propsValue?.Context);
+                await globalCommon.SendTeamMessage(sendUserEmail, TeamMsg, ContextData?.propsValue?.Context, ContextData?.propsValue);
               }
               DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
               DashboardConfigCopy?.map((Config: any) => {
@@ -580,7 +580,7 @@ const TaskStatusTbl = (Tile: any) => {
         isColumnVisible: true,
         cell: ({ row, getValue }: any) => (
           <span className="d-flex">
-            <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={item?.Tasks} AllListId={ContextData?.propsValue?.Context} />
+            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={item?.Tasks} AllListId={ContextData?.propsValue?.Context} />
           </span>
         ),
       },
@@ -652,7 +652,7 @@ const TaskStatusTbl = (Tile: any) => {
           <>
             {row?.original?.ProjectTitle != (null || undefined) &&
               <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextData?.propsValue?.siteUrl}/SitePages/Project-Management-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextData?.propsValue} /></a></span>
+                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextData?.propsValue} /></a></span>
             }
           </>
         ),
