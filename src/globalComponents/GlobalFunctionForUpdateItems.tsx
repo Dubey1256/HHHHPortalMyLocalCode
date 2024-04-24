@@ -1699,43 +1699,48 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         }
                     </div>
                     {RequiredData?.CommentsArray?.length > 0 ?
-                        <div style={{ width: '232px'}}>
-                                <div className="">
-                                    <div style={{fontSize:'16px', fontWeight:'600', marginBottom:'8px'}}>
-                                        Comments:
-                                    </div>
-                                    <div style={{width:'100%'}}>
-                                        {RequiredData["CommentsArray"] != undefined && RequiredData["CommentsArray"]?.length > 0 && RequiredData["CommentsArray"]?.map((cmtData: any, i: any) => {
-                                            return (
-                                                <div style={{backgroundColor:'#fff', width:'100%', padding:'8px 12px', marginBottom: "8px"}}>
-                                                    <div style={{marginBottom: "8px", width:'100%'}}>
-                                                        <div>
-                                                            <span style={{fontWeight:'600' }}>{cmtData.AuthorName}</span> - {cmtData.Created}
-                                                        </div>
-                                                        <div>
-                                                            {cmtData.Description}
-                                                        </div>
-                                                    </div>
-                                                    {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
-                                                        return (
-                                                            <div style={{backgroundColor:'#f5f5f5', padding:'8px 12px', width:'100%' }}>
-                                                                <div style={{ marginBottom: '8px' }}>
-                                                                    <span style={{fontWeight:'600' }}>{replyData.AuthorName}</span> - {replyData.Created}
-                                                                </div>
-                                                                <div>
-                                                                    {replyData.Description}
-                                                                </div>
-                                                            </div>
-                                                        )
-                                                    })}
-                                                   
-                                                </div>
-
-                                            )
-
-                                        })}
-                                    </div>
+                        <div style={{ width: '232px' }}>
+                            <div className="">
+                                <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>
+                                    Comments ({RequiredData["CommentsArray"]?.length}):
                                 </div>
+                                <div style={{ width: '100%' }}>
+                                    {RequiredData["CommentsArray"] != undefined && RequiredData["CommentsArray"]?.length > 0 && RequiredData["CommentsArray"]?.map((cmtData: any, i: any) => {
+                                        if (i < 5) {
+                                            return (
+                                                <>
+                                                    <div style={{ backgroundColor: '#fff', width: '100%', padding: '8px 12px', marginBottom: "8px" }}>
+                                                        <div style={{ marginBottom: "8px", width: '100%' }}>
+                                                            <div>
+                                                                <span style={{ fontWeight: '600' }}>{cmtData.AuthorName}</span> - {cmtData.Created}
+                                                            </div>
+                                                            <div>
+                                                                {cmtData.Description}
+                                                            </div>
+                                                        </div>
+                                                        {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
+                                                            return (
+                                                                <div style={{ backgroundColor: '#f5f5f5', padding: '8px 12px', width: '100%' }}>
+                                                                    <div style={{ marginBottom: '8px' }}>
+                                                                        <span style={{ fontWeight: '600' }}>{replyData.AuthorName}</span> - {replyData.Created}
+                                                                    </div>
+                                                                    <div>
+                                                                        {replyData.Description}
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        })}
+
+                                                    </div>
+
+                                                </>
+                                            )
+                                        }
+                                    })}
+                                </div>
+                                {RequiredData?.CommentsArray?.length > 5 ? <span>For more go to Task: <a href={`${RequiredData?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${RequiredData?.ID}&Site=${RequiredData?.siteType}`}>
+                                    Click-here</a> </span> : ""}
+                            </div>
                         </div>
                         : null
                     }
