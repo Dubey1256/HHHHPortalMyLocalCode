@@ -257,7 +257,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     let showPopupHeader = items?.showPopupHeader
     // let showPagination: any = items?.showPagination;
     let usedFor: any = items?.usedFor;
-    let portfolioColor = items?.portfolioColor != undefined ? items?.portfolioColor : "#000066";
+    let portfolioColor = items?.portfolioColor != undefined ? items?.portfolioColor : "";
     let expandIcon = items?.expandIcon;
     let fixedWidth = items?.fixedWidth;
     let portfolioTypeData = items?.portfolioTypeData;
