@@ -318,6 +318,9 @@ const inlineEditingcolumns = (props: any) => {
           "taskCategoryType",
           JSON.stringify(CMSTaskCategories)
         );
+        CMSTaskCategories = CMSTaskCategories.filter((item: any)=> item.Title != "Bottleneck")
+        let stringifiedCategories = JSON.stringify(CMSTaskCategories)
+        localStorage.setItem("taskCategoryType", stringifiedCategories);
         localStorage.setItem(
           "Priority",
           JSON.stringify(
