@@ -4,7 +4,7 @@ import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
 import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 import Button from 'react-bootstrap/Button';
-import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent';
+// import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent';
 import PortfolioTagging from './PortfolioTagging';
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 import * as globalCommon from "../../../globalComponents/globalCommon";
