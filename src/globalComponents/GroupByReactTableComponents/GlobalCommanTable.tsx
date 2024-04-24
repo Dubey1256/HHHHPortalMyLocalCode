@@ -1246,12 +1246,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                 return (
                                     <>
                                         {isShowingDataAll === true ? <label><label className='alignCenter'>
-                                            <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons hover-text'>{`${type?.Title?.charAt(0)}`} <span className='tooltip-text pop-right'>{type?.Title}</span></label>
+                                            <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons hover-text'>{type.Title !== "Sprint" ? `${type?.Title?.charAt(0)}`: "X"} <span className='tooltip-text pop-right'>{type?.Title}</span></label>
                                             <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `}/</label>
                                             <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
                                         </label></label> :
                                             <label><label className='alignCenter'>
-                                                <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons hover-text'>{`${type?.Title?.charAt(0)}`} <span className='tooltip-text pop-right'>{type?.Title}</span></label>
+                                                <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons hover-text'>{type.Title !== "Sprint" ? `${type?.Title?.charAt(0)}`: "X"}<span className='tooltip-text pop-right'>{type?.Title}</span></label>
                                                 <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `}/</label>
                                                 <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
                                             </label></label>}
