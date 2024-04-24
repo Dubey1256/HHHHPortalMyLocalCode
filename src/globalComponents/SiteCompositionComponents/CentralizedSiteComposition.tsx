@@ -1335,7 +1335,8 @@ const CentralizedSiteComposition = (Props: any) => {
                 if (SelectedCCIndex > -1) {
                     ItemData.ClientCategories?.map((CCItem: any, CCIndex: any) => {
                         if (CCIndex == SelectedCCIndex) {
-                            CCItem.checked = true
+                            CCItem.checked = true;
+                            ItemData.TaggedCCTitle = CCItem.Title;
                         } else {
                             CCItem.checked = false
                         }
