@@ -10,14 +10,7 @@
         }
       ]
     },
-    "gmbh-calendar-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/gmbhCalendar/GmbhCalendarWebPart.js",
-          "manifest": "./src/webparts/gmbhCalendar/GmbhCalendarWebPart.manifest.json"
-        }
-      ]
-    },
+   
     "smart-connect-web-part": {
       "components": [
         {
@@ -290,14 +283,7 @@
         }
       ]
     },
-    "smartmetadataportfolio-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/smartmetadataportfolio/SmartmetadataportfolioWebPart.js",
-          "manifest": "./src/webparts/smartmetadataportfolio/SmartmetadataportfolioWebPart.manifest.json"
-        }
-      ]
-    },
+   
     "site-structure-web-part": {
       "components": [
         {
@@ -459,22 +445,31 @@
         }
       ]
     },
-    "profiles-web-part": {
+    "hhhh-smart-pages-web-part": {
       "components": [
         {
-          "entrypoint": "./lib/webparts/profiles/ProfilesWebPart.js",
-          "manifest": "./src/webparts/profiles/ProfilesWebPart.manifest.json"
+          "entrypoint": "./lib/webparts/hhhhSmartPages/HhhhSmartPagesWebPart.js",
+          "manifest": "./src/webparts/hhhhSmartPages/HhhhSmartPagesWebPart.manifest.json"
         }
       ]
     },
-    "smartpages-web-part": {
+    "hhhh-smart-metadata-portfolio-web-part": {
       "components": [
         {
-          "entrypoint": "./lib/webparts/smartpages/SmartpagesWebPart.js",
-          "manifest": "./src/webparts/smartpages/SmartpagesWebPart.manifest.json"
+          "entrypoint": "./lib/webparts/hhhhSmartMetadataPortfolio/HhhhSmartMetadataPortfolioWebPart.js",
+          "manifest": "./src/webparts/hhhhSmartMetadataPortfolio/HhhhSmartMetadataPortfolioWebPart.manifest.json"
+        }
+      ]
+    },
+    "hhhh-profile-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/hhhhProfile/HhhhProfileWebPart.js",
+          "manifest": "./src/webparts/hhhhProfile/HhhhProfileWebPart.manifest.json"
         }
       ]
     }
+   
   },
   "externals": {
     "bootstrap-css": {
@@ -512,7 +507,6 @@
     "TaskUserManagementWebPartStrings": "lib/webparts/taskUserManagement/loc/{locale}.js",
     "SiteStructureWebPartStrings": "lib/webparts/SiteStructure/loc/{locale}.js",
     "SiteDataBackupToolWebPartStrings": "lib/webparts/siteDataBackupTool/loc/{locale}.js",
-    "SmartmetadataportfolioWebPartStrings": "lib/webparts/smartmetadataportfolio/loc/{locale}.js",
     "HhhhQuickWebPartStrings": "lib/webparts/hhhhQuick/loc/{locale}.js",
     "ParentPortfolioViewWebPartStrings": "lib/webparts/parentPortfolioView/loc/{locale}.js",
     "EmployeDashBoardWebPartStrings": "lib/webparts/employeDashBoard/loc/{locale}.js",
@@ -548,14 +542,14 @@
     "ManagedashboardconfigWebPartStrings": "lib/webparts/managedashboardconfig/loc/{locale}.js",
     "FlowCreationWebPartStrings": "lib/webparts/flowCreation/loc/{locale}.js",
     "SMarttaskWebPartStrings": "lib/webparts/sMarttask/loc/{locale}.js",
-    "GmbhCalendarWebPartStrings": "lib/webparts/gmbhCalendar/loc/{locale}.js",
     "GroupByComponentsDashboardWebPartStrings": "lib/webparts/groupByComponentsDashboard/loc/{locale}.js",
     "SmartDynamicTableWebPartStrings": "lib/webparts/smartDynamicTable/loc/{locale}.js",
     "TaskProfileTemplateWebPartStrings": "lib/webparts/taskProfileTemplate/loc/{locale}.js",
     "EmployeeDashboardTemplatedWebPartStrings": "lib/webparts/employeeDashboardTemplated/loc/{locale}.js",
     "ContactDatabaseWebPartStrings": "lib/webparts/contactDatabase/loc/{locale}.js",
     "ContactProfileWebPartStrings": "lib/webparts/contactProfile/loc/{locale}.js",
-    "SmartpagesWebPartStrings": "lib/webparts/smartpages/loc/{locale}.js",
-    "ProfilesWebPartStrings": "lib/webparts/profiles/loc/{locale}.js"
+    "HhhhSmartPagesWebPartStrings": "lib/webparts/hhhhSmartPages/loc/{locale}.js",
+    "HhhhSmartMetadataPortfolioWebPartStrings": "lib/webparts/hhhhSmartMetadataPortfolio/loc/{locale}.js",
+    "HhhhProfileWebPartStrings": "lib/webparts/hhhhProfile/loc/{locale}.js"
   }
 }

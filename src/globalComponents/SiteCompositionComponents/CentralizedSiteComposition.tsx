@@ -31,7 +31,10 @@ let SelectedChildItems: any = [];
 let GlobalCount: any = 0;
 let GlobalAllTaskUsersData: any = [];
 let FlatViewTableData: any = [];
+let BackupFlatViewTableData: any = [];
 let GroupByTableData: any = [];
+let BackupGroupByTableData: any = [];
+
 let taskTypeData: any = [];
 let PortfolioItemColor: any = "";
 
@@ -74,10 +77,7 @@ const CentralizedSiteComposition = (Props: any) => {
 
 
     // These are used for Global Common Table Component 
-
-    // const [GroupByTableData, setGroupByTableData] = useState<any>([]);
     const [data, setData] = React.useState([])
-    // const [FlatViewTableData, setFlatViewTableData] = useState<any>([]);
     const [loaded, setLoaded] = React.useState(false);
     const [AllTaskUserData, setAllTaskUserData] = useState(false);
     const [IsShowTableContent, setIsShowTableContent] = useState(true);
@@ -374,6 +374,21 @@ const CentralizedSiteComposition = (Props: any) => {
                     }
                 }, 1000);
             }
+
+            if (SelectedItemDetails.ClientCategory?.length > 0) {
+                let TempCCItems: any = [];
+                AllClientCategoryDataBackup?.map((AllCCItem: any) => {
+                    SelectedItemDetails.ClientCategory?.map((SelectedCCItem: any) => {
+                        if (SelectedCCItem?.Id == AllCCItem?.Id) {
+                            TempCCItems.push(AllCCItem);
+                            AllCCItem.checked = true;
+                            AllClientCategoryBucket.push(AllCCItem);
+                        }
+                    })
+                })
+                ClientCategoryTemp = TempCCItems;
+            }
+
             if (SelectedItemDetails.Sitestagging?.length > 0) {
                 SiteCompositionTemp = JSON.parse(SelectedItemDetails.Sitestagging);
                 // setSiteCompositionJSON(SiteCompositionTemp);
@@ -394,6 +409,18 @@ const CentralizedSiteComposition = (Props: any) => {
                 GlobalCount = 1;
             }
 
+            let TempArraySC: any = [];
+            SiteCompositionTemp?.map((SCItemsData: any) => {
+                ClientCategoryTemp?.map((TaggedCCData: any) => {
+                    if (SCItemsData.Title == TaggedCCData.siteName) {
+                        SCItemsData.TaggedCCTitle = TaggedCCData.Title;
+                        TempArraySC.push(SCItemsData);
+                    }
+                })
+            })
+
+
+
             if (SiteCompositionTemp?.length > 0) {
                 AllSiteDataBackup?.map((SiteData: any) => {
                     SiteCompositionTemp?.map((SelectedSC: any) => {
@@ -401,24 +428,12 @@ const CentralizedSiteComposition = (Props: any) => {
                             SiteData.BtnStatus = true;
                             SiteData.ClienTimeDescription = SelectedSC.ClienTimeDescription;
                             SiteData.Date = SelectedSC.Date;
+                            SiteData.TaggedCCTitle = SelectedSC.TaggedCCTitle;
+
                         }
                     })
                 })
                 setAllSiteData([...AllSiteDataBackup])
-            }
-
-            if (SelectedItemDetails.ClientCategory?.length > 0) {
-                let TempCCItems: any = [];
-                AllClientCategoryDataBackup?.map((AllCCItem: any) => {
-                    SelectedItemDetails.ClientCategory?.map((SelectedCCItem: any) => {
-                        if (SelectedCCItem?.Id == AllCCItem?.Id) {
-                            TempCCItems.push(AllCCItem);
-                            AllCCItem.checked = true;
-                            AllClientCategoryBucket.push(AllCCItem);
-                        }
-                    })
-                })
-                ClientCategoryTemp = TempCCItems;
             }
             SelectedItemDetails.Id = ItemDetails?.Id;
             SelectedItemDetails.listId = ItemDetails?.listId;
@@ -497,7 +512,9 @@ const CentralizedSiteComposition = (Props: any) => {
         if (usedFor == "AWT") {
             let AllGroupingData: any = await AWTGrouping(ItemDetails, "AWT");
             if (AllGroupingData?.length > 0) {
+                let DeepCopyData: any = JSON.parse(JSON.stringify(AllGroupingData));
                 GroupByTableData = AllGroupingData;
+                BackupGroupByTableData = DeepCopyData;
                 setData(AllGroupingData);
             }
             FilterAllClientCategories();
@@ -645,6 +662,8 @@ const CentralizedSiteComposition = (Props: any) => {
         }
         setData(FinalGroupingData);
         GroupByTableData = FinalGroupingData;
+        let DeepCopyData: any = JSON.parse(JSON.stringify(FinalGroupingData));
+        BackupGroupByTableData = DeepCopyData;
         FilterAllClientCategories();
         setLoaded(true);
     }
@@ -942,7 +961,9 @@ const CentralizedSiteComposition = (Props: any) => {
         setIsModelOpen(false);
         closePopupCallBack(usedFor);
         FlatViewTableData = [];
+        BackupFlatViewTableData = [];
         GroupByTableData = [];
+        BackupGroupByTableData = [];
     }
 
     // For the user find the selected site setting
@@ -1201,13 +1222,13 @@ const CentralizedSiteComposition = (Props: any) => {
 
     const switchFlatViewData = (Type: any) => {
         if (Type == false) {
-            setData(FlatViewTableData)
+            setData(BackupFlatViewTableData)
             let groupedDataItems = JSON.parse(JSON.stringify(data));
             const flattenedData = flattenData(groupedDataItems);
             setData(flattenedData);
             setFlatView(true);
         } else {
-            setData(GroupByTableData);
+            setData(BackupGroupByTableData);
             setFlatView(false);
         }
     }
@@ -1314,7 +1335,8 @@ const CentralizedSiteComposition = (Props: any) => {
                 if (SelectedCCIndex > -1) {
                     ItemData.ClientCategories?.map((CCItem: any, CCIndex: any) => {
                         if (CCIndex == SelectedCCIndex) {
-                            CCItem.checked = true
+                            CCItem.checked = true;
+                            ItemData.TaggedCCTitle = CCItem.Title;
                         } else {
                             CCItem.checked = false
                         }
@@ -1609,6 +1631,26 @@ const CentralizedSiteComposition = (Props: any) => {
         let UpdateStatus: any = false;
         let SiteCompositionJSON: any[] = [];
         let ClientCategoriesIds: any[] = [];
+        let IsSCUpdatedInline: any = false;
+        let IsCCUpdatedInline: any = false;
+        let IsBothUpdatedInline: any = false;
+
+        if (DataForUpdate.IsSCUpdatedInline == true) {
+            IsSCUpdatedInline = true;
+        } else {
+            IsSCUpdatedInline = false;
+        }
+        if (DataForUpdate.IsCCUpdatedInline == true) {
+            IsCCUpdatedInline = true;
+        } else {
+            IsCCUpdatedInline = false;
+        }
+        if (DataForUpdate.IsBothUpdatedInline == true) {
+            IsBothUpdatedInline = true;
+        } else {
+            IsBothUpdatedInline = false;
+        }
+
         let SiteSettings: any[] = PreparedUpdatedData?.siteSetting;
         if (ItemType == "CSF") {
             SiteCompositionJSON = PreparedUpdatedData.SiteTaggingData;
@@ -1649,10 +1691,22 @@ const CentralizedSiteComposition = (Props: any) => {
 
 
         let FinalSitestagging: any[] = commonFunctionForRemoveDataRedundancy(SiteCompositionJSON);
-        let MakeUpdateJSONDataObject: object = {
-            Sitestagging: FinalSitestagging?.length > 0 ? JSON.stringify(FinalSitestagging) : null,
-            ClientCategoryId: { "results": (ClientCategoriesIds?.length > 0) ? ClientCategoriesIds : [] },
-            SiteCompositionSettings: (SiteSettings?.length > 0) ? JSON.stringify(SiteSettings) : null,
+        let MakeUpdateJSONDataObject: object = {};
+        if (((!IsSCUpdatedInline || !IsCCUpdatedInline) && IsBothUpdatedInline) || (!IsSCUpdatedInline && !IsCCUpdatedInline && !IsBothUpdatedInline)) {
+            MakeUpdateJSONDataObject = {
+                Sitestagging: FinalSitestagging?.length > 0 ? JSON.stringify(FinalSitestagging) : null,
+                ClientCategoryId: { "results": (ClientCategoriesIds?.length > 0) ? ClientCategoriesIds : [] },
+                SiteCompositionSettings: (SiteSettings?.length > 0) ? JSON.stringify(SiteSettings) : null,
+            }
+        } else if (IsSCUpdatedInline) {
+            MakeUpdateJSONDataObject = {
+                Sitestagging: FinalSitestagging?.length > 0 ? JSON.stringify(FinalSitestagging) : null,
+                SiteCompositionSettings: (SiteSettings?.length > 0) ? JSON.stringify(SiteSettings) : null,
+            }
+        } else if (IsCCUpdatedInline) {
+            MakeUpdateJSONDataObject = {
+                ClientCategoryId: { "results": (ClientCategoriesIds?.length > 0) ? ClientCategoriesIds : [] },
+            }
         }
         console.log("final data to update in backend side object ======", MakeUpdateJSONDataObject);
         try {
@@ -1759,6 +1813,174 @@ const CentralizedSiteComposition = (Props: any) => {
     const SmartTotalTimeCallBack = React.useCallback((SmartTotalTime: any) => {
         setTaskTotalTime(SmartTotalTime);
     }, [])
+
+
+    // This is used for update site composition 
+
+    const UpdateSiteCompositionButtonFunction = () => {
+        if (SelectedChildItems?.length > 0) {
+            let FindPreparedData: any = filterUpdatedSiteCompositions();
+            let SiteCompositionData: any = FindPreparedData?.SiteTaggingData;
+            let siteSettingData: any = FindPreparedData?.siteSetting;
+            let checkIsSCProtected: any = false;
+            SelectedChildItems?.map((SelectedItem: any) => {
+                if (SelectedItem.TaskType?.Title?.length > 1) {
+                    if (SelectedItem?.siteType?.toLocaleLowerCase() !== "shareweb") {
+                        if (SelectedItem?.siteType != undefined) {
+                            let SCDummyJSON: any = {
+                                ClienTimeDescription: "100",
+                                Title: SelectedItem?.siteType,
+                                localSiteComposition: true,
+                                SiteImages: SelectedItem?.siteIcon,
+                                Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
+                            }
+                            SiteCompositionData = [SCDummyJSON]
+                        }
+                        let tempSiteSetting: any = [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]
+                        siteSettingData = tempSiteSetting;
+                    }
+                }
+                SelectedItem.Sitestagging = SiteCompositionData?.length > 0 ? JSON.stringify(SiteCompositionData) : "";
+                SelectedItem.IsSCUpdatedInline = true;
+                if (siteSettingData != undefined) {
+                    if (siteSettingData?.length > 0) {
+                        checkIsSCProtected = siteSettingData[0].Protected;
+                    }
+                    SelectedItem.compositionType = siteCompositionType(JSON.stringify(siteSettingData));
+                } else {
+                    SelectedItem.compositionType = '';
+                }
+                if (checkIsSCProtected) {
+                    SelectedItem.IsSCProtected = true;
+                    SelectedItem.IsSCProtectedStatus = "Protected";
+                } else {
+                    SelectedItem.IsSCProtected = false;
+                    SelectedItem.IsSCProtectedStatus = "";
+                }
+            })
+            setData([...data]);
+        } else {
+            alert("Before performing this operation, select a data item from the table")
+        }
+    }
+
+    // This is used for update Client Categories 
+
+    const UpdateClientCategoriesButtonFunction = () => {
+        if (SelectedChildItems?.length > 0) {
+            let FindPreparedData: any = filterUpdatedSiteCompositions();
+            let ClientCategoryData: any = FindPreparedData?.ClientCategories;
+            SelectedChildItems?.map((SelectedItem: any) => {
+                let tempCCItem: any = [];
+                ClientCategoryData?.map((CCItems: any) => {
+                    if (SelectedItem.TaskType?.Title?.length > 1) {
+                        if (SelectedItem?.siteType?.toLocaleLowerCase() !== "shareweb") {
+                            if (CCItems.siteName == SelectedItem?.siteType) {
+                                tempCCItem.push(CCItems);
+                            }
+                        }
+                    }
+                })
+
+                if (SelectedItem?.siteType?.toLocaleLowerCase() !== "shareweb") {
+                    SelectedItem.ClientCategory = tempCCItem;
+                } else {
+                    SelectedItem.ClientCategory = ClientCategoryData?.length > 0 ? ClientCategoryData : [];
+                }
+
+                SelectedItem.IsCCUpdatedInline = true;
+            })
+            setData([...data]);
+        } else {
+            alert("Before performing this operation, select a data item from the table")
+        }
+    }
+
+
+    // This is used for update both site composition and Client Categories 
+
+    const UpdateBothButtonFunction = () => {
+        if (SelectedChildItems?.length > 0) {
+            let FindPreparedData: any = filterUpdatedSiteCompositions();
+            let SiteCompositionData: any = FindPreparedData?.SiteTaggingData;
+            let siteSettingData: any = FindPreparedData?.siteSetting;
+            let ClientCategoryData: any = FindPreparedData?.ClientCategories;
+            let checkIsSCProtected: any = false;
+            SelectedChildItems?.map((SelectedItem: any) => {
+                SelectedItem.IsBothUpdatedInline = true;
+                // This is for the SC 
+                if (SelectedItem.TaskType?.Title?.length > 1) {
+                    if (SelectedItem?.siteType?.toLocaleLowerCase() !== "shareweb") {
+                        if (SelectedItem?.siteType != undefined) {
+                            let SCDummyJSON: any = {
+                                ClienTimeDescription: "100",
+                                Title: SelectedItem?.siteType,
+                                localSiteComposition: true,
+                                SiteImages: SelectedItem?.siteIcon,
+                                Date: Moment(new Date()).tz("Europe/Berlin").format("DD/MM/YYYY")
+                            }
+                            SiteCompositionData = [SCDummyJSON]
+                        }
+                        let tempSiteSetting: any = [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]
+                        siteSettingData = tempSiteSetting;
+                    }
+                }
+                SelectedItem.Sitestagging = SiteCompositionData?.length > 0 ? JSON.stringify(SiteCompositionData) : "";
+
+                // This is fir CC 
+                let tempCCItem: any = [];
+                ClientCategoryData?.map((CCItems: any) => {
+                    if (SelectedItem.TaskType?.Title?.length > 1) {
+                        if (SelectedItem?.siteType?.toLocaleLowerCase() !== "shareweb") {
+                            if (CCItems.siteName == SelectedItem?.siteType) {
+                                tempCCItem.push(CCItems);
+                            }
+                        }
+                    }
+                })
+
+                if (SelectedItem?.siteType?.toLocaleLowerCase() !== "shareweb") {
+                    SelectedItem.ClientCategory = tempCCItem;
+                } else {
+                    SelectedItem.ClientCategory = ClientCategoryData?.length > 0 ? ClientCategoryData : [];
+                }
+                if (siteSettingData != undefined) {
+                    if (siteSettingData?.length > 0) {
+                        checkIsSCProtected = siteSettingData[0].Protected;
+                    }
+                    SelectedItem.compositionType = siteCompositionType(JSON.stringify(siteSettingData));
+                } else {
+                    SelectedItem.compositionType = '';
+                }
+                if (checkIsSCProtected) {
+                    SelectedItem.IsSCProtected = true;
+                    SelectedItem.IsSCProtectedStatus = "Protected";
+                } else {
+                    SelectedItem.IsSCProtected = false;
+                    SelectedItem.IsSCProtectedStatus = "";
+                }
+            })
+            setData([...data]);
+        } else {
+            alert("Before performing this operation, select a data item from the table");
+        }
+    }
+
+
+
+    // This is used for reset the pervious data 
+
+    const ResetDataButtonFunction = (DataViewStatus: any) => {
+        setFlatView(false);
+        let DeepCopyData: any = JSON.parse(JSON.stringify(BackupGroupByTableData));
+        if (DeepCopyData?.length > 0) {
+            setData([...DeepCopyData]);
+        }
+        SelectedChildItems = [];
+    }
+
+    // END of Function Code 
+
     return (
         <section>
             <Panel
@@ -1850,7 +2072,7 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                         onClick={(e) => AddSiteCompositionFunction(siteData.Title)}
                                                                     />
                                                                 </td>
-                                                                <td className="m-0 p-0 align-middle" style={{ width: "60%" }}>
+                                                                <td className="m-0 p-0 align-middle" style={{ width: "30%" }}>
                                                                     <div className="alignCenter">
                                                                         <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} className="mx-2 workmember" />
                                                                         {siteData.Title}
@@ -1922,6 +2144,9 @@ const CentralizedSiteComposition = (Props: any) => {
                                                                     :
                                                                     null
                                                                 }
+                                                                <td className="m-0 align-middle" style={{ width: "30%" }}>
+                                                                    {siteData.TaggedCCTitle}
+                                                                </td>
                                                             </tr>
                                                         )
                                                     }
@@ -1992,11 +2217,11 @@ const CentralizedSiteComposition = (Props: any) => {
                                             <SlArrowRight />
                                         )}
                                     </span>
-                                    Client Category Summarization Tool
+                                    Client Category Identification Tool
                                     <span className="hover-text alignIcon">
                                         <span className="svg__iconbox svg__icon--info dark"></span>
                                         <span className="tooltip-text pop-right">
-                                            <b>Client Category Summarization Tool:</b><br />
+                                            <b>Client Category Identification Tool:</b><br />
                                             This tool efficiently consolidates client categories associated with selected items and their corresponding child Items (All Tagged CC in Selected Item CSF and AWT). The tool offers a streamlined view of client categories, filtering them based on their respective sites. The selected client categories seamlessly Inherited to the designated parent item and also inherited into selected items (CSF/AWT) from the Tagged Child Item Table.
                                             <p className="mb-1"><b>Validation Cases:</b> </p>
                                             <b>1. </b>If the selected item have tagged CCs, that CCs will be automatically set as the default selection<br />
@@ -2084,7 +2309,7 @@ const CentralizedSiteComposition = (Props: any) => {
                         </div>
                     </div>
                     {IsShowTableContent ?
-                        <div className="tagged-child-items-container">
+                        <div className="tagged-child-items-container mt-2">
                             <div className="tagged-child-items-header alignCenter justify-content-between border p-2">
                                 <div className="siteColor alignCenter">
                                     Tagged Child Items
@@ -2094,6 +2319,13 @@ const CentralizedSiteComposition = (Props: any) => {
                                             {"These entries within the table are identified as child items associated with the selected CSF/AWT"}
                                         </span>
                                     </span>
+
+                                </div>
+                                <div>
+                                    <button className="btn btn-primary px-3 " onClick={UpdateSiteCompositionButtonFunction}>Apply Site Composition</button>
+                                    <button className="btn btn-primary px-3 mx-2" onClick={UpdateClientCategoriesButtonFunction}>Apply Client Categories</button>
+                                    <button className="btn btn-primary px-3 me-2" onClick={UpdateBothButtonFunction}>Apply Both</button>
+                                    <button className="btn btn-primary px-3 " onClick={() => ResetDataButtonFunction(flatView)}>Reset</button>
                                 </div>
                                 <div className="alignCenter">
                                     <label className="switch me-2 siteColor" htmlFor="checkbox-Flat">
@@ -2120,7 +2352,6 @@ const CentralizedSiteComposition = (Props: any) => {
                                     showHeader={false}
                                     fixedWidth={true}
                                     expendedTrue={true}
-
                                 />
                             </div>
                         </div> : null

@@ -93,6 +93,7 @@ const CreateActivity = (props: any) => {
   });
   const [siteName, setSiteName] = React.useState(false);
   const globalContextData: any = React.useContext<any>(myContextValue)
+
   React.useEffect(() => {
     AllListId = props?.AllListId;
     if (props?.selectedItem?.NoteCall != "Task" && props?.selectedItem?.NoteCall != "Activities") {
@@ -217,8 +218,8 @@ const CreateActivity = (props: any) => {
     }
     let Project :any= {};
     if (globalContextData?.tagProjectFromTable == true) {
-      if (props?.UsedFrom == "ProjectManagement" && selectedItem?.Project?.Id != undefined && selectedItem?.Project?.Item_x0020_Type == "Sprint") {
-        Project = AllProjects?.find((ProjectItem: any) => ProjectItem?.Id == selectedItem?.Project?.Id);
+      if (props?.UsedFrom == "ProjectManagement" && props?.selectedItem?.Id != undefined && props?.selectedItem?.Item_x0020_Type == "Sprint") {
+        Project = AllProjects?.find((ProjectItem: any) => ProjectItem?.Id == props?.selectedItem?.Id);
       } else {
         Project = AllProjects?.find((ProjectItem: any) => ProjectItem?.Id == globalContextData?.ProjectLandingPageDetails?.Id);
       }
@@ -1030,8 +1031,8 @@ const CreateActivity = (props: any) => {
         }
         let ProjectId = null;
         if (globalContextData?.tagProjectFromTable == true) {
-          if (props?.UsedFrom == "ProjectManagement" && selectedItem?.Project?.Id != undefined && selectedItem?.Project?.Item_x0020_Type == "Sprint") {
-            ProjectId = selectedItem?.Project?.Id;
+          if (props?.UsedFrom == "ProjectManagement" && selectedItem?.Id != undefined && selectedItem?.Item_x0020_Type == "Sprint") {
+            ProjectId = selectedItem?.Id;
           } else {
             ProjectId = globalContextData?.ProjectLandingPageDetails?.Id != undefined ? globalContextData?.ProjectLandingPageDetails?.Id : null;
           }
@@ -1076,7 +1077,7 @@ const CreateActivity = (props: any) => {
                   : null,
               TaskCategoriesId: { results: CategoryID },
               ClientCategoryId: { results: ClientCategory },
-              PortfolioId: selectedItem?.Id,
+              PortfolioId: props?.UsedFrom === "ProjectManagement" ? props?.taggedPortfolioItem?.Id : selectedItem?.Id,
               PriorityRank: priorityRank,
               Priority: priority,
               TaskTypeId: 1,
@@ -1120,7 +1121,7 @@ const CreateActivity = (props: any) => {
                       "DD/MM/YYYY"
                     ),
                     DisplayDueDate: moment(item.DueDate).format("DD/MM/YYYY"),
-                    Portfolio: selectedItem?.Portfolio,
+                    Portfolio: (props?.UsedFrom == "ProjectManagement" && props?.taggedPortfolioItem != undefined) ? props?.taggedPortfolioItem: selectedItem?.Portfolio,
                     TaskID: TaskID,
                     siteUrl: site?.siteUrl?.Url,
                     siteType: site?.Title,
@@ -1237,7 +1238,7 @@ const CreateActivity = (props: any) => {
                 res.data = item;
               }
               if (selectedItem.PageType == "ProjectManagement") {
-                props.Call();
+                props.Call("Close");
                 let url = `${AllListId.siteUrl}/SitePages/Task-Profile.aspx?taskId=${res.data.Id}&Site=${res.data.siteType}`;
                 window.open(url, "_blank");
               } else {
@@ -1330,7 +1331,7 @@ const CreateActivity = (props: any) => {
                   ? new Date(save.DueDate).toISOString()
                   : null,
               TaskCategoriesId: { results: CategoryID },
-              PortfolioId: PortfolioData,
+              PortfolioId: (props?.UsedFrom == "ProjectManagement" && props?.taggedPortfolioItem != undefined) ? props?.taggedPortfolioItem?.Id: PortfolioData,
               ParentTaskId: ParentData != undefined ? ParentData : null,
               ClientCategoryId: { results: ClientCategory },
               FeedBack:

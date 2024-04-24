@@ -1405,22 +1405,40 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
         const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
         ReactDOM.render(reactElement, containerDiv);
         let finalTaskInfo: any = containerDiv.innerHTML;
+        let NotificationTypeMessage: string = '';
+        let isShowComment: any = false;
+
+        if (ActionType == "Bottleneck" || ActionType == "Attention") {
+            NotificationTypeMessage = `You have been tagged as <b>${ActionType}</b> in the below task.`;
+            isShowComment = true;
+        }
+       else if (RequiredData?.UpdatedDataObject?.PercentComplete == 90) {
+            NotificationTypeMessage = `This task has 90%. Kindly review it.`;
+            isShowComment = false;
+        }
+        else if (RequiredData?.UpdatedDataObject?.PercentComplete == 0 && ActionType.indexOf('User Experience - UX') != -1) {
+            NotificationTypeMessage = `Below task has been created by the UX team, please have a look.`;
+            isShowComment = false;
+        }
+        else {
+            NotificationTypeMessage = `Task created from your end as ${ActionType} category Task status has been set as ${UpdatedDataObject.PercentComplete + "%"}. Please take necessary action`;
+            isShowComment = false;
+        }
+
+
         
-        const TeamsMessage = `
-        <div style="background-color: #f5f5f5; padding: 12px;">
+         const TeamsMessage = `
             <b>Hi ${ReceiverName},</b>
             <p></p>
-            You have been tagged as <b>${ActionType}</b> in the below ${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject?RequiredData?.UpdatedDataObject?.Item_x0020_Type:"Task"}
+           ${NotificationTypeMessage}
             <p><br/></p>
-            <span><b>${ActionType} Comment </b>: <span style="background-color: yellow"; >${ReasonStatement}</span></span>
+            ${isShowComment ? `<span><b>${ActionType} Comment </b>: <span style="background-color: yellow"; >${ReasonStatement}</span></span>` : ''}
             <p></p>
-           <span>${finalTaskInfo}</span>
+            <span>${finalTaskInfo}</span>
             <p></p>
-            <a href="${UpdatedDataObject?.siteUrl}/SitePages/${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject?`Portfolio-Profile.aspx?taskId=${UpdatedDataObject.Id}`:`Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}`}">Click here</a>
-
+            Task Link: <a href="${UpdatedDataObject?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}">Click here</a>
             <p></p>
             <b>Thanks,<br/>Task Management Team</b>
-            </div>
         `;
         
         if (sendUserEmail?.length > 0) {
@@ -1681,43 +1699,48 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         }
                     </div>
                     {RequiredData?.CommentsArray?.length > 0 ?
-                        <div style={{ width: '232px'}}>
-                                <div className="">
-                                    <div style={{fontSize:'16px', fontWeight:'600', marginBottom:'8px'}}>
-                                        Comments:
-                                    </div>
-                                    <div style={{width:'100%'}}>
-                                        {RequiredData["CommentsArray"] != undefined && RequiredData["CommentsArray"]?.length > 0 && RequiredData["CommentsArray"]?.map((cmtData: any, i: any) => {
-                                            return (
-                                                <div style={{backgroundColor:'#fff', width:'100%', padding:'8px 12px', marginBottom: "8px"}}>
-                                                    <div style={{marginBottom: "8px", width:'100%'}}>
-                                                        <div>
-                                                            <span style={{fontWeight:'600' }}>{cmtData.AuthorName}</span> - {cmtData.Created}
-                                                        </div>
-                                                        <div>
-                                                            {cmtData.Description}
-                                                        </div>
-                                                    </div>
-                                                    {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
-                                                        return (
-                                                            <div style={{backgroundColor:'#f5f5f5', padding:'8px 12px', width:'100%' }}>
-                                                                <div style={{ marginBottom: '8px' }}>
-                                                                    <span style={{fontWeight:'600' }}>{replyData.AuthorName}</span> - {replyData.Created}
-                                                                </div>
-                                                                <div>
-                                                                    {replyData.Description}
-                                                                </div>
-                                                            </div>
-                                                        )
-                                                    })}
-                                                   
-                                                </div>
-
-                                            )
-
-                                        })}
-                                    </div>
+                        <div style={{ width: '232px' }}>
+                            <div className="">
+                                <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>
+                                    Comments ({RequiredData["CommentsArray"]?.length}):
                                 </div>
+                                <div style={{ width: '100%' }}>
+                                    {RequiredData["CommentsArray"] != undefined && RequiredData["CommentsArray"]?.length > 0 && RequiredData["CommentsArray"]?.map((cmtData: any, i: any) => {
+                                        if (i < 5) {
+                                            return (
+                                                <>
+                                                    <div style={{ backgroundColor: '#fff', width: '100%', padding: '8px 12px', marginBottom: "8px" }}>
+                                                        <div style={{ marginBottom: "8px", width: '100%' }}>
+                                                            <div>
+                                                                <span style={{ fontWeight: '600' }}>{cmtData.AuthorName}</span> - {cmtData.Created}
+                                                            </div>
+                                                            <div>
+                                                                {cmtData.Description}
+                                                            </div>
+                                                        </div>
+                                                        {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
+                                                            return (
+                                                                <div style={{ backgroundColor: '#f5f5f5', padding: '8px 12px', width: '100%' }}>
+                                                                    <div style={{ marginBottom: '8px' }}>
+                                                                        <span style={{ fontWeight: '600' }}>{replyData.AuthorName}</span> - {replyData.Created}
+                                                                    </div>
+                                                                    <div>
+                                                                        {replyData.Description}
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        })}
+
+                                                    </div>
+
+                                                </>
+                                            )
+                                        }
+                                    })}
+                                </div>
+                                {RequiredData?.CommentsArray?.length > 5 ? <span>For more go to Task: <a href={`${RequiredData?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${RequiredData?.ID}&Site=${RequiredData?.siteType}`}>
+                                    Click-here</a> </span> : ""}
+                            </div>
                         </div>
                         : null
                     }
@@ -2107,11 +2130,11 @@ export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredD
         let messageContent = '';
 
         if (usedFor === "Information-Request") {
-            emailSubject = `[Information Request - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title} - Request is completed`;
+            emailSubject = `[Information Request - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}- ${ItemDetails?.Title}] - Request is completed`;
             messageContent = 'Task created from your end for Information Request has been completed. Please take necessary action';
         }
         if (usedFor === "Priority-Check") {
-            emailSubject = `[Task Priority Check - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title}. Please have a look`;
+            emailSubject = `[Task Priority Check - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}- ${ItemDetails?.Title}]. Please have a look`;
             messageContent = 'Task created from your end has been set to 8%. Please take necessary action';
         }
 

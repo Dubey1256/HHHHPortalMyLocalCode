@@ -2595,7 +2595,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 isColumnVisible: true
             },
             {
-                accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
+                accessorFn: (row) => row?.projectStructerId + " " + row?.ProjectTitle,
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) &&

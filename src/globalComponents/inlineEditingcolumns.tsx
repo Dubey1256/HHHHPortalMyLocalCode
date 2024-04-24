@@ -83,6 +83,7 @@ const inlineEditingcolumns = (props: any) => {
   const [feedback, setFeedback] = useState("");
   const [comments, setComments] = useState([])
   const [onHoldPanel, setOnHoldPanel] = useState(false)
+  const [DesignStatus, setDesignStatus] = useState(false);
   const StatusArray = [
     { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
     { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -99,11 +100,11 @@ const inlineEditingcolumns = (props: any) => {
     { value: 90, status: "90% Task completed", taskStatusComment: "Task completed" },
     { value: 100, status: "100% Closed", taskStatusComment: "Closed" },
   ];
+
   React.useEffect(() => {
     updateItemValues();
-
-  }, [dueDate.editPopup, UpdateFeatureType, TaskStatusPopup, remark, teamMembersPopup, UpdateEstimatedTime, TaskPriorityPopup, taskCategoriesPopup, props?.item?.TaskCategories?.results]);
-
+  }, [dueDate.editPopup, UpdateFeatureType ,TaskStatusPopup,remark,teamMembersPopup, UpdateEstimatedTime,TaskPriorityPopup,taskCategoriesPopup,props?.item?.TaskCategories?.results]);
+  
   React.useEffect(() => {
     updateTaskComments();
   }, [])
@@ -142,6 +143,7 @@ const inlineEditingcolumns = (props: any) => {
           props?.item?.TaskCategories?.map((cat: any) => {
             cat.ActiveTile = true;
           });
+          setDesignStatus(props?.item?.TaskCategories?.some((category: any) => category.Title === "Design"));
         }
         setCategoriesData(props?.item?.TaskCategories);
       } else if (props?.item?.TaskCategories?.results?.length > 0) {
@@ -950,15 +952,17 @@ const inlineEditingcolumns = (props: any) => {
           setTaskStatus(item.taskStatusComment);
         }
       });
-    }
-    if (StatusData.value == 90) {
-      setEditData((prevState: any) => ({
-        ...prevState,
-        IsTodaysTask: false,
-        workingThisWeek: false
-      }));
-      if (EditData.siteType == "Offshore Tasks") {
-        setWorkingMember(36);
+  }
+  if (StatusData.value == 90) {
+    setEditData((prevState: any) => ({
+      ...prevState,
+      IsTodaysTask: false,
+      workingThisWeek: false
+    }));
+      if (EditData.siteType == "Offshore%20Tasks") {
+          setWorkingMember(36);
+      } else if (DesignStatus) {
+        setWorkingMember(301);
       } else {
         setWorkingMember(42);
       }
