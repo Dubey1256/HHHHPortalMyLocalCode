@@ -743,7 +743,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       `;
           }
 
-          await globalCommon.SendTeamMessage(mention_To, TeamsMessage, this.props.Context)
+          await globalCommon.SendTeamMessage(mention_To, TeamsMessage, this.props.Context, this.props?.AllListId)
           //  this.SendEmail(emailprops);
           this.setState({
             ChildLevel: false,
