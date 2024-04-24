@@ -252,7 +252,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     // console.log("Cuurent User Name - " + r['Title']);  
     //}); 
     let taskUsers = [];
-    taskUsers = await web.lists.getById(this.props?.AllListId?.TaskUsertListID).items.select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail').filter("ItemType eq 'User'").expand('AssingedToUser').get();
+    taskUsers = await web.lists.getById(this.props?.AllListId?.TaskUsertListID).items.select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'UserGroup/Id', 'UserGroup/Title').filter("ItemType eq 'User'").expand('AssingedToUser', 'UserGroup').get();
     taskUsers = taskUsers?.filter((User: any) => User?.UserGroup == undefined || User?.UserGroup?.Title != "Ex Staff")
     this.taskUsers = taskUsers;
     if (this.taskUsers != undefined && this.taskUsers.length > 0) {
