@@ -1154,7 +1154,7 @@ const closeActivity = () => {
     if (workingToday == undefined) {
 
       try {
-        groupedDataItems = JSON.parse(JSON.stringify(data));
+        groupedDataItems = globalCommon.deepCopy(data)
       } catch (e) {
 
       }
