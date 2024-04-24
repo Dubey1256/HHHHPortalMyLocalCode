@@ -63,7 +63,7 @@ export default function ProjectOverview(props: any) {
     const [isAddStructureOpen, setIsAddStructureOpen] = React.useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [AllTaskUser, setAllTaskUser] = React.useState([]);
-    const [SharewebComponent, setSharewebComponent] = React.useState('');
+    const [CMSToolComponent, setCMSToolComponent] = React.useState('');
     const [categoryGroup, setCategoryGroup] = React.useState([]);
     const [data, setData] = React.useState([]);
     const [flatData, setFlatData] = React.useState([]);
@@ -281,7 +281,7 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row, getValue }) => (
                     <div>
                         <>
-                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} AllListId={AllListId} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
+                            <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} AllListId={AllListId} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
 
                         </>
                     </div>
@@ -1149,7 +1149,7 @@ export default function ProjectOverview(props: any) {
         item['listName'] = 'Master Tasks';
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);
-        setSharewebComponent(item);
+        setCMSToolComponent(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
 
@@ -1953,7 +1953,7 @@ export default function ProjectOverview(props: any) {
                         ""
                     )
                 }
-                {IsComponent && <EditProjectPopup props={SharewebComponent} AllListId={AllListId} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
+                {IsComponent && <EditProjectPopup props={CMSToolComponent} AllListId={AllListId} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
                 {ShowTeamPopup === true ? <ShowTeamMembers props={checkData} callBack={showTaskTeamCAllBack} TaskUsers={AllTaskUser} /> : ''}
                 {openTimeEntryPopup && <TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />}
                 {isAddStructureOpen && <AddProject CallBack={CallBack} items={CheckBoxData} PageName={"ProjectOverview"} AllListId={AllListId} data={data} />}

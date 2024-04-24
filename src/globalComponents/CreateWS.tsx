@@ -37,7 +37,7 @@ const CreateWS = (props: any) => {
     const [selectedItem, setSelectedItem]: any = React.useState({})
     const [selectedTaskType, setSelectedTaskType] = React.useState(3)
     const [ParentArray, setParentArray] = React.useState([]);
-    const [SharewebTask, setSharewebTask] = React.useState<any>();
+    const [CMSTask, setCMSTask] = React.useState<any>();
     const [IsPopupComponent, setIsPopupComponent] = React.useState(false)
     const [ClientCategoriesData, setClientCategoriesData] = React.useState<any>(
         []
@@ -539,7 +539,7 @@ const CreateWS = (props: any) => {
                     }
                     res.data = item;
                     if (type == "createopenpopup") {
-                        setSharewebTask(res.data);
+                        setCMSTask(res.data);
                         setIsPopupComponent(true)
 
                     } else {
@@ -572,7 +572,7 @@ const CreateWS = (props: any) => {
     //**** Callbackfunction for openeditpopup */
     const Call = (items: any) => {
         setIsPopupComponent(false)
-        let wsData = { data: SharewebTask }
+        let wsData = { data: CMSTask }
 
         closeTaskStatusUpdatePoup(wsData);
 
@@ -826,13 +826,13 @@ const CreateWS = (props: any) => {
 
             </Panel>
             {/* {IsComponent && <ComponentPortPolioPopup 
-            props={SharewebComponent} 
+            props={CMSToolComponent} 
             AllListId={dynamicList}
             context={props.context} 
             Call={Call}>
                 </ComponentPortPolioPopup>}
             {IsComponentPicker && <Picker
-             props={SharewebCategory} 
+             props={TaskCat} 
              AllListId={dynamicList} 
              Call={Call}
              >
@@ -840,7 +840,7 @@ const CreateWS = (props: any) => {
             {
                 IsPopupComponent
                 && <EditTaskPopup
-                    Items={SharewebTask}
+                    Items={CMSTask}
                     AllListId={AllListId}
                     pageName={"TaskFooterTable"}
                     context={props?.context}

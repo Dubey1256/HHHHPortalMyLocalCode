@@ -1736,7 +1736,6 @@ const CompareTool = (props: any) => {
         //     postData.ServiceId = { "results": [Item.Id] };
         // }
 
-        //  return SharewebListService.UpdateListItemByListId(GlobalConstants.ADMIN_SITE_URL, GlobalConstants.QUESTIONHELPDESCRIPTION_LISTID, postData, obj.Id);
     }
     const componentPost = (Item: any, type: any) => {
         try {

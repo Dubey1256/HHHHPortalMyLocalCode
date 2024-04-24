@@ -1076,7 +1076,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
     }
 
     ////////////////  end /////////////////
-
+    const customScrollToFn = (offset: number, options: any, instance: any) => {
+        setTimeout(() => {
+            instance._scrollToOffset(offset, options);
+        }, 200); // Adjust the delay time (in milliseconds) as needed
+    };
+    
     //Virual rows
     const parentRef = React.useRef<HTMLDivElement>(null);
     const { rows } = table.getRowModel();
@@ -1086,6 +1091,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         // estimateSize: () => 24,
         // overscan: 15,
         estimateSize: () => 200,
+        scrollToFn: customScrollToFn, 
         overscan: 50,
     });
 

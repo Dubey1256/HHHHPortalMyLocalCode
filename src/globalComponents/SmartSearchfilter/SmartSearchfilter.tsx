@@ -880,7 +880,7 @@ const TaskMangementTable = (props: any) => {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <>
-                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={item} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
+                        <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={item} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
                     </>
                 ),
                 id: "TaskID",

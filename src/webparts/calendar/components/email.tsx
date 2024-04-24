@@ -71,7 +71,7 @@ const EmailComponenet = (props: any) => {
         .sendEmail({
           Body: BindHtmlBody(),
           Subject: "HHHH - Team Attendance " + formattedDate + " " + availableteammeberstoday + " available - " + leaveallteammemebrstoday + " on leave",
-          To: ["anubhav.shukla@hochhuth-consulting.de"],
+          To: ["deepak@hochhuth-consulting.de", "stefan.hochhuth@hochhuth-consulting.de", "robert.ungethuem@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "anubhav.shukla@hochhuth-consulting.de"],
           // ,"prashant.kumar@hochhuth-consulting.de","ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"
           AdditionalHeaders: {
             "content-type": "text/html",

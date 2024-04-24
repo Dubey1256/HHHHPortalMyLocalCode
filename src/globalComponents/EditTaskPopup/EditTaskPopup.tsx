@@ -99,7 +99,7 @@ const EditTaskPopup = (Items: any) => {
     // Items.Items.Id = Items?.Items?.ID;
     Items.Items.Id =
         Items.Items.Id != undefined ? Items.Items.Id : Items.Items.ID;
-    let ShareWebConfigData: any = [];
+    let SiteWebConfigData: any = [];
     const [TaskImages, setTaskImages] = useState([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
     const [IsComponentPicker, setIsComponentPicker] = useState(false);
@@ -445,7 +445,7 @@ const EditTaskPopup = (Items: any) => {
                     tempArray.push(site);
                 }
                 if (site.Title !== undefined && site.Title == "Shareweb") {
-                    ShareWebConfigData = site.Configurations;
+                    SiteWebConfigData = site.Configurations;
                 }
             });
             setSiteTypes(tempArray);
