@@ -1835,9 +1835,9 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
     // let TaskUsers: any = [];
     let AllMasterTaskData: any = [];
     try {
-        
+         let AllListId=Props
         let Response: ArrayLike<any> = [];
-        Response = await loadTaskUsers();
+        Response = await loadAllTaskUsers(AllListId);
         let ProjectData: any = [];
         let web = new Web(Props.siteUrl);
         AllMasterTaskData = await web.lists
