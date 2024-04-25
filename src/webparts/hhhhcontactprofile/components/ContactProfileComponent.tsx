@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState } from 'react';
 import { Web } from 'sp-pnp-js';
-import EditContactPopup from "../../contactDatabase/components/EditContactPopup";
+import EditContactPopup from "../../hhhcontact/components/EditContactPopup";
 let allListId: any = {};
 const ContactProfileComponent = (props: any) => {
     const baseUrl = props?.props?.Context?.pageContext?._web?.absoluteUrl;
