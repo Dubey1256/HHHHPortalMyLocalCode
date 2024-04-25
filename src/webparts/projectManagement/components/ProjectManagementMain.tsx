@@ -1253,7 +1253,8 @@ const closeActivity = () => {
         resetSorting: false,
         resetColumnFilters: false,
         size: 50,
-        isColumnVisible: true
+        isColumnVisible: true,
+        fixedColumnWidth: true,
       },
       {
         accessorKey: "TaskID",
@@ -1393,7 +1394,8 @@ const closeActivity = () => {
           return row?.original?.PriorityRank == filterValue
         },
         resetSorting: false,
-        size: 75
+        size: 75,
+        fixedColumnWidth: true,
       },
       {
         accessorFn: (row) => row?.SmartPriority,
@@ -1409,6 +1411,7 @@ const closeActivity = () => {
         },
         header: "",
         size: 42,
+        fixedColumnWidth: true,
       },
       {
         accessorFn: (row) => row?.DueDate,
@@ -1427,6 +1430,7 @@ const closeActivity = () => {
 
         resetSorting: false,
         isColumnVisible: true,
+        fixedColumnWidth: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.DisplayDueDate?.includes(filterValue)
         },
@@ -1468,6 +1472,7 @@ const closeActivity = () => {
         placeholder: "% Complete",
         resetColumnFilters: false,
         isColumnVisible: true,
+        fixedColumnWidth: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.PercentComplete == filterValue
         },
@@ -1495,6 +1500,7 @@ const closeActivity = () => {
         placeholder: "TeamMembers",
         header: "",
         size: 110,
+        fixedColumnWidth: true,
         isColumnVisible: true
       },
       {
@@ -1540,6 +1546,7 @@ const closeActivity = () => {
         resetSorting: false,
         placeholder: "Created",
         isColumnVisible: true,
+        fixedColumnWidth: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
             return true
@@ -1577,6 +1584,7 @@ const closeActivity = () => {
         resetSorting: false,
         placeholder: "Modified",
         isColumnVisible: true,
+        fixedColumnWidth: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
             return true
@@ -1597,7 +1605,8 @@ const closeActivity = () => {
         header: "",
         resetColumnFilters: false,
         size: 49,
-        isColumnVisible: true
+        isColumnVisible: true,
+        fixedColumnWidth: true,
       },
       {
         header: ({ table }: any) => (
