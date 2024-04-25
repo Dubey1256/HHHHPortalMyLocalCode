@@ -35,7 +35,7 @@ const MettingTable = (props: any) => {
   const contextdata: any = React.useContext(mycontextValue)
   const [data, setData] = React.useState<any>()
   const [IsTask, setIsTask] = React.useState(false);
-  const [SharewebTask, setSharewebTask] = React.useState("");
+  const [CMSTask, setCMSTask] = React.useState("");
   const [siteConfig, setSiteConfig] = React.useState([]);
   const [allSiteTasksData, setAllSiteTasksData] = React.useState([]);
   React.useMemo(() => {
@@ -110,7 +110,7 @@ const MettingTable = (props: any) => {
 
   const EditItemTaskPopup = (item: any) => {
     setIsTask(true);
-    setSharewebTask(item);
+    setCMSTask(item);
   };
   const Call = (res: any) => {
     if (res == "Close") {
@@ -152,8 +152,8 @@ const MettingTable = (props: any) => {
         accessorFn: (row) => row?.TaskID,
         cell: ({ row, getValue }) => (
           <>
-            {/* <ReactPopperTooltip ShareWebId={getValue()} row={row} /> */}
-            <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={props?.AllListId} masterTaskData={props?.MasterTaskListData} AllSitesTaskData={allSiteTasksData}/>
+            {/* <ReactPopperTooltip CMSToolId={getValue()} row={row} /> */}
+            <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={props?.AllListId} masterTaskData={props?.MasterTaskListData} AllSitesTaskData={allSiteTasksData}/>
           </>
         ),
         id: "TaskID",
@@ -202,7 +202,7 @@ const MettingTable = (props: any) => {
           <>
             {row?.original?.ProjectTitle != (null || undefined) ?
               <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${contextdata?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={props?.AllListId} /></a></span>
+                <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={props?.AllListId} /></a></span>
               : ""}
           </>
         ),
@@ -387,7 +387,7 @@ const MettingTable = (props: any) => {
       </div>
       {IsTask && (
         <EditTaskPopup
-          Items={SharewebTask}
+          Items={CMSTask}
           Call={Call}
           AllListId={props?.AllListId}
           context={contextdata?.Context}

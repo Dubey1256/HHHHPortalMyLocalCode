@@ -851,7 +851,7 @@ const CentralizedSiteComposition = (Props: any) => {
                     <span>Update Site Composition -</span>
                     <span>
                         <ReactPopperTooltip
-                            ShareWebId={ItemDetails?.TaskID}
+                            CMSToolId={ItemDetails?.TaskID}
                             row={ItemDetails}
                             singleLevel={true}
                             masterTaskData={GlobalAllMasterListData}
@@ -1031,9 +1031,9 @@ const CentralizedSiteComposition = (Props: any) => {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <div>
-                        {/* <ReactPopperTooltip ShareWebId={getValue()} row={row} /> */}
+                        {/* <ReactPopperTooltip CMSToolId={getValue()} row={row} /> */}
                         <ReactPopperTooltip
-                            ShareWebId={row?.original?.TaskID}
+                            CMSToolId={row?.original?.TaskID}
                             row={row?.original}
                             singleLevel={true}
                             masterTaskData={GlobalAllMasterListData}
@@ -1094,7 +1094,7 @@ const CentralizedSiteComposition = (Props: any) => {
                         {row?.original?.ProjectTitle != (null || undefined) ?
                             <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
                                 <ReactPopperTooltip
-                                    ShareWebId={row?.original?.projectStructerId}
+                                    CMSToolId={row?.original?.projectStructerId}
                                     projectToolShow={true}
                                     row={row?.original}
                                     singleLevel={true}
@@ -1269,17 +1269,17 @@ const CentralizedSiteComposition = (Props: any) => {
                             // }
                         }
                         if (OriginalData.siteType == "Shareweb") {
-                            let TempCCForSharewebTask: any = [];
+                            let TempCCForTask: any = [];
                             // AllSiteDataBackup?.map((AllSiteItem: any) => {
                             //     if (AllSiteItem?.ClientCategories?.length > 0) {
                             //         AllSiteItem?.ClientCategories?.map((ExistingCCItem: any) => {
                             //             if (ExistingCCItem.checked == true) {
-                            //                 TempCCForSharewebTask.push(ExistingCCItem);
+                            //                 TempCCForTask.push(ExistingCCItem);
                             //             }
                             //         })
                             //     }
                             // })
-                            // OriginalData.ClientCategory = TempCCForSharewebTask;
+                            // OriginalData.ClientCategory = TempCCForTask;
                         }
                     })
                 }

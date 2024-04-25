@@ -497,8 +497,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         this.setState((prevState) => ({
             disablebutton: !prevState.disablebutton,
           }));
-        //$('#CreateChildpoup1').hide();
-        //SharewebCommonFactoryService.showProgressBar();
+       
 
 
         let self = this;
