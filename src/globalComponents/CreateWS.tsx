@@ -456,7 +456,7 @@ const CreateWS = (props: any) => {
                 TaskCategoriesId: { "results": CategoryID },
                 PriorityRank: priorityRank,
                 Priority: priority,
-                PortfolioId: selectedItem?.Portfolio?.Id,
+                PortfolioId: selectedItem?.Portfolio?.Id!=undefined?selectedItem?.Portfolio?.Id: selectedItem?.PortfolioId,
                 // PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
                 TaskTypeId: selectedTaskType,
                 ProjectId: ProjectId,
