@@ -674,6 +674,9 @@ const ProjectManagementMain = (props: any) => {
           items.PortfolioTitle = '';
           items.portfolio = items?.Portfolio;
           items.PortfolioTitle = items?.Portfolio?.Title;
+          items.ProjectTitle = '';
+          items.project = items?.Project;
+          items.ProjectTitle = items?.Project?.Title;
           // items["Portfoliotype"] = "Component";
         }
         if (items?.Project?.Id != undefined) {
@@ -1091,7 +1094,7 @@ const ProjectManagementMain = (props: any) => {
     if (workingToday == undefined) {
 
       try {
-        groupedDataItems = JSON.parse(JSON.stringify(data));
+        groupedDataItems = globalCommon.deepCopy(data);
       } catch (e) {
 
       }
@@ -1285,6 +1288,34 @@ const ProjectManagementMain = (props: any) => {
         resetSorting: false,
         header: "",
         isColumnVisible: true
+      },
+      {
+        accessorFn: (row) => row?.ProjectTitle,
+        cell: ({ row }) => (
+          <a
+            className="hreflink"
+            data-interception="off"
+            target="blank"
+            href={`${props?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.project?.Id}`}
+          >
+            <span className="d-flex">
+              <ReactPopperTooltipSingleLevel
+                AllListId={AllListId}
+                onclickPopup={false}
+                ShareWebId={row?.original?.project?.Title}
+                row={row?.original?.Project}
+                singleLevel={true}
+                masterTaskData={MasterListData}
+                AllSitesTaskData={AllSitesAllTasks}
+              />
+            </span>
+          </a>
+        ),
+        id: "ProjectTitle",
+        placeholder: "Project",
+        resetColumnFilters: false,
+        resetSorting: false,
+        header: "",
       },
       {
         accessorFn: (row) => row?.TaskTypeValue,
