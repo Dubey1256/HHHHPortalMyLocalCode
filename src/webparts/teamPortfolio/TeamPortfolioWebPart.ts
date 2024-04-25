@@ -22,7 +22,8 @@ export interface ITeamPortfolioWebPartProps {
   SmartMetadataListID: "01a34938-8c7e-4ea6-a003-cee649e8c67a";
   SmartHelpListID: '9CF872FC-AFCD-42A5-87C0-AAB0C80C5457';
   PortFolioTypeID: "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
-  AdminconfigrationID:'e968902a-3021-4af2-a30a-174ea95cf8fa';
+  AdminconfigrationID: 'e968902a-3021-4af2-a30a-174ea95cf8fa';
+  DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08';
   // dropdownvalue: string;
   TimeEntry: any;
   SiteCompostion: any;
@@ -48,8 +49,9 @@ export default class TeamPortfolioWebPart extends BaseClientSideWebPart<ITeamPor
         TaskUsertListID: this.properties.TaskUsertListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
         SmartHelpListID: this.properties.SmartHelpListID,
-        PortFolioTypeID:this.properties.PortFolioTypeID,
-        AdminconfigrationID:this.properties.AdminconfigrationID,
+        PortFolioTypeID: this.properties.PortFolioTypeID,
+        AdminconfigrationID: this.properties.AdminconfigrationID,
+        DocumentsListID: this.properties.DocumentsListID,
         Context: this.context,
         // dropdownvalue: this.properties.dropdownvalue,
         TimeEntry: this.properties.TimeEntry,
@@ -147,10 +149,12 @@ export default class TeamPortfolioWebPart extends BaseClientSideWebPart<ITeamPor
                 PropertyPaneTextField("AdminconfigrationID", {
                   label: "AdminconfigrationID",
                 }),
-                
+                PropertyPaneTextField('DocumentsListID', {
+                  label: "DocumentsListID"
+                }),
                 PropertyPaneTextField("TimeEntry", {
                   label: "TimeEntry",
-                }),  
+                }),
                 PropertyPaneTextField("SiteCompostion", {
                   label: "SiteCompostion",
                 })

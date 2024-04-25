@@ -12,6 +12,7 @@ export interface ITeamPortfolioProps {
   TaskTypeID:'21b55c7b-5748-483a-905a-62ef663972dc';
   PortFolioTypeID:"c21ab0e4-4984-4ef7-81b5-805efaa3752e";
   AdminconfigrationID:'e968902a-3021-4af2-a30a-174ea95cf8fa';
+  DocumentsListID:'d0f88b8f-d96d-4e12-b612-2706ba40fb08';
   Context: any;
   // dropdownvalue:any;
   TimeEntry: any;
