@@ -76,7 +76,7 @@ export interface IUserTimeEntryState {
   IsTimeEntry: boolean;
   showShareTimesheet: boolean;
   disableProperty: boolean;
-  cmsTimeComponent: any;
+  TimeComponent: any;
   AllMetadata: any;
   isDirectPopup: boolean;
   TimeSheetLists: any;
@@ -134,7 +134,7 @@ export default class UserTimeEntry extends React.Component<
       IsCheckedService: true,
       selectedRadio: "ThisWeek",
       IsTimeEntry: false,
-      cmsTimeComponent: {},
+      TimeComponent: {},
       AllMetadata: [],
       isDirectPopup: false,
       TimeSheetLists: [],
@@ -1405,7 +1405,7 @@ export default class UserTimeEntry extends React.Component<
         lastMonth.getMonth(),
         1
       );
-      var change = Moment(startingDateOfLastMonth).add(28, "days").format();
+      var change = Moment(startingDateOfLastMonth).add(25, "days").format();
       var b = new Date(change);
       formattedDate = b;
     } else if (startDateOf == "Last Week") {
@@ -1851,7 +1851,7 @@ export default class UserTimeEntry extends React.Component<
     getAllTimeEntry: any
   ) {
     let callcount = 0;
-    let AllSiteTask: any = [];
+    let AllSiteTasks: any = [];
     let AllTimeEntryItem: any = [];
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
     if (filterItemTimeTab.length > 0) {
@@ -1860,37 +1860,7 @@ export default class UserTimeEntry extends React.Component<
         if (itemtype.ListName == "OffshoreTasks") {
           itemtype.ListName = "Offshore Tasks";
         }
-        // if (this.state.ImageSelectedUsers.length > 2) {
-        //   let self = this;
-        //   AllSitesAllTasks?.forEach(function (Item) {
-        //     Item.siteName = itemtype.ListName;
-        //     Item.DisplayTaskId = globalCommon.GetTaskId(Item)
-        //     Item.listId = itemtype.ListId;
-        //     //Item.ClientTime = JSON.parse(Item?.ClientTime);
-        //     // Item.PercentComplete = Item.PercentComplete <= 1 ? Item.PercentComplete * 100 : Item.PercentComplete;
-        //     // if (Item.PercentComplete != undefined) {
-        //     //   Item.PercentComplete = parseInt((Item.PercentComplete).toFixed(0));
-        //     // }
-        //     Item.NewCompletedDate = Item?.CompletedDate;
-        //     Item.NewCreated = Item?.Created;
-        //     if (Item.Created != undefined)
-        //       Item.FiltercreatedDate = self.ConvertLocalTOServerDate(Item.Created, "DD/MM/YYYY");
-        //     if (Item.CompletedDate != undefined)
-        //       Item.FilterCompletedDate = self.ConvertLocalTOServerDate(Item.CompletedDate, "DD/MM/YYYY");
-        //     Item.descriptionsSearch = '';
-        //     if (Item?.FeedBack != undefined) {
-        //       let DiscriptionSearchData: any = '';
-        //       let feedbackdata: any = JSON.parse(Item?.FeedBack)
-        //       DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-        //         const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
-        //         const subtextText = (child?.Subtext || [])?.map((elem: any) => elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')).join('');
-        //         return childText + subtextText;
-        //       }).join('');
-        //       Item.descriptionsSearch = DiscriptionSearchData
-        //     }
-        //     AllSiteTask.push(Item);
-        //   })
-        // }
+       
 
         for (let j = 0; j < itemtype.Query.length; j++) {
           let queryType = itemtype.Query[j];
@@ -2043,7 +2013,7 @@ export default class UserTimeEntry extends React.Component<
                 }).join("");
               Item.descriptionsSearch = DiscriptionSearchData;
             }
-            AllSiteTask.push(Item);
+            AllSiteTasks.push(Item);
           });
         }
       }
@@ -2052,7 +2022,7 @@ export default class UserTimeEntry extends React.Component<
         filterItem.ClientCategorySearch = "";
         filterItem.clientCategory = "";
         filterItem.clientCategoryIds = "";
-        AllSiteTask.forEach(function (copygetval: any) {
+        AllSiteTasks.forEach(function (copygetval: any) {
           var getItem: any = JSON.stringify(copygetval);
           getItem = globalCommon.parseJSON(getItem);
           if (
@@ -2106,9 +2076,9 @@ export default class UserTimeEntry extends React.Component<
             filterItem.SmartPriority = getItem?.SmartPriority;
             filterItem.projectStructerId = getItem?.projectStructerId;
             filterItem.ProjectTitle = getItem?.Project?.Title;
+            filterItem.ProjectId = getItem?.Project?.Id;
             filterItem.PortfolioType = getItem?.PortfolioType;
             filterItem.Body = getItem?.Body;
-            filterItem.ProjectId = getItem?.Project?.Id;
             filterItem.descriptionsSearch = getItem?.descriptionsSearch;
             filterItem.FeedBack = getItem?.FeedBack;
             filterItem.TaskType = getItem?.TaskType;
@@ -2700,7 +2670,7 @@ export default class UserTimeEntry extends React.Component<
       IsTimeEntry: true,
     });
     this.setState({
-      cmsTimeComponent: item,
+      TimeComponent: item,
     });
   };
   private TimeEntryCallBack() {
@@ -2765,7 +2735,7 @@ export default class UserTimeEntry extends React.Component<
             <span className="d-flex">
               <ReactPopperTooltipSingleLevel
                 AllListId={AllListId}
-                CMSToolId={info?.row?.original?.DisplayTaskId}
+                ShareWebId={info?.row?.original?.DisplayTaskId}
                 row={info?.row?.original}
                 singleLevel={true}
                 masterTaskData={AllPortfolios}
@@ -2906,7 +2876,7 @@ export default class UserTimeEntry extends React.Component<
             <>
                 {info?.row?.original?.ProjectTitle != (null || undefined) &&
                     <span ><a style={info?.row?.original?.fontColorTask != undefined ? { color: `${info?.row?.original?.fontColorTask}` } : { color: `${info?.row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/PX-Profile.aspx?ProjectId=${info?.row?.original?.ProjectId}`} >
-                        <ReactPopperTooltip CMSToolId={info?.row?.original?.projectStructerId} projectToolShow={true}  row={info?.row} AllListId={AllListId} /></a></span>
+                        <ReactPopperTooltip ShareWebId={info?.row?.original?.projectStructerId} projectToolShow={true}  row={info?.row} AllListId={AllListId} /></a></span>
                 }
             </>
         ),
@@ -3347,7 +3317,7 @@ export default class UserTimeEntry extends React.Component<
           totalTimedata,
           AllTaskUser,
           this?.props?.Context,
-          // DateType
+          DateType
         );
       } else {
         globalCommon.ShareTimeSheetMultiUser(
@@ -4047,7 +4017,7 @@ export default class UserTimeEntry extends React.Component<
         )}
         {this.state.IsTimeEntry && (
           <TimeEntryPopup
-            props={this.state.cmsTimeComponent}
+            props={this.state.TimeComponent}
             CallBackTimeEntry={this.TimeEntryCallBack}
             Context={this?.props?.Context}
           ></TimeEntryPopup>
