@@ -67,10 +67,14 @@ let relevantDocRef: any;
 let smartInfoRef: any;
 let keyDocRef: any;
 let suggestedPortfolioItems: any;
+
+let taskTypeDataItem:any;
 const ProjectManagementMain = (props: any) => {
   relevantDocRef = React.useRef();
   smartInfoRef = React.useRef();
   keyDocRef = React.useRef();
+  const [portfolioTypeDataItem, setPortFolioTypeIcon] = React.useState([]);
+  
   const [keydoc, Setkeydoc] = React.useState([]);
   const [FileDirRef, SetFileDirRef] = React.useState('');
   // const [item, setItem] = React.useState({});
@@ -249,6 +253,36 @@ const ProjectManagementMain = (props: any) => {
     }
     return taskUser;
   }
+
+  const getTaskType = async () => {
+    let web = new Web(AllListId.siteUrl);
+    let taskTypeData = [];
+    let typeData: any = [];
+    taskTypeData = await web.lists
+        .getById(AllListId.TaskTypeID)
+        .items.select(
+            'Id',
+            'Level',
+            'Title',
+            'SortOrder',
+        ).get();
+    if (taskTypeData?.length > 0 && taskTypeData != undefined) {
+        taskTypeData?.forEach((obj: any) => {
+            if (obj != undefined) {
+                let Item: any = {};
+                Item.Title = obj.Title;
+                Item.SortOrder = obj.SortOrder;
+                Item[obj.Title + 'number'] = 0;
+                Item[obj.Title + 'filterNumber'] = 0;
+                Item[obj.Title + 'numberCopy'] = 0;
+                typeData.push(Item);
+            }
+        })
+       
+        taskTypeDataItem = typeData.sort((elem1: any, elem2: any) => elem1.SortOrder - elem2.SortOrder);
+        
+    }
+};
 
   const GetMasterData = async (loadtask: any) => {
     if (AllListId?.MasterTaskListID != undefined) {
@@ -880,6 +914,9 @@ const ProjectManagementMain = (props: any) => {
       })
       allSprints = allSprints.concat(AllTaskToBePushed);
       allBackupSprintAndTask = allSprints
+     let allRowInfo =getAllRowInfo(allSprints)
+      countAWT(allRowInfo)
+      countPoject(allRowInfo)
       setProjectTableData(allSprints);
       backupTableData = allSprints;
       setTaskTaggedPortfolios(taskTaggedComponents)
@@ -891,8 +928,50 @@ const ProjectManagementMain = (props: any) => {
 
     }
 
-  };
+  }
+  const getAllRowInfo=(allSprints:any)=>{
+    let allrowInfo:any=[];
+   function getallRows(value:any){
+    value?.map((item:any)=>{
+      allrowInfo.push(item)
+      if(item?.subRows?.length>0){
+        getallRows(item?.subRows)
+      }
+    })
 
+   }
+   getallRows(allSprints)
+   return allrowInfo;
+  }
+  const countAWT=(countTaskAWTLevel:any)=>{
+    countTaskAWTLevel?.map((result: any) => {
+      taskTypeDataItem?.map((type: any) => {
+          if (result?.TaskType?.Title === type.Title) {
+            type[type?.Title + 'filterNumber'] += 1;
+              type[type?.Title + 'number'] += 1;
+          }
+      });
+  })
+  }
+  const countPoject=(projectCount:any)=>{
+    let portfolioTypeData:any=[]
+    let Item: any = {};
+    Item.Title = "Sprint";
+    Item.Sprintnumber = 0;
+    Item.SprintfilterNumber = 0;
+    Item.SprintnumberCopy = 0;
+    portfolioTypeData?.push(Item);
+    projectCount?.map((item:any)=>{
+      portfolioTypeData?.map((showPortFolio:any)=>{
+        if(item?.Item_x0020_Type==showPortFolio?.Title){
+          showPortFolio[showPortFolio.Title + 'filterNumber'] += 1;
+          showPortFolio[showPortFolio.Title + 'number'] += 1;
+        }
+      })
+      
+    })
+    setPortFolioTypeIcon(portfolioTypeData)
+  }
 
   const getChilds = (item: any, items: any) => {
     items?.map((sub: any) => {
@@ -2104,6 +2183,9 @@ const ProjectManagementMain = (props: any) => {
                               <div className="wrapper project-management-Table">
                                 {(ProjectTableData?.length == 0 || ProjectTableData?.length > 0) && <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} updatedSmartFilterFlatView={false}
                                   projectmngmnt={"projectmngmnt"}
+                                  portfolioTypeData={portfolioTypeDataItem}
+                                  showingAllPortFolioCount={true}
+                                  taskTypeDataItem={taskTypeDataItem}
                                   masterTaskData={MasterListData}
                                   PortfolioFeature={Masterdata?.Item_x0020_Type == "Sprint" ? 'Feature' : ''}
                                   AllSitesTaskData={AllSitesAllTasks}
