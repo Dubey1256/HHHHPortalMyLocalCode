@@ -1405,7 +1405,7 @@ export default class UserTimeEntry extends React.Component<
         lastMonth.getMonth(),
         1
       );
-      var change = Moment(startingDateOfLastMonth).add(28, "days").format();
+      var change = Moment(startingDateOfLastMonth).add(25, "days").format();
       var b = new Date(change);
       formattedDate = b;
     } else if (startDateOf == "Last Week") {
@@ -2076,9 +2076,9 @@ export default class UserTimeEntry extends React.Component<
             filterItem.SmartPriority = getItem?.SmartPriority;
             filterItem.projectStructerId = getItem?.projectStructerId;
             filterItem.ProjectTitle = getItem?.Project?.Title;
+            filterItem.ProjectId = getItem?.Project?.Id;
             filterItem.PortfolioType = getItem?.PortfolioType;
             filterItem.Body = getItem?.Body;
-            filterItem.ProjectId = getItem?.Project?.Id;
             filterItem.descriptionsSearch = getItem?.descriptionsSearch;
             filterItem.FeedBack = getItem?.FeedBack;
             filterItem.TaskType = getItem?.TaskType;

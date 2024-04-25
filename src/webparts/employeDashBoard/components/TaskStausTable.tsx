@@ -19,7 +19,7 @@ import { GrNext, GrPrevious } from "react-icons/gr";
 import * as Moment from "moment";
 import Slider from "react-slick";
 import HighlightableCell from "../../../globalComponents/highlight";
-import { MdOutlineGppGood, MdGppBad } from "react-icons/md";
+import { MdOutlineGppGood, MdGppBad } from "react-icons/Md";
 import { Panel } from '@fluentui/react';
 let Count = 0;
 let DashboardConfig: any = [];
@@ -441,7 +441,7 @@ const TaskStatusTbl = (Tile: any) => {
                 <p>${RejectedItem?.RejectedDetails?.RejectedComment}</p>
                 </br>
                 <p>Thanks,</p>`
-                await globalCommon.SendTeamMessage(sendUserEmail, TeamMsg, ContextData?.propsValue?.Context);
+                await globalCommon.SendTeamMessage(sendUserEmail, TeamMsg, ContextData?.propsValue?.Context, ContextData?.propsValue);
               }
               DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
               DashboardConfigCopy?.map((Config: any) => {

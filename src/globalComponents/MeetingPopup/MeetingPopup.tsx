@@ -689,12 +689,7 @@ const MeetingPopupComponent = (Props: any) => {
                                 Share This Meeting
                             </span> ||
 
-                            {/* {Items.Items.siteType == "Offshore Tasks" ? 
-                            <a target="_blank" className="mx-2" data-interception="off"
-                                // href={`${siteUrls}/Lists/SharewebQA/EditForm.aspx?ID=${MeetingData.ID}`}
-                                >
-                                Open Out-Of-The-Box Form
-                            </a> : */}
+                            
                             <a target="_blank" className="mx-2" data-interception="off"
                                 href={`${siteUrls}/Lists/Master%20Tasks/EditForm.aspx?ID=${MeetingData.ID}`}
                             >

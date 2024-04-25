@@ -43,6 +43,7 @@ import { Web } from 'sp-pnp-js';
 import { TbChevronDown, TbChevronUp, TbSelector } from 'react-icons/tb';
 import { myContextValue } from '../globalCommon';
 import ProgressBar from 'react-bootstrap/ProgressBar';
+import moment from 'moment';
 // import TileBasedTasks from './TileBasedTasks';
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -256,7 +257,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     let showPopupHeader = items?.showPopupHeader
     // let showPagination: any = items?.showPagination;
     let usedFor: any = items?.usedFor;
-    let portfolioColor = items?.portfolioColor != undefined ? items?.portfolioColor : "#000066";
+    let portfolioColor = items?.portfolioColor != undefined ? items?.portfolioColor : "";
     let expandIcon = items?.expandIcon;
     let fixedWidth = items?.fixedWidth;
     let portfolioTypeData = items?.portfolioTypeData;
@@ -321,35 +322,63 @@ const GlobalCommanTable = (items: any, ref: any) => {
             }
         }
     }, [fixedWidth === true])
+
     const customGlobalSearch = (row: any, id: any, query: any) => {
         query = query.replace(/\s+/g, " ").trim().toLowerCase();
         if (String(query).trim() === "") return true;
-
-        if ((selectedFilterPannelData?.Title?.Title === id && selectedFilterPannelData?.Title?.Selected === true) || (selectedFilterPannelData?.commentsSearch?.commentsSearch === id && selectedFilterPannelData?.commentsSearch?.Selected === true) ||
-            (selectedFilterPannelData?.descriptionsSearch?.descriptionsSearch === id && selectedFilterPannelData?.descriptionsSearch?.Selected === true) || (selectedFilterPannelData?.timeSheetsDescriptionSearch?.timeSheetsDescriptionSearch === id && selectedFilterPannelData?.timeSheetsDescriptionSearch?.Selected === true)) {
-
-            const cellValue: any = String(row.getValue(id)).toLowerCase();
-
-            if (globalSearchType === "ALL") {
-                let found = true;
-                let a = query?.split(" ")
-                for (let item of a) {
-                    if (!cellValue.split(" ").some((elem: any) => elem === item)) {
-                        found = false;
+        for (const key in selectedFilterPannelData) {
+            const filter = selectedFilterPannelData[key];
+            if (filter[id] === id && filter.Selected === true) {
+                const cellValueString: any = row.getValue(id);
+                if (cellValueString === null || cellValueString === "" || cellValueString === undefined) {
+                    return false;
+                }
+                const cellValue: any = String(row.getValue(id)).toLowerCase();
+                if (isValidISODate(cellValue) === false) {
+                    if (globalSearchType === "ALL") {
+                        let found = true;
+                        let a = query?.split(" ")
+                        for (let item of a) {
+                            if (!cellValue.split(" ").some((elem: any) => elem === item)) {
+                                found = false;
+                            }
+                        }
+                        return found
+                    } else if (globalSearchType === "ANY") {
+                        for (let item of query.split(" ")) {
+                            if (cellValue.includes(item)) return true;
+                        }
+                        return false;
+                    } else if (globalSearchType === "EXACT") {
+                        return cellValue.includes(query);
+                    }
+                } else if (isValidISODate(cellValue) === true) {
+                    const cellValueCopy: any = moment(cellValue).format("DD/MM/YYYY")
+                    if (globalSearchType === "ALL") {
+                        let found = true;
+                        let a = query?.split(" ")
+                        for (let item of a) {
+                            if (!cellValueCopy.split(" ").some((elem: any) => elem === item)) {
+                                found = false;
+                            }
+                        }
+                        return found
+                    } else if (globalSearchType === "ANY") {
+                        for (let item of query.split(" ")) {
+                            if (cellValueCopy.includes(item)) return true;
+                        }
+                        return false;
+                    } else if (globalSearchType === "EXACT") {
+                        return cellValueCopy.includes(query);
                     }
                 }
-                return found
-            } else if (globalSearchType === "ANY") {
-                for (let item of query.split(" ")) {
-                    if (cellValue.includes(item)) return true;
-                }
-                return false;
-            } else if (globalSearchType === "EXACT") {
-                return cellValue.includes(query);
             }
-        };
+        }
     };
-
+    const isValidISODate = (dateString: string): boolean => {
+        const isoDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/i;
+        return isoDateRegex.test(dateString);
+    };
     // ***************** coustmize Global Expende And Check Box *********************
     const modColumns = React.useMemo(() => {
         return columns.map((elem: any, index: any) => {
@@ -447,8 +476,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     configurationData[0].ConfrigId = resultsArray[0]?.Id;
                 }
                 console.log(resultsArray);
-                // setSettingConfrigrationData(configurationData);
-                // rerender();
                 settingConfrigrationData = settingConfrigrationData.concat(configurationData);
             } else if (smartFabBasedColumnsSetting?.length > 0) {
                 settingConfrigrationData = settingConfrigrationData.concat(smartFabBasedColumnsSetting);
@@ -478,13 +505,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
             let sortingDescData: any = [];
             let columnVisibilityResult: any = {};
             let preSetColumnSettingVisibility: any = {};
+            let updatedSelectedFilterPannelData: any = {};
             let preSetColumnOrdring: any = [];
             console.log(settingConfrigrationData);
             columns = columns.map((updatedSortDec: any) => {
                 try {
-                    // if ((localStorage.getItem(tableId) != undefined && localStorage.getItem(tableId)) && Object.keys(JSON.parse(localStorage.getItem(tableId)))?.length > 0 && (items?.columnSettingIcon === true)) {
                     if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableId && (items?.columnSettingIcon === true)) {
-                        // const preSetColumnsValue = JSON.parse(localStorage.getItem(tableId));
                         const preSetColumnsValue = settingConfrigrationData[0]
                         if (preSetColumnsValue?.tableId === items?.tableId) {
                             preSetColumnSettingVisibility = preSetColumnsValue?.columnSettingVisibility;
@@ -509,6 +535,13 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         let obj = { 'id': updatedSortDec.id, desc: false };
                         sortingDescData.push(obj);
                     }
+                    if (updatedSortDec.placeholder != "" && updatedSortDec.placeholder != undefined) {
+                        updatedSelectedFilterPannelData[updatedSortDec.id] = {
+                            [updatedSortDec.id]: updatedSortDec.id,
+                            Selected: updatedSortDec.isColumnVisible,
+                            lebel: updatedSortDec.placeholder
+                        };
+                    }
                     return updatedSortDec;
                 } catch (error) {
                     console.log(error);
@@ -516,6 +549,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     location.reload();
                 }
             });
+            setSelectedFilterPannelData(updatedSelectedFilterPannelData);
             if (preSetColumnOrdring?.columnOrderValue?.length > 0 && preSetColumnOrdring?.tableId === items?.tableId) {
                 const colValue = preSetColumnOrdring?.columnOrderValue?.map((elem: any) => elem.id);
                 setColumnOrder(colValue);
@@ -550,9 +584,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 setSorting([]);
             }
             try {
-                // if (localStorage.getItem(tableId) && Object.keys(JSON.parse(localStorage.getItem(tableId)))?.length > 0 && (items?.columnSettingIcon === true)) {
                 if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableId && (items?.columnSettingIcon === true)) {
-                    // const preSetColumnsValue = JSON.parse(localStorage.getItem(tableId));
                     const preSetColumnsValue = settingConfrigrationData[0]
                     if (preSetColumnsValue?.tableId === items?.tableId) {
                         makeConfrigrationColumnsDefult()
@@ -563,97 +595,9 @@ const GlobalCommanTable = (items: any, ref: any) => {
             }
         }
     }
-
-    // React.useEffect(() => {
-    //     if (columns?.length > 0 && columns != undefined) {
-    //         let sortingDescData: any = [];
-    //         let columnVisibilityResult: any = {};
-    //         let preSetColumnSettingVisibility: any = {};
-    //         let preSetColumnOrdring: any = [];
-    //         console.log(settingConfrigrationData);
-    //         columns = columns.map((updatedSortDec: any) => {
-    //             try {
-    //                 // if ((localStorage.getItem(tableId) != undefined && localStorage.getItem(tableId)) && Object.keys(JSON.parse(localStorage.getItem(tableId)))?.length > 0 && (items?.columnSettingIcon === true)) {
-    //                 if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableId && (items?.columnSettingIcon === true)) {
-    //                     // const preSetColumnsValue = JSON.parse(localStorage.getItem(tableId));
-    //                     const preSetColumnsValue = settingConfrigrationData[0]
-    //                     if (preSetColumnsValue?.tableId === items?.tableId) {
-    //                         preSetColumnSettingVisibility = preSetColumnsValue?.columnSettingVisibility;
-    //                         preSetColumnOrdring = preSetColumnsValue
-    //                         setShowHeaderLocalStored(preSetColumnsValue?.showHeader)
-    //                         if (Object.keys(preSetColumnSettingVisibility)?.length) {
-    //                             const columnId = updatedSortDec.id;
-    //                             if (preSetColumnSettingVisibility[columnId] !== undefined) {
-    //                                 updatedSortDec.isColumnVisible = preSetColumnSettingVisibility[columnId];
-    //                             }
-    //                         }
-    //                     } else if (updatedSortDec?.isColumnVisible === false && items?.columnSettingIcon === true) {
-    //                         columnVisibilityResult[updatedSortDec.id] = updatedSortDec.isColumnVisible;
-    //                     }
-    //                 } else if (updatedSortDec?.isColumnVisible === false && items?.columnSettingIcon === true) {
-    //                     columnVisibilityResult[updatedSortDec.id] = updatedSortDec.isColumnVisible;
-    //                 }
-    //                 if (updatedSortDec.isColumnDefultSortingDesc === true) {
-    //                     let obj = { 'id': updatedSortDec.id, desc: true }
-    //                     sortingDescData.push(obj);
-    //                 } else if (updatedSortDec.isColumnDefultSortingAsc === true) {
-    //                     let obj = { 'id': updatedSortDec.id, desc: false }
-    //                     sortingDescData.push(obj);
-    //                 }
-    //                 return updatedSortDec;
-    //             } catch (error) {
-    //                 console.log(error);
-    //                 localStorage.removeItem(tableId);
-    //                 location.reload();
-    //             }
-    //         });
-    //         if (preSetColumnOrdring?.columnOrderValue?.length > 0 && preSetColumnOrdring?.tableId === items?.tableId) {
-    //             const colValue = preSetColumnOrdring?.columnOrderValue?.map((elem: any) => elem.id);
-    //             setColumnOrder(colValue);
-    //         } else if (items?.columnSettingIcon === true && tableId) {
-    //             const colValue = columns?.map((elem: any) => elem.id);
-    //             setColumnOrder(colValue);
-    //         }
-    //         if (preSetColumnOrdring?.tableHeightValue?.length > 0 && preSetColumnOrdring?.tableHeightValue != "") {
-    //             setWrapperHeight(preSetColumnOrdring?.tableHeightValue);
-    //         }
-    //         try {
-    //             if ((Object.keys(preSetColumnSettingVisibility) != null && Object.keys(preSetColumnSettingVisibility) != undefined) && Object.keys(preSetColumnSettingVisibility)?.length > 0 && preSetColumnOrdring?.tableId === items?.tableId) {
-    //                 setColumnVisibility(preSetColumnSettingVisibility);
-    //             } else if (Object.keys(columnVisibilityResult)?.length > 0) {
-    //                 setColumnVisibility(columnVisibilityResult);
-    //                 columnVisibilityDataValue = { ...columnVisibilityResult };
-    //             }
-    //         } catch (error) {
-    //             console.log(error)
-    //         }
-
-    //         if (sortingDescData.length > 0) {
-    //             setSorting(sortingDescData);
-    //         } else {
-    //             setSorting([]);
-    //         }
-    //         try {
-    //             // if (localStorage.getItem(tableId) && Object.keys(JSON.parse(localStorage.getItem(tableId)))?.length > 0 && (items?.columnSettingIcon === true)) {
-    //             if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableId && (items?.columnSettingIcon === true)) {
-    //                 // const preSetColumnsValue = JSON.parse(localStorage.getItem(tableId));
-    //                 const preSetColumnsValue = settingConfrigrationData[0]
-    //                 if (preSetColumnsValue?.tableId === items?.tableId) {
-    //                     makeConfrigrationColumnsDefult()
-    //                 }
-    //             }
-    //         } catch (error) {
-    //             console.log(error)
-    //         }
-    //     }
-    // }, [columns]);
-
-
     const makeConfrigrationColumnsDefult = () => {
         try {
-            // if (localStorage.getItem(tableId) && Object.keys(JSON.parse(localStorage.getItem(tableId)))?.length > 0 && (items?.columnSettingIcon === true)) {
             if (settingConfrigrationData?.length > 0 && settingConfrigrationData[0]?.tableId === tableId && (items?.columnSettingIcon === true)) {
-                // const eventSetting = JSON.parse(localStorage.getItem(tableId));
                 const eventSetting = settingConfrigrationData[0]
                 if (eventSetting?.columanSize?.length > 0) {
                     table?.getHeaderGroups()?.map((elem: any) => {
@@ -934,16 +878,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
             }
         })
     }
-    // React.useEffect(() => {
-    //     if (expendedTrue != true) {
-    //         if (table.getState().columnFilters.length || table.getState()?.globalFilter?.length > 0) {
-    //             setExpanded(true);
-    //         } else {
-    //             setExpanded({});
-    //         }
-    //     }
-    // }, [table.getState().columnFilters, table.getState().globalFilter]);
-
     React.useEffect(() => {
         if (expendedTrue != true) {
             if (table.getState().columnFilters.length || table.getState()?.globalFilter?.length > 0) {
@@ -1142,7 +1076,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
     }
 
     ////////////////  end /////////////////
-
+    const customScrollToFn = (offset: number, options: any, instance: any) => {
+        setTimeout(() => {
+            instance._scrollToOffset(offset, options);
+        }, 200); // Adjust the delay time (in milliseconds) as needed
+    };
+    
     //Virual rows
     const parentRef = React.useRef<HTMLDivElement>(null);
     const { rows } = table.getRowModel();
@@ -1152,6 +1091,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         // estimateSize: () => 24,
         // overscan: 15,
         estimateSize: () => 200,
+        scrollToFn: customScrollToFn, 
         overscan: 50,
     });
 
@@ -1311,21 +1251,16 @@ const GlobalCommanTable = (items: any, ref: any) => {
                             {portfolioTypeData?.map((type: any, index: any) => {
                                 return (
                                     <>
-                                        {/* {isShowingDataAll === true ? <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</> :
-                                            <><label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `} of {" "} </label> <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label><label style={{ color: "#333333" }} className='ms-1'>{" "} {type.Title}</label>{index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>}</>} */}
-
                                         {isShowingDataAll === true ? <label><label className='alignCenter'>
-                                            <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
+                                            <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons hover-text'>{type.Title !== "Sprint" ? `${type?.Title?.charAt(0)}`: "X"} <span className='tooltip-text pop-right'>{type?.Title}</span></label>
                                             <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `}/</label>
                                             <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
-                                            {/* {index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
                                         </label></label> :
                                             <label><label className='alignCenter'>
-                                                <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
+                                                <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons hover-text'>{type.Title !== "Sprint" ? `${type?.Title?.charAt(0)}`: "X"}<span className='tooltip-text pop-right'>{type?.Title}</span></label>
                                                 <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `}/</label>
                                                 <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
-                                                {/* {index < type.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
-                                                </label></label>}
+                                            </label></label>}
                                     </>
                                 )
                             })}
@@ -1333,16 +1268,14 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                 return (
                                     <>
                                         {isShowingDataAll === true ? <label><label className='alignCenter'>
-                                            <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
+                                            <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons hover-text'>{`${type?.Title?.charAt(0)}`} <span className='tooltip-text pop-right'>{type?.Title}</span></label>
                                             <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `}/</label>
                                             <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
-                                            {/* {index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
                                         </label></label> :
                                             <label><label className='alignCenter'>
-                                                <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons'>{`${type?.Title?.charAt(0)}`}</label>
+                                                <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons hover-text'>{`${type?.Title?.charAt(0)}`} <span className='tooltip-text pop-right'>{type?.Title}</span></label>
                                                 <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `}/</label>
                                                 <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
-                                                {/* {index < items?.taskTypeDataItem?.length - 1 && <label style={{ color: "#333333" }} className="ms-1"> | </label>} */}
                                             </label></label>}
                                     </>
                                 )
@@ -1449,12 +1382,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         }</div>}
                     </>
                     }
-                    {/* {
-                        items?.pageProjectOverview === true &&
-                        <>{trueRestructuring === true ? <RestructuringCom AllSitesTaskData={items?.AllSitesTaskData} AllMasterTasksData={items?.masterTaskData} queryItems={items.queryItems} restructureFunct={restructureFunct} ref={childRef} taskTypeId={items.TaskUsers} contextValue={items.AllListId} allData={data} restructureCallBack={items.restructureCallBack} restructureItem={table?.getSelectedRowModel()?.flatRows} />
-                            : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>}</>
-                    } */}
-
                     {items.taskProfile === true && items?.showCreationAllButton === true && items?.hideRestructureBtn != true && <>
                         {table?.getSelectedRowModel()?.flatRows.length < 2 ? <button type="button" className="btn btn-primary" title='Add Activity' onClick={() => openCreationAllStructure("Add Workstream-Task")}>{(table?.getSelectedRowModel()?.flatRows.length > 0 && table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType.Title == "Workstream") || (items?.queryItems?.TaskType?.Title == "Workstream") ? "Add Task" : "Add Workstream-Task"}</button> :
                             <button type="button" className="btn btn-primary" disabled={true} > Add Workstream-Task</button>}
@@ -1477,45 +1404,52 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
 
                     {items?.hideTeamIcon != true ? <>
-                        {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <a className="teamIcon hreflink" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team"></span></a>
-                            : <a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team"></span></a>}
+                        {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <a className="teamIcon hreflink hover-text m-0" onClick={() => ShowTeamFunc()}><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--team"></span> <span className='tooltip-text pop-left'>Create Teams Group</span></a>
+                            : <a className="teamIcon hover-text m-0"><span style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team"></span> <span className='tooltip-text pop-left'>Create Teams Group</span></a>}
                     </> : ''}
 
                     {items?.showEmailIcon === true ? <>
-                        <a className="teamIcon p-0 hreflink" onClick={() => openCreationAllStructure("sendEmail")}><span title="send email" style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--mail"></span></a>
+                        <a className="teamIcon p-0 hreflink hover-text m-0" onClick={() => openCreationAllStructure("sendEmail")}><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--mail"></span> <span className='tooltip-text pop-left'>send email</span></a>
                     </> : ''}
 
                     {items?.hideOpenNewTableIcon != true ? <>
                         {table?.getSelectedRowModel()?.flatRows?.length > 0 ?
-                            <a onClick={() => openTaskAndPortfolioMulti()} title='Open in New Tab' className="openWebIcon p-0"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span></a>
-                            : <a className="openWebIcon p-0 hreflink" title='Open in New Tab'><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a>}
+                            <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon p-0 hover-text m-0"><span style={{ color: `${portfolioColor}`, backgroundColor: `${portfolioColor}` }} className="svg__iconbox svg__icon--openWeb"></span> <span className='tooltip-text pop-left'>Open in New Tab</span></a>
+                            : <a className="openWebIcon p-0 hreflink hover-text m-0"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span> <span className='tooltip-text pop-left'>Open In New Tab</span></a>}
                     </> : ''}
 
-                    {items?.OpenAdjustedTimePopupCategory && items?.showCatIcon === true && <a onClick={items.OpenAdjustedTimePopupCategory} title="Open Adjusted Time Popup">
+                    {items?.OpenAdjustedTimePopupCategory && items?.showCatIcon === true && <a onClick={items.OpenAdjustedTimePopupCategory} className='hover-text m-0'>
                         <i className="fa fa-cog brush hreflink" aria-hidden="true"></i>
+                        <span className='tooltip-text pop-left'>Open Adjusted Time Popup</span>
                     </a>}
 
-                    {items?.showCatIcon != true ? <a className='excal hreflink' title='Export to Excel' onClick={() => exportToExcel()}><RiFileExcel2Fill /></a> :
-                        <a className='excal' title='Export to Excel' onClick={items?.exportToExcelCategoryReport}><RiFileExcel2Fill /></a>}
+                    {items?.showCatIcon != true ? <><a className='excal hreflink hover-text m-0' onClick={() => exportToExcel()}><RiFileExcel2Fill /><span className='tooltip-text pop-left'>Export To Excel</span></a></> :
+                        <><a className='excal hover-text m-0' onClick={items?.exportToExcelCategoryReport}><RiFileExcel2Fill /><span className='tooltip-text pop-left'>Export To Excel</span></a></>}
 
-                    {items?.SmartTimeIconShow === true && items?.AllListId?.isShowTimeEntry === true && <a className='smartTotalTime hreflink' title="Load SmartTime of AWT" onClick={() => openCreationAllStructure("Smart-Time")} > <BsClockHistory /></a>}
+                    {items?.SmartTimeIconShow === true && items?.AllListId?.isShowTimeEntry === true && <a className='smartTotalTime hreflink hover-text m-0' title="Load SmartTime of AWT" onClick={() => openCreationAllStructure("Smart-Time")} > <BsClockHistory /> <span className='tooltip-text pop-left'>Load SmartTime of AWT</span></a>}
 
-                    {items?.flatView === true && items?.updatedSmartFilterFlatView === false && <>{items?.clickFlatView === false ? <a className='smartTotalTime hreflink' title='Switch to Flat-View' onClick={() => openCreationAllStructure("Flat-View")}><BsList /></a> :
-                        <a className='smartTotalTime' title='Switch to Groupby View' onClick={() => openCreationAllStructure("Groupby-View")}><FaListAlt /></a>}</>}
+                    {items?.flatView === true && items?.updatedSmartFilterFlatView === false && <>{items?.clickFlatView === false ? <a className='smartTotalTime hreflink hover-text m-0' onClick={() => openCreationAllStructure("Flat-View")}><BsList /> <span className='tooltip-text pop-left'>Switch to Flat-View</span></a> :
+                        <a className='smartTotalTime hover-text m-0' onClick={() => openCreationAllStructure("Groupby-View")}><FaListAlt /><span className='tooltip-text pop-left'>Switch to Groupby View</span></a>}</>}
+                    {items?.flatView === true && items?.updatedSmartFilterFlatView === true && <a className='smartTotalTime hreflink hover-text m-0'><FaListAlt /> <span className='tooltip-text pop-left'>Deactivated To Groupby View</span></a>}
 
-                    {items?.flatView === true && items?.updatedSmartFilterFlatView === true && <a className='smartTotalTime hreflink' title='deactivated to Groupby View'><FaListAlt /></a>}
-                    <a className='brush'><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); setRowSelection({}); }}></i></a>
-                    <a className='Prints' onClick={() => downloadPdf()}>
-                        <i className="fa fa-print" aria-hidden="true" title="Print"></i>
+                    <a className='brush hover-text m-0'><i className="fa fa-paint-brush hreflink" aria-hidden="true" onClick={() => { setGlobalFilter(''); setColumnFilters([]); setRowSelection({}); }}></i> <span className='tooltip-text pop-left'>Clear All</span></a>
+
+                    <a className='Prints hover-text m-0' onClick={() => downloadPdf()}>
+                        <i className="fa fa-print" aria-hidden="true"></i>
+                        <span className='tooltip-text pop-left'>Print</span>
                     </a>
-                    {items?.bulkEditIcon === true && <a className='smartTotalTime hreflink' title='Bulk editing setting' onClick={() => bulkEditingSettingPopupEvent()} ><RiListSettingsFill /></a>}
 
-                    {expandIcon === true && <a className="expand" title="Expand table section">
+                    {items?.bulkEditIcon === true && <a className='smartTotalTime hreflink hover-text m-0' onClick={() => bulkEditingSettingPopupEvent()} ><RiListSettingsFill /> <span className='tooltip-text pop-left'>Bulk Editing Setting</span></a>}
+
+                    {expandIcon === true && <a className="expand hover-text m-0">
                         <ExpndTable prop={expndpopup} prop1={tablecontiner} />
+                        <span className='tooltip-text pop-left'>Expand Table Section</span>
                     </a>}
 
-                    {items?.showFilterIcon === true && <><a className='smartTotalTime hreflink' title='Filter all task' onClick={() => openCreationAllStructure("loadFilterTask")}><RiFilter3Fill /></a></>}
-                    {items?.columnSettingIcon === true && <><a className='smartTotalTime hreflink' title='Column setting' onClick={() => openTableSettingPopup("tableBased")}><AiFillSetting /></a></>}
+                    {items?.showFilterIcon === true && <><a className='smartTotalTime hreflink hover-text m-0' onClick={() => openCreationAllStructure("loadFilterTask")}><RiFilter3Fill /><span className='tooltip-text pop-left'>Filter All Task</span></a></>}
+
+                    {items?.columnSettingIcon === true && <><a className='smartTotalTime hreflink hover-text m-0' onClick={() => openTableSettingPopup("tableBased")}><AiFillSetting /> <span className='tooltip-text pop-left'>Column Setting</span></a></>}
+
                     <Tooltip ComponentId={5756} />
                 </span>
             </div >}
@@ -1626,7 +1560,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                 return (
                                     <tr
                                         className={row?.original?.lableColor}
-                                        // className={row?.original?.IsSCProtected != undefined && row?.original?.IsSCProtected == true ? `Disabled-Link opacity-75 ${row?.original?.lableColor}` : `${row?.original?.lableColor}`}
                                         key={row.id} data-index={virtualRow.index} ref={virtualizer.measureElement} onDragStart={(e) => startDrag(row?.original, row?.original?.TaskId)} onDragOver={(e) => e.preventDefault()}>
                                         {row.getVisibleCells().map((cell: any) => {
                                             if (cell.column.columnDef.id == "Id" && row?.original?.IsSCProtected == true) {
@@ -1711,9 +1644,8 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </select>
                 </div> : ''
             }
-            {/* {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''} */}
             {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} /> : ''}
-            {selectedFilterPanelIsOpen && <SelectFilterPanel isOpen={selectedFilterPanelIsOpen} selectedFilterCount={selectedFilterCount} setSelectedFilterCount={setSelectedFilterCount} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
+            {selectedFilterPanelIsOpen && <SelectFilterPanel columns={columns} isOpen={selectedFilterPanelIsOpen} selectedFilterCount={selectedFilterCount} setSelectedFilterCount={setSelectedFilterCount} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
             {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
             {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} bulkEditingCongration={bulkEditingCongration} />}
             {columnSettingPopup && <ColumnsSetting showProgres={showProgress} ContextValue={items?.AllListId} settingConfrigrationData={settingConfrigrationData} tableSettingPageSize={tableSettingPageSize} tableHeight={parentRef?.current?.style?.height} columnOrder={columnOrder} setSorting={setSorting} sorting={sorting} headerGroup={table?.getHeaderGroups()} tableId={items?.tableId} showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility}

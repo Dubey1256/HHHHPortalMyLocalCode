@@ -36,7 +36,7 @@ var AllMetadata: any = [];
 var isShowSiteCompostion: any = "";
 const RootLevelDashboard = (props: any) => {
   const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
-  const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
+  const [cmsTimeComponent, setCmsTimeComponent] = React.useState([]);
   const [AllTasks, setAllTasks] = React.useState([]);
   const [dashboardConfigrations, setDashboardConfigrations] = React.useState([]);
   const [AllTasksBackup, setAllTasksBackup] = React.useState([]);
@@ -75,7 +75,7 @@ const RootLevelDashboard = (props: any) => {
   }, []);
   const EditDataTimeEntryData = (e: any, item: any) => {
     setIsTimeEntry(true);
-    setSharewebTimeComponent(item);
+    setCmsTimeComponent(item);
   };
   const EditPopup = React.useCallback((item: any) => {
     setisOpenEditPopup(true);
@@ -606,7 +606,7 @@ const RootLevelDashboard = (props: any) => {
       </section>
       {IsTimeEntry && (
         <DisplayTimeEntry
-          props={SharewebTimeComponent}
+          props={cmsTimeComponent}
           CallBackTimeEntry={TimeEntryCallBack}
           Context={props?.props?.Context}
         ></DisplayTimeEntry>

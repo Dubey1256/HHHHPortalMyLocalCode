@@ -25,7 +25,7 @@ var AllComponetsDataNew: any = [];
 var taskUsers: any = [];
 var copyAllitemsdata: any = [];
 var AllTimeSpentDetails: any = [];
-var SharewebTitle: any = '';
+var CmsTitle: any = '';
 var componentTitle: any = "";
 var Finalcomponent: any = "";
 let Pageurls: any = "";
@@ -36,7 +36,6 @@ function SmartConnectTable(SelectedProp: any) {
     const [allitemsData, setAllitemsData] = React.useState([])
     const [AllMetadata, setMetadata] = React.useState([])
     const [AllUsers, setTaskUser] = React.useState([]);
-    //const [Pageurlshareweb, setPageurlshareweb] = React.useState('');
     // const [CompnentId, setCompnentId] = React.useState('');
 
     const [AllTimeSheetData, setAllTimeSheetData] = React.useState([]);
@@ -52,9 +51,9 @@ function SmartConnectTable(SelectedProp: any) {
             Mainportfolio = Mainportfolio[0]
     })();
     (async () => {
-        SharewebTitle = await Promise.all([globalCommon.getParameterByName('Title')]);
-        if (SharewebTitle[0] != "" && SharewebTitle.length > 0)
-            SharewebTitle = SharewebTitle[0]
+        CmsTitle = await Promise.all([globalCommon.getParameterByName('Title')]);
+        if (CmsTitle[0] != "" && CmsTitle.length > 0)
+            CmsTitle = CmsTitle[0]
     })();
 
 
@@ -268,7 +267,6 @@ function SmartConnectTable(SelectedProp: any) {
                 .get()
             console.log(results);
             var newComponent: any = results[0];
-            // SharewebListService.getRequest(_spPageContextInfo.webAbsoluteUrl, "/getbyid('" + GlobalConstants.MASTER_TASKS_LISTID + "')/items?$select=Id,Site,Title,Portfolio_x0020_Type,ServicePortfolio/Id,ServicePortfolio/Title,Parent/Id,Parent/Title,Component/Id,Component/Title,Component/ItemType,Services/Id,Services/Title,Services/ItemType,Events/Id,Events/Title,Events/ItemType&$expand=Parent,Component,Services,ServicePortfolio,Events&$filter=(Id eq '" + id + "')&$top=4999").then(function (success) {
             //     newComponent = success.d.results[0];
             if (newComponent != undefined && (newComponent.Parent.Id == 0 || newComponent.Parent.Id == undefined)) {
                 Finalcomponent = newComponent;
@@ -290,7 +288,6 @@ function SmartConnectTable(SelectedProp: any) {
                 loadAlltask(Mainportfolio, filters);
             }
             if (newComponent != undefined && newComponent.Parent.Id != undefined) {
-                // SharewebListService.getRequest(_spPageContextInfo.webAbsoluteUrl, "/getbyid('" + GlobalConstants.MASTER_TASKS_LISTID + "')/items?$select=Id,Portfolio_x0020_Type,Item_x0020_Type,Site,Short_x0020_Description_x0020_On,Title,ServicePortfolio/Id,ServicePortfolio/Title,Parent/Id,Parent/Title,Component/Id,Component/Title,Component/ItemType,Services/Id,Services/Title,Services/ItemType,Events/Id,Events/Title,Events/ItemType&$expand=Parent,Component,ServicePortfolio,Services,Events&$filter=(Id eq '" + newComponent.Parent.Id + "')&$top=4999").then(function (success) {
                 let resultsnew: any = [];
                 resultsnew = await web.lists
                     .getById(SelectedProp.MasterTaskListID)
@@ -320,7 +317,6 @@ function SmartConnectTable(SelectedProp: any) {
 
 
                 if (newComponentsecond != undefined && newComponentsecond.Parent.Id != undefined) {
-                    //  SharewebListService.getRequest(_spPageContextInfo.webAbsoluteUrl, "/getbyid('" + GlobalConstants.MASTER_TASKS_LISTID + "')/items?$select=Id,Portfolio_x0020_Type,Item_x0020_Type,Site,Short_x0020_Description_x0020_On,Title,ServicePortfolio/Id,ServicePortfolio/Title,Parent/Id,Parent/Title,Component/Id,Component/Title,Component/ItemType,Services/Id,Services/Title,Services/ItemType,Events/Id,Events/Title,Events/ItemType&$expand=Parent,Component,Services,ServicePortfolio,Events&$filter=(Id eq '" + newComponentsecond.Parent.Id + "')&$top=4999").then(function (success) {
                     let subChild: any = [];
                     subChild = await web.lists
                         .getById(SelectedProp.MasterTaskListID)
@@ -359,7 +355,7 @@ function SmartConnectTable(SelectedProp: any) {
         var columns = ['ID', 'Id', 'Title', 'DueDate', 'ClientActivity', 'ClientCategory', 'TaskID', 'PercentComplete', 'Author', 'Editor', 'Modified', 'Created', 'Portfolio/Title','Portfolio/Id', 'TaskType', 'ItemRank', 'ItemRank', 'ParentTask', 'TaskLevel', 'TaskLevel', 'ClientCategory', 'ServicePortfolio'];
         var orderBy = "ItemRank";
         var whereClause = "<View><Query><Where><And><Contains><FieldRef Name='ClientActivity'  /><Value Type='Note'>" + Pageurl + "</Value></Contains><Contains><FieldRef Name='ClientActivity'/><Value Type='Note'>" + newSite + "</Value></Contains></And></Where></Query></View>";
-        var listItem = SitesConfig.filter((site: any) => site.Title.toLowerCase() === Mainsiteitem.toLowerCase()) //SharewebCommonFactoryService.getListIdByListName(MainSite, GlobalConstants.CURRENT_SITE_TYPE);
+        var listItem = SitesConfig.filter((site: any) => site.Title.toLowerCase() === Mainsiteitem.toLowerCase()) 
 
         const web = new Web(SelectedProp.siteUrl);
         let result: any = [];
@@ -524,9 +520,9 @@ function SmartConnectTable(SelectedProp: any) {
             if (item.DueDate != undefined)
                 item.DueDate = Moment(item.DueDate).format('DD/MM/YYYY');
             if (item.Modified != undefined)
-                item.Modifiednew = Moment(item.Modified).format('DD/MM/YYYY');//SharewebCommonFactoryService.ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY');
+                item.Modifiednew = Moment(item.Modified).format('DD/MM/YYYY');
             if (item.Created != undefined)
-                item.CreatedNew = Moment(item.Created).format('DD/MM/YYYY');//SharewebCommonFactoryService.ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
+                item.CreatedNew = Moment(item.Created).format('DD/MM/YYYY');
             item['PortfolioItemsId'] = undefined
 
             if (item.Portfolio != undefined && item.Portfolio?.Title !=undefined) {
@@ -603,7 +599,7 @@ function SmartConnectTable(SelectedProp: any) {
     }
     const loadAlltask = async (NewType: any, newvalue: any) => {
         // $scope.orderBy1 = 'ItemRank';
-        //  SharewebCommonFactoryService.showProgressBar();
+      
         // let defer = $q.defer();
         // let allCalls = [];
         var filters: any = '';
@@ -719,9 +715,9 @@ function SmartConnectTable(SelectedProp: any) {
                             else
                                 item.PercentComplete = 0;
                             if (item.Modified != undefined)
-                                item.Modifiednew = globalCommon.ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY'); //SharewebCommonFactoryService.ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY');
+                                item.Modifiednew = globalCommon.ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY'); 
                             if (item.Created != undefined)
-                                item.CreatedNew = globalCommon.ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');//SharewebCommonFactoryService.ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
+                                item.CreatedNew = globalCommon.ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
 
 
                             //if (!$scope.isItemExistsById($scope.allitems, item.Id)) {
@@ -797,7 +793,7 @@ function SmartConnectTable(SelectedProp: any) {
                         //     $scope.loadLinkedComponentTask();
                         // }
 
-                        // SharewebCommonFactoryService.hideProgressBar();
+                       
                         //  $scope.sortBy1('ItemRank', false);
 
                     }
@@ -959,10 +955,7 @@ function SmartConnectTable(SelectedProp: any) {
                 .select(query)
                 .getAll(4000)
             setAllTimeSheetData(result);
-            // if (Pageurlshareweb != "" && MainSite != "") {
-            //     Getportfolioid(Pageurlshareweb, MainSite, Mainportfolio);
-            //     // Sharewebselectionopen();
-            // }
+          
 
 
         }
@@ -1010,7 +1003,7 @@ function SmartConnectTable(SelectedProp: any) {
         });
         if (Pageurls != "" && MainSite != "") {
             Getportfolioid(Pageurls, MainSite, Mainportfolio);
-            // Sharewebselectionopen();
+           
         }
         // GetAllTaskTime();
     }
@@ -1021,7 +1014,7 @@ function SmartConnectTable(SelectedProp: any) {
         (async () => {
             let Pageurlshareweb1 = await Promise.all([globalCommon.getParameterByName('PageUrl')]);
             if (Pageurlshareweb1[0] != "" && Pageurlshareweb1.length > 0)
-                //  setPageurlshareweb(Pageurlshareweb => Pageurlshareweb1[0])
+              
                 Pageurls = Pageurlshareweb1[0];
         })();
         (async () => {
