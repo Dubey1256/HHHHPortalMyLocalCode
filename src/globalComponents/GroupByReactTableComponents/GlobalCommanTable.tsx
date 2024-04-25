@@ -560,7 +560,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             if (preSetColumnOrdring?.tableHeightValue?.length > 0 && preSetColumnOrdring?.tableHeightValue != "") {
                 setWrapperHeight(preSetColumnOrdring?.tableHeightValue);
             } else {
-                setWrapperHeight(items?.wrapperHeight);
+                setWrapperHeight(items?.wrapperHeight ? items?.wrapperHeight : "");
             }
             if (preSetColumnOrdring?.showProgress === true) {
                 setShowProgress(true)
@@ -661,18 +661,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
             console.log(error)
         }
     }
-    /****************** defult Expend Other Section  part *******************/
-    React.useEffect(() => {
-        if (table?.getRowModel()?.rows.length > 0) {
-            table?.getRowModel()?.rows.map((elem: any) => {
-                if (elem?.original?.Title === "Others") {
-                    const newExpandedState = { [elem.id]: true };
-                    setExpanded(newExpandedState);
-                }
-            })
-        }
-    }, [])
-    /****************** defult Expend Other Section end *******************/
     /****************** defult sorting  part end *******************/
 
     const table: any = useReactTable({
@@ -898,6 +886,18 @@ const GlobalCommanTable = (items: any, ref: any) => {
         }
     }, [table.getState().columnFilters, table.getState().globalFilter]);
 
+    /****************** defult Expend Other Section  part *******************/
+    React.useEffect(() => {
+        if (table?.getRowModel()?.rows?.length > 0 && items?.data?.length > 0) {
+            table?.getRowModel()?.rows?.map((elem: any) => {
+                if (elem?.original?.Title === "Others") {
+                    // const newExpandedState = { [elem.id]: true };
+                    setExpanded((prev: any) => ({ ...prev, [elem.id]: true, }));
+                }
+            })
+        }
+    }, [items?.data?.length > 0])
+    /****************** defult Expend Other Section end *******************/
 
     React.useEffect(() => {
         if (expendedTrue === true) {
@@ -1081,7 +1081,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             instance._scrollToOffset(offset, options);
         }, 200); // Adjust the delay time (in milliseconds) as needed
     };
-    
+
     //Virual rows
     const parentRef = React.useRef<HTMLDivElement>(null);
     const { rows } = table.getRowModel();
@@ -1091,7 +1091,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         // estimateSize: () => 24,
         // overscan: 15,
         estimateSize: () => 200,
-        scrollToFn: customScrollToFn, 
+        scrollToFn: customScrollToFn,
         overscan: 50,
     });
 
@@ -1203,7 +1203,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             if (eventSetting?.tableHeightValue?.length > 0 && eventSetting?.tableHeightValue != "") {
                 setWrapperHeight(eventSetting?.tableHeightValue);
             } else {
-                setWrapperHeight("");
+                setWrapperHeight(items?.wrapperHeight ? items?.wrapperHeight : "");
             }
             if (Object.keys(eventSetting?.showPageSizeSetting)?.length > 0) {
                 if (eventSetting?.showPageSizeSetting?.tablePageSize > 0) {
@@ -1225,7 +1225,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
             setColumnSettingPopup(false)
         }
     }, []);
-
     const openTableSettingPopup = (event: any) => {
         if (event === "tableBased") {
             setColumnSettingPopup(true);
@@ -1252,12 +1251,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                 return (
                                     <>
                                         {isShowingDataAll === true ? <label><label className='alignCenter'>
-                                            <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons hover-text'>{type.Title !== "Sprint" ? `${type?.Title?.charAt(0)}`: "X"} <span className='tooltip-text pop-right'>{type?.Title}</span></label>
+                                            <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons hover-text'>{type.Title !== "Sprint" ? `${type?.Title?.charAt(0)}` : "X"} <span className='tooltip-text pop-right'>{type?.Title}</span></label>
                                             <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `}/</label>
                                             <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
                                         </label></label> :
                                             <label><label className='alignCenter'>
-                                                <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons hover-text'>{type.Title !== "Sprint" ? `${type?.Title?.charAt(0)}`: "X"}<span className='tooltip-text pop-right'>{type?.Title}</span></label>
+                                                <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons hover-text'>{type.Title !== "Sprint" ? `${type?.Title?.charAt(0)}` : "X"}<span className='tooltip-text pop-right'>{type?.Title}</span></label>
                                                 <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `}/</label>
                                                 <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
                                             </label></label>}
@@ -1648,7 +1647,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             {selectedFilterPanelIsOpen && <SelectFilterPanel columns={columns} isOpen={selectedFilterPanelIsOpen} selectedFilterCount={selectedFilterCount} setSelectedFilterCount={setSelectedFilterCount} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
             {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
             {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} bulkEditingCongration={bulkEditingCongration} />}
-            {columnSettingPopup && <ColumnsSetting showProgres={showProgress} ContextValue={items?.AllListId} settingConfrigrationData={settingConfrigrationData} tableSettingPageSize={tableSettingPageSize} tableHeight={parentRef?.current?.style?.height} columnOrder={columnOrder} setSorting={setSorting} sorting={sorting} headerGroup={table?.getHeaderGroups()} tableId={items?.tableId} showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility}
+            {columnSettingPopup && <ColumnsSetting showProgres={showProgress} ContextValue={items?.AllListId} settingConfrigrationData={settingConfrigrationData} tableSettingPageSize={tableSettingPageSize} tableHeight={parentRef?.current?.style?.height} wrapperHeight={wrapperHeight} columnOrder={columnOrder} setSorting={setSorting} sorting={sorting} headerGroup={table?.getHeaderGroups()} tableId={items?.tableId} showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility}
                 smartFabBasedColumnsSettingToggle={smartFabBasedColumnsSettingToggle} setSmartFabBasedColumnsSettingToggle={setSmartFabBasedColumnsSettingToggle} />}
 
             {coustomButtonMenuPopup && <HeaderButtonMenuPopup isOpen={coustomButtonMenuPopup} coustomButtonMenuToolBoxCallback={coustomButtonMenuToolBoxCallback} setCoustomButtonMenuPopup={setCoustomButtonMenuPopup}
