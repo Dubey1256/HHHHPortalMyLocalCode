@@ -23,7 +23,7 @@ import {
   MdKeyboardArrowRight,
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
-} from "react-icons/md";
+} from "react-icons/Md";
 
 let AllTimeSpentDetails: any = [];
 let CurntUserId = "";

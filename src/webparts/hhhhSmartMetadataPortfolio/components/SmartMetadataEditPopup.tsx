@@ -295,7 +295,7 @@ export default function SmartMetadataEditPopup(props: any) {
                         selctitemid = smart.Id;
                         if (smart.siteType == selecteditem.Title) {
                             let postData = {
-                                SharewebCategoriesId: { "results": Category },
+                               TaskCategoriesId: { "results": Category },
                             };
                             const web = new Web(props?.AllList?.SPSitesListUrl);
                             await web.lists.getById(ListId).items.getById(smart.Id).update(postData);

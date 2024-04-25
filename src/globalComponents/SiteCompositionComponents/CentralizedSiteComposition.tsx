@@ -1031,7 +1031,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <div>
-                        {/* <ReactPopperTooltip ShareWebId={getValue()} row={row} /> */}
+                        {/* <ReactPopperTooltip CMSToolId={getValue()} row={row} /> */}
                         <ReactPopperTooltip
                             CMSToolId={row?.original?.TaskID}
                             row={row?.original}
@@ -1269,17 +1269,17 @@ const CentralizedSiteComposition = (Props: any) => {
                             // }
                         }
                         if (OriginalData.siteType == "Shareweb") {
-                            let TempCCForSharewebTask: any = [];
+                            let TempCCForTask: any = [];
                             // AllSiteDataBackup?.map((AllSiteItem: any) => {
                             //     if (AllSiteItem?.ClientCategories?.length > 0) {
                             //         AllSiteItem?.ClientCategories?.map((ExistingCCItem: any) => {
                             //             if (ExistingCCItem.checked == true) {
-                            //                 TempCCForSharewebTask.push(ExistingCCItem);
+                            //                 TempCCForTask.push(ExistingCCItem);
                             //             }
                             //         })
                             //     }
                             // })
-                            // OriginalData.ClientCategory = TempCCForSharewebTask;
+                            // OriginalData.ClientCategory = TempCCForTask;
                         }
                     })
                 }

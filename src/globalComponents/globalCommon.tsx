@@ -30,9 +30,23 @@ export const docxUint8Array = async () => {
     })
     return result
 }
-export const SendTeamMessage = async (mention_To: any, txtComment: any, Context: any) => {
+export const findTaskCategoryParent = (taskCategories: any, result: any) => {
+    if (taskCategories?.length > 0 && result.TaskCategories?.length > 0) {
+        let newTaskCat = taskCategories?.filter((val: any) => result?.TaskCategories?.some((elem: any) => val.Id === elem.Id));
+        newTaskCat.map((elemVal: any) => {
+            if (result[elemVal?.Parent?.Title]) {
+                result[elemVal?.Parent?.Title] += ` ${elemVal?.Title}`
+            } else {
+                result[elemVal?.Parent?.Title] = elemVal?.Title;
+            }
+        })
+    }
+    return result;
+}
+export const SendTeamMessage = async (mention_To: any, txtComment: any, Context: any, AllListId: any) => {
     let currentUser: any = {}
     try {
+        let AllUsers: any = await loadAllTaskUsers(AllListId)
         let pageContent = await pageContext()
         let web = new Web(pageContent?.WebFullUrl);
         //let currentUser = await web.currentUser?.get()
@@ -81,17 +95,35 @@ export const SendTeamMessage = async (mention_To: any, txtComment: any, Context:
                 const chat_payload: any = {
                     "members": participants
                 }
-                mention_To != undefined && mention_To?.length == 1 ? chat_payload.chatType = 'oneOnOne' : chat_payload.chatType = 'group'
-                let new_chat_resp = await client.api('/chats').version('v1.0').post(chat_payload)
-                const message_payload = {
-                    "body": {
-                        contentType: 'html',
-                        content: `${txtComment}`,
-                        //content: 'test',
-                    }
+                let IsSendTeamMessage = 0;
+                if (mention_To != undefined && AllUsers != undefined && AllUsers?.length > 0 && mention_To?.length > 0) {
+                    mention_To?.map((TeamUser: any) => {
+                        AllUsers?.map((User: any) => {
+                            if (User?.AssingedToUser != undefined && User?.AssingedToUser?.EMail != undefined && User?.AssingedToUser?.EMail != '' && User?.AssingedToUser?.EMail?.toLowerCase() == TeamUser.toLowerCase()) {
+                                IsSendTeamMessage += 1;
+                            }
+                        })
+
+                    })
+
                 }
-                let result = await client.api('/chats/' + new_chat_resp?.id + '/messages').post(message_payload)
-                return result;
+                if (IsSendTeamMessage == mention_To?.length) {
+                    mention_To != undefined && mention_To?.length == 1 ? chat_payload.chatType = 'oneOnOne' : chat_payload.chatType = 'group'
+                    let new_chat_resp = await client.api('/chats').version('v1.0').post(chat_payload)
+                    const message_payload = {
+                        "body": {
+                            contentType: 'html',
+                            content: `${txtComment}`,
+                            //content: 'test',
+                        }
+                    }
+                    let result = await client.api('/chats/' + new_chat_resp?.id + '/messages').post(message_payload)
+                    return result;
+                }
+                else {
+                    alert("Something went wrong please try after sometime")
+                }
+
             });
         });
     } catch (error) {
@@ -741,12 +773,12 @@ export const loadTaskUsers = async () => {
     return taskUser;
 }
 export const loadAllTaskUsers = async (AllListId: any) => {
-  
+
     let taskUser;
     try {
         let web = new Web(AllListId?.siteUrl);
         taskUser = await web.lists
-            .getById(AllListId?.TaskUsertListID!==undefined? AllListId?.TaskUsertListID:AllListId?.TaskUserListId)
+            .getById(AllListId?.TaskUsertListID)
             .items
             .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name,UserGroup/Id,UserGroup/Title,TeamLeader/Id,TeamLeader/Title&$expand=UserGroup,AssingedToUser,Approver,TeamLeader").get();
     }
@@ -1051,16 +1083,6 @@ export const sendImmediateEmailNotifications = async (
     taskUsers: any,
     Context: any
 ) => {
-    let clientTaskDetails :any= [];
-    if(item?.ClientActivityJson!=undefined){
-        try{
-            clientTaskDetails= JSON.parse(item?.ClientActivityJson);
-            clientTaskDetails= clientTaskDetails[0]
-        }catch(e){
-
-        }
-    }
-   
     await GetImmediateTaskNotificationEmails(
         item,
         isLoadNotification,
@@ -1349,25 +1371,16 @@ export const sendImmediateEmailNotifications = async (
                                 UpdateItem?.Category.toLowerCase("approval") > -1
                             )
                                 item.CategoriesType = item?.Category?.replace("Approval,", "");
-                                if (
-                                    UpdateItem?.Category?.toLowerCase()?.indexOf("immediate") > -1
-                                ) {
-                                    Subject =
-                                    `[Immediate - ${UpdateItem.siteType} - ${UpdateItem.TaskID} ${UpdateItem.Title}] New Immediate Task Created`
-                                }
-                                else{
-                                    Subject =
-                                    "[" +
-                                    siteType +
-                                    " - " +
-                                    UpdateItem?.Category +
-                                    " (" +
-                                    UpdateItem?.PercentComplete +
-                                    "%)] " +
-                                    UpdateItem?.Title +
-                                    "";
-                                }
-                           
+                            Subject =
+                                "[" +
+                                siteType +
+                                " - " +
+                                UpdateItem?.Category +
+                                " (" +
+                                UpdateItem?.PercentComplete +
+                                "%)] " +
+                                UpdateItem?.Title +
+                                "";
                         }
                         if (UpdateItem?.PercentComplete != 1) {
                             Subject = Subject?.replaceAll("Approval,", "");
@@ -1395,11 +1408,15 @@ export const sendImmediateEmailNotifications = async (
                                 "] " +
                                 UpdateItem?.Title +
                                 "";
-                            if (isLoadNotification == "Client Task" && clientTaskDetails?.ClientActivityId!=undefined) {
-                                Subject =  `[Client Task - ${clientTaskDetails?.ClientSite} - ${clientTaskDetails?.SDCTaskId} ${clientTaskDetails?.SDCTitle} by ${clientTaskDetails?.SDCCreatedBy}] New Client Task`
-                            }
-                            if (isLoadNotification == "Client Task Completed" && clientTaskDetails?.ClientActivityId!=undefined) {
-                                Subject =  `[Client Task - ${clientTaskDetails?.ClientSite} - ${clientTaskDetails?.SDCTaskId} ${clientTaskDetails?.SDCTitle} by ${clientTaskDetails?.SDCCreatedBy}] Client Task completed`
+                            if (isLoadNotification == "Client Task") {
+                                Subject =
+                                    "[ SDC Client Task - " +
+                                    siteType +
+                                    " - " +
+                                    item?.SDCAuthor +
+                                    " ] " +
+                                    UpdateItem?.Title +
+                                    "";
                             }
                             if (
                                 UpdateItem?.Category?.toLowerCase()?.indexOf(
@@ -1432,18 +1449,24 @@ export const sendImmediateEmailNotifications = async (
                                 UpdateItem?.Category?.toLowerCase()?.indexOf("immediate") > -1
                             ) {
                                 Subject =
-                                `[Immediate - ${UpdateItem.siteType} - ${UpdateItem.TaskId} ${UpdateItem.Title} New Immediate Task Created]`
+                                    "[" +
+                                    siteType +
+                                    " - " +
+                                    "Approval,Immediate" +
+                                    "] " +
+                                    UpdateItem?.Title +
+                                    "";
                             }
                         } else if (
                             UpdateItem?.PercentComplete == 0 &&
-                            UpdateItem?.Category?.toLowerCase()?.indexOf("user experience - ux") > -1
+                            UpdateItem?.Category?.toLowerCase()?.indexOf("design") > -1
                         ) {
                             if (isLoadNotification == "DesignMail") {
                                 Subject =
                                     "[" +
                                     siteType +
                                     " - " +
-                                    "User Experience - UX" +
+                                    "Design" +
                                     "]" +
                                     UpdateItem?.Title +
                                     "";
@@ -1603,27 +1626,28 @@ export const sendImmediateEmailNotifications = async (
                             let extraBody = "";
                             if (UpdateItem?.ClientActivityJson?.SDCCreatedBy?.length > 0) {
                                 SDCDetails = UpdateItem?.ClientActivityJson;
-                                if (isLoadNotification == "Client Task" && clientTaskDetails?.ClientActivityId!=undefined) {
-                                    Subject =  `[Client Task - ${clientTaskDetails?.ClientSite} - ${clientTaskDetails?.SDCTaskId} ${clientTaskDetails?.SDCTitle} by ${clientTaskDetails?.SDCCreatedBy}] New Client Task`
-                                }
-                                if (isLoadNotification == "Client Task Completed" && clientTaskDetails?.ClientActivityId!=undefined) {
-                                    Subject =  `[Client Task - ${clientTaskDetails?.ClientSite} - ${clientTaskDetails?.SDCTaskId} ${clientTaskDetails?.SDCTitle} by ${clientTaskDetails?.SDCCreatedBy}] Client Task completed`
-                                }
+                                Subject =
+                                    "[ SDC Client Task - " +
+                                    siteType +
+                                    " - " +
+                                    SDCDetails?.SDCCreatedBy +
+                                    " ] " +
+                                    UpdateItem?.Title +
+                                    "";
                                 if (UpdateItem?.PercentComplete < 90) {
-                                //     extraBody = `<div>
-                                //       <h2>Email Subject : Your Task has been seen - [${SDCDetails?.SDCTaskId} ${UpdateItem?.Title}]</h2>
-                                //       <p>Message:</p>
-                                //       <p>Dear ${SDCDetails?.SDCCreatedBy},</p>
-                                //       <p>Thank you for your Feedback!</p>
-                                //       <p>Your Task - [${UpdateItem?.Title}] has been seen by our Team and we are now working on it.</p>
-                                //       <p>You can track your Task Status here: <a href="${SDCDetails?.SDCTaskUrl}">${SDCDetails?.SDCTaskUrl}</a></p>
-                                //       <p>If you want to see all your Tasks or all Sharweb Tasks click here: <a href="${SDCDetails?.SDCTaskDashboard}">Team Dashboard - Task View</a></p>
-                                //       <p>Best regards,<br />Your HHHH Support Team</p>
-                                //       <br>
-                                //       <h4>Client Email : - ${SDCDetails?.SDCEmail}
-                                //   </div><br><br>`;
+                                    extraBody = `<div>
+                                      <h2>Email Subject : Your Task has been seen - [${SDCDetails?.SDCTaskId} ${UpdateItem?.Title}]</h2>
+                                      <p>Message:</p>
+                                      <p>Dear ${SDCDetails?.SDCCreatedBy},</p>
+                                      <p>Thank you for your Feedback!</p>
+                                      <p>Your Task - [${UpdateItem?.Title}] has been seen by our Team and we are now working on it.</p>
+                                      <p>You can track your Task Status here: <a href="${SDCDetails?.SDCTaskUrl}">${SDCDetails?.SDCTaskUrl}</a></p>
+                                      <p>If you want to see all your Tasks or all Sharweb Tasks click here: <a href="${SDCDetails?.SDCTaskDashboard}">Team Dashboard - Task View</a></p>
+                                      <p>Best regards,<br />Your HHHH Support Team</p>
+                                      <br>
+                                      <h4>Client Email : - ${SDCDetails?.SDCEmail}
+                                  </div><br><br>`;
                                 } else if (UpdateItem?.PercentComplete == 90) {
-                                    Subject =  `[Client Task - ${clientTaskDetails?.ClientSite} - ${clientTaskDetails?.SDCTaskId} ${clientTaskDetails?.SDCTitle} by ${clientTaskDetails?.SDCCreatedBy}] Client Task completed`
                                     extraBody = `<div>
                                       <h2>Email Subject : Your Task has been completed - [${SDCDetails?.SDCTaskId} ${UpdateItem?.Title}]</h2>
                                       <p>Message:</p>
@@ -1640,20 +1664,6 @@ export const sendImmediateEmailNotifications = async (
 
                                 body = extraBody + body;
                             }
-                           
-                        }
-                        if(UpdateItem?.Category?.toLowerCase()?.indexOf("immediate") > -1){
-
-                            let headercontain = 
-                            `<div style="margin-top: 11.25pt;">
-                                <div style="margin-top: 2pt;">Hello ${UpdateItem?.Author1},</div>
-                                <div style="margin-top: 5pt;">Your task has been set to  ${UpdateItem?.PercentComplete}%  by ${UpdateItem?.Author1}, team will process it further.</div>
-                                <div style="margin-top: 5pt;">Have a nice day !</div>
-                                <div style="margin-top: 5pt;">Regards,</div>
-                                <div style="margin-top: 5pt;">Task Management Team,</div>
-                            </div>`
-
-                            body = headercontain + body;
                         }
                         var from = "",
                             to = ToEmails,
@@ -1835,9 +1845,6 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
     // let TaskUsers: any = [];
     let AllMasterTaskData: any = [];
     try {
-         let AllListId=Props
-        let Response: ArrayLike<any> = [];
-        Response = await loadAllTaskUsers(AllListId);
         let ProjectData: any = [];
         let web = new Web(Props.siteUrl);
         AllMasterTaskData = await web.lists
@@ -1917,10 +1924,7 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
                 result.FeatureTypeTitle = result?.FeatureType?.Title
             }
 
-            result.PortfolioTitle=''
-            result.TaskTypeValue=''
-            result.SmartInformationTitle=''
-            result.SmartPriority=''
+
             result.descriptionsSearch = '';
             result.commentsSearch = "";
             result.descriptionsDeliverablesSearch = '';
@@ -2082,7 +2086,6 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
 }
 
 
-
 export const componentGrouping = (Portfolio: any, AllProtFolioData: any, path: string = "") => {
     let pathArray: any = [];
     Portfolio.subRows = [];
@@ -2169,17 +2172,15 @@ export const GetCompleteTaskId = (Item: any) => {
     }
     return taskIds;
 };
-
 export const GetTaskId = (Item: any) => {
-    const { TaskID, ParentTask, Id, TaskType, Item_x0020_Type } = Item;
+    const { TaskID, ParentTask, Id, TaskType } = Item;
     let taskIds = "";
     if (TaskType?.Title === 'Activities' || TaskType?.Title === 'Workstream') {
         taskIds += taskIds.length > 0 ? `-${TaskID}` : `${TaskID}`;
     }
     if (ParentTask?.TaskID != undefined && TaskType?.Title === 'Task') {
         taskIds += taskIds.length > 0 ? `-${ParentTask?.TaskID}-T${Id}` : `${ParentTask?.TaskID}-T${Id}`;
-    }
-    else if (ParentTask?.TaskID == undefined && TaskType?.Title === 'Task') {
+    } else if (ParentTask?.TaskID == undefined && TaskType?.Title === 'Task') {
         taskIds += taskIds.length > 0 ? `-T${Id}` : `T${Id}`;
     } else if (taskIds?.length <= 0) {
         taskIds += `T${Id}`;
@@ -2241,7 +2242,7 @@ export const loadAllTimeEntry = async (timesheetListConfig: any) => {
     }
 }
 export const loadAllSiteTasks = async (allListId?: any | null, filter?: any | null, pertiCularSites?: any | null, showOffShore?: any | undefined) => {
-    let query = "Id,Title,Comments,FeedBack,WorkingAction,PriorityRank,Remark,Project/PriorityRank,EstimatedTimeDescription,ClientActivityJson,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
+    let query = "Id,Title,FeedBack,PriorityRank,WorkingAction,Remark,Project/PriorityRank,EstimatedTimeDescription,ClientActivityJson,Project/PortfolioStructureID,ParentTask/Id,ParentTask/Title,ParentTask/TaskID,TaskID,SmartInformation/Id,SmartInformation/Title,Project/Id,Project/Title,workingThisWeek,EstimatedTime,TaskLevel,TaskLevel,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,Sitestagging,Priority,Status,ItemRank,IsTodaysTask,Body,Portfolio/Id,Portfolio/Title,Portfolio/PortfolioStructureID,PercentComplete,Categories,StartDate,PriorityRank,DueDate,TaskType/Id,TaskType/Title,TaskType/Level,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,TaskCategories/Id,TaskCategories/Title,AssignedTo/Id,AssignedTo/Title,TeamMembers/Id,TeamMembers/Title,ResponsibleTeam/Id,ResponsibleTeam/Title,ClientCategory/Id,ClientCategory/Title&$expand=AssignedTo,Project,ParentTask,SmartInformation,Author,Portfolio,Editor,TaskType,TeamMembers,ResponsibleTeam,TaskCategories,ClientCategory"
     if (filter != undefined) {
         query += `&$filter=${filter}`
     }
@@ -2609,29 +2610,16 @@ export const AwtGroupingAndUpdatePrarticularColumn = async (findGrouping: any, A
                 });
         }
     }
-    return { findGrouping, flatdata }; 
+    return { findGrouping, flatdata };
 }
-export const replaceURLsWithAnchorTags = (text:any) => {
+export const replaceURLsWithAnchorTags = (text: any) => {
     // Regular expression to match URLs
-    var urlRegex = /(https?:\/\/[^\s<>"]+)(?=["'\s.,]|$)/g;
+    var urlRegex = /(https?:\/\/[^\s]+)/g;
     // Replace URLs with anchor tags
-    let textToIgnore :any= ''
-    var replacedText = text.replace(urlRegex, function (url:any) {
-        if (!isURLInsideAnchorTag(url, text) && !textToIgnore.includes(url)) {
-            console.log(url,'in if')
-            return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
-        } else{
-            textToIgnore += `${url} `
-            return url;
-        }
+    var replacedText = text.replace(urlRegex, function (url: any) {
+        return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
     });
     return replacedText;
-}
-
-function isURLInsideAnchorTag(url:any, text:any) {
-    // Regular expression to match anchor tags
-    var anchorRegex = /<a\s+(?:[^>]*?\s+)?href=(["'])(.*?)\1/i;
-    return anchorRegex.test(text) && anchorRegex.exec(text)[2] === url;
 }
 //--------------------------------------Share TimeSheet Report-----------------------------------------------------------------------
 
@@ -3222,12 +3210,12 @@ export const ShareTimeSheetMultiUser = async (AllTimeEntry: any, TaskUser: any, 
         '</tbody>' +
         '</table>'
     var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/UserTimeEntry.aspx";
-    var ReportDatetime: any;
+
     if (DateType == 'Yesterday' || DateType == 'Today') {
-        ReportDatetime = startDate;
+        var ReportDatetime = startDate;
     }
     else {
-        ReportDatetime = `${startDate} - ${endDate}`
+        var ReportDatetime: any = `${startDate} - ${endDate}`
     }
 
     var body: any =
@@ -3353,17 +3341,4 @@ const GetleaveUser = async (TaskUser: any, Context: any) => {
     })
     console.log(finalData)
     return finalData
-}
-export const findTaskCategoryParent = (taskCategories: any, result: any) => {
-    if (taskCategories?.length > 0 && result.TaskCategories?.length > 0) {
-        let newTaskCat = taskCategories?.filter((val: any) => result?.TaskCategories?.some((elem: any) => val.Id === elem.Id));
-        newTaskCat.map((elemVal: any) => {
-            if (result[elemVal?.Parent?.Title]) {
-                result[elemVal?.Parent?.Title] +=' '+` ${elemVal?.Title}`
-            } else {
-                result[elemVal?.Parent?.Title] = elemVal?.Title;
-            }
-        })
-    }
-    return result;
 }

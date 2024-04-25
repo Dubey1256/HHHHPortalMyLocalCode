@@ -38,7 +38,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     copyDtaArray = data;
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
     const [AllMetadataItems, setAllMetadataItems] = React.useState([]);
-    const [SharewebComponent, setSharewebComponent] = React.useState("");
+    const [CMSToolComponent, setCMSToolComponent] = React.useState("");
     const [AllUsers, setTaskUser] = React.useState([]);
     const [checkedList, setCheckedList] = React.useState<any>({});
     const [ShowingAllData, setShowingData] = React.useState([])
@@ -316,12 +316,12 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     const EditComponentPopup = (item: any) => {
         if(showProject == true){
             setIsProjectPopup(true)
-            setSharewebComponent(item);
+            setCMSToolComponent(item);
         }else{
             item["siteUrl"] = Dynamic?.siteUrl;
             item["listName"] = "Master Tasks";
             setIsComponent(true);
-            setSharewebComponent(item);
+            setCMSToolComponent(item);
         }
        
       
@@ -1008,7 +1008,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
 
             {IsComponent && (
                 <EditInstitution
-                    item={SharewebComponent}
+                    item={CMSToolComponent}
                     Calls={Callbackfrompopup}
                     SelectD={Dynamic}
                     portfolioTypeData={PortfolitypeData}
@@ -1016,7 +1016,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                     {" "}
                 </EditInstitution>
             )}
-            {IsProjectPopup && <EditProjectPopup props={SharewebComponent} AllListId={Dynamic} Call={Call} showProgressBar={"showProgressBar"}> </EditProjectPopup>}
+            {IsProjectPopup && <EditProjectPopup props={CMSToolComponent} AllListId={Dynamic} Call={Call} showProgressBar={"showProgressBar"}> </EditProjectPopup>}
         </Panel >
     )
 }; export default ServiceComponentPortfolioPopup;

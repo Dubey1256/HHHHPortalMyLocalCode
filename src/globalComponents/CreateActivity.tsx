@@ -54,14 +54,14 @@ const CreateActivity = (props: any) => {
   const [CategoriesData, setCategoriesData] = React.useState<any>([]);
   const [categorySearchKey, setCategorySearchKey] = React.useState("");
   const [SearchedProjectItems, setSearchedProjectItems] = React.useState<any>([]);
-  const [ShareWebComponent, setShareWebComponent] = React.useState('');
+  const [CMSToolComponent, setCMSToolComponent] = React.useState('');
   const [SearchedProjectKey, setSearchedProjectKey] = React.useState<any>('');
   const [selectedProjectData, setSelectedProjectData]: any = React.useState({});
   const [refreshData, setRefreshData] = React.useState(false);
   const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
   // const [IsClientPopup, setIsClientPopup] = React.useState(false);
   const [FeedbackPost, setFeedbackPost] = React.useState([]);
-  const [SharewebCategory, setSharewebCategory] = React.useState("");
+  const [TaskCat, setTaskCat] = React.useState("");
   const [selectedItem, setSelectedItem]: any = React.useState({});
   const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
   const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
@@ -236,11 +236,11 @@ const CreateActivity = (props: any) => {
     // if (Type == 'Component') {
     //     setIsOpenPortfolio(true);
     //     setOpenPortfolioType(Type)
-    //     setShareWebComponent(item);
+    //     setCMSToolComponent(item);
     // }
     if (Type == 'Project') {
       setProjectManagementPopup(true)
-      setShareWebComponent(item);
+      setCMSToolComponent(item);
     }
   }
   const autoSuggestionsForProject = (e: any) => {
@@ -900,7 +900,7 @@ const CreateActivity = (props: any) => {
 
   const EditComponentPicker = (item: any) => {
     setIsComponentPicker(true);
-    setSharewebCategory(item);
+    setTaskCat(item);
   };
   //-------- Edit client categrory and categrioes open popup  fuction end ------------
 
@@ -1262,7 +1262,6 @@ const CreateActivity = (props: any) => {
 
           if (
             selectedItem?.TaskType?.Title == "Workstream" ||
-            selectedItem?.SharewebTaskType?.Title == "Workstream" ||
             selectedItem?.TaskType === "Workstream"
           ) {
             TaskID = selectedItem?.TaskID + "-T" + LatestId;
@@ -2142,7 +2141,7 @@ const CreateActivity = (props: any) => {
       )}
       {ProjectManagementPopup && (
         <ServiceComponentPortfolioPopup
-          props={ShareWebComponent}
+          props={CMSToolComponent}
           Dynamic={AllListId}
           Call={ComponentServicePopupCallBack}
           selectionType={"Single"}
@@ -2152,7 +2151,7 @@ const CreateActivity = (props: any) => {
       )}
       {IsComponentPicker && (
         <Picker
-          props={SharewebCategory}
+          props={TaskCat}
           selectedCategoryData={CategoriesData}
           usedFor="Task-Footertable"
           AllListId={AllListId}

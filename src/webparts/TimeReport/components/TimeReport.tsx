@@ -20,7 +20,7 @@ import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 
 // import * as Moment from 'moment';
 import * as Moment from 'moment-timezone';
-import { MdEmail } from "react-icons/md";
+import { MdEmail } from "react-icons/Md";
 import PageLoader from '../../../globalComponents/pageLoader';
 import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import EditPage from '../../../globalComponents/EditPanelPage/EditPage';
