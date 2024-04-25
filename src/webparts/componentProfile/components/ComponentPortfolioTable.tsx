@@ -1083,8 +1083,8 @@ const switchGroupbyData = () => {
         accessorFn: (row) => row?.TaskID,
         cell: ({ row, getValue }) => (
           <>
-            {/* <ReactPopperTooltip ShareWebId={getValue()} row={row} /> */}
-            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={flatviewmastertask} AllSitesTaskData={flatviewTasklist} AllListId={SelectedProp?.NextProp} />
+            {/* <ReactPopperTooltip CMSToolId={getValue()} row={row} /> */}
+            <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={flatviewmastertask} AllSitesTaskData={flatviewTasklist} AllListId={SelectedProp?.NextProp} />
           
           </>
         ),
@@ -1246,7 +1246,7 @@ const switchGroupbyData = () => {
                   href={`${ContextValue.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`}
                 >
                   <ReactPopperTooltip
-                    ShareWebId={row?.original?.projectStructerId}
+                    CMSToolId={row?.original?.projectStructerId}
                     projectToolShow={true}
                     row={row}
                     AllListId={ContextValue}
