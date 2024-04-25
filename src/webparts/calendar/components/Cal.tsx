@@ -1376,7 +1376,7 @@ const SendEmail = (EventData: any, MyEventData: any) => {
     sp.utility
       .sendEmail({
         Body: BindHtmlBody,
-        Subject: "Leave Request - " + startDate +"-"+EventData?.Designation+"-"+ EventData?.title , // Modified subject
+        Subject: "Leave Request - " + formattedstartDate +"-"+EventData?.Designation+"-"+ EventData?.title , // Modified subject
         To: [ "anubhav.shukla@hochhuth-consulting.de"],
         AdditionalHeaders: {
           "content-type": "text/html",
