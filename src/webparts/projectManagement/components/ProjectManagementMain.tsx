@@ -1190,7 +1190,8 @@ const ProjectManagementMain = (props: any) => {
         resetSorting: false,
         resetColumnFilters: false,
         size: 50,
-        isColumnVisible: true
+        isColumnVisible: true,
+        fixedColumnWidth: true,
       },
       {
         accessorKey: "TaskID",
@@ -1264,7 +1265,6 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         isColumnVisible: true
       },
-
       {
         accessorFn: (row) => row?.PortfolioTitle,
         cell: ({ row }) => (
@@ -1331,7 +1331,7 @@ const ProjectManagementMain = (props: any) => {
           return row?.original?.PriorityRank == filterValue
         },
         resetSorting: false,
-        size: 75
+        size: 75,
       },
       {
         accessorFn: (row) => row?.SmartPriority,
@@ -1407,13 +1407,13 @@ const ProjectManagementMain = (props: any) => {
         placeholder: "% Complete",
         resetColumnFilters: false,
         isColumnVisible: true,
+        fixedColumnWidth: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.PercentComplete == filterValue
         },
         resetSorting: false,
         header: "",
-        size: 55,
-        fixedColumnWidth: true
+        size: 55
       },
       {
         accessorFn: (row) => row?.TeamMembers?.map((elem: any) => elem.Title).join('-'),
