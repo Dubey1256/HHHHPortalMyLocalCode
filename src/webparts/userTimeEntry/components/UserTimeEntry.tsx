@@ -76,7 +76,7 @@ export interface IUserTimeEntryState {
   IsTimeEntry: boolean;
   showShareTimesheet: boolean;
   disableProperty: boolean;
-  SharewebTimeComponent: any;
+  TimeComponent: any;
   AllMetadata: any;
   isDirectPopup: boolean;
   TimeSheetLists: any;
@@ -134,7 +134,7 @@ export default class UserTimeEntry extends React.Component<
       IsCheckedService: true,
       selectedRadio: "ThisWeek",
       IsTimeEntry: false,
-      SharewebTimeComponent: {},
+      TimeComponent: {},
       AllMetadata: [],
       isDirectPopup: false,
       TimeSheetLists: [],
@@ -1851,7 +1851,7 @@ export default class UserTimeEntry extends React.Component<
     getAllTimeEntry: any
   ) {
     let callcount = 0;
-    let AllSharewebSiteTasks: any = [];
+    let AllSiteTasks: any = [];
     let AllTimeEntryItem: any = [];
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
     if (filterItemTimeTab.length > 0) {
@@ -1860,37 +1860,7 @@ export default class UserTimeEntry extends React.Component<
         if (itemtype.ListName == "OffshoreTasks") {
           itemtype.ListName = "Offshore Tasks";
         }
-        // if (this.state.ImageSelectedUsers.length > 2) {
-        //   let self = this;
-        //   AllSitesAllTasks?.forEach(function (Item) {
-        //     Item.siteName = itemtype.ListName;
-        //     Item.DisplayTaskId = globalCommon.GetTaskId(Item)
-        //     Item.listId = itemtype.ListId;
-        //     //Item.ClientTime = JSON.parse(Item?.ClientTime);
-        //     // Item.PercentComplete = Item.PercentComplete <= 1 ? Item.PercentComplete * 100 : Item.PercentComplete;
-        //     // if (Item.PercentComplete != undefined) {
-        //     //   Item.PercentComplete = parseInt((Item.PercentComplete).toFixed(0));
-        //     // }
-        //     Item.NewCompletedDate = Item?.CompletedDate;
-        //     Item.NewCreated = Item?.Created;
-        //     if (Item.Created != undefined)
-        //       Item.FiltercreatedDate = self.ConvertLocalTOServerDate(Item.Created, "DD/MM/YYYY");
-        //     if (Item.CompletedDate != undefined)
-        //       Item.FilterCompletedDate = self.ConvertLocalTOServerDate(Item.CompletedDate, "DD/MM/YYYY");
-        //     Item.descriptionsSearch = '';
-        //     if (Item?.FeedBack != undefined) {
-        //       let DiscriptionSearchData: any = '';
-        //       let feedbackdata: any = JSON.parse(Item?.FeedBack)
-        //       DiscriptionSearchData = feedbackdata[0]?.FeedBackDescriptions?.map((child: any) => {
-        //         const childText = child?.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '');
-        //         const subtextText = (child?.Subtext || [])?.map((elem: any) => elem.Title?.replace(/(<([^>]+)>)/gi, '')?.replace(/\n/g, '')).join('');
-        //         return childText + subtextText;
-        //       }).join('');
-        //       Item.descriptionsSearch = DiscriptionSearchData
-        //     }
-        //     AllSharewebSiteTasks.push(Item);
-        //   })
-        // }
+       
 
         for (let j = 0; j < itemtype.Query.length; j++) {
           let queryType = itemtype.Query[j];
@@ -2043,7 +2013,7 @@ export default class UserTimeEntry extends React.Component<
                 }).join("");
               Item.descriptionsSearch = DiscriptionSearchData;
             }
-            AllSharewebSiteTasks.push(Item);
+            AllSiteTasks.push(Item);
           });
         }
       }
@@ -2052,7 +2022,7 @@ export default class UserTimeEntry extends React.Component<
         filterItem.ClientCategorySearch = "";
         filterItem.clientCategory = "";
         filterItem.clientCategoryIds = "";
-        AllSharewebSiteTasks.forEach(function (copygetval: any) {
+        AllSiteTasks.forEach(function (copygetval: any) {
           var getItem: any = JSON.stringify(copygetval);
           getItem = globalCommon.parseJSON(getItem);
           if (
@@ -2700,7 +2670,7 @@ export default class UserTimeEntry extends React.Component<
       IsTimeEntry: true,
     });
     this.setState({
-      SharewebTimeComponent: item,
+      TimeComponent: item,
     });
   };
   private TimeEntryCallBack() {
@@ -4047,7 +4017,7 @@ export default class UserTimeEntry extends React.Component<
         )}
         {this.state.IsTimeEntry && (
           <TimeEntryPopup
-            props={this.state.SharewebTimeComponent}
+            props={this.state.TimeComponent}
             CallBackTimeEntry={this.TimeEntryCallBack}
             Context={this?.props?.Context}
           ></TimeEntryPopup>
