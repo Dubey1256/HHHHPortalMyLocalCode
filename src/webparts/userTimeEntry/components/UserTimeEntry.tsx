@@ -3317,7 +3317,7 @@ export default class UserTimeEntry extends React.Component<
           totalTimedata,
           AllTaskUser,
           this?.props?.Context,
-          DateType
+          // DateType
         );
       } else {
         globalCommon.ShareTimeSheetMultiUser(

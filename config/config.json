@@ -155,14 +155,7 @@
         }
       ]
     },
-    "feedback-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/TimeReport/FeedbackWebPart.js",
-          "manifest": "./src/webparts/TimeReport/FeedbackWebPart.manifest.json"
-        }
-      ]
-    },
+    
     "update-top-navigation-web-part": {
       "components": [
         {
@@ -429,22 +422,7 @@
         }
       ]
     },
-    "contact-database-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/contactDatabase/ContactDatabaseWebPart.js",
-          "manifest": "./src/webparts/contactDatabase/ContactDatabaseWebPart.manifest.json"
-        }
-      ]
-    },
-    "contact-profile-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/contactProfile/ContactProfileWebPart.js",
-          "manifest": "./src/webparts/contactProfile/ContactProfileWebPart.manifest.json"
-        }
-      ]
-    },
+    
     "hhhh-smart-pages-web-part": {
       "components": [
         {
@@ -466,6 +444,22 @@
         {
           "entrypoint": "./lib/webparts/hhhhProfile/HhhhProfileWebPart.js",
           "manifest": "./src/webparts/hhhhProfile/HhhhProfileWebPart.manifest.json"
+        }
+      ]
+    },
+    "hhhcontact-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/hhhcontact/HhhcontactWebPart.js",
+          "manifest": "./src/webparts/hhhcontact/HhhcontactWebPart.manifest.json"
+        }
+      ]
+    },
+    "hhhhcontactprofile-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/hhhhcontactprofile/HhhhcontactprofileWebPart.js",
+          "manifest": "./src/webparts/hhhhcontactprofile/HhhhcontactprofileWebPart.manifest.json"
         }
       ]
     }
@@ -502,7 +496,6 @@
     "TaskprofileWebPartStrings": "lib/webparts/taskprofile/loc/{locale}.js",
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
     "DatacleanuptoolWebPartStrings": "lib/webparts/datacleanuptool/loc/{locale}.js",
-    "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
     "TaskUserManagementWebPartStrings": "lib/webparts/taskUserManagement/loc/{locale}.js",
     "SiteStructureWebPartStrings": "lib/webparts/SiteStructure/loc/{locale}.js",
@@ -546,10 +539,11 @@
     "SmartDynamicTableWebPartStrings": "lib/webparts/smartDynamicTable/loc/{locale}.js",
     "TaskProfileTemplateWebPartStrings": "lib/webparts/taskProfileTemplate/loc/{locale}.js",
     "EmployeeDashboardTemplatedWebPartStrings": "lib/webparts/employeeDashboardTemplated/loc/{locale}.js",
-    "ContactDatabaseWebPartStrings": "lib/webparts/contactDatabase/loc/{locale}.js",
-    "ContactProfileWebPartStrings": "lib/webparts/contactProfile/loc/{locale}.js",
     "HhhhSmartPagesWebPartStrings": "lib/webparts/hhhhSmartPages/loc/{locale}.js",
     "HhhhSmartMetadataPortfolioWebPartStrings": "lib/webparts/hhhhSmartMetadataPortfolio/loc/{locale}.js",
-    "HhhhProfileWebPartStrings": "lib/webparts/hhhhProfile/loc/{locale}.js"
+    "HhhhProfileWebPartStrings": "lib/webparts/hhhhProfile/loc/{locale}.js",
+    "HhhcontactWebPartStrings": "lib/webparts/hhhcontact/loc/{locale}.js",
+    "HhhhcontactprofileWebPartStrings": "lib/webparts/hhhhcontactprofile/loc/{locale}.js"
+ 
   }
 }

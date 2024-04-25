@@ -1,4 +1,4 @@
-declare interface IContactProfileWebPartStrings {
+declare interface IHhhcontactWebPartStrings {
   PropertyPaneDescription: string;
   BasicGroupName: string;
   DescriptionFieldLabel: string;
@@ -10,9 +10,10 @@ declare interface IContactProfileWebPartStrings {
   AppTeamsTabEnvironment: string;
   AppOfficeEnvironment: string;
   AppOutlookEnvironment: string;
+  UnknownEnvironment: string;
 }
 
-declare module 'ContactProfileWebPartStrings' {
-  const strings: IContactProfileWebPartStrings;
+declare module 'HhhcontactWebPartStrings' {
+  const strings: IHhhcontactWebPartStrings;
   export = strings;
 }
