@@ -244,7 +244,7 @@ const Tabless = (props: any) => {
     await web.lists
       .getById(props.Items.MasterTaskListID)
       .items
-      .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "StructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
+      .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title",
         "DueDate", "Body", "Item_x0020_Type", "FeedBack", "Categories", "Short_x0020_Description_x0020_On", "PriorityRank", "Priority",
         "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete",
         "ResponsibleTeam/Id", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id",
