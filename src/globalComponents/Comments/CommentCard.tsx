@@ -182,6 +182,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       component_url: taskDetails["component_x0020_link"],
       Comments: JSON.parse(taskDetails["Comments"]),
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
+
       PortfolioType: taskDetails["PortfolioType"],
       TaskUrl: `${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID}&Site=${this.state.listName}`
     };
@@ -742,7 +743,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       `;
           }
 
-          await globalCommon.SendTeamMessage(mention_To, TeamsMessage, this.props.Context)
+          await globalCommon.SendTeamMessage(mention_To, TeamsMessage, this.props.Context, this.props?.AllListId)
           //  this.SendEmail(emailprops);
           this.setState({
             ChildLevel: false,
