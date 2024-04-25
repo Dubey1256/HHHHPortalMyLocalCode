@@ -2806,9 +2806,7 @@ const EditTaskPopup = (Items: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
                                 }
-
                             });
-
                             Createtordata?.map((InfoItem: any) => {
 
                                 let DataForNotification: any = {
@@ -2824,9 +2822,6 @@ const EditTaskPopup = (Items: any) => {
                                 })
 
                             })
-
-
-
                         }
 
                         if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
@@ -2836,9 +2831,7 @@ const EditTaskPopup = (Items: any) => {
                                 }
 
                             });
-
                             Createtordata?.map((InfoItem: any) => {
-
                                 let DataForNotification: any = {
                                     ReceiverName: 'Robert',
                                     sendUserEmail: ['robert.ungethuem@hochhuth-consulting.de'],
@@ -2850,11 +2843,7 @@ const EditTaskPopup = (Items: any) => {
                                 GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
                                     console.log("Ms Teams Notifications send")
                                 })
-
                             })
-
-
-
                         }
 
                         if (checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
