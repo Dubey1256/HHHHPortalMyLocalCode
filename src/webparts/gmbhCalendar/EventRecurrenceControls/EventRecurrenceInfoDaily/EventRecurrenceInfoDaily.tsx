@@ -293,7 +293,9 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
         selectDateRangeOption = `<repeatForever>FALSE</repeatForever>`;
         break;
       case 'endAfter':
-        selectDateRangeOption = `<repeatInstances>${this.state.numberOcurrences}</repeatInstances>`;
+        let occurrences = parseInt(this.state.numberOcurrences, 10); // Convert string to number
+        occurrences = Math.max(occurrences - 1, 0); // Ensure occurrences doesn't go negative
+        selectDateRangeOption = `<repeatInstances>${occurrences}</repeatInstances>`;
         break;
       case 'endDate':
         selectDateRangeOption = `<windowEnd>${endDate}</windowEnd>`;
@@ -302,10 +304,10 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
         break;
     }
     const recurrenceXML = `<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat>` +
-      `<daily ${ this.state.selectPatern === 'every' ? `dayFrequency="${this.state.numberOfDays.trim()}"/>` : 'weekday'}</repeat>${selectDateRangeOption}</rule></recurrence>`;
-  //  console.log(recurrenceXML);
-  //endDate change
-    this.props.returnRecurrenceData(this.state.startDate,this.state.endDate, recurrenceXML);
+      `<daily ${this.state.selectPatern === 'every' ? `dayFrequency="${this.state.numberOfDays.trim()}"/>` : 'weekday'}</repeat>${selectDateRangeOption}</rule></recurrence>`;
+    //  console.log(recurrenceXML);
+    //endDate change
+    this.props.returnRecurrenceData(this.state.startDate, this.state.endDate, recurrenceXML);
   }
   /**
    *
@@ -338,7 +340,7 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
 
             </div>
             <div style={{ width: '100%', paddingTop: '10px' }}>
-              <Label>{ strings.patternLabel }</Label>
+              <Label>{strings.patternLabel}</Label>
               <ChoiceGroup
                 selectedKey={this.state.selectPatern}
                 options={[
@@ -375,7 +377,7 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
             </div>
 
             <div style={{ paddingTop: '22px' }}>
-              <Label>{ strings.dateRangeLabel }</Label>
+              <Label>{strings.dateRangeLabel}</Label>
               <div style={{ display: 'inline-block', verticalAlign: 'top', paddingRight: '35px', paddingTop: '10px' }}>
 
                 <DatePicker
