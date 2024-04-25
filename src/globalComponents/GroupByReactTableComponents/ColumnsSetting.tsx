@@ -21,7 +21,10 @@ const ColumnsSetting = (props: any) => {
     const [columnOrderValue, setColumnOrderValue] = React.useState([]);
     const [draggedIndex, setDraggedIndex] = React.useState(null);
     const [editMode, setEditMode] = React.useState(false);
+
     const [tableHeightValue, setTableHeightValue] = React.useState(props?.tableHeight);
+    const [heightOption, setHeightOption] = React.useState(props?.wrapperHeight ? "fixed" : "flexible");
+
     const [tablePageSize, setTablePageSize] = React.useState(props?.tableSettingPageSize);
     const [showProgress, setShowProgress] = React.useState(props?.showProgres);
     const rerender = React.useReducer(() => ({}), {})[1]
@@ -138,7 +141,8 @@ const ColumnsSetting = (props: any) => {
                 columnSorting: columnSorting,
                 tableId: props?.tableId,
                 columnOrderValue: columnOrderValue,
-                tableHeightValue: tableHeightValue,
+                // tableHeightValue: tableHeightValue,
+                tableHeightValue: heightOption === "fixed" ? tableHeightValue : "",
                 showProgress: showProgress,
                 // showTilesView: showTilesView
 
@@ -186,7 +190,8 @@ const ColumnsSetting = (props: any) => {
                 columnSorting: columnSorting,
                 tableId: props?.tableId,
                 columnOrderValue: columnOrderValue,
-                tableHeightValue: tableHeightValue,
+                // tableHeightValue: tableHeightValue,
+                tableHeightValue: heightOption === "fixed" ? tableHeightValue : "",
                 showProgress: showProgress,
                 // showTilesView: showTilesView
             }
@@ -264,7 +269,8 @@ const ColumnsSetting = (props: any) => {
                 columnSorting: columnSorting,
                 tableId: props?.tableId,
                 columnOrderValue: columnOrderValue,
-                tableHeightValue: tableHeightValue,
+                // tableHeightValue: tableHeightValue,
+                tableHeightValue: heightOption === "fixed" ? tableHeightValue : "",
                 showProgress: showProgress,
                 // showTilesView: showTilesView
 
@@ -494,17 +500,18 @@ const ColumnsSetting = (props: any) => {
                     <table className="w-100">
                         <thead>
                             <tr>
-                                <th className="f-16 border-0" style={{ width: "25%" }}>Table Header</th>
-                                <th className="f-16 border-0" style={{ width: "25%" }}><div className="alignCenter"><span>Restore default table</span> <span className="alignCenter"><CoustomInfoIcon Discription="Restore the Column Settings to their Default Value." /></span> </div></th>
-                                <th className="f-16 border-0" style={{ width: "25%" }}>Table Height</th>
-                                <th className="f-16 border-0" style={{ width: "25%" }}>Page Size</th>
+                                <th className="f-16 border-0" style={{ width: "20%" }}>Table Header</th>
+                                <th className="f-16 border-0" style={{ width: "20%" }}><div className="alignCenter"><span>Restore default table</span> <span className="alignCenter"><CoustomInfoIcon Discription="Restore the Column Settings to their Default Value." /></span> </div></th>
+                                <th className="f-16 border-0" style={{ width: "40%" }}>Table Height</th>
+                                <th className="f-16 border-0" style={{ width: "20%" }}>Page Size</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td><label><input className="form-check-input cursor-pointer me-1" type="checkbox" checked={showHeader} onChange={handleCheckboxChange} name="showHeader" />Show Header</label></td>
                                 <td><button className="width30" type="button" onClick={handleClearLocalStorage}>Clear</button></td>
-                                <td>{editMode ? (
+                                <td>
+                                    {/* {editMode ? (
                                     <div className="alignCenter">
                                         <div title="Table Height" className="columnSettingWidth" style={{ width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" }}>{tableHeightValue}</div>
                                         <div className="alignCenter">
@@ -520,7 +527,18 @@ const ColumnsSetting = (props: any) => {
                                             <span className="svg__iconbox svg__icon--editBox" onClick={handleEditClick}></span>
                                         </div>
                                     </div>
-                                )}
+                                )} */}
+
+                                    <div className="SpfxCheckRadio alignCenter">
+                                        <input type="radio" className="radio" id="flexible" value="flexible" checked={heightOption === 'flexible'} onChange={() => setHeightOption('flexible')} />
+                                        <label htmlFor="flexible" className="me-3">Flexible</label>
+                                        <input type="radio" className="radio" id="fixed" value="fixed" checked={heightOption === 'fixed'} onChange={() => setHeightOption('fixed')} />
+                                        <label htmlFor="fixed">Fixed</label>
+                                        {heightOption === 'fixed' && (
+                                            <input style={{ width: "20%", height: "27px" }} type="text" className="ms-1" value={tableHeightValue} onChange={(e) => setTableHeightValue(e.target.value)} />
+                                        )}
+                                    </div>
+
                                 </td>
                                 <td><div className=" d-flex"><input style={{ width: "36%", height: "27px" }} type="number" className="ms-1" value={tablePageSize} onChange={(e) => setTablePageSize(e.target.value)} /></div></td>
                             </tr>
@@ -534,7 +552,7 @@ const ColumnsSetting = (props: any) => {
                     </table>
                 </div>
 
-                <div className="f-16 fontBold"> Column Setting</div>
+                <div className="boldClable f-18"> Column Setting</div>
                 <div className="tableSettingTable">
                     <table className="w-100">
                         <thead>
