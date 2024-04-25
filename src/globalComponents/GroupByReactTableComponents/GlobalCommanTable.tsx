@@ -661,18 +661,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
             console.log(error)
         }
     }
-    /****************** defult Expend Other Section  part *******************/
-    React.useEffect(() => {
-        if (table?.getRowModel()?.rows.length > 0) {
-            table?.getRowModel()?.rows.map((elem: any) => {
-                if (elem?.original?.Title === "Others") {
-                    const newExpandedState = { [elem.id]: true };
-                    setExpanded(newExpandedState);
-                }
-            })
-        }
-    }, [])
-    /****************** defult Expend Other Section end *******************/
     /****************** defult sorting  part end *******************/
 
     const table: any = useReactTable({
@@ -898,6 +886,18 @@ const GlobalCommanTable = (items: any, ref: any) => {
         }
     }, [table.getState().columnFilters, table.getState().globalFilter]);
 
+    /****************** defult Expend Other Section  part *******************/
+    React.useEffect(() => {
+        if (table?.getRowModel()?.rows?.length > 0 && items?.data?.length > 0) {
+            table?.getRowModel()?.rows?.map((elem: any) => {
+                if (elem?.original?.Title === "Others") {
+                    // const newExpandedState = { [elem.id]: true };
+                    setExpanded((prev: any) => ({ ...prev, [elem.id]: true, }));
+                }
+            })
+        }
+    }, [items?.data?.length > 0])
+    /****************** defult Expend Other Section end *******************/
 
     React.useEffect(() => {
         if (expendedTrue === true) {
@@ -1081,7 +1081,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             instance._scrollToOffset(offset, options);
         }, 200); // Adjust the delay time (in milliseconds) as needed
     };
-    
+
     //Virual rows
     const parentRef = React.useRef<HTMLDivElement>(null);
     const { rows } = table.getRowModel();
@@ -1091,7 +1091,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
         // estimateSize: () => 24,
         // overscan: 15,
         estimateSize: () => 200,
-        scrollToFn: customScrollToFn, 
+        scrollToFn: customScrollToFn,
         overscan: 50,
     });
 
@@ -1225,7 +1225,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
             setColumnSettingPopup(false)
         }
     }, []);
-
     const openTableSettingPopup = (event: any) => {
         if (event === "tableBased") {
             setColumnSettingPopup(true);
@@ -1252,12 +1251,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
                                 return (
                                     <>
                                         {isShowingDataAll === true ? <label><label className='alignCenter'>
-                                            <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons hover-text'>{type.Title !== "Sprint" ? `${type?.Title?.charAt(0)}`: "X"} <span className='tooltip-text pop-right'>{type?.Title}</span></label>
+                                            <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons hover-text'>{type.Title !== "Sprint" ? `${type?.Title?.charAt(0)}` : "X"} <span className='tooltip-text pop-right'>{type?.Title}</span></label>
                                             <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'numberCopy']} `}/</label>
                                             <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
                                         </label></label> :
                                             <label><label className='alignCenter'>
-                                                <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons hover-text'>{type.Title !== "Sprint" ? `${type?.Title?.charAt(0)}`: "X"}<span className='tooltip-text pop-right'>{type?.Title}</span></label>
+                                                <label style={{ color: "white", backgroundColor: `${portfolioColor}` }} className='ms-1 Dyicons hover-text'>{type.Title !== "Sprint" ? `${type?.Title?.charAt(0)}` : "X"}<span className='tooltip-text pop-right'>{type?.Title}</span></label>
                                                 <label className='ms-1' style={{ color: "#333333" }}>{` ${type[type.Title + 'filterNumber']} `}/</label>
                                                 <label style={{ color: "#333333" }} className='ms-1'>{` ${type[type.Title + 'number']} `}</label>
                                             </label></label>}
