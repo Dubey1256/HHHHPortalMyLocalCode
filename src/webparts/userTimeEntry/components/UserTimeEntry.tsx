@@ -2735,7 +2735,7 @@ export default class UserTimeEntry extends React.Component<
             <span className="d-flex">
               <ReactPopperTooltipSingleLevel
                 AllListId={AllListId}
-                ShareWebId={info?.row?.original?.DisplayTaskId}
+                CMSToolId={info?.row?.original?.DisplayTaskId}
                 row={info?.row?.original}
                 singleLevel={true}
                 masterTaskData={AllPortfolios}
@@ -2876,7 +2876,7 @@ export default class UserTimeEntry extends React.Component<
             <>
                 {info?.row?.original?.ProjectTitle != (null || undefined) &&
                     <span ><a style={info?.row?.original?.fontColorTask != undefined ? { color: `${info?.row?.original?.fontColorTask}` } : { color: `${info?.row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${this.props.Context.pageContext.web.absoluteUrl}/SitePages/PX-Profile.aspx?ProjectId=${info?.row?.original?.ProjectId}`} >
-                        <ReactPopperTooltip ShareWebId={info?.row?.original?.projectStructerId} projectToolShow={true}  row={info?.row} AllListId={AllListId} /></a></span>
+                        <ReactPopperTooltip CMSToolId={info?.row?.original?.projectStructerId} projectToolShow={true}  row={info?.row} AllListId={AllListId} /></a></span>
                 }
             </>
         ),
