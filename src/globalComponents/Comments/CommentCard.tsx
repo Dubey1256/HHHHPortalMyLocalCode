@@ -613,7 +613,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           element.classList.remove("active");
         if (matches) {
           matches?.map((Email: any) => {
-            if (Email != undefined && Email != '' && topCmnt?.id.toLowerCase().indexOf(Email?.toLowerCase()) > -1) {
+            if (Email != undefined)
+              Email = Email?.trim()
+            if (Email != undefined && Email != '' && (topCmnt?.id.toLowerCase().indexOf(Email?.trim()?.toLowerCase()) > -1 || Email.toLowerCase().indexOf(topCmnt?.id?.trim()?.toLowerCase()) > -1)) {
               if (element) {
                 element.classList.add("active");
               }

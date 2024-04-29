@@ -21,7 +21,10 @@ const ColumnsSetting = (props: any) => {
     const [columnOrderValue, setColumnOrderValue] = React.useState([]);
     const [draggedIndex, setDraggedIndex] = React.useState(null);
     const [editMode, setEditMode] = React.useState(false);
+
     const [tableHeightValue, setTableHeightValue] = React.useState(props?.tableHeight);
+    const [heightOption, setHeightOption] = React.useState(props?.wrapperHeight ? "fixed" : "flexible");
+
     const [tablePageSize, setTablePageSize] = React.useState(props?.tableSettingPageSize);
     const [showProgress, setShowProgress] = React.useState(props?.showProgres);
     const rerender = React.useReducer(() => ({}), {})[1]
@@ -138,7 +141,8 @@ const ColumnsSetting = (props: any) => {
                 columnSorting: columnSorting,
                 tableId: props?.tableId,
                 columnOrderValue: columnOrderValue,
-                tableHeightValue: tableHeightValue,
+                // tableHeightValue: tableHeightValue,
+                tableHeightValue: heightOption === "fixed" ? tableHeightValue : "",
                 showProgress: showProgress,
                 // showTilesView: showTilesView
 
@@ -186,7 +190,8 @@ const ColumnsSetting = (props: any) => {
                 columnSorting: columnSorting,
                 tableId: props?.tableId,
                 columnOrderValue: columnOrderValue,
-                tableHeightValue: tableHeightValue,
+                // tableHeightValue: tableHeightValue,
+                tableHeightValue: heightOption === "fixed" ? tableHeightValue : "",
                 showProgress: showProgress,
                 // showTilesView: showTilesView
             }
@@ -264,7 +269,8 @@ const ColumnsSetting = (props: any) => {
                 columnSorting: columnSorting,
                 tableId: props?.tableId,
                 columnOrderValue: columnOrderValue,
-                tableHeightValue: tableHeightValue,
+                // tableHeightValue: tableHeightValue,
+                tableHeightValue: heightOption === "fixed" ? tableHeightValue : "",
                 showProgress: showProgress,
                 // showTilesView: showTilesView
 
@@ -332,7 +338,7 @@ const ColumnsSetting = (props: any) => {
         return (
             <>
                 <div className="alignCenter subheading">
-                    <span style={{ color: `${props?.portfolioColor}` }} className="siteColor">Table Settings</span>
+                    <span style={{ color: `${props?.portfolioColor}` }} className="siteColor">General Settings</span>
                 </div>
                 <Tooltip ComponentId={7464} />
             </>
@@ -457,7 +463,7 @@ const ColumnsSetting = (props: any) => {
         setEditMode(false);
     };
     const handleClearLocalStorage = async () => {
-        let confirmDelete = confirm("Are you sure, you want to delete this?");
+        let confirmDelete = confirm("Restore the Column Settings to their Default Value ?");
         if (confirmDelete) {
             const web = new Web(props?.ContextValue.siteUrl);
             await web.lists
@@ -466,9 +472,9 @@ const ColumnsSetting = (props: any) => {
                 .recycle()
                 .then((i: any) => {
                     console.log(i, "deleted Favorites");
+                    location.reload();
                 });
         }
-        location.reload();
     };
     return (
         <Panel className="overflow-x-visible"
@@ -479,7 +485,7 @@ const ColumnsSetting = (props: any) => {
             onRenderHeader={onRenderCustomHeader}
             isBlocking={false}
         >
-            <div className="modal-body p-0 mt-2 mb-3 clearfix">
+            <div className="modal-body p-0 mb-3 clearfix">
                 {/* <div className="px-1 siteColor" style={{ fontWeight: 300, fontSize: "21px", display: 'contents' }}>Table Columns Settings</div> */}
                 {/* <div className="px-1 border-b border-black">
                             <label>
@@ -489,11 +495,69 @@ const ColumnsSetting = (props: any) => {
                                 Select All
                             </label>
                         </div> */}
+
+                <div className=" mb-3 tableSettingTable">
+                    <table className="w-100">
+                        <thead>
+                            <tr>
+                                <th className="f-16 border-0" style={{ width: "20%" }}>Table Header</th>
+                                <th className="f-16 border-0" style={{ width: "20%" }}><div className="alignCenter"><span>Restore default table</span> <span className="alignCenter"><CoustomInfoIcon Discription="Restore the Column Settings to their Default Value." /></span> </div></th>
+                                <th className="f-16 border-0" style={{ width: "40%" }}>Table Height</th>
+                                <th className="f-16 border-0" style={{ width: "20%" }}>Page Size</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><label><input className="form-check-input cursor-pointer me-1" type="checkbox" checked={showHeader} onChange={handleCheckboxChange} name="showHeader" />Show Header</label></td>
+                                <td><button className="width30" type="button" onClick={handleClearLocalStorage}>Clear</button></td>
+                                <td>
+                                    {/* {editMode ? (
+                                    <div className="alignCenter">
+                                        <div title="Table Height" className="columnSettingWidth" style={{ width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" }}>{tableHeightValue}</div>
+                                        <div className="alignCenter">
+                                            <input style={{ width: "20%", height: "27px" }} type="text" className="ms-1" onChange={(e) => setTableHeightValue(e.target.value)} />
+                                            <span className="svg__iconbox svg__icon--Save" onClick={handleSaveClick}></span>
+                                            <span className="svg__iconbox svg__icon--cross" onClick={handleCancelClick}></span>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className=" d-flex">
+                                        <div title="Table Height" className="columnSettingWidth" style={{ width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" }}>{tableHeightValue}</div>
+                                        <div className="pancil-icons">
+                                            <span className="svg__iconbox svg__icon--editBox" onClick={handleEditClick}></span>
+                                        </div>
+                                    </div>
+                                )} */}
+
+                                    <div className="SpfxCheckRadio alignCenter">
+                                        <input type="radio" className="radio" id="flexible" value="flexible" checked={heightOption === 'flexible'} onChange={() => setHeightOption('flexible')} />
+                                        <label htmlFor="flexible" className="me-3">Flexible</label>
+                                        <input type="radio" className="radio" id="fixed" value="fixed" checked={heightOption === 'fixed'} onChange={() => setHeightOption('fixed')} />
+                                        <label htmlFor="fixed">Fixed</label>
+                                        {heightOption === 'fixed' && (
+                                            <input style={{ width: "20%", height: "27px" }} type="text" className="ms-1" value={tableHeightValue} onChange={(e) => setTableHeightValue(e.target.value)} />
+                                        )}
+                                    </div>
+
+                                </td>
+                                <td><div className=" d-flex"><input style={{ width: "36%", height: "27px" }} type="number" className="ms-1" value={tablePageSize} onChange={(e) => setTablePageSize(e.target.value)} /></div></td>
+                            </tr>
+                        </tbody>
+                        {/* <div className="col-sm-2">
+                        <div style={{ fontWeight: 300, fontSize: "21px", display: 'contents' }}><span className="siteColor">Views</span></div>
+                        <div>
+                            <label><input className="form-check-input cursor-pointer me-1" type="checkbox" checked={showTilesView} onChange={handleToggleViewTailView} name="showTilesView" />Tile View</label>
+                        </div>
+                    </div> */}
+                    </table>
+                </div>
+
+                <div className="boldClable f-18"> Column Setting</div>
                 <div className="tableSettingTable">
                     <table className="w-100">
                         <thead>
                             <tr>
-                                <th className="f-16 border-0" style={{ width: "28%" }}> <div className="alignCenter"><span>Columns</span> <span className="mt-1"><CoustomInfoIcon Discription="Default settings are stored in centralized database the changes done here will be only for current user on this table it will not impact anyone else. For centralized changes suggestions contact admin." /></span></div></th>
+                                <th className="f-16 border-0" style={{ width: "28%" }}> <div className="alignCenter"><span>Columns</span> <span className="alignCenter"><CoustomInfoIcon Discription="Default settings are stored in centralized database the changes done here will be only for current user on this table it will not impact anyone else. For centralized changes suggestions contact admin." /></span></div></th>
                                 <th className="f-16 border-0" style={{ width: "21%" }}>Column Width</th>
                                 {/* <th className="f-16 border-0" style={{ width: "21%" }}>Column Sorting</th> */}
                                 <th className="f-16 border-0" style={{ width: "30%" }}>Column Ordering</th>
@@ -509,7 +573,7 @@ const ColumnsSetting = (props: any) => {
                                                     <>
                                                         {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && column.id != "showProgress") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <tr key={column?.id} style={columnSorting[column?.id]?.asc === true || columnSorting[column.id]?.desc === true ? { background: "#ddd" } : {}}>
                                                             <td style={{ width: "40%" }}>
-                                                                {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && column.id != "showProgress") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <div className={column.id === "Type" || column.id === "Attention" || column.id === "Admin" || column.id === "Actions" ? "alignCenter mx-3" :"alignCenter"}>
+                                                                {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && column.id != "showProgress") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <div className={column.id === "Type" || column.id === "Attention" || column.id === "Admin" || column.id === "Actions" ? "alignCenter mx-3" : "alignCenter"}>
                                                                     <input className="form-check-input cursor-pointer me-1" id={column.id} type='checkbox' disabled={column?.id === "Title" || column?.id === "TaskID" || column?.id === "portfolioItemsSearch" ? true : false} checked={column?.isColumnVisible}
                                                                         onChange={(e: any) => coustomColumnsSetting(column, event)} name={column.id}
                                                                     />
@@ -523,7 +587,7 @@ const ColumnsSetting = (props: any) => {
                                                                 {(column?.placeholder != undefined && column?.placeholder != '' && column.id != "descriptionsSearch" && column.id != "commentsSearch" && column.id != "timeSheetsDescriptionSearch" && column.id != "showProgress") || (column.id === "timeSheetsDescriptionSearch" && column?.columnHide === false) ? <div className="alignCenter">
                                                                     {/* <div title={column?.placeholder} className="columnSettingWidth" style={(column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" } : { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px", background: "gray", color: "white" }}>
                                                                     </div> */}
-                                                                    <input className="columnSettingWidth ms-1" disabled={(column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? false : true} style={(column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" } : { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px", background: "#ddd" }} value={column?.size} type="number" placeholder={`${column?.placeholder}`} title={column?.placeholder} onChange={(e: any) => handleChangeWidth(e, column)} />
+                                                                    <input className="columnSettingWidth text-center ms-1" disabled={(column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? false : true} style={(column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" } : { width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px", background: "#ddd" }} value={column?.size} type="number" placeholder={`${column?.placeholder}`} title={column?.placeholder} onChange={(e: any) => handleChangeWidth(e, column)} />
 
                                                                     {/* {!editing[column?.id] && ((column?.fixedColumnWidth === undefined || column?.fixedColumnWidth === false) ? (<div className="pencil-icons" onClick={() => handleEdit(column.id)}> <span className="svg__iconbox svg__icon--editBox"></span></div>) : (!editing[column?.id] && (<div className="pencil-icons"> <span style={{ background: "gray" }} className="svg__iconbox svg__icon--editBox"></span></div>)))} */}
                                                                     {/* {editing[column?.id] && (
@@ -569,59 +633,6 @@ const ColumnsSetting = (props: any) => {
                             </tr>
                         </tbody>
                     </table>
-                </div>
-                <div className="my-2 col-sm-12 row">
-                    <div className="col-sm-3">
-                        <div style={{ fontWeight: 300, fontSize: "21px", display: 'contents' }}><span className="siteColor">Table Header</span></div>
-                        <div>
-                            <label><input className="form-check-input cursor-pointer me-1" type="checkbox" checked={showHeader} onChange={handleCheckboxChange} name="showHeader" />Show Header</label>
-                        </div>
-                    </div>
-
-                    <div className="col-sm-3">
-                        <div className="alignCenter"><div style={{ fontWeight: 300, fontSize: "21px", display: 'contents' }} className="siteColor">Clear Preset Value</div>  <CoustomInfoIcon Discription="Restore the Column Settings to their Default Value." /></div>
-                        <div>
-                            <button className="width30" type="button" onClick={handleClearLocalStorage}>
-                                Clear
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="col-sm-3">
-                        <div style={{ fontWeight: 300, fontSize: "21px", display: 'contents' }} className="siteColor">Table Height</div>
-                        {editMode ? (
-                            <div className="alignCenter">
-                                <div title="Table Height" className="columnSettingWidth" style={{ width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" }}>{tableHeightValue}</div>
-                                <div className="alignCenter">
-                                    <input style={{ width: "20%", height: "27px" }} type="text" className="ms-1" onChange={(e) => setTableHeightValue(e.target.value)} />
-                                    <span className="svg__iconbox svg__icon--Save" onClick={handleSaveClick}></span>
-                                    <span className="svg__iconbox svg__icon--cross" onClick={handleCancelClick}></span>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className=" d-flex">
-                                <div title="Table Height" className="columnSettingWidth" style={{ width: "80px", padding: "1px", border: "1px solid #ccc", height: "27px" }}>{tableHeightValue}</div>
-                                <div className="pancil-icons">
-                                    <span className="svg__iconbox svg__icon--editBox" onClick={handleEditClick}></span>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="col-sm-2">
-                        <div style={{ fontWeight: 300, fontSize: "21px", display: 'contents' }} className="siteColor">Page Size</div>
-                        <div className=" d-flex">
-                            <input style={{ width: "36%", height: "27px" }} type="number" className="ms-1" value={tablePageSize} onChange={(e) => setTablePageSize(e.target.value)} />
-                        </div>
-                    </div>
-
-                    {/* <div className="col-sm-2">
-                        <div style={{ fontWeight: 300, fontSize: "21px", display: 'contents' }}><span className="siteColor">Views</span></div>
-                        <div>
-                            <label><input className="form-check-input cursor-pointer me-1" type="checkbox" checked={showTilesView} onChange={handleToggleViewTailView} name="showTilesView" />Tile View</label>
-                        </div>
-                    </div> */}
-
                 </div>
             </div>
             <footer>

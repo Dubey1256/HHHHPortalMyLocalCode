@@ -961,7 +961,7 @@ const TimeReport = (props: any) => {
                 accessorFn: (row) => row?.NewTaskId,
                 cell: ({ row, getValue }) => (
                     <>
-                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={props.ContextData} singleLevel={true} masterTaskData={componentDetails} AllSitesTaskData={AllTasks} />
+                        <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={props.ContextData} singleLevel={true} masterTaskData={componentDetails} AllSitesTaskData={AllTasks} />
                     </>
                 ),
                 id: "TaskID",

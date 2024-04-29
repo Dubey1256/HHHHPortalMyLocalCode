@@ -582,7 +582,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
     return json;
   };
   const GetSiteIcon = (listName: string) => {
-    console.log(this.state.Result)
+   
     if (listName != undefined) {
       let siteicon = '';
       smartmetaDetails?.map((icondata: any) => {

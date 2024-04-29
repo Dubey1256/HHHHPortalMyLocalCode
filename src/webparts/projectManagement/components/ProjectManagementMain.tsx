@@ -184,6 +184,7 @@ const ProjectManagementMain = (props: any) => {
       setIsSmartInfoAvailable(true)
     }
     getQueryVariable((e: any) => e);
+    getTaskType()
     loadAllSmartInformation()
     try {
       $("#spPageCanvasContent").removeClass();
@@ -1357,7 +1358,7 @@ const ProjectManagementMain = (props: any) => {
             href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
           >
             <span className="d-flex">
-              <ReactPopperTooltipSingleLevel AllListId={AllListId} onclickPopup={false} ShareWebId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel AllListId={AllListId} onclickPopup={false} CMSToolId={row?.original?.portfolio?.Title} row={row?.original?.Portfolio} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </a>
         ),
@@ -1381,7 +1382,7 @@ const ProjectManagementMain = (props: any) => {
               <ReactPopperTooltipSingleLevel
                 AllListId={AllListId}
                 onclickPopup={false}
-                ShareWebId={row?.original?.project?.Title}
+                CMSToolId={row?.original?.project?.PortfolioStructureID}
                 row={row?.original?.Project}
                 singleLevel={true}
                 masterTaskData={MasterListData}

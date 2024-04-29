@@ -7,7 +7,7 @@ import * as globalCommon from './globalCommon';
 import TeamConfigurationCard from './TeamConfiguration/TeamConfiguration';
 // import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 // import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
-// import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
+
 import * as Moment from 'moment'
 import Tooltip from './Tooltip';
 import { data } from 'jquery';
