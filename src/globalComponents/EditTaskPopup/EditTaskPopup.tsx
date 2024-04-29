@@ -5270,21 +5270,23 @@ const EditTaskPopup = (Items: any) => {
                                     Delete This Item
                                 </span>
                             </a>
-                            <span> | </span>
-                            <a
-                                className="hreflink"
-                                onClick={() => CopyAndMovePopupFunction("Copy-Task")}
-                            >
-                                Copy Task
-                            </a>
-                            <span> | </span>
-                            <a
-                                className="hreflink"
-                                onClick={() => CopyAndMovePopupFunction("Move-Task")}
-                            >
-                                {" "}
-                                Move Task
-                            </a>{" "}
+                            {SiteTypes?.length > 2 ? <>
+                                <span> | </span>
+                                <a
+                                    className="hreflink"
+                                    onClick={() => CopyAndMovePopupFunction("Copy-Task")}
+                                >
+                                    Copy Task
+                                </a>
+                                <span> | </span>
+                                <a
+                                    className="hreflink"
+                                    onClick={() => CopyAndMovePopupFunction("Move-Task")}
+                                >
+                                    {" "}
+                                    Move Task
+                                </a>{" "}
+                            </> : null}
                             |
                             <span>
                                 {EditData.ID ? (
@@ -5410,15 +5412,23 @@ const EditTaskPopup = (Items: any) => {
                                     Delete This Item
                                 </span>
                             </a>
-                            <span> | </span>
-                            <a className="hreflink" onClick={CopyAndMovePopupFunction}>
-                                Copy Task
-                            </a>
-                            <span> | </span>
-                            <a className="hreflink" onClick={CopyAndMovePopupFunction}>
-                                {" "}
-                                Move Task
-                            </a>{" "}
+                            {SiteTypes?.length > 2 ? <>
+                                <span> | </span>
+                                <a
+                                    className="hreflink"
+                                    onClick={() => CopyAndMovePopupFunction("Copy-Task")}
+                                >
+                                    Copy Task
+                                </a>
+                                <span> | </span>
+                                <a
+                                    className="hreflink"
+                                    onClick={() => CopyAndMovePopupFunction("Move-Task")}
+                                >
+                                    {" "}
+                                    Move Task
+                                </a>{" "}
+                            </> : null}
                             |
                             <span>
                                 {EditData.ID ? (
@@ -5746,11 +5756,9 @@ const EditTaskPopup = (Items: any) => {
                                                         //         ? Moment(EditData.Created).format("YYYY-MM-DD")
                                                         //         : ""
                                                         // }
-                                                        defaultValue={
+                                                        value={
                                                             EditData.StartDate
-                                                                ? Moment(EditData.StartDate).format(
-                                                                    "YYYY-MM-DD"
-                                                                )
+                                                                ? Moment(EditData.StartDate).format("YYYY-MM-DD")
                                                                 : ""
                                                         }
                                                         onChange={(e) =>
@@ -5783,7 +5791,7 @@ const EditTaskPopup = (Items: any) => {
                                                         //         ? Moment(EditData.Created).format("YYYY-MM-DD")
                                                         //         : ""
                                                         // }
-                                                        defaultValue={
+                                                        value={
                                                             EditData.DueDate
                                                                 ? Moment(EditData.DueDate).format("YYYY-MM-DD")
                                                                 : ""
@@ -5812,11 +5820,9 @@ const EditTaskPopup = (Items: any) => {
                                                         //         ? Moment(EditData.Created).format("YYYY-MM-DD")
                                                         //         : ""
                                                         // }
-                                                        defaultValue={
+                                                        value={
                                                             EditData.CompletedDate
-                                                                ? Moment(EditData.CompletedDate).format(
-                                                                    "YYYY-MM-DD"
-                                                                )
+                                                                ? Moment(EditData.CompletedDate).format("YYYY-MM-DD")
                                                                 : ""
                                                         }
                                                         onChange={(e) =>
@@ -8066,6 +8072,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             Working This Week?
                                                                         </label>
                                                                     </span>
+
                                                                     <span className="form-check">
                                                                         <input
                                                                             className="form-check-input rounded-0"
@@ -8088,8 +8095,8 @@ const EditTaskPopup = (Items: any) => {
                                                                 placeholder="Task Name"
                                                                 defaultValue={EditData.Title}
                                                                 onChange={(e) =>
-                                                                    setEditData({
-                                                                        ...EditData,
+                                                                    setUpdateTaskInfo({
+                                                                        ...UpdateTaskInfo,
                                                                         Title: e.target.value,
                                                                     })
                                                                 }
@@ -8099,6 +8106,10 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="mx-0 row taskdate ">
                                                         <div className="col-6 ps-0 mt-2">
                                                             <div className="input-group ">
+                                                                {/* <CDatePicker date={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}/> */}
+                                                                {/* <DatePicker value={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : null} onChange={(date) => setEditData({
+                                                        ...EditData, StartDate: date
+                                                    })} /> */}
                                                                 <label className="form-label full-width">
                                                                     Start Date
                                                                 </label>
@@ -8108,16 +8119,12 @@ const EditTaskPopup = (Items: any) => {
                                                                     max="9999-12-31"
                                                                     // min={
                                                                     //     EditData.Created
-                                                                    //         ? Moment(EditData.Created).format(
-                                                                    //             "YYYY-MM-DD"
-                                                                    //         )
+                                                                    //         ? Moment(EditData.Created).format("YYYY-MM-DD")
                                                                     //         : ""
                                                                     // }
-                                                                    defaultValue={
+                                                                    value={
                                                                         EditData.StartDate
-                                                                            ? Moment(EditData.StartDate).format(
-                                                                                "YYYY-MM-DD"
-                                                                            )
+                                                                            ? Moment(EditData.StartDate).format("YYYY-MM-DD")
                                                                             : ""
                                                                     }
                                                                     onChange={(e) =>
@@ -8147,16 +8154,12 @@ const EditTaskPopup = (Items: any) => {
                                                                     max="9999-12-31"
                                                                     // min={
                                                                     //     EditData.Created
-                                                                    //         ? Moment(EditData.Created).format(
-                                                                    //             "YYYY-MM-DD"
-                                                                    //         )
+                                                                    //         ? Moment(EditData.Created).format("YYYY-MM-DD")
                                                                     //         : ""
                                                                     // }
-                                                                    defaultValue={
+                                                                    value={
                                                                         EditData.DueDate
-                                                                            ? Moment(EditData.DueDate).format(
-                                                                                "YYYY-MM-DD"
-                                                                            )
+                                                                            ? Moment(EditData.DueDate).format("YYYY-MM-DD")
                                                                             : ""
                                                                     }
                                                                     onChange={(e) =>
@@ -8180,16 +8183,12 @@ const EditTaskPopup = (Items: any) => {
                                                                     max="9999-12-31"
                                                                     // min={
                                                                     //     EditData.Created
-                                                                    //         ? Moment(EditData.Created).format(
-                                                                    //             "YYYY-MM-DD"
-                                                                    //         )
+                                                                    //         ? Moment(EditData.Created).format("YYYY-MM-DD")
                                                                     //         : ""
                                                                     // }
-                                                                    defaultValue={
+                                                                    value={
                                                                         EditData.CompletedDate
-                                                                            ? Moment(EditData.CompletedDate).format(
-                                                                                "YYYY-MM-DD"
-                                                                            )
+                                                                            ? Moment(EditData.CompletedDate).format("YYYY-MM-DD")
                                                                             : ""
                                                                     }
                                                                     onChange={(e) =>
@@ -8232,7 +8231,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                     </div>
                                                     <div className="mx-0 row mt-2 taskservices">
-                                                        <div className="col-md-6 ps-0">
+                                                        <div className="col-md-6  ps-0">
                                                             <div className="input-group mb-2">
                                                                 <label className="form-label full-width">
                                                                     Portfolio Item
@@ -8256,6 +8255,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         })}
                                                                     </div>
                                                                 ) : (
+
                                                                     <input
                                                                         type="text"
                                                                         className="form-control"
@@ -8284,26 +8284,22 @@ const EditTaskPopup = (Items: any) => {
                                                                 {SearchedServiceCompnentData?.length > 0 ? (
                                                                     <div className="SmartTableOnTaskPopup">
                                                                         <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                            {SearchedServiceCompnentData.map(
-                                                                                (Item: any) => {
-                                                                                    return (
-                                                                                        <li
-                                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
-                                                                                            key={Item.id}
-                                                                                            onClick={() =>
-                                                                                                setSelectedServiceAndCompnentData(
-                                                                                                    Item,
-                                                                                                    "Single"
-                                                                                                )
-                                                                                            }
-                                                                                        >
-                                                                                            <a className="siteColor">
-                                                                                                {Item.Path}
-                                                                                            </a>
-                                                                                        </li>
-                                                                                    );
-                                                                                }
-                                                                            )}
+                                                                            {SearchedServiceCompnentData.map((Item: any) => {
+                                                                                return (
+                                                                                    <li
+                                                                                        className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                                                                        key={Item.id}
+                                                                                        onClick={() =>
+                                                                                            setSelectedServiceAndCompnentData(
+                                                                                                Item,
+                                                                                                "Single"
+                                                                                            )
+                                                                                        }
+                                                                                    >
+                                                                                        <a>{Item.Path}</a>
+                                                                                    </li>
+                                                                                );
+                                                                            })}
                                                                         </ul>
                                                                     </div>
                                                                 ) : null}
@@ -8411,7 +8407,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                             {SearchedCategoryData.map((item: any) => {
                                                                                                 return (
                                                                                                     <li
-                                                                                                        className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                                                                                        className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
                                                                                                         key={item.id}
                                                                                                         onClick={() =>
                                                                                                             setSelectedCategoryData(
@@ -8444,6 +8440,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     <span className="svg__iconbox svg__icon--editBox"></span>
                                                                 </span>
                                                             </div>
+
                                                             <div className="col">
                                                                 <div className="col">
                                                                     <div className="form-check">
@@ -8453,13 +8450,9 @@ const EditTaskPopup = (Items: any) => {
                                                                             type="checkbox"
                                                                             checked={PhoneStatus}
                                                                             value={`${PhoneStatus}`}
-                                                                            onClick={(e) =>
-                                                                                CategoryChange(e, "Phone", 199)
-                                                                            }
+                                                                            onClick={(e) => CategoryChange(e, "Phone", 199)}
                                                                         />
-                                                                        <label className="form-check-label">
-                                                                            Phone
-                                                                        </label>
+                                                                        <label className="form-check-label">Phone</label>
                                                                     </div>
                                                                     <div className="form-check">
                                                                         <input
@@ -8468,11 +8461,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             checked={EmailStatus}
                                                                             value={`${EmailStatus}`}
                                                                             onClick={(e) =>
-                                                                                CategoryChange(
-                                                                                    e,
-                                                                                    "Email Notification",
-                                                                                    276
-                                                                                )
+                                                                                CategoryChange(e, "Email Notification", 276)
                                                                             }
                                                                         />
                                                                         <label>Email Notification</label>
@@ -8483,11 +8472,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 checked={OnlyCompletedStatus}
                                                                                 value={`${OnlyCompletedStatus}`}
                                                                                 onClick={(e) =>
-                                                                                    CategoryChange(
-                                                                                        e,
-                                                                                        "Only Completed",
-                                                                                        565
-                                                                                    )
+                                                                                    CategoryChange(e, "Only Completed", 565)
                                                                                 }
                                                                             />
                                                                             <label>Only Completed</label>
@@ -8505,48 +8490,45 @@ const EditTaskPopup = (Items: any) => {
                                                                         />
                                                                         <label>Immediate</label>
                                                                     </div>
-                                                                    {TaskCategoriesData != undefined &&
-                                                                        TaskCategoriesData?.length > 0 ? (
-                                                                        <div>
-                                                                            {TaskCategoriesData?.map(
-                                                                                (type: any, index: number) => {
-                                                                                    if (
-                                                                                        type.Title != "Phone" &&
-                                                                                        type.Title !=
-                                                                                        "Email Notification" &&
-                                                                                        type.Title != "Immediate" &&
-                                                                                        type.Title != "Approval" &&
-                                                                                        type.Title != "Email" &&
-                                                                                        type.Title != "Only Completed"
-                                                                                    ) {
-                                                                                        return (
-                                                                                            <div className="block w-100">
-                                                                                                <a
-                                                                                                    className="wid90"
-                                                                                                    style={{
-                                                                                                        color: "#fff !important",
-                                                                                                    }}
-                                                                                                >
-                                                                                                    {type.Title}
-                                                                                                </a>
-                                                                                                <span
-                                                                                                    onClick={() =>
-                                                                                                        removeCategoryItem(
-                                                                                                            type.Title,
-                                                                                                            type.Id
-                                                                                                        )
-                                                                                                    }
-                                                                                                    className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
-                                                                                                ></span>
-                                                                                            </div>
-                                                                                        );
-                                                                                    }
-                                                                                }
-                                                                            )}
-                                                                        </div>
-                                                                    ) : null}
+                                                                    {/* {TaskCategoriesData != undefined &&
+                                                            TaskCategoriesData?.length > 0 ? (
+                                                            <div>
+                                                                {TaskCategoriesData?.map(
+                                                                    (type: any, index: number) => {
+                                                                        if (
+                                                                            type.Title != "Phone" &&
+                                                                            type.Title != "Email Notification" &&
+                                                                            type.Title != "Immediate" &&
+                                                                            type.Title != "Approval" &&
+                                                                            type.Title != "Email" &&
+                                                                            type.Title != "Only Completed"
+                                                                        ) {
+                                                                            return (
+                                                                                <div className="block w-100">
+                                                                                    <a
+                                                                                        style={{ color: "#fff !important" }}
+                                                                                        className="wid90"
+                                                                                    >
+                                                                                        {type.Title}
+                                                                                    </a>
+                                                                                    <span
+                                                                                        onClick={() =>
+                                                                                            removeCategoryItem(
+                                                                                                type.Title,
+                                                                                                type.Id
+                                                                                            )
+                                                                                        }
+                                                                                        className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
+                                                                                    ></span>
+                                                                                </div>
+                                                                            );
+                                                                        }
+                                                                    }
+                                                                )}
+                                                            </div>
+                                                        ) : null} */}
                                                                 </div>
-                                                                <div className="form-check mt-1">
+                                                                <div className="form-check mt-2">
                                                                     <label className="full-width">Approval</label>
                                                                     <input
                                                                         type="checkbox"
@@ -8559,9 +8541,9 @@ const EditTaskPopup = (Items: any) => {
                                                                         }
                                                                     />
                                                                 </div>
-                                                                <div className="col ps-3 mb-1">
-                                                                    <ul className="p-0 mt-1 list-none ">
-                                                                        <li className="SpfxCheckRadio ">
+                                                                <div className="col ps-4 mb-1">
+                                                                    <ul className="p-0 mt-1 list-none">
+                                                                        <li className="SpfxCheckRadio">
                                                                             <input
                                                                                 className="radio"
                                                                                 name="ApprovalLevel"
@@ -8571,7 +8553,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 Normal Approval
                                                                             </label>
                                                                         </li>
-                                                                        <li className="SpfxCheckRadio ">
+                                                                        <li className="SpfxCheckRadio">
                                                                             <input
                                                                                 type="radio"
                                                                                 className="radio"
@@ -8591,76 +8573,121 @@ const EditTaskPopup = (Items: any) => {
                                                                 </div>
                                                                 {ApprovalStatus ? (
                                                                     <div>
-                                                                        <div className="col-12">
-                                                                            <div className="input-group">
-                                                                                <label className="form-label full-width"></label>
-                                                                                {ApproverData != undefined &&
-                                                                                    ApproverData.length > 0 ? (
-                                                                                    <>
-                                                                                        {ApproverData.map(
-                                                                                            (Approver: any, index: number) => {
-                                                                                                return (
-                                                                                                    <div className="full-width replaceInput alignCenter">
-                                                                                                        <a
-                                                                                                            className="hreflink textDotted"
-                                                                                                            target="_blank"
-                                                                                                            data-interception="off"
-                                                                                                        >
-                                                                                                            {Approver.Title}
-                                                                                                        </a>
-                                                                                                    </div>
-                                                                                                );
-                                                                                            }
-                                                                                        )}
-                                                                                    </>
-                                                                                ) :
-                                                                                    <input
-                                                                                        type="text"
-                                                                                        className="form-control"
-                                                                                        placeholder="Search Approver's Name Here"
-                                                                                        value={ApproverSearchKey}
-                                                                                        onChange={(e) =>
-                                                                                            autoSuggestionsForApprover(
-                                                                                                e,
-                                                                                                "OnTaskPopup"
-                                                                                            )
-                                                                                        }
-                                                                                    />
-                                                                                }
-                                                                                <span
-                                                                                    className="input-group-text mt--10"
-                                                                                    onClick={OpenApproverPopupFunction}
-                                                                                    title="Approver Data Popup"
-                                                                                >
-                                                                                    <span className="svg__iconbox svg__icon--editBox mt--10"></span>
-                                                                                </span>
+                                                                        <div className="input-group mb-2">
+                                                                            <label className="form-label full-width"></label>
+                                                                            {ApproverData?.length > 1 ? <>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    className="form-control"
+                                                                                    placeholder="Search Approver's Name Here"
+                                                                                    value={ApproverSearchKey}
+                                                                                    onChange={(e) =>
+                                                                                        autoSuggestionsForApprover(e, "OnTaskPopup")
+                                                                                    }
+                                                                                />
                                                                                 {ApproverSearchedData?.length > 0 ? (
                                                                                     <div className="SmartTableOnTaskPopup">
                                                                                         <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                                            {ApproverSearchedData.map(
-                                                                                                (item: any) => {
-                                                                                                    return (
-                                                                                                        <li
-                                                                                                            className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
-                                                                                                            key={item.id}
-                                                                                                            onClick={() =>
-                                                                                                                SelectApproverFromAutoSuggestion(
-                                                                                                                    item, "Approver"
-                                                                                                                )
-                                                                                                            }
-                                                                                                        >
-                                                                                                            <a>{item.NewLabel}</a>
-                                                                                                        </li>
-                                                                                                    );
-                                                                                                }
-                                                                                            )}
+                                                                                            {ApproverSearchedData.map((item: any) => {
+                                                                                                return (
+                                                                                                    <li
+                                                                                                        className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                                                                                        key={item.id}
+                                                                                                        onClick={() =>
+                                                                                                            SelectApproverFromAutoSuggestion(
+                                                                                                                item, "Approver"
+                                                                                                            )
+                                                                                                        }
+                                                                                                    >
+                                                                                                        <a>{item.NewLabel}</a>
+                                                                                                    </li>
+                                                                                                );
+                                                                                            })}
                                                                                         </ul>
                                                                                     </div>
                                                                                 ) : null}
-                                                                            </div>
+                                                                                {ApproverData?.map(
+                                                                                    (type: any, index: number) => {
 
+                                                                                        return (
+                                                                                            <div className="block w-100">
+                                                                                                <a
+                                                                                                    style={{ color: "#fff !important" }}
+                                                                                                    className="textDotted"
+                                                                                                >
+                                                                                                    {type.Title}
+                                                                                                </a>
+                                                                                                <span
+                                                                                                    onClick={() => removeAssignedMember(type)}
+                                                                                                    className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
+                                                                                                ></span>
+                                                                                            </div>
+                                                                                        );
+                                                                                    }
 
+                                                                                )}</> :
+                                                                                <>
+                                                                                    {ApproverData?.length == 1 ?
 
+                                                                                        <div className="full-width">
+
+                                                                                            {ApproverData.map(
+                                                                                                (Approver: any, index: number) => {
+                                                                                                    return (
+                                                                                                        <div className="full-width replaceInput alignCenter">
+                                                                                                            <a
+                                                                                                                className="hreflink"
+                                                                                                                target="_blank"
+                                                                                                                data-interception="off"
+                                                                                                            >
+                                                                                                                {Approver.Title}
+                                                                                                            </a>
+                                                                                                        </div>
+                                                                                                    );
+                                                                                                }
+                                                                                            )}
+                                                                                        </div>
+                                                                                        :
+                                                                                        <>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="form-control"
+                                                                                                id="txtApprover"
+                                                                                                // onChange={(e) => autoSuggestionsForCategory(e)}
+                                                                                                placeholder="Search Name Here!"
+                                                                                                value={ApproverSearchKey}
+                                                                                                onChange={(e) => autoSuggestionsForApprover(e, "OnTaskPopup")}
+                                                                                            />
+                                                                                            {ApproverSearchedDataForPopup?.length > 0 ? (
+                                                                                                <div className="SmartTableOnTaskPopup">
+                                                                                                    <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                                                        {ApproverSearchedDataForPopup.map((item: any) => {
+                                                                                                            return (
+                                                                                                                <li
+                                                                                                                    className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                                                    key={item.id}
+                                                                                                                    onClick={() => SelectApproverFromAutoSuggestion(item, "Approver")}
+                                                                                                                >
+                                                                                                                    <a>{item.NewLabel}</a>
+                                                                                                                </li>
+                                                                                                            );
+                                                                                                        })}
+                                                                                                    </ul>
+                                                                                                </div>
+                                                                                            ) : null}
+                                                                                        </>
+                                                                                    }
+                                                                                </>
+
+                                                                            }
+
+                                                                            <span
+                                                                                className="input-group-text mt--10"
+                                                                                onClick={OpenApproverPopupFunction}
+                                                                                title="Approver Data Popup"
+                                                                            >
+                                                                                <span className="svg__iconbox svg__icon--editBox mt--10"></span>
+                                                                            </span>
                                                                         </div>
                                                                         <div className="Approval-History-section my-2">
                                                                             {ApproverHistoryData != undefined &&
@@ -8715,85 +8742,105 @@ const EditTaskPopup = (Items: any) => {
                                                                 ) : null}
                                                             </div>
                                                         </div>
-                                                        <div className="col-6 ps-0 pe-0 pt-4">
-                                                            <div className="time-status">
-                                                                <div className="input-group">
-                                                                    <input
-                                                                        type="text"
-                                                                        className="form-control"
-                                                                        placeholder="Enter Priority"
-                                                                        value={
-                                                                            EditData.PriorityRank
-                                                                                ? EditData.PriorityRank
-                                                                                : ""
-                                                                        }
-                                                                        onChange={(e) =>
-                                                                            ChangePriorityStatusFunction(e)
-                                                                        }
-                                                                    />
+                                                        <div className="col-6 ps-0 pe-0">
+                                                            <div className="row">
+                                                                <div className="time-status col-md-6">
+                                                                    <div className="input-group">
+                                                                        <label className="form-label full-width">Priority</label>
+                                                                        <input
+                                                                            type="text"
+                                                                            className="form-control"
+                                                                            placeholder="Enter Priority"
+                                                                            value={
+                                                                                EditData.PriorityRank
+                                                                                    ? EditData.PriorityRank
+                                                                                    : ""
+                                                                            }
+                                                                            onChange={(e) => ChangePriorityStatusFunction(e)}
+                                                                        />
+                                                                    </div>
+                                                                    <ul className="p-0 my-1">
+                                                                        <li className="form-check ">
+                                                                            <label className="SpfxCheckRadio">
+                                                                                <input
+                                                                                    className="radio"
+                                                                                    name="radioPriority"
+                                                                                    type="radio"
+                                                                                    checked={
+                                                                                        EditData.PriorityRank <= 10 &&
+                                                                                        EditData.PriorityRank >= 8
+                                                                                    }
+                                                                                    onChange={() =>
+                                                                                        ChangePriorityStatusFunction({
+                                                                                            target: {
+                                                                                                value: 8
+                                                                                            }
+                                                                                        })
+                                                                                    }
+                                                                                />
+                                                                                High{" "}
+                                                                            </label>
+                                                                        </li>
+                                                                        <li className="form-check ">
+                                                                            <label className="SpfxCheckRadio">
+                                                                                <input
+                                                                                    className="radio"
+                                                                                    name="radioPriority"
+                                                                                    type="radio"
+                                                                                    checked={
+                                                                                        EditData.PriorityRank <= 7 &&
+                                                                                        EditData.PriorityRank >= 4
+                                                                                    }
+                                                                                    onChange={() =>
+                                                                                        ChangePriorityStatusFunction({
+                                                                                            target: {
+                                                                                                value: 4
+                                                                                            }
+                                                                                        })
+                                                                                    }
+                                                                                />
+                                                                                Normal{" "}
+                                                                            </label>
+                                                                        </li>
+                                                                        <li className="form-check ">
+                                                                            <label className="SpfxCheckRadio">
+                                                                                <input
+                                                                                    className="radio"
+                                                                                    name="radioPriority"
+                                                                                    type="radio"
+                                                                                    checked={
+                                                                                        EditData.PriorityRank <= 3 &&
+                                                                                        EditData.PriorityRank > 0
+                                                                                    }
+                                                                                    onChange={() =>
+                                                                                        ChangePriorityStatusFunction({
+                                                                                            target: {
+                                                                                                value: 1
+                                                                                            }
+                                                                                        })
+                                                                                    }
+                                                                                />
+                                                                                Low{" "}
+                                                                            </label>
+                                                                        </li>
+                                                                    </ul>
                                                                 </div>
-                                                                <ul className="p-0 mt-1">
-                                                                    <li className="form-check ">
-                                                                        <label className="SpfxCheckRadio">
-                                                                            <input
-                                                                                className="radio"
-                                                                                name="radioPriority"
-                                                                                type="radio"
-                                                                                checked={
-                                                                                    EditData.PriorityRank <= 10 &&
-                                                                                    EditData.PriorityRank >= 8
-                                                                                }
-                                                                                onChange={() =>
-                                                                                    setEditData({
-                                                                                        ...EditData,
-                                                                                        PriorityRank: 8,
-                                                                                    })
-                                                                                }
-                                                                            />
-                                                                            High{" "}
-                                                                        </label>
-                                                                    </li>
-                                                                    <li className="form-check ">
-                                                                        <label className="SpfxCheckRadio">
-                                                                            <input
-                                                                                className="radio"
-                                                                                name="radioPriority"
-                                                                                type="radio"
-                                                                                checked={
-                                                                                    EditData.PriorityRank <= 7 &&
-                                                                                    EditData.PriorityRank >= 4
-                                                                                }
-                                                                                onChange={() =>
-                                                                                    setEditData({
-                                                                                        ...EditData,
-                                                                                        PriorityRank: 4,
-                                                                                    })
-                                                                                }
-                                                                            />
-                                                                            Normal{" "}
-                                                                        </label>
-                                                                    </li>
-                                                                    <li className="form-check ">
-                                                                        <label className="SpfxCheckRadio">
-                                                                            <input
-                                                                                className="radio"
-                                                                                name="radioPriority"
-                                                                                type="radio"
-                                                                                checked={
-                                                                                    EditData.PriorityRank <= 3 &&
-                                                                                    EditData.PriorityRank > 0
-                                                                                }
-                                                                                onChange={() =>
-                                                                                    setEditData({
-                                                                                        ...EditData,
-                                                                                        PriorityRank: 1,
-                                                                                    })
-                                                                                }
-                                                                            />
-                                                                            Low{" "}
-                                                                        </label>
-                                                                    </li>
-                                                                </ul>
+                                                                <div className="col-md-6">
+                                                                    <div className="input-group">
+                                                                        <label className="form-label full-width">SmartPriority</label>
+                                                                        <div className="bg-e9 w-100 py-1 px-2" style={{ border: '1px solid #CDD4DB' }}>
+                                                                            <span className={EditData?.SmartPriority != undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
+                                                                                <>{EditData?.SmartPriority != undefined ? EditData?.SmartPriority : 0}</>
+                                                                                <span className="tooltip-text pop-right">
+                                                                                    {EditData?.showFormulaOnHover != undefined ?
+
+                                                                                        <SmartPriorityHover editValue={EditData} /> : ""}
+                                                                                </span>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
                                                             </div>
                                                             <div className="col-12 mb-2">
                                                                 <div className="input-group ">
@@ -8837,7 +8884,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <div className="col-12 mb-2 mt-2">
                                                                 <div className="input-group mb-2">
                                                                     <label className="form-label full-width">
-                                                                        Linked Portfolios
+                                                                        Linked Portfolio Items
                                                                     </label>
                                                                     <input
                                                                         type="text"
@@ -8849,7 +8896,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 "Linked-Portfolios"
                                                                             )
                                                                         }
-                                                                        placeholder="Search Portfolio Components"
+                                                                        placeholder="Search Portfolio Items"
                                                                     />
                                                                     <span className="input-group-text">
                                                                         <span
@@ -8870,7 +8917,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                     (Item: any) => {
                                                                                         return (
                                                                                             <li
-                                                                                                className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                                                                                className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
                                                                                                 key={Item.id}
                                                                                                 onClick={() =>
                                                                                                     setSelectedServiceAndCompnentData(
@@ -8897,11 +8944,9 @@ const EditTaskPopup = (Items: any) => {
                                                                                     <>
                                                                                         <div className="block w-100">
                                                                                             <a
-                                                                                                className="wid90"
                                                                                                 title={com.Title}
-                                                                                                style={{
-                                                                                                    color: "#fff !important",
-                                                                                                }}
+                                                                                                className="wid90"
+                                                                                                style={{ color: "#fff !important" }}
                                                                                                 target="_blank"
                                                                                                 data-interception="off"
                                                                                                 href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
@@ -8913,7 +8958,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                 onClick={() =>
                                                                                                     RemoveLinkedPortfolio(Index)
                                                                                                 }
-                                                                                                className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"
+                                                                                                className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
                                                                                             ></span>
                                                                                         </div>
                                                                                     </>
@@ -8931,16 +8976,17 @@ const EditTaskPopup = (Items: any) => {
                                                                     {selectedProject != undefined &&
                                                                         selectedProject.length > 0 ? (
                                                                         <>
-                                                                            {selectedProject.map((ProjectData: any) => {
+                                                                            {selectedProject?.map((ProjectData: any) => {
                                                                                 return (
                                                                                     <>
                                                                                         {ProjectData.Title != undefined ? (
-                                                                                            <div className="replaceInput alignCenter w-100">
+                                                                                            <div className="full-width replaceInput alignCenter">
                                                                                                 <a
-                                                                                                    className="hreflink textDotted"
+
                                                                                                     target="_blank"
                                                                                                     title={ProjectData.Title}
                                                                                                     data-interception="off"
+                                                                                                    className="textDotted hreflink"
                                                                                                     href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
                                                                                                 >
                                                                                                     {ProjectData.Title}
@@ -8951,21 +8997,18 @@ const EditTaskPopup = (Items: any) => {
                                                                                 );
                                                                             })}
                                                                         </>
-                                                                    ) : <input
-                                                                        type="text"
-                                                                        className="form-control"
-                                                                        placeholder="Search Project Here"
-                                                                        value={ProjectSearchKey}
-                                                                        onChange={(e) =>
-                                                                            autoSuggestionsForProject(e)
-                                                                        }
-                                                                    />}
-
+                                                                    ) :
+                                                                        <input
+                                                                            type="text"
+                                                                            className="form-control"
+                                                                            placeholder="Search Project Here"
+                                                                            value={ProjectSearchKey}
+                                                                            onChange={(e) => autoSuggestionsForProject(e)}
+                                                                        />
+                                                                    }
                                                                     <span
                                                                         className="input-group-text"
-                                                                        onClick={() =>
-                                                                            setProjectManagementPopup(true)
-                                                                        }
+                                                                        onClick={() => setProjectManagementPopup(true)}
                                                                         title="Project Items Popup"
                                                                     >
                                                                         <span className="svg__iconbox svg__icon--editBox"></span>
@@ -8979,9 +9022,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                             className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
                                                                                             key={item.id}
                                                                                             onClick={() =>
-                                                                                                SelectProjectFromAutoSuggestion([
-                                                                                                    item,
-                                                                                                ])
+                                                                                                SelectProjectFromAutoSuggestion([item])
                                                                                             }
                                                                                         >
                                                                                             <a>{item?.Path}</a>
@@ -8992,8 +9033,6 @@ const EditTaskPopup = (Items: any) => {
                                                                         </div>
                                                                     ) : null}
                                                                 </div>
-
-
                                                             </div>
                                                         </div>
                                                     </div>
@@ -9043,9 +9082,9 @@ const EditTaskPopup = (Items: any) => {
 
                                                 <div className="col-md-3">
                                                     {AllListIdData.isShowSiteCompostion ? (
-                                                        <div className="Sitecomposition">
+                                                        <div className="Sitecomposition mb-2">
                                                             <div className="dropdown">
-                                                                <a className="sitebutton bg-fxdark d-flex justify-content-between">
+                                                                <a className="sitebutton bg-fxdark alignCenter justify-content-between">
                                                                     <div
                                                                         style={{ cursor: "pointer" }}
                                                                         onClick={() =>
@@ -9059,19 +9098,13 @@ const EditTaskPopup = (Items: any) => {
                                                                                 <SlArrowRight />
                                                                             )}
                                                                         </span>
-                                                                        <span className="mx-2">
-                                                                            Site Composition
-                                                                        </span>
+                                                                        <span className="mx-2">Site Composition</span>
                                                                     </div>
-                                                                    <div>
-                                                                        <span
-                                                                            className="svg__iconbox svg__icon--editBox hreflink"
-                                                                            title="Edit Site Composition"
-                                                                            onClick={() =>
-                                                                                setSiteCompositionShow(true)
-                                                                            }
-                                                                        ></span>
-                                                                    </div>
+                                                                    <span
+                                                                        className="svg__iconbox svg__icon--editBox hreflink"
+                                                                        title="Edit Site Composition"
+                                                                        onClick={() => setSiteCompositionShow(true)}
+                                                                    ></span>
                                                                 </a>
                                                                 {composition &&
                                                                     EditData.siteCompositionData?.length > 0 ? (
@@ -9096,7 +9129,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                             <span className="mx-2">
                                                                                                                 {Number(
                                                                                                                     SiteDtls.ClienTimeDescription
-                                                                                                                ).toFixed(2)}
+                                                                                                                ).toFixed(1)}
                                                                                                                 %
                                                                                                             </span>
                                                                                                         )}
@@ -9138,9 +9171,7 @@ const EditTaskPopup = (Items: any) => {
 
                                                     <div className="col mt-2 clearfix">
                                                         <div className="input-group taskTime">
-                                                            <label className="form-label full-width">
-                                                                Status
-                                                            </label>
+                                                            <label className="form-label full-width">Status</label>
                                                             <input
                                                                 type="text"
                                                                 maxLength={3}
@@ -9158,9 +9189,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 className="input-group-text"
                                                                 title="Status Popup"
                                                                 // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
-                                                                onClick={() =>
-                                                                    setSmartMedaDataUsedPanel("Status")
-                                                                }
+                                                                onClick={() => setSmartMedaDataUsedPanel("Status")}
                                                             >
                                                                 <span
                                                                     title="Edit Task"
@@ -9177,6 +9206,7 @@ const EditTaskPopup = (Items: any) => {
                                                     </span> : null} */}
                                                         </div>
                                                     </div>
+
                                                     <div className="row">
                                                         <div className="col mt-2 time-status">
                                                             <div>
@@ -9190,9 +9220,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         className="form-control"
                                                                         placeholder="Time"
                                                                         defaultValue={
-                                                                            EditData.Mileage != null
-                                                                                ? EditData.Mileage
-                                                                                : ""
+                                                                            EditData.Mileage != null ? EditData.Mileage : ""
                                                                         }
                                                                         onChange={(e) =>
                                                                             setEditData({
@@ -9216,10 +9244,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 }
                                                                                 type="radio"
                                                                                 onChange={(e) =>
-                                                                                    setEditData({
-                                                                                        ...EditData,
-                                                                                        Mileage: "15",
-                                                                                    })
+                                                                                    setEditData({ ...EditData, Mileage: "15" })
                                                                                 }
                                                                                 defaultChecked={
                                                                                     EditData.Mileage <= 15 &&
@@ -9244,10 +9269,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 }
                                                                                 type="radio"
                                                                                 onChange={(e) =>
-                                                                                    setEditData({
-                                                                                        ...EditData,
-                                                                                        Mileage: "60",
-                                                                                    })
+                                                                                    setEditData({ ...EditData, Mileage: "60" })
                                                                                 }
                                                                                 defaultChecked={
                                                                                     EditData.Mileage <= 60 &&
@@ -9272,10 +9294,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 }
                                                                                 type="radio"
                                                                                 onChange={(e) =>
-                                                                                    setEditData({
-                                                                                        ...EditData,
-                                                                                        Mileage: "240",
-                                                                                    })
+                                                                                    setEditData({ ...EditData, Mileage: "240" })
                                                                                 }
                                                                                 defaultChecked={
                                                                                     EditData.Mileage <= 240 &&
@@ -9295,10 +9314,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 checked={EditData.Mileage === "480"}
                                                                                 type="radio"
                                                                                 onChange={(e) =>
-                                                                                    setEditData({
-                                                                                        ...EditData,
-                                                                                        Mileage: "480",
-                                                                                    })
+                                                                                    setEditData({ ...EditData, Mileage: "480" })
                                                                                 }
                                                                                 defaultChecked={
                                                                                     EditData.Mileage <= 480 &&
@@ -9313,7 +9329,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 </ul>
                                                             </div>
                                                         </div>
-                                                        <div className="col mt-2 ps-0">
+                                                        <div className="col mt-2">
                                                             <div className="input-group">
                                                                 <label className="form-label full-width">
                                                                     {EditData.TaskAssignedUsers?.length > 0
@@ -9332,9 +9348,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                     <img
                                                                                         className="ProirityAssignedUserPhoto me-2"
                                                                                         data-bs-placement="bottom"
-                                                                                        title={
-                                                                                            userDtl.Title ? userDtl.Title : ""
-                                                                                        }
+                                                                                        title={userDtl.Title ? userDtl.Title : ""}
                                                                                         src={
                                                                                             userDtl.Item_x0020_Cover
                                                                                                 ? userDtl.Item_x0020_Cover.Url
@@ -9349,23 +9363,40 @@ const EditTaskPopup = (Items: any) => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="col-12 mb-2">
-                                                        <div className="input-group ">
-                                                            <label className="form-label full-width">
-                                                                Estimated Task Time Details
-                                                            </label>
+                                                    <div className="border p-2 mb-3">
+                                                        <div>Estimated Task Time Details</div>
+                                                        <div className="col-12">
                                                             <div
                                                                 onChange={UpdateEstimatedTimeDescriptions}
                                                                 className="full-width"
                                                             >
-                                                                <textarea
-                                                                    className="form-control p-1"
-                                                                    name="Description"
-                                                                    defaultValue={EstimatedDescription}
-                                                                    value={EstimatedDescription}
-                                                                    rows={1}
-                                                                    placeholder="Estimated Time Description"
-                                                                ></textarea>
+                                                                <div className="input-group mt-2">
+                                                                    <label className="form-label full-width">
+                                                                        Select Category
+                                                                    </label>
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        defaultValue={EstimatedDescriptionCategory}
+                                                                        value={EstimatedDescriptionCategory}
+                                                                        placeholder="Select Category"
+                                                                        onChange={(e) =>
+                                                                            setEstimatedDescriptionCategory(e.target.value)
+                                                                        }
+                                                                    />
+                                                                    <span
+                                                                        className="input-group-text"
+                                                                        title="Status Popup"
+                                                                        onClick={() =>
+                                                                            setSmartMedaDataUsedPanel("Estimated-Time")
+                                                                        }
+                                                                    >
+                                                                        <span
+                                                                            title="Edit Task"
+                                                                            className="svg__iconbox svg__icon--editBox"
+                                                                        ></span>
+                                                                    </span>
+                                                                </div>
                                                                 <div className="gap-2 my-1 d-flex">
                                                                     <input
                                                                         type="number"
@@ -9379,79 +9410,328 @@ const EditTaskPopup = (Items: any) => {
                                                                         className="btn btn-primary full-width my-1"
                                                                         onClick={SaveEstimatedTimeDescription}
                                                                     >
-                                                                        Submit
+                                                                        Add
                                                                     </button>
                                                                 </div>
+                                                                <textarea
+                                                                    className="form-control p-1"
+                                                                    name="Description"
+                                                                    defaultValue={EstimatedDescription}
+                                                                    value={EstimatedDescription}
+                                                                    rows={1}
+                                                                    placeholder="Add comment if necessary"
+                                                                ></textarea>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="col-12 mb-2">
-                                                        {EditData?.EstimatedTimeDescriptionArray != null &&
-                                                            EditData?.EstimatedTimeDescriptionArray?.length >
-                                                            0 ? (
-                                                            <div className="border p-1">
-                                                                {EditData?.EstimatedTimeDescriptionArray?.map(
-                                                                    (EstimatedTimeData: any, Index: any) => {
-                                                                        return (
-                                                                            <div>
-                                                                                <div className="align-content-center border-bottom d-flex justify-content-between p-1">
-                                                                                    <img
-                                                                                        className="ProirityAssignedUserPhoto m-0"
-                                                                                        title={EstimatedTimeData.UserName}
-                                                                                        src={
-                                                                                            EstimatedTimeData.UserImage !=
-                                                                                                undefined &&
-                                                                                                EstimatedTimeData.UserImage
-                                                                                                    ?.length > 0
-                                                                                                ? EstimatedTimeData.UserImage
-                                                                                                : ""
-                                                                                        }
-                                                                                    />
-                                                                                    <span>
-                                                                                        {EstimatedTimeData.Team
-                                                                                            ? EstimatedTimeData.Team
-                                                                                            : null}
-                                                                                    </span>{" "}
-                                                                                    |
-                                                                                    <span>
-                                                                                        Time :{" "}
-                                                                                        {EstimatedTimeData.EstimatedTime
-                                                                                            ? EstimatedTimeData.EstimatedTime >
-                                                                                                1
-                                                                                                ? EstimatedTimeData.EstimatedTime +
-                                                                                                " hours"
-                                                                                                : EstimatedTimeData.EstimatedTime +
-                                                                                                " hour"
-                                                                                            : "0 hour"}
-                                                                                    </span>
-                                                                                    <span className="hover-text m-0 alignIcon">
-                                                                                        <span className="svg__iconbox svg__icon--info"></span>
-                                                                                        <span className="tooltip-text pop-right">
-                                                                                            {
-                                                                                                EstimatedTimeData.EstimatedTimeDescription
-                                                                                            }
+                                                        <div className="col-12">
+                                                            {EditData?.EstimatedTimeDescriptionArray != null &&
+                                                                EditData?.EstimatedTimeDescriptionArray?.length > 0 ? (
+                                                                <div>
+                                                                    {EditData?.EstimatedTimeDescriptionArray?.map(
+                                                                        (EstimatedTimeData: any, Index: any) => {
+                                                                            return (
+                                                                                <div className="align-content-center alignCenter justify-content-between py-1">
+                                                                                    <div className="alignCenter">
+                                                                                        <span className="me-1">
+                                                                                            {EstimatedTimeData?.Team != undefined
+                                                                                                ? EstimatedTimeData.Team
+                                                                                                : EstimatedTimeData.Category !=
+                                                                                                    undefined
+                                                                                                    ? EstimatedTimeData.Category
+                                                                                                    : null}
+                                                                                        </span>{" "}
+                                                                                        |
+                                                                                        <span className="mx-1">
+                                                                                            {EstimatedTimeData?.EstimatedTime
+                                                                                                ? EstimatedTimeData.EstimatedTime > 1
+                                                                                                    ? EstimatedTimeData.EstimatedTime +
+                                                                                                    " Hours"
+                                                                                                    : EstimatedTimeData.EstimatedTime +
+                                                                                                    " Hour"
+                                                                                                : "0 Hour"}
                                                                                         </span>
-                                                                                    </span>
-                                                                                    {/* <span title="Edit" className="svg__iconbox svg__icon--editBox" onClick={() => alert("We are working on this feature. It will be live soon..")}></span> */}
+                                                                                        <img
+                                                                                            className="ProirityAssignedUserPhoto m-0"
+                                                                                            title={EstimatedTimeData.UserName}
+                                                                                            src={
+                                                                                                EstimatedTimeData.UserImage !=
+                                                                                                    undefined &&
+                                                                                                    EstimatedTimeData.UserImage?.length >
+                                                                                                    0
+                                                                                                    ? EstimatedTimeData.UserImage
+                                                                                                    : ""
+                                                                                            }
+                                                                                        />
+                                                                                    </div>
+                                                                                    {EstimatedTimeData?.EstimatedTimeDescription
+                                                                                        ?.length > 0 ? (
+                                                                                        <span className="hover-text m-0 alignIcon">
+                                                                                            <span className="svg__iconbox svg__icon--info"></span>
+                                                                                            <span className="tooltip-text pop-right">
+                                                                                                {
+                                                                                                    EstimatedTimeData?.EstimatedTimeDescription
+                                                                                                }
+                                                                                            </span>
+                                                                                        </span>
+                                                                                    ) : null}
                                                                                 </div>
-                                                                            </div>
-                                                                        );
-                                                                    }
-                                                                )}
-                                                                <div className="text-end">
-                                                                    <span>Total Estimated Time : </span>
-                                                                    <span className="mx-1">
-                                                                        {TotalEstimatedTime > 1
-                                                                            ? TotalEstimatedTime + " hours"
-                                                                            : TotalEstimatedTime + " hour"}{" "}
-                                                                    </span>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                                    <div className="border-top pt-1">
+                                                                        <span>Total Estimated Time : </span>
+                                                                        <span className="mx-1">
+                                                                            {TotalEstimatedTime > 1
+                                                                                ? TotalEstimatedTime + " hours"
+                                                                                : TotalEstimatedTime + " hour"}{" "}
+                                                                        </span>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        ) : null}
+                                                            ) : null}
+                                                        </div>
                                                     </div>
+                                                    {/* <div className="Sitecomposition mb-3">
+                                            <a className="sitebutton bg-fxdark alignCenter justify-content-between">
+                                                <span className="alignCenter">
+                                                    <span className="svg__iconbox svg__icon--docx"></span>
+                                                    <span className="mx-2">Submit EOD Report</span>
+                                                </span>
+                                                <span className="svg__iconbox svg__icon--editBox hreflink" title="Submit EOD Report Popup"
+                                                    onClick={() => setOpenEODReportPopup(true)}>
+                                                </span>
+                                            </a>
+                                        </div> */}
                                                 </div>
                                                 <div className="col-md-4">
-                                                    <div className="full_width ">
+                                                    {/* This is used for bottleneck  */}
+                                                    <div className="col ps-0">
+                                                        <div className="input-group">
+                                                            <label className="form-label full-width ">
+                                                                Bottleneck
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                value={BottleneckSearchKey}
+                                                                className="form-control"
+                                                                placeholder="Tag user for Bottleneck"
+                                                                onChange={(e) => autoSuggestionsForApprover(e, "Bottleneck")}
+                                                            />
+                                                            <span
+                                                                className="input-group-text"
+                                                                // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
+                                                                onClick={() => openBottleneckPopup("Bottleneck")}
+                                                            >
+                                                                <span
+                                                                    title="Add Comment"
+                                                                    className="svg__iconbox svg__icon--editBox"
+                                                                ></span>
+                                                            </span>
+                                                            {BottleneckSearchedData?.length > 0 ? (
+                                                                <div className="SmartTableOnTaskPopup">
+                                                                    <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                        {BottleneckSearchedData.map((item: any) => {
+                                                                            return (
+                                                                                <li
+                                                                                    className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                                                                    key={item.id}
+                                                                                    onClick={() =>
+                                                                                        SelectApproverFromAutoSuggestion(
+                                                                                            item, "Bottleneck"
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    <a>{item.NewLabel}</a>
+                                                                                </li>
+                                                                            );
+                                                                        })}
+                                                                    </ul>
+                                                                </div>
+                                                            ) : null}
+                                                        </div>
+                                                        {WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
+                                                            if (WAItemData.Title == "Bottleneck" && WAItemData?.InformationData?.length > 0) {
+                                                                return (
+                                                                    <div className="border p-1 mt-1">
+                                                                        {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: number) => {
+                                                                            return (
+                                                                                <div className="align-content-center alignCenter justify-content-between py-1">
+                                                                                    <div className="alignCenter">
+                                                                                        <img
+                                                                                            className="ProirityAssignedUserPhoto m-0"
+                                                                                            title={InfoData.TaggedUsers?.Title}
+                                                                                            src={
+                                                                                                InfoData.TaggedUsers.userImage !=
+                                                                                                    undefined &&
+                                                                                                    InfoData.TaggedUsers.userImage.length >
+                                                                                                    0
+                                                                                                    ? InfoData.TaggedUsers.userImage
+                                                                                                    : ""
+                                                                                            }
+                                                                                        />
+                                                                                        <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
+                                                                                    </div>
+
+                                                                                    <div className="alignCenter">
+                                                                                        <span
+                                                                                            className="hover-text m-1"
+                                                                                            onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
+                                                                                        >
+                                                                                            <LuBellPlus></LuBellPlus>
+                                                                                            <span className="tooltip-text pop-left">
+                                                                                                Send reminder notifications
+                                                                                            </span>
+                                                                                        </span>
+                                                                                        <span
+                                                                                            className="m-0 img-info hover-text"
+                                                                                            onClick={() =>
+                                                                                                openAddImageDescriptionFunction(
+                                                                                                    InfoIndex,
+                                                                                                    InfoData,
+                                                                                                    "Bottleneck"
+                                                                                                )
+                                                                                            }
+                                                                                        >
+                                                                                            <span className="svg__iconbox svg__icon--comment"></span>
+                                                                                            <span className="tooltip-text pop-left">
+                                                                                                {InfoData.Comment != undefined &&
+                                                                                                    InfoData.Comment?.length > 1
+                                                                                                    ? InfoData.Comment
+                                                                                                    : "Add Comment"}
+                                                                                            </span>
+                                                                                        </span>
+                                                                                        <span
+                                                                                            className="hover-text m-0 alignIcon"
+                                                                                            onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Remove", WAItemData.Title)}
+                                                                                        >
+                                                                                            <span className="svg__iconbox svg__icon--cross"></span>
+                                                                                            <span className="tooltip-text pop-left">
+                                                                                                Remove user from bottleneck
+                                                                                            </span>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            )
+                                                                        })}
+                                                                    </div>
+                                                                )
+                                                            }
+                                                        })}
+                                                    </div>
+                                                    {/* This is used for Attentions  */}
+                                                    <div className="col mt-2 ps-0">
+                                                        <div className="input-group">
+                                                            <label className="form-label full-width ">
+                                                                Attention
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                value={AttentionSearchKey}
+                                                                className="form-control"
+                                                                placeholder="Tag user for attention"
+                                                                onChange={(e) => autoSuggestionsForApprover(e, "Attention")}
+                                                            />
+                                                            <span
+                                                                className="input-group-text"
+                                                                // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
+                                                                onClick={() => openBottleneckPopup("Attention")}
+                                                            >
+                                                                <span
+                                                                    title="Add Comment"
+                                                                    className="svg__iconbox svg__icon--editBox"
+                                                                ></span>
+                                                            </span>
+                                                            {AttentionSearchedData?.length > 0 ? (
+                                                                <div className="SmartTableOnTaskPopup">
+                                                                    <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                        {AttentionSearchedData.map((item: any) => {
+                                                                            return (
+                                                                                <li
+                                                                                    className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                                                                    key={item.id}
+                                                                                    onClick={() =>
+                                                                                        SelectApproverFromAutoSuggestion(
+                                                                                            item, "Attention"
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    <a>{item.NewLabel}</a>
+                                                                                </li>
+                                                                            );
+                                                                        })}
+                                                                    </ul>
+                                                                </div>
+                                                            ) : null}
+                                                        </div>
+                                                        {WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
+                                                            if (WAItemData.Title == "Attention" && WAItemData?.InformationData?.length > 0) {
+                                                                return (
+                                                                    <div className="border p-1 mt-1">
+                                                                        {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: number) => {
+                                                                            return (
+                                                                                <div className="align-content-center alignCenter justify-content-between py-1">
+                                                                                    <div className="alignCenter">
+                                                                                        <img
+                                                                                            className="ProirityAssignedUserPhoto m-0"
+                                                                                            title={InfoData.TaggedUsers?.Title}
+                                                                                            src={
+                                                                                                InfoData.TaggedUsers.userImage !=
+                                                                                                    undefined &&
+                                                                                                    InfoData.TaggedUsers.userImage?.length >
+                                                                                                    0
+                                                                                                    ? InfoData.TaggedUsers.userImage
+                                                                                                    : ""
+                                                                                            }
+                                                                                        />
+                                                                                        <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
+                                                                                    </div>
+
+                                                                                    <div className="alignCenter">
+                                                                                        <span
+                                                                                            onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
+                                                                                            className="hover-text m-1"
+                                                                                        >
+                                                                                            <LuBellPlus></LuBellPlus>
+                                                                                            <span className="tooltip-text pop-left">
+                                                                                                Send reminder notifications
+                                                                                            </span>
+                                                                                        </span>
+                                                                                        <span
+                                                                                            className="m-0 img-info hover-text"
+                                                                                            onClick={() =>
+                                                                                                openAddImageDescriptionFunction(
+                                                                                                    InfoIndex,
+                                                                                                    InfoData,
+                                                                                                    "Attention"
+                                                                                                )
+                                                                                            }
+                                                                                        >
+                                                                                            <span className="svg__iconbox svg__icon--comment"></span>
+                                                                                            <span className="tooltip-text pop-left">
+                                                                                                {InfoData.Comment != undefined &&
+                                                                                                    InfoData.Comment?.length > 1
+                                                                                                    ? InfoData.Comment
+                                                                                                    : "Add Comment"}
+                                                                                            </span>
+                                                                                        </span>
+                                                                                        <span
+                                                                                            className="hover-text m-0 alignIcon"
+                                                                                            onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Remove", WAItemData.Title)}
+                                                                                        >
+                                                                                            <span className="svg__iconbox svg__icon--cross"></span>
+                                                                                            <span className="tooltip-text pop-left">
+                                                                                                Remove user from bottleneck
+                                                                                            </span>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            )
+                                                                        })}
+                                                                    </div>
+                                                                )
+                                                            }
+                                                        })}
+                                                    </div>
+                                                    <div className="full_width mt-2">
                                                         <CommentCard
                                                             siteUrl={siteUrls}
                                                             listName={Items?.Items?.siteType}
@@ -9471,9 +9751,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 type="checkbox"
                                                                 checked={EditData.waitForResponse}
                                                                 value={EditData.waitForResponse}
-                                                                onChange={(e) =>
-                                                                    changeStatus(e, "waitForResponse")
-                                                                }
+                                                                onChange={(e) => changeStatus(e, "waitForResponse")}
                                                             />
                                                         </span>
                                                     </div>
