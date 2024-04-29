@@ -1120,7 +1120,8 @@ function CreateTaskComponent(props: any) {
                                     await globalCommon.SendTeamMessage(
                                         sendUserEmail,
                                         TeamMsg,
-                                        props.SelectedProp.Context
+                                        props.SelectedProp.Context,
+                                        AllListId
                                     );
                                 }
 
