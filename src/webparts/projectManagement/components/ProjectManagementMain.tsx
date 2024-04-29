@@ -184,6 +184,7 @@ const ProjectManagementMain = (props: any) => {
       setIsSmartInfoAvailable(true)
     }
     getQueryVariable((e: any) => e);
+    getTaskType()
     loadAllSmartInformation()
     try {
       $("#spPageCanvasContent").removeClass();

@@ -1224,7 +1224,16 @@ function EditProjectPopup(item: any) {
     },
     []
   );
-
+  const shareThisTaskFunction = () => {
+    var link =
+      "mailTo:" +
+      "?cc:" +
+      "&subject=" +
+      EditData?.Title +
+      "&body=" +
+      `${AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${EditData?.Id}`;
+    window.location.href = link;
+  };
   const DDComponentCallBack = (dt: any) => {
     setTeamConfig(dt);
     console.log(TeamConfig);
@@ -1317,7 +1326,7 @@ function EditProjectPopup(item: any) {
               </li>
             </ul>
           </div>
-
+          
           <div className="feedbkicon">
             {" "}
             <Tooltip ComponentId='6490' />{" "}
@@ -1397,6 +1406,13 @@ function EditProjectPopup(item: any) {
         type={PanelType.large}
       >
         {EditData != undefined && EditData.Title != undefined && (
+          <>
+          <div className="subheading alignCenter ms-0">
+            <span className="siteColor">
+              <label className='ms-1 Dyicons hover-text'>{EditData?.Item_x0020_Type !== "Sprint" ? `${EditData?.Item_x0020_Type?.charAt(0)}` : "X"} <span className='tooltip-text pop-right'>{EditData?.Title}</span></label>
+              {`${EditData?.PortfolioStructureID} - ${EditData?.Title}`}
+            </span>
+          </div>
           <div id="EditGrueneContactSearch">
             <div className="modal-body mb-5">
               <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
@@ -2272,10 +2288,10 @@ function EditProjectPopup(item: any) {
                 <div>
                   <div>
                     Created{" "}
-                    <span className="font-weight-normal siteColor" ng-bind="EditData.Created | date:'dd/MM/yyyy'">
+                    <span className="font-weight-normal siteColor" >
                       {" "}
                       {EditData.Created != null
-                        ? moment(EditData.Created).format("DD/MM/YYYY MM:SS")
+                        ? moment(EditData.Created).format("DD/MM/YYYY")
                         : ""}
                     </span>{" "}
                     by
@@ -2289,7 +2305,7 @@ function EditProjectPopup(item: any) {
                     Last modified{" "}
                     <span className="font-weight-normal siteColor">
                       {EditData.Modified != null
-                        ? moment(EditData.Modified).format("DD/MM/YYYY MM:SS")
+                        ? moment(EditData.Modified).format("DD/MM/YYYY")
                         : ""}
                     </span>{" "}
                     by{" "}
@@ -2303,7 +2319,7 @@ function EditProjectPopup(item: any) {
                     <a className="hreflink siteColor" onClick={() => deleteTask()}>
                       <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
                       {" "}
-                      <span> Delete this item</span>
+                      <span> Delete this PX</span>
                     </a>
                     <span>
                       {" "}
@@ -2326,22 +2342,17 @@ function EditProjectPopup(item: any) {
                         target="_blank"
                         data-interception="off"
                         href={`${AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${EditData.Id}`}                     >
-                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />{" "}
-                        Go to Profile page
+                        Go to Landing Page
                       </a>
                       ||
 
-                      <a
-                        target="_blank"
-                        data-interception="off"
-                        href={`mailto:?subject=${"Test"}&body=${EditData.ComponentLink
-                          }`}
+                      <a className="siteColor hreflink"
+                        onClick={() => shareThisTaskFunction()}
                       >
                         {" "}
-                        Share this task ||
+                        Share this PX ||
                       </a>
                     </span>
-                    <span className="p-1">|</span>
                     <a
                       data-interception="off"
                       className="p-1"
@@ -2389,6 +2400,8 @@ function EditProjectPopup(item: any) {
               ></Picker>
             )}
           </div>
+          </>
+          
         )}
       </Panel>
       {/* ***************** this is status panel *********** */}
