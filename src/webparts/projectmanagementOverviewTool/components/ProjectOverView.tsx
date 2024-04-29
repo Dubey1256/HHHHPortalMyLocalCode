@@ -177,6 +177,7 @@ export default function ProjectOverview(props: any) {
 
     const editTaskCallBack = React.useCallback((item: any) => {
         setisOpenEditPopup(false);
+        LoadAllSiteTasks();
     }, []);
 
     const loadAllComponent = async () => {
