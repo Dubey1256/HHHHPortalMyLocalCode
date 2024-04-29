@@ -1292,49 +1292,51 @@ const Apps = (props: any) => {
 // for send Email
 
 const calculateTotalWorkingDays = (matchedData: any[]) => {
-  const today = new Date();
-  let totalWorkingDays = 0;
-
-  matchedData.forEach((item: any) => {
-    const endDate = new Date(item.EndDate);
-    const eventDate = new Date(item.EventDate);
-
-    // Adjust dates for timezone
-    endDate.setHours(endDate.getHours() - endDate.getTimezoneOffset() / 60);
-    eventDate.setHours(eventDate.getHours() - eventDate.getTimezoneOffset() / 60);
-
-    // Check if event date is in the current year
-    if (eventDate.getFullYear() === today.getFullYear()) {
-      const adjustedEndDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-      const adjustedEventDate:any = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
-      let currentDate = new Date(adjustedEventDate);
-
-      while (currentDate <= adjustedEndDate) {
-        const dayOfWeek = currentDate.getDay();
-
-        // Exclude weekends (Saturday and Sunday)
-        if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(currentDate, adjustedEndDate)) {
-          // Check if the current date falls within the event range
-          if (currentDate >= adjustedEventDate && currentDate <= adjustedEndDate) {
-            if (item?.Event_x002d_Type !== "Work From Home") {
-              if (item?.HalfDay === true || item?.HalfDayTwo === true) {
-                totalWorkingDays += 0.5; // Add half-day
-              } else {
-                totalWorkingDays++;
-              }
-            }
-          }
-        }
-
-        currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
-      }
-    }
-  });
-
-  return totalWorkingDays;
-};
-
-
+  // Function to reset the time of a date string to 00:00:00
+ function resetTime(dateString:any) {
+   let date = new Date(dateString);
+   date.setHours(0, 0, 0, 0);
+   return date; // Return the date object
+ }
+ 
+ // Today's date for comparison (reset to 00:00:00)
+ const today = new Date();
+ today.setHours(0, 0, 0, 0);
+ 
+ let totalWorkingDays = 0; // Initialize the counter for total working days
+ 
+ matchedData.forEach((item) => {
+   let endDate = resetTime(item.EndDate);
+   let eventDate:any = resetTime(item.EventDate);
+   if (eventDate.getFullYear() === today.getFullYear()) {
+     let currentDate = new Date(eventDate);
+ 
+     while (currentDate <= endDate) {
+       const dayOfWeek = currentDate.getDay();
+ 
+       // Exclude weekends (Saturday and Sunday)
+       if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+         // Check if the current date falls within the event range
+         if (currentDate >= eventDate && currentDate <= endDate) {
+           if (item.Event_x002d_Type !== "Work From Home") {
+             if (item.HalfDay === true || item.HalfDayTwo === true) {
+               totalWorkingDays += 0.5; // Add half-day
+             } else {
+               totalWorkingDays++; // Add full day
+             }
+           }
+         }
+       }
+ 
+       currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+     }
+   }
+ });
+ 
+ 
+   return totalWorkingDays;
+ };
+ 
 const isWeekend = (startDate: any, endDate: any) => {
   const startDay = startDate.getDay();
   const endDay = endDate.getDay();
@@ -1376,8 +1378,8 @@ const SendEmail = (EventData: any, MyEventData: any) => {
     sp.utility
       .sendEmail({
         Body: BindHtmlBody,
-        Subject: "Leave Request - " + formattedstartDate +"-"+EventData?.Designation+"-"+ EventData?.title , // Modified subject
-        To: [ "anubhav.shukla@hochhuth-consulting.de"],
+        Subject: "Leave Request - " + formattedstartDate +"-"+EventData?.Designation+"-"+EventData?.type+"-"+ EventData?.title , // Modified subject
+        To: ["ranu.trivedi@hochhuth-consulting.de","juli.kumari@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de","anubhav.shukla@hochhuth-consulting.de"],
         AdditionalHeaders: {
           "content-type": "text/html",
         },
