@@ -1391,8 +1391,7 @@ export const getDataByKey = (DataArray: any, keyName: any) => {
 //             await GlobalCommon.SendTeamMessage(
 //                 sendUserEmail,
 //                 TeamsMessage,
-//                 Context,
-//                 RequiredListIds
+//                 Context
 //             );
 //         }
 //     })
@@ -1407,44 +1406,33 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
         const reactElement = React.createElement(TaskInformation?.type, TaskInformation?.props);
         ReactDOM.render(reactElement, containerDiv);
         let finalTaskInfo: any = containerDiv.innerHTML;
-        let NotificationTypeMessage: string = '';
-        let isShowComment: any = false;
-
-        if (ActionType == "Bottleneck" || ActionType == "Attention") {
-            NotificationTypeMessage = `You have been tagged as <b>${ActionType}</b> in the below task.`;
-            isShowComment = true;
-        }
-        else if (RequiredData?.UpdatedDataObject?.PercentComplete == 90) {
-            NotificationTypeMessage = `This task has 90%. Kindly review it.`;
-            isShowComment = false;
-        }
-        else if (RequiredData?.UpdatedDataObject?.PercentComplete == 0 && ActionType.indexOf('User Experience - UX') != -1) {
-            NotificationTypeMessage = `Below task has been created by the UX team, please have a look.`;
-            isShowComment = false;
-        }
-        else {
-            NotificationTypeMessage = `Task created from your end as ${ActionType} category Task status has been set as ${UpdatedDataObject.PercentComplete + "%"}. Please take necessary action`;
-            isShowComment = false;
-        }
-
-
 
         const TeamsMessage = `
-            <b>Hi ${ReceiverName},</b>
-            <p></p>
-           ${NotificationTypeMessage}
+        <div style="padding: 12px; background-color: transparent;">
+            You have been tagged as <b>${ActionType}</b> in the below ${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? RequiredData?.UpdatedDataObject?.Item_x0020_Type : "Task"}
             <p><br/></p>
-            ${isShowComment ? `<span><b>${ActionType} Comment </b>: <span style="background-color: yellow"; >${ReasonStatement}</span></span>` : ''}
+            <div style="background-color: #fff; padding:16px; display:block;">
+            <b style="fontSize: 18px; fontWeight: 600; marginBottom: 8px;">${ActionType} Comment</b>: <span>${ReasonStatement}</span>
+            </div>
+            <div style="margin-top: 16px;">  <b style="font-weight:600;">Task Link: </b>
+            <a href="${UpdatedDataObject?.siteUrl}/SitePages/${"Short_x0020_Description_x0020_On" in RequiredData?.UpdatedDataObject ? `Portfolio-Profile.aspx?taskId=${UpdatedDataObject.Id}` : `Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}`}">
+            ${UpdatedDataObject?.TaskId}-${UpdatedDataObject?.Title}
+            </a>
+            </div>
             <p></p>
-            <span>${finalTaskInfo}</span>
-            <p></p>
-            Task Link: <a href="${UpdatedDataObject?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${UpdatedDataObject.Id}&Site=${UpdatedDataObject.siteType}">Click here</a>
+           <span>${finalTaskInfo}</span>
+            
+
             <p></p>
             <b>Thanks,<br/>Task Management Team</b>
+            </div>
         `;
 
         if (sendUserEmail?.length > 0) {
-            await GlobalCommon.SendTeamMessage(sendUserEmail, TeamsMessage, Context, RequiredData?.RequiredListIds);
+            await GlobalCommon.SendTeamMessage(sendUserEmail,
+                TeamsMessage,
+                Context,
+                RequiredData?.RequiredListIds);
         }
         return 'Notification sent successfully';
     } catch (error) {
@@ -1457,12 +1445,14 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
 export const MSTeamsReminderMessage = (RequiredData: any) => {
     return new Promise(async (resolve, reject) => {
         const { ReceiverName, sendUserEmail, Context, ActionType, ReasonStatement, UpdatedDataObject } = RequiredData || {};
-        let TeamsMessage = `<b>Hi ${ReceiverName},</b> 
-        <p></p>
+        let TeamsMessage = ` 
         This is a gentle reminder to address the below task promptly, as you've been marked as ${ActionType}:
         <p>
         <br/>
-        <span><b>${ActionType} Comment </b>: <span style="background-color: yellow"; >${ReasonStatement ? ReasonStatement : ""}</span></span>
+        <div style="background-color: #fff; padding:16px;>
+          <b>${ActionType} Comment </b>: <span>${ReasonStatement ? ReasonStatement : ""}</span>
+        </div>
+       
         </br>
         <p>
         Task Link:  
@@ -1489,19 +1479,18 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
     try {
         if (RequiredData?.Title?.length > 0) {
             return (
-                <div style={{ backgroundColor: '#f5f5f5', display: 'flex' }}>
-
-                    <div style={RequiredData?.CommentsArray?.length > 0 ? { width: '528px', marginRight: '8px' } : {}}>
-                        <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>Task Details:</div>
+                <div style={{backgroundColor:'transparent'}}>
+                    <div>
+                        <div><b style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>Task Details:</b></div>
                         <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', marginBottom: '8px' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Task Id:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Task Id:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData?.TaskId}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Component:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Component:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 {RequiredData["Portfolio"] != null &&
@@ -1511,7 +1500,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                 }
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Priority:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Priority:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData["Priority"]}</span>
@@ -1519,19 +1508,19 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Start Date:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Start Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD-MMMM-YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Completion Date:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Completion Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD-MMMM-YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Due Date:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Due Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD-MMMM-YYYY") : ''}</span>
@@ -1539,7 +1528,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Team Members:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Team Members:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <div style={{ wordBreak: "break-all" }}>{RequiredData["TeamMembers"] != null &&
@@ -1551,13 +1540,13 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                 </div>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Created:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Created:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{Moment(RequiredData["Created"]).format("DD-MMMM-YYYY")}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Created By:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Created By:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData["Author"] != null && RequiredData["Author"] != undefined && RequiredData["Author"].Title}</span>
@@ -1565,19 +1554,19 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Categories:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Categories:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData["Categories"]}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Status:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Status:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 {RequiredData["Status"]}
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>% Complete:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>% Complete:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 {RequiredData["PercentComplete"]}
@@ -1585,8 +1574,8 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         </div>
 
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
-                            <div style={RequiredData?.CommentsArray?.length > 0 ? { width: '86px', background: '#fff', padding: '5px', display: 'flex', alignItems: 'center' } : { width: '120px', background: '#fff', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Smart Priority:</span>
+                            <div style={RequiredData?.CommentsArray?.length > 0 ? { width: '120px', background: '#fff', padding: '5px', display: 'flex', alignItems: 'center' } : { width: '120px', background: '#fff', padding: '5px', display: 'flex', alignItems: 'center' }}>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Smart Priority:</span>
                             </div>
                             <div style={{ padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 {RequiredData["SmartPriority"]}
@@ -1606,7 +1595,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                         </div>
                         <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>URL:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>URL:</span>
                             </div>
                             <div style={{ wordBreak: "break-all", padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>
@@ -1615,138 +1604,141 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                     }</span>
                             </div>
                         </div>
-
-                        {RequiredData["FeedBack"] != null &&
-                            RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
-                            RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title?.length > 8 ?
-                            <div style={{ width: "100%" }}>
-                                <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px', marginTop: '24px' }}>Task Description:</div>
-                                <div>
-                                    {RequiredData["FeedBack"] != null &&
-                                        RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
-                                        RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title != '' &&
-                                        RequiredData["FeedBack"][0]?.FeedBackDescriptions.map((fbData: any, i: any) => {
-                                            return (<>
-                                                <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#fff' }}>
-                                                    {/* <div style={{width:'3%'}}>
+                    </div>
+                    <div style={{ display: 'flex', marginTop: '24px' }}>
+                        <div style={RequiredData?.CommentsArray?.length > 0 ? { width: '528px', marginRight: '8px' } : { marginRight: '8px' }}>
+                            {RequiredData["FeedBack"] != null &&
+                                RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
+                                RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title?.length > 8 ?
+                                <div style={{ width: "100%" }}>
+                                    <div><b style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>Task Description:</b></div>
+                                    <div>
+                                        {RequiredData["FeedBack"] != null &&
+                                            RequiredData["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
+                                            RequiredData["FeedBack"][0]?.FeedBackDescriptions[0].Title != '' &&
+                                            RequiredData["FeedBack"][0]?.FeedBackDescriptions.map((fbData: any, i: any) => {
+                                                return (<>
+                                                    <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#fff' }}>
+                                                        {/* <div style={{width:'3%'}}>
                                                         <span style={{ fontSize: "10pt", color: "#333", marginRight:'5px' }}>
                                                             {i + 1}.
                                                         </span>
                                                     </div> */}
-                                                    <div style={{ width: '100%' }}>
-                                                        <div style={{ display: 'flex' }}>
-                                                            <span style={{ fontSize: "10pt", color: "#333", marginRight: '5px', fontWeight: '600' }}>
-                                                                {i + 1}.
-                                                            </span>
-                                                            <span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span></div>
+                                                        <div style={{ width: '100%' }}>
+                                                            <div style={{ display: 'flex' }}>
+                                                                <span style={{ fontSize: "10pt", color: "#333", marginRight: '5px', fontWeight: '600' }}>
+                                                                    {i + 1}.
+                                                                </span>
+                                                                <span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span></div>
 
-                                                        {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
-                                                            return <div style={{ padding: '12px', backgroundColor: '#f5f5f5', marginTop: '8px', width: '100%' }}>
-                                                                <div style={{ marginBottom: '8px' }}>
-                                                                    <div style={{ fontWeight: '600' }}>{fbComment.AuthorName} - {fbComment.Created}</div>
-                                                                </div>
-                                                                <div><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span></div>
+                                                            {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
+                                                                return <div style={{ padding: '12px', backgroundColor: '#f5f5f5', marginTop: '8px', width: '100%' }}>
+                                                                    <div style={{ marginBottom: '8px' }}>
+                                                                        <div style={{ fontWeight: '600' }}>{fbComment.AuthorName} - {fbComment.Created}</div>
+                                                                    </div>
+                                                                    <div><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span></div>
 
-                                                                {fbComment?.ReplyMessages?.length > 0 && fbComment?.ReplyMessages?.map((replycom: any) => {
-                                                                    return (
-                                                                        <div style={{ padding: '12px', backgroundColor: '#ffffff', width: '100%' }}>
-                                                                            <div style={{ marginBottom: '8px' }}>
-                                                                                <div style={{ fontWeight: '600' }}><span>{replycom.AuthorName} - {replycom.Created}</span></div>
+                                                                    {fbComment?.ReplyMessages?.length > 0 && fbComment?.ReplyMessages?.map((replycom: any) => {
+                                                                        return (
+                                                                            <div style={{ padding: '12px', backgroundColor: '#ffffff', width: '100%' }}>
+                                                                                <div style={{ marginBottom: '8px' }}>
+                                                                                    <div style={{ fontWeight: '600' }}><span>{replycom.AuthorName} - {replycom.Created}</span></div>
+                                                                                </div>
+                                                                                <div><span dangerouslySetInnerHTML={{ __html: replycom['Title'] }}></span></div>
                                                                             </div>
-                                                                            <div><span dangerouslySetInnerHTML={{ __html: replycom['Title'] }}></span></div>
-                                                                        </div>
-                                                                    )
-                                                                })}
+                                                                        )
+                                                                    })}
 
-                                                            </div>
-                                                        })}
+                                                                </div>
+                                                            })}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map((fbSubData: any, j: any) => {
-                                                    return <>
-                                                        <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#fff' }}>
-                                                            {/* <div style={{width:'5%'}}>
+                                                    {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map((fbSubData: any, j: any) => {
+                                                        return <>
+                                                            <div style={{ width: '100%', display: 'flex', marginBottom: '8px', padding: '16px 12px', backgroundColor: '#fff' }}>
+                                                                {/* <div style={{width:'5%'}}>
                                                                 <span style={{ fontSize: "10pt", color: "#333", marginRight:'5px' }}>{i + 1}.{j + 1}.</span> 
                                                             </div> */}
-                                                            <div style={{ width: '100%' }}>
-                                                                <span style={{ fontSize: "10pt", color: "#333", marginRight: '5px', fontWeight: '600' }}>{i + 1}.{j + 1}.</span>
-                                                                <span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
-                                                                {fbSubData['Comments'] != null && fbSubData['Comments']?.length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
-                                                                    return <div style={{ padding: '12px', backgroundColor: '#f5f5f5', marginTop: '8px' }}>
-                                                                        <div style={{ marginBottom: '8px' }}>
-                                                                            <span style={{ fontSize: '10.0pt', fontWeight: '600' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}</span>
-                                                                        </div>
-                                                                        <div><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span></div>
-                                                                        {fbSubComment?.ReplyMessages?.length > 0 && fbSubComment?.ReplyMessages?.map((replycom: any) => {
-                                                                            return (
-                                                                                <div style={{ padding: '12px', backgroundColor: '#ffffff' }}>
-                                                                                    <div style={{ marginBottom: '8px' }}>
-                                                                                        <div style={{ fontWeight: '600' }}>{replycom.AuthorName} - {replycom.Created}</div>
+                                                                <div style={{ width: '100%' }}>
+                                                                    <span style={{ fontSize: "10pt", color: "#333", marginRight: '5px', fontWeight: '600' }}>{i + 1}.{j + 1}.</span>
+                                                                    <span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
+                                                                    {fbSubData['Comments'] != null && fbSubData['Comments']?.length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
+                                                                        return <div style={{ padding: '12px', backgroundColor: '#f5f5f5', marginTop: '8px' }}>
+                                                                            <div style={{ marginBottom: '8px' }}>
+                                                                                <span style={{ fontSize: '10.0pt', fontWeight: '600' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}</span>
+                                                                            </div>
+                                                                            <div><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span></div>
+                                                                            {fbSubComment?.ReplyMessages?.length > 0 && fbSubComment?.ReplyMessages?.map((replycom: any) => {
+                                                                                return (
+                                                                                    <div style={{ padding: '12px', backgroundColor: '#ffffff' }}>
+                                                                                        <div style={{ marginBottom: '8px' }}>
+                                                                                            <div style={{ fontWeight: '600' }}>{replycom.AuthorName} - {replycom.Created}</div>
+                                                                                        </div>
+                                                                                        <div><span dangerouslySetInnerHTML={{ __html: replycom['Title'] }}></span></div>
                                                                                     </div>
-                                                                                    <div><span dangerouslySetInnerHTML={{ __html: replycom['Title'] }}></span></div>
-                                                                                </div>
-                                                                            )
-                                                                        })}
-                                                                    </div>
-                                                                })}
+                                                                                )
+                                                                            })}
+                                                                        </div>
+                                                                    })}
+                                                                </div>
                                                             </div>
+                                                        </>
+                                                    })}
+                                                </>)
+                                            })}
+                                    </div>
+                                </div>
+                                :
+                                null
+                            }
+                        </div>
+                        {RequiredData?.CommentsArray?.length > 0 ?
+                            <div style={{ width: '232px' }}>
+                                <div className="">
+                                    <div>
+                                    <b style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}> Comments ({RequiredData["CommentsArray"]?.length}):</b>
+                                    </div>
+                                    <div style={{ width: '100%' }}>
+                                        {RequiredData["CommentsArray"] != undefined && RequiredData["CommentsArray"]?.length > 0 && RequiredData["CommentsArray"]?.map((cmtData: any, i: any) => {
+                                            if (i < 5) {
+                                                return (
+                                                    <>
+                                                        <div style={{ backgroundColor: '#fff', width: '100%', padding: '8px 12px', marginBottom: "8px" }}>
+                                                            <div style={{ marginBottom: "8px", width: '100%' }}>
+                                                                <div>
+                                                                    <span style={{ fontWeight: '600' }}>{cmtData.AuthorName}</span> - {cmtData.Created}
+                                                                </div>
+                                                                <div>
+                                                                    {cmtData.Description}
+                                                                </div>
+                                                            </div>
+                                                            {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
+                                                                return (
+                                                                    <div style={{ backgroundColor: '#f5f5f5', padding: '8px 12px', width: '100%' }}>
+                                                                        <div style={{ marginBottom: '8px' }}>
+                                                                            <span style={{ fontWeight: '600' }}>{replyData.AuthorName}</span> - {replyData.Created}
+                                                                        </div>
+                                                                        <div>
+                                                                            {replyData.Description}
+                                                                        </div>
+                                                                    </div>
+                                                                )
+                                                            })}
+
                                                         </div>
+
                                                     </>
-                                                })}
-                                            </>)
+                                                )
+                                            }
                                         })}
+                                    </div>
+                                    {RequiredData?.CommentsArray?.length > 5 ? <span>For more go to Task: <a href={`${RequiredData?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${RequiredData?.ID}&Site=${RequiredData?.siteType}`}>
+                                        Click-here</a> </span> : ""}
                                 </div>
                             </div>
-                            :
-                            null
+                            : null
                         }
                     </div>
-                    {RequiredData?.CommentsArray?.length > 0 ?
-                        <div style={{ width: '232px' }}>
-                            <div className="">
-                                <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>
-                                    Comments ({RequiredData["CommentsArray"]?.length}):
-                                </div>
-                                <div style={{ width: '100%' }}>
-                                    {RequiredData["CommentsArray"] != undefined && RequiredData["CommentsArray"]?.length > 0 && RequiredData["CommentsArray"]?.map((cmtData: any, i: any) => {
-                                        if (i < 5) {
-                                            return (
-                                                <>
-                                                    <div style={{ backgroundColor: '#fff', width: '100%', padding: '8px 12px', marginBottom: "8px" }}>
-                                                        <div style={{ marginBottom: "8px", width: '100%' }}>
-                                                            <div>
-                                                                <span style={{ fontWeight: '600' }}>{cmtData.AuthorName}</span> - {cmtData.Created}
-                                                            </div>
-                                                            <div>
-                                                                {cmtData.Description}
-                                                            </div>
-                                                        </div>
-                                                        {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
-                                                            return (
-                                                                <div style={{ backgroundColor: '#f5f5f5', padding: '8px 12px', width: '100%' }}>
-                                                                    <div style={{ marginBottom: '8px' }}>
-                                                                        <span style={{ fontWeight: '600' }}>{replyData.AuthorName}</span> - {replyData.Created}
-                                                                    </div>
-                                                                    <div>
-                                                                        {replyData.Description}
-                                                                    </div>
-                                                                </div>
-                                                            )
-                                                        })}
-
-                                                    </div>
-
-                                                </>
-                                            )
-                                        }
-                                    })}
-                                </div>
-                                {RequiredData?.CommentsArray?.length > 5 ? <span>For more go to Task: <a href={`${RequiredData?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${RequiredData?.ID}&Site=${RequiredData?.siteType}`}>
-                                    Click-here</a> </span> : ""}
-                            </div>
-                        </div>
-                        : null
-                    }
                 </div>
             )
         }
@@ -1950,19 +1942,19 @@ export const GenerateMSTeamsNotificationPoprtfolioAndProject = (RequiredData: an
                 //     </tbody>
                 // </table>
 
-                <div style={{ backgroundColor: '#f5f5f5', display: 'flex' }}>
+                <div style={{ display: 'flex' }}>
 
                     <div style={RequiredData?.CommentsArray?.length > 0 ? { width: '528px' } : { marginRight: '8px' }}>
                         <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>{"Short_x0020_Description_x0020_On" in RequiredData.UpdatedDataObject && RequiredData?.UpdatedDataObject?.Item_x0020_Type} Details:</div>
                         <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', marginBottom: '8px' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Id:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Id:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData?.PortfolioStructureID}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Component:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Component:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 {RequiredData["Portfolio"] != null &&
@@ -1972,7 +1964,7 @@ export const GenerateMSTeamsNotificationPoprtfolioAndProject = (RequiredData: an
                                 }
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Priority:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Priority:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData["Priority"]}</span>
@@ -1980,19 +1972,19 @@ export const GenerateMSTeamsNotificationPoprtfolioAndProject = (RequiredData: an
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Start Date:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Start Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData["StartDate"] != null && RequiredData["StartDate"] != undefined && RequiredData["StartDate"] != "" ? Moment(RequiredData["StartDate"]).format("DD-MMMM-YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Completion Date:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Completion Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData["CompletedDate"] != null && RequiredData["CompletedDate"] != undefined && RequiredData["CompletedDate"] != "" ? Moment(RequiredData["CompletedDate"]).format("DD-MMMM-YYYY") : ""}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Due Date:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Due Date:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData["DueDate"] != null && RequiredData["DueDate"] != undefined && RequiredData["DueDate"] != "" ? Moment(RequiredData["DueDate"]).format("DD-MMMM-YYYY") : ''}</span>
@@ -2000,7 +1992,7 @@ export const GenerateMSTeamsNotificationPoprtfolioAndProject = (RequiredData: an
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Team Members:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Team Members:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <div style={{ wordBreak: "break-all" }}>{RequiredData["TeamMembers"] != null &&
@@ -2012,13 +2004,13 @@ export const GenerateMSTeamsNotificationPoprtfolioAndProject = (RequiredData: an
                                 </div>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Created:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Created:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{Moment(RequiredData["Created"]).format("DD-MMMM-YYYY")}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Created By:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Created By:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData["Author"] != null && RequiredData["Author"] != undefined && RequiredData["Author"].Title}</span>
@@ -2026,19 +2018,19 @@ export const GenerateMSTeamsNotificationPoprtfolioAndProject = (RequiredData: an
                         </div>
                         <div style={{ width: '100%', display: 'flex', marginBottom: '8px', justifyContent: 'flex-start' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Categories:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Categories:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>{RequiredData["Categories"]}</span>
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>Status:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>Status:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 {RequiredData["Status"]}
                             </div>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>% Complete:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>% Complete:</span>
                             </div>
                             <div style={{ width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 {RequiredData["PercentComplete"]}
@@ -2046,7 +2038,7 @@ export const GenerateMSTeamsNotificationPoprtfolioAndProject = (RequiredData: an
                         </div>
                         <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start' }}>
                             <div style={{ background: '#fff', width: '120px', padding: '5px', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ fontSize: '10.0pt', fontWeight: '500' }}>URL:</span>
+                                <span style={{ fontSize: '10.0pt', fontWeight: '500', color:'#333' }}>URL:</span>
                             </div>
                             <div style={{ wordBreak: "break-all", padding: '5px', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ fontSize: '10.0pt' }}>
@@ -2133,11 +2125,11 @@ export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredD
         let messageContent = '';
 
         if (usedFor === "Information-Request") {
-            emailSubject = `[Information Request - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}- ${ItemDetails?.Title}] - Request is completed`;
+            emailSubject = `[Information Request - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title} - Request is completed`;
             messageContent = 'Task created from your end for Information Request has been completed. Please take necessary action';
         }
         if (usedFor === "Priority-Check") {
-            emailSubject = `[Task Priority Check - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}- ${ItemDetails?.Title}]. Please have a look`;
+            emailSubject = `[Task Priority Check - ${ItemDetails?.siteType} - ${ItemDetails.TaskId}] ${ItemDetails?.Title}. Please have a look`;
             messageContent = 'Task created from your end has been set to 8%. Please take necessary action';
         }
 
