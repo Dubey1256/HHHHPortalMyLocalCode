@@ -379,7 +379,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     //let txtComment = draftToHtml(convertToRaw(this.state.editorState.getCurrentContent()));
     let txtComment = this.state.editorChangeValue;
     if (txtComment != '') {
-      let temp = {
+      let temp :any= {
         AuthorImage: this.currentUser?.Item_x0020_Cover != null ? this.currentUser?.Item_x0020_Cover?.Url : '',
         AuthorName: this.currentUser?.Title != null ? this.currentUser?.Title : this.props.Context.pageContext._user.displayName,
         MsTeamCreated: updateCommentPost?.MsTeamCreated,
@@ -391,6 +391,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         editable: false,
         CommentFor: updateCommentPost?.CommentFor
       };
+      if("ReplyMessages" in updateCommentPost ){
+        temp.ReplyMessages=updateCommentPost?.ReplyMessages
+      }
       //Add object in feedback
       //delete the value before add new value
       let elementPosition = 0;
