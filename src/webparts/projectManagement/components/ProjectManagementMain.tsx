@@ -1382,7 +1382,7 @@ const ProjectManagementMain = (props: any) => {
               <ReactPopperTooltipSingleLevel
                 AllListId={AllListId}
                 onclickPopup={false}
-                CMSToolId={row?.original?.project?.Title}
+                CMSToolId={row?.original?.project?.PortfolioStructureID}
                 row={row?.original?.Project}
                 singleLevel={true}
                 masterTaskData={MasterListData}

@@ -3574,8 +3574,11 @@ const EditTaskPopup = (Items: any) => {
         let deletePost = confirm("Do you really want to delete this Task?");
         if (deletePost) {
             deleteItemFunction(TaskID, FunctionsType);
+            Items.Call("Delete-Task")
+
         } else {
             console.log("Your Task has not been deleted");
+            Items.Call()
         }
     };
     const deleteItemFunction = async (itemId: any, FnType: any) => {
