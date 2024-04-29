@@ -47,7 +47,10 @@ const RelevantDocuments = (props: any, ref: any) => {
           let keydoc: any = [];
           if (Data?.length > 0) {
             Data?.map((item: any, index: any) => {
-              if(item?.Title.includes(item?.File_x0020_Type)){
+              if ((item?.Title == undefined || item?.Title == '') && item?.FileLeafRef != undefined) {
+                item.Title = item?.FileLeafRef;
+              }
+              if (item?.Title != undefined && item?.Title.includes(item?.File_x0020_Type)) {
                 item.Title = getUploadedFileName(item?.Title);
               }
               item.siteType = 'sp'
@@ -82,16 +85,16 @@ const RelevantDocuments = (props: any, ref: any) => {
             if (myContextData2?.FunctionCall != undefined && keydoc?.length > 0) {
               myContextData2?.FunctionCall(keydoc, Data[0]?.FileDirRef, false)
             }
-              var releventData = Data?.filter((d) => d.ItemRank != 6 && d.ItemRank != 0)
-              if (releventData?.length > 0) {
-                setDocumentData(releventData);
-              } else {
-                setDocumentData([])
-              }
+            var releventData = Data?.filter((d) => d.ItemRank != 6 && d.ItemRank != 0)
+            if (releventData?.length > 0) {
+              setDocumentData(releventData);
+            } else {
+              setDocumentData([])
+            }
 
 
-              setFileurl(Data[0]?.FileDirRef)
-           
+            setFileurl(Data[0]?.FileDirRef)
+
           }
           else {
             setDocumentData([]);
