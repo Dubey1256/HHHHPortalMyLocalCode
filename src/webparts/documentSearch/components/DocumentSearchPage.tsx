@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Web } from 'sp-pnp-js';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
-import EditDocument from '../../taskprofile/components/EditDocunentPanel';
+ import EditDocument from '../../taskprofile/components/EditDocunentPanel';
 import moment from 'moment';
 import PageLoad from '../../../globalComponents/pageLoader';
 
@@ -15,8 +15,10 @@ let mastertaskdata: any = []
 export default function DocumentSearchPage(Props: any) {
     //#region Required Varibale on Page load BY PB
     var AllListId = Props.Selectedprops
-    AllListId.siteUrl = Props?.Selectedprops?.context?._pageContext?._web?.absoluteUrl
+    let SiteURL:string  = Props?.Selectedprops?.context?._pageContext?._web?.absoluteUrl
+    AllListId.siteUrl = SiteURL;
     const PageContext = AllListId;
+    let CurrentSiteCheck = SiteURL?.indexOf("grueneweltweit") > -1;
     const [AllDocs, setAllDocs] = useState([]);
     const [selectedItemId, setSelectedItem] = useState(undefined);
     const [isEditModalOpen, setisEditModalOpen] = useState(false);
@@ -663,9 +665,11 @@ export default function DocumentSearchPage(Props: any) {
                 <h2 className="d-flex justify-content-between heading align-items-center siteColor serviceColor_Active">
                     <div>Document Search
                     </div>
-                    <div className="text-end fs-6">
-                        <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/document-search-old.aspx">Old Document Search</a>
-                    </div>
+                    {!CurrentSiteCheck &&
+                   <div className="text-end fs-6">
+                   <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/document-search-old.aspx">Old Document Search</a>
+                     </div>
+                     }  
                 </h2>
             </div>
             {AllDocs && <div>

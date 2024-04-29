@@ -317,7 +317,7 @@ function CreateTaskComponent(props: any) {
             let paramType = params.get('Type');
             let paramTaskType = params.get('TaskType');
             let paramServiceId = params.get('ServiceID');
-
+            let externalSite = params.get('ExternalSite') === '1'
             let SDCTaskId = BurgerMenuData.SDCTaskId = params.get('TaskId');
             let SDCTitle = BurgerMenuData.SDCTitle = params.get('Title');
             let SDCSiteType = BurgerMenuData.SDCSiteType = params.get('siteType');
@@ -346,7 +346,7 @@ function CreateTaskComponent(props: any) {
                 PageName = paramSiteUrl?.split('aspx')[0].split("").reverse().join("").split('/')[0].split("").reverse().join("");
                 PageName = PageName + 'aspx'
             }
-            if (paramComponentId == undefined && paramType == undefined && (paramSiteUrl != undefined || SDCTaskId != undefined)) {
+            if (paramComponentId == undefined && paramType == undefined && (paramSiteUrl != undefined || SDCTaskId != undefined && externalSite == false)) {
                 BurgerMenuData.ComponentID = paramComponentId = "756";
                 QueryPortfolioId = '756';
             }
@@ -354,18 +354,45 @@ function CreateTaskComponent(props: any) {
                 BurgerMenuData.ComponentID = paramServiceId = "4497";
                 QueryPortfolioId = '4497';
             }
+
             if (paramComponentId != undefined) {
                 QueryPortfolioId = paramComponentId;
-                AllComponents?.map((item: any) => {
-                    if (item?.Id == paramComponentId) {
-                        setComponent.push(item)
-                        setSave((prev: any) => ({ ...prev, Component: setComponent }));
-                        setSmartComponentData(setComponent);
-                        let suggestedProjects = AllProjects?.filter((Projects: any) => Projects?.Portfolios?.some((port: any) => port?.Id == paramComponentId));
-                        setSuggestedProjectsOfporfolio(suggestedProjects);
-                        selectedPortfolio = setComponent
-                    }
-                })
+                if (externalSite == false) {
+                    let foundCom = AllComponents?.find((item: any) => {
+                        if (item?.Id == paramComponentId) {
+                            setComponent.push(item)
+                            setSave((prev: any) => ({ ...prev, Component: setComponent }));
+                            setSmartComponentData(setComponent);
+                            let suggestedProjects = AllProjects?.filter((Projects: any) => Projects?.Portfolios?.some((port: any) => port?.Id == paramComponentId));
+                            setSuggestedProjectsOfporfolio(suggestedProjects);
+                            selectedPortfolio = setComponent
+                            return true;
+                        }
+                    })
+                }
+                if (externalSite == true) {
+                    const parts = paramSiteUrl?.toLowerCase()?.split("/");
+                    const sitePagesIndex = parts.indexOf("sites");
+                    let completeUrl = parts.slice(sitePagesIndex).join("/");
+                    let foundationUrl: any = completeUrl.toLowerCase().split("/");
+                    let foundationPageIndex = foundationUrl.indexOf("sitepages")
+                    foundationUrl = foundationUrl.slice(foundationPageIndex).join("/")
+                    let PageUrl = foundationUrl.toLowerCase().split('?')[0];
+                    PageUrl = '/' + PageUrl;
+                    PageUrl = PageUrl.split('#')[0];
+                    let foundCom = AllComponents?.find((item: any) => {
+                        if (item?.FoundationPageUrl?.toLowerCase() == PageUrl?.toLowerCase()) {
+                            paramComponentId = QueryPortfolioId = item?.Id
+                            setComponent.push(item)
+                            setSave((prev: any) => ({ ...prev, Component: setComponent }));
+                            setSmartComponentData(setComponent);
+                            let suggestedProjects = AllProjects?.filter((Projects: any) => Projects?.Portfolios?.some((port: any) => port?.Id == paramComponentId));
+                            setSuggestedProjectsOfporfolio(suggestedProjects);
+                            selectedPortfolio = setComponent
+                            return true;
+                        }
+                    })
+                }
                 if (SDCCreatedBy != undefined && SDCCreatedDate != undefined && SDCTaskUrl != undefined) {
 
                     let saveValue = save;
@@ -472,6 +499,7 @@ function CreateTaskComponent(props: any) {
 
                     createTask();
                 } else if (paramSiteUrl != undefined) {
+                    
                     let saveValue = save;
                     let setTaskTitle = 'Feedback - ' + setComponent[0]?.Title + ' ' + moment(new Date()).format('DD-MM-YYYY');
                     saveValue.taskName = setTaskTitle;
@@ -1028,7 +1056,7 @@ function CreateTaskComponent(props: any) {
                         let newTitle = data?.data?.Title
                         let CreatedTaskID = data?.data?.Id
                         data.data.siteType = save.siteType;
-                        if (CategoryTitle?.indexOf('Immediate') > -1 || CategoryTitle?.indexOf('Email Notification') > -1) {
+                        if (CategoryTitle?.indexOf('Immediate') > -1) {
                             let listID = '3BBA0B9A-4A9F-4CE0-BC15-61F4F550D556'
                             var postData = {
                                 __metadata: { 'type': 'SP.Data.ImmediateNotificationsListItem' },
@@ -1090,8 +1118,11 @@ function CreateTaskComponent(props: any) {
                                 });
                                 if (sendUserEmail?.length > 0) {
                                     await globalCommon.SendTeamMessage(
-                                        sendUserEmail, TeamMsg, props.SelectedProp.Context,
+                                        sendUserEmail,
+                                        TeamMsg,
+                                        props.SelectedProp.Context,
                                         AllListId
+
                                     );
                                 }
 

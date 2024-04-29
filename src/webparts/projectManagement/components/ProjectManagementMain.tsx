@@ -184,6 +184,7 @@ const ProjectManagementMain = (props: any) => {
       setIsSmartInfoAvailable(true)
     }
     getQueryVariable((e: any) => e);
+    getTaskType()
     loadAllSmartInformation()
     try {
       $("#spPageCanvasContent").removeClass();
@@ -1381,7 +1382,7 @@ const ProjectManagementMain = (props: any) => {
               <ReactPopperTooltipSingleLevel
                 AllListId={AllListId}
                 onclickPopup={false}
-                CMSToolId={row?.original?.project?.Title}
+                CMSToolId={row?.original?.project?.PortfolioStructureID}
                 row={row?.original?.Project}
                 singleLevel={true}
                 masterTaskData={MasterListData}
