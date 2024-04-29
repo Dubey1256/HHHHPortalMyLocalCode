@@ -909,14 +909,15 @@ const EditDocumentpanel = (props: any) => {
             <div className='col-sm-6 mt-2 p-0'>
               <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Documents/Forms/EditForm.aspx?ID=${EditdocumentsData?.Id != null ? EditdocumentsData?.Id : null}`}>Open out-of-the-box form</a></span>
 
-              <Button className='btn btn-primary ms-1  mx-2'
+
+              <button type='button' className='btn btn-primary mx-2'
                 onClick={updateDocumentsData}
               >
                 Save
-              </Button>
-              <Button className='btn btn-default' onClick={() => handleClosedoc()}>
+              </button>
+              <button type='button' className='btn btn-default' onClick={() => handleClosedoc()}>
                 Cancel
-              </Button>
+              </button>
             </div>
           </div>
         </footer>

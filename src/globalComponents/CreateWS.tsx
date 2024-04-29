@@ -7,7 +7,7 @@ import * as globalCommon from './globalCommon';
 import TeamConfigurationCard from './TeamConfiguration/TeamConfiguration';
 // import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 // import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
-// import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
+
 import * as Moment from 'moment'
 import Tooltip from './Tooltip';
 import { data } from 'jquery';
@@ -456,7 +456,7 @@ const CreateWS = (props: any) => {
                 TaskCategoriesId: { "results": CategoryID },
                 PriorityRank: priorityRank,
                 Priority: priority,
-                PortfolioId: selectedItem?.Portfolio?.Id,
+                PortfolioId: selectedItem?.Portfolio?.Id!=undefined?selectedItem?.Portfolio?.Id: selectedItem?.PortfolioId,
                 // PortfolioTypeId: portFolioTypeId == undefined ? null : portFolioTypeId[0]?.Id,
                 TaskTypeId: selectedTaskType,
                 ProjectId: ProjectId,

@@ -387,7 +387,7 @@ function EditProjectPopup(item: any) {
     return json;
   };
   const GetSiteIcon = (listName: string) => {
-
+    
     if (listName != undefined) {
       let siteicon = '';
       smartmetaDetails?.map((icondata: any) => {
