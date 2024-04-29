@@ -5754,11 +5754,9 @@ const EditTaskPopup = (Items: any) => {
                                                         //         ? Moment(EditData.Created).format("YYYY-MM-DD")
                                                         //         : ""
                                                         // }
-                                                        defaultValue={
+                                                        value={
                                                             EditData.StartDate
-                                                                ? Moment(EditData.StartDate).format(
-                                                                    "YYYY-MM-DD"
-                                                                )
+                                                                ? Moment(EditData.StartDate).format("YYYY-MM-DD")
                                                                 : ""
                                                         }
                                                         onChange={(e) =>
@@ -5791,7 +5789,7 @@ const EditTaskPopup = (Items: any) => {
                                                         //         ? Moment(EditData.Created).format("YYYY-MM-DD")
                                                         //         : ""
                                                         // }
-                                                        defaultValue={
+                                                        value={
                                                             EditData.DueDate
                                                                 ? Moment(EditData.DueDate).format("YYYY-MM-DD")
                                                                 : ""
@@ -5820,11 +5818,9 @@ const EditTaskPopup = (Items: any) => {
                                                         //         ? Moment(EditData.Created).format("YYYY-MM-DD")
                                                         //         : ""
                                                         // }
-                                                        defaultValue={
+                                                        value={
                                                             EditData.CompletedDate
-                                                                ? Moment(EditData.CompletedDate).format(
-                                                                    "YYYY-MM-DD"
-                                                                )
+                                                                ? Moment(EditData.CompletedDate).format("YYYY-MM-DD")
                                                                 : ""
                                                         }
                                                         onChange={(e) =>
