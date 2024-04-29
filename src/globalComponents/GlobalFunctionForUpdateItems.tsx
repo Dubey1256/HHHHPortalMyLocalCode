@@ -1421,8 +1421,6 @@ export const SendMSTeamsNotificationForWorkingActions = async (RequiredData: any
             </div>
             <p></p>
            <span>${finalTaskInfo}</span>
-            
-
             <p></p>
             <b>Thanks,<br/>Task Management Team</b>
             </div>
