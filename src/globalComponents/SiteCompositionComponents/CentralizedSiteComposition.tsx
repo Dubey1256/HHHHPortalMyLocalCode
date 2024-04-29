@@ -1134,7 +1134,12 @@ const CentralizedSiteComposition = (Props: any) => {
             },
 
             {
-                accessorKey: "compositionType",
+                accessorFn: (row) => row?.compositionType,
+                cell: ({ row, getValue }) => (
+                    <div className="alignCenter">
+                        {row?.original?.compositionType?.length > 0 ? <>{row?.original?.compositionType}</> : <span className="svg__iconbox svg__icon--Plus" onClick={() => UpdateSiteSittingsAndCompositionInLine(row?.original)}></span>}
+                    </div>
+                ),
                 placeholder: "Composition Type",
                 header: "",
                 resetColumnFilters: false,
@@ -1145,7 +1150,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 accessorFn: (row) => row?.ClientCategorySearch,
                 cell: ({ row }) => (
                     <>
-                        <ShowClintCategory clintData={row?.original} AllMetadata={AllClientCategoryDataBackup} />
+                        {row?.original?.ClientCategory?.length > 0 ? <ShowClintCategory clintData={row?.original} AllMetadata={AllClientCategoryDataBackup} /> : <span className="svg__iconbox svg__icon--Plus" onClick={() => UpdateClientCategoriesInLine(row?.original)}></span>}
                     </>
                 ),
                 id: "ClientCategorySearch",
@@ -1158,7 +1163,8 @@ const CentralizedSiteComposition = (Props: any) => {
                 accessorFn: (row) => row?.Sitestagging + "." + row?.Sitestagging,
                 cell: ({ row, column, getValue }) => (
                     <>
-                        <ShowSiteComposition SitesTaggingData={row?.original?.Sitestagging} AllSitesData={AllSiteDataBackup} />
+                        {row?.original?.Sitestagging?.length > 5 ? <ShowSiteComposition SitesTaggingData={row?.original?.Sitestagging} AllSitesData={AllSiteDataBackup} /> : <span className="svg__iconbox svg__icon--Plus" onClick={() => UpdateSiteSittingsAndCompositionInLine(row?.original)} ></span>}
+
                     </>
                 ),
                 id: 'Sitestagging',
@@ -1927,7 +1933,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 }
                 SelectedItem.Sitestagging = SiteCompositionData?.length > 0 ? JSON.stringify(SiteCompositionData) : "";
 
-                // This is fir CC 
+                // This is for CC 
                 let tempCCItem: any = [];
                 ClientCategoryData?.map((CCItems: any) => {
                     if (SelectedItem.TaskType?.Title?.length > 1) {
@@ -1978,6 +1984,24 @@ const CentralizedSiteComposition = (Props: any) => {
         }
         SelectedChildItems = [];
     }
+
+
+    // This is used for the Inline editing in Table fo site composition Distribution, Site Settings and Client Categories update 
+    // This is used for the Site Settings and composition inline editing 
+
+    const UpdateSiteSittingsAndCompositionInLine = (SelectedItemData: any) => {
+        SelectedChildItems.push(SelectedItemData);
+        UpdateSiteCompositionButtonFunction();
+    }
+
+    // This is used for the Update Client Category inline editing 
+
+    const UpdateClientCategoriesInLine = (SelectedItemData: any) => {
+        SelectedChildItems.push(SelectedItemData);
+        UpdateClientCategoriesButtonFunction();
+    }
+
+
 
     // END of Function Code 
 
