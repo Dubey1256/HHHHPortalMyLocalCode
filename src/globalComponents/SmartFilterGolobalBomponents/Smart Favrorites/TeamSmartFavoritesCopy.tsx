@@ -813,7 +813,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 onRenderHeader={onRenderCustomHeader}
                 isBlocking={false}
             >
-                <div className="modal-body p-0 mt-2 mb-3">
+                <div className="modal-body p-0 mb-3">
                     <section className='smartFilter bg-light border mb-2 col'>
                         <section className='mt-2 px-2'>
                             <div className='justify-content-between'>
@@ -825,7 +825,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                             </div>
                             {FavoriteFieldvalue === "SmartFilterBased" &&
                                 <div className='row'>
-                                    <div className='mb-2 col-7'>
+                                    <div className='mb-2 col-7 pe-0'>
                                         <div className='input-group mt-3'>
                                             <label className='d-flex form-label full-width justify-content-between'>Title <span><input type="checkbox" className='form-check-input' checked={isShowEveryone} onChange={(e) => isShowEveryOneCheck(e)} /> For EveryOne</span></label>
                                             <input type="text" className='form-control' value={smartTitle} onChange={(e) => ChangeTitle(e)} />
@@ -865,13 +865,13 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                 <div className="px-2">
                                     <div className="togglebox">
                                         <label className="toggler full_width active">
-                                            <span className='full-width' style={{ color: `${portfolioColor}` }}>
+                                            <span className='full-width'>
                                                 <div className='alignCenter'>
-                                                    <span className='f-16'>Project</span>
+                                                    <span className='f-15 fw-semibold'>Project</span>
                                                 </div>
                                             </span>
                                         </label>
-                                        <div className='mb-3 mt-1 pt-1' style={{ borderTop: "1.5px solid" + portfolioColor }}>
+                                        <div className='mb-3 mt-2 pt-2' style={{ borderTop: "1.5px solid #bdbdbd" }}>
                                             <div className='d-flex justify-content-between'>
                                                 <div className="col-12">
                                                     <div className='d-flex'>
@@ -931,13 +931,13 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                     <div className="togglebox">
                                         <span>
                                             <label className="toggler full_width active">
-                                                <span className='full-width' style={{ color: `${portfolioColor}` }}>
+                                                <span className='full-width'>
                                                     <div className='alignCenter'>
-                                                        <span className='f-16'>Sites</span>
+                                                        <span className='f-15 fw-semibold'>Sites</span>
                                                     </div>
                                                 </span>
                                             </label>
-                                            <div className="togglecontent mb-3 mt-1 pt-1" style={{ display: "block", borderTop: "1.5px solid" + portfolioColor }}>
+                                            <div className="togglecontent mb-3 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #bdbdbd"}}>
                                                 <div className="col-sm-12 pad0">
                                                     <div className="togglecontent">
                                                         <table width="100%" className="indicator_search">
@@ -948,7 +948,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                                                             <td valign="top" style={{ width: '33.3%' }}>
                                                                                 <fieldset className='pe-3 smartFilterStyle'>
                                                                                     <legend className='SmartFilterHead'>
-                                                                                        <span className="mparent d-flex" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
+                                                                                        <span className="mparent d-flex pb-1" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
                                                                                             <input className={"form-check-input cursor-pointer"}
                                                                                                 style={Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
                                                                                                 type="checkbox"
@@ -1006,13 +1006,13 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                 <div className="px-2">
                                     <div className="togglebox">
                                         <label className="toggler full_width active">
-                                            <span className='full-width' style={{ color: `${portfolioColor}` }}>
+                                            <span className='full-width'>
                                                 <div className='alignCenter'>
-                                                    <span className='f-16'>Categories and Status</span>
+                                                    <span className='f-15 fw-semibold'>Categories and Status</span>
                                                 </div>
                                             </span>
                                         </label>
-                                        <div className="togglecontent mb-3" style={{ display: "block", borderTop: "1.5px solid #D9D9D9" }}>
+                                        <div className="togglecontent mb-3 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #D9D9D9" }}>
                                             <div className="col-sm-12 pad0">
                                                 <div className="togglecontent">
                                                     <table width="100%" className="indicator_search">
@@ -1023,7 +1023,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                                                         <td valign="top" style={{ width: '14.2%' }}>
                                                                             <fieldset className='smartFilterStyle pe-3'>
                                                                                 <legend className='SmartFilterHead'>
-                                                                                    <span className="mparent d-flex" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
+                                                                                    <span className="mparent d-flex pb-1" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
                                                                                         <input className={"form-check-input cursor-pointer"}
                                                                                             style={(Group.selectAllChecked == undefined || Group.selectAllChecked === false) && Group?.ValueLength === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
                                                                                             type="checkbox"
@@ -1085,13 +1085,13 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                 <div className="px-2">
                                     <div className="togglebox">
                                         <label className="toggler full_width active">
-                                            <span className='full-width' style={{ color: `${portfolioColor}` }}>
+                                            <span className='full-width'>
                                                 <div className='alignCenter'>
-                                                    <span className='f-16'>Client Category</span>
+                                                    <span className='f-15 fw-semibold'>Client Category</span>
                                                 </div>
                                             </span>
                                         </label>
-                                        <div className="togglecontent mb-3 pt-1 mt-1" style={{ display: "block", borderTop: "1.5px solid" + portfolioColor }}>
+                                        <div className="togglecontent mb-3 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #bdbdbd" }}>
                                             <div className="col-sm-12">
                                                 <div className="togglecontent">
                                                     <table width="100%" className="indicator_search">
@@ -1100,10 +1100,10 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                                                 {allFilterClintCatogryData != null && allFilterClintCatogryData.length > 0 &&
                                                                     allFilterClintCatogryData?.map((Group: any, index: any) => {
                                                                         return (
-                                                                            <div className='col-sm-4 mb-3 ps-0'>
-                                                                                <fieldset className='smartFilterStyle ps-2'>
+                                                                            <div className='col-sm-4 mb-3 ps-2'>
+                                                                                <fieldset className='ps-lg-1 smartFilterStyle'>
                                                                                     <legend className='SmartFilterHead'>
-                                                                                        <span className="mparent d-flex" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
+                                                                                        <span className="mparent d-flex pb-1" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
                                                                                             <input className={"form-check-input cursor-pointer"}
                                                                                                 style={(Group.selectAllChecked == undefined || Group.selectAllChecked === false) && Group?.ValueLength === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
                                                                                                 type="checkbox"
@@ -1162,13 +1162,13 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                 <div className="px-2">
                                     <div className="togglebox">
                                         <label className="toggler full_width active">
-                                            <span className='full_width' style={{ color: `${portfolioColor}` }}>
+                                            <span className='full_width'>
                                                 <div className='alignCenter'>
-                                                    <span className='f-16'>Team Members</span>
+                                                    <span className='f-15 fw-semibold'>Team Members</span>
                                                 </div>
                                             </span>
                                         </label>
-                                        <div className="togglecontent mb-3 mt-1 pt-1" style={{ display: "block", borderTop: "1.5px solid" + portfolioColor }}>
+                                        <div className="togglecontent mb-3 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #bdbdbd" }}>
                                             <Col className='mb-2 '>
                                                 <label className='me-3'>
                                                     <input className='form-check-input' type="checkbox" value="isSelectAll" checked={isSelectAll} onChange={handleSelectAllChangeTeamSection} /> Select All
@@ -1200,10 +1200,10 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                                                 {TaskUsersData != null && TaskUsersData.length > 0 &&
                                                                     TaskUsersData?.map((Group: any, index: any) => {
                                                                         return (
-                                                                            <div className='col-sm-3 mb-3 ps-0'>
-                                                                                <fieldset className='smartFilterStyle ps-2'>
+                                                                            <div className='col-sm-3 mb-3 ps-2'>
+                                                                                <fieldset className='ps-lg-1 smartFilterStyle'>
                                                                                     <legend className='SmartFilterHead'>
-                                                                                        <span className="mparent d-flex" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
+                                                                                        <span className="mparent d-flex pb-1" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
                                                                                             <input className={"form-check-input cursor-pointer"}
                                                                                                 style={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
                                                                                                 type="checkbox"
@@ -1261,13 +1261,13 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                 <div className="px-2">
                                     <div className="togglebox">
                                         <label className="toggler full_width active">
-                                            <span className="full-width" style={{ color: `${portfolioColor}` }}>
+                                            <span className="full-width">
                                                 <div className='alignCenter'>
-                                                    <span className='f-16'>Date</span>
+                                                    <span className='f-15 fw-semibold'>Date</span>
                                                 </div>
                                             </span>
                                         </label>
-                                        <div className="togglecontent mb-3 pt-1 mt-1" style={{ display: "block", borderTop: "1.5px solid" + portfolioColor }}>
+                                        <div className="togglecontent mb-3 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #bdbdbd" }}>
                                             <div className="col-sm-12">
                                                 <Col className='mb-2 mt-2'>
                                                     <label className="me-3">
