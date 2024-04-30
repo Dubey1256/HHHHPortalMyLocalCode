@@ -463,7 +463,14 @@
         }
       ]
     }
-   
+   ,"last-modified-web-part": {
+    "components": [
+      {
+        "entrypoint": "./lib/webparts/lastModified/LastModifiedWebPart.js",
+        "manifest": "./src/webparts/lastModified/LastModifiedWebPart.manifest.json"
+      }
+    ]
+  }
   },
   "externals": {
     "bootstrap-css": {
@@ -543,7 +550,7 @@
     "HhhhSmartMetadataPortfolioWebPartStrings": "lib/webparts/hhhhSmartMetadataPortfolio/loc/{locale}.js",
     "HhhhProfileWebPartStrings": "lib/webparts/hhhhProfile/loc/{locale}.js",
     "HhhcontactWebPartStrings": "lib/webparts/hhhcontact/loc/{locale}.js",
-    "HhhhcontactprofileWebPartStrings": "lib/webparts/hhhhcontactprofile/loc/{locale}.js"
- 
+    "HhhhcontactprofileWebPartStrings": "lib/webparts/hhhhcontactprofile/loc/{locale}.js",
+    "LastModifiedWebPartStrings": "lib/webparts/lastModified/loc/{locale}.js"
   }
 }
