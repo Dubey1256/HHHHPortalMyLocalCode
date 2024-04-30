@@ -386,18 +386,28 @@ const Apps = (props: any) => {
         const { recurrence } = result;
         const rule = recurrence?.rule?.[0];
         const firstDayOfWeek = rule?.firstDayOfWeek || 'su';
-        const startDate = new Date(recurrenceData?.EventDate);
+        function resetTime(dateString:any) {
+          let date = new Date(dateString);
+          date.setHours(0, 0, 0, 0);
+          return date; // Return the date object
+        }
+         const myeventdate:any = resetTime(recurrenceData?.EventDate);
+        const startDate = new Date(myeventdate);
         let repeatInstance = 0;
         let windowEndDate: any;
-        let RecurreEndDate = new Date(recurrenceData?.EndDate);
+        
+        const myeventdateitem:any = resetTime(recurrenceData?.EndDate)
+        let RecurreEndDate = new Date(myeventdateitem);
         if (rule?.repeatForever != undefined && rule?.repeatForever[0] === 'FALSE') {
           RecurreEndDate.setFullYear(startDate.getFullYear() + 4);
           const formattedEndDate = RecurreEndDate.toISOString();
           windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(formattedEndDate).setHours(0, 0, 0, 0);
         } else if (rule?.repeatInstances && rule?.repeatInstances[0] > 0) {
           repeatInstance = Number(rule.repeatInstances[0]);
+          const newrepeatance = repeatInstance - 1;
+          // repeatInstance -1;
           // let myenddateOccur= endDate.setDate(startDate.getDate() + repeatInstance);
-          let myenddateOccur = RecurreEndDate.setDate(startDate.getDate() + repeatInstance);
+          let myenddateOccur = RecurreEndDate.setDate(startDate.getDate() + newrepeatance);
           windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(myenddateOccur).setHours(0, 0, 0, 0);
         }
         else {
@@ -473,6 +483,7 @@ const Apps = (props: any) => {
   }
   const eventDataForBinding = (eventDetails: any, currentDate: any) => {
     let event: any = {};
+    
     event = {
       ...eventDetails,
       EndDate: new Date(currentDate).toISOString(),
@@ -486,12 +497,17 @@ const Apps = (props: any) => {
 
   function handleDailyRecurrence(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any, repeatInstance: any) {
     const dayFrequency = parseInt(frequency.dayFrequency);
+    const nextDate = new Date(currentDate);
+    nextDate.setDate(nextDate.getDate() + 1);
+    currentDate.setHours(0, 0, 0, 0);
     let count = 0;
     let result = '';
     if (frequency?.weekday == 'TRUE') {
-      let AllWeekDaysOfWeek = getWeekDays(currentDate)
+      let AllWeekDaysOfWeek = getWeekDays(nextDate)
       AllWeekDaysOfWeek?.map((DayOfWeek: any) => {
-        if (new Date(eventDetails?.EventDate).setHours(0, 0, 0, 0) <= new Date(DayOfWeek).setHours(0, 0, 0, 0) && new Date(DayOfWeek).setHours(0, 0, 0, 0) < new Date(windowEndDate).setHours(0, 0, 0, 0)) {
+
+        const endDate = new Date(windowEndDate);
+        if (new Date(eventDetails?.EventDate).setHours(0, 0, 0, 0) <= new Date(DayOfWeek).setHours(0, 0, 0, 0) && new Date(DayOfWeek).setHours(0, 0, 0, 0) < endDate.setDate(endDate.getDate() + 1)) {
           const event = eventDataForBinding(eventDetails, DayOfWeek);
           AllEvents.push(event);
           dates.push(new Date(DayOfWeek));
@@ -501,8 +517,10 @@ const Apps = (props: any) => {
       })
 
     } else {
+  
       while (count < repeatInstance && new Date(currentDate).setHours(0, 0, 0, 0) < windowEndDate) {
         currentDate.setDate(currentDate.getDate() + dayFrequency);
+
         const event = eventDataForBinding(eventDetails, currentDate);
         AllEvents.push(event);
         dates.push(new Date(currentDate));
