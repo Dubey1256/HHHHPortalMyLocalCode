@@ -1,5 +1,7 @@
+
 import * as React from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
+import ReactDOM from "react-dom";
 import * as $ from "jquery";
 import * as Moment from "moment";
 import { Web, sp } from "sp-pnp-js";
@@ -17,7 +19,7 @@ import {
     Panel,
     PanelType
 } from "office-ui-fabric-react";
-
+import { LuBellPlus } from "react-icons/lu";
 import { FaExpandAlt } from "react-icons/fa";
 import { RiDeleteBin6Line, RiH6 } from "react-icons/ri";
 import { SlArrowDown, SlArrowRight, SlUserUnfollow } from "react-icons/sl";
@@ -38,6 +40,7 @@ import EmailNotificationMail from "./EmailNotificationMail";
 import OnHoldCommentCard from '../Comments/OnHoldCommentCard';
 import CentralizedSiteComposition from "../SiteCompositionComponents/CentralizedSiteComposition";
 import * as GlobalFunctionForUpdateItems from '../GlobalFunctionForUpdateItems';
+import SmartPriorityHover from "./SmartPriorityHover";
 let PortfolioItemColor: any = "";
 var AllMetaData: any = [];
 var taskUsers: any = [];
@@ -47,7 +50,7 @@ var CommentBoxData: any = [];
 var SubCommentBoxData: any = [];
 var timesheetData: any = [];
 var updateFeedbackArray: any = [];
-let tempShareWebTypeData: any = [];
+let BackupTaskCategoriesData: any = [];
 var tempCategoryData: any = "";
 var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
@@ -96,7 +99,7 @@ const EditTaskPopup = (Items: any) => {
     // Items.Items.Id = Items?.Items?.ID;
     Items.Items.Id =
         Items.Items.Id != undefined ? Items.Items.Id : Items.Items.ID;
-    let ShareWebConfigData: any = [];
+    let SiteWebConfigData: any = [];
     const [TaskImages, setTaskImages] = useState([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
     const [IsComponentPicker, setIsComponentPicker] = useState(false);
@@ -106,7 +109,7 @@ const EditTaskPopup = (Items: any) => {
     const [TaggedPortfolioData, setTaggedPortfolioData] = useState([]);
     const [linkedPortfolioData, setLinkedPortfolioData] = useState([]);
     const [CategoriesData, setCategoriesData] = useState("");
-    const [ShareWebTypeData, setShareWebTypeData] = useState([]);
+    const [TaskCategoriesData, setTaskCategoriesData] = useState([]);
     const [BasicImageData, setBasicImageData] = useState([]);
     const [AllCategoryData, setAllCategoryData] = useState([]);
     const [SearchedCategoryData, setSearchedCategoryData] = useState([]);
@@ -215,7 +218,7 @@ const EditTaskPopup = (Items: any) => {
     const [IsImageUploaded, setIsImageUploaded] = useState(true);
     const [WorkingAction, setWorkingAction] = useState([]);
     const [AddDescriptionModelName, setAddDescriptionModelName] = useState("");
-   const [useFor,setUseFor]=useState("")
+    const [useFor, setUseFor] = useState("")
     let [StatusOptions, setStatusOptions] = useState([
         { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -442,7 +445,7 @@ const EditTaskPopup = (Items: any) => {
                     tempArray.push(site);
                 }
                 if (site.Title !== undefined && site.Title == "Shareweb") {
-                    ShareWebConfigData = site.Configurations;
+                    SiteWebConfigData = site.Configurations;
                 }
             });
             setSiteTypes(tempArray);
@@ -675,7 +678,7 @@ const EditTaskPopup = (Items: any) => {
                     TaxonomyItems.push(item);
                 }
                 uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
-                    return array.indexOf(val) == id;
+                    return array?.indexOf(val) == id;
                 });
             }
         });
@@ -1072,13 +1075,13 @@ const EditTaskPopup = (Items: any) => {
                         let tempArray: any = [];
                         const TaskApproverBackupTemp = TaskApproverBackupArray?.filter(
                             (val: any, id: any, array: any) => {
-                                return array.indexOf(val) == id;
+                                return array?.indexOf(val) == id;
                             }
                         );
                         const TaskCreatorApproverBackupTemp =
                             TaskCreatorApproverBackupArray?.filter(
                                 (val: any, id: any, array: any) => {
-                                    return array.indexOf(val) == id;
+                                    return array?.indexOf(val) == id;
                                 }
                             );
 
@@ -1204,7 +1207,7 @@ const EditTaskPopup = (Items: any) => {
                 ) {
                     const finalData = TaskCreatorApproverBackupArray?.filter(
                         (val: any, id: any, array: any) => {
-                            return array.indexOf(val) == id;
+                            return array?.indexOf(val) == id;
                         }
                     );
                     TaskCreatorApproverBackupArray = finalData;
@@ -1225,9 +1228,9 @@ const EditTaskPopup = (Items: any) => {
                 ) {
                     let tempArray: any = [];
                     tempArray = item.TaskCategories;
-                    setShareWebTypeData(item.TaskCategories);
+                    setTaskCategoriesData(item.TaskCategories);
                     tempArray?.map((tempData: any) => {
-                        tempShareWebTypeData.push(tempData);
+                        BackupTaskCategoriesData.push(tempData);
                     });
                 }
                 if (item.RelevantPortfolio?.length > 0) {
@@ -1515,7 +1518,7 @@ const EditTaskPopup = (Items: any) => {
                                 LinkedPortfolioDataBackup.concat(DataItem);
                             const finalData = LinkedPortfolioDataBackup?.filter(
                                 (val: any, id: any, array: any) => {
-                                    return array.indexOf(val) == id;
+                                    return array?.indexOf(val) == id;
                                 }
                             );
                             setLinkedPortfolioData(finalData);
@@ -1579,8 +1582,8 @@ const EditTaskPopup = (Items: any) => {
     const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         setIsComponentPicker(false);
         let uniqueIds: any = {};
-        let checkForOnHoldAndBottleneck: any = tempShareWebTypeData?.some((category: any) => category.Title === "On-Hold" && category.Title === "Bottleneck");
-        let checkForDesign: any = tempShareWebTypeData?.some((category: any) => category.Title === "Design");
+        let checkForOnHoldAndBottleneck: any = BackupTaskCategoriesData?.some((category: any) => category.Title === "On-Hold" && category.Title === "Bottleneck");
+        let checkForDesign: any = BackupTaskCategoriesData?.some((category: any) => category.Title === "Design");
         if (usedFor == "For-Panel") {
             let TempArrya: any = [];
             selectCategoryData?.map((selectedData: any) => {
@@ -1611,7 +1614,7 @@ const EditTaskPopup = (Items: any) => {
                     setSendCategoryName(selectedData?.Title);
                 }
             })
-            tempShareWebTypeData = TempArrya;
+            BackupTaskCategoriesData = TempArrya;
         } else {
             selectCategoryData.forEach((existingData: any) => {
                 if ((existingData.Title == "On-Hold" || existingData.Title == "Bottleneck") && !checkForOnHoldAndBottleneck) {
@@ -1619,21 +1622,21 @@ const EditTaskPopup = (Items: any) => {
                     setOnHoldPanel(true);
                     setSendCategoryName(existingData.Title)
                 } else {
-                    tempShareWebTypeData.push(existingData);
+                    BackupTaskCategoriesData.push(existingData);
                 }
             });
         }
-        const result: any = tempShareWebTypeData.filter((item: any) => {
+        const result: any = BackupTaskCategoriesData.filter((item: any) => {
             if (!uniqueIds[item.Id]) {
                 uniqueIds[item.Id] = true;
                 return true;
             }
             return false;
         });
-        tempShareWebTypeData = result;
+        BackupTaskCategoriesData = result;
         let updatedItem = {
             ...EditDataBackup,
-            TaskCategories: tempShareWebTypeData,
+            TaskCategories: BackupTaskCategoriesData,
         };
         let SmartPriority = globalCommon.calculateSmartPriority(updatedItem)
         updatedItem = {
@@ -1655,7 +1658,7 @@ const EditTaskPopup = (Items: any) => {
             setApproverData([]);
         }
         if (usedFor === "For-Panel" || usedFor === "For-Auto-Search") {
-            setShareWebTypeData(result);
+            setTaskCategoriesData(result);
             if (usedFor === "For-Auto-Search") {
                 setSearchedCategoryData([]);
                 setCategorySearchKey("");
@@ -1672,16 +1675,16 @@ const EditTaskPopup = (Items: any) => {
         setOnHoldPanel(false);
         if (usedFor == "Save") {
             let uniqueIds: any = {};
-            tempShareWebTypeData.push(onHoldCategory[0]);
-            const result: any = tempShareWebTypeData.filter((item: any) => {
+            BackupTaskCategoriesData.push(onHoldCategory[0]);
+            const result: any = BackupTaskCategoriesData.filter((item: any) => {
                 if (!uniqueIds[item.Id]) {
                     uniqueIds[item.Id] = true;
                     return true;
                 }
                 return false;
             });
-            tempShareWebTypeData = result;
-            setShareWebTypeData(result);
+            BackupTaskCategoriesData = result;
+            setTaskCategoriesData(result);
         }
         onHoldCategory = [];
     }, []);
@@ -1711,11 +1714,11 @@ const EditTaskPopup = (Items: any) => {
     const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
         let tempString: any;
         let tempArray2: any = [];
-        tempShareWebTypeData = [];
-        ShareWebTypeData?.map((dataType: any) => {
+        BackupTaskCategoriesData = [];
+        TaskCategoriesData?.map((dataType: any) => {
             if (dataType.Id != TypeId) {
                 tempArray2.push(dataType);
-                tempShareWebTypeData.push(dataType);
+                BackupTaskCategoriesData.push(dataType);
             }
         });
         if (tempArray2 != undefined && tempArray2.length > 0) {
@@ -1728,7 +1731,7 @@ const EditTaskPopup = (Items: any) => {
         }
         setCategoriesData(tempString);
         tempCategoryData = tempString;
-        setShareWebTypeData(tempArray2);
+        setTaskCategoriesData(tempArray2);
     };
     const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
         isApprovalByStatus = false;
@@ -1773,10 +1776,10 @@ const EditTaskPopup = (Items: any) => {
                 setCategoriesData(category);
                 tempCategoryData = category;
                 if (
-                    tempShareWebTypeData != undefined &&
-                    tempShareWebTypeData.length > 0
+                    BackupTaskCategoriesData != undefined &&
+                    BackupTaskCategoriesData.length > 0
                 ) {
-                    tempShareWebTypeData.map((tempItem: any) => {
+                    BackupTaskCategoriesData.map((tempItem: any) => {
                         if (tempItem.Title == type) {
                             CheckTaagedCategory = false;
                         }
@@ -1789,14 +1792,14 @@ const EditTaskPopup = (Items: any) => {
                     AutoCompleteItemsArray.map((dataItem: any) => {
                         if (dataItem.Title == type) {
                             if (CheckTaagedCategory) {
-                                ShareWebTypeData.push(dataItem);
-                                tempShareWebTypeData.push(dataItem);
+                                TaskCategoriesData.push(dataItem);
+                                BackupTaskCategoriesData.push(dataItem);
 
                             }
                         }
                     });
                 }
-                // setSearchedCategoryData(tempShareWebTypeData);
+                // setSearchedCategoryData(BackupTaskCategoriesData);
                 if (type == "Phone") {
                     setPhoneStatus(true);
                 }
@@ -1824,7 +1827,7 @@ const EditTaskPopup = (Items: any) => {
                     // }
                     const finalData = tempArray.filter(
                         (val: any, id: any, array: any) => {
-                            return array.indexOf(val) == id;
+                            return array?.indexOf(val) == id;
                         }
                     );
 
@@ -1859,7 +1862,7 @@ const EditTaskPopup = (Items: any) => {
         }
         let updatedItem = {
             ...EditDataBackup,
-            TaskCategories: tempShareWebTypeData,
+            TaskCategories: BackupTaskCategoriesData,
         };
         let SmartPriority = globalCommon.calculateSmartPriority(updatedItem)
         updatedItem = {
@@ -2282,7 +2285,7 @@ const EditTaskPopup = (Items: any) => {
                     });
                 }
                 const finalData = tempArray.filter((val: any, id: any, array: any) => {
-                    return array.indexOf(val) == id;
+                    return array?.indexOf(val) == id;
                 });
                 setTaskAssignedTo(finalData);
                 setTaskTeamMembers(finalData);
@@ -2440,13 +2443,13 @@ const EditTaskPopup = (Items: any) => {
     const setModalIsOpenToFalse = () => {
         Items.Call("Close");
         // callBack();
-        tempShareWebTypeData = [];
+        BackupTaskCategoriesData = [];
         AllMetaData = [];
         taskUsers = [];
         CommentBoxData = [];
         SubCommentBoxData = [];
         updateFeedbackArray = [];
-        tempShareWebTypeData = [];
+        BackupTaskCategoriesData = [];
         tempCategoryData = [];
         SiteTypeBackupArray = [];
         currentUserBackupArray = [];
@@ -2594,12 +2597,14 @@ const EditTaskPopup = (Items: any) => {
                             TaskDetailsFromCall[0].siteType = EditData.siteType;
                             TaskDetailsFromCall[0].siteUrl = siteUrls;
                             TaskDetailsFromCall[0].siteIcon = Items.Items.SiteIcon;
+                            TaskDetailsFromCall[0].PercentComplete = (TaskDetailsFromCall[0].PercentComplete * 100).toFixed(0);
+                            TaskDetailsFromCall[0].Comments = JSON.parse(TaskDetailsFromCall[0].Comments)
                         }
                         let UpdatedDataObject: any = TaskDetailsFromCall[0]
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
                         UpdatedDataObject.SmartPriority = NewSmartPriority;
                         UpdatedDataObject.siteUrl = siteUrls;
-                        UpdatedDataObject.CommentsArray=  UpdatedDataObject?.Comments!=null ?JSON.parse(UpdatedDataObject?.Comments):null
+                        UpdatedDataObject.CommentsArray = UpdatedDataObject?.Comments != null ? typeof UpdatedDataObject?.CommentsArray === "object" ? JSON.parse(UpdatedDataObject?.Comments) : UpdatedDataObject?.Comments : null
                         let WorkingActionData = UpdatedDataObject?.WorkingAction?.length > 0 ? JSON.parse(UpdatedDataObject?.WorkingAction) : [];
                         WorkingActionData?.map((ItemData: any) => {
                             ItemData.InformationData?.map(async (InfoItem: any) => {
@@ -2613,7 +2618,7 @@ const EditTaskPopup = (Items: any) => {
                                         ReasonStatement: InfoItem.Comment,
                                         UpdatedDataObject: UpdatedDataObject
                                     }
-                                     await GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    await GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
                                         console.log("Ms Teams Notifications send")
                                     })
                                 }
@@ -2624,7 +2629,7 @@ const EditTaskPopup = (Items: any) => {
                             UpdateWorkinActionJSON(WorkingActionData);
                         }
                         const uniqueIds: any = {};
-                        const result = tempShareWebTypeData.filter((item: any) => {
+                        const result = BackupTaskCategoriesData.filter((item: any) => {
                             if (!uniqueIds[item.Id]) {
                                 uniqueIds[item.Id] = true;
                                 return true;
@@ -2634,83 +2639,91 @@ const EditTaskPopup = (Items: any) => {
                         const TaskCategories = result.map((item: any) => item.Title).join(', ');
                         const CheckForInformationRequestCategory: any = TaskCategories.includes("Information Request");
                         let checkStatusUpdate = Number(taskPercentageValue) * 100;
-                        // This is used for send MS Teams Notification 
-                        if (SendCategoryName !== "Bottleneck") {
-                            try {
-                                const sendUserEmails: string[] = [];
-                                let AssignedUserName = '';
-                                const addEmailAndUserName = (userItem: any) => {
-                                    if (userItem.AssingedToUserId !== currentUserId) {
-                                        sendUserEmails.push(userItem.Email);
-                                        AssignedUserName = AssignedUserName ? "Team" : userItem.Title;
-                                    }
-                                };
 
-                                if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
+
+                        // This is used for send MS Teams Notification 
+
+                        try {
+                            const sendUserEmails: string[] = [];
+                            let AssignedUserName = '';
+                            const addEmailAndUserName = (userItem: any) => {
+                                if (userItem?.AssingedToUserId !== currentUserId) {
+                                    sendUserEmails.push(userItem.Email);
+                                    AssignedUserName = AssignedUserName ? "Team" : userItem?.Title;
+                                }
+                            };
+
+                            if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
+                                taskUsers?.forEach((allUserItem: any) => {
+                                    if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
+                                        addEmailAndUserName(allUserItem);
+                                    }
+                                });
+                            } else {
+                                const usersToCheck = TeamLeaderChanged && TeamMemberChanged ? TaskResponsibleTeam?.concat(TaskAssignedTo) :
+                                    TeamLeaderChanged ? UpdatedDataObject?.ResponsibleTeam :
+                                        TeamMemberChanged || IsTaskStatusUpdated ? TaskAssignedTo : [];
+
+                                usersToCheck.forEach((userDtl: any) => {
                                     taskUsers?.forEach((allUserItem: any) => {
-                                        if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                        if (userDtl.Id === allUserItem?.AssingedToUserId) {
                                             addEmailAndUserName(allUserItem);
                                         }
                                     });
+                                });
+                            }
+                            let CommonMsg = '';
+                            const sendMSGCheck = (checkStatusUpdate === 80 || checkStatusUpdate === 70) && IsTaskStatusUpdated;
+                            const SendUserEmailFinal: any = sendUserEmails?.filter((item: any, index: any) => sendUserEmails?.indexOf(item) === index);
+
+                            if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
+                                CommonMsg = ` Task created from your end has been set to 8%. Please take necessary action.`;
+                                let functionType: any = '';
+                                if (checkStatusUpdate === 90 && CheckForInformationRequestCategory) {
+                                    functionType = "Information-Request"
                                 } else {
-                                    const usersToCheck = TeamLeaderChanged && TeamMemberChanged ? TaskResponsibleTeam.concat(TaskAssignedTo) :
-                                        TeamLeaderChanged ? UpdatedDataObject?.ResponsibleTeam :
-                                            TeamMemberChanged || IsTaskStatusUpdated ? TaskAssignedTo : [];
-
-                                    usersToCheck.forEach((userDtl: any) => {
-                                        taskUsers?.forEach((allUserItem: any) => {
-                                            if (userDtl.Id === allUserItem.AssingedToUserId) {
-                                                addEmailAndUserName(allUserItem);
-                                            }
-                                        });
-                                    });
+                                    functionType = "Priority-Check"
                                 }
-                                let CommonMsg = '';
-                                const sendMSGCheck = (checkStatusUpdate === 80 || checkStatusUpdate === 70) && IsTaskStatusUpdated;
-                                const SendUserEmailFinal: any = sendUserEmails.filter((item: any, index: any) => sendUserEmails.indexOf(item) === index);
-                                if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
-                                    CommonMsg = ` Task created from your end has been set to 8%. Please take necessary action.`;
-                                    let functionType: any = '';
-                                    if (checkStatusUpdate === 90 && CheckForInformationRequestCategory) {
-                                        functionType = "Information-Request"
-                                    } else {
-                                        functionType = "Priority-Check"
-                                    }
-                                    let RequiredDataForNotification: any = {
-                                        ItemDetails: UpdatedDataObject,
-                                        ReceiverEmail: SendUserEmailFinal,
-                                        Context: Context,
-                                        usedFor: functionType,
-                                        ReceiverName: AssignedUserName
-                                    }
-                                    GlobalFunctionForUpdateItems.SendEmailNotificationForIRCTasksAndPriorityCheck(RequiredDataForNotification);
-                                } else if (TeamMemberChanged && TeamLeaderChanged) {
-                                    CommonMsg = `You have been marked as TL/working member in the below task. Please take necessary action.`;
-                                } else if (TeamMemberChanged) {
-                                    CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`;
-                                } else if (TeamLeaderChanged) {
-                                    CommonMsg = `You have been marked as a Lead on the below task. Please take necessary action.`;
-                                } else if (IsTaskStatusUpdated) {
-                                    switch (checkStatusUpdate) {
-                                        case 80:
-                                            CommonMsg = `Below task has been set to 80%, please review it.`;
-                                            break;
-                                        case 70:
-                                            CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`;
-                                            break;
-                                    }
+                                let RequiredDataForNotification: any = {
+                                    ItemDetails: UpdatedDataObject,
+                                    ReceiverEmail: SendUserEmailFinal,
+                                    Context: Context,
+                                    usedFor: functionType,
+                                    ReceiverName: AssignedUserName
                                 }
+                                GlobalFunctionForUpdateItems.SendEmailNotificationForIRCTasksAndPriorityCheck(RequiredDataForNotification);
+                            }
 
-                                const SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> 
+                            else if (TeamMemberChanged && TeamLeaderChanged) {
+                                CommonMsg = `You have been marked as TL/working member in the below task. Please take necessary action.`;
+                            } else if (TeamMemberChanged) {
+                                CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`;
+                            } else if (TeamLeaderChanged) {
+                                CommonMsg = `You have been marked as a Lead on the below task. Please take necessary action.`;
+                            } else if (IsTaskStatusUpdated) {
+                                switch (checkStatusUpdate) {
+                                    case 80:
+                                        CommonMsg = `Below task has been set to 80%, please review it.`;
+                                        break;
+                                    case 70:
+                                        CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`;
+                                        break;
+                                }
+                            }
+
+                            const emailMessage = GlobalFunctionForUpdateItems?.GenerateMSTeamsNotification(UpdatedDataObject);
+                            const containerDiv = document.createElement('div');
+                            const reactElement = React.createElement(emailMessage?.type, emailMessage?.props);
+                            ReactDOM.render(reactElement, containerDiv);
+
+                            const SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> 
                                 </br> 
+                                    ${containerDiv.innerHTML}
                                     <p>
                                     Task Link:  
-                                    <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
-                                     ${UpdatedDataObject.TaskId}-${UpdatedDataObject.Title}
+                                    <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
+                                     Click-here
                                     </a>
-                                    </br>
-                                    Task Category: ${TaskCategories}</br>
-                                    Smartpriority: <b>${UpdatedDataObject?.SmartPriority}</b></br>
                                     </p>
                                     <p></p>
                                     <b>
@@ -2720,43 +2733,163 @@ const EditTaskPopup = (Items: any) => {
                                     `;
 
 
-                                if ((sendMSGCheck || SendMsgToAuthor || TeamMemberChanged || TeamLeaderChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
-                                    if (sendUserEmails.length > 0) {
-                                        // await sendTeamMessagePromise(SendUserEmailFinal, SendMessage, Items.context)
-                                        globalCommon.SendTeamMessage(SendUserEmailFinal, SendMessage, Items.context).then(() => {
-                                            console.log("MS Teams Message Send Succesfully !!!!")
-                                        }).catch((error) => {
-                                            console.log("MS Teams Message Not Send !!!!", error.message)
-                                        })
-                                    }
+                            if ((sendMSGCheck || SendMsgToAuthor || TeamMemberChanged || TeamLeaderChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
+                                if (sendUserEmails.length > 0) {
+                                    // await sendTeamMessagePromise(SendUserEmailFinal, SendMessage, Items.context,AllListIdData)
+                                    globalCommon.SendTeamMessage(SendUserEmailFinal, SendMessage, Items.context, AllListIdData).then(() => {
+                                        console.log("MS Teams Message Send Succesfully !!!!")
+                                    }).catch((error) => {
+                                        console.log("MS Teams Message Not Send !!!!", error.message)
+                                    })
                                 }
-                            } catch (error) {
-                                console.log("Error", error.message);
                             }
+                        } catch (error) {
+                            console.log("Error", error.message);
                         }
 
-                        // This is used for send Email Notification for design Category Task 
-
-                        if (SendDesignEmailStatus && (taskPercentageValue < 20 || taskPercentageValue == 0 || taskPercentageValue == undefined)) {
-                            let EmailRecievers: any = [];
-                            taskUsers?.map((userItemData: any) => {
-                                if (userItemData.AssingedToUserId !== currentUserId && (userItemData.Title == "Robert Ungethuem" || userItemData.Title == "Alina Chyhasova")) {
-                                    EmailRecievers.push(userItemData);
+                        let Createtordata: any = []
+                        if (IsTaskStatusUpdated && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject?.Categories?.indexOf('Immediate') != -1) {
+                            taskUsers?.forEach((allUserItem: any) => {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
+                                    Createtordata.push(allUserItem);
                                 }
+
+                            });
+
+                            Createtordata?.map((InfoItem: any) => {
+                                let DataForNotification: any = {
+                                    ReceiverName: InfoItem?.Title,
+                                    sendUserEmail: [InfoItem?.Email],
+                                    Context: Items.context,
+                                    ActionType: "Immediate",
+                                    ReasonStatement: '',
+                                    UpdatedDataObject: UpdatedDataObject
+                                }
+                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    console.log("Ms Teams Notifications send")
+                                })
+
                             })
-                            if (EmailRecievers?.length > 0) {
-                                globalCommon.sendImmediateEmailNotifications(UpdatedDataObject.Id, siteUrl, EditData?.listId, UpdatedDataObject, EmailRecievers, 'DesignMail', taskUsers, Context).then((response: any) => {
-                                    console.log(response);
-                                    console.log("Design Email Notification Sent !!");
-                                });
 
-                            }
+
+
                         }
+                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.indexOf('Immediate') != -1) {
+                            taskUsers?.forEach((allUserItem: any) => {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
+                                    Createtordata.push(allUserItem);
+                                }
+
+                            });
+
+                            Createtordata?.map((InfoItem: any) => {
+                                let DataForNotification: any = {
+                                    ReceiverName: InfoItem?.Title,
+                                    sendUserEmail: [InfoItem?.Email],
+                                    Context: Items.context,
+                                    ActionType: "Immediate",
+                                    ReasonStatement: '',
+                                    UpdatedDataObject: UpdatedDataObject
+                                }
+                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    console.log("Ms Teams Notifications send")
+                                })
+
+                            })
+
+
+
+                        }
+
+                        if (IsTaskStatusUpdated && checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.indexOf('Design') != -1) {
+                            taskUsers?.forEach((allUserItem: any) => {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                    Createtordata.push(allUserItem);
+                                }
+
+                            });
+
+                            Createtordata?.map((InfoItem: any) => {
+
+                                let DataForNotification: any = {
+                                    ReceiverName: 'kristina',
+                                    sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
+                                    Context: Items.context,
+                                    ActionType: "Design",
+                                    ReasonStatement: "",
+                                    UpdatedDataObject: UpdatedDataObject
+                                }
+                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    console.log("Ms Teams Notifications send")
+                                })
+
+                            })
+
+
+
+                        }
+
+                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
+                            taskUsers?.forEach((allUserItem: any) => {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                    Createtordata.push(allUserItem);
+                                }
+
+                            });
+
+                            Createtordata?.map((InfoItem: any) => {
+
+                                let DataForNotification: any = {
+                                    ReceiverName: 'Robert',
+                                    sendUserEmail: ['robert.ungethuem@hochhuth-consulting.de'],
+                                    Context: Items.context,
+                                    ActionType: "User Experience - UX",
+                                    ReasonStatement: "",
+                                    UpdatedDataObject: UpdatedDataObject
+                                }
+                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    console.log("Ms Teams Notifications send")
+                                })
+
+                            })
+
+
+
+                        }
+
+                        if (checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
+                            taskUsers?.forEach((allUserItem: any) => {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                    Createtordata.push(allUserItem);
+                                }
+
+                            });
+
+                            Createtordata?.map((InfoItem: any) => {
+
+                                let DataForNotification: any = {
+                                    ReceiverName: 'kristina',
+                                    sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
+                                    Context: Items.context,
+                                    ActionType: "User Experience - UX",
+                                    ReasonStatement: "",
+                                    UpdatedDataObject: UpdatedDataObject
+                                }
+                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    console.log("Ms Teams Notifications send")
+                                })
+
+                            })
+
+
+
+                        }
+
 
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             taskUsers.forEach((val: any) => {
                                 if (
-                                    ApproverData[0]?.Id == val?.AssignedToUserId &&
+                                    ApproverData[0]?.Id == val?.AssingedToUserId &&
                                     ApproverData[0].Company == undefined
                                 ) {
                                     EditData.TaskApprovers = ApproverData;
@@ -2766,7 +2899,7 @@ const EditTaskPopup = (Items: any) => {
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             taskUsers.forEach((val: any) => {
                                 if (
-                                    ApproverData[0]?.AssignedToUserId == val?.AssignedToUserId &&
+                                    ApproverData[0]?.AssingedToUserId == val?.AssingedToUserId &&
                                     ApproverData[0].Company != undefined
                                 ) {
                                     EditData.TaskApprovers = ApproverData;
@@ -2782,17 +2915,15 @@ const EditTaskPopup = (Items: any) => {
                                 //EditData.TaskApprovers.push(EditData?.Author)
                             }
                         }
-                        let spaceIndex = EditData.TaskCreatorData[0]?.Title.lastIndexOf(' ');
+                        let spaceIndex = EditData.TaskCreatorData[0]?.Title?.lastIndexOf(' ');
                         if (spaceIndex !== -1) {
-                            TaskDetailsFromCall[0].CreatorTitle = EditData.TaskCreatorData[0]?.Title.substring(0, spaceIndex);
+                            TaskDetailsFromCall[0].CreatorTitle = EditData.TaskCreatorData[0]?.Title?.substring(0, spaceIndex);
                         } else {
                             console.log("No last name found");
                         }
-                        let CalculateStatusPercentages: any = TaskDetailsFromCall[0]
-                            .PercentComplete
-                            ? TaskDetailsFromCall[0].PercentComplete * 100
+                        let CalculateStatusPercentages: any = TaskDetailsFromCall[0].PercentComplete ? TaskDetailsFromCall[0].PercentComplete
                             : 0;
-                        if (CalculateStatusPercentages == 90 && EmailStatus == true) {
+                        if (IsTaskStatusUpdated && CalculateStatusPercentages == 90 && EmailStatus == true) {
                             setLastUpdateTaskData(TaskDetailsFromCall[0]);
                             ValueStatus = "90";
                             setSendEmailNotification(true);
@@ -2801,13 +2932,13 @@ const EditTaskPopup = (Items: any) => {
                         if (usedFor == "Image-Tab") {
                             GetExtraLookupColumnData();
                         } else {
-                            tempShareWebTypeData = [];
+                            BackupTaskCategoriesData = [];
                             AllMetaData = [];
                             taskUsers = [];
                             CommentBoxData = [];
                             SubCommentBoxData = [];
                             updateFeedbackArray = [];
-                            tempShareWebTypeData = [];
+                            BackupTaskCategoriesData = [];
                             tempCategoryData = "";
                             SiteTypeBackupArray = [];
                             currentUserBackupArray = [];
@@ -2819,9 +2950,8 @@ const EditTaskPopup = (Items: any) => {
                             TempSmartInformationIds = [];
                             userSendAttentionEmails = [];
                             SiteCompositionPrecentageValue = 0;
-                            let CalculateStatusPercentage: any = TaskDetailsFromCall[0]
-                                .PercentComplete
-                                ? TaskDetailsFromCall[0].PercentComplete * 100
+
+                            let CalculateStatusPercentage: any = TaskDetailsFromCall[0].PercentComplete ? TaskDetailsFromCall[0].PercentComplete
                                 : 0;
                             isApprovalByStatus = false;
                             if (Items.sendApproverMail != undefined) {
@@ -2841,6 +2971,11 @@ const EditTaskPopup = (Items: any) => {
                             if (
                                 (CalculateStatusPercentage == 5 || CalculateStatusPercentage == 10 || CalculateStatusPercentage == 80 ||
                                     CalculateStatusPercentage == 90) && ImmediateStatus && EditData.PercentComplete != CalculateStatusPercentage) {
+                                ValueStatus = CalculateStatusPercentage;
+                                setSendEmailNotification(true);
+                                Items.StatusUpdateMail = true;
+                            }
+                            if (TaskDetailsFromCall[0]?.Categories?.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
                                 ValueStatus = CalculateStatusPercentage;
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
@@ -2967,7 +3102,7 @@ const EditTaskPopup = (Items: any) => {
             if (ApproverData == undefined && ApproverData.length == 0) {
                 const finalData = tempArrayApprover.filter(
                     (val: any, id: any, array: any) => {
-                        return array.indexOf(val) == id;
+                        return array?.indexOf(val) == id;
                     }
                 );
                 TaskAssignedTo = finalData;
@@ -2991,7 +3126,7 @@ const EditTaskPopup = (Items: any) => {
                 EditData.TaskApprovers = ApproverData;
                 ApproverData?.map((ApproverInfo) => {
                     if (ApproverInfo.Id == undefined) {
-                        ApproverInfo.Id = ApproverInfo.AssignedToUserId;
+                        ApproverInfo.Id = ApproverInfo.AssingedToUserId;
                     }
                 });
                 ApprovalData = ApproverData;
@@ -3070,7 +3205,7 @@ const EditTaskPopup = (Items: any) => {
         let CategoriesTitle: any = "";
         let uniqueIds: any = {};
 
-        const result: any = tempShareWebTypeData.filter((item: any) => {
+        const result: any = BackupTaskCategoriesData.filter((item: any) => {
             if (!uniqueIds[item.Id]) {
                 uniqueIds[item.Id] = true;
                 return true;
@@ -3100,22 +3235,37 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
             TaskAssignedTo?.map((taskInfo) => {
-                AssignedToIds.push(taskInfo.Id);
+                if (taskInfo.AssingedToUserId != undefined) {
+                    AssignedToIds.push(taskInfo.AssingedToUserId);
+                }
+                else {
+                    AssignedToIds.push(taskInfo.Id);
+                }
+
             });
         }
 
         if (ApproverData != undefined && ApproverData?.length > 0) {
             ApproverData?.map((ApproverInfo) => {
-                if (ApproverInfo.Id == undefined) {
-                    ApproverInfo.Id = ApproverInfo.ID;
+                if (ApproverInfo.AssingedToUserId != undefined) {
+                    ApproverIds.push(ApproverInfo.AssingedToUserId)
                 }
-                ApproverIds.push(ApproverInfo.Id);
+                else {
+                    ApproverIds.push(ApproverInfo.Id);
+                }
+
             });
         }
 
         if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
             TaskTeamMembers?.map((taskInfo) => {
-                TeamMemberIds.push(taskInfo.Id);
+                if (taskInfo.AssingedToUserId != undefined) {
+                    TeamMemberIds.push(taskInfo.AssingedToUserId)
+                }
+                else {
+                    TeamMemberIds.push(taskInfo.Id);
+                }
+
             });
         }
 
@@ -3136,7 +3286,13 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
             TaskResponsibleTeam?.map((taskInfo) => {
-                ResponsibleTeamIds.push(taskInfo.Id);
+                if (taskInfo.AssingedToUserId != undefined) {
+                    ResponsibleTeamIds.push(taskInfo.AssingedToUserId)
+                }
+                else {
+                    ResponsibleTeamIds.push(taskInfo.Id);
+                }
+
             });
         }
         if (
@@ -3157,6 +3313,76 @@ const EditTaskPopup = (Items: any) => {
             });
         }
 
+// ----------------------for check Activity and worstream---------------------------------------------------------
+   let SelectedSites:any=''
+    var Tasklevel:any=''
+    var TaskID:any=''
+   if(EditData.TaskType.Id == 1){
+    let SelectedSites:any=''
+    var TaskTypeId:any = 1;
+    SiteTypes.map((dataItem: any) => {
+        if (dataItem.isSelected == true) {
+            SelectedSites = dataItem.Title;
+        }
+    });
+        let web = new Web(AllListIdData?.siteUrl);
+        let componentDetails: any = [];
+        componentDetails = await web.lists
+          .getByTitle(SelectedSites)
+          .items.select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel")
+          .expand("TaskType")
+          .orderBy("TaskLevel", false)
+          .filter("TaskType/Id eq 1")
+          .top(1)
+          .get();
+        console.log(componentDetails);
+        if (componentDetails.length == 0) {
+          var LatestId: any = 1;
+          Tasklevel = LatestId;
+          TaskID = "A" + LatestId;
+        } else {
+          var LatestId = componentDetails[0].TaskLevel + 1;
+          Tasklevel = LatestId;
+          TaskID = "A" + LatestId;
+        }
+      
+   }
+   if (EditData.TaskType.Id == 3) {
+    let WorstreamLatestId:any=''
+    SiteTypes.map((dataItem: any) => {
+        if (dataItem.isSelected == true) {
+            SelectedSites = dataItem.Title;
+        }
+    });
+    let componentDetails: any = [];
+    let web = new Web(AllListIdData?.siteUrl);
+    componentDetails = await web.lists
+        .getByTitle(SelectedSites)
+        .items
+        .select("FolderID,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,TaskLevel,FileLeafRef,Title,Id,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
+        .expand("TaskType,ParentTask,Author,Editor,AssignedTo")
+        .filter(("TaskType/Id eq 3") && ("ParentTask/Id eq '" + EditData?.Id + "'"))
+        .orderBy("Created", true)
+        .top(499)
+        .get()
+    console.log(componentDetails)
+    if (componentDetails?.length == 0) {
+        WorstreamLatestId = 1;
+    } 
+    else {
+        if( componentDetails[componentDetails?.length-1]?.TaskLevel){
+            WorstreamLatestId = componentDetails[componentDetails?.length-1]?.TaskLevel + 1;
+        }else{
+            WorstreamLatestId = componentDetails?.length + 1;
+        }
+      
+    }
+    Tasklevel = WorstreamLatestId++;
+    let removed = EditData?.TaskID?.split('-')[0];
+    TaskID = `${removed}-W${Tasklevel}`
+    var TaskTypeId:any = 3;
+}
+
         let UpdateDataObject: any = {
             IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : null,
             workingThisWeek: EditData.workingThisWeek
@@ -3167,6 +3393,9 @@ const EditTaskPopup = (Items: any) => {
                 : null,
             PriorityRank: EditData.PriorityRank,
             ItemRank: EditData.ItemRank,
+            TaskTypeId:TaskTypeId != undefined?TaskTypeId:null,
+            TaskID: TaskID != ''?TaskID:null,
+            TaskLevel: Tasklevel != ''?Tasklevel:null,
             Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
             Priority: Priority,
             StartDate: EditData.StartDate
@@ -3418,8 +3647,11 @@ const EditTaskPopup = (Items: any) => {
         let deletePost = confirm("Do you really want to delete this Task?");
         if (deletePost) {
             deleteItemFunction(TaskID, FunctionsType);
+            Items.Call("Delete-Task")
+
         } else {
             console.log("Your Task has not been deleted");
+            Items.Call()
         }
     };
     const deleteItemFunction = async (itemId: any, FnType: any) => {
@@ -3598,7 +3830,7 @@ const EditTaskPopup = (Items: any) => {
                     PhoneCount = PhoneCount + 1;
                 }
             });
-            if (ApprovedStatusCount == 0 && EditDataBackup?.PercentComplete != 0) {
+            if (ApprovedStatusCount == 0 && EditDataBackup?.PercentComplete > 0 && EditDataBackup?.PercentComplete < 5 && IsTaskStatusUpdated) {
                 let teamMember = [];
                 let AssignedTo = [];
                 if (EditDataBackup?.Categories?.includes("Approval")) {
@@ -3627,7 +3859,7 @@ const EditTaskPopup = (Items: any) => {
             else {
                 let teamMember = [];
                 let AssignedTo = [];
-                if (EditDataBackup?.Categories?.includes("Approval") && EditDataBackup?.PercentComplete != 0) {
+                if (EditDataBackup?.Categories?.includes("Approval") && EditDataBackup?.PercentComplete > 0 && EditDataBackup?.PercentComplete < 5 && IsTaskStatusUpdated) {
                     teamMember.push(currentUserBackupArray?.[0]?.AssingedToUser)
                     AssignedTo.push(currentUserBackupArray?.[0]?.AssingedToUser)
                     setTaskAssignedTo(AssignedTo)
@@ -4546,13 +4778,13 @@ const EditTaskPopup = (Items: any) => {
     };
 
     const UpdateApproverFunction = () => {
-       var data :any= ApproverData;
+        var data: any = ApproverData;
         if (useFor == "Bottleneck" || useFor == "Attention") {
             let CreatorData: any = currentUserBackupArray[0];
             let copyWorkAction: any = [...WorkingAction]
-            if(data?.length>0){
-                data?.map((selectedData:any)=>{
-                    if(selectedData?.Id!=undefined){
+            if (data?.length > 0) {
+                data?.map((selectedData: any) => {
+                    if (selectedData?.Id != undefined) {
                         let CreateObject: any = {
                             CreatorName: CreatorData?.Title,
                             CreatorImage: CreatorData.UserImage,
@@ -4591,44 +4823,44 @@ const EditTaskPopup = (Items: any) => {
                                     TempItem.InformationData.push(CreateObject);
                                 }
                             })
-    
+
                             copyWorkAction = TempArrya;
                         }
                     }
-                   
+
                 })
             }
-           
-        
+
+
             setWorkingAction([...copyWorkAction]);
             console.log("Bottleneck All Details:", copyWorkAction)
             setUseFor("")
-        setApproverPopupStatus(false)
-        setApproverData([])
+            setApproverPopupStatus(false)
+            setApproverData([])
         }
-   else{
-    setApproverPopupStatus(false);
-    setTaskAssignedTo(ApproverData);
-    setApproverData(data);
-    setTaskTeamMembers(ApproverData);
-    StatusOptions?.map((item: any) => {
-        if (item.value == 1) {
-            Items.sendApproverMail = true;
-            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: "1" });
-            setPercentCompleteStatus(item.status);
-            setTaskStatus(item.taskStatusComment);
+        else {
+            setApproverPopupStatus(false);
+            setTaskAssignedTo(ApproverData);
+            setApproverData(data);
+            setTaskTeamMembers(ApproverData);
+            StatusOptions?.map((item: any) => {
+                if (item.value == 1) {
+                    Items.sendApproverMail = true;
+                    setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: "1" });
+                    setPercentCompleteStatus(item.status);
+                    setTaskStatus(item.taskStatusComment);
+                }
+            });
         }
-    });
-   }
-        
+
     };
 
     const selectApproverFunction = (selectedData: any) => {
-   let checkduplicateData :any=  ApproverData.filter((data:any)=>data?.AssingedToUserId==selectedData?.AssingedToUserId)
-        if(checkduplicateData?.length==0){
+        let checkduplicateData: any = ApproverData.filter((data: any) => data?.AssingedToUserId == selectedData?.AssingedToUserId)
+        if (checkduplicateData?.length == 0) {
             setApproverData([...ApproverData, selectedData]);
         }
-     };
+    };
 
 
 
@@ -4643,13 +4875,13 @@ const EditTaskPopup = (Items: any) => {
         if (type == "OnTaskPopup") {
             setApproverSearchKey(e.target.value);
         }
-        if (type =="OnPanel") {
+        if (type == "OnPanel") {
             setApproverSearchKey(e.target.value);
         }
-     
+
         BottleneckSearchKey
         let tempArray: any = [];
-        
+
         if (searchedKey?.length > 0) {
             AllEmployeeData?.map((itemData: any) => {
                 if (itemData.Child != undefined && itemData.Child.length > 0) {
@@ -4684,6 +4916,7 @@ const EditTaskPopup = (Items: any) => {
             setApproverSearchedDataForPopup([]);
         }
     };
+
 
 
     const SelectApproverFromAutoSuggestion = (ApproverData: any, usedFor: string) => {
@@ -4740,35 +4973,55 @@ const EditTaskPopup = (Items: any) => {
             setWorkingAction([...copyWorkAction]);
             console.log("Bottleneck All Details:", copyWorkAction)
         } else {
+            let ApproverHistoryObject: any
             selectApproverFunction(ApproverData);
             setTaskAssignedTo([ApproverData]);
             setTaskTeamMembers([ApproverData]);
             TaskApproverBackupArray = [ApproverData];
-            StatusOptions?.map((item: any) => {
-                if (item.value == 1) {
-                    Items.sendApproverMail = true;
-                    setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: "1" });
-                    setPercentCompleteStatus(item.status);
-                    setTaskStatus(item.taskStatusComment);
-                }
-            });
-            let ApproverHistoryObject: any = {
-                ApproverName: ApproverData.Title,
-                ApprovedDate: Moment(new Date())
-                    .tz("Europe/Berlin")
-                    .format("DD MMM YYYY HH:mm"),
-                ApproverId: ApproverData.AssingedToUserId,
-                ApproverImage:
-                    ApproverData.Item_x0020_Cover != undefined ||
-                        ApproverData.Item_x0020_Cover != null
-                        ? ApproverData.Item_x0020_Cover.Url
-                        : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-                ApproverSuffix: ApproverData.Suffix,
-                ApproverEmail: ApproverData.Email,
-            };
+            if (useFor == "Bottleneck" || useFor == "Attention") {
+                ApproverHistoryObject = {
+                    ApproverName: ApproverData.Title,
+                    ApprovedDate: Moment(new Date())
+                        .tz("Europe/Berlin")
+                        .format("DD MMM YYYY HH:mm"),
+                    ApproverId: ApproverData.AssingedToUserId,
+                    ApproverImage:
+                        ApproverData.Item_x0020_Cover != undefined ||
+                            ApproverData.Item_x0020_Cover != null
+                            ? ApproverData.Item_x0020_Cover.Url
+                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                    ApproverSuffix: ApproverData.Suffix,
+                    ApproverEmail: ApproverData.Email,
+                };
+            } else {
+                StatusOptions?.map((item: any) => {
+                    if (item.value == 1) {
+                        Items.sendApproverMail = true;
+                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: "1" });
+                        setPercentCompleteStatus(item.status);
+                        setTaskStatus(item.taskStatusComment);
+                    }
+                });
+                ApproverHistoryObject = {
+                    ApproverName: ApproverData.Title,
+                    ApprovedDate: Moment(new Date())
+                        .tz("Europe/Berlin")
+                        .format("DD MMM YYYY HH:mm"),
+                    ApproverId: ApproverData.AssingedToUserId,
+                    ApproverImage:
+                        ApproverData.Item_x0020_Cover != undefined ||
+                            ApproverData.Item_x0020_Cover != null
+                            ? ApproverData.Item_x0020_Cover.Url
+                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                    ApproverSuffix: ApproverData.Suffix,
+                    ApproverEmail: ApproverData.Email,
+                };
+            }
+
             ApproverHistoryData.push(ApproverHistoryObject);
         }
     };
+
 
     // *********** this is for Send Email Notification for Approval Category Task Functions ****************************
 
@@ -4929,21 +5182,21 @@ const EditTaskPopup = (Items: any) => {
         });
     }
     //  This is the end of the function 
-    const openBottleneckPopup=(usefor:any)=>{
-     let selectedtagMember:any=[];
+    const openBottleneckPopup = (usefor: any) => {
+        let selectedtagMember: any = [];
         setUseFor(usefor)
         setApproverPopupStatus(true)
         WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
             if (WAItemData.Title == usefor && WAItemData?.InformationData?.length > 0) {
-                WAItemData?.InformationData?.map((item:any)=>{
+                WAItemData?.InformationData?.map((item: any) => {
                     item.Id = item?.TaggedUsers?.AssingedToUserId;
                     selectedtagMember.push(item?.TaggedUsers)
                 })
-              
+
             }
-        
+
         })
-            setApproverData(selectedtagMember)
+        setApproverData(selectedtagMember)
     }
     const onRenderCustomHeaderMain = () => {
         return (
@@ -5049,7 +5302,7 @@ const EditTaskPopup = (Items: any) => {
                         : "d-flex full-width pb-1"
                 }
             >
-                <div className="subheading siteColor"> {useFor!=""?`Select${useFor}`:`Select Approver`}</div>
+                <div className="subheading siteColor"> {useFor != "" ? `Select${useFor}` : `Select Approver`}</div>
                 <Tooltip ComponentId="1683" isServiceTask={ServicesTaskCheck} />
             </div>
         );
@@ -5572,11 +5825,11 @@ const EditTaskPopup = (Items: any) => {
                                                         type="date"
                                                         className="form-control"
                                                         max="9999-12-31"
-                                                        min={
-                                                            EditData.Created
-                                                                ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                                : ""
-                                                        }
+                                                        // min={
+                                                        //     EditData.Created
+                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
+                                                        //         : ""
+                                                        // }
                                                         defaultValue={
                                                             EditData.StartDate
                                                                 ? Moment(EditData.StartDate).format(
@@ -5609,11 +5862,11 @@ const EditTaskPopup = (Items: any) => {
                                                         className="form-control"
                                                         placeholder="Enter Due Date"
                                                         max="9999-12-31"
-                                                        min={
-                                                            EditData.Created
-                                                                ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                                : ""
-                                                        }
+                                                        // min={
+                                                        //     EditData.Created
+                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
+                                                        //         : ""
+                                                        // }
                                                         defaultValue={
                                                             EditData.DueDate
                                                                 ? Moment(EditData.DueDate).format("YYYY-MM-DD")
@@ -5638,11 +5891,11 @@ const EditTaskPopup = (Items: any) => {
                                                         type="date"
                                                         className="form-control"
                                                         max="9999-12-31"
-                                                        min={
-                                                            EditData.Created
-                                                                ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                                : ""
-                                                        }
+                                                        // min={
+                                                        //     EditData.Created
+                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
+                                                        //         : ""
+                                                        // }
                                                         defaultValue={
                                                             EditData.CompletedDate
                                                                 ? Moment(EditData.CompletedDate).format(
@@ -5727,8 +5980,6 @@ const EditTaskPopup = (Items: any) => {
                                                             }
                                                             placeholder="Search Portfolio Item"
                                                         />
-
-
                                                     )}
                                                     <span className="input-group-text">
                                                         <span
@@ -5770,7 +6021,7 @@ const EditTaskPopup = (Items: any) => {
                                                     <label className="form-label full-width">
                                                         Categories
                                                     </label>
-                                                    {ShareWebTypeData?.length > 1 ? <>
+                                                    {TaskCategoriesData?.length > 1 ? <>
                                                         <input
                                                             type="text"
                                                             className="form-control"
@@ -5801,7 +6052,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 </ul>
                                                             </div>
                                                         ) : null}
-                                                        {ShareWebTypeData?.map(
+                                                        {TaskCategoriesData?.map(
                                                             (type: any, index: number) => {
                                                                 if (
                                                                     type.Title != "Phone" &&
@@ -5834,10 +6085,10 @@ const EditTaskPopup = (Items: any) => {
                                                             }
                                                         )}</> :
                                                         <>
-                                                            {ShareWebTypeData?.length == 1 ?
+                                                            {TaskCategoriesData?.length == 1 ?
 
                                                                 <div className="full-width">
-                                                                    {ShareWebTypeData?.map((CategoryItem: any) => {
+                                                                    {TaskCategoriesData?.map((CategoryItem: any) => {
                                                                         return (
                                                                             <div className="full-width replaceInput alignCenter">
                                                                                 <a
@@ -5951,10 +6202,10 @@ const EditTaskPopup = (Items: any) => {
                                                             />
                                                             <label>Immediate</label>
                                                         </div>
-                                                        {/* {ShareWebTypeData != undefined &&
-                                                            ShareWebTypeData?.length > 0 ? (
+                                                        {/* {TaskCategoriesData != undefined &&
+                                                            TaskCategoriesData?.length > 0 ? (
                                                             <div>
-                                                                {ShareWebTypeData?.map(
+                                                                {TaskCategoriesData?.map(
                                                                     (type: any, index: number) => {
                                                                         if (
                                                                             type.Title != "Phone" &&
@@ -6289,11 +6540,13 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="col-md-6">
                                                         <div className="input-group">
                                                             <label className="form-label full-width">SmartPriority</label>
-                                                            <div className="bg-e9 w-100 py-1 px-2">
+                                                            <div className="bg-e9 w-100 py-1 px-2" style={{ border: '1px solid #CDD4DB' }}>
                                                                 <span className={EditData?.SmartPriority != undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
                                                                     <>{EditData?.SmartPriority != undefined ? EditData?.SmartPriority : 0}</>
                                                                     <span className="tooltip-text pop-right">
-                                                                        {EditData?.showFormulaOnHover != undefined ? EditData?.showFormulaOnHover : ""}
+                                                                        {EditData?.showFormulaOnHover != undefined ?
+
+                                                                            <SmartPriorityHover editValue={EditData} /> : ""}
                                                                     </span>
                                                                 </span>
                                                             </div>
@@ -6978,7 +7231,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <span
                                                     className="input-group-text"
                                                     // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
-                                                    onClick={() =>openBottleneckPopup("Bottleneck")}
+                                                    onClick={() => openBottleneckPopup("Bottleneck")}
                                                 >
                                                     <span
                                                         title="Add Comment"
@@ -7032,10 +7285,10 @@ const EditTaskPopup = (Items: any) => {
 
                                                                         <div className="alignCenter">
                                                                             <span
-                                                                                className="hover-text m-0 alignIcon"
+                                                                                className="hover-text m-1"
                                                                                 onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
                                                                             >
-                                                                                <span className="svg__iconbox svg__icon--clock dark"></span>
+                                                                                <LuBellPlus></LuBellPlus>
                                                                                 <span className="tooltip-text pop-left">
                                                                                     Send reminder notifications
                                                                                 </span>
@@ -7147,9 +7400,9 @@ const EditTaskPopup = (Items: any) => {
                                                                         <div className="alignCenter">
                                                                             <span
                                                                                 onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
-                                                                                className="hover-text m-0 alignIcon"
+                                                                                className="hover-text m-1"
                                                                             >
-                                                                                <span className="svg__iconbox svg__icon--clock dark"></span>
+                                                                                <LuBellPlus></LuBellPlus>
                                                                                 <span className="tooltip-text pop-left">
                                                                                     Send reminder notifications
                                                                                 </span>
@@ -7514,7 +7767,7 @@ const EditTaskPopup = (Items: any) => {
                     {IsComponentPicker && (
                         <Picker
                             props={EditData}
-                            selectedCategoryData={ShareWebTypeData}
+                            selectedCategoryData={TaskCategoriesData}
                             usedFor="Task-Popup"
                             siteUrls={siteUrls}
                             AllListId={AllListIdData}
@@ -7937,13 +8190,13 @@ const EditTaskPopup = (Items: any) => {
                                                                     type="date"
                                                                     className="form-control"
                                                                     max="9999-12-31"
-                                                                    min={
-                                                                        EditData.Created
-                                                                            ? Moment(EditData.Created).format(
-                                                                                "YYYY-MM-DD"
-                                                                            )
-                                                                            : ""
-                                                                    }
+                                                                    // min={
+                                                                    //     EditData.Created
+                                                                    //         ? Moment(EditData.Created).format(
+                                                                    //             "YYYY-MM-DD"
+                                                                    //         )
+                                                                    //         : ""
+                                                                    // }
                                                                     defaultValue={
                                                                         EditData.StartDate
                                                                             ? Moment(EditData.StartDate).format(
@@ -7976,13 +8229,13 @@ const EditTaskPopup = (Items: any) => {
                                                                     className="form-control"
                                                                     placeholder="Enter Due Date"
                                                                     max="9999-12-31"
-                                                                    min={
-                                                                        EditData.Created
-                                                                            ? Moment(EditData.Created).format(
-                                                                                "YYYY-MM-DD"
-                                                                            )
-                                                                            : ""
-                                                                    }
+                                                                    // min={
+                                                                    //     EditData.Created
+                                                                    //         ? Moment(EditData.Created).format(
+                                                                    //             "YYYY-MM-DD"
+                                                                    //         )
+                                                                    //         : ""
+                                                                    // }
                                                                     defaultValue={
                                                                         EditData.DueDate
                                                                             ? Moment(EditData.DueDate).format(
@@ -8009,13 +8262,13 @@ const EditTaskPopup = (Items: any) => {
                                                                     type="date"
                                                                     className="form-control"
                                                                     max="9999-12-31"
-                                                                    min={
-                                                                        EditData.Created
-                                                                            ? Moment(EditData.Created).format(
-                                                                                "YYYY-MM-DD"
-                                                                            )
-                                                                            : ""
-                                                                    }
+                                                                    // min={
+                                                                    //     EditData.Created
+                                                                    //         ? Moment(EditData.Created).format(
+                                                                    //             "YYYY-MM-DD"
+                                                                    //         )
+                                                                    //         : ""
+                                                                    // }
                                                                     defaultValue={
                                                                         EditData.CompletedDate
                                                                             ? Moment(EditData.CompletedDate).format(
@@ -8144,7 +8397,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <label className="form-label full-width">
                                                                     Categories
                                                                 </label>
-                                                                {ShareWebTypeData?.length > 1 ? <>
+                                                                {TaskCategoriesData?.length > 1 ? <>
                                                                     <input
                                                                         type="text"
                                                                         className="form-control"
@@ -8175,7 +8428,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             </ul>
                                                                         </div>
                                                                     ) : null}
-                                                                    {ShareWebTypeData?.map(
+                                                                    {TaskCategoriesData?.map(
                                                                         (type: any, index: number) => {
                                                                             if (
                                                                                 type.Title != "Phone" &&
@@ -8208,10 +8461,10 @@ const EditTaskPopup = (Items: any) => {
                                                                         }
                                                                     )}</> :
                                                                     <>
-                                                                        {ShareWebTypeData?.length == 1 ?
+                                                                        {TaskCategoriesData?.length == 1 ?
 
                                                                             <div className="full-width">
-                                                                                {ShareWebTypeData?.map((CategoryItem: any) => {
+                                                                                {TaskCategoriesData?.map((CategoryItem: any) => {
                                                                                     return (
                                                                                         <div className="full-width replaceInput alignCenter">
                                                                                             <a
@@ -8336,10 +8589,10 @@ const EditTaskPopup = (Items: any) => {
                                                                         />
                                                                         <label>Immediate</label>
                                                                     </div>
-                                                                    {ShareWebTypeData != undefined &&
-                                                                        ShareWebTypeData?.length > 0 ? (
+                                                                    {TaskCategoriesData != undefined &&
+                                                                        TaskCategoriesData?.length > 0 ? (
                                                                         <div>
-                                                                            {ShareWebTypeData?.map(
+                                                                            {TaskCategoriesData?.map(
                                                                                 (type: any, index: number) => {
                                                                                     if (
                                                                                         type.Title != "Phone" &&
