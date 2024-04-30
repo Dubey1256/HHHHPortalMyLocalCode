@@ -237,6 +237,10 @@ const inlineEditingcolumns = (props: any) => {
       CMSTaskCategories = JSON.parse(
         localStorage.getItem("taskCategoryType")
       );
+      
+      CMSTaskCategories = CMSTaskCategories.filter((item: any)=> item.Title != "Bottleneck")
+      let stringifiedCategories = JSON.stringify(CMSTaskCategories)
+      localStorage.setItem("taskCategoryType", stringifiedCategories);
       Priority = JSON.parse(localStorage.getItem("Priority"));
       let site = JSON.parse(localStorage.getItem("siteUrl"));
       let DataLoaded = JSON.parse(localStorage.getItem("inlineMetaDataLoaded"));
@@ -318,9 +322,6 @@ const inlineEditingcolumns = (props: any) => {
           "taskCategoryType",
           JSON.stringify(CMSTaskCategories)
         );
-        CMSTaskCategories = CMSTaskCategories.filter((item: any)=> item.Title != "Bottleneck")
-        let stringifiedCategories = JSON.stringify(CMSTaskCategories)
-        localStorage.setItem("taskCategoryType", stringifiedCategories);
         localStorage.setItem(
           "Priority",
           JSON.stringify(
