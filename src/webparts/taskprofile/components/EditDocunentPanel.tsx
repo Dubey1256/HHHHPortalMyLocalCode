@@ -21,6 +21,7 @@ const EditDocumentpanel = (props: any) => {
   const [projectdata, setProjectData] = React.useState([]);
   const [SharewebComponentProjectpopup, setSharewebComponentProjectpopup] = React.useState("");
   const [allProjectDaata, SetAllProjectDaata] = React.useState([]);
+  const [ProjectSearchKey, setProjectSearchKey] = React.useState("");
   const [searchedProjectDaata, setSearchedProjectDaata] = React.useState([]);
   let ItemRank = [
     { rankTitle: 'Select Item Rank', rank: null },
@@ -53,12 +54,16 @@ const EditDocumentpanel = (props: any) => {
         .expand('Author,Editor,Portfolios')
         .get()
         .then((Data) => {
-          Data.Title = getUploadedFileName(Data?.Title);
+          if(Data?.Title.includes(Data?.File_x0020_Type)){
+            Data.Title = getUploadedFileName(Data?.Title);
+          }
           Data.siteType = 'sp';
           Data.docTitle = getUploadedFileName(Data?.FileLeafRef);
           Data.Item_x002d_Image = Data?.Item_x0020_Cover
           let portfolioData: any = []
           let projectData: any = []
+          let projectDataforsuggestion: any = []
+
           if (Data.Portfolios != undefined && Data?.Portfolios?.length > 0) {
             Data?.Portfolios?.map((portfolio: any) => {
               mastertaskdetails.map((mastertask: any) => {
@@ -68,11 +73,15 @@ const EditDocumentpanel = (props: any) => {
                 if (mastertask.Id == portfolio.Id && mastertask?.Item_x0020_Type == "Project") {
                   projectData.push(mastertask);
                 }
+                if (mastertask?.Item_x0020_Type == "Project") {
+                  projectDataforsuggestion.push(mastertask)
+                }
               });
             });
             Data.Portfolios = portfolioData;
             Data.projectData = projectData;
             setProjectData(projectData)
+            SetAllProjectDaata(projectDataforsuggestion)
           }
           setTimeout(() => {
             const panelMain: any = document.querySelector('.ms-Panel-main');
@@ -219,22 +228,22 @@ const EditDocumentpanel = (props: any) => {
     }
 
     if (projectdata != undefined && projectdata?.length > 0) {
-            projectdata?.map((com: any) => {
-              if (projectdata != undefined && projectdata?.length >= 0) {
-                $.each(projectdata, function (index: any, smart: any) {
-                  RelevantProjectIds = smart.Id;
-                  componetServicetagData.push(smart.Id);
-                });
-              }
-            });
-          }
-      
-          if (projectdata != null && projectdata.length >= 0) {
-            projectdata.filter((com: any) => {
-              RelevantProjectIdRemove = com.Id;
-              componetServicetagData.push(com.Id);
-            });
-          }
+      projectdata?.map((com: any) => {
+        if (projectdata != undefined && projectdata?.length >= 0) {
+          $.each(projectdata, function (index: any, smart: any) {
+            RelevantProjectIds = smart.Id;
+            componetServicetagData.push(smart.Id);
+          });
+        }
+      });
+    }
+
+    if (projectdata != null && projectdata.length >= 0) {
+      projectdata.filter((com: any) => {
+        RelevantProjectIdRemove = com.Id;
+        componetServicetagData.push(com.Id);
+      });
+    }
 
     const web = new Web(props?.AllListId?.siteUrl);
     await web.lists.getById(props?.AllListId?.DocumentsListID)
@@ -358,6 +367,7 @@ const EditDocumentpanel = (props: any) => {
   // -----For project
   const autoSuggestionForProject = (e: any) => {
     let searchedKey: any = e.target.value;
+    setProjectSearchKey(e.target.value);
     let tempArray: any = [];
     if (searchedKey?.length > 0) {
       allProjectDaata?.map((itemData: any) => {
@@ -534,144 +544,19 @@ const EditDocumentpanel = (props: any) => {
                   </select>
                 </div>
               </div>
-              <div className='d-flex mt-3'>
-                <div className="input-group"><label className="full-width ">Title </label>
+              <div className='row mt-3'>
+                <div className="col-sm-6">
+                  <div className='input-group'>
+                  <label className="full-width ">Title </label>
                   <input type="text" className="form-control" value={EditdocumentsData?.Title}
                     onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value })}
                   />
                 </div>
-                {/* <div className="input-group mx-4">
-                  <label className="form-label full-width">
-                    Portfolios
-                  </label>
-
-                  {EditdocumentsData?.Portfolios != undefined &&
-                    EditdocumentsData?.Portfolios?.map((portfolio: any) => {
-                      return (
-                        <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
-                          <a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${portfolio?.Id}`}>{portfolio?.Title}</a>
-                          <a>
-                            <span className="bg-light svg__icon--cross svg__iconbox" onClick={() => DeleteTagPortfolios(portfolio?.Id)}></span>
-                          </a></div>
-                      )
-                    })
-                  }
-
-                  {EditdocumentsData?.Portfolios?.length == 0 &&
-
-                    <input type="text" className="form-control" readOnly />}
-                  <span className="input-group-text" title="Linked Component Task Popup">
-                    <span className="svg__iconbox svg__icon--editBox" onClick={(e) => opencomonentservicepopup()}></span>
-                  </span>
-                </div> */}
-                <div className="input-group mx-4">
-                  <label className="form-label full-width">
-                    Portfolios
-                  </label>
-                  {EditdocumentsData && EditdocumentsData?.Portfolios?.length == 1 ? (
-                    EditdocumentsData?.Portfolios != undefined && EditdocumentsData?.Item_x0020_Type != "Project" &&
-                    EditdocumentsData?.Portfolios?.map((portfolio: any, index: any) => {
-
-                      return (
-                        // <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
-                        //   <a target="_blank" data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${portfolio?.Id}`}>{portfolio?.Title}</a>
-                        //   <a>
-                        //     <span className="bg-light svg__icon--cross svg__iconbox" onClick={() => DeleteTagPortfolios(portfolio?.Id)}></span>
-                        //   </a></div>
-                        <div
-                          className="full-width replaceInput alignCenter"
-                          key={index}
-                        >
-                          <a
-                            href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${portfolio.Id}`}
-                            className="textDotted hreflink"
-                            data-interception="off"
-                            target="_blank"
-                          >
-                            {portfolio?.Title}
-                          </a>
-                          <span
-                            className="input-group-text"
-                            placeholder="Project"
-                          >
-                            <span
-                              className="bg-dark svg__icon--cross svg__iconbox"
-                              onClick={() =>
-                                DeleteTagPortfolios([portfolio?.Id])
-                              }
-                            ></span>
-                            <span
-                              title="Project"
-                              onClick={(e) =>
-                                openProjectPopup("Project")
-                              }
-                              className="svg__iconbox svg__icon--editBox"
-                            ></span>
-                          </span>
-                        </div>
-                      )
-                    })
-                  ) : ("")}
-
-                  {EditdocumentsData?.Portfolios?.length == 0 && (
-                    <>
-                      <input
-                        type="text"
-                        className="form-control"
-                        readOnly
-                      />
-                      <span
-                        className="input-group-text"
-                        placeholder="Linked Component Task Popup"
-                      >
-                        <span
-                          onClick={(e) => opencomonentservicepopup()
-                          }
-                          className="svg__iconbox svg__icon--editBox"
-                        ></span>
-                      </span>
-                    </>
-                  )}
-
-                  {/* {EditdocumentsData?.Portfolios?.length == 0 &&
-
-                    <input type="text" className="form-control" readOnly />}
-                  <span className="input-group-text" title="Linked Component Task Popup">
-                    <span className="svg__iconbox svg__icon--editBox" onClick={(e) => opencomonentservicepopup()}></span>
-                  </span> */}
-                </div>
-
-              </div>
-{/* -------For Project--- */}
-<div className="col-sm-4 mt-2">
-                <div className="col-sm-12 padding-0 input-group">
+                {/* -------For Project--- */}
+                <div className="input-group">
                   <label className="full_width">Project</label>
 
-                  {(projectdata?.length == 0 ||
-                    projectdata.length !== 1) && (
-                      <>
-                        <input
-                          type="text"
-                          className="form-control"
-                          onChange={(e) => autoSuggestionForProject(e)}
-                        />
-                        <span
-                          className="input-group-text"
-                          placeholder="Project"
-                        >
-                          <span
-                            title="Project"
-                            onClick={(e) =>
-                              openProjectPopup("Project")
-                            }
-                            className="svg__iconbox svg__icon--editBox"
-                          ></span>
-                        </span>
-                      </>
-                    )}
-
-                  {projectdata && projectdata.length == 1 ? (
-                    //    "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=4310"
+                  {projectdata != undefined && projectdata.length == 1 ? (
                     <div className="w-100">
                       {projectdata?.map((items: any, Index: any) => (
                         <div
@@ -679,7 +564,8 @@ const EditDocumentpanel = (props: any) => {
                           key={Index}
                         >
                           <a
-                            href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items.Id}`}
+                            href={`${props?.AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${items.Id}`}
+
                             className="textDotted hreflink"
                             data-interception="off"
                             target="_blank"
@@ -694,7 +580,7 @@ const EditDocumentpanel = (props: any) => {
                               className="bg-dark svg__icon--cross svg__iconbox"
                               onClick={() =>
                                 DeleteCrossIconDataForProject([items?.Id])
-                                // setProjectData([])
+
                               }
                             ></span>
                             <span
@@ -708,8 +594,21 @@ const EditDocumentpanel = (props: any) => {
                         </div>
                       ))}
                     </div>
-                  ) : (
-                    ""
+                  ) : (<>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Search Project Here"
+                      onChange={(e) => autoSuggestionForProject(e)}
+                    />
+                    <span className="input-group-text" placeholder="Project">
+                      <span
+                        title="Project"
+                        onClick={(e) => openProjectPopup("Project")}
+                        className="svg__iconbox svg__icon--editBox"
+                      ></span>
+                    </span>
+                  </>
                   )}
 
                   {searchedProjectDaata?.length > 0 && (
@@ -733,7 +632,7 @@ const EditDocumentpanel = (props: any) => {
                   )}
 
                   <div className="col-sm-12  inner-tabb">
-                    {projectdata && projectdata.length > 1 ? (
+                    {projectdata != undefined && projectdata.length > 1 ? (
                       <div className="w=100">
                         {projectdata?.map((items: any, Index: any) => (
                           <div
@@ -741,7 +640,7 @@ const EditDocumentpanel = (props: any) => {
                             key={Index}
                           >
                             <a
-                              href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${items.Id}`}
+                              href={`${props?.AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${items.Id}`}
                               className="wid-90 light"
                               data-interception="off"
                               target="_blank"
@@ -754,7 +653,6 @@ const EditDocumentpanel = (props: any) => {
                                 className="bg-light svg__icon--cross svg__iconbox"
                                 onClick={() =>
                                   DeleteCrossIconDataForProject([items?.Id])
-                                  // setProjectData([])
                                 }
                               ></span>
                             </a>
@@ -766,8 +664,132 @@ const EditDocumentpanel = (props: any) => {
                     )}
                   </div>
                 </div>
-              </div>
 
+                </div>
+                <div className="col-sm-6">
+                <div className="input-group">
+                  <label className="form-label full-width">
+                    Portfolios
+                  </label>
+                  {EditdocumentsData?.Portfolios != undefined && EditdocumentsData?.Portfolios?.length == 1 ? (
+                    EditdocumentsData?.Portfolios?.map((portfolio: any, index: any) => {
+
+                      return (
+                        <div
+                          className="full-width replaceInput alignCenter"
+                          key={index}
+                        >
+                          <a
+                            href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${portfolio.Id}`}
+                            className="textDotted hreflink"
+                            data-interception="off"
+                            target="_blank"
+                          >
+                            {portfolio?.Title}
+                          </a>
+                          <span
+                            className="input-group-text"
+                            placeholder="Project"
+                          >
+                            <span
+                              className="bg-dark svg__icon--cross svg__iconbox"
+                              onClick={() =>
+                                DeleteTagPortfolios([portfolio?.Id])
+                              }
+                            ></span>
+                            <span
+                              title="Portfolio"
+                               onClick={(e) => opencomonentservicepopup()
+                          }
+                              className="svg__iconbox svg__icon--editBox"
+                            ></span>
+                          </span>
+                        </div>
+                      )
+                    })
+                  ) : (
+                    <>
+                      <input
+                        type="text"
+                        className="form-control"
+                        readOnly
+                      />
+                      <span
+                        className="input-group-text"
+                        placeholder="Linked Component Task Popup"
+                      >
+                        <span
+                          onClick={(e) => opencomonentservicepopup()
+                          }
+                          className="svg__iconbox svg__icon--editBox"
+                        ></span>
+                      </span>
+                    </>
+                  )}
+                 
+                  <div className="col-sm-12  inner-tabb">
+                    {EditdocumentsData?.Portfolios != undefined && EditdocumentsData?.Portfolios?.length > 1 ? (
+                      <div className="w=100">
+                        {EditdocumentsData?.Portfolios?.map((itemss: any, Index: any) => (
+                          <div
+                            className="block d-flex justify-content-between mb-1"
+                            key={Index}
+                          >
+                            <a
+                              href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${itemss.Id}`}
+                              className="wid-90 light"
+                              data-interception="off"
+                              target="_blank"
+                            >
+                              {itemss?.Title}
+                            </a>
+                            <a className="text-end">
+                              {" "}
+                              <span
+                                className="bg-light svg__icon--cross svg__iconbox"
+                                onClick={() =>
+                                  DeleteTagPortfolios([itemss?.Id])
+                                }
+                              ></span>
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                 
+                  {/* {EditdocumentsData?.Portfolios?.length == 0 && (
+                    <>
+                      <input
+                        type="text"
+                        className="form-control"
+                        readOnly
+                      />
+                      <span
+                        className="input-group-text"
+                        placeholder="Linked Component Task Popup"
+                      >
+                        <span
+                          onClick={(e) => opencomonentservicepopup()
+                          }
+                          className="svg__iconbox svg__icon--editBox"
+                        ></span>
+                      </span>
+                    </>
+                  )} */}
+
+                  {/* {EditdocumentsData?.Portfolios?.length == 0 &&
+
+                    <input type="text" className="form-control" readOnly />}
+                  <span className="input-group-text" title="Linked Component Task Popup">
+                    <span className="svg__iconbox svg__icon--editBox" onClick={(e) => opencomonentservicepopup()}></span>
+                  </span> */}
+                </div></div>
+
+              </div>
+              
 
               {/* ------end project--- */}
 
@@ -807,7 +829,7 @@ const EditDocumentpanel = (props: any) => {
 
                       }
                       <div className='input-group gap-1'>
-                        <label className="form-label full-width">CC:</label>                                    
+                        <label className="form-label full-width">CC:</label>
                         {(EditdocumentsData?.recipients !== null) ?
                           (JSON.parse(EditdocumentsData?.recipients)?.map((items: any) => {
                             if (items.recipType === "cc") {
@@ -818,10 +840,10 @@ const EditDocumentpanel = (props: any) => {
                                       ...EditdocumentsData,
                                       recipients: e.target,
                                     })}>
-                                   <span className='textDotted'>{items.email}</span>
+                                    <span className='textDotted'>{items.email}</span>
                                   </div></div>
                               )
-                            }               
+                            }
                           }))
                           :
                           <div className="col-sm-3"
@@ -904,7 +926,7 @@ const EditDocumentpanel = (props: any) => {
         />
       }
 
-       {isopenprojectservicepopup &&
+      {isopenprojectservicepopup &&
         <ServiceComponentPortfolioPopup
           props={projectdata}
           Dynamic={props.AllListId}

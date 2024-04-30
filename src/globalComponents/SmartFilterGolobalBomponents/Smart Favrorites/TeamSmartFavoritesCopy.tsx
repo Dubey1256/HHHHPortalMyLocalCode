@@ -74,6 +74,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
     const [months, setMonths] = React.useState(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December",])
     const [selectedValue, setSelectedValue] = React.useState("Modified");
     const [tablePageSize, setTablePageSize] = React.useState(null);
+    const [count, setCount] = React.useState(true);
     React.useEffect(() => {
         const currentYear = new Date().getFullYear();
         const year: any = [];
@@ -101,6 +102,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
             setIsModifiedDateSelected(item?.isModifiedDateSelected);
             setIsDueDateSelected(item?.isDueDateSelected);
             setTaskUsersData(item?.TaskUsersData);
+            setCount(false);
         } else if (item?.updatedSmartFilter === true && item?.updatedEditData) {
             setsmartTitle(item?.updatedEditData?.Title)
             setisShowEveryone(item?.updatedEditData?.isShowEveryone)
@@ -123,6 +125,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
             setTaskUsersData((prev: any) => item?.updatedEditData?.TaskUsersData);
             setSelectedValue((prev: any) => item?.updatedEditData?.showPageSizeSetting?.selectedTopValue);
             setTablePageSize((prev: any) => item?.updatedEditData?.showPageSizeSetting?.tablePageSize);
+            setCount(false);
         }
     }, [item])
     ///// Year Range Using Piker end////////
@@ -363,6 +366,12 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 setStartDate(last30DaysStartDate);
                 setEndDate(last30DaysEndDate);
                 break;
+                case "last3months":
+                    const lastMonthEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
+                    const last3MonthsStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 3, 1); 
+                    setStartDate(last3MonthsStartDate);
+                    setEndDate(lastMonthEndDate);
+                    break;
             case "thisyear":
                 const yearStartDate = new Date(currentDate.getFullYear(), 0, 1);
                 setStartDate(yearStartDate);
@@ -389,8 +398,16 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 }
                 break;
             default:
-                setStartDate(null);
-                setEndDate(null);
+                if (count === true && item?.updatedSmartFilter === true && item?.updatedEditData) {
+                    setStartDate((prev: any) => item?.updatedEditData?.startDate);
+                    setEndDate((prev: any) => item?.updatedEditData?.endDate);
+                } else if (item?.updatedSmartFilter != true && !item?.updatedEditData && count === true) {
+                    setStartDate(item?.startDate);
+                    setEndDate(item?.endDate);
+                } else {
+                    setStartDate(null);
+                    setEndDate(null);
+                }
                 break;
         }
     }, [selectedFilter]);
@@ -406,7 +423,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
         ) {
             switch (event.target.value) {
                 case "today": case "yesterday": case "thisweek": case "last7days":
-                case "thismonth": case "last30days": case "thisyear": case "lastyear": case "Pre-set":
+                case "thismonth": case "last30days": case "last3months": case "thisyear": case "lastyear": case "Pre-set":
                     setIsCreatedDateSelected(true);
                     setIsModifiedDateSelected(true);
                     setIsDueDateSelected(true);
@@ -1285,6 +1302,10 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                                     <span className='SpfxCheckRadio  me-3'>
                                                         <input type="radio" name="dateFilter" value="last30days" className='radio' checked={selectedFilter === "last30days"} onChange={handleDateFilterChange} />
                                                         <label className='ms-1'>Last 30 Days</label>
+                                                    </span>
+                                                    <span className='SpfxCheckRadio  me-3'>
+                                                        <input type="radio" name="dateFilter" value="last3months" className='radio' checked={selectedFilter === "last3months"} onChange={handleDateFilterChange} />
+                                                        <label className='ms-1'>Last 3 Months</label>
                                                     </span>
                                                     <span className='SpfxCheckRadio  me-3'>
                                                         <input type="radio" name="dateFilter" value="thisyear" className='radio' checked={selectedFilter === "thisyear"} onChange={handleDateFilterChange} />

@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import PageLoader from '../../../globalComponents/pageLoader';
+import * as globalCommon from '../../../globalComponents/globalCommon'
 import moment from 'moment';
 export default function DeleteSmartMetadataOpenPopup(props: any) {
     let DeleteItemCallBack: any = props.DeleteItemCallBack
@@ -27,125 +28,34 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
         });
         return Items;
     }
-    const LoadAllMetaData = async () => {
-        try {
-            SitesConfig = [];
-            const web = new Web(props?.AllList?.SPSitesListUrl);
-            const query = `(TaxType eq 'Categories') or (TaxType eq 'Sites')`
-            const select = `Id,Title,TaxType,listId`;
-            const AllMetaData = await web.lists.getById(props.AllList.SPSmartMetadataListID).items.select(select).filter(query).getAll()
-            SitesConfig = getSmartMetadataItemsByTaxType(AllMetaData, 'Sites');
-            for (var i = 0; i < SitesConfig.length; i++) {
-                if (SitesConfig[i].listId == undefined || SitesConfig[i].Title == 'Master Tasks') {
-                    SitesConfig.splice(i, 1);
-                    i--;
+    useEffect(() => {
+        loadtaggedTasks();
+    }, [props?.modalInstance?.TaxType === "Categories"])
+    const loadtaggedTasks = async () => {
+        const TaggedTasks: any = []
+        setloaded(true);
+        SitesConfig = await globalCommon?.loadAllSiteTasks(props?.AllList, undefined);
+        SitesConfig.filter((item: any) => {
+            if (item.Categories !== null && item.Categories !== undefined) {
+                if (props?.modalInstance?.TaxType === "Categories" && item?.Categories === props?.modalInstance?.Title) {
+                    item.Modified = (item.Modified !== "" || item.Modified !== undefined) ? moment(item.Modified).format("DD/MM/YYYY") : '';
+                    item.Created = (item.Created !== "" || item.Created !== undefined) ? moment(item.Created).format("DD/MM/YYYY") : '';
+                    item.DueDate = (item.DueDate !== "" || item.Created !== undefined) ? moment(item.DueDate).format("DD/MM/YYYY") : '';
+                    TaggedTasks.push(item)
                 }
             }
-            loadAllSitesTask(props?.modalInstance);
-        } catch (error: any) {
-            console.error(error);
-        };
-    }
-    const loadAllSitesTask = async (Item: any) => {
-        try {
-            allCalls = [];
-            allCalls = SitesConfig.map((site) => {
-                let web = new Web(props.AllList.SPSitesListUrl);
-                return web.lists.getById(site.listId).items.select(`Id,Title,SharewebTaskLevel1No,SharewebTaskLevel2No,SharewebTaskType/Id,SharewebTaskType/Title,Component/Id,Services/Id,Events/Id,PercentComplete,ComponentId,ServicesId,EventsId,Priority_x0020_Rank,DueDate,Created,TaskID,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ParentTask/Id,ParentTask/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title`).expand('AssignedTo', 'Author', 'Editor', 'Component', 'Services', 'Events', 'Team_x0020_Members', 'ParentTask', 'SharewebCategories', 'Responsible_x0020_Team', 'SharewebTaskType')
-                    .getAll();
-            });
-            setloaded(true);
-            const success = await Promise.all(allCalls);
-            allSitesTask = [];
-            success.forEach((val) => {
-                val.forEach((item: any) => {
-                    if (item?.SharewebCategories.length > 0) {
-                        item.SharewebCategories.forEach((cate: any) => {
-                            if (cate.Id === Item.Id) {
-                                item.Created = item.Created !== null ? moment(item?.Created).format("DD/MM/YYYY") : '';
-                                item.DueDate = item.DueDate !== null ? moment(item?.DueDate).format("DD/MM/YYYY") : '';
-                                item.Modified = item.Modified !== null ? moment(item?.Modified).format("DD/MM/YYYY") : '';
-                                if (item.ComponentId.length > 0) {
-                                    item['Portfoliotype'] = 'Component';
-                                } else if (item.ServicesId.length > 0) {
-                                    item['Portfoliotype'] = 'Service';
-                                } else if (item.EventsId.length > 0) {
-                                    item['Portfoliotype'] = 'Event';
-                                }
-                                if (item.PercentComplete != undefined) {
-                                    item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
-                                } else if (item.PercentComplete != undefined)
-                                    item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
-                                else
-                                    item.PercentComplete = 0;
-                                if (item.ComponentId.length > 0) {
-                                    item.Portfoliotype = 'Component';
-                                } else if (item.ServicesId.length > 0) {
-                                    item.Portfoliotype = 'Service';
-                                } else if (item.EventsId.length > 0) {
-                                    item.Portfoliotype = 'Event';
-                                }
-                                if (item.siteType != undefined && item.siteType == 'Offshore Tasks') {
-                                    item.Companytype = 'Offshoretask';
-                                } else {
-                                    item.Companytype = 'Alltask';
-                                }
-                                if (item.Companytype == 'Alltask') {
-                                    allSitesTask.push(item);
-                                }
-                            }
-                        })
-                    } else {
-                        if (item.SharewebCategories[0]?.Id === Item.Id) {
-                            item.Created = item.Created !== null ? moment(item?.Created).format("DD/MM/YYYY") : '';
-                            item.DueDate = item.DueDate !== null ? moment(item?.DueDate).format("DD/MM/YYYY") : '';
-                            item.Modified = item.Modified !== null ? moment(item?.Modified).format("DD/MM/YYYY") : '';
-                            if (item.ComponentId.length > 0) {
-                                item['Portfoliotype'] = 'Component';
-                            } else if (item.ServicesId.length > 0) {
-                                item['Portfoliotype'] = 'Service';
-                            } else if (item.EventsId.length > 0) {
-                                item['Portfoliotype'] = 'Event';
-                            }
-                            if (item.PercentComplete != undefined) {
-                                item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
-                            } else if (item.PercentComplete != undefined)
-                                item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
-                            else
-                                item.PercentComplete = 0;
-                            if (item.ComponentId.length > 0) {
-                                item.Portfoliotype = 'Component';
-                            } else if (item.ServicesId.length > 0) {
-                                item.Portfoliotype = 'Service';
-                            } else if (item.EventsId.length > 0) {
-                                item.Portfoliotype = 'Event';
-                            }
-                            if (item.siteType != undefined && item.siteType == 'Offshore Tasks') {
-                                item.Companytype = 'Offshoretask';
-                            } else {
-                                item.Companytype = 'Alltask';
-                            }
-                            if (item.Companytype == 'Alltask') {
-                                allSitesTask.push(item);
-                            }
-                        }
-                    }
-                });
-            })
-            setAllSitesTask(allSitesTask);
-            if (allSitesTask.length > 0)
-                setloaded(false)
+        })
+        if (TaggedTasks.length === 0 || TaggedTasks.length > 1) {
+            setloaded(false)
+            setAllSitesTask(TaggedTasks);
         }
-        catch (error) {
-            console.error(error);
-            // Handle errors
-        }
+
     }
     const deleteSmartMetadata = async (item: any) => {
         var flag = confirm(`Are you sure, you want to delete this id?`)
         if (flag === true) {
-            let web = new Web(props.AllList.SPSitesListUrl);
-            web.lists.getById(props.AllList.SPSmartMetadataListID).items.getById(item.Id).recycle().then((response: any) => {
+            let web = new Web(props?.AllList?.SPSitesListUrl);
+            web.lists.getById(props?.AllList?.SmartMetadataListID).items.getById(item.Id).recycle().then((response: any) => {
                 console.log("delete successful")
                 if (response) {
                     DeleteItemCallBack(props.AllMetadata, '', smartMetadataItem.TaxType, '');
@@ -170,7 +80,7 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
         [{ accessorKey: "TaskID", placeholder: "Site", header: "", size: 10, },
         {
             cell: ({ row }: any) => (
-                <a target='_blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Task-Profile.aspx?taskId=${row?.original.Id}&Site=${row?.original.Title}`}>{row.original.Title}</a>
+                <a target='_blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Task-Profile.aspx?taskId=${row?.original.Id}&Site=${row?.original.siteType}`}>{row.original.Title}</a>
 
             ),
             accessorKey: 'Title',
@@ -185,14 +95,10 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
         { accessorKey: "Modified", placeholder: "Modified", header: "", size: 10, },
         { accessorKey: "DueDate", placeholder: "DueDate", header: "", size: 10, },
         ], [AllSitesTask]);
-    useEffect(() => {
-        LoadAllMetaData();
-    }, []);
     return (
         <>
             <div>
                 <Panel
-                    title="popup-title"
                     isOpen={true}
                     onDismiss={closeDeleteSmartMetaPopup}
                     type={PanelType.custom}
@@ -263,7 +169,6 @@ export default function DeleteSmartMetadataOpenPopup(props: any) {
                     </div>
                     <div className='applyLeavePopup'>
                         <div className="modal-footer border-0 px-0">
-                            {/* <button className='btnCol btn btn-primary mx-2 mt-0' onClick={() => deleteTypeSmartmetadta(smartMetadataItem)}> Archive and Delete </button> */}
                             <button className='btnCol btn btn-primary mx-2 mt-0' onClick={() => deleteSmartMetadata(smartMetadataItem)}> Delete </button>
                             <button className='btn btn-default m-0' onClick={() => closeDeleteSmartMetaPopup()}> Cancel</button>
                         </div>

@@ -235,6 +235,9 @@ const inlineEditingcolumns = (props: any) => {
       SharewebtaskCategories = JSON.parse(
         localStorage.getItem("taskCategoryType")
       );
+      SharewebtaskCategories = SharewebtaskCategories.filter((item: any)=> item.Title != "Bottleneck")
+      let stringifiedCategories = JSON.stringify(SharewebtaskCategories)
+      localStorage.setItem("taskCategoryType", stringifiedCategories);
       Priority = JSON.parse(localStorage.getItem("Priority"));
       let site = JSON.parse(localStorage.getItem("siteUrl"));
       let DataLoaded = JSON.parse(localStorage.getItem("inlineMetaDataLoaded"));
@@ -646,6 +649,8 @@ const inlineEditingcolumns = (props: any) => {
   const CategoryCallBack = React.useCallback((item1: any, type: any) => {
     setIsComponentPicker(false)
     setTaskCategoriesPopup(true)
+    let uniqueIds: any = {};
+    TempArrya = CategoriesData
     if (type == "Category-Task-Footertable") {
       if (item1?.length > 0) {
         item1?.map((cat: any) => {
@@ -660,7 +665,15 @@ const inlineEditingcolumns = (props: any) => {
         });
       }
     }
-    setCategoriesData(TempArrya) 
+    const result: any = TempArrya.filter((item: any) => {
+      if (!uniqueIds[item.Id]) {
+          uniqueIds[item.Id] = true;
+          return true;
+      }
+      return false;
+  });
+  TempArrya = result;
+  setCategoriesData(result) 
   }, [])
 
   const smartCategoryPopup = React.useCallback(() => {

@@ -7,10 +7,10 @@ import Tooltip from '../../../globalComponents/Tooltip';
 export default function CreateMetadataItem(props: any) {
     let SelectedItem: any = props.SelectedItem;
     let Taxtype: any = props.TabSelected;
-    let SmartMetadataListID = props.AllList.SPSmartMetadataListID;
+    let SmartMetadataListID = props.AllList.SmartMetadataListID;
     let addItemCallBack: any = props.addItemCallBack
     const [addedMetadataItem, setAddedMetadataItem]: any = useState({});
-    const [SmartMetadataEditPopupOpen, setSmartMetadataEditPopupOpen] = useState(false);
+    const [EditMetadataPopup, setEditMetadataPopup] = useState(false);
     const [smartMetaDataTitle, setSmartMetaDataTitle]: any = useState('');
     const [smartDescription, setSmartDescription] = useState('');
     const [countFor, setCountFor] = useState(0);
@@ -40,17 +40,16 @@ export default function CreateMetadataItem(props: any) {
                     const web = new Web(props?.AllList?.SPSitesListUrl);
                     const addedItem = await web.lists.getById(SmartMetadataListID).items.add({
                         "TaxType": SelectedItem[0].TaxType,
-                        "Description1": smartDescription,
+                        "Description": smartDescription,
                         "Title": smartMetaDataTitle,
                         "ParentId": SelectedItem[0].Id,
                         "ParentID": SelectedItem[0].Id,
                     });
                     setAddedMetadataItem(addedItem?.data);
+                    setIsCreatePopupOpen(false);
+                    setEditMetadataPopup(true);
                 } catch (error) {
                     console.error(error);
-                } finally {
-                    closeCreateSmartMetadataPopup();
-                    addItemCallBack(array, false, SelectedItem[0]?.TaxType, undefined, '');
                 }
             } else {
                 if (props?.categoriesTabName?.Id !== undefined && props?.categoriesTabName?.Id !== '') {
@@ -58,89 +57,82 @@ export default function CreateMetadataItem(props: any) {
                         const web = new Web(props?.AllList?.SPSitesListUrl);
                         const addedItem = await web.lists.getById(SmartMetadataListID).items.add({
                             "TaxType": Taxtype,
-                            "Description1": smartDescription,
+                            "Description": smartDescription,
                             "Title": smartMetaDataTitle,
                             "ParentId": props?.categoriesTabName?.Id,
                             "ParentID": props?.categoriesTabName?.Id
                         });
                         setAddedMetadataItem(addedItem?.data);
+                        setIsCreatePopupOpen(false);
+                        setEditMetadataPopup(true);
                     } catch (error) {
                         console.error(error);
-                    } finally {
-                        closeCreateSmartMetadataPopup();
-                        addItemCallBack(array, false, props?.categoriesTabName?.TaxType, '');
                     }
                 } else {
                     try {
                         const web = new Web(props?.AllList?.SPSitesListUrl);
                         const addedItem = await web.lists.getById(SmartMetadataListID).items.add({
                             "TaxType": Taxtype,
-                            "Description1": smartDescription,
+                            "Description": smartDescription,
                             "Title": smartMetaDataTitle,
                             "ParentID": 0
                         });
                         setAddedMetadataItem(addedItem?.data);
+                        setIsCreatePopupOpen(false);
+                        setEditMetadataPopup(true);
                     } catch (error) {
                         console.error(error);
-                    } finally {
-                        closeCreateSmartMetadataPopup();
-                        addItemCallBack(array, false, props?.TabSelected, '');
                     }
                 }
             }
-            closeCreateSmartMetadataPopup();
-            setSmartMetadataEditPopupOpen(true);
         } else {
             if (SelectedItem.length > 0) {
                 try {
                     const web = new Web(props?.AllList?.SPSitesListUrl);
                     const addedItem = await web.lists.getById(SmartMetadataListID).items.add({
                         "TaxType": SelectedItem[0].TaxType,
-                        "Description1": smartDescription,
+                        "Description": smartDescription,
                         "Title": smartMetaDataTitle,
                         "ParentId": SelectedItem[0].Id,
                         "ParentID": SelectedItem[0].Id,
                     });
                     setAddedMetadataItem(addedItem?.data);
+                    setIsCreatePopupOpen(false);
+                    addItemCallBack(array, false, SelectedItem[0]?.TaxType, '', '');
                 } catch (error) {
                     console.error(error);
-                } finally {
-                    closeCreateSmartMetadataPopup();
-                    addItemCallBack(array, false, SelectedItem[0]?.TaxType, undefined, '');
                 }
             } else {
-                if (props.categoriesTabName !== undefined && props?.categoriesTabName !== '') {
+                if (props?.categoriesTabName?.Id !== undefined) {
                     try {
                         const web = new Web(props?.AllList?.SPSitesListUrl);
                         const addedItem = await web.lists.getById(SmartMetadataListID).items.add({
                             "TaxType": Taxtype,
-                            "Description1": smartDescription,
+                            "Description": smartDescription,
                             "Title": smartMetaDataTitle,
                             "ParentId": props?.categoriesTabName?.Id,
                             "ParentID": props?.categoriesTabName?.Id
                         });
                         setAddedMetadataItem(addedItem?.data);
+                        setIsCreatePopupOpen(false);
+                        addItemCallBack(array, false, props?.categoriesTabName?.TaxType, '');
                     } catch (error) {
                         console.error(error);
-                    } finally {
-                        closeCreateSmartMetadataPopup();
-                        addItemCallBack(array, false, props?.categoriesTabName?.TaxType, '');
                     }
                 } else {
                     try {
                         const web = new Web(props?.AllList?.SPSitesListUrl);
                         const addedItem = await web.lists.getById(SmartMetadataListID).items.add({
                             "TaxType": Taxtype,
-                            "Description1": smartDescription,
+                            "Description": smartDescription,
                             "Title": smartMetaDataTitle,
                             "ParentID": 0
                         });
                         setAddedMetadataItem(addedItem?.data);
+                        setIsCreatePopupOpen(false);
+                        addItemCallBack(array, false, props?.TabSelected, '');
                     } catch (error) {
                         console.error(error);
-                    } finally {
-                        closeCreateSmartMetadataPopup();
-                        addItemCallBack(array, false, props?.TabSelected, '');
                     }
                 }
             }
@@ -212,9 +204,10 @@ export default function CreateMetadataItem(props: any) {
         setSmartDescription('');
         setSmartMetaDataTitle('');
         setIsCreatePopupOpen(false);
+        props?.closeCreateSmartMetadataPopup();
         props?.childRefdata?.current?.setRowSelection({});
     }
-    const onRenderDeleteSmartMetadata = () => {
+    const onRenderCreateSmartMetadata = () => {
         return (
             <>
                 <div className='subheading siteColor'>
@@ -234,13 +227,13 @@ export default function CreateMetadataItem(props: any) {
             </div> */}
             {
                 IsCreatePopupOpen === true ? <section>
-                    <Panel type={PanelType.custom} onRenderHeader={onRenderDeleteSmartMetadata} customWidth="500px" isOpen={IsCreatePopupOpen} onDismiss={closeCreateSmartMetadataPopup} isBlocking={false} closeButtonAriaLabel="Close">
+                    <Panel type={PanelType.custom} onRenderHeader={onRenderCreateSmartMetadata} customWidth="500px" isOpen={IsCreatePopupOpen} onDismiss={closeCreateSmartMetadataPopup} isBlocking={false} closeButtonAriaLabel="Close">
                         {props.ParentItem.Id == undefined && (
                             <div className="modal-body">
                                 <div className="col-sm-12 padL-0">
                                     <div className="input-group my-2">
                                         <label className="full_width form-label">Title</label>
-                                        <input className="form-control w-100" type="text" value={smartMetaDataTitle} onChange={(e) => setSmartMetaDataTitle(e.target.value)} placeholder="Enter Component Title..." required />
+                                        <input className="form-control w-100" type="text" value={smartMetaDataTitle} onChange={(e) => setSmartMetaDataTitle(e.target.value)} placeholder="Enter Title..." required />
                                         <span className="searchclear" style={{ top: '17px', right: '10px' }} onClick={clearControl}>
                                             x
                                         </span>
@@ -351,7 +344,7 @@ export default function CreateMetadataItem(props: any) {
                     </Panel>
                 </section> : ''
             }
-            {SmartMetadataEditPopupOpen ? <SmartMetadataEditPopup AllList={props.AllList} smartMetaDataTitle={smartMetaDataTitle} smartDescription={smartDescription} CloseEditSmartMetaPopup={() => setSmartMetadataEditPopupOpen(false)} EditItemCallBack={props.addItemCallBack} AllMetadata={props.ParentItem} modalInstance={addedMetadataItem} /> : ''}
+            {EditMetadataPopup === true ? <SmartMetadataEditPopup AllList={props.AllList} smartMetaDataTitle={smartMetaDataTitle} smartDescription={smartDescription} CloseEditSmartMetaPopup={() => setEditMetadataPopup(false)} EditItemCallBack={props.addItemCallBack} AllMetadata={props.ParentItem} modalInstance={addedMetadataItem} /> : ''}
         </>
     )
 }

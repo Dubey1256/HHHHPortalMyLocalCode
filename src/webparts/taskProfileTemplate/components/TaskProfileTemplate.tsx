@@ -80,7 +80,7 @@ export interface ITaskprofileState {
   sendMail: boolean,
   showPopup: any;
   emailcomponentopen: boolean,
- 
+
   showhideCommentBoxIndex: any
   ApprovalCommentcheckbox: boolean;
   CommenttoPost: string;
@@ -157,7 +157,7 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
       ApprovalPointCurrentParentIndex: null,
       ApprovalHistoryPopup: false,
       emailcomponentopen: false,
-     
+
       emailComponentstatus: null,
       subchildParentIndex: null,
       showcomment_subtext: 'none',
@@ -213,7 +213,7 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
       this.masterTaskData = this.masterTaskData?.concat([...CallBackData?.FlatProjectData, ...CallBackData?.AllData])
       this.masterForHierarchy = this.masterForHierarchy?.concat([...CallBackData?.FlatProjectData, ...CallBackData?.AllData])
       this.GetResult();
-    }else{
+    } else {
       this.GetResult();
     }
   }
@@ -261,7 +261,7 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
       .getByTitle(this.state?.listName)
       .items
       .getById(this.state?.itemID)
-      .select("ID", "Title", "Comments", "Sitestagging", "ApproverHistory", "Approvee/Id", "Approvee/Title", "EstimatedTime", "SiteCompositionSettings", "TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "PriorityRank", "Approver/Title", "ParentTask/Id", "ParentTask/TaskID", "Project/Id", "Project/Title", "Project/PriorityRank", "Project/PortfolioStructureID", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id","TaskType/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .select("ID", "Title", "Comments", "Sitestagging", "ApproverHistory", "Approvee/Id", "Approvee/Title", "EstimatedTime", "SiteCompositionSettings", "TaskID", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "DueDate", "IsTodaysTask", 'EstimatedTimeDescription', "Approver/Id", "PriorityRank", "Approver/Title", "ParentTask/Id", "ParentTask/TaskID", "Project/Id", "Project/Title", "Project/PriorityRank", "Project/PortfolioStructureID", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "TaskLevel", "TaskLevel", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "TaskCategories/Id", "TaskCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "ComponentLink", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "TaskType/Id", "TaskType/Title", "ClientTime", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
       .expand("TeamMembers", "Project", "Approver", "Approvee", "ParentTask", "Portfolio", "SmartInformation", "AssignedTo", "TaskCategories", "Author", "ClientCategory", "ResponsibleTeam", "TaskType", "Editor", "AttachmentFiles")
       .get()
     AllListId = {
@@ -272,9 +272,9 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
       TaskTimeSheetListID: this.props.TaskTimeSheetListID,
       DocumentsListID: this.props.DocumentsListID,
       SmartInformationListID: this.props.SmartInformationListID,
-      PortFolioTypeID:  this.props.PortFolioTypeID,
+      PortFolioTypeID: this.props.PortFolioTypeID,
       siteUrl: this.props.siteUrl,
-      Context:this.props.Context,
+      Context: this.props.Context,
       TaskTypeID: this.props.TaskTypeID,
       isShowTimeEntry: isShowTimeEntry,
       isShowSiteCompostion: isShowSiteCompostion
@@ -286,8 +286,13 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
     taskDetails.TaskId = globalCommon.GetTaskId(taskDetails);
     var category = ""
     if (taskDetails["TaskCategories"] != undefined && taskDetails["TaskCategories"].length > 0) {
+      let seprate = ""
+      if (taskDetails["TaskCategories"].length > 1) {
+        seprate = ";"
+      }
       taskDetails["TaskCategories"]?.map((item: any, index: any) => {
-        category = category + item?.Title + ";"
+
+        category = category + item?.Title + seprate
         let ApprovalCheck = category?.search("Approval");
         if (ApprovalCheck >= 0) {
           this.setState({
@@ -650,7 +655,7 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
       } if (senderObject.length == 0) {
         userDeatails.push({
           'Title': username,
-          'userImage':"" 
+          'userImage': ""
         })
 
       }
@@ -1555,7 +1560,7 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
   //****** remove extra space in folora editor  */
 
   private cleanHTML = (html: any, folora: any, index: any) => {
-    if(html!=undefined){
+    if (html != undefined) {
       html = globalCommon?.replaceURLsWithAnchorTags(html)
       const div = document.createElement('div');
       div.innerHTML = html;
@@ -1568,8 +1573,8 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
       });
       div.innerHTML = div.innerHTML.replace(/\n/g, '<br>')  // Convert newlines to <br> tags first
       div.innerHTML = div.innerHTML.replace(/(?:<br\s*\/?>\s*)+(?=<\/?[a-z][^>]*>)/gi, '');
-  
-  
+
+
       return div.innerHTML;
     }
 
@@ -1864,8 +1869,8 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
                   {this.state?.Result["Portfolio"] == undefined && this.state.breadCrumData?.length == 0 && this.state.Result.Title != undefined ?
                     <>
                       <li >
-                        <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Dashboard.aspx`}> <span>Dashboard</span> </a>          <span><SlArrowRight /></span> 
-                      </li> 
+                        <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Dashboard.aspx`}> <span>Dashboard</span> </a> <span><SlArrowRight /></span>
+                      </li>
 
 
                       <li>
@@ -1883,21 +1888,21 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
                       {this.state.Result["Portfolio"] != null && this.state.breadCrumData.length > 0 &&
                         <li >
                           {this.state.Result["Portfolio"] != null &&
-                            <a className="fw-bold" style={{ color: this.state.Result["Portfolio"]?.PortfolioType?.Color }} target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Team-Portfolio.aspx`}>Team Portfolio</a> 
+                            <a className="fw-bold" style={{ color: this.state.Result["Portfolio"]?.PortfolioType?.Color }} target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Team-Portfolio.aspx`}>Team Portfolio</a>
                           }
-                      <span><SlArrowRight /></span> 
+                          <span><SlArrowRight /></span>
                         </li>
                       }
                       {this.state.breadCrumData?.map((breadcrumbitem: any, index: any) => {
                         return <>
                           {breadcrumbitem?.siteType == "Master Tasks" && <li>
-                            <a style={{ color: breadcrumbitem?.PortfolioType?.Color }}  target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
-                            <span><SlArrowRight /></span> 
+                            <a style={{ color: breadcrumbitem?.PortfolioType?.Color }} target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem?.Id}`}>{breadcrumbitem?.Title}</a>
+                            <span><SlArrowRight /></span>
                           </li>}
                           {breadcrumbitem?.siteType !== "Master Tasks" && <li>
 
                             <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem?.Id}&Site=${breadcrumbitem?.siteType} `}>{breadcrumbitem?.Title}</a>
-                            <span><SlArrowRight /></span> 
+                            <span></span>
                           </li>}
                           {this.state.breadCrumData.length == index &&
                             <li>
@@ -1920,8 +1925,8 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
               </div>
             </div>
           }
-            <section className='row py-2'>
-              <h2 className="heading d-flex ps-0 justify-content-between align-items-center">
+            <section className='row p-0 '>
+              <h2 className="heading d-flex ps-0 justify-content-between align-items-center task-title">
                 <span className='alignCenter'>
                   {this.state.Result["SiteIcon"] != "" && <img className="imgWid29 pe-1 " title={this?.state?.Result?.siteType} src={this.state.Result["SiteIcon"]} />}
                   {this.state.Result["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />}
@@ -1950,344 +1955,340 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
                   <div className="team_member row">
                     <div className='col-md-8 '>
                       <div className='bg-Ff p-2 boxshadow  rounded-1 row'>
-                      <div className='col-md-6 p-0'>
-                        <dl>
-                          <dt className='bg-Fa'>Task Id</dt>
-                          <dd className='bg-Ff position-relative'>
-                            <ReactPopperTooltipSingleLevel ShareWebId={this.state.Result['TaskId']} row={this.state.Result} singleLevel={true} masterTaskData={this.masterForHierarchy} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} />
+                        <div className='col-md-6 p-0'>
+                          <dl>
+                            <dt className='bg-Fa'>Task Id</dt>
+                            <dd className='bg-Ff position-relative'>
+                              <ReactPopperTooltipSingleLevel ShareWebId={this.state.Result['TaskId']} row={this.state.Result} singleLevel={true} masterTaskData={this.masterForHierarchy} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} />
 
-                          </dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Due Date</dt>
-                          <dd className='bg-Ff'>
-                            <EditableField
-                              listName={this?.state?.Result?.listName}
-                              itemId={this?.state?.Result?.Id}
-                              fieldName="DueDate"
-                              value={
-                                this?.state?.Result?.DueDate != undefined
-                                  ? this?.state?.Result?.DueDate
-                                  : ""
-                              }
-                              TaskProfilePriorityCallback={null}
-                              onChange={this.handleFieldChange("DueDate")}
-                              type="Date"
-                              web={AllListId?.siteUrl}
-                            />
-
-                          </dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Start Date</dt>
-                          <dd className='bg-Ff'>{this.state.Result["StartDate"] != undefined ? this.state.Result["StartDate"] : ""}</dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Completion Date</dt>
-                          <dd className='bg-Ff'> {this.state.Result["CompletedDate"] != undefined ? this.state.Result["CompletedDate"] : ""}</dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa' title="Task Id">Categories</dt>
-
-                          <dd className='bg-Ff text-break'>
-                            <div className='alignCenter'>
-                              <InlineEditingcolumns
-                                AllListId={AllListId}
-                                callBack={this?.inlineCallBack}
-                                columnName='TaskCategories'
-                                item={this?.state?.Result}
-                                TaskUsers={this?.taskUsers}
-                                pageName={'portfolioprofile'}
+                            </dd>
+                          </dl>
+                          <dl>
+                            <dt className='bg-Fa'>Due Date</dt>
+                            <dd className='bg-Ff'>
+                              <EditableField
+                                listName={this?.state?.Result?.listName}
+                                itemId={this?.state?.Result?.Id}
+                                fieldName="DueDate"
+                                value={
+                                  this?.state?.Result?.DueDate != undefined
+                                    ? this?.state?.Result?.DueDate
+                                    : ""
+                                }
+                                TaskProfilePriorityCallback={null}
+                                onChange={this.handleFieldChange("DueDate")}
+                                type="Date"
+                                web={AllListId?.siteUrl}
                               />
 
-                            </div>
+                            </dd>
+                          </dl>
+                          <dl>
+                            <dt className='bg-Fa'>Start Date</dt>
+                            <dd className='bg-Ff'>{this.state.Result["StartDate"] != undefined ? this.state.Result["StartDate"] : ""}</dd>
+                          </dl>
+                          <dl>
+                            <dt className='bg-Fa'>Completion Date</dt>
+                            <dd className='bg-Ff'> {this.state.Result["CompletedDate"] != undefined ? this.state.Result["CompletedDate"] : ""}</dd>
+                          </dl>
+                          <dl>
+                            <dt className='bg-Fa' title="Task Id">Categories</dt>
+
+                            <dd className='bg-Ff text-break'>
+                              <div className='alignCenter'>
+                                <InlineEditingcolumns
+                                  AllListId={AllListId}
+                                  callBack={this?.inlineCallBack}
+                                  columnName='TaskCategories'
+                                  item={this?.state?.Result}
+                                  TaskUsers={this?.taskUsers}
+                                  pageName={'portfolioprofile'}
+                                />
+
+                              </div>
 
 
-                          </dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Item Rank</dt>
-                          <dd className='bg-Ff'>
-                            <EditableField
-                              listName={this?.state?.Result?.listName}
-                              itemId={this?.state?.Result?.Id}
-                              fieldName="ItemRank"
-                              value={
-                                this?.state?.Result?.ItemRank != undefined
-                                  ? this?.state?.Result?.ItemRank
-                                  : ""
-                              }
-                              TaskProfilePriorityCallback={null}
-                              onChange={this.handleFieldChange("ItemRank")}
-                              type=""
-                              web={AllListId?.siteUrl}
-                            />
+                            </dd>
+                          </dl>
+                          <dl>
+                            <dt className='bg-Fa'>Item Rank</dt>
+                            <dd className='bg-Ff'>
+                              <EditableField
+                                listName={this?.state?.Result?.listName}
+                                itemId={this?.state?.Result?.Id}
+                                fieldName="ItemRank"
+                                value={
+                                  this?.state?.Result?.ItemRank != undefined
+                                    ? this?.state?.Result?.ItemRank
+                                    : ""
+                                }
+                                TaskProfilePriorityCallback={null}
+                                onChange={this.handleFieldChange("ItemRank")}
+                                type=""
+                                web={AllListId?.siteUrl}
+                              />
 
-                          </dd>
-                        </dl>
+                            </dd>
+                          </dl>
 
-                        {isShowTimeEntry && <dl>
-                          <dt className='bg-Fa'>SmartTime Total</dt>
-                          <dd className='bg-Ff'>
-                            <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId} callbackTotalTime={(data: any) => this.callbackTotalTime(data)} props={this.state.Result} Context={this.props.Context} allTaskUsers={this?.taskUsers} /> : null}</span>
-                          </dd>
+                          {isShowTimeEntry && <dl>
+                            <dt className='bg-Fa'>SmartTime Total</dt>
+                            <dd className='bg-Ff'>
+                              <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId} callbackTotalTime={(data: any) => this.callbackTotalTime(data)} props={this.state.Result} Context={this.props.Context} allTaskUsers={this?.taskUsers} /> : null}</span>
+                            </dd>
 
-                        </dl>}
-                      </div>
-                      <div className='col-md-6 p-0'>
-                        <dl>
-                          <dt className='bg-Fa'>Team Members</dt>
+                          </dl>}
+                        </div>
+                        <div className='col-md-6 p-0'>
+                          <dl>
+                            <dt className='bg-Fa'>Team Members</dt>
 
-                          <dd className='bg-Ff'>
-                            <ShowTaskTeamMembers
-                              props={this.state.Result}
-                              TaskUsers={this?.taskUsers}
-                            />
+                            <dd className='bg-Ff'>
+                              <ShowTaskTeamMembers
+                                props={this.state.Result}
+                                TaskUsers={this?.taskUsers}
+                              />
 
 
-                          </dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Status</dt>
-                          <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"]?.toFixed(0) : 0} <span className='me-2'>%</span> {this.state.Result["Status"]}<br></br>
-                            {this.state.Result["ApproverHistory"] != undefined && this.state.Result["ApproverHistory"].length > 1 && this.state.Result["Categories"].includes("Approval") ?
-                              <span style={{ fontSize: "smaller" }}>Approved by
-                                <img className="workmember" title={this.state.Result["ApproverHistory"][this.state.Result?.ApproverHistory.length - 2]?.ApproverName} src={(this.state.Result?.ApproverHistory[this.state.Result?.ApproverHistory?.length - 2]?.ApproverImage != null) ? (this.state.Result.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverImage) : (this.state.Result?.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverSuffix)}></img></span>
+                            </dd>
+                          </dl>
+                          <dl>
+                            <dt className='bg-Fa'>Status</dt>
+                            <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"]?.toFixed(0) : 0} <span className='me-2'>%</span> {this.state.Result["Status"]}<br></br>
+                              {this.state.Result["ApproverHistory"] != undefined && this.state.Result["ApproverHistory"].length > 1 && this.state.Result["Categories"].includes("Approval") ?
+                                <span style={{ fontSize: "smaller" }}>Approved by
+                                  <img className="workmember" title={this.state.Result["ApproverHistory"][this.state.Result?.ApproverHistory.length - 2]?.ApproverName} src={(this.state.Result?.ApproverHistory[this.state.Result?.ApproverHistory?.length - 2]?.ApproverImage != null) ? (this.state.Result.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverImage) : (this.state.Result?.ApproverHistory[this.state.Result.ApproverHistory.length - 2]?.ApproverSuffix)}></img></span>
 
-                              : null}</dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Working Today</dt>
-                          <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["IsTodaysTask"] ? "Yes" : "No"} </span>
-                          </dd>
-                        </dl>
+                                : null}</dd>
+                          </dl>
+                          <dl>
+                            <dt className='bg-Fa'>Working Today</dt>
+                            <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["IsTodaysTask"] ? "Yes" : "No"} </span>
+                            </dd>
+                          </dl>
 
-                        {/* <dl>
+                          {/* <dl>
                         <dt className='bg-Fa'>% Complete</dt>
 
                         <dd className='bg-Ff'>{this.state.Result["PercentComplete"] != undefined ? this.state.Result["PercentComplete"]?.toFixed(0) : 0}</dd>
 
 
                       </dl> */}
-                        <dl>
-                          <dt className='bg-Fa'>Priority</dt>
-                          <dd className='bg-Ff'>
+                          <dl>
+                            <dt className='bg-Fa'>Priority</dt>
+                            <dd className='bg-Ff'>
 
-                            {this.state.Result.Categories != undefined && this.state.Result?.Categories?.indexOf('On-Hold') >= 0 ? (
-                              <div className="hover-text">
-                                <IoHandRightOutline
-                                  onMouseEnter={this.showOnHoldReason}
-                                  onMouseLeave={this.hideOnHoldReason}
-                                />
-                                <span className="tooltip-text tooltipboxs  pop-right">
-                                  {this.state.showOnHoldComment &&
-                                    comments.map((item: any, index: any) =>
-                                      item.CommentFor !== undefined &&
-                                        item.CommentFor === "On-Hold" ? (
-                                        <div key={index}>
-                                          <span className="siteColor H-overTitle">
-                                            Task On-Hold by{" "}
-                                            <span>
-                                              {
-                                                item.AuthorName
-                                              }
-                                            </span>{" "}
-                                            <span>
-                                              {
-                                                moment(item.Created).format('DD/MM/YY')
-                                              }
-                                            </span>
-                                          </span>
-                                          {item.CommentFor !== undefined &&
-                                            item.CommentFor !== "" ? (
-                                            <div key={index}>
-                                              <span dangerouslySetInnerHTML={{ __html: this.cleanHTML(item?.Description, "folora", index) }}>
+                              {this.state.Result.Categories != undefined && this.state.Result?.Categories?.indexOf('On-Hold') >= 0 ? (
+                                <div className="hover-text">
+                                  <IoHandRightOutline
+                                    onMouseEnter={this.showOnHoldReason}
+                                    onMouseLeave={this.hideOnHoldReason}
+                                  />
+                                  <span className="tooltip-text tooltipboxs  pop-right">
+                                    {this.state.showOnHoldComment &&
+                                      comments.map((item: any, index: any) =>
+                                        item.CommentFor !== undefined &&
+                                          item.CommentFor === "On-Hold" ? (
+                                          <div key={index}>
+                                            <span className="siteColor H-overTitle">
+                                              Task On-Hold by{" "}
+                                              <span>
+                                                {
+                                                  item.AuthorName
+                                                }
+                                              </span>{" "}
+                                              <span>
+                                                {
+                                                  moment(item.Created).format('DD/MM/YY')
+                                                }
                                               </span>
-                                            </div>
-                                          ) : null}
-                                        </div>
-                                      ) : null
-                                    )}
-                                </span>
+                                            </span>
+                                            {item.CommentFor !== undefined &&
+                                              item.CommentFor !== "" ? (
+                                              <div key={index}>
+                                                <span dangerouslySetInnerHTML={{ __html: this.cleanHTML(item?.Description, "folora", index) }}>
+                                                </span>
+                                              </div>
+                                            ) : null}
+                                          </div>
+                                        ) : null
+                                      )}
+                                  </span>
+                                </div>
+                              ) : null}
+                              <EditableField
+                                // key={index}
+                                listName={this?.state?.Result?.listName}
+                                itemId={this.state.Result?.Id}
+                                fieldName="Priority"
+                                value={
+                                  this.state.Result?.PriorityRank != undefined
+                                    ? this.state.Result?.PriorityRank
+                                    : ""
+                                }
+                                TaskProfilePriorityCallback={(priorityValue: any) => this.TaskProfilePriorityCallback(priorityValue)}
+                                onChange={this.handleFieldChange("Priority")}
+                                type=""
+                                web={AllListId?.siteUrl}
+                              />
+
+                            </dd>
+                          </dl>
+
+                          <dl>
+                            <dt className='bg-Fa'>SmartPriority</dt>
+
+                            <dd className='bg-Ff'>
+                              <div className="boldClable" title={this?.state?.Result?.showFormulaOnHover}>
+                                {this.state.Result["SmartPriority"] != undefined ? this.state.Result["SmartPriority"] : 0}
                               </div>
-                            ) : null}
-                            <EditableField
-                              // key={index}
-                              listName={this?.state?.Result?.listName}
-                              itemId={this.state.Result?.Id}
-                              fieldName="Priority"
-                              value={
-                                this.state.Result?.PriorityRank != undefined
-                                  ? this.state.Result?.PriorityRank
-                                  : ""
+
+                            </dd>
+                          </dl>
+
+                          <dl>
+                            <dt className='bg-Fa'>Created</dt>
+                            <dd className='bg-Ff alignCenter'>
+                              {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MM/YYYY") : ""}
+                              {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
+                                <a title={this.state.Result["Author"][0].Title} className='alignCenter ms-1'>
+                                  {this.state.Result["Author"][0].userImage !== "" && <img className="workmember hreflink " src={this.state.Result["Author"][0].userImage} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, this.state.Result["Author"][0]?.Id)} ></img>}
+                                  {this.state.Result["Author"][0].userImage === "" && <span className="workmember">{this.state.Result["Author"][0].Suffix}</span>}
+                                </a>
+
                               }
-                              TaskProfilePriorityCallback={(priorityValue: any) => this.TaskProfilePriorityCallback(priorityValue)}
-                              onChange={this.handleFieldChange("Priority")}
-                              type=""
-                              web={AllListId?.siteUrl}
-                            />
 
-                          </dd>
-                        </dl>
+                            </dd>
+                          </dl>
+                        </div>
+                        <div className='col-12 p-0'>
+                          <dl>
+                            <dt className='bg-Fa p-2' style={{ width: "19.5%" }}>Url</dt>
+                            <dt className='bg-Ff p-2 text-break ' style={{ width: "80%" }}>
+                              {this.state.Result["component_url"] != null &&
+                                <a target="_blank" data-interception="off" href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a>
+                              }
+                            </dt>
+                          </dl>
+                        </div>
 
-                        <dl>
-                          <dt className='bg-Fa'>SmartPriority</dt>
-
-                          <dd className='bg-Ff'>
-                            <div className="boldClable" title={this?.state?.Result?.showFormulaOnHover}>
-                              {this.state.Result["SmartPriority"] != undefined ? this.state.Result["SmartPriority"] : 0}
-                            </div>
-
-                          </dd>
-                        </dl>
-
-                        <dl>
-                          <dt className='bg-Fa'>Created</dt>
-                          <dd className='bg-Ff alignCenter'>
-                            {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MM/YYYY") : ""}
-                            {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
-                              <a title={this.state.Result["Author"][0].Title} className='alignCenter ms-1'>
-                                {this.state.Result["Author"][0].userImage !== "" && <img className="workmember hreflink " src={this.state.Result["Author"][0].userImage} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, this.state.Result["Author"][0]?.Id)} ></img>}
-                                {this.state.Result["Author"][0].userImage === "" && <span className="workmember">{this.state.Result["Author"][0].Suffix}</span>}
-                              </a>
-
-                            }
-
-                          </dd>
-                        </dl>
                       </div>
-                    
-                      <dl>
-                      <dt className='bg-Fa p-2' style={{width:"24.5%"}}>Url</dt>
-                      <dt className='bg-Ff p-2 text-break ' style={{width:"70%"}}>
-                        {this.state.Result["component_url"] != null &&
-                          <a target="_blank" data-interception="off" href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a>
-                        }
-                      </dt>
-                   
-                  </dl>
-                      </div>
-                 
+
                     </div>
 
                     <div className='col-md-4'>
                       <div className='bg-Ff p-2 rounded-1 boxshadow  '>
-                        
-                      <dl>
 
-<dt className='bg-Fa'>Portfolio Item</dt>
-<dd className='bg-Ff full-width'>
-  {this.state?.TagConceptPaper?.length > 0 &&
-    <a href={this.state?.TagConceptPaper[0].EncodedAbsUrl}>
-      <span className={`alignIcon svg__iconbox svg__icon--${this.state?.TagConceptPaper[0]?.File_x0020_Type}`} title={this.state?.TagConceptPaper[0]?.File_x0020_Type}></span>
-    </a>
-  }
-  {this.state?.Result["Portfolio"] != null &&
+                        <dl>
+                          <dt className='bg-Fa'>Portfolio Item</dt>
+                          <dd className='bg-Ff full-width columnFixedTitle '>
+                            {this.state?.TagConceptPaper?.length > 0 &&
+                              <a href={this.state?.TagConceptPaper[0].EncodedAbsUrl}>
+                                <span className={`alignIcon svg__iconbox svg__icon--${this.state?.TagConceptPaper[0]?.File_x0020_Type}`} title={this.state?.TagConceptPaper[0]?.File_x0020_Type}></span>
+                              </a>
+                            }
+                            {this.state?.Result["Portfolio"] != null &&
 
-    <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state?.Result["Portfolio"].Id}`}>
+                              <a className="hreflink text-content w-100" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state?.Result["Portfolio"].Id}`}>
 
-      {this.state?.Result["Portfolio"]?.Title}
+                                {this.state?.Result["Portfolio"]?.Title}
 
-    </a>
+                              </a>
+                            } <span className="pull-right svg__icon--editBox svg__iconbox " onClick={() => this?.openPortfolioPopupFunction("Portfolio")}></span>
+                          </dd>
+                        </dl>
+                        <dl>
+                          <dt className='bg-Fa'>Project</dt>
+                          <dd className='bg-Ff full-width columnFixedTitle'>
+                    
+                              {ProjectData?.Title != undefined ? <a className="hreflink text-content w-100" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
+                                <ReactPopperTooltipSingleLevel ShareWebId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
+                              <span className="pull-right svg__icon--editBox svg__iconbox " onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
+                         
+                          </dd>
+                        </dl>
+                        {isShowSiteCompostion && <dl className="Sitecomposition">
+                          {ClientTimeArray != null && ClientTimeArray?.length > 0 &&
+                            <div className='dropdown'>
+                              <a className="sitebutton bg-fxdark d-flex">
+                                <span className="arrowicons" onClick={() => this.showhideComposition()}>{this.state.showComposition ? <SlArrowDown /> : <SlArrowRight />}</span>
+                                <div className="d-flex justify-content-between full-width">
+                                  <p className="pb-0 mb-0">Site Composition</p>
+                                  <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => this.setState({ EditSiteCompositionStatus: true })}>
+                                    <span className="svg__iconbox svg__icon--editBox"></span>
+                                  </p>
+                                </div>
 
+                              </a>
+                              <div className="spxdropdown-menu" style={{ display: this.state.showComposition ? 'block' : 'none' }}>
+                                <ul>
+                                  {ClientTimeArray?.map((cltime: any, i: any) => {
+                                    return <li className="Sitelist">
+                                      <span>
+                                        <img style={{ width: "22px" }} title={cltime?.SiteName} src={cltime?.SiteImages} />
+                                      </span>
+                                      {cltime?.ClienTimeDescription != undefined &&
+                                        <span>
+                                          {Number(cltime?.ClienTimeDescription).toFixed(1)}%
+                                        </span>
+                                      }
+                                      {cltime.ClientCategory != undefined && cltime.ClientCategory.length > 0 ? cltime.ClientCategory?.map((clientcat: any) => {
+                                        return (
+                                          <span>{clientcat.Title}</span>
+                                        )
+                                      }) : null}
+                                    </li>
+                                  })}
+                                </ul>
+                              </div>
+                            </div>
+                          }
+                        </dl>}
 
-
-  } <span className="pull-right svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Portfolio")}></span>
-
-</dd>
-</dl>
-<dl>
-<dt className='bg-Fa'>Project</dt>
-<dd className='bg-Ff full-width'>
-  <div>
-    {ProjectData?.Title != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
-      <ReactPopperTooltipSingleLevel ShareWebId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
-    <span className="pull-right svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
-  </div>
-</dd>
-</dl>
-{isShowSiteCompostion && <dl className="Sitecomposition">
-{ClientTimeArray != null && ClientTimeArray?.length > 0 &&
-  <div className='dropdown'>
-    <a className="sitebutton bg-fxdark d-flex">
-      <span className="arrowicons" onClick={() => this.showhideComposition()}>{this.state.showComposition ? <SlArrowDown /> : <SlArrowRight />}</span>
-      <div className="d-flex justify-content-between full-width">
-        <p className="pb-0 mb-0">Site Composition</p>
-        <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => this.setState({ EditSiteCompositionStatus: true })}>
-          <span className="svg__iconbox svg__icon--editBox"></span>
-        </p>
-      </div>
-
-    </a>
-    <div className="spxdropdown-menu" style={{ display: this.state.showComposition ? 'block' : 'none' }}>
-      <ul>
-        {ClientTimeArray?.map((cltime: any, i: any) => {
-          return <li className="Sitelist">
-            <span>
-              <img style={{ width: "22px" }} title={cltime?.SiteName} src={cltime?.SiteImages} />
-            </span>
-            {cltime?.ClienTimeDescription != undefined &&
-              <span>
-                {Number(cltime?.ClienTimeDescription).toFixed(1)}%
-              </span>
-            }
-            {cltime.ClientCategory != undefined && cltime.ClientCategory.length > 0 ? cltime.ClientCategory?.map((clientcat: any) => {
-              return (
-                <span>{clientcat.Title}</span>
-              )
-            }) : null}
-          </li>
-        })}
-      </ul>
-    </div>
-  </div>
-}
-</dl>}
-
-{this.state.Result?.EstimatedTimeDescriptionArray?.length > 0 &&
-<dl className="Sitecomposition my-2">
-  <div className='dropdown'>
-    <a className="sitebutton bg-fxdark d-flex">
-      <span className="arrowicons" onClick={() => this.showhideEstimatedTime()}>{this.state.ShowEstimatedTimeDescription ? <SlArrowDown /> : <SlArrowRight />}</span>
-      <div className="d-flex justify-content-between full-width">
-        <p className="pb-0 mb-0 ">Estimated Task Time Details</p>
-      </div>
-    </a>
-    <div className="spxdropdown-menu" style={{ display: this.state.ShowEstimatedTimeDescription ? 'block' : 'none' }}>
-      <div className="col-12" style={{ fontSize: "14px" }}>
-        {this.state.Result?.EstimatedTimeDescriptionArray != null && this.state.Result?.EstimatedTimeDescriptionArray?.length > 0 ?
-          <div>
-            {this.state.Result?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
-              return (
-                <div className={this.state.Result?.EstimatedTimeDescriptionArray?.length == Index + 1 ? "align-content-center alignCenter justify-content-between p-1 px-2" : "align-content-center justify-content-between border-bottom alignCenter p-1 px-2"}>
-                  <div className='alignCenter'>
-                    <span className='me-2'>{EstimatedTimeData?.Team != undefined ? EstimatedTimeData?.Team : EstimatedTimeData?.Category != undefined ? EstimatedTimeData?.Category : null}</span> |
-                    <span className='mx-2'>{EstimatedTimeData?.EstimatedTime ? (EstimatedTimeData?.EstimatedTime > 1 ? EstimatedTimeData?.EstimatedTime + " hours" : EstimatedTimeData?.EstimatedTime + " hour") : "0 hour"}</span>
-                    <img className="ProirityAssignedUserPhoto m-0 mx-2 hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, EstimatedTimeData?.UserName, this?.taskUsers)} title={EstimatedTimeData?.UserName} src={EstimatedTimeData?.UserImage != undefined && EstimatedTimeData?.UserImage?.length > 0 ? EstimatedTimeData?.UserImage : ''} />
-                  </div>
-                  {EstimatedTimeData?.EstimatedTimeDescription?.length > 0 && <div className='alignCenter hover-text'>
-                    <span className="svg__iconbox svg__icon--info"></span>
-                    <span className='tooltip-text pop-right'>{EstimatedTimeData?.EstimatedTimeDescription} </span>
-                  </div>}
-                </div>
-              ) 
-            })}
-          </div>
-          : null
-        }
-      </div>
-    </div>
-    <div className="spxdropdown-menu ps-2 py-1 " style={{ zIndex: 0 }}>
-      <span>Total Estimated Time : </span><span className="mx-1">{this.state.Result?.TotalEstimatedTime > 1 ? this.state.Result?.TotalEstimatedTime + " hours" : this.state.Result?.TotalEstimatedTime + " hour"} </span>
-    </div>
-  </div>
-</dl>
-}
+                        {this.state.Result?.EstimatedTimeDescriptionArray?.length > 0 &&
+                          <dl className="Sitecomposition my-2">
+                            <div className='dropdown'>
+                              <a className="sitebutton bg-fxdark d-flex">
+                                <span className="arrowicons" onClick={() => this.showhideEstimatedTime()}>{this.state.ShowEstimatedTimeDescription ? <SlArrowDown /> : <SlArrowRight />}</span>
+                                <div className="d-flex justify-content-between full-width">
+                                  <p className="pb-0 mb-0 ">Estimated Task Time Details</p>
+                                </div>
+                              </a>
+                              <div className="spxdropdown-menu" style={{ display: this.state.ShowEstimatedTimeDescription ? 'block' : 'none' }}>
+                                <div className="col-12" style={{ fontSize: "14px" }}>
+                                  {this.state.Result?.EstimatedTimeDescriptionArray != null && this.state.Result?.EstimatedTimeDescriptionArray?.length > 0 ?
+                                    <div>
+                                      {this.state.Result?.EstimatedTimeDescriptionArray?.map((EstimatedTimeData: any, Index: any) => {
+                                        return (
+                                          <div className={this.state.Result?.EstimatedTimeDescriptionArray?.length == Index + 1 ? "align-content-center alignCenter justify-content-between p-1 px-2" : "align-content-center justify-content-between border-bottom alignCenter p-1 px-2"}>
+                                            <div className='alignCenter'>
+                                              <span className='me-2'>{EstimatedTimeData?.Team != undefined ? EstimatedTimeData?.Team : EstimatedTimeData?.Category != undefined ? EstimatedTimeData?.Category : null}</span> |
+                                              <span className='mx-2'>{EstimatedTimeData?.EstimatedTime ? (EstimatedTimeData?.EstimatedTime > 1 ? EstimatedTimeData?.EstimatedTime + " hours" : EstimatedTimeData?.EstimatedTime + " hour") : "0 hour"}</span>
+                                              <img className="ProirityAssignedUserPhoto m-0 mx-2 hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, EstimatedTimeData?.UserName, this?.taskUsers)} title={EstimatedTimeData?.UserName} src={EstimatedTimeData?.UserImage != undefined && EstimatedTimeData?.UserImage?.length > 0 ? EstimatedTimeData?.UserImage : ''} />
+                                            </div>
+                                            {EstimatedTimeData?.EstimatedTimeDescription?.length > 0 && <div className='alignCenter hover-text'>
+                                              <span className="svg__iconbox svg__icon--info"></span>
+                                              <span className='tooltip-text pop-right'>{EstimatedTimeData?.EstimatedTimeDescription} </span>
+                                            </div>}
+                                          </div>
+                                        )
+                                      })}
+                                    </div>
+                                    : null
+                                  }
+                                </div>
+                              </div>
+                              <div className="spxdropdown-menu ps-2 py-1 " style={{ zIndex: 0 }}>
+                                <span>Total Estimated Time : </span><span className="mx-1">{this.state.Result?.TotalEstimatedTime > 1 ? this.state.Result?.TotalEstimatedTime + " hours" : this.state.Result?.TotalEstimatedTime + " hour"} </span>
+                              </div>
+                            </div>
+                          </dl>
+                        }
                       </div>
 
                     </div>
                   </div>
-                 
+
                   <div className="row">
                     <div className='p-0'> {this.state.Result.Id != undefined && <KeyDocuments AllListId={AllListId} Context={this.props?.Context} siteUrl={this.props.siteUrl} user={this?.taskUsers} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} keyDoc={true}></KeyDocuments>}</div>
                   </div>
@@ -2899,7 +2900,6 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
               <button className="btn btn-primary ms-1" onClick={(e) => this.updateComment()}>Save</button>
               <button className='btn btn-default ms-1' onClick={this.Closecommentpopup}>Cancel</button>
             </footer>
-
 
           </Panel>}
 

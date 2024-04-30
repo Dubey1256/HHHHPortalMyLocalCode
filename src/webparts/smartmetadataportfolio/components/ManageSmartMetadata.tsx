@@ -17,6 +17,7 @@ let ParentMetaDataItems: any = [];
 let TabsData: any = [];
 let SelectedMetadataItem: any = [];
 let CopySmartmetadata: any = []
+let UrlTabName: any = ""
 export default function ManageSmartMetadata(selectedProps: any) {
     const MyContextValue: any = useContext(myContextValue)
     const [SmartmetadataAdd, setSmartmetadataAdd] = useState(false);
@@ -43,6 +44,9 @@ export default function ManageSmartMetadata(selectedProps: any) {
         childRefdata = { ...childRef };
 
     }
+    const params = new URLSearchParams(window.location.search);
+    UrlTabName = params.get('TabName');
+    console.log(params.get('TabName'));
     //...........................................................Start Filter SmartMetadata Items counts....................................................
 
     const getFilterMetadataItems = (Metadata: any) => {
@@ -92,13 +96,16 @@ export default function ManageSmartMetadata(selectedProps: any) {
     };
     const LoadSmartMetadata = async () => {
         try {
-            let web = new Web(selectedProps.AllList.SPSitesListUrl);
-            const AllMetaDataItems = await web.lists.getById(selectedProps.AllList.SPSmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderby=Title&$filter=isDeleted ne 1").getAll();
+            let web = new Web(selectedProps?.AllList?.SPSitesListUrl);
+            const AllMetaDataItems = await web.lists.getById(selectedProps?.AllList?.SmartMetadataListID).items.select("*,Author/Title,Editor/Title,Parent/Id,Parent/Title&$expand=Parent,Author,Editor&$orderby=Title&$filter=isDeleted ne 1").getAll();
             SmartmetadataItems = SmartmetadataItems.concat(AllMetaDataItems)
             if (TabsData.length > 0) {
                 TabsData.filter((item: any) => {
-                    if (item.Title === 'Categories')
-                        ShowingTabsData(item.Title);
+                    if (UrlTabName !== null) {
+                        ShowingTabsData(UrlTabName)
+                    } else {
+                        ShowingTabsData("Categories");
+                    }
                 })
             }
         } catch (error) {
@@ -130,6 +137,12 @@ export default function ManageSmartMetadata(selectedProps: any) {
         if (ParentMetaDataItems.length > 0)
             ParentMetaDataItems = [];
         SmartmetadataItems?.filter((comp: any) => {
+            if (comp.TaxType === 'Smart Pages') {
+                comp.href = `${selectedProps?.AllList?.SPSitesListUrl}/SitePages/Pages.aspx?SmartId=${comp.Id}&Item=${comp.Title}`
+            }
+            if (comp.TaxType === 'Topics') {
+                comp.href = `${selectedProps?.AllList?.SPSitesListUrl}/SitePages/Profiles.aspx?SmartId=${comp.Id}&Item=${comp.Title}`
+            }
             if (comp?.TaxType === Tab && comp?.ParentID === 0) {
                 comp['flag'] = true;
                 ParentMetaDataItems.push(comp)
@@ -202,10 +215,12 @@ export default function ManageSmartMetadata(selectedProps: any) {
                             row?.original?.Title != null &&
                             row?.original?.Title != '' ? (
                             <a>
-                                {row?.original?.Title}
-                                {(row?.original?.Description1 !== null && row?.original?.Description1 !== undefined) && <div className='hover-text'>
+                                {row?.original?.TaxType === 'Smart Pages' || row?.original?.TaxType === 'Topics' ? <a className="hreflink" href={row?.original?.href} target="_blank" data-interception="off" rel="noopener noreferrer">
+                                    {row?.original?.Title}
+                                </a> : row?.original?.Title}
+                                {(row?.original?.Description !== null && row?.original?.Description !== undefined) && <div className='hover-text'>
                                     <span className="alignIcon svg__iconbox svg__icon--info"></span>
-                                    <span className='tooltip-text pop-right'>{row?.original?.Description1} </span>
+                                    <span className='tooltip-text pop-right'>{row?.original?.Description} </span>
                                 </div>}
                             </a>
                         ) : null}
@@ -326,7 +341,10 @@ export default function ManageSmartMetadata(selectedProps: any) {
         },
     ],
         [Smartmetadata]);
-
+    const closeCreateSmartMetadataPopup = () => {
+        setSmartmetadataAdd(false);
+        childRefdata?.current?.setRowSelection({});
+    }
     const CloseEditSmartMetaPopup = () => {
         setSmartMetadataEditPopupOpen(false);
         childRefdata?.current?.setRowSelection({});
@@ -406,7 +424,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
             Array = {};
             setRestructureIcon(false)
             setSelectedItem({});
-            LoadSmartMetadata();
+            GetAdminConfig();
         }
     }, []);
     const callChildFunction = (items: any) => {
@@ -481,6 +499,11 @@ export default function ManageSmartMetadata(selectedProps: any) {
     const buttonRestructureCheck = () => {
         setSmartmetadataRestructure(true);
     }
+    const closeCompareAndRestructuepopup = () => {
+        setSmartmetadataCompare(false);
+        setSmartmetadataRestructure(false);
+        childRefdata?.current?.setRowSelection({});
+    }
     const customTableHeaderButtons = (
         <div>
             <button type="button" title="Add" onClick={OpenCreateSmartMetadataPopup} className="btnCol btn btn-primary">Add +</button>
@@ -506,14 +529,14 @@ export default function ManageSmartMetadata(selectedProps: any) {
                         <span>
                             {
                                 SmartmetadataAdd === true ?
-                                    <CreateMetadataItem AddButton={SmartmetadataAdd} childRefdata={childRefdata} AllList={selectedProps.AllList} addItemCallBack={callBackSmartMetaData} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedMetadataItem} setName={setName} ParentItem={Smartmetadata} TabSelected={TabSelected} categoriesTabName={categoriesTabName}></CreateMetadataItem>
+                                    <CreateMetadataItem AddButton={SmartmetadataAdd} childRefdata={childRefdata} AllList={selectedProps.AllList} addItemCallBack={callBackSmartMetaData} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} closeCreateSmartMetadataPopup={closeCreateSmartMetadataPopup} SelectedItem={SelectedMetadataItem} setName={setName} ParentItem={Smartmetadata} TabSelected={TabSelected} categoriesTabName={categoriesTabName}></CreateMetadataItem>
                                     : ''
                             }
                         </span>
                         <span>
                             {
                                 SmartmetadataCompare === true ?
-                                    <CompareSmartMetaData CompareButton={SmartmetadataCompare} childRefdata={childRefdata} AllList={selectedProps.AllList} compareSeletected={SelectedMetadataItem} ref={childRef} SelectedItem={SelectedMetadataItem} setName={setName} ParentItem={Smartmetadata} TabSelected={TabSelected}></CompareSmartMetaData>
+                                    <CompareSmartMetaData closeComparepopup={closeCompareAndRestructuepopup} CompareButton={SmartmetadataCompare} childRefdata={childRefdata} AllList={selectedProps.AllList} compareSeletected={SelectedMetadataItem} ref={childRef} SelectedItem={SelectedMetadataItem} setName={setName} ParentItem={Smartmetadata} TabSelected={TabSelected}></CompareSmartMetaData>
                                     : ''
                             }
                         </span>
@@ -521,6 +544,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                             {
                                 SmartmetadataRestructure === true ?
                                     <RestructureSmartMetaData
+                                        closeRestructurepopup={closeCompareAndRestructuepopup}
                                         RestructureButton={SmartmetadataRestructure} childRefdata={childRefdata} AllList={selectedProps.AllList} ref={childRef} AllMetaData={Smartmetadata} restructureItemCallBack={callBackSmartMetaData} restructureItem={SelectedMetadataItem} SmartrestructureFunct={SmartrestructureFunct} TabSelected={TabSelected} />
                                     : ''
                             }
@@ -528,17 +552,14 @@ export default function ManageSmartMetadata(selectedProps: any) {
                     </div>
                 </section>
                 <ul className="nav nav-tabs" role="tablist">
-                    {Tabs.map((item: any, index: any) => (
-                        <button className={
-                            index === 0
-                                ? "nav-link active"
-                                : "nav-link"
-                        } onClick={() => ShowingTabsData(item.Title)} key={index} data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
+                    {Tabs?.map((item: any, index: any) => (
+                        <button className={`nav-link ${item.Title === TabSelected ? "active" : ""}`}
+                            onClick={() => ShowingTabsData(item.Title)} key={index} data-bs-toggle="tab" data-bs-target="#URLTasks" type="button" role="tab" aria-controls="URLTasks" aria-selected="true">
                             {item.Title}
                         </button>
                     ))}
                     <span className='ml-auto'>
-                        <a className='text-end hyperlink ' onClick={() => generateJSONOfTaskLists()}>Generate JSON </a>
+                        <a className='text-end hyperlink' onClick={() => generateJSONOfTaskLists()}>Generate JSON </a>
                     </span>
                 </ul>
                 <div className="border border-top-0 clearfix p-2 tab-content " id="myTabContent">
@@ -562,7 +583,7 @@ export default function ManageSmartMetadata(selectedProps: any) {
                                     <div className='wrapper'>
                                         {
                                             Smartmetadata &&
-                                            <GlobalCommanTable customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllList={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRef} childRefdata={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} categoriesTabName={categoriesTabName} />
+                                            <GlobalCommanTable customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} smartMetadataCount={smartMetadataCount} Tabs={Tabs} compareSeletected={compareSeletected} CloseEditSmartMetaPopup={CloseEditSmartMetaPopup} SelectedItem={SelectedItem} setName={setName} ParentItem={Smartmetadata} AllListId={selectedProps.AllList} data={Smartmetadata} TabSelected={TabSelected} ref={childRef} childRefdata={childRefdata} callChildFunction={callChildFunction} callBackSmartMetaData={callBackSmartMetaData} columns={columns} showHeader={true} expandIcon={true} showPagination={true} callBackData={callBackSmartMetaData} categoriesTabName={categoriesTabName} />
                                         }
                                     </div>
                                 </div>
@@ -572,7 +593,6 @@ export default function ManageSmartMetadata(selectedProps: any) {
                 </div>
                 {isVisible && (<div>
                     <Panel
-                        title="popup-title"
                         isOpen={true}
                         onDismiss={CloseGenerateJSONpopup}
                         type={PanelType.custom}

@@ -358,7 +358,13 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 enableMultiSort: true,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.ProjectPriority == filterValue
+                    if ((row?.original?.ProjectPriority?.toString().charAt(0) == filterValue.toString().charAt(0))
+                        && (row?.original?.ProjectPriority.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
                 isColumnDefultSortingDesc: true,
                 resetSorting: false,
@@ -380,7 +386,13 @@ export default function ProjectOverview(props: any) {
                 resetSorting: false,
                 size: 55,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PercentComplete == filterValue
+                    if ((row?.original?.PercentComplete?.toString()?.charAt(0) == filterValue?.toString()?.charAt(0))
+                        && (row?.original?.PercentComplete?.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
             },
             {
@@ -395,7 +407,13 @@ export default function ProjectOverview(props: any) {
                 placeholder: "Priority",
                 resetColumnFilters: false,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PriorityRank == filterValue
+                    if ((row?.original?.PriorityRank?.toString().charAt(0) == filterValue.toString().charAt(0))
+                        && (row?.original?.PriorityRank.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
                 isColumnDefultSortingDesc: true,
                 enableMultiSort: true,
@@ -431,6 +449,16 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    if (row?.original?.AssignedTo?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase()) ||
+                        row?.original?.ResponsibleTeam?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase()) ||
+                        row?.original?.TeamMembers?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase())) {
+                        return true
+                    } else {
+                        return false
+                    }
+
+                },
                 size: 85,
             },
             {
@@ -647,7 +675,13 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 size: 45,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PercentComplete == filterValue
+                    if ((row?.original?.PercentComplete?.toString().charAt(0) == filterValue.toString().charAt(0))
+                        && (row?.original?.PercentComplete.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
             },
             {
@@ -663,14 +697,20 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 size: 50,
                 filterFn: (row: any, columnId: any, filterValue: any) => {
-                    return row?.original?.PriorityRank == filterValue
+                    if ((row?.original?.PriorityRank?.toString().charAt(0) == filterValue.toString().charAt(0))
+                        && (row?.original?.PriorityRank.toString())?.includes(filterValue)) {
+                        return true
+                    } else {
+                        return false
+                    }
+
                 },
                 isColumnDefultSortingDesc: true,
                 resetSorting: false,
                 header: ""
             },
             {
-                accessorFn: (row) => row?.TeamMembers?.map((elem: any) => elem.Title).join('-'),
+                accessorFn: (row) => row?.TeamMembersSearch,
                 cell: ({ row }) => (
                     <span>
                         <InlineEditingcolumns
@@ -683,10 +723,20 @@ export default function ProjectOverview(props: any) {
                         />
                     </span>
                 ),
-                id: 'TeamMembers',
+                id: 'TeamMembersSearch',
                 canSort: false,
                 resetColumnFilters: false,
                 resetSorting: false,
+                filterFn: (row: any, columnId: any, filterValue: any) => {
+                    if (row?.original?.AssignedTo?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase()) ||
+                        row?.original?.ResponsibleTeam?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase()) ||
+                        row?.original?.TeamMembers?.map((val: any) => val?.Title)?.join()?.toLowerCase()?.includes(filterValue?.toLowerCase())) {
+                        return true
+                    } else {
+                        return false
+                    }
+
+                },
                 placeholder: "TeamMembers",
                 header: "",
                 size: 85,
@@ -932,7 +982,8 @@ export default function ProjectOverview(props: any) {
                         item?.AssignedTo?.map((user: any) => {
                             memberOnLeave = AllLeaves.some((emp: any) => emp == user?.Id)
                         });
-                        if (!memberOnLeave) {
+
+                        if (!memberOnLeave && item?.AssignedTo?.length > 0) {
                             taskCount++;
                             let teamUsers: any = [];
                             if (item?.AssignedTo?.length > 0) {
@@ -1182,7 +1233,7 @@ export default function ProjectOverview(props: any) {
                                     }
                                 })
                             }
-                            child.SiteIconTitle = child?.Item_x0020_Type.charAt(0)
+                            child.SiteIconTitle = child?.Item_x0020_Type == "Sprint" ? "X" : child?.Item_x0020_Type.charAt(0);
                         })
                     }
                 })
@@ -1544,7 +1595,7 @@ export default function ProjectOverview(props: any) {
                 let filter = 'ProjectId ne null'
                 smartmeta = await globalCommon?.loadAllSiteTasks(AllListId, filter)
                 smartmeta.map((items: any) => {
-                    let EstimatedDesc = JSON.parse(items?.EstimatedTimeDescription)
+                    let EstimatedDesc = globalCommon.parseJSON(items?.EstimatedTimeDescription)
                     items.Item_x0020_Type = 'tasks';
                     items.ShowTeamsIcon = false
                     items.descriptionsSearch = '';
@@ -1850,7 +1901,7 @@ export default function ProjectOverview(props: any) {
                                                     <div className="col-sm-12 p-0 smart">
                                                         <div>
                                                             <div>
-                                                                {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} taskTypeDataItem={taskTypeDataItem} showingAllPortFolioCount={true} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                                                {selectedView == 'teamWise' ? <GlobalCommanTable expandIcon={true} headerOptions={headerOptions} hideShowingTaskCountToolTip={true} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} taskTypeDataItem={taskTypeDataItem} showingAllPortFolioCount={true} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                                                 {selectedView == 'Projects' ? <GlobalCommanTable fixedWidthTable={true} expandIcon={true} ref={childRef} callChildFunction={callChildFunction} AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false}
                                                                     customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons} multiSelect={true} columns={column2}
                                                                     data={workingTodayFiltered ? data : flatData} portfolioTypeData={portfolioTypeDataItem} showingAllPortFolioCount={true} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}

@@ -13,6 +13,7 @@ export default function CompareSmartMetaData(Props: any) {
     var [state, setState]: any = React.useState({});
     const closeComparepopup = () => {
         setIsShowCompare(false);
+        Props?.closeComparepopup()
         Props?.childRefdata?.current?.setRowSelection({});
     }
     const openComparePopup = () => {
@@ -490,7 +491,6 @@ export default function CompareSmartMetaData(Props: any) {
             </div> */}
             {isShowCompare && (<div>
                 <Panel
-                    title="popup-title"
                     isOpen={true}
                     onDismiss={closeComparepopup}
                     type={PanelType.custom}
