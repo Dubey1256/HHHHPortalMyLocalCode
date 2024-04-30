@@ -240,7 +240,6 @@ const PortfolioTagging = (item: any) => {
             //  ungetFilterLength();
             // setData(data => ([...maidataBackup]));
             setComponentsData(maidataBackup);
-            //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
         }
         }
     const handleOpen = (item: any) => {

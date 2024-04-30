@@ -66,6 +66,7 @@ const Designation = [
   { key: "HR", text: "HR" },
   { key: "Admin", text: "Admin" },
   { key: "Management", text: "Management" },
+  { key: "Mobile", text: "Mobile" },
   { key: "JTM (Junior Task Manager)", text: "JTM (Junior Task Manager)" }
 ];
 let newEvent: any
@@ -1289,59 +1290,53 @@ const Apps = (props: any) => {
     } else return "";
   };
 // for send Email
-const calculateTotalWorkingDays = (matchedData: any) => {
-  const today = new Date();
 
-  return matchedData.reduce((total: any, item: any) => {
-    const endDate = new Date(item.EndDate);
-    const eventDate = new Date(item.EventDate);
-    const timezoneOffset = endDate.getTimezoneOffset();
-    const timezoneOffsetInHours = timezoneOffset / 60;
-    const adjustedEndDate = new Date(endDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
-    const adjustedEventDate: any = new Date(eventDate.getTime() + timezoneOffsetInHours * 60 * 60 * 1000);
-
-    // Filter data based on the event date being in the current year
-    if (adjustedEventDate.getFullYear() === today.getFullYear()) {
-      const adjustedEndDateToToday = today < adjustedEndDate ? today : adjustedEndDate;
-
-      // Set hours to 0 for accurate date comparisons
-      adjustedEndDateToToday.setHours(0);
-      let workingDays = 0;
-      let currentDate = new Date(adjustedEventDate);
-      currentDate.setHours(0);
-
-      while (currentDate <= adjustedEndDateToToday) {
-        const dayOfWeek = currentDate.getDay();
-
-        if (dayOfWeek !== 0 && dayOfWeek !== 6 && !isWeekend(currentDate, adjustedEndDateToToday)) {
-          // Exclude Sunday (0) and Saturday (6), and the event date and end date if they're both on a weekend
-          if (item?.Event_x002d_Type !== "Work From Home") {
-            if (
-              (item?.HalfDay === true) ||
-              (item?.HalfDayTwo === true)
-            ) {
-              workingDays += 0.5; // Consider half-day
-            } else {
-              workingDays++;
-            }
-          }
-        }
-
-        currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
-      }
-
-      // Add one day if start and end dates are the same
-      if (adjustedEventDate.getTime() === adjustedEndDateToToday.getTime()) {
-        workingDays += 1;
-      }
-
-      return total + workingDays;
-    }
-
-    return total;
-  }, 0);
-};
-
+const calculateTotalWorkingDays = (matchedData: any[]) => {
+  // Function to reset the time of a date string to 00:00:00
+ function resetTime(dateString:any) {
+   let date = new Date(dateString);
+   date.setHours(0, 0, 0, 0);
+   return date; // Return the date object
+ }
+ 
+ // Today's date for comparison (reset to 00:00:00)
+ const today = new Date();
+ today.setHours(0, 0, 0, 0);
+ 
+ let totalWorkingDays = 0; // Initialize the counter for total working days
+ 
+ matchedData.forEach((item) => {
+   let endDate = resetTime(item.EndDate);
+   let eventDate:any = resetTime(item.EventDate);
+   if (eventDate.getFullYear() === today.getFullYear()) {
+     let currentDate = new Date(eventDate);
+ 
+     while (currentDate <= endDate) {
+       const dayOfWeek = currentDate.getDay();
+ 
+       // Exclude weekends (Saturday and Sunday)
+       if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+         // Check if the current date falls within the event range
+         if (currentDate >= eventDate && currentDate <= endDate) {
+           if (item.Event_x002d_Type !== "Work From Home") {
+             if (item.HalfDay === true || item.HalfDayTwo === true) {
+               totalWorkingDays += 0.5; // Add half-day
+             } else {
+               totalWorkingDays++; // Add full day
+             }
+           }
+         }
+       }
+ 
+       currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+     }
+   }
+ });
+ 
+ 
+   return totalWorkingDays;
+ };
+ 
 const isWeekend = (startDate: any, endDate: any) => {
   const startDay = startDate.getDay();
   const endDay = endDate.getDay();
@@ -1369,16 +1364,13 @@ const SendEmail = (EventData: any, MyEventData: any) => {
 
   let sp = spfi().using(spSPFx(props?.props?.context));
 
-  let BindHtmlBody = `<div style="max-width: 600px; margin: 0 auto; background-color: #f7f7f7; padding: 20px; border: 1px solid #ddd;">
-  <div style="padding: 20px; color: #333;">
+  let BindHtmlBody = `<div>
+  <div>
     Dear Prashant,<br><br>
     I am writing to request ${daysDifference} day of leave from ${formattedstartDate} to ${formattedendDate} due to ${EventData?.title}.<br><br>
     I have ensured that my tasks are up to date and arranged coverage during my absence. Your understanding and approval would be greatly appreciated.<br><br>
     Best regards,<br>
     ${EventData?.name}
-  </div>
-  <div style="text-align: center; padding: 10px; font-size: 0.8em; color: #666;">
-    This is an automated email notification.
   </div>
 </div>`;
 
@@ -1386,8 +1378,8 @@ const SendEmail = (EventData: any, MyEventData: any) => {
     sp.utility
       .sendEmail({
         Body: BindHtmlBody,
-        Subject: "Leave Request - " + EventData?.name + EventData?.title , // Modified subject
-        To: ["prashant.kumar@hochhuth-consulting.de", "anubhav.shukla@hochhuth-consulting.de"],
+        Subject: "Leave Request - " + formattedstartDate +"-"+EventData?.Designation+"-"+EventData?.type+"-"+ EventData?.title , // Modified subject
+        To: ["ranu.trivedi@hochhuth-consulting.de","juli.kumari@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de","anubhav.shukla@hochhuth-consulting.de"],
         AdditionalHeaders: {
           "content-type": "text/html",
         },
@@ -1472,7 +1464,9 @@ const SendEmail = (EventData: any, MyEventData: any) => {
               .getById(props.props.SmalsusLeaveCalendar)
               .items.add(eventData)
               .then(() => {
-                SendEmail(newEvent,eventData)
+                if(newEvent.type !== "Work From Home"){
+                  SendEmail(newEvent,eventData)
+                }
                 getEvents();
               })
           });

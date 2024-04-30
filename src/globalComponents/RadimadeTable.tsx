@@ -102,10 +102,10 @@ function ReadyMadeTable(SelectedProp: any) {
     const [isOpenActivity, setIsOpenActivity] = React.useState(false)
     const [isOpenWorkstream, setIsOpenWorkstream] = React.useState(false)
     const [IsComponent, setIsComponent] = React.useState(false);
-    const [SharewebComponent, setSharewebComponent] = React.useState("");
+    const [CMSToolComponent, setCMSToolComponent] = React.useState("");
     const [IsTask, setIsTask] = React.useState(false);
-    const [SharewebTask, setSharewebTask] = React.useState("");
-    const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
+    const [CMSTask, setCMSTask] = React.useState("");
+    const [cmsTimeComponent, setCmsTimeComponent] = React.useState([]);
     const checkedList1: any = React.useRef([]);
     const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
@@ -303,7 +303,6 @@ function ReadyMadeTable(SelectedProp: any) {
             .top(4999).expand("Parent").get();
         setAllClientCategory(smartmetaDetails?.filter((metadata: any) => metadata?.TaxType == 'Client Category'));
         smartmetaDetails?.map((newtest: any) => {
-            // if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
             if (newtest.Title == "SDC Sites" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
                 newtest.DataLoadNew = false;
             else if (newtest.TaxType == 'Sites') {
@@ -1556,7 +1555,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <div className="hreflink">
-                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
+                        <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
                     </div>
                 ),
                 id: "TaskID",
@@ -1613,7 +1612,7 @@ function ReadyMadeTable(SelectedProp: any) {
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) &&
                             <span><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.PortfolioType?.Color}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
+                                <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
                         }
                     </>
                 ),
@@ -2225,15 +2224,15 @@ function ReadyMadeTable(SelectedProp: any) {
         item["siteUrl"] = ContextValue.siteUrl;
         item["listName"] = "Master Tasks";
         setIsComponent(true);
-        setSharewebComponent(item);
+        setCMSToolComponent(item);
     };
     const EditItemTaskPopup = (item: any) => {
         setIsTask(true);
-        setSharewebTask(item);
+        setCMSTask(item);
     };
     const EditDataTimeEntryData = (e: any, item: any) => {
         setIsTimeEntry(true);
-        setSharewebTimeComponent(item);
+        setCmsTimeComponent(item);
     };
     const TimeEntryCallBack = React.useCallback((item1) => {
         setIsTimeEntry(false);
@@ -2865,7 +2864,7 @@ function ReadyMadeTable(SelectedProp: any) {
                 </CreateWS>)}
             {IsTask && (
                 <EditTaskPopup
-                    Items={SharewebTask}
+                    Items={CMSTask}
                     Call={Call}
                     AllListId={SelectedProp?.AllListId}
                     context={SelectedProp?.AllListId?.Context}
@@ -2874,7 +2873,7 @@ function ReadyMadeTable(SelectedProp: any) {
             )}
             {IsComponent && (
                 <EditInstitution
-                    item={SharewebComponent}
+                    item={CMSToolComponent}
                     Calls={Call}
                     SelectD={SelectedProp?.AllListId}
                     portfolioTypeData={portfolioTypeData}
@@ -2883,7 +2882,7 @@ function ReadyMadeTable(SelectedProp: any) {
             )}
             {IsTimeEntry && (
                 <TimeEntryPopup
-                    props={SharewebTimeComponent}
+                    props={cmsTimeComponent}
                     CallBackTimeEntry={TimeEntryCallBack}
                     Context={SelectedProp?.AllListId?.Context}
                 ></TimeEntryPopup>
@@ -2906,7 +2905,7 @@ export default ReadyMadeTable;
 //     SelectedItem:{} we have to pass the  data and give the all child data  inside that component,
 
 //     SelectedSiteForTask:["hhhh","de"],
-//     ExcludeSiteForTask:["shareweb"],
+//     ExcludeSiteForTask:["HHH"],
 //     TaskFilter:'',// like PercentComplete gt 0.89 or (PercentComplete eq 0.0 or (PercentComplete gt 0.0 and PercentComplete lt 0.89) or PercentComplete eq 0.89)
 //     ComponentFilter:""// like service ,component ,event 
   

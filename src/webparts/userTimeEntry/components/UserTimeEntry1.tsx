@@ -798,7 +798,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               addtime.Title = time.Title;
               addtime.selectedSiteType = time.selectedSiteType;
               addtime.siteType = time.siteType;
-              addtime.SiteIcon = ''//SharewebCommonFactoryService.GetIconImageUrl(addtime.selectedSiteType, _spPageContextInfo.webAbsoluteUrl);
+              addtime.SiteIcon = ''
               addtime.ImageUrl = time.ImageUrl;
               if (time.TaskCreated != undefined)
                 addtime.TaskCreatednew = this.ConvertLocalTOServerDate(time.TaskCreated, 'DD/MM/YYYY');
@@ -883,9 +883,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
 
   private async GetAllSiteTaskData(filterItemTimeTab: any, getAllTimeEntry: any) {
     let callcount = 0;
-    let AllSharewebSiteTasks: any = [];
+    let AllSiteTask: any = [];
     let AllTimeEntryItem: any = [];
-    let getAllSharewebSiteTasks = [];
+    let getAllSiteTask = [];
     let PortfolioComponent = true;
     let PortfolioService = true;
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
@@ -923,19 +923,19 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
               Item.FiltercreatedDate = self.ConvertLocalTOServerDate(Item.Created, "DD/MM/YYYY");
             if (Item.CompletedDate != undefined)
               Item.FilterCompletedDate = self.ConvertLocalTOServerDate(Item.CompletedDate, "DD/MM/YYYY");
-            AllSharewebSiteTasks.push(Item);
+            AllSiteTask.push(Item);
           })
         }
       }
 
-      console.log(AllSharewebSiteTasks);
+      console.log(AllSiteTask);
 
       console.log(this.state.filterItems);
       let filterItems = this.state.filterItems;
       getAllTimeEntry.forEach(function (filterItem: any) {
         filterItem.clientCategory = '';
         filterItem.clientCategoryIds = '';
-        AllSharewebSiteTasks.forEach(function (getItem: any) {
+        AllSiteTask.forEach(function (getItem: any) {
           if (filterItem.TaskItemID == getItem.Id && filterItem.selectedSiteType == getItem.siteName) {
             if (filterItem.siteType != undefined && filterItem.siteType == 'ALAK_Digital') {
               filterItem.siteType = 'ALAKDigital'
@@ -957,7 +957,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
             filterItem.PercentComplete = getItem.PercentComplete;
             filterItem.ItemRank = getItem.ItemRank;
             filterItem.PriorityRank = getItem?.PriorityRank;
-            filterItem.TaskID = ''//SharewebCommonFactoryService.getSharewebId(getItem);
+            filterItem.TaskID = ''
             filterItem.Portfolio = getItem?.Portfolio?.Title;
             filterItem.Created = getItem.Created;
             filterItem.ListId = getItem.ListId
@@ -995,16 +995,9 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         this.getFilterTask(AllTimeEntryItem);
       })
 
-      //$('#showSearchBox').show();
-
-      //$scope.sortBy('TimeEntrykDateNew', true);
-      //SharewebCommonFactoryService.hideProgressBar();
 
     }
     else {
-      //SharewebCommonFactoryService.hideProgressBar();
-      //$scope.TotalTimeEntry = 0;
-      //$('#showSearchBox').show();
     }
   }
 
@@ -1273,9 +1266,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
         AllTimeEntry: this.AllTimeEntry,
         resultSummary,
       }, () => this.createTableColumns())
-      //$scope.CopyAllTimeEntry = SharewebCommonFactoryService.ArrayCopy($scope.AllTimeEntry);
-
-    }
+     }
   }
 
   private issmartExistsIds(array: any[], Ids: { TaskItemID: any; ID: any; TimeEntryId: any; }) {

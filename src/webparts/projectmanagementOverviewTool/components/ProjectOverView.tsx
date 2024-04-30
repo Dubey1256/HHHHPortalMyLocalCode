@@ -63,7 +63,7 @@ export default function ProjectOverview(props: any) {
     const [isAddStructureOpen, setIsAddStructureOpen] = React.useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [AllTaskUser, setAllTaskUser] = React.useState([]);
-    const [SharewebComponent, setSharewebComponent] = React.useState('');
+    const [CMSToolComponent, setCMSToolComponent] = React.useState('');
     const [categoryGroup, setCategoryGroup] = React.useState([]);
     const [data, setData] = React.useState([]);
     const [flatData, setFlatData] = React.useState([]);
@@ -177,6 +177,7 @@ export default function ProjectOverview(props: any) {
 
     const editTaskCallBack = React.useCallback((item: any) => {
         setisOpenEditPopup(false);
+        LoadAllSiteTasks();
     }, []);
 
     const loadAllComponent = async () => {
@@ -281,7 +282,7 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row, getValue }) => (
                     <div>
                         <>
-                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} AllListId={AllListId} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
+                            <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} AllListId={AllListId} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
 
                         </>
                     </div>
@@ -1149,7 +1150,7 @@ export default function ProjectOverview(props: any) {
         item['listName'] = 'Master Tasks';
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);
-        setSharewebComponent(item);
+        setCMSToolComponent(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
 
@@ -1650,10 +1651,40 @@ export default function ProjectOverview(props: any) {
                     }
                     items.TeamMembersSearch = "";
                     items.AssignedToIds = [];
-
+                    if (items.AssignedTo != undefined) {
+                        items?.AssignedTo?.map((taskUser: any) => {
+                            items.AssignedToIds.push(taskUser?.Id)
+                            AllTaskUsers.map((user: any) => {
+                                if (user.AssingedToUserId == taskUser.Id) {
+                                    if (user?.Title != undefined) {
+                                        items.TeamMembersSearch =
+                                            items.TeamMembersSearch + " " + user?.Title;
+                                    }
+                                }
+                            });
+                        });
+                    }
 
                     items.TaskID = globalCommon.getTaskId(items);
+                    AllTaskUsers?.map((user: any) => {
+                        if (user.AssingedToUserId == items.Author.Id) {
+                            items.createdImg = user?.Item_x0020_Cover?.Url;
+                        }
+                        if (items.TeamMembers != undefined) {
+                            items.TeamMembers.map((taskUser: any) => {
+                                var newuserdata: any = {};
+                                if (user.AssingedToUserId == taskUser.Id) {
+                                    newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
+                                    newuserdata["Suffix"] = user?.Suffix;
+                                    newuserdata["Title"] = user?.Title;
+                                    newuserdata["UserId"] = user?.AssingedToUserId;
+                                    items["Usertitlename"] = user?.Title;
+                                    items.AllTeamMember.push(newuserdata);
+                                }
 
+                            });
+                        }
+                    });
                     AllTask.push(items);
                 });
 
@@ -1688,7 +1719,8 @@ export default function ProjectOverview(props: any) {
                 const categorizedUsers: any = [];
 
                 // Iterate over the users
-                for (const user of AllTaskUsers) {
+                let filterTaskUser = AllListId.siteUrl.includes("GrueneWeltweit") ? (AllTaskUsers.filter((item:any)=>item.technicalGroup !== "SPFx Team")): AllTaskUsers
+                for (const user of filterTaskUser) {
                     const category = user?.technicalGroup;
                     let categoryObject = categorizedUsers?.find((obj: any) => obj?.Title === category);
                     // If the category doesn't exist, create a new category object
@@ -1923,7 +1955,7 @@ export default function ProjectOverview(props: any) {
                         ""
                     )
                 }
-                {IsComponent && <EditProjectPopup props={SharewebComponent} AllListId={AllListId} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
+                {IsComponent && <EditProjectPopup props={CMSToolComponent} AllListId={AllListId} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
                 {ShowTeamPopup === true ? <ShowTeamMembers props={checkData} callBack={showTaskTeamCAllBack} TaskUsers={AllTaskUser} /> : ''}
                 {openTimeEntryPopup && <TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />}
                 {isAddStructureOpen && <AddProject CallBack={CallBack} items={CheckBoxData} PageName={"ProjectOverview"} AllListId={AllListId} data={data} />}

@@ -33,7 +33,7 @@ import VersionHistoryPopup from "./VersionHistroy/VersionHistory";
 import ServiceComponentPortfolioPopup from "./EditTaskPopup/ServiceComponentPortfolioPopup";
 
 // % complete save on the project popup
-
+let smartmetaDetails: any = []
 interface EditableFieldProps {
   listName: string;
   itemId: number;
@@ -176,12 +176,12 @@ function EditProjectPopup(item: any) {
   const [update, setUpdate] = React.useState(0);
   const [EditData, setEditData] = React.useState<any>({});
   const [modalIsOpen, setModalIsOpen] = React.useState(false);
-  const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
+  const [CMSItemRank, setCMSItemRank] = React.useState([]);
   const [isOpenPicker, setIsOpenPicker] = React.useState(false);
   const [IsComponent, setIsComponent] = React.useState(false);
   const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
-  const [SharewebComponent, setSharewebComponent] = React.useState("");
-  const [SharewebCategory, setSharewebCategory] = React.useState("");
+  const [CMSToolComponent, setCMSToolComponent] = React.useState("");
+  const [TaskCat, setTaskCat] = React.useState("");
   const [CollapseExpend, setCollapseExpend] = React.useState(true);
   const [CategoriesData, setCategoriesData] = React.useState([]);
   const TeamConfigInfo = item.props;
@@ -386,42 +386,26 @@ function EditProjectPopup(item: any) {
     }
     return json;
   };
-  var LIST_CONFIGURATIONS_TASKS =
-    '[{"Title":"Gruene","listId":"2302E0CD-F41A-4855-A518-A2B1FD855E4C","siteName":"Gruene","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.gruene-washington.de","MetadataName":"SP.Data.GrueneListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/logo-gruene.png"},{"Title":"DE","listId":"3204D169-62FD-4240-831F-BCDDA77F5028","siteName":"DE","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/Development-Effectiveness","MetadataName":"SP.Data.DEListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_de.png"},{"Title":"DRR","listId":"CCBCBAFE-292E-4384-A800-7FE0AAB1F70A","siteName":"DRR","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"","MetadataName":"SP.Data.DRRListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_drr.png"},{"Title":"Education","listId":"CF45B0AD-7BFF-4778-AF7A-7131DAD2FD7D","siteName":"Education","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/education","MetadataName":"SP.Data.EducationListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_education.png"},{"Title":"EI","listId":"E0E1FC6E-0E3E-47F5-8D4B-2FBCDC3A5BB7","siteName":"EI","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/ei","MetadataName":"SP.Data.EIListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_ei.png"},{"Title":"EPS","listId":"EC6F0AE9-4D2C-4943-9E79-067EC77AA613","siteName":"EPS","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/eps","MetadataName":"SP.Data.EPSListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_eps.png"},{"Title":"Gender","listId":"F8FD0ADA-0F3C-40B7-9914-674F63F72ABA","siteName":"Gender","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"","MetadataName":"SP.Data.GenderListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_gender.png"},{"Title":"Health","listId":"E75C6AA9-E987-43F1-84F7-D1818A862076","siteName":"Health","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/Health","MetadataName":"SP.Data.HealthListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_health.png"},{"Title":"HHHH","listId":"091889BD-5339-4D11-960E-A8FF38DF414B","siteName":"HHHH","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://hhhhteams.sharepoint.com/sites/HHHH","MetadataName":"SP.Data.HHHHListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png"},{"Title":"KathaBeck","listId":"beb3d9d7-daf3-4c0f-9e6b-fd36d9290fb9","siteName":null,"siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://kathabeck.sharepoint.com/sites/TeamK4Bundestag","MetadataName":"SP.Data.KathaBeckListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png"},{"Title":"QA","listId":"61B71DBD-7463-4B6C-AF10-6609A23AE650","siteName":"QA","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/qa","MetadataName":"SP.Data.QAListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_qa.png"},{"Title":"ALAKDigital","listId":"d70271ae-3325-4fac-9893-147ee0ba9b4d","siteName":"ALAKDigital","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/ei/digitaladministration","MetadataName":"SP.Data.ALAKDigitalListItem","TimesheetListName":"TasksTimesheet2","TimesheetListId":"9ED5C649-3B4E-42DB-A186-778BA43C5C93","TimesheetListmetadata":"SP.Data.TasksTimesheet2ListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_DA.png"},{"Title":"Shareweb","listId":"B7198F49-D58B-4D0A-ADAD-11995F6FADE0","siteName":"Shareweb","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/joint","MetadataName":"SP.Data.SharewebListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_shareweb.png"},{"Title":"Small Projects","listId":"3AFC4CEE-1AC8-4186-B139-531EBCEEA0DE","siteName":"Small Projects","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"","MetadataName":"SP.Data.Small_x0020_ProjectsListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/small_project.png"},{"Title":"Offshore Tasks","listId":"BEB90492-2D17-4F0C-B332-790BA9E0D5D4","siteName":"Offshore Tasks","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://hhhhteams.sharepoint.com/sites/HHHH","MetadataName":"SP.Data.SharewebQAListItem","TimesheetListName":"TaskTimeSheetListNew","TimesheetListId":"464FB776-E4B3-404C-8261-7D3C50FF343F","TimesheetListmetadata":"SP.Data.TaskTimeSheetListNewListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/offshore_Tasks.png"},{"Title":"Migration","listId":"D1A5AC25-3DC2-4939-9291-1513FE5AC17E","siteName":"Migration","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"https://www.shareweb.ch/site/Migration","MetadataName":"SP.Data.MigrationListItem","TimesheetListName":"TasksTimesheet2","TimesheetListId":"9ED5C649-3B4E-42DB-A186-778BA43C5C93","TimesheetListmetadata":"SP.Data.TasksTimesheet2ListItem","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png"},{"Title":"Master Tasks","listId":"EC34B38F-0669-480A-910C-F84E92E58ADF","siteName":"Master Tasks","siteUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SP","TaxType":"Sites","DomainUrl":"","MetadataName":"SP.Data.Master_x0020_TasksListItem","ImageUrl":"","ImageInformation":[{"ItemType":"Component","PortfolioType":"Component","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/component_icon.png"},{"ItemType":"SubComponent","PortfolioType":"Component","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png"},{"ItemType":"Feature","PortfolioType":"Component","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png"},{"ItemType":"Component","PortfolioType":"Service","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"},{"ItemType":"SubComponent","PortfolioType":"Service","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png"},{"ItemType":"Feature","PortfolioType":"Service","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png"},{"ItemType":"Component","PortfolioType":"Events","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Event_Icons/component_icon.png"},{"ItemType":"SubComponent","PortfolioType":"Events","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Event_Icons/SubComponent_icon.png"},{"ItemType":"Feature","PortfolioType":"Events","ImageUrl":"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Event_Icons/feature_icon.png"}]}]';
-  var GetIconImageUrl = function (listName: any, listUrl: any, Item: any) {
-    var IconUrl = "";
+  const GetSiteIcon = (listName: string) => {
+    
     if (listName != undefined) {
-      let TaskListsConfiguration = parseJSON(LIST_CONFIGURATIONS_TASKS);
-      let TaskListItem = TaskListsConfiguration.filter(function (
-        filterItem: any
-      ) {
-        let SiteRelativeUrl = filterItem?.siteUrl;
-        return (
-          filterItem.Title?.toLowerCase() == listName?.toLowerCase() &&
-          SiteRelativeUrl?.toLowerCase() == listUrl?.toLowerCase()
-        );
-      });
-      if (TaskListItem.length > 0) {
-        if (Item == undefined) {
-          IconUrl = TaskListItem[0].ImageUrl;
-        } else if (TaskListItem[0].ImageInformation != undefined) {
-          var IconUrlItem = TaskListItem[0].ImageInformation.filter(function (
-            index: any,
-            filterItem: any
-          ) {
-            return (
-              filterItem.ItemType == Item.Item_x0020_Type &&
-              filterItem.PortfolioType == Item.Portfolio_x0020_Type
-            );
-          });
-          if (IconUrlItem != undefined && IconUrlItem.length > 0) {
-            IconUrl = IconUrlItem[0].ImageUrl;
+      let siteicon = '';
+      smartmetaDetails?.map((icondata: any) => {
+        if (icondata.Title != undefined) {
+          if (icondata.Title.toLowerCase() == listName?.toLowerCase() && icondata.Item_x0020_Cover != undefined) {
+            siteicon = icondata.Item_x0020_Cover.Url
+          }
+          if (icondata.Title.toLowerCase() == listName?.toLowerCase() && icondata.Item_x005F_x0020_Cover != undefined) {
+            siteicon = icondata.Item_x005F_x0020_Cover.Url
           }
         }
-      }
+      })
+
+      return siteicon;
     }
-    return IconUrl;
-  };
+
+  }
+
 
   const getpriority = function (item: any) {
     if (item.PriorityRank >= 0 && item.PriorityRank <= 3) {
@@ -669,8 +653,8 @@ function EditProjectPopup(item: any) {
       item.siteUrl = AllListId?.siteUrl;
       item["SiteIcon"] =
         item.siteType == "Master Tasks"
-          ? GetIconImageUrl(item.siteType, AllListId?.siteUrl, undefined)
-          : GetIconImageUrl(item.siteType, AllListId?.siteUrl, undefined);
+          ? GetSiteIcon(item.siteType)
+          : GetSiteIcon(item.siteType);
       if (item.Synonyms != undefined && item.Synonyms.length > 0) {
         item.Synonyms = JSON.parse(item.Synonyms);
       }
@@ -691,7 +675,7 @@ function EditProjectPopup(item: any) {
 
   var ListId: any = "";
   var CurrentSiteUrl: any = "";
-  //var SharewebItemRank: any = '';
+  //var CMSItemRank: any = '';
   const [state, setState] = React.useState("state");
 
 
@@ -701,7 +685,7 @@ function EditProjectPopup(item: any) {
   const siteDetail: any = [];
   const GetSmartmetadata = async () => {
     let web = new Web(AllListId?.siteUrl);
-    let smartmetaDetails = [];
+    smartmetaDetails = [];
     let categoryhh: any = [];
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
@@ -776,7 +760,7 @@ function EditProjectPopup(item: any) {
           { rankTitle: "(1) Archive", rank: 1 },
           { rankTitle: "(0) No Show", rank: 0 },
         ]);
-        setSharewebItemRank(TaskItemRank[0]);
+        setCMSItemRank(TaskItemRank[0]);
         // if (useeffectdata == false)
         //     setuseeffectdata(true);
         // else setuseeffectdata(false);
@@ -788,7 +772,7 @@ function EditProjectPopup(item: any) {
   const EditComponent = (items: any, title: any) => {
     // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
     setIsComponent(true);
-    setSharewebComponent(items);
+    setCMSToolComponent(items);
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
   const GetComponents = async () => {
@@ -834,13 +818,13 @@ function EditProjectPopup(item: any) {
   };
   function EditComponentCallback() {
     if (postedData?.Id == undefined && postedData?.ID == undefined) {
-      postedData ={
-        ...postedData,...EditData
+      postedData = {
+        ...postedData, ...EditData
       }
-      postedData ={
+      postedData = {
         ...postedData,
         ComponentLink: {
-          Url: EditData?.ComponentLink!=undefined?EditData?.ComponentLink:''
+          Url: EditData?.ComponentLink != undefined ? EditData?.ComponentLink : ''
         },
       }
     }
@@ -954,7 +938,7 @@ function EditProjectPopup(item: any) {
 
     portfolioType = type;
     setIsPortfolio(true);
-    setSharewebComponent(item);
+    setCMSToolComponent(item);
   };
   const setPriorityNew = function (e: any, item: any) {
     item.PriorityRank = e.target.value;
@@ -1087,7 +1071,7 @@ function EditProjectPopup(item: any) {
       Items.ItemRankTitle != undefined &&
       Items.ItemRankTitle != "Select Item Rank"
     )
-      var ItemRank = SharewebItemRank.filter(
+      var ItemRank = CMSItemRank.filter(
         (option: { rankTitle: any }) => option.rankTitle == Items.ItemRankTitle
       )[0].rank;
     let web = new Web(AllListId?.siteUrl);
@@ -1196,17 +1180,17 @@ function EditProjectPopup(item: any) {
           );
         }
         postData["TaskID"] = postData?.PortfolioStructureID;
-        postedData ={
+        postedData = {
           ...postData,
-          TaskCategories:CategoriesData,
-          AssignedTo:TaskAssignedTo,
-          ResponsibleTeam:TaskResponsibleTeam,
-          TeamMembers:TaskTeamMembers,
-          Item_x0020_Type : EditData?.Item_x0020_Type,
+          TaskCategories: CategoriesData,
+          AssignedTo: TaskAssignedTo,
+          ResponsibleTeam: TaskResponsibleTeam,
+          TeamMembers: TaskTeamMembers,
+          Item_x0020_Type: EditData?.Item_x0020_Type,
           ComponentLink: {
-            Url: Items?.ComponentLink!=undefined?Items?.ComponentLink:''
+            Url: Items?.ComponentLink != undefined ? Items?.ComponentLink : ''
           },
-          Body:EditData.Body,
+          Body: EditData.Body,
           taggedPortfolios: projectTaggedPortfolios
 
         }
@@ -1217,7 +1201,7 @@ function EditProjectPopup(item: any) {
   };
   const EditComponentPicker = (item: any, title: any) => {
     setIsComponentPicker(true);
-    setSharewebCategory(item);
+    setTaskCat(item);
   };
 
   const ChangeStatus = (e: any, item: any) => {
@@ -1240,7 +1224,16 @@ function EditProjectPopup(item: any) {
     },
     []
   );
-
+  const shareThisTaskFunction = () => {
+    var link =
+      "mailTo:" +
+      "?cc:" +
+      "&subject=" +
+      EditData?.Title +
+      "&body=" +
+      `${AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${EditData?.Id}`;
+    window.location.href = link;
+  };
   const DDComponentCallBack = (dt: any) => {
     setTeamConfig(dt);
     console.log(TeamConfig);
@@ -1333,7 +1326,7 @@ function EditProjectPopup(item: any) {
               </li>
             </ul>
           </div>
-
+          
           <div className="feedbkicon">
             {" "}
             <Tooltip ComponentId='6490' />{" "}
@@ -1413,6 +1406,13 @@ function EditProjectPopup(item: any) {
         type={PanelType.large}
       >
         {EditData != undefined && EditData.Title != undefined && (
+          <>
+          <div className="subheading alignCenter ms-0">
+            <span className="siteColor">
+              <label className='ms-1 Dyicons hover-text'>{EditData?.Item_x0020_Type !== "Sprint" ? `${EditData?.Item_x0020_Type?.charAt(0)}` : "X"} <span className='tooltip-text pop-right'>{EditData?.Title}</span></label>
+              {`${EditData?.PortfolioStructureID} - ${EditData?.Title}`}
+            </span>
+          </div>
           <div id="EditGrueneContactSearch">
             <div className="modal-body mb-5">
               <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
@@ -1501,8 +1501,8 @@ function EditProjectPopup(item: any) {
                                     ? "select Item Rank"
                                     : EditData.ItemRankTitle}
                                 </option>
-                                {SharewebItemRank &&
-                                  SharewebItemRank.map(function (
+                                {CMSItemRank &&
+                                  CMSItemRank.map(function (
                                     h: any,
                                     i: any
                                   ) {
@@ -1521,56 +1521,56 @@ function EditProjectPopup(item: any) {
                             </div>
                           </div>
 
-                            <div className="col-sm-12 mt-2 p-0">
-                              <div className="row">
-                                <div className="col-sm-6">
-                                  <div className="input-group">
-                                    <label className="form-label full-width">Status</label>
-                                    <input type="text" maxLength={3} placeholder="% Complete" className="form-control px-2"
-                                      defaultValue={EditData?.PercentComplete != undefined ? Number(EditData?.PercentComplete).toFixed(0) : null}
-                                      value={EditData?.PercentComplete != undefined ? Number(EditData?.PercentComplete).toFixed(0) : null}
-                                      onChange={(e) => StatusAutoSuggestion(e.target.value)} />
-                                    <span className="input-group-text" title="Status Popup" onClick={() => setTaskStatusPopup(true)}>
-                                      <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
-                                    </span>
-                                  </div>
-
-                                  {PercentCompleteStatus?.length > 0 ?
-                                    <span className="full-width SpfxCheckRadio">
-                                      <input type='radio' className="radio" checked />
-                                      <label className="pt-1">
-                                        {PercentCompleteStatus}
-                                      </label>
-                                    </span> : null}
-
+                          <div className="col-sm-12 mt-2 p-0">
+                            <div className="row">
+                              <div className="col-sm-6">
+                                <div className="input-group">
+                                  <label className="form-label full-width">Status</label>
+                                  <input type="text" maxLength={3} placeholder="% Complete" className="form-control px-2"
+                                    defaultValue={EditData?.PercentComplete != undefined ? Number(EditData?.PercentComplete).toFixed(0) : null}
+                                    value={EditData?.PercentComplete != undefined ? Number(EditData?.PercentComplete).toFixed(0) : null}
+                                    onChange={(e) => StatusAutoSuggestion(e.target.value)} />
+                                  <span className="input-group-text" title="Status Popup" onClick={() => setTaskStatusPopup(true)}>
+                                    <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
+                                  </span>
                                 </div>
-                                <div className="col-sm-6">
-                                  <div className="input-group">
-                                    <label className="form-label full-width  mx-2">
-                                      Working Member
+
+                                {PercentCompleteStatus?.length > 0 ?
+                                  <span className="full-width SpfxCheckRadio">
+                                    <input type='radio' className="radio" checked />
+                                    <label className="pt-1">
+                                      {PercentCompleteStatus}
                                     </label>
-                                    {EditData?.AssignedUsers?.map(
-                                      (userDtl: any, index: any) => {
-                                        return (
-                                          <div className="TaskUsers">
-                                            <a target="_blank"
-                                            >
-                                              <img className="ProirityAssignedUserPhoto ms-2" src={
-                                                userDtl?.Item_x0020_Cover?.Url
-                                                  ? userDtl?.Item_x0020_Cover?.Url
-                                                  : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
-                                              }
-                                              />
-                                            </a>
-                                          </div>
-                                        );
-                                      }
-                                    )}
-                                  </div>
+                                  </span> : null}
+
+                              </div>
+                              <div className="col-sm-6">
+                                <div className="input-group">
+                                  <label className="form-label full-width  mx-2">
+                                    Working Member
+                                  </label>
+                                  {EditData?.AssignedUsers?.map(
+                                    (userDtl: any, index: any) => {
+                                      return (
+                                        <div className="TaskUsers">
+                                          <a target="_blank"
+                                          >
+                                            <img className="ProirityAssignedUserPhoto ms-2" src={
+                                              userDtl?.Item_x0020_Cover?.Url
+                                                ? userDtl?.Item_x0020_Cover?.Url
+                                                : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+                                            }
+                                            />
+                                          </a>
+                                        </div>
+                                      );
+                                    }
+                                  )}
                                 </div>
                               </div>
                             </div>
-                          
+                          </div>
+
                         </div>
                         <div className="mx-0 row mt-2">
                           <div className="col-sm-4 ps-0 ">
@@ -1855,7 +1855,7 @@ function EditProjectPopup(item: any) {
                                                     }}
                                                     target="_blank"
                                                     data-interception="off"
-                                                   >
+                                                  >
                                                     {type.Title}
                                                   </a>
                                                   <img
@@ -2283,15 +2283,15 @@ function EditProjectPopup(item: any) {
               </div>
             </div>
 
-            <footer className="bg-f4" style={{ position: "absolute", bottom: "0", width: "100%", zIndex: "9", left:"0px" }}>
+            <footer className="bg-f4" style={{ position: "absolute", bottom: "0", width: "100%", zIndex: "9", left: "0px" }}>
               <div className="align-items-center d-flex justify-content-between px-4 py-2">
                 <div>
                   <div>
                     Created{" "}
-                    <span className="font-weight-normal siteColor" ng-bind="EditData.Created | date:'dd/MM/yyyy'">
+                    <span className="font-weight-normal siteColor" >
                       {" "}
                       {EditData.Created != null
-                        ? moment(EditData.Created).format("DD/MM/YYYY MM:SS")
+                        ? moment(EditData.Created).format("DD/MM/YYYY")
                         : ""}
                     </span>{" "}
                     by
@@ -2305,7 +2305,7 @@ function EditProjectPopup(item: any) {
                     Last modified{" "}
                     <span className="font-weight-normal siteColor">
                       {EditData.Modified != null
-                        ? moment(EditData.Modified).format("DD/MM/YYYY MM:SS")
+                        ? moment(EditData.Modified).format("DD/MM/YYYY")
                         : ""}
                     </span>{" "}
                     by{" "}
@@ -2319,7 +2319,7 @@ function EditProjectPopup(item: any) {
                     <a className="hreflink siteColor" onClick={() => deleteTask()}>
                       <span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span>
                       {" "}
-                      <span> Delete this item</span>
+                      <span> Delete this PX</span>
                     </a>
                     <span>
                       {" "}
@@ -2342,22 +2342,17 @@ function EditProjectPopup(item: any) {
                         target="_blank"
                         data-interception="off"
                         href={`${AllListId?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${EditData.Id}`}                     >
-                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />{" "}
-                        Go to Profile page
+                        Go to Landing Page
                       </a>
                       ||
-      
-                      <a
-                        target="_blank"
-                        data-interception="off"
-                        href={`mailto:?subject=${"Test"}&body=${EditData.ComponentLink
-                          }`}
+
+                      <a className="siteColor hreflink"
+                        onClick={() => shareThisTaskFunction()}
                       >
                         {" "}
-                        Share this task ||
+                        Share this PX ||
                       </a>
                     </span>
-                    <span className="p-1">|</span>
                     <a
                       data-interception="off"
                       className="p-1"
@@ -2399,12 +2394,14 @@ function EditProjectPopup(item: any) {
             )}
             {IsComponentPicker && (
               <Picker
-                props={SharewebCategory}
+                props={TaskCat}
                 AllListId={AllListId}
                 Call={Call}
               ></Picker>
             )}
           </div>
+          </>
+          
         )}
       </Panel>
       {/* ***************** this is status panel *********** */}

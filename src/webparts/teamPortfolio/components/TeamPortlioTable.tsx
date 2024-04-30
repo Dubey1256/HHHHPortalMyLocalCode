@@ -117,10 +117,10 @@ function TeamPortlioTable(SelectedProp: any) {
     const [isOpenActivity, setIsOpenActivity] = React.useState(false)
     const [isOpenWorkstream, setIsOpenWorkstream] = React.useState(false)
     const [IsComponent, setIsComponent] = React.useState(false);
-    const [SharewebComponent, setSharewebComponent] = React.useState("");
+    const [CMSToolComponent, setCMSToolComponent] = React.useState("");
     const [IsTask, setIsTask] = React.useState(false);
-    const [SharewebTask, setSharewebTask] = React.useState("");
-    const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
+    const [CMSTask, setCMSTask] = React.useState("");
+    const [cmsTimeComponent, setCmsTimeComponent] = React.useState([]);
     const [checkedList1, setCheckedList1] = React.useState([]);
     const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
     const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
@@ -231,7 +231,6 @@ function TeamPortlioTable(SelectedProp: any) {
             .top(4999).expand("Parent").get();
         setAllClientCategory(smartmetaDetails?.filter((metadata: any) => metadata?.TaxType == 'Client Category'));
         smartmetaDetails?.map((newtest: any) => {
-            // if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Small Projects" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
             if (newtest.Title == "SDC Sites" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
                 newtest.DataLoadNew = false;
             else if (newtest.TaxType == 'Sites') {
@@ -2122,7 +2121,7 @@ function TeamPortlioTable(SelectedProp: any) {
     //                 accessorFn: (row: any) => row?.TaskID,
     //                 cell: ({ row, getValue }: any) => (
     //                     <>
-    //                         <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
+    //                         <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
     //                     </>
     //                 ),
     //                 id: column?.id,
@@ -2181,7 +2180,7 @@ function TeamPortlioTable(SelectedProp: any) {
     //                     <>
     //                         {row?.original?.ProjectTitle != (null || undefined) &&
     //                             <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
-    //                                 <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
+    //                                 <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
     //                         }
     //                     </>
     //                 ),
@@ -2545,7 +2544,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <>
-                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
+                        <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={ContextValue} singleLevel={true} masterTaskData={allMasterTaskDataFlatLoadeViewBackup} AllSitesTaskData={allTaskDataFlatLoadeViewBackup} />
                     </>
                 ),
                 id: "TaskID",
@@ -2596,12 +2595,12 @@ function TeamPortlioTable(SelectedProp: any) {
                 isColumnVisible: true
             },
             {
-                accessorFn: (row) => row?.projectStructerId + "." + row?.ProjectTitle,
+                accessorFn: (row) => row?.projectStructerId + " " + row?.ProjectTitle,
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) &&
                             <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
+                                <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
                         }
                     </>
                 ),
@@ -3227,15 +3226,15 @@ function TeamPortlioTable(SelectedProp: any) {
         item["siteUrl"] = ContextValue.siteUrl;
         item["listName"] = "Master Tasks";
         setIsComponent(true);
-        setSharewebComponent(item);
+        setCMSToolComponent(item);
     };
     const EditItemTaskPopup = (item: any) => {
         setIsTask(true);
-        setSharewebTask(item);
+        setCMSTask(item);
     };
     const EditDataTimeEntryData = (e: any, item: any) => {
         setIsTimeEntry(true);
-        setSharewebTimeComponent(item);
+        setCmsTimeComponent(item);
     };
     const TimeEntryCallBack = React.useCallback((item1) => {
         setIsTimeEntry(false);
@@ -3365,7 +3364,7 @@ function TeamPortlioTable(SelectedProp: any) {
             }
             if (item?.CreateOpenType === 'CreatePopup') {
                 const openEditItem = (item?.CreatedItem != undefined ? item.CreatedItem[0]?.data : item.data);
-                setSharewebComponent(openEditItem);
+                setCMSToolComponent(openEditItem);
                 setIsComponent(true);
             }
             renderData = [];
@@ -3391,7 +3390,7 @@ function TeamPortlioTable(SelectedProp: any) {
             renderData = renderData.concat(copyDtaArray)
             if (item?.CreateOpenType === 'CreatePopup') {
                 const openEditItem = (item?.CreatedItem != undefined ? item.CreatedItem[0]?.data : item.data);
-                setSharewebComponent(openEditItem);
+                setCMSToolComponent(openEditItem);
                 setIsComponent(true);
             }
             refreshData();
@@ -3822,7 +3821,7 @@ function TeamPortlioTable(SelectedProp: any) {
                 </CreateWS>)}
             {IsTask && (
                 <EditTaskPopup
-                    Items={SharewebTask}
+                    Items={CMSTask}
                     Call={Call}
                     AllListId={SelectedProp?.SelectedProp}
                     context={SelectedProp?.SelectedProp?.Context}
@@ -3831,7 +3830,7 @@ function TeamPortlioTable(SelectedProp: any) {
             )}
             {IsComponent && (
                 <EditInstituton
-                    item={SharewebComponent}
+                    item={CMSToolComponent}
                     Calls={Call}
                     SelectD={SelectedProp?.SelectedProp}
                     portfolioTypeData={portfolioTypeData}
@@ -3840,7 +3839,7 @@ function TeamPortlioTable(SelectedProp: any) {
             )}
             {IsTimeEntry && (
                 <TimeEntryPopup
-                    props={SharewebTimeComponent}
+                    props={cmsTimeComponent}
                     CallBackTimeEntry={TimeEntryCallBack}
                     Context={SelectedProp?.SelectedProp?.Context}
                 ></TimeEntryPopup>

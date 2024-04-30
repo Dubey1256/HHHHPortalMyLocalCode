@@ -516,7 +516,7 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                 accessorFn: (row) => row?.TaskID,
                 cell: ({ row, getValue }) => (
                     <>
-                        <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={item?.ContextValue} singleLevel={true} masterTaskData={item?.masterTaskData} AllSitesTaskData={popupData} />
+                        <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={item?.ContextValue} singleLevel={true} masterTaskData={item?.masterTaskData} AllSitesTaskData={popupData} />
                     </>
                 ),
                 id: "TaskID",
@@ -570,7 +570,7 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                     <>
                         {row?.original?.ProjectTitle != (null || undefined) ?
                             <div className="d-flex"><span style={{ width: '44%' }}><a style={row?.original?.updatedPortfolioStructureID ? { color: "#5b5b5be0" } : row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${item?.ContextValue?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
-                                <ReactPopperTooltip ShareWebId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={item?.ContextValue} /></a></span> <span className="px-1" style={{ width: '10%', textAlign: 'center' }}>{row?.original?.updatedPortfolioStructureID ? " | " : ''}</span> <span style={{ fontWeight: 600, textAlign: 'right', width: '44%' }}>
+                                <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={item?.ContextValue} /></a></span> <span className="px-1" style={{ width: '10%', textAlign: 'center' }}>{row?.original?.updatedPortfolioStructureID ? " | " : ''}</span> <span style={{ fontWeight: 600, textAlign: 'right', width: '44%' }}>
                                     <InlineBulkEditingTask columnName="Project" item={row?.original} ContextValue={item?.ContextValue} popupData={popupData} setPopupData={setPopupData} value={row?.original?.updatedPortfolioStructureID} inlineEditingCallBack={inlineEditingCallBack} />
                                 </span></div>
                             : <div className="d-flex"><span style={{ width: '44%' }}>&nbsp;</span><span className="px-1" style={{ width: '10%', textAlign: 'center' }}>{row?.original?.updatedPortfolioStructureID ? " | " : ''}</span><span style={{ fontWeight: 600, textAlign: 'right', width: '44%' }}>

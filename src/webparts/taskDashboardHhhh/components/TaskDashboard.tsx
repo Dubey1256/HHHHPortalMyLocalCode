@@ -64,7 +64,7 @@ const TaskDashboard = (props: any) => {
     const [openTimeEntryPopup, setOpenTimeEntryPopup] = React.useState(false);
     const [isTimeEntry, setIsTimeEntry] = React.useState(false);
     const [weeklyTimeReport, setWeeklyTimeReport] = React.useState([]);
-    const [sharewebTasks, setSharewebTasks] = React.useState([]);
+    const [CMSTasks, setCMSTasks] = React.useState([]);
     const [AllAssignedTasks, setAllAssignedTasks] = React.useState([]);
     const [AllImmediateTasks, setAllImmediateTasks] = React.useState([]);
     const [UserImmediateTasks, setUserImmediateTasks] = React.useState([]);
@@ -187,7 +187,7 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Last Month') {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-            var change = (Moment(startingDateOfLastMonth).add(25, 'days').format())
+            var change = (Moment(startingDateOfLastMonth).add(28, 'days').format())
             var b = new Date(change)
             formattedDate = b;
         } else if (startDateOf == 'Last Week') {
@@ -391,9 +391,15 @@ const TaskDashboard = (props: any) => {
     // All Sites Task
     const LoadAllSiteTasks = async function () {
         await loadAllComponent()
+        let  CMSTaskCategories = JSON.parse(
+            localStorage.getItem("taskCategoryType")
+        );  
+        CMSTaskCategories = CMSTaskCategories.filter((item: any)=> item.Title != "Bottleneck")
+        let stringifiedCategories = JSON.stringify(CMSTaskCategories)
+        localStorage.setItem("taskCategoryType", stringifiedCategories);
         let AllSiteTasks: any = [];
         let approverTask: any = [];
-        let SharewebTask: any = [];
+        let CMSTask: any = [];
         let AllImmediates: any = [];
         let AllEmails: any = [];
         let AllBottleNeckTasks: any = [];
@@ -541,7 +547,7 @@ const TaskDashboard = (props: any) => {
                             AllEmails.push(task)
                         }
                         if (task?.ClientActivityJson != undefined) {
-                            SharewebTask.push(task)
+                            CMSTask.push(task)
                         }
                         if (parseInt(task.PriorityRank) >= 8 && parseInt(task.PriorityRank) <= 10 && task?.PercentComplete < 80) {
                             AllPriority.push(task);
@@ -560,7 +566,7 @@ const TaskDashboard = (props: any) => {
                 setAssignedApproverTasks(sortOnCreated(approverTask));
                 setAllEmailTasks(sortOnCreated(AllEmails));
                 setAllSitesTask(sortOnCreated(AllSiteTasks));
-                setSharewebTasks(sortOnCreated(SharewebTask));
+                setCMSTasks(sortOnCreated(CMSTask));
                 setAllBottleNeck(sortOnCreated(AllBottleNeckTasks));
                 const params = new URLSearchParams(window.location.search);
                 let query = params.get("UserId");
@@ -746,7 +752,7 @@ const TaskDashboard = (props: any) => {
                 cell: ({ row }) => (
                     <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
                         <>
-                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} AllListId={AllListId} />
+                            <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} AllListId={AllListId} />
                         </>
                     </div>
                 ),
@@ -962,7 +968,7 @@ const TaskDashboard = (props: any) => {
 
             },
             {
-                accessorFn: (row) => row?.DisplayCreateDate,
+                accessorFn: (row) => row?.Created,
                 cell: ({ row, getValue }) => (
                     <span draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
                         <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
@@ -1021,7 +1027,7 @@ const TaskDashboard = (props: any) => {
                 cell: ({ row }) => (
                     <div>
                         <>
-                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} />
+                            <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} />
                         </>
                     </div>
                 ),
@@ -1159,7 +1165,7 @@ const TaskDashboard = (props: any) => {
                 size: 55
             },
             {
-                accessorFn: (row) => row?.DisplayCreateDate,
+                accessorFn: (row) => row?.Created,
                 cell: ({ row, getValue }) => (
                     <span>
                         <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
@@ -2117,10 +2123,10 @@ const TaskDashboard = (props: any) => {
             setNameTop("All Site's Tasks")
             setValue(AllSitesTask)
         }
-        else if (Tabs == "sharewebTasks") {
+        else if (Tabs == "CMSTasks") {
             setCurrentView(Tabs)
             setNameTop("Shareweb Tasks")
-            setValue(sharewebTasks)
+            setValue(CMSTasks)
         }
     }
 
@@ -2217,7 +2223,7 @@ const TaskDashboard = (props: any) => {
                                     <li id="DefaultViewSelectId" className={currentView == 'AllSitesTask' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { AllSitesDats('AllSitesTask') }}>
                                         All Tasks
                                     </li>
-                                    <li id="DefaultViewSelectId" className={currentView == 'sharewebTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { AllSitesDats('sharewebTasks') }}>
+                                    <li id="DefaultViewSelectId" className={currentView == 'CMSTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { AllSitesDats('CMSTasks') }}>
                                         Shareweb Tasks
                                     </li>
 
@@ -2414,9 +2420,9 @@ const TaskDashboard = (props: any) => {
                             : ''}
 
 
-                        {/* <label className='f-16 fw-semibold'>{`Shareweb Tasks - ${sharewebTasks?.length}`}</label>
-                        <label className='f-16 fw-semibold'>{`Shareweb Tasks - ${sharewebTasks?.length}`}</label> */}
-                        {currentView == 'AllImmediateTasks' || currentView == 'AllEmailTasks' || currentView == 'AllPriorityTasks' || currentView == 'assignedApproverTasks' || currentView == 'AllBottleNeck' || currentView == 'AllSitesTask' || currentView == 'sharewebTasks' ? <article className="row">
+                        {/* <label className='f-16 fw-semibold'>{`Shareweb Tasks - ${CMSTasks?.length}`}</label>
+                        <label className='f-16 fw-semibold'>{`Shareweb Tasks - ${CMSTasks?.length}`}</label> */}
+                        {currentView == 'AllImmediateTasks' || currentView == 'AllEmailTasks' || currentView == 'AllPriorityTasks' || currentView == 'assignedApproverTasks' || currentView == 'AllBottleNeck' || currentView == 'AllSitesTask' || currentView == 'CMSTasks' ? <article className="row">
                             <div>
                                 <div>
                                     <label className='f-16 fw-semibold'>{` ${NameTop} - ${value?.length}`}</label>

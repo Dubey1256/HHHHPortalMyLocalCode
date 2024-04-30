@@ -157,7 +157,8 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             Title: title,
             Suffix: suffix,
             SortOrder: sortOrder,
-            ItemType: "Group"
+            ItemType: "Group",
+            IsActive: true
         }).then((res: any) => {
             console.log(res);
             const newItem = res.data;

@@ -52,7 +52,7 @@ export const getTooltiphierarchyWithoutGroupByTable = (row: any, completeTitle: 
 
 let scrollToolitem: any = false
 let pageName: any = 'hierarchyPopperToolTip'
-export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterTaskData, AllSitesTaskData, AllListId }: any) {
+export default function ReactPopperTooltipSingleLevel({ CMSToolId, row, masterTaskData, AllSitesTaskData, AllListId }: any) {
     let paddingCount: number = -1;
     let marginCount: number = 0;
     
@@ -410,7 +410,7 @@ export default function ReactPopperTooltipSingleLevel({ ShareWebId, row, masterT
                 onMouseLeave={() => handleMouseLeave()}
                 onClick={() => handlClick("click")}
             >
-                {ShareWebId}
+                {CMSToolId}
             </span>
 
             {action === "click" && visible && (

@@ -28,7 +28,7 @@ export const getTooltiphierarchy = (row: any) => {
 };
 let scrollToolitem: any = false
 let pageName: any = 'hierarchyPopperToolTip'
-export default function ReactPopperTooltip({ ShareWebId, row, projectToolShow, AllListId }: any) {
+export default function ReactPopperTooltip({ CMSToolId, row, projectToolShow, AllListId }: any) {
     const [controlledVisible, setControlledVisible] = React.useState(false);
     const [openActivity, setOpenActivity] = React.useState(false);
     const [openWS, setOpenWS] = React.useState(false);
@@ -190,14 +190,14 @@ export default function ReactPopperTooltip({ ShareWebId, row, projectToolShow, A
                 onMouseEnter={() => handlAction("hover")}
                 onMouseLeave={() => handleMouseLeave()}
             >
-                {ShareWebId}
+                {CMSToolId}
             </span> :
                 <span
                     ref={setTriggerRef}
                     onMouseEnter={() => handlAction("hover")}
                     onMouseLeave={() => handleMouseLeave()}
                 >
-                    {ShareWebId}
+                    {CMSToolId}
                 </span>}
 
             {action === "click" && visible && (
