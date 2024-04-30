@@ -119,6 +119,15 @@ const inlineEditingcolumns = (props: any) => {
     } catch (e) {
       console.error("Priority and impTaskCategoryType")
     }
+    try{
+      let a :any = localStorage.getItem('taskCategoryType')
+      a = JSON.parse(a)
+      a = a.filter((item: any) => item.Title != 'Bottleneck')
+      localStorage.setItem('taskCategoryType', JSON.stringify(a))
+    }
+    catch(e){
+      console.error("JSON cannot be parsed")
+    }
     try {
 
       if (props?.pageName === "portfolioprofile" || props?.pageName === 'ProjectManagmentMaster') {
@@ -237,7 +246,7 @@ const inlineEditingcolumns = (props: any) => {
       CMSTaskCategories = JSON.parse(
         localStorage.getItem("taskCategoryType")
       );
-      
+
       CMSTaskCategories = CMSTaskCategories.filter((item: any)=> item.Title != "Bottleneck")
       let stringifiedCategories = JSON.stringify(CMSTaskCategories)
       localStorage.setItem("taskCategoryType", stringifiedCategories);
