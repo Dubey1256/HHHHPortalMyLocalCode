@@ -484,8 +484,8 @@ const CreateAllStructureComponent = (props: any) => {
                         <div className="d-flex">
                             {props?.portfolioTypeData.map((item: any) => {
                                 return (
-                                    <div className="mx-2 mb-2 mt-2">
-                                        <label className='label--radio'><input className='radio' defaultChecked={defaultPortfolioType.toLowerCase() === item.Title.toLowerCase()} name='PortfolioType' type='radio' onClick={() => CheckPortfolioType(item)} ></input>{item.Title}</label>
+                                    <div className="mb-2 mt-2">
+                                        <label className='SpfxCheckRadio'><input className='radio' defaultChecked={defaultPortfolioType.toLowerCase() === item.Title.toLowerCase()} name='PortfolioType' type='radio' onClick={() => CheckPortfolioType(item)} ></input>{item.Title}</label>
                                     </div>)
                             })}
                         </div> </>}
