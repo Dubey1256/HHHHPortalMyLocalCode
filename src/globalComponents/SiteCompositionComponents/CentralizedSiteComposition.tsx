@@ -356,7 +356,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 setSiteCompositionSettings([...SiteSettingTemp]);
                 SelectedItemDetails.SiteSettingBackup = SiteSettingTemp;
             } else {
-                let tempSiteSetting: any = [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]
+                let tempSiteSetting: any = [{ Proportional: false, Manual: false, Protected: false, Deluxe: false, Standard: true }]
                 setSiteCompositionSettings(tempSiteSetting);
                 setIsSCManual(true);
                 setSiteSettingJSON([...SiteSettingJSON])
@@ -1842,7 +1842,7 @@ const CentralizedSiteComposition = (Props: any) => {
                             }
                             SiteCompositionData = [SCDummyJSON]
                         }
-                        let tempSiteSetting: any = [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]
+                        let tempSiteSetting: any = [{ Proportional: false, Manual: false, Protected: false, Deluxe: false, Standard: true }]
                         siteSettingData = tempSiteSetting;
                     }
                 }
@@ -1927,7 +1927,7 @@ const CentralizedSiteComposition = (Props: any) => {
                             }
                             SiteCompositionData = [SCDummyJSON]
                         }
-                        let tempSiteSetting: any = [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]
+                        let tempSiteSetting: any = [{ Proportional: false, Manual: false, Protected: false, Deluxe: false, Standard: true }]
                         siteSettingData = tempSiteSetting;
                     }
                 }

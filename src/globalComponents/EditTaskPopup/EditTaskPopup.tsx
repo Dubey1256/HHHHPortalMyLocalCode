@@ -2616,7 +2616,8 @@ const EditTaskPopup = (Items: any) => {
                                         Context: Items.context,
                                         ActionType: ItemData.Title,
                                         ReasonStatement: InfoItem.Comment,
-                                        UpdatedDataObject: UpdatedDataObject
+                                        UpdatedDataObject: UpdatedDataObject,
+                                        RequiredListIds: AllListIdData
                                     }
                                     await GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
                                         console.log("Ms Teams Notifications send")
@@ -2689,7 +2690,8 @@ const EditTaskPopup = (Items: any) => {
                                     ReceiverEmail: SendUserEmailFinal,
                                     Context: Context,
                                     usedFor: functionType,
-                                    ReceiverName: AssignedUserName
+                                    ReceiverName: AssignedUserName,
+                                    RequiredListIds: AllListIdData
                                 }
                                 GlobalFunctionForUpdateItems.SendEmailNotificationForIRCTasksAndPriorityCheck(RequiredDataForNotification);
                             }
@@ -2763,7 +2765,8 @@ const EditTaskPopup = (Items: any) => {
                                     Context: Items.context,
                                     ActionType: "Immediate",
                                     ReasonStatement: '',
-                                    UpdatedDataObject: UpdatedDataObject
+                                    UpdatedDataObject: UpdatedDataObject,
+                                    RequiredListIds: AllListIdData
                                 }
                                 GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
                                     console.log("Ms Teams Notifications send")
@@ -2789,7 +2792,8 @@ const EditTaskPopup = (Items: any) => {
                                     Context: Items.context,
                                     ActionType: "Immediate",
                                     ReasonStatement: '',
-                                    UpdatedDataObject: UpdatedDataObject
+                                    UpdatedDataObject: UpdatedDataObject,
+                                    RequiredListIds: AllListIdData
                                 }
                                 GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
                                     console.log("Ms Teams Notifications send")
@@ -2815,7 +2819,8 @@ const EditTaskPopup = (Items: any) => {
                                     Context: Items.context,
                                     ActionType: "Design",
                                     ReasonStatement: "",
-                                    UpdatedDataObject: UpdatedDataObject
+                                    UpdatedDataObject: UpdatedDataObject,
+                                    RequiredListIds: AllListIdData
                                 }
                                 GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
                                     console.log("Ms Teams Notifications send")
@@ -2838,7 +2843,8 @@ const EditTaskPopup = (Items: any) => {
                                     Context: Items.context,
                                     ActionType: "User Experience - UX",
                                     ReasonStatement: "",
-                                    UpdatedDataObject: UpdatedDataObject
+                                    UpdatedDataObject: UpdatedDataObject,
+                                    RequiredListIds: AllListIdData
                                 }
                                 GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
                                     console.log("Ms Teams Notifications send")
@@ -2862,7 +2868,8 @@ const EditTaskPopup = (Items: any) => {
                                     Context: Items.context,
                                     ActionType: "User Experience - UX",
                                     ReasonStatement: "",
-                                    UpdatedDataObject: UpdatedDataObject
+                                    UpdatedDataObject: UpdatedDataObject,
+                                    RequiredListIds: AllListIdData
                                 }
                                 GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
                                     console.log("Ms Teams Notifications send")
@@ -5072,6 +5079,7 @@ const EditTaskPopup = (Items: any) => {
                     ActionType: ActionType,
                     ReasonStatement: InfoData.Comment,
                     UpdatedDataObject: EditDataBackup,
+                    RequiredListIds: AllListIdData
                 }
                 GlobalFunctionForUpdateItems.MSTeamsReminderMessage(RequiredData);
                 alert("The reminder has been sent to the user.");
