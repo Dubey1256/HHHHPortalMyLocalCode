@@ -391,6 +391,12 @@ const TaskDashboard = (props: any) => {
     // All Sites Task
     const LoadAllSiteTasks = async function () {
         await loadAllComponent()
+        let  CMSTaskCategories = JSON.parse(
+            localStorage.getItem("taskCategoryType")
+        );  
+        CMSTaskCategories = CMSTaskCategories.filter((item: any)=> item.Title != "Bottleneck")
+        let stringifiedCategories = JSON.stringify(CMSTaskCategories)
+        localStorage.setItem("taskCategoryType", stringifiedCategories);
         let AllSiteTasks: any = [];
         let approverTask: any = [];
         let CMSTask: any = [];
