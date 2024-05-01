@@ -10,21 +10,17 @@ import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIco
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import EmailComponenet from "../../taskprofile/components/emailComponent";
-import ManageConfigPopup from "../../../globalComponents/ManageConfigPopup";
 import { Web } from "sp-pnp-js";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
-import { Col, Row } from "react-bootstrap";
 import AddConfiguration from "../../../globalComponents/AddConfiguration";
 import { GrNext, GrPrevious } from "react-icons/gr";
 import * as Moment from "moment";
 import Slider from "react-slick";
-import { ColumnDef } from "@tanstack/react-table";
 import HighlightableCell from "../../../globalComponents/highlight";
-import { MdOutlineGppGood, MdGppBad } from "react-icons/Md";
-import { FocusTrapCallout, FocusZone, FocusZoneTabbableElements, Panel, PanelType, Stack, Text, } from '@fluentui/react';
-import { color } from "@mui/system";
+import { MdOutlineGppGood, MdGppBad } from "react-icons/md";
+import { Panel } from '@fluentui/react';
 let Count = 0;
 let DashboardConfig: any = [];
 let DashboardConfigCopy: any = [];
@@ -50,6 +46,9 @@ const TaskStatusTbl = (Tile: any) => {
   const [dateRange, setDateRange] = React.useState<any>([]);
   const [isRejectItem, setisRejectItem] = React.useState<any>(undefined);
   const [RefSelectedItem, setRefSelectedItem] = React.useState<any>([]);
+  if (Tile?.smartFavTableConfig != undefined && Tile?.smartFavTableConfig?.length > 0 && childRef?.current != undefined) {
+    childRef?.current?.setSmartFabBasedColumnsSetting(Tile?.smartFavTableConfig)
+  }
   const settings = {
     dots: false, infinite: true, speed: 500, slidesToShow: 6, slidesToScroll: 1, nextArrow: <SamplePrevNextArrow type="next" />, prevArrow: <SamplePrevNextArrow type="prev" />,
     beforeChange: handleBeforeChange,
@@ -442,7 +441,7 @@ const TaskStatusTbl = (Tile: any) => {
                 <p>${RejectedItem?.RejectedDetails?.RejectedComment}</p>
                 </br>
                 <p>Thanks,</p>`
-                await globalCommon.SendTeamMessage(sendUserEmail, TeamMsg, ContextData?.propsValue?.Context);
+                await globalCommon.SendTeamMessage(sendUserEmail, TeamMsg, ContextData?.propsValue?.Context, ContextData?.propsValue);
               }
               DashboardConfigCopy = JSON.parse(JSON.stringify(DashboardConfig));
               DashboardConfigCopy?.map((Config: any) => {
@@ -560,16 +559,17 @@ const TaskStatusTbl = (Tile: any) => {
         id: "Id"
       },
       {
+        accessorFn: (row: any) => row?.portfolioItemsSearch,
         cell: ({ row, getValue }: any) => (
           <div>
             <img width={"20px"} height={"20px"} className="rounded-circle" src={row?.original?.SiteIcon} />
           </div>
         ),
-        accessorKey: "",
-        id: "SiteIcon",
-        canSort: false,
-        placeholder: "",
-        size: 25,
+        id: "portfolioItemsSearch",
+        placeholder: "Type",
+        header: "",
+        resetColumnFilters: false,
+        size: 95,
         isColumnVisible: true
       },
       {
@@ -664,14 +664,19 @@ const TaskStatusTbl = (Tile: any) => {
         isColumnVisible: false
       },
       {
-        accessorKey: "percentage",
-        placeholder: "% Complete",
-        header: "",
+
+        accessorFn: (row: any) => row?.percentage,
+        cell: ({ row }: any) => (
+          <div className="text-center">{row?.original?.percentage}</div>
+        ),
+        id: "PercentComplete",
+        placeholder: "Status",
         resetColumnFilters: false,
-        size: 45,
-        id: "percentage",
+        header: "",
+        size: 55,
         isColumnVisible: true,
         fixedColumnWidth: true
+
       },
       {
         accessorFn: (row: any) => row?.TaskTypeValue,
@@ -835,8 +840,8 @@ const TaskStatusTbl = (Tile: any) => {
         placeholder: "Smart Time",
         header: "",
         resetColumnFilters: false,
-        size: 45,
-        isColumnVisible: false,
+        size: 49,
+        isColumnVisible: true,
         fixedColumnWidth: true
       },
       {
@@ -1089,6 +1094,11 @@ const TaskStatusTbl = (Tile: any) => {
     const rows: any = [];
     let currentRow: any = [];
     DashboardConfig.forEach((config: any, index: any) => {
+      let smartFavTableConfig: any = [];
+      if (config?.configurationData != undefined && config?.configurationData?.length > 0 && config?.configurationData[0]?.smartFabBasedColumnsSetting != undefined && config?.configurationData[0]?.smartFabBasedColumnsSetting != '') {
+        config.configurationData[0].smartFabBasedColumnsSetting.tableId = "DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"
+        smartFavTableConfig.push(config?.configurationData[0]?.smartFabBasedColumnsSetting)
+      }
       if (Tile.activeTile === config?.TileName || config?.TileName === "") {
         if (config?.DataSource != undefined && config?.DataSource != '') {
           const box = (
@@ -1116,7 +1126,7 @@ const TaskStatusTbl = (Tile: any) => {
                   </div>
                   <div className="Alltable" draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
-                      <GlobalCommanTable wrapperHeight="300px" tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                      <GlobalCommanTable wrapperHeight="300px" smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                         pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
                     )}
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
@@ -1206,7 +1216,7 @@ const TaskStatusTbl = (Tile: any) => {
                                   <>
                                     <h3 className="f-15">{user?.Title} {Date?.DisplayDate} Task</h3>
                                     <div key={index} className="Alltable mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} style={{ height: "300px" }}>
-                                      <GlobalCommanTable wrapperHeight="300px" columnSettingIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
+                                      <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" columnSettingIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
                                         callBackData={callBackData} pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
                                     </div>
                                   </>
@@ -1232,11 +1242,11 @@ const TaskStatusTbl = (Tile: any) => {
                     </div>
                     <div className="Alltable" >
                       {config?.Tasks != undefined && config?.Tasks?.length > 0 && (
-                        <GlobalCommanTable wrapperHeight="300px" ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                        <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                           pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
                       )}
                       {config?.Tasks != undefined && config?.Tasks?.length == 0 && (
-                        <GlobalCommanTable wrapperHeight="300px" ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                        <GlobalCommanTable smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" ShowTimeSheetsDescriptionSearch={true} columnSettingIcon={true} hideTeamIcon={true} hideOpenNewTableIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} AllListId={ContextData?.propsValue} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                           pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
                       )}
                     </div>

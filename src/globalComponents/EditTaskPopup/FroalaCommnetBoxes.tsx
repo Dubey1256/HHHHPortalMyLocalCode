@@ -169,7 +169,6 @@ export default function FroalaCommnetBoxes(textItems: any) {
         UpdatedFeedBackParentArray=tempArray
         setState(tempArray);
     }
-
     function handleChange(e: any) {
         UpdatedFeedBackParentArray = State;
         const id = parseInt(e.currentTarget.dataset.id, 10);

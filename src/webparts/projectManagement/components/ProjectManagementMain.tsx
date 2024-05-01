@@ -1,8 +1,9 @@
 import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import InlineEditingcolumns from "../../../globalComponents/inlineEditingcolumns";
-import { FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
-import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
+import { Panel, PanelType } from "office-ui-fabric-react";
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import ReactPopperTooltipSingleLevel from "../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel";
 import { Web } from "sp-pnp-js";
 import EditProjectPopup from "../../../globalComponents/EditProjectPopup";
 import * as Moment from "moment";
@@ -32,6 +33,7 @@ import RelevantDocuments from "../../taskprofile/components/RelevantDocuments";
 import RelevantEmail from '../../taskprofile/components/./ReleventEmails'
 import KeyDocuments from '../../taskprofile/components/KeyDocument';
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
+import Tooltip from "../../../globalComponents/Tooltip";
 //import { BsXCircleFill, BsCheckCircleFill } from "react-icons/bs";
 var QueryId: any = "";
 let smartPortfoliosData: any = [];
@@ -67,10 +69,16 @@ let relevantDocRef: any;
 let smartInfoRef: any;
 let keyDocRef: any;
 let suggestedPortfolioItems: any;
+let keyRelevantPortfolioItems: any;
+let selectedItem: any
+let taggedPortfolioItem: any
+let taskTypeDataItem:any;
 const ProjectManagementMain = (props: any) => {
   relevantDocRef = React.useRef();
   smartInfoRef = React.useRef();
   keyDocRef = React.useRef();
+  const [portfolioTypeDataItem, setPortFolioTypeIcon] = React.useState([]);
+  
   const [keydoc, Setkeydoc] = React.useState([]);
   const [FileDirRef, SetFileDirRef] = React.useState('');
   // const [item, setItem] = React.useState({});
@@ -109,8 +117,12 @@ const ProjectManagementMain = (props: any) => {
   const [remark, setRemark] = React.useState(false)
   const [remarkData, setRemarkData] = React.useState(null);
   const [topCompoIcon, setTopCompoIcon]: any = React.useState(false);
-  const [editSmartInfo, setEditSmartInfo] = React.useState(false)
-  const [suggestedItems, setSuggestedItems] = React.useState('')
+  const [editSmartInfo, setEditSmartInfo] = React.useState(false);
+  const [suggestedItems, setSuggestedItems] = React.useState("");
+  const [suggestedPortfolio, setSuggestedPortfolio] = React.useState("")
+  const [searchedKeyPortfolios, setSearchedkeyPortfolios] = React.useState([])
+  const [ActivityPopup, setActivityPopup] = React.useState(false);
+  const [activeTile, setActiveTile] = React.useState("")
   const childRef = React.useRef<any>();
   const StatusArray = [
     { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
@@ -180,6 +192,7 @@ const ProjectManagementMain = (props: any) => {
       setIsSmartInfoAvailable(true)
     }
     getQueryVariable((e: any) => e);
+    getTaskType()
     loadAllSmartInformation()
     try {
       $("#spPageCanvasContent").removeClass();
@@ -249,6 +262,36 @@ const ProjectManagementMain = (props: any) => {
     }
     return taskUser;
   }
+
+  const getTaskType = async () => {
+    let web = new Web(AllListId.siteUrl);
+    let taskTypeData = [];
+    let typeData: any = [];
+    taskTypeData = await web.lists
+        .getById(AllListId.TaskTypeID)
+        .items.select(
+            'Id',
+            'Level',
+            'Title',
+            'SortOrder',
+        ).get();
+    if (taskTypeData?.length > 0 && taskTypeData != undefined) {
+        taskTypeData?.forEach((obj: any) => {
+            if (obj != undefined) {
+                let Item: any = {};
+                Item.Title = obj.Title;
+                Item.SortOrder = obj.SortOrder;
+                Item[obj.Title + 'number'] = 0;
+                Item[obj.Title + 'filterNumber'] = 0;
+                Item[obj.Title + 'numberCopy'] = 0;
+                typeData.push(Item);
+            }
+        })
+       
+        taskTypeDataItem = typeData.sort((elem1: any, elem2: any) => elem1.SortOrder - elem2.SortOrder);
+        
+    }
+};
 
   const GetMasterData = async (loadtask: any) => {
     if (AllListId?.MasterTaskListID != undefined) {
@@ -362,13 +405,13 @@ const ProjectManagementMain = (props: any) => {
               const suggestedKeywords = fetchedProject?.Title.toLowerCase().split(/\s+/);
               if (suggestedKeywords.length > 0) {
                 suggestedPortfolioItems = MasterListData.filter((masterItm: any) => {
-                    const titleWords = masterItm?.Title.toLowerCase();
-                    const includesAnyKeyword = suggestedKeywords.some((keyword: any) => titleWords.includes(keyword));
-                    const isNotMatchingTitles = titleWords !== fetchedProject?.Title.toLowerCase() && titleWords !== 'latest annual report';
-                    return includesAnyKeyword && isNotMatchingTitles
+                  const titleWords = masterItm?.Title.toLowerCase();
+                  const includesAnyKeyword = suggestedKeywords.some((keyword: any) => titleWords.includes(keyword));
+                  const isNotMatchingTitles = titleWords !== fetchedProject?.Title.toLowerCase() && titleWords !== 'latest annual report';
+                  return includesAnyKeyword && isNotMatchingTitles
                 });
+              }
             }
-          }
             projectData = fetchedProject;
             if (loadtask == true) {
               LoadAllSiteTasks();
@@ -437,11 +480,33 @@ const ProjectManagementMain = (props: any) => {
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
     if (elem?.TaskType != undefined) {
       setCheckedList(elem)
+    }
+    else if (elem?.TaskType == undefined) {
+      setCheckedList(elem)
+      selectedItem = elem
     } else {
       setCheckedList({})
     }
   }, []);
 
+  const onRenderCustomHeaderMain = () => {
+    return (
+        <div className="d-flex full-width pb-1">
+            <div className="subheading">
+                <span className="siteColor">{`Create Item`}</span>
+            </div>
+            <Tooltip ComponentId={1746} />
+        </div>
+    );
+};
+
+const closeActivity = () => {
+  setActivityPopup(false)
+  setActiveTile("")
+  setSearchedkeyPortfolios([])
+  setSuggestedPortfolio("")
+  childRef?.current?.setRowSelection({});
+}
 
   const CallBack = React.useCallback((item: any, type: any) => {
     setIsAddStructureOpen(false)
@@ -678,18 +743,22 @@ const ProjectManagementMain = (props: any) => {
           }
           suggestedPortfolioItems = suggestedPortfolioItems.filter((itms: any) => {
             if (smartPortfoliosData !== undefined || taskTaggedComponents !== undefined) {
-                const isKeyTitleMatch = smartPortfoliosData.some((tagPort: any) => tagPort?.Title === itms?.Title); 
-                const isRelevantTitleMatch = taskTaggedComponents.some((taskTag: any) => taskTag?.Title === itms?.Title);
-                const isProjectOrSprint = itms?.Item_x0020_Type === 'Project' || itms?.Item_x0020_Type === 'Sprint';    
-                if (isKeyTitleMatch || isRelevantTitleMatch || isProjectOrSprint) {
-                    return false;
-                }
+              const isKeyTitleMatch = smartPortfoliosData.some((tagPort: any) => tagPort?.Title === itms?.Title);
+              const isRelevantTitleMatch = taskTaggedComponents.some((taskTag: any) => taskTag?.Title === itms?.Title);
+              const isProjectOrSprint = itms?.Item_x0020_Type === 'Project' || itms?.Item_x0020_Type === 'Sprint';
+              if (isKeyTitleMatch || isRelevantTitleMatch || isProjectOrSprint) {
+                return false;
+              }
             }
             return itms?.Item_x0020_Type !== 'Project' && itms?.Item_x0020_Type !== 'Sprint';
-        });
+          });
           items.PortfolioTitle = '';
           items.portfolio = items?.Portfolio;
           items.PortfolioTitle = items?.Portfolio?.Title;
+          items.ProjectTitle = '';
+          items.ProjectID = items?.Project?.PortfolioStructureID
+          items.project = items?.Project;
+          items.ProjectTitle = items?.Project?.Title;
           // items["Portfoliotype"] = "Component";
         }
         if (items?.Project?.Id != undefined) {
@@ -749,7 +818,7 @@ const ProjectManagementMain = (props: any) => {
       if (projectData?.subRows?.length > 0 && projectData?.Item_x0020_Type == "Project") {
         allSprints = projectData?.subRows
         allSprints?.map((Sprint: any) => {
-          
+
           let allSprintActivities: any = []
           allSprintActivities = AllTask.filter((task: any) => {
             if (task?.TaskType?.Id == 1 && task?.Project?.Id == Sprint?.Id) {
@@ -868,6 +937,9 @@ const ProjectManagementMain = (props: any) => {
       AllTask = AllTask.filter((item: any) => item?.isTaskPushed !== true);
       allSprints = allSprints.concat(AllTask);
       allBackupSprintAndTask = allSprints
+     let allRowInfo =getAllRowInfo(allSprints)
+      countAWT(allRowInfo)
+      countPoject(allRowInfo)
       setProjectTableData(allSprints);
       backupTableData = allSprints;
       setTaskTaggedPortfolios(taskTaggedComponents)
@@ -880,7 +952,49 @@ const ProjectManagementMain = (props: any) => {
     }
 
   };
+  const getAllRowInfo=(allSprints:any)=>{
+    let allrowInfo:any=[];
+   function getallRows(value:any){
+    value?.map((item:any)=>{
+      allrowInfo.push(item)
+      if(item?.subRows?.length>0){
+        getallRows(item?.subRows)
+      }
+    })
 
+   }
+   getallRows(allSprints)
+   return allrowInfo;
+  }
+  const countAWT=(countTaskAWTLevel:any)=>{
+    countTaskAWTLevel?.map((result: any) => {
+      taskTypeDataItem?.map((type: any) => {
+          if (result?.TaskType?.Title === type.Title) {
+            type[type?.Title + 'filterNumber'] += 1;
+              type[type?.Title + 'number'] += 1;
+          }
+      });
+  })
+  }
+  const countPoject=(projectCount:any)=>{
+    let portfolioTypeData:any=[]
+    let Item: any = {};
+    Item.Title = "Sprint";
+    Item.Sprintnumber = 0;
+    Item.SprintfilterNumber = 0;
+    Item.SprintnumberCopy = 0;
+    portfolioTypeData?.push(Item);
+    projectCount?.map((item:any)=>{
+      portfolioTypeData?.map((showPortFolio:any)=>{
+        if(item?.Item_x0020_Type==showPortFolio?.Title){
+          showPortFolio[showPortFolio.Title + 'filterNumber'] += 1;
+          showPortFolio[showPortFolio.Title + 'number'] += 1;
+        }
+      })
+      
+    })
+    setPortFolioTypeIcon(portfolioTypeData)
+  }
 
   const getChilds = (item: any, items: any) => {
     items?.map((sub: any) => {
@@ -917,9 +1031,30 @@ const ProjectManagementMain = (props: any) => {
   };
   const OpenAddStructureModal = () => {
     setIsAddStructureOpen(true);
-  }
-  const addActivity = (type: any) => {
+  };
 
+  const CreateActivityPopup = (type: any) => {
+    setActiveTile(type)
+    if (checkedList?.TaskType === undefined) {
+        checkedList.NoteCall = type;
+
+    }
+    if (checkedList?.TaskType?.Id == 1) {
+        checkedList.NoteCall = type;
+    }
+    if (checkedList?.TaskType?.Id == 3) {
+        checkedList.NoteCall = type;
+    }
+    if (checkedList?.TaskType?.Id == 2) {
+        alert("You can not create ny item inside Task");
+    }
+};
+  const addActivity = (type: any) => {
+    keyRelevantPortfolioItems = [...Masterdata?.taggedPortfolios, ...TaskTaggedPortfolios]
+    if (checkedList?.TaskType?.Id == undefined) {
+      checkedList.NoteCall = type
+      setActivityPopup(true);
+  }
     if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
       checkedList.NoteCall = "Task";
       setIsOpenActivity(true);
@@ -932,6 +1067,25 @@ const ProjectManagementMain = (props: any) => {
       alert("You can not create ny item inside Task");
     }
   };
+  const Createbutton = () => {
+    if (checkedList?.TaskType === undefined) {
+        setIsOpenActivity(true);
+        setActiveTile("")
+    }
+    if (checkedList?.TaskType?.Id == 1) {
+        setIsOpenWorkstream(true);
+        setActiveTile("")
+    }
+    if (checkedList?.TaskType?.Id == 3) {
+        setIsOpenActivity(true);
+        setActiveTile("")
+    }
+    if (checkedList?.TaskType?.Id == 2) {
+        alert("You can not create ny item inside Task");
+    }
+    setSearchedkeyPortfolios([])
+    setSuggestedPortfolio("")
+};
   const Call = (propsItems: any, type: any) => {
     if (propsItems?.Id != undefined) {
       if (propsItems?.DueDate != undefined) {
@@ -959,7 +1113,7 @@ const ProjectManagementMain = (props: any) => {
         let filteredSmartPortfolios = propsItems?.taggedPortfolios.filter((tagPort: any) => tagPort?.Id !== undefined).map((tagPort: any) => smartPortfoliosData.find((port: any) => port?.Id === tagPort?.Id));
         smartPortfoliosData = filteredSmartPortfolios
       }
-    }  
+    }
     if (propsItems?.Item_x0020_Type == "Project") {
       setMasterdata(propsItems)
     } else if (propsItems?.Item_x0020_Type == "Sprint") {
@@ -976,16 +1130,18 @@ const ProjectManagementMain = (props: any) => {
     }
     if (propsItems === "Close") {
       setIsComponent(false);
-      setIsOpenActivity(false)
-      setIsOpenWorkstream(false)
+      setIsOpenActivity(false);
+      setIsOpenWorkstream(false);
+      setActivityPopup(false)
     }
     if (propsItems?.data && propsItems?.data?.ItmesDelete != true && (propsItems?.data?.TaskType?.Id == 2 || propsItems?.data?.TaskType?.Id == 3)) {
       setIsOpenActivity(false)
       setIsOpenWorkstream(false)
+      setActivityPopup(false)
       LoadAllSiteTasks();
     }
-      setIsComponent(false);
-      GetMasterData(false)
+    setIsComponent(false);
+    GetMasterData(false)
   };
 
   const LoadAllSiteAllTasks = async function () {
@@ -1080,9 +1236,9 @@ const ProjectManagementMain = (props: any) => {
   const switchFlatViewData = (data?: any | null, workingToday?: boolean | null) => {
     let groupedDataItems = [];
     if (workingToday == undefined) {
-   
+
       try {
-        groupedDataItems = JSON.parse(JSON.stringify(data));
+        groupedDataItems = globalCommon.deepCopy(data);
       } catch (e) {
 
       }
@@ -1099,10 +1255,10 @@ const ProjectManagementMain = (props: any) => {
     } else {
       if (workingToday) {
         groupedDataItems = globalCommon.deepCopy(backupTableData);
-        let flattenedData :any = []
-        try{
+        let flattenedData: any = []
+        try {
           flattenedData = flattenData(groupedDataItems)
-        }catch(e){
+        } catch (e) {
 
         }
         let filteredTodayTak = flattenedData?.filter((task: any) => {
@@ -1118,7 +1274,7 @@ const ProjectManagementMain = (props: any) => {
       }
       setWorkingTodayFiltered(workingToday)
     }
-  
+
 
     // setProjectTableData(smartAllFilterData);
   }
@@ -1180,22 +1336,26 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         resetSorting: false,
         resetColumnFilters: false,
-        size: 50
+        size: 50,
+        isColumnVisible: true,
+        fixedColumnWidth: true,
       },
       {
         accessorKey: "TaskID",
-        placeholder: "Task Id",
-        header: "",
-        resetColumnFilters: false,
-        resetSorting: false,
-        size: 125,
-        cell: ({ row, getValue }) => (
+                cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
               <ReactPopperTooltipSingleLevel AllListId={AllListId} ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MasterListData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </>
         ),
+        id:"TaskID",
+        placeholder: "Task Id",
+        header: "",
+        resetColumnFilters: false,
+        resetSorting: false,
+        size: 125,
+        isColumnVisible: true
       },
       {
         accessorFn: (row) => row?.Title,
@@ -1250,8 +1410,8 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         resetSorting: false,
         header: "",
+        isColumnVisible: true
       },
-
       {
         accessorFn: (row) => row?.PortfolioTitle,
         cell: ({ row }) => (
@@ -1270,7 +1430,41 @@ const ProjectManagementMain = (props: any) => {
         placeholder: "Portfolio Item",
         resetColumnFilters: false,
         resetSorting: false,
-        header: ""
+        header: "",
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row) => row?.ProjectID + " " + row?.ProjectTitle,
+        cell: ({ row }) => (
+          <>
+          {row.original.ProjectTitle != (null || undefined) && 
+          <a
+            className="hreflink"
+            data-interception="off"
+            target="blank"
+            href={`${props?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.project?.Id}`}
+          >
+            <span className="d-flex">
+              <ReactPopperTooltipSingleLevel
+                AllListId={AllListId}
+                onclickPopup={false}
+                CMSToolId={row?.original?.project?.PortfolioStructureID}
+                row={row?.original?.Project}
+                singleLevel={true}
+                masterTaskData={MasterListData}
+                AllSitesTaskData={AllSitesAllTasks}
+              />
+            </span>
+          </a>}
+          </>  
+        ),
+        id: "ProjectTitle",
+        placeholder: "Project",
+        resetColumnFilters: false,
+        resetSorting: false,
+        header: "",
+        size: 70,
+        isColumnVisible: true
       },
       {
         accessorFn: (row) => row?.TaskTypeValue,
@@ -1311,11 +1505,13 @@ const ProjectManagementMain = (props: any) => {
         id: 'Priority',
         header: "",
         resetColumnFilters: false,
+        isColumnVisible: true,
+        fixedColumnWidth: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.PriorityRank == filterValue
         },
         resetSorting: false,
-        size: 75
+        size: 75,
       },
       {
         accessorFn: (row) => row?.SmartPriority,
@@ -1325,11 +1521,13 @@ const ProjectManagementMain = (props: any) => {
         id: "SmartPriority",
         placeholder: "SmartPriority",
         resetColumnFilters: false,
+        isColumnVisible: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.SmartPriority == filterValue
         },
         header: "",
         size: 42,
+        fixedColumnWidth: true
       },
       {
         accessorFn: (row) => row?.DueDate,
@@ -1345,8 +1543,9 @@ const ProjectManagementMain = (props: any) => {
         ),
         id: 'DueDate',
         resetColumnFilters: false,
-        isColumnDefultSortingDesc: true,
+        fixedColumnWidth: true,
         resetSorting: false,
+        isColumnVisible: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.DisplayDueDate?.includes(filterValue)
         },
@@ -1387,6 +1586,8 @@ const ProjectManagementMain = (props: any) => {
         id: 'PercentComplete',
         placeholder: "% Complete",
         resetColumnFilters: false,
+        isColumnVisible: true,
+        fixedColumnWidth: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.PercentComplete == filterValue
         },
@@ -1413,7 +1614,9 @@ const ProjectManagementMain = (props: any) => {
         resetSorting: false,
         placeholder: "TeamMembers",
         header: "",
-        size: 110
+        size: 110,
+        isColumnVisible: true,
+        fixedColumnWidth: true,
       },
       {
         accessorFn: (row) => row?.SmartInformationTitle,
@@ -1427,7 +1630,8 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         placeholder: "Remarks",
         header: '',
-        size: 50
+        size: 50,
+        isColumnVisible: true
       },
 
       {
@@ -1456,6 +1660,8 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Created",
+        isColumnVisible: true,
+        fixedColumnWidth: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
             return true
@@ -1492,6 +1698,8 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Modified",
+        isColumnVisible: true,
+        fixedColumnWidth: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
             return true
@@ -1512,6 +1720,8 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         resetColumnFilters: false,
         size: 49,
+        isColumnVisible: true,
+        fixedColumnWidth: true,
       },
       {
         header: ({ table }: any) => (
@@ -1541,11 +1751,11 @@ const ProjectManagementMain = (props: any) => {
       },
       {
         cell: ({ row }) => (
-          <>
+          <div className="text-end">
             {row?.original?.TaskType != undefined &&
-            (row?.original?.TaskType?.Title == "Activities" ||
-              row?.original?.TaskType?.Title == "Workstream" ||
-              row?.original?.TaskType?.Title == "Task") ? (
+              (row?.original?.TaskType?.Title == "Activities" ||
+                row?.original?.TaskType?.Title == "Workstream" ||
+                row?.original?.TaskType?.Title == "Task") ? (
               <>
                 <span
                   onClick={(e) => EditDataTimeEntry(e, row.original)}
@@ -1565,7 +1775,7 @@ const ProjectManagementMain = (props: any) => {
                 className="alignIcon svg__iconbox svg__icon--edit hreflink"
               ></span>
             )}
-          </>
+          </div>
         ),
         id: "EditPopup",
         accessorKey: "",
@@ -1638,9 +1848,42 @@ const ProjectManagementMain = (props: any) => {
     const searchQuery = e?.target?.value
     setSuggestedItems(searchQuery);
     const filteredPortfolioItems = suggestedPortfolioItems.filter((item: any) =>
-        item?.Title.toLowerCase().includes(searchQuery.toLowerCase())
+      item?.Title.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setSuggestedPortfolios(searchQuery === '' ? suggestedPortfolioItems : filteredPortfolioItems);
+  }
+  const searchSuggestedPortfolio2 = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let SearchedKeyWord: any = e.target.value;
+        let TempArray: any = [];
+        setSuggestedPortfolio(SearchedKeyWord)
+        if (SearchedKeyWord.length > 0) {
+            if (
+                keyRelevantPortfolioItems != undefined &&
+                keyRelevantPortfolioItems.length > 0
+            ) {
+              keyRelevantPortfolioItems.map((AllDataItem: any) => {
+                    if (
+                        AllDataItem.Path?.toLowerCase()?.includes(
+                            SearchedKeyWord.toLowerCase()
+                        )
+                    ) {
+                        TempArray.push(AllDataItem);
+                    }
+                });
+            }
+            if (TempArray != undefined && TempArray.length > 0) {
+              setSearchedkeyPortfolios(TempArray)
+            }
+        } else {
+          setSearchedkeyPortfolios([]);
+          setSuggestedPortfolio("");
+        }
+  };
+
+  const setTaggedPortfolioItem = (item: any) => {
+    taggedPortfolioItem = item
+    setSuggestedPortfolio(item?.Title)
+    setSearchedkeyPortfolios([]);
   }
   return (
     <myContextValue.Provider value={{ ...myContextValue, user: AllUser, ProjectLandingPageDetails: Masterdata, FunctionCall: contextCall, keyDoc: keydoc, FileDirRef: FileDirRef, closeCompTaskPopup: tagAndCreateCallBack, projectCallBackTask: LoadAllSiteTasks, portfolioCreationCallBack: ComponentServicePopupCallBack, tagProjectFromTable: true }}>
@@ -1695,94 +1938,94 @@ const ProjectManagementMain = (props: any) => {
                           </a>
                         </li>
                         <li className="nav__item  pb-1 pt-0 mt-1">
-                        <div className="nav__text">
-                        <>
-                        {Masterdata?.taggedPortfolios?.length > 0 ? (
-                          <div>
-                          <span className="nav__text">Key Portfolio Items</span>
-                            <ul className="nav__subList wrapper ps-0 pe-2">
-                              {Masterdata?.taggedPortfolios?.map((component: any, index: any) => {
-                                return (
-                                  <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
-                                    <span>
-                                      <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="_blank" onClick={() => filterPotfolioTasks(component, index, "Component")}>
-                                        {component?.Title}
-                                      </a>
-                                    </span>
-                                  </li>
-                                )
-                              })}
-                            </ul>
-                        </div>
-                        ) : (
-                        <>
-                        <span className="nav__text">Key Portfolio Items</span>  
-                          <div className="nontag mt-2 text-center">
-                              No Tagged Portfolio
-                          </div>
-                        </>  
-                        )}
-                        {TaskTaggedPortfolios?.length > 0 ? (
-                          <div>
-                          <span className="nav__text">Relevant Portfolio Items</span>
-                          <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar">
-                            {TaskTaggedPortfolios?.map((component: any, index: any) => {
-                              return (
-                                <li key={index} className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
-                                  <div className="alignCenter">
-                                    <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank" onClick={() => filterPotfolioTasks(component, index, "taskComponent")}>
-                                      {component?.Title}
-                                    </a>
-                                  <span
-                                  className="ml-auto wid30 svg__iconbox svg__icon--Plus light hreflink"
-                                  onClick={(e) =>
-                                  ComponentServicePopupCallBack([component],'','')}
-                                  >
-                                  </span>
+                          <div className="nav__text">
+                            <>
+                              {Masterdata?.taggedPortfolios?.length > 0 ? (
+                                <div>
+                                  <span className="nav__text">Key Portfolio Items</span>
+                                  <ul className="nav__subList wrapper ps-0 pe-2">
+                                    {Masterdata?.taggedPortfolios?.map((component: any, index: any) => {
+                                      return (
+                                        <li className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
+                                          <span>
+                                            <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="_blank" onClick={() => filterPotfolioTasks(component, index, "Component")}>
+                                              {component?.Title}
+                                            </a>
+                                          </span>
+                                        </li>
+                                      )
+                                    })}
+                                  </ul>
+                                </div>
+                              ) : (
+                                <>
+                                  <span className="nav__text">Key Portfolio Items</span>
+                                  <div className="nontag mt-2 text-center">
+                                    No Tagged Portfolio
                                   </div>
-                                </li>
-                                )
-                              })}
-                          </ul>
-                        </div>
-                        ) : (
-                          <>
-                        <span className="nav__text">Relevant Portfolio Items</span>  
-                          <div className="nontag mt-2 text-center">
-                              No Tagged Portfolio
-                          </div>
-                          </>
-                        )}
-                        <div>
-                        <span className="nav__text">Suggested Portfolio Items</span>
-                          <input
-                            type="search"
-                            value={suggestedItems}
-                            onChange={(e) => searchSuggestedPortfolio(e)}
-                            placeholder="Search Suggested Portfolio Items"
-                            className="bg-transparent full-width px-1 py-0 mt-1 text-bg-secondary"
-                          />
-                             {suggestedPortfolios?.length > 0 ? (
-                              <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar mt-2">
-                                {suggestedPortfolios?.map(
-                                  (component: any, index: any) => (
-                                    <li
-                                      key={index}
-                                      className={
-                                      component?.Id ==
-                                      createTaskId?.portfolioData?.Id
-                                      ? "nav__item bg-ee ps-1"
-                                      : "mb-1 bg-shade hreflink"
-                                      }
-                                    >
-                                      <div className="alignCenter">
-                                        <a
+                                </>
+                              )}
+                              {TaskTaggedPortfolios?.length > 0 ? (
+                                <div>
+                                  <span className="nav__text">Relevant Portfolio Items</span>
+                                  <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar">
+                                    {TaskTaggedPortfolios?.map((component: any, index: any) => {
+                                      return (
+                                        <li key={index} className={component?.Id == createTaskId?.portfolioData?.Id ? "nav__item bg-ee ps-1" : "mb-1 bg-shade hreflink"}>
+                                          <div className="alignCenter">
+                                            <a className={component?.Id == createTaskId?.portfolioData?.Id ? "hreflink " : "text-white hreflink"} data-interception="off" target="blank" onClick={() => filterPotfolioTasks(component, index, "taskComponent")}>
+                                              {component?.Title}
+                                            </a>
+                                            <span
+                                              className="ml-auto wid30 svg__iconbox svg__icon--Plus light hreflink"
+                                              onClick={(e) =>
+                                                ComponentServicePopupCallBack([component], '', '')}
+                                            >
+                                            </span>
+                                          </div>
+                                        </li>
+                                      )
+                                    })}
+                                  </ul>
+                                </div>
+                              ) : (
+                                <>
+                                  <span className="nav__text">Relevant Portfolio Items</span>
+                                  <div className="nontag mt-2 text-center">
+                                    No Tagged Portfolio
+                                  </div>
+                                </>
+                              )}
+                              <div>
+                                <span className="nav__text">Suggested Portfolio Items</span>
+                                <input
+                                  type="search"
+                                  value={suggestedItems}
+                                  onChange={(e) => searchSuggestedPortfolio(e)}
+                                  placeholder="Search Suggested Portfolio Items"
+                                  className="bg-transparent full-width px-1 py-0 mt-1 text-bg-secondary"
+                                />
+                                {suggestedPortfolios?.length > 0 ? (
+                                  <ul className="nav__subList wrapper ps-0 pe-2 maXh-400 scrollbar mt-2">
+                                    {suggestedPortfolios?.map(
+                                      (component: any, index: any) => (
+                                        <li
+                                          key={index}
                                           className={
                                             component?.Id ==
-                                            createTaskId?.portfolioData?.Id
-                                            ? "hreflink "
-                                            : "text-white hreflink"
+                                              createTaskId?.portfolioData?.Id
+                                              ? "nav__item bg-ee ps-1"
+                                              : "mb-1 bg-shade hreflink"
                                           }
+                                        >
+                                          <div className="alignCenter">
+                                            <a
+                                              className={
+                                                component?.Id ==
+                                                  createTaskId?.portfolioData?.Id
+                                                  ? "hreflink "
+                                                  : "text-white hreflink"
+                                              }
                                               data-interception="off"
                                               target="blank"
                                               onClick={() =>
@@ -1812,14 +2055,14 @@ const ProjectManagementMain = (props: any) => {
                                   </ul>
                                 ) : (
                                   <>
-                                  <div className="nontag mt-2 text-center">
-                                    No Tagged Portfolio
-                                  </div>
-                                </>
-                              )}
-                            </div>
-                        </>
-                        </div>
+                                    <div className="nontag mt-2 text-center">
+                                      No Tagged Portfolio
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            </>
+                          </div>
                         </li>
                       </ul>
                     </nav>
@@ -2058,6 +2301,8 @@ const ProjectManagementMain = (props: any) => {
                                   bulkEditIcon={true} setData={setProjectTableData} setLoaded={setPageLoader}
                                   customTableHeaderButtons={customTableHeaderButtons}
                                   showRestructureButton={true}
+                                  columnSettingIcon={true}
+                                  tableId="pxlandingpage"
                                   switchGroupbyData={switchGroupbyData}
                                   restructureCallBack={callBackData1}
                                   ref={childRef} callChildFunction={callChildFunction}
@@ -2108,6 +2353,103 @@ const ProjectManagementMain = (props: any) => {
               />
             )}
             {pageLoaderActive ? <PageLoader /> : ''}
+            <Panel
+                onRenderHeader={onRenderCustomHeaderMain}
+                type={PanelType.custom}
+                customWidth="620px"
+                isOpen={ActivityPopup}
+                onDismiss={closeActivity}
+                isBlocking={false}
+            >
+                <div className="modal-body clearfix">
+                    <div
+                        className={"app component clearfix"}
+                    >
+                        <div id="portfolio" className="section-event pt-0">
+                            {checkedList != undefined &&
+                                checkedList?.TaskType?.Title == "Workstream" ? (
+                                <div className="mt-4 clearfix">
+                                    <h4 className="titleBorder "> Type</h4>
+                                    <div className="col p-0 taskcatgoryPannel">
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Bug")} className={activeTile == "Bug" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Bug</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Feedback")} className={activeTile == "Feedback" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Feedback</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Improvement")} className={activeTile == "Improvement" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Improvement</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Design")} className={activeTile == "Design" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Design</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={(e) => CreateActivityPopup("Task")} className={activeTile == "Task" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Task</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="mt-4 clearfix">
+                                    <h4 className="titleBorder "> Type</h4>
+                                    <div className="col p-0 taskcatgoryPannel">
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Activities")} className={activeTile == "Activities" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Activity</span>
+                                        </a>
+                                        <a id="subcategorytasks936" onClick={() => CreateActivityPopup("Task")} className={activeTile == "Task" ? "active bg-siteColor subcategoryTask text-center" : "bg-siteColor subcategoryTask text-center"}>
+                                            <span className="tasks-label">Task</span>
+                                        </a>
+                                    </div>
+                              <div className="mt-4 clearfix">
+                              <h4 className="titleBorder"> Key/Relevant Portfolios</h4>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  value={suggestedPortfolio}
+                                  onChange={(e) => searchSuggestedPortfolio2(e)}
+                                  placeholder="Search Portfolio Items"
+                                />
+                                {searchedKeyPortfolios?.length > 0 ? (
+                                              <div className="SmartTableOnTaskPopup p-0 position-static">
+                                                <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                  {searchedKeyPortfolios.map((Item: any) => {
+                                                return (
+                                                  <li
+                                                      className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                                      key={Item.id}
+                                                      onClick={() =>
+                                                      setTaggedPortfolioItem(Item)
+                                                    }
+                                                  >
+                                                <a>{Item.Path}</a>
+                                              </li>
+                                            );
+                                          })}
+                                        </ul>
+                                      </div>
+                                ) : null}
+                              </div>
+                            </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+                <footer className="pull-right mt-3">
+                    <button
+                        type="button"
+                        className="btn btn-primary mx-2"
+                        onClick={() => Createbutton()} disabled={activeTile===""?true:false}
+                    >
+                        Create
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-default btn-default ms-1 pull-right"
+                        onClick={closeActivity}
+                    >
+                        Cancel
+                    </button>
+                </footer>
+            </Panel>
             {isOpenActivity && (
               <CreateActivity
                 Call={Call}
@@ -2116,7 +2458,12 @@ const ProjectManagementMain = (props: any) => {
                 UsedFrom={"ProjectManagement"}
                 context={AllListId.Context}
                 LoadAllSiteTasks={LoadAllSiteTasks}
-                selectedItem={checkedList != null && checkedList?.Id != undefined ? checkedList : undefined}
+                selectedItem={
+                  (checkedList != null && checkedList.Id != null)
+                  ? checkedList
+                  : (selectedItem != null && selectedItem.Id != null) ? selectedItem : null
+                }
+                taggedPortfolioItem={taggedPortfolioItem}
               ></CreateActivity>
             )}
             {isOpenWorkstream && (

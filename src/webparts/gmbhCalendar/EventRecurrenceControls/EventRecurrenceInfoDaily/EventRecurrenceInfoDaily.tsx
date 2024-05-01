@@ -302,10 +302,10 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
         break;
     }
     const recurrenceXML = `<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat>` +
-      `<daily ${ this.state.selectPatern === 'every' ? `dayFrequency="${this.state.numberOfDays.trim()}"/>` :  `weekday="TRUE" />`}</repeat>${selectDateRangeOption}</rule></recurrence>`;
-  //  console.log(recurrenceXML);
-  //endDate change
-    this.props.returnRecurrenceData(this.state.startDate,this.state.endDate, recurrenceXML);
+      `<daily ${this.state.selectPatern === 'every' ? `dayFrequency="${this.state.numberOfDays.trim()}"/>` : 'weekday'}</repeat>${selectDateRangeOption}</rule></recurrence>`;
+    //  console.log(recurrenceXML);
+    //endDate change
+    this.props.returnRecurrenceData(this.state.startDate, this.state.endDate, recurrenceXML);
   }
   /**
    *
@@ -338,7 +338,7 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
 
             </div>
             <div style={{ width: '100%', paddingTop: '10px' }}>
-              <Label>{ strings.patternLabel }</Label>
+              <Label>{strings.patternLabel}</Label>
               <ChoiceGroup
                 selectedKey={this.state.selectPatern}
                 options={[
@@ -375,7 +375,7 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
             </div>
 
             <div style={{ paddingTop: '22px' }}>
-              <Label>{ strings.dateRangeLabel }</Label>
+              <Label>{strings.dateRangeLabel}</Label>
               <div style={{ display: 'inline-block', verticalAlign: 'top', paddingRight: '35px', paddingTop: '10px' }}>
 
                 <DatePicker

@@ -235,6 +235,9 @@ const inlineEditingcolumns = (props: any) => {
       SharewebtaskCategories = JSON.parse(
         localStorage.getItem("taskCategoryType")
       );
+      SharewebtaskCategories = SharewebtaskCategories.filter((item: any)=> item.Title != "Bottleneck")
+      let stringifiedCategories = JSON.stringify(SharewebtaskCategories)
+      localStorage.setItem("taskCategoryType", stringifiedCategories);
       Priority = JSON.parse(localStorage.getItem("Priority"));
       let site = JSON.parse(localStorage.getItem("siteUrl"));
       let DataLoaded = JSON.parse(localStorage.getItem("inlineMetaDataLoaded"));

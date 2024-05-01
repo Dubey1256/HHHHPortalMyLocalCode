@@ -113,15 +113,9 @@ const TimeEntryPopup = (item: any) => {
     Description: "",
     TaskTime: "",
   });
-  const initialData = {
-    Title: '',
-    TaskDate: '',
-    Description: '',
-    TimeSpentInMinute: '',
-    TimeSpentInHours: '',
-    TaskTime: '',
-};
-  const [newData, setNewData] = React.useState(initialData);
+  const [title,setNewTitle]=React.useState(undefined)
+  
+  
   const [saveEditTaskTimeChild, setsaveEditTaskTimeChild] = React.useState<any>(
     {}
   );
@@ -405,11 +399,13 @@ const TimeEntryPopup = (item: any) => {
     CategoriesIdd = child.Category.Id;
     array.push(child);
     setCategoryData(array);
+    setNewTitle(title);
     setEditcategory(true);
   };
 
   const closeEditcategorypopup = (child: any) => {
-    setNewData(initialData );
+   
+    setNewTitle(undefined)
     setcheckCategories(undefined);
     setEditcategory(false);
   };
@@ -424,7 +420,7 @@ const TimeEntryPopup = (item: any) => {
       setAddTaskTimepopup(true);
       setTimeInMinutes(0);
       setTimeInHours(0);
-      setNewData(initialData );
+      setNewTitle(undefined)
       SetWeek(1);
       setediteddata(undefined);
       setCount(1);
@@ -444,7 +440,7 @@ const TimeEntryPopup = (item: any) => {
       PopupType = Type;
       CategryTitle = "";
       setediteddata(undefined);
-      setNewData(initialData );
+      setNewTitle(undefined)
       setTimeInHours(0);
       setMyDatee(undefined);
       change = Moment().format();
@@ -468,7 +464,7 @@ const TimeEntryPopup = (item: any) => {
       var Childitem: any = [];
       setAddTaskTimepopup(true);
       // Array.push(childitem)
-      setNewData(initialData );
+      setNewTitle(undefined)
       Childitem.push(childitem);
       backupEdit?.forEach((val: any) => {
         if (val.Id == childitem.MainParentId) {
@@ -515,7 +511,7 @@ const TimeEntryPopup = (item: any) => {
     setAddTaskTimepopup(false);
     setcheckCategories(undefined);
     setTimeInHours(0);
-    setNewData(initialData );
+    setNewTitle(undefined)
     setTimeInMinutes(0);
     SetWeek(1);
     setediteddata(undefined);
@@ -1183,7 +1179,7 @@ function reverseArray(arr: any) {
     getStructurefTimesheetCategories();
     setEditItem(items.Title);
 
-    if (items.siteType == "Offshore Tasks" || items.siteType == "SharewebQA") {
+    if (items.siteType == "Offshore Tasks" || items.siteType == "Offshore%20Tasks" || items.siteType == "SharewebQA") {
       var siteType = "OffshoreTasks";
       var filteres = "Task" + siteType + "/Id eq " + items.Id;
       var linkedSite = "Task" + siteType;
@@ -1552,10 +1548,9 @@ function reverseArray(arr: any) {
     }
     let itemMetadataAdded = {
       Title:
-        newData != undefined &&
-          newData.Title != undefined &&
-          newData.Title != ""
-          ? newData.Title
+      title != undefined &&
+      title != ""
+      ? title
           : checkCategories,
       [smartTermId]: item.props.Id,
       CategoryId: Category,
@@ -1685,11 +1680,10 @@ function reverseArray(arr: any) {
            else {
             let itemMetadataAdded = {
               Title:
-                newData != undefined &&
-                  newData.Title != undefined &&
-                  newData.Title != ""
-                  ? newData.Title
-                  : checkCategories,
+              title != undefined &&
+              title != ""
+              ? title
+              : checkCategories,
 
               [smartTermId]: item.props.Id,
               CategoryId: Category,
@@ -1727,7 +1721,7 @@ function reverseArray(arr: any) {
   //---------------------------------------------------------------Save Timesheet Main function----------------------------------------------------------------------
   const saveTimeSpent = async () => {
     var UpdatedData: any = {};
-    if (item.props.siteType == "Offshore Tasks") {
+    if (item.props.siteType == "Offshore Tasks"  || item.props.siteType == "Offshore%20Tasks") {
       var siteType = "OffshoreTasks";
       smartTermId = "Task" + siteType + "Id";
     } else {
@@ -1799,10 +1793,9 @@ function reverseArray(arr: any) {
 
     let itemMetadataAdded = {
       Title:
-        newData != undefined &&
-          newData.Title != undefined &&
-          newData.Title != ""
-          ? newData.Title
+        title != undefined &&
+          title != ""
+          ? title
           : checkCategories,
       [smartTermId]: item.props.Id,
       CategoryId: Category,
@@ -1858,10 +1851,9 @@ function reverseArray(arr: any) {
 
     let itemMetadataAdded = {
       Title:
-        newData != undefined &&
-          newData.Title != undefined &&
-          newData.Title != ""
-          ? newData.Title
+          title != undefined &&
+          title != ""
+          ? title
           : checkCategories,
       [smartTermId]: item.props.Id,
       CategoryId: Category,
@@ -2107,7 +2099,7 @@ function reverseArray(arr: any) {
               : "";
         }
       });
-      if (item.props.siteType == "Offshore Tasks") {
+      if (item.props.siteType == "Offshore Tasks" || || item.props.siteType == "Offshore%20Tasks") {
         var siteType = "OffshoreTasks";
         var filteres = "Task" + siteType + "/Id eq " + item.props.Id;
         var linkedSite = "Task" + siteType;
@@ -2237,7 +2229,7 @@ function reverseArray(arr: any) {
     var update: any = {};
     var UpdatedData: any = [];
     let web = new Web(`${CurrentSiteUrl}`);
-    if (item.props.siteType == "Offshore Tasks") {
+    if (item.props.siteType == "Offshore Tasks" || item.props.siteType == "Offshore%20Tasks") {
       var siteType = "OffshoreTasks";
       smartTermId = "Task" + siteType + "Id";
     } else {
@@ -2335,7 +2327,7 @@ function reverseArray(arr: any) {
     }
     var DateFormate = new Date(Eyd);
 
-    if (item.props.siteType == "Offshore Tasks") {
+    if (item.props.siteType == "Offshore Tasks" || item.props.siteType == "Offshore%20Tasks") {
       var siteType = "OffshoreTasks";
       smartTermId = "Task" + siteType + "Id";
     } else {
@@ -2467,7 +2459,7 @@ function reverseArray(arr: any) {
       .getById(ListId)
       .items.getById(CategoryyID)
       .update({
-        Title: newData != undefined ? newData.Title : checkCategories,
+        Title: title != undefined ? title : checkCategories,
         CategoryId:
           Category != undefined && Category != "" ? Category : CategoriesIdd,
       })
@@ -2479,9 +2471,8 @@ function reverseArray(arr: any) {
       });
   };
   const clearInput = () => {
-    setNewData(initialData )
+    setNewTitle('');
     setcheckCategoriesTitle('');
-
    
   }
   //-----------------------------header of Main popup-----------------------------------------------------------------------------------------------------
@@ -2527,6 +2518,8 @@ function reverseArray(arr: any) {
           setTimeInHours(timeInHour.toFixed(2));
         }
         setTimeInMinutes(changeTime);
+
+      
     }
 
     if (type == "EditTime" || type == "CopyTime") {
@@ -3060,9 +3053,9 @@ function reverseArray(arr: any) {
                           type="text"
                           className="form-control"
                           name="TimeTitle"
-                          value={newData?.Title === '' ? (checkCategories|| checkCategoriesTitle): newData?.Title }
+                          value={title==undefined?(checkCategories|| checkCategoriesTitle): title }
                           onChange={(e) =>
-                            setNewData({ ...newData, Title: e.target.value })
+                            setNewTitle(e.target.value)
                           }
                         />
                          <span className="input-group-text" style={{zIndex:'9'}} onClick={() =>clearInput()}>
@@ -3605,7 +3598,6 @@ function reverseArray(arr: any) {
                           <div
                             className="SpfxCheckRadio "
                             id="subcategorytasksPriority{{item.Id}}"
-
                           >
                             <input
                               type="radio"
@@ -3752,13 +3744,13 @@ function reverseArray(arr: any) {
                         autoComplete="off"
                         className="form-control"
                         name="TimeTitle"
-                        defaultValue={
-                          checkCategories != undefined
-                            ? checkCategories
-                            : item.Category.Title
+                        value={
+                          title != undefined
+                            ? title
+                            : checkCategories
                         }
                         onChange={(e) =>
-                          setNewData({ ...newData, Title: e.target.value })
+                          setNewTitle(e.target.value)
                         }
                       />
                     </div>

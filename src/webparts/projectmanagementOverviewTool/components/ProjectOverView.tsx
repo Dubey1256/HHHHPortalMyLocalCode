@@ -113,7 +113,8 @@ export default function ProjectOverview(props: any) {
             isShowTimeEntry: isShowTimeEntry,
             isShowSiteCompostion: isShowSiteCompostion,
             SmalsusLeaveCalendar: props?.props?.SmalsusLeaveCalendar,
-            TaskTypeID: props?.props?.TaskTypeID
+            TaskTypeID: props?.props?.TaskTypeID,
+            Context: props?.props?.Context
         }
         TaskUser()
         loadTodaysLeave();
@@ -1236,7 +1237,7 @@ export default function ProjectOverview(props: any) {
                                     }
                                 })
                             }
-                            child.SiteIconTitle = child?.Item_x0020_Type.charAt(0)
+                            child.SiteIconTitle = child?.Item_x0020_Type == "Sprint" ? "X" : child?.Item_x0020_Type.charAt(0);
                         })
                     }
                 })

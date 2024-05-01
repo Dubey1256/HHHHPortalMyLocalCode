@@ -18,6 +18,7 @@ import PageLoader from '../../../globalComponents/pageLoader';
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import SendEmailEODReport from './SendEmailEODReport';
 import SmartPriorityToolTip from '../../../globalComponents/SmartPriorityTooltip';
+import SmartPriorityHover from '../../../globalComponents/EditTaskPopup/SmartPriorityHover';
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
@@ -25,6 +26,7 @@ var AllTaskTimeEntries: any = [];
 var AllTasks: any = [];
 var timesheetListConfig: any = [];
 var currentUserId: any = '';
+let currenUserAssignedToUserId:any='';
 let todaysDrafTimeEntry: any = [];
 var RemarksData: any = []
 var currentUser: any = [];
@@ -84,7 +86,6 @@ const TaskDashboard = (props: any) => {
     const [dragedTask, setDragedTask] = React.useState({
         task: {},
         taskId: '',
-        PickupLocation:''
         // origin: ''
     });
     const TimeEntryCallBack = React.useCallback((item1) => {
@@ -255,11 +256,6 @@ const TaskDashboard = (props: any) => {
                                 todaysDrafTimeEntry?.push(item);
                             }
                             item.taskDetails = checkTimeEntrySite(item);
-                            if (item?.FeedBack != undefined) {
-                                item.descriptionsSearch = globalCommon.descriptionSearchData(item)
-                            } else {
-                                item.descriptionsSearch = '';
-                            }
                             AllTaskTimeEntries.push(item);
                         });
                         currentUserTimeEntry('This Week');
@@ -420,6 +416,11 @@ const TaskDashboard = (props: any) => {
                         if (task?.EstimatedTimeDescription != undefined && task?.EstimatedTimeDescription != '' && task?.EstimatedTimeDescription != null) {
                             EstimatedDesc = JSON.parse(task?.EstimatedTimeDescription)
                         }
+                        let workingAct:any=[]
+                        if (task?.WorkingAction != undefined && task?.WorkingAction != '' && task?.WorkingAction != null) {
+                            workingAct = JSON.parse(task?.WorkingAction)
+                            task.WorkingAction=workingAct;
+                        }
                         task.HierarchyData = [];
                         task.EstimatedTime = 0;
                         task.SmartPriority;
@@ -492,12 +493,8 @@ const TaskDashboard = (props: any) => {
                             taskUsers?.map((user: any) => {
                                 if (user.AssingedToUserId == taskUser.Id) {
                                     if (user?.Title != undefined) {
-                                        if(task.TeamMembersSearch?.includes(user?.Title)){
-                                            task.TeamMembersSearch = task.TeamMembersSearch
-                                        }
-                                        else{
-                                            task.TeamMembersSearch = task.TeamMembersSearch + " " + user?.Title;
-                                        }
+                                        task.TeamMembersSearch =
+                                            task.TeamMembersSearch + " " + user?.Title;
                                     }
                                     newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
                                     newuserdata["Suffix"] = user?.Suffix;
@@ -508,10 +505,26 @@ const TaskDashboard = (props: any) => {
                                 task.AllTeamMember.push(newuserdata);
                             });
                         });
-                        const isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
+                        let isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
                         const isImmediate = checkUserExistence('Immediate', task?.TaskCategories);
                         const isEmailNotification = checkUserExistence('Email Notification', task?.TaskCategories);
                         const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
+                       
+                        if (task?.WorkingAction?.length > 0) {
+                             task?.WorkingAction?.forEach((data:any) => {
+                               if (data?.Title === "Bottleneck") {
+                                isBottleneckTask=true;
+                                    // data?.InformationData?.forEach((userBottleneckTasks:any) => {
+                                    //      if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currenUserAssignedToUserId) {
+                                    //             // userBottleneckTasks.TaggedUsers.isBottleneck = true;
+                                    //             // AllBottleNeckTasks.push(userBottleneckTasks)
+                                    //             isBottleneckTask=true;
+                                    //         }
+                                    //   });
+                                 }
+                             });
+                        }
+  
                         if (isCurrentUserApprover && task?.PercentComplete == '1') {
                             approverTask.push(task)
                         }
@@ -628,12 +641,56 @@ const TaskDashboard = (props: any) => {
         let Immediates: any = [];
         let EmailsTasks: any = [];
         let approverTask: any = [];
+        // if (AllTasks?.length > 0 && currentUserId != undefined && currentUserId != '') {
+            
+        //     // AllTasks?.map((task: any) => {
+        //     //     let isBottleneckTask=false;
+        //     //     if (task?.WorkingAction?.length > 0) {
+        //     //         task?.WorkingAction?.forEach((data:any) => {
+        //     //           if (data?.Title === "Bottleneck") {
+                       
+        //     //                data?.InformationData?.forEach((userBottleneckTasks:any) => {
+        //     //                     if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currentUserId) {
+        //     //                            // userBottleneckTasks.TaggedUsers.isBottleneck = true;
+        //     //                            // AllBottleNeckTasks.push(userBottleneckTasks)
+        //     //                            isBottleneckTask=true;
+        //     //                        }
+        //     //                  });
+        //     //             }
+        //     //         });
+        //     //    }
+        //     //    let alreadyPushed = false;
+        //     //    if (isBottleneckTask ) {
+        //     //     bottleneckTask.push(task)
+        //     //     alreadyPushed = true;
+        //     // }
+        //     // });
+           
+        // }
         if (AllTasks?.length > 0 && currentUserId != undefined && currentUserId != '') {
+           
             AllTasks?.map((task: any) => {
+                
+              
                 const isCurrentUserAssigned = task?.AssignedToIds?.includes(currentUserId);
                 const isImmediate = checkUserExistence('Immediate', task?.TaskCategories);
                 const isEmailNotfication = checkUserExistence('Email Notification', task?.TaskCategories);
-                const isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
+                let isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
+                let isBottleneckTaskNew = false;
+                if (task?.WorkingAction?.length > 0) {
+                    task?.WorkingAction?.forEach((data:any) => {
+                      if (data?.Title === "Bottleneck") {
+                       
+                           data?.InformationData?.forEach((userBottleneckTasks:any) => {
+                                if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currentUserId) {
+                                       // userBottleneckTasks.TaggedUsers.isBottleneck = true;
+                                       // AllBottleNeckTasks.push(userBottleneckTasks)
+                                       isBottleneckTaskNew=true;
+                                   }
+                             });
+                        }
+                    });
+               }
 
                 // Testing Only Please Remove Before deployement
                 // const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
@@ -650,7 +707,7 @@ const TaskDashboard = (props: any) => {
                 } else if (task?.workingThisWeek && (isCurrentUserAssigned)) {
                     workingThisWeekTask.push(task)
                     alreadyPushed = true;
-                } if (isBottleneckTask && (isCurrentUserAssigned)) {
+                } if ((isBottleneckTask && (isCurrentUserAssigned))||isBottleneckTaskNew ) {
                     bottleneckTask.push(task)
                     alreadyPushed = true;
                 } if (!alreadyPushed && (isCurrentUserAssigned)) {
@@ -713,7 +770,7 @@ const TaskDashboard = (props: any) => {
                 resetSorting: false,
                 size: 100,
                 cell: ({ row }) => (
-                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
+                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
                         <>
                             <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} AllListId={AllListId} />
                         </>
@@ -723,7 +780,7 @@ const TaskDashboard = (props: any) => {
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row }: any) => (
-                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
+                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
                         <a className='hreflink'
                             href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                             data-interception="off"
@@ -759,7 +816,7 @@ const TaskDashboard = (props: any) => {
             {
                 accessorFn: (row) => row?.PortfolioTitle,
                 cell: ({ row }: any) => (
-                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
+                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
                         <a className='hreflink' data-interception="off"
                             target="blank"
                             href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
@@ -783,7 +840,7 @@ const TaskDashboard = (props: any) => {
                 header: "",
                 size: 100,
                 cell: ({ row }: any) => (
-                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
+                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
                         <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
 
                     </div>
@@ -799,7 +856,7 @@ const TaskDashboard = (props: any) => {
                 header: "",
                 size: 90,
                 cell: ({ row }: any) => (
-                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
+                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
                         <InlineEditingcolumns AllListId={AllListId} type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
                         {row?.original?.priorityRank}
                     </div>
@@ -817,7 +874,13 @@ const TaskDashboard = (props: any) => {
             {
                 accessorFn: (row) => row?.SmartPriority,
                 cell: ({ row }: any) => row?.original?.SmartPriority !== null && (
-                    <SmartPriorityToolTip smartPriority={row?.original?.SmartPriority} hoverFormula={row?.original?.showFormulaOnHover} />
+                    <span className={row?.original?.SmartPriority!= undefined ? "hover-text hreflink m-0 r sxsvc" : "hover-text hreflink m-0 cssc"}>
+                    <>{row?.original?.SmartPriority!= undefined ? row?.original?.SmartPriority : 0}</>
+                    <span className="tooltip-text pop-right">
+                      {row?.original?.SmartPriority != undefined ?
+                        <SmartPriorityHover editValue={row?.original} /> : ""}
+                    </span>
+                  </span> 
                 ),
                 filterFn: (row: any, columnId: any, filterValue: any) => {
 
@@ -839,7 +902,7 @@ const TaskDashboard = (props: any) => {
                 accessorFn: (row) => row?.DisplayDueDate,
 
                 cell: ({ row }: any) =>
-                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
+                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
                         {row?.original?.DisplayDueDate}
                     </div>
                 , filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -866,7 +929,7 @@ const TaskDashboard = (props: any) => {
                 header: "",
                 size: 60,
                 cell: ({ row }: any) => (
-                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
+                    <div draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
                         {row?.original?.EstimatedTime != undefined ? row?.original?.EstimatedTime : ''}
                     </div>
                 ),
@@ -884,7 +947,7 @@ const TaskDashboard = (props: any) => {
             {
                 accessorFn: (row) => row?.PercentComplete,
                 cell: ({ row, getValue }) => (
-                    <span draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
+                    <span draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
                         <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
                         {/* {row?.original?.PercentComplete} */}
                     </span>
@@ -927,7 +990,7 @@ const TaskDashboard = (props: any) => {
             {
                 accessorFn: (row) => row?.Created,
                 cell: ({ row, getValue }) => (
-                    <span draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID,'')}>
+                    <span draggable onDragStart={() => startDrag(row?.original, row?.original?.TaskID)}>
                         <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
                         {row?.original?.createdImg != undefined ?
                             <>
@@ -936,10 +999,10 @@ const TaskDashboard = (props: any) => {
                                     <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
                                 </a>
                             </>
-                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
+                            : <span title={row?.original?.Author?.Title} className="alignIcon svg__iconbox svg__icon--defaultUser grey "></span>}
                     </span>
                 ),
-                id: "DisplayCreateDate",
+                id: "Created",
                 filterFn: (row: any, columnId: any, filterValue: any) => {
                     if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
                         return true
@@ -983,7 +1046,6 @@ const TaskDashboard = (props: any) => {
                 size: 100,
                 cell: ({ row }) => (
                     <div>
-                            <div draggable onDragStart={() => startDrag(row?.original,row?.original?.TaskID,"TimeEntry")}></div>
                         <>
                             <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} />
                         </>
@@ -1008,7 +1070,6 @@ const TaskDashboard = (props: any) => {
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
-                    <div draggable onDragStart={() =>startDrag(row?.original,row?.original?.TaskID,"TimeEntry")}>
                     <div className='alignCenter'>
                         <a className='hreflink'
                             href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
@@ -1017,10 +1078,10 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.original?.Title}
                         </a>
-                        {row?.original?.descriptionsSearch !== null && <InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} />
+                        {row?.original?.Body !== null && <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} />
                         }
                     </div>
-                    </div>
+
                 ),
                 id: "Title",
                 placeholder: "Title",
@@ -1125,7 +1186,7 @@ const TaskDashboard = (props: any) => {
                 size: 55
             },
             {
-                accessorFn: (row) => row?.DisplayCreateDate,
+                accessorFn: (row) => row?.Created,
                 cell: ({ row, getValue }) => (
                     <span>
                         <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
@@ -1139,7 +1200,7 @@ const TaskDashboard = (props: any) => {
                             : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser grey "></span>}
                     </span>
                 ),
-                id: "DisplayCreateDate",
+                id: "Created",
                 filterFn: (row: any, columnId: any, filterValue: any) => {
                     if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
                         return true
@@ -1306,6 +1367,7 @@ const TaskDashboard = (props: any) => {
                 item.isAdmin = false;
                 if (currentUserId == item?.AssingedToUser?.Id) {
                     currentUser = item;
+                    currenUserAssignedToUserId=item.AssignedToUserId;
                     setCurrentUserData(item);
                 }
                 item.expanded = false;
@@ -1424,12 +1486,7 @@ const TaskDashboard = (props: any) => {
             let thisWeekTask = thisWeekTasks;
             let allTasks = AllAssignedTasks;
             let task: any = dragedTask.task;
-            let timeEntryPickUp=false
-            if(dragedTask?.PickupLocation=='TimeEntry'){
-                timeEntryPickUp=true
-            }
-
-            if (destination == 'thisWeek' && (task?.workingThisWeek == false || task?.workingThisWeek == undefined||timeEntryPickUp==true)) {
+            if (destination == 'thisWeek' && (task?.workingThisWeek == false || task?.workingThisWeek == undefined)) {
                 task.IsTodaysTask = false;
                 task.workingThisWeek = true;
                 UpdateTaskStatus(task);
@@ -1437,7 +1494,7 @@ const TaskDashboard = (props: any) => {
                 todayTasks = todayTasks.filter(taskItem => taskItem.TaskID != dragedTask.taskId)
                 allTasks = allTasks.filter(taskItem => taskItem.TaskID != dragedTask.taskId)
             }
-            if (destination == 'workingToday' && (task?.IsTodaysTask == false || task?.IsTodaysTask == undefined||timeEntryPickUp==true)) {
+            if (destination == 'workingToday' && (task?.IsTodaysTask == false || task?.IsTodaysTask == undefined)) {
                 task.IsTodaysTask = true;
                 task.workingThisWeek = false;
                 UpdateTaskStatus(task);
@@ -1445,7 +1502,7 @@ const TaskDashboard = (props: any) => {
                 thisWeekTask = thisWeekTask.filter(taskItem => taskItem.TaskID != dragedTask.taskId)
                 allTasks = allTasks.filter(taskItem => taskItem.TaskID != dragedTask.taskId)
             }
-            if (destination == 'AllTasks' && (task?.IsTodaysTask == true || task?.workingThisWeek == true||timeEntryPickUp==true)) {
+            if (destination == 'AllTasks' && (task?.IsTodaysTask == true || task?.workingThisWeek == true)) {
                 task.IsTodaysTask = false;
                 task.workingThisWeek = false;
                 UpdateTaskStatus(task);
@@ -1471,11 +1528,10 @@ const TaskDashboard = (props: any) => {
         }
 
     }
-    const startDrag = (task: any, taskId: any,PickupArea:any) => {
+    const startDrag = (task: any, taskId: any) => {
         let taskDetails = {
             task: task,
             taskId: taskId,
-            PickupLocation:PickupArea
             // origin: origin
         }
         setDragedTask(taskDetails)
@@ -2256,7 +2312,7 @@ const TaskDashboard = (props: any) => {
                                         {workingTodayTasks?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable'>
                                                 <>
-                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={workingTodayTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
+                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={workingTodayTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                                 </>
                                             </div>
                                             : <div className='text-center full-width'>
@@ -2271,7 +2327,7 @@ const TaskDashboard = (props: any) => {
                                         {thisWeekTasks?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable' >
                                                 <>
-                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={thisWeekTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
+                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={thisWeekTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                                 </>
                                             </div> : <div className='text-center full-width'>
                                                 <span>No Working This Week Tasks Available</span>
@@ -2284,7 +2340,7 @@ const TaskDashboard = (props: any) => {
                                         {UserImmediateTasks?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable'>
                                                 <>
-                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={UserImmediateTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
+                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={UserImmediateTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                                 </>
                                             </div>
                                             : <div className='text-center full-width'>
@@ -2298,7 +2354,7 @@ const TaskDashboard = (props: any) => {
                                         {bottleneckTasks?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable '>
                                                 <>
-                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={bottleneckTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
+                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={bottleneckTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                                 </>
                                             </div>
                                             : <div className='text-center full-width'>
@@ -2316,7 +2372,7 @@ const TaskDashboard = (props: any) => {
                                             <>
                                                 <div className='Alltable border-0 dashboardTable float-none' >
                                                     <>
-                                                        <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={AllAssignedTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
+                                                        <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={AllAssignedTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                                     </>
                                                 </div>
 
@@ -2399,7 +2455,7 @@ const TaskDashboard = (props: any) => {
 
                                         <div className='Alltable dashboardTable float-none'>
                                             <>
-                                                <GlobalCommanTable AllListId={AllListId} showPagination={true} columns={columnsName} data={value} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
+                                                <GlobalCommanTable AllListId={AllListId} showPagination={true} columns={columnsName} data={value} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                             </>
                                         </div>
 

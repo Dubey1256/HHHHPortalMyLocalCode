@@ -8,7 +8,6 @@ import {
     ColumnDef,
 } from "@tanstack/react-table";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../GroupByReactTableComponents/GlobalCommanTable";
-import RadimadeTable from "../../globalComponents/RadimadeTable"
 import HighlightableCell from "../GroupByReactTableComponents/highlight";
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 import { Web } from "sp-pnp-js";
@@ -71,17 +70,17 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         } else {
             // Code to run on subsequent renders (check and uncheck events)
             // For example:
-            if (CheckBoxData?.length > 0) {
+            if (childRef?.current?.table?.getSelectedRowModel()?.flatRows?.length > 0) {
                 let allCheckData: any = [];
-                CheckBoxData?.forEach((elem: any) => {
-                    allCheckData.push(elem);
+                childRef?.current?.table?.getSelectedRowModel()?.flatRows?.forEach((elem: any) => {
+                    allCheckData.push(elem?.original);
                 });
                 setdataUpper(allCheckData);
             } else {
                 setdataUpper([]);
             }
         }
-    }, [initialRender, childRef?.current?.table?.getSelectedRowModel()?.flatRows, CheckBoxData]);
+    }, [initialRender, childRef?.current?.table?.getSelectedRowModel()?.flatRows]);
     
     // Default selectionType
     
@@ -928,7 +927,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     </div>
 } */}
 
-                        {/* {showProject !== true &&
+                        {showProject !== true &&
                             <div className="tbl-headings p-2 bg-white">
                                 <span className="leftsec">
                                     {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
@@ -954,11 +953,11 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                                         </label>}
                                 </span>
                             </div>
-                        } */}
+                        }
                        
                         <div className="col-sm-12 p-0 smart">
                             <div className="">
-                                <RadimadeTable configration={"AllCSF"} AllListId={Dynamic} tableId="TaskPopup" setCheckBoxData={setCheckBoxData} showProject={showProject}/>
+                                <GlobalCommanTable columns={columns}  customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons1}  ref={childRef} showHeader={true} data={data} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={IsSelectionsBelow} />
                             </div>
                         </div>
                     </div>
