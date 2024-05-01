@@ -949,7 +949,6 @@ const GlobalCommanTable = (items: any, ref: any) => {
         })
         doc.save('Data PrintOut');
     }
-
     // Export To Excel////////
     const exportToExcel = () => {
         const flattenedData: any[] = [];
