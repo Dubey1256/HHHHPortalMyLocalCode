@@ -2144,8 +2144,8 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (StatusInput == 70) {
                     if (
-                        EditData.TeamMembers != undefined &&
-                        EditData.TeamMembers?.length > 0
+                        (EditData.TeamMembers != undefined &&
+                            EditData.TeamMembers?.length > 0) && (EditData.TeamMembers?.length != EditData?.AssignedTo?.length)
                     ) {
                         setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
                     } else if (EditData.ResponsibleTeam?.length > 0) {
