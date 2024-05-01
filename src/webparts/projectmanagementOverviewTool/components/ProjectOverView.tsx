@@ -113,7 +113,9 @@ export default function ProjectOverview(props: any) {
             isShowTimeEntry: isShowTimeEntry,
             isShowSiteCompostion: isShowSiteCompostion,
             SmalsusLeaveCalendar: props?.props?.SmalsusLeaveCalendar,
-            TaskTypeID: props?.props?.TaskTypeID
+            TaskTypeID: props?.props?.TaskTypeID,
+            Context: props?.props?.Context,
+            context: props?.props?.Context
         }
         TaskUser()
         loadTodaysLeave();
@@ -177,6 +179,7 @@ export default function ProjectOverview(props: any) {
 
     const editTaskCallBack = React.useCallback((item: any) => {
         setisOpenEditPopup(false);
+        LoadAllSiteTasks();
     }, []);
 
     const loadAllComponent = async () => {
@@ -1718,7 +1721,8 @@ export default function ProjectOverview(props: any) {
                 const categorizedUsers: any = [];
 
                 // Iterate over the users
-                for (const user of AllTaskUsers) {
+                let filterTaskUser = AllListId.siteUrl.includes("GrueneWeltweit") ? (AllTaskUsers.filter((item:any)=>item.technicalGroup !== "SPFx Team")): AllTaskUsers
+                for (const user of filterTaskUser) {
                     const category = user?.technicalGroup;
                     let categoryObject = categorizedUsers?.find((obj: any) => obj?.Title === category);
                     // If the category doesn't exist, create a new category object
