@@ -71,11 +71,14 @@ let keyDocRef: any;
 let suggestedPortfolioItems: any;
 let keyRelevantPortfolioItems: any;
 let selectedItem: any
-let taggedPortfolioItem: any 
+let taggedPortfolioItem: any
+let taskTypeDataItem:any;
 const ProjectManagementMain = (props: any) => {
   relevantDocRef = React.useRef();
   smartInfoRef = React.useRef();
   keyDocRef = React.useRef();
+  const [portfolioTypeDataItem, setPortFolioTypeIcon] = React.useState([]);
+  
   const [keydoc, Setkeydoc] = React.useState([]);
   const [FileDirRef, SetFileDirRef] = React.useState('');
   // const [item, setItem] = React.useState({});
@@ -189,6 +192,7 @@ const ProjectManagementMain = (props: any) => {
       setIsSmartInfoAvailable(true)
     }
     getQueryVariable((e: any) => e);
+    getTaskType()
     loadAllSmartInformation()
     try {
       $("#spPageCanvasContent").removeClass();
@@ -258,6 +262,36 @@ const ProjectManagementMain = (props: any) => {
     }
     return taskUser;
   }
+
+  const getTaskType = async () => {
+    let web = new Web(AllListId.siteUrl);
+    let taskTypeData = [];
+    let typeData: any = [];
+    taskTypeData = await web.lists
+        .getById(AllListId.TaskTypeID)
+        .items.select(
+            'Id',
+            'Level',
+            'Title',
+            'SortOrder',
+        ).get();
+    if (taskTypeData?.length > 0 && taskTypeData != undefined) {
+        taskTypeData?.forEach((obj: any) => {
+            if (obj != undefined) {
+                let Item: any = {};
+                Item.Title = obj.Title;
+                Item.SortOrder = obj.SortOrder;
+                Item[obj.Title + 'number'] = 0;
+                Item[obj.Title + 'filterNumber'] = 0;
+                Item[obj.Title + 'numberCopy'] = 0;
+                typeData.push(Item);
+            }
+        })
+       
+        taskTypeDataItem = typeData.sort((elem1: any, elem2: any) => elem1.SortOrder - elem2.SortOrder);
+        
+    }
+};
 
   const GetMasterData = async (loadtask: any) => {
     if (AllListId?.MasterTaskListID != undefined) {
@@ -721,6 +755,10 @@ const closeActivity = () => {
           items.PortfolioTitle = '';
           items.portfolio = items?.Portfolio;
           items.PortfolioTitle = items?.Portfolio?.Title;
+          items.ProjectTitle = '';
+          items.ProjectID = items?.Project?.PortfolioStructureID
+          items.project = items?.Project;
+          items.ProjectTitle = items?.Project?.Title;
           // items["Portfoliotype"] = "Component";
         }
         if (items?.Project?.Id != undefined) {
@@ -899,6 +937,9 @@ const closeActivity = () => {
       AllTask = AllTask.filter((item: any) => item?.isTaskPushed !== true);
       allSprints = allSprints.concat(AllTask);
       allBackupSprintAndTask = allSprints
+     let allRowInfo =getAllRowInfo(allSprints)
+      countAWT(allRowInfo)
+      countPoject(allRowInfo)
       setProjectTableData(allSprints);
       backupTableData = allSprints;
       setTaskTaggedPortfolios(taskTaggedComponents)
@@ -911,7 +952,49 @@ const closeActivity = () => {
     }
 
   };
+  const getAllRowInfo=(allSprints:any)=>{
+    let allrowInfo:any=[];
+   function getallRows(value:any){
+    value?.map((item:any)=>{
+      allrowInfo.push(item)
+      if(item?.subRows?.length>0){
+        getallRows(item?.subRows)
+      }
+    })
 
+   }
+   getallRows(allSprints)
+   return allrowInfo;
+  }
+  const countAWT=(countTaskAWTLevel:any)=>{
+    countTaskAWTLevel?.map((result: any) => {
+      taskTypeDataItem?.map((type: any) => {
+          if (result?.TaskType?.Title === type.Title) {
+            type[type?.Title + 'filterNumber'] += 1;
+              type[type?.Title + 'number'] += 1;
+          }
+      });
+  })
+  }
+  const countPoject=(projectCount:any)=>{
+    let portfolioTypeData:any=[]
+    let Item: any = {};
+    Item.Title = "Sprint";
+    Item.Sprintnumber = 0;
+    Item.SprintfilterNumber = 0;
+    Item.SprintnumberCopy = 0;
+    portfolioTypeData?.push(Item);
+    projectCount?.map((item:any)=>{
+      portfolioTypeData?.map((showPortFolio:any)=>{
+        if(item?.Item_x0020_Type==showPortFolio?.Title){
+          showPortFolio[showPortFolio.Title + 'filterNumber'] += 1;
+          showPortFolio[showPortFolio.Title + 'number'] += 1;
+        }
+      })
+      
+    })
+    setPortFolioTypeIcon(portfolioTypeData)
+  }
 
   const getChilds = (item: any, items: any) => {
     items?.map((sub: any) => {
@@ -975,7 +1058,6 @@ const closeActivity = () => {
     if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
       checkedList.NoteCall = "Task";
       setIsOpenActivity(true);
-      setActiveTile("")
     }
     if (checkedList?.TaskType?.Id == 1 || checkedList?.TaskTypeId == 1) {
       checkedList.NoteCall = "Workstream";
@@ -1156,7 +1238,7 @@ const closeActivity = () => {
     if (workingToday == undefined) {
 
       try {
-        groupedDataItems = JSON.parse(JSON.stringify(data));
+        groupedDataItems = globalCommon.deepCopy(data);
       } catch (e) {
 
       }
@@ -1255,7 +1337,8 @@ const closeActivity = () => {
         resetSorting: false,
         resetColumnFilters: false,
         size: 50,
-        isColumnVisible: true
+        isColumnVisible: true,
+        fixedColumnWidth: true,
       },
       {
         accessorKey: "TaskID",
@@ -1329,7 +1412,6 @@ const closeActivity = () => {
         header: "",
         isColumnVisible: true
       },
-
       {
         accessorFn: (row) => row?.PortfolioTitle,
         cell: ({ row }) => (
@@ -1349,6 +1431,39 @@ const closeActivity = () => {
         resetColumnFilters: false,
         resetSorting: false,
         header: "",
+        isColumnVisible: true
+      },
+      {
+        accessorFn: (row) => row?.ProjectID + " " + row?.ProjectTitle,
+        cell: ({ row }) => (
+          <>
+          {row.original.ProjectTitle != (null || undefined) && 
+          <a
+            className="hreflink"
+            data-interception="off"
+            target="blank"
+            href={`${props?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.project?.Id}`}
+          >
+            <span className="d-flex">
+              <ReactPopperTooltipSingleLevel
+                AllListId={AllListId}
+                onclickPopup={false}
+                CMSToolId={row?.original?.project?.PortfolioStructureID}
+                row={row?.original?.Project}
+                singleLevel={true}
+                masterTaskData={MasterListData}
+                AllSitesTaskData={AllSitesAllTasks}
+              />
+            </span>
+          </a>}
+          </>  
+        ),
+        id: "ProjectTitle",
+        placeholder: "Project",
+        resetColumnFilters: false,
+        resetSorting: false,
+        header: "",
+        size: 70,
         isColumnVisible: true
       },
       {
@@ -1391,11 +1506,12 @@ const closeActivity = () => {
         header: "",
         resetColumnFilters: false,
         isColumnVisible: true,
+        fixedColumnWidth: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.PriorityRank == filterValue
         },
         resetSorting: false,
-        size: 75
+        size: 75,
       },
       {
         accessorFn: (row) => row?.SmartPriority,
@@ -1411,6 +1527,7 @@ const closeActivity = () => {
         },
         header: "",
         size: 42,
+        fixedColumnWidth: true
       },
       {
         accessorFn: (row) => row?.DueDate,
@@ -1426,7 +1543,7 @@ const closeActivity = () => {
         ),
         id: 'DueDate',
         resetColumnFilters: false,
-
+        fixedColumnWidth: true,
         resetSorting: false,
         isColumnVisible: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
@@ -1470,6 +1587,7 @@ const closeActivity = () => {
         placeholder: "% Complete",
         resetColumnFilters: false,
         isColumnVisible: true,
+        fixedColumnWidth: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           return row?.original?.PercentComplete == filterValue
         },
@@ -1497,7 +1615,8 @@ const closeActivity = () => {
         placeholder: "TeamMembers",
         header: "",
         size: 110,
-        isColumnVisible: true
+        isColumnVisible: true,
+        fixedColumnWidth: true,
       },
       {
         accessorFn: (row) => row?.SmartInformationTitle,
@@ -1542,6 +1661,7 @@ const closeActivity = () => {
         resetSorting: false,
         placeholder: "Created",
         isColumnVisible: true,
+        fixedColumnWidth: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           if (row?.original?.Author?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayCreateDate?.includes(filterValue)) {
             return true
@@ -1579,6 +1699,7 @@ const closeActivity = () => {
         resetSorting: false,
         placeholder: "Modified",
         isColumnVisible: true,
+        fixedColumnWidth: true,
         filterFn: (row: any, columnId: any, filterValue: any) => {
           if (row?.original?.Editor?.Title?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.DisplayModifiedDate?.includes(filterValue)) {
             return true
@@ -1599,7 +1720,8 @@ const closeActivity = () => {
         header: "",
         resetColumnFilters: false,
         size: 49,
-        isColumnVisible: true
+        isColumnVisible: true,
+        fixedColumnWidth: true,
       },
       {
         header: ({ table }: any) => (
@@ -2278,7 +2400,7 @@ const closeActivity = () => {
                                         </a>
                                     </div>
                               <div className="mt-4 clearfix">
-                                <h4 className="titleBorder"> Key/Relevant Portfolios</h4>
+                              <h4 className="titleBorder"> Key/Relevant Portfolios</h4>
                                 <input
                                   type="text"
                                   className="form-control"
@@ -2287,7 +2409,7 @@ const closeActivity = () => {
                                   placeholder="Search Portfolio Items"
                                 />
                                 {searchedKeyPortfolios?.length > 0 ? (
-                                              <div className="SmartTableOnTaskPopup">
+                                              <div className="SmartTableOnTaskPopup p-0 position-static">
                                                 <ul className="autosuggest-list maXh-200 scrollbar list-group">
                                                   {searchedKeyPortfolios.map((Item: any) => {
                                                 return (
