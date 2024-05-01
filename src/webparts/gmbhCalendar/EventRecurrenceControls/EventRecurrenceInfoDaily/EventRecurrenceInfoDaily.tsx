@@ -293,9 +293,7 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
         selectDateRangeOption = `<repeatForever>FALSE</repeatForever>`;
         break;
       case 'endAfter':
-        let occurrences = parseInt(this.state.numberOcurrences, 10); // Convert string to number
-        occurrences = Math.max(occurrences - 1, 0); // Ensure occurrences doesn't go negative
-        selectDateRangeOption = `<repeatInstances>${occurrences}</repeatInstances>`;
+        selectDateRangeOption = `<repeatInstances>${this.state.numberOcurrences}</repeatInstances>`;
         break;
       case 'endDate':
         selectDateRangeOption = `<windowEnd>${endDate}</windowEnd>`;
