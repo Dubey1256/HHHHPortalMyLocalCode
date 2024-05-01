@@ -736,6 +736,7 @@ const closeActivity = () => {
           items.portfolio = items?.Portfolio;
           items.PortfolioTitle = items?.Portfolio?.Title;
           items.ProjectTitle = '';
+          items.ProjectID = items?.Project?.PortfolioStructureID
           items.project = items?.Project;
           items.ProjectTitle = items?.Project?.Title;
           // items["Portfoliotype"] = "Component";
@@ -1433,8 +1434,10 @@ const closeActivity = () => {
         isColumnVisible: true
       },
       {
-        accessorFn: (row) => row?.ProjectTitle,
+        accessorFn: (row) => row?.ProjectID + " " + row?.ProjectTitle,
         cell: ({ row }) => (
+          <>
+          {row.original.ProjectTitle != (null || undefined) && 
           <a
             className="hreflink"
             data-interception="off"
@@ -1452,13 +1455,16 @@ const closeActivity = () => {
                 AllSitesTaskData={AllSitesAllTasks}
               />
             </span>
-          </a>
+          </a>}
+          </>  
         ),
         id: "ProjectTitle",
         placeholder: "Project",
         resetColumnFilters: false,
         resetSorting: false,
         header: "",
+        size: 70,
+        isColumnVisible: true
       },
       {
         accessorFn: (row) => row?.TaskTypeValue,
