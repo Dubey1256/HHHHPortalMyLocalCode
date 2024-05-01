@@ -7,7 +7,7 @@ import "react-popper-tooltip/dist/styles.css";
 import ColumnSettingSortingToolTip from "./ColumnSettingSortingToolTip";
 import { Web } from "sp-pnp-js";
 import CoustomInfoIcon from "./CoustomInfoIcon";
-import { myContextValue } from '../globalCommon';
+import { myContextValue, deepCopy } from '../globalCommon';
 // let propColumns: any = [];
 const ColumnsSetting = (props: any) => {
     let MyContextdata: any = React.useContext(myContextValue);
@@ -111,7 +111,8 @@ const ColumnsSetting = (props: any) => {
     const handleClosePopup = () => {
         props?.columnSettingCallBack('close');
     };
-    const handleChangeDateAndDataCallBack = () => {
+
+    const handleChangeDateAndDataCallBack = async () => {
         if (props?.smartFabBasedColumnsSettingToggle != true) {
             const updatedData = { ...props?.columnVisibilityData };
             for (let key in columnSettingVisibility) {
@@ -145,7 +146,6 @@ const ColumnsSetting = (props: any) => {
                 tableHeightValue: heightOption === "fixed" ? tableHeightValue : "",
                 showProgress: showProgress,
                 // showTilesView: showTilesView
-
             }
             if (tablePageSize > 0) {
                 preSetColumnSettingVisibility.showPageSizeSetting = {
@@ -248,7 +248,6 @@ const ColumnsSetting = (props: any) => {
             } catch (error) {
 
             }
-
             props?.columnSettingCallBack(columnsVisibllityDataAll);
 
         } else if (props?.smartFabBasedColumnsSettingToggle === true) {
@@ -419,7 +418,6 @@ const ColumnsSetting = (props: any) => {
             newColumns.splice(index, 0, draggedColumn);
             setColumnOrderValue(newColumns);
             setDraggedIndex(index);
-
             // let sortedColumn: any = [];
             // columnOrderValue?.forEach((orderItem: any) => {
             //     for (let i = 0; i < propColumns?.length; i++) {
@@ -501,7 +499,7 @@ const ColumnsSetting = (props: any) => {
                         <thead>
                             <tr>
                                 <th className="f-16 border-0" style={{ width: "20%" }}>Table Header</th>
-                                <th className="f-16 border-0" style={{ width: "20%" }}><div className="alignCenter"><span>Restore default table</span> <span className="alignCenter"><CoustomInfoIcon Discription="Restore the Column Settings to their Default Value." /></span> </div></th>
+                                <th className="f-16 border-0" style={{ width: "20%" }}></th>
                                 <th className="f-16 border-0" style={{ width: "40%" }}>Table Height</th>
                                 <th className="f-16 border-0" style={{ width: "20%" }}>Page Size</th>
                             </tr>
@@ -509,7 +507,10 @@ const ColumnsSetting = (props: any) => {
                         <tbody>
                             <tr>
                                 <td><label><input className="form-check-input cursor-pointer me-1" type="checkbox" checked={showHeader} onChange={handleCheckboxChange} name="showHeader" />Show Header</label></td>
-                                <td><button className="width30" type="button" onClick={handleClearLocalStorage}>Clear</button></td>
+                                <td>
+                                    {/* <button className="width30" type="button" onClick={handleClearLocalStorage}>Clear</button> */}
+                                <div className="alignCenter hreflink siteColor" onClick={handleClearLocalStorage}><span>Restore default table</span> <span className="alignCenter"><CoustomInfoIcon Discription="Restore the Column Settings to their Default Value." /></span> </div>
+                                </td>
                                 <td>
                                     {/* {editMode ? (
                                     <div className="alignCenter">
@@ -578,9 +579,7 @@ const ColumnsSetting = (props: any) => {
                                                                         onChange={(e: any) => coustomColumnsSetting(column, event)} name={column.id}
                                                                     />
                                                                     <ColumnSettingSortingToolTip columnSorting={columnSorting} column={column} placeholder={column?.placeholder} handleSortClick={handleSortClick} />
-
                                                                     {column?.showProgressBar && <><input name="showProgress" className="form-check-input cursor-pointer me-1 mx-2" id="showProgress" type='checkbox' checked={showProgress} onChange={(e: any) => coustomColumnsSetting(column = { id: "showProgress" }, event)} /><span>Show Progress Bar</span></>}
-
                                                                 </div> : ""}
                                                             </td>
                                                             <td style={{ width: "30%" }}>
