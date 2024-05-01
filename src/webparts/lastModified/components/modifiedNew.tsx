@@ -1,4 +1,4 @@
-import Loader from "react-loader"
+
 import PageLoader from '../../../globalComponents/pageLoader';
 import moment from 'moment';
 import { ColumnDef } from '@tanstack/react-table'
@@ -16,18 +16,15 @@ import EditInstitutionPopup from '../../contactSearch/components/contact-search/
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import EditPage from '../../../globalComponents/EditPanelPage/EditPage'
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
-
-let allSite: any = {
-  GMBHSite: false,
-  HrSite: false,
-  MainSite: true,
-}
+import EditContactPopup from "./editLastmodified//EditContactPopup";
+import EditEventCardPopup from "./editLastmodified/EditEventCard";
 let masterTaskData: any;
 let ActualSites: any = []
+let baseUrl: any
+let editLists:any
 export const Modified = (props: any) => {
   let columns: any = [];
   let portfolioColor: any = '#000066';
-  var baseUrl: any = props?.props.context?._pageContext?.web?.absoluteUrl;
   const [gmbhSite, setGmbhSite] = useState(false);
   const [sites, setSites] = useState<any>([])
   const [allSiteData, setallSiteData] = useState<any>([])
@@ -39,17 +36,16 @@ export const Modified = (props: any) => {
   const [editComponentPopUps, setEditComponentPopUps] = useState(false);
   const [editDocPopUpOpen, seteditDocPopUpOpen] = useState(false);
   const [editValue, setEditValue] = useState<any>([]);
-  const [editLists, setEditLists] = useState<any>();
   const [editContactLists, setEditContactLists] = useState<any>();
   const [Portfoliotyped, setPortfoliotyped] = useState<any>();
   const [loader, setLoader] = useState<any>(false);
-  const [componentChecked, setComponentChecked] = useState<any>(false);
-  const [serviceChecked, setServiceChecked] = useState<any>(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [currentTimeEntry, setCurrentTimeEntry] = useState<any>([]);
   const [istimeEntryOpen, setIsTimeEntryOpen] = useState(false);
   const [editInstitutionPopUp, setEditInstitutionPopUp] = useState(false);
   const [editWebPagePopUp, setEditWebPagePopUp] = useState(false)
+  const [SitesConfig, setSitesConfig] = React.useState([]);
+  const [isEditEvent, setIsEditEvent] = useState<any>(false)
   const childRef = React.useRef<any>();
   let context = props?.props?.context
   let allDataFinal: any = [];
@@ -58,24 +54,11 @@ export const Modified = (props: any) => {
   let Users: any;
   let currentAll: any = []
   useEffect(() => {
-    getAllUsers()
+    storeEditList()
     getSites();
-    getPortfolioData()
   }, []);
 
-
-  const getAllUsers = async () => {
-
-
-    Users = await globalCommon.loadTaskUsers();
-    setAllUsers(Users)
-    if (baseUrl.toLowerCase().includes("gmbh")) {
-      setGmbhSite(true)
-      allSite = {
-        GMBHSite: true,
-        MainSite: false,
-      }
-    }
+  const storeEditList = () => {
     const editListsAll = {
       TaskUsertListID: props?.props?.TaskUsertListID,
       SmartMetadataListID: props?.props?.SmartMetadataListID,
@@ -91,28 +74,18 @@ export const Modified = (props: any) => {
       Context: props?.props?.context,
       SmartHelptListID: props?.props?.SmartHelptListID,
       PortFolioTypeID: props?.props?.PortFolioTypeID,
+      baseUrl: baseUrl,
+      NewsListId:props?.props?.NewsListId,
+      EventListId:props?.props?.EventListId,
       context: props?.props?.context,
       TaskUserListId: props?.props?.TaskUsertListID,
-      isShowTimeEntry:props?.props?.TimeEntry,
+      isShowTimeEntry: props?.props?.TimeEntry,
 
     }
-    setEditLists(editListsAll)
-
-    const contactList = {
-      Context: props?.props.context,
-      HHHHContactListId: props?.props?.HHHHContactListId,
-      HHHHInstitutionListId: props?.props?.HHHHInstitutionListId,
-      MAIN_SMARTMETADATA_LISTID: props?.props?.MAIN_SMARTMETADATA_LISTID,
-      MAIN_HR_LISTID: props?.props?.MAIN_HR_LISTID,
-      ContractListID: props?.props?.ContractListID,
-      GMBH_CONTACT_SEARCH_LISTID: props?.props?.GMBH_CONTACT_SEARCH_LISTID,
-      HR_EMPLOYEE_DETAILS_LIST_ID: props?.props?.HR_EMPLOYEE_DETAILS_LIST_ID,
-      siteUrl: baseUrl,
-      jointSiteUrl: "https://hhhhteams.sharepoint.com/sites/HHHH"
-    }
-    setEditContactLists(contactList)
+    editLists=editListsAll
   }
   const getSites = async function () {
+    baseUrl = props?.props.context?._pageContext?.web?.absoluteUrl;
     var web: any = new Web(baseUrl);
     try {
       var siteData = await web.lists.getById(props.props.ListConfigurationListId).items.select("Id,Key,Configuration,Value&$filter=Key eq 'LastModifiedItems'").getAll();
@@ -127,43 +100,17 @@ export const Modified = (props: any) => {
       sites.allEditFunction = false;
     })
     setSites(ActualSites)
-    getMasterTaskList();
-  }
-  const getMasterTaskList = () => {
-    var web = new Web(baseUrl);
-    try {
-      web.lists.getById(props?.props?.MasterTaskListID).items.select("Id,Title,PortfolioStructureID,ComponentCategory/Id,ComponentCategory/Title,PortfolioType/Id,PortfolioType/Title").expand('PortfolioType,ComponentCategory').getAll().then((masterValue: any) => {
-        if (masterValue.length > 0) {
-          masterTaskData = masterValue;
-          getCurrentData(ActualSites[0])
-        }
-      });
-    } catch (error) {
-      console.error(error)
-    }
-  }
-  const getPortfolioData = async () => {
-    let web = new Web(baseUrl);
-    let PortFolioType = [];
-    PortFolioType = await web.lists
-      .getById(props?.props?.PortFolioTypeID)
-      .items.select(
-        "Id",
-        "Title",
-        "Color",
-        "IdRange"
-      )
-      .get();
-    setPortfoliotyped(PortFolioType)
+    getCurrentData(ActualSites[0])
   }
   const getCurrentData = async (allSite: any) => {
     childRef?.current?.setRowSelection({});
     setLoader(false);
+    baseUrl = allSite.SiteUrl;
+    editLists.siteUrl = baseUrl;
+    editLists.baseUrl=baseUrl
     let web = new Web(baseUrl);
     setType(allSite.TabName);
     setIsButtonDisabled(false)
-    setComponentChecked(false)
-    setServiceChecked(false)
     // to show all sites task data
     if (allSite.TabName == 'ALL') {
       allSite.allEditFunction = true;
@@ -178,9 +125,11 @@ export const Modified = (props: any) => {
           getCurrentData(check);
         })
         allSite.noRepeat = true;
+        allSite.firstRepeat = true;
         allSite.allNorepeat = true;
       } else {
         allSite.allNorepeat = false;
+        allSite.firstRepeat = false;
       }
     }
     if (allSite.AllTask != true) {
@@ -210,280 +159,22 @@ export const Modified = (props: any) => {
     }
     // 
     if (allSite.noRepeat != true) {
+    
       var data: any = [];
-      try {
-        data = await web.lists.getById(allSite.ListId).items.select(allSite.Columns).orderBy('Modified', false).top(200).get();
-      }
-      catch (error) {
-        console.error(error)
-      }
-      if (allSite.TabName == 'DOCUMENTS' || allSite.TabName == 'FOLDERS' || allSite.TabName == 'COMPONENTS' || allSite.TabName == 'SERVICES' || allSite.TabName == 'TEAM-PORTFOLIO' || allSite.TabName == "WEB PAGES") {
-        data?.map((item: any) => {
-          item.siteType = allSite.TabName
-          if (allSite.TabName == 'COMPONENTS' || allSite.TabName == 'SERVICES' || allSite.TabName == 'TEAM-PORTFOLIO') {
-            item.siteType = "Master Tasks";
-            item.MasterType=allSite.TabName
-          }
-          item.listId = allSite.ListId;
-          item.siteUrl = baseUrl;
-          item.coloumns = allSite.Columns
-          item.GmBHSiteCheck = item.siteUrl.includes("/GmBH");
-          if (allSite.TabName == 'SERVICES') {
-            item.fontColorTask = '#228b22'
-          } else {
-            item.fontColorTask = '#000066'
-          }
-
-          if (item.ItemType != undefined) {
-            if (item.ItemType == 'Component') {
-              item.photoComponent = allSite.SiteIcon1
-            }
-            if (item.ItemType == 'SubComponent') {
-              item.photoComponent = allSite.SiteIcon2
-            }
-            if (item.ItemType == 'Feature') {
-              item.photoComponent = allSite.SiteIcon3
-            }
-          }
-          if (item.DueDate != undefined) {
-            item.dueDateNew = moment(item?.DueDate).format('DD/MM/YYYY')
-          }
-          if (item.Modified != undefined) {
-            item.modifiedNew = moment(item?.Modified).format('DD/MM/YYYY');
-          }
-          if (item.Created != undefined) {
-            item.createdNew = moment(item?.Created).format('DD/MM/YYYY')
-          }
-          if (item.File_x0020_Type != undefined) {
-            if (item.File_x0020_Type == "doc") {
-              item.File_x0020_Type = 'docx'
-            }
-            if (item.File_x0020_Type == 'jfif') {
-              item.File_x0020_Type = 'jpg'
-            }
-          }
-
-          if (allSite.TabName == 'FOLDERS') {
-            item.File_x0020_Type = 'folder';
-          }
-          if (item.Author != undefined) {
-            (Users != undefined ? Users : allUsers).map((Users: any) => {
-              if (item.Author.Id == Users?.AssingedToUser?.Id) {
-                item.authorImage = Users.Item_x0020_Cover?.Url;
-                item.authorSuffix = Users.Suffix;
-                item.authorName = Users?.AssingedToUser?.Title;
-                item.authorId = Users?.AssingedToUser?.Id;
-
-              }
-            })
-            if (item?.authorImage == undefined && item.authorSuffix == undefined) {
-              item.authorDefaultName = item.Author?.Title;
-              item.authorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
-            }
-          }
-          if (item.Editor != undefined) {
-            (Users != undefined ? Users : allUsers).map((Users: any) => {
-              if (item.Editor.Id == Users?.AssingedToUser?.Id) {
-                item.editorImage = Users.Item_x0020_Cover?.Url;
-                item.editorSuffix = Users.Suffix;
-                item.editorName = Users?.AssingedToUser?.Title;
-                item.editorId = Users?.AssingedToUser?.Id;
-              }
-              if (item?.editorImage == undefined && item.editorSuffix == undefined) {
-                item.editorDefaultName = item.Editor.Title;
-                item.editorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
-              }
-
-            })
-          }
+      if(allSite?.NumerousSite==true){
+        loadSiteConfiguration(allSite,web).then((response:any)=>{
+        getInformationList(response,baseUrl,allSite) 
         })
-        if (allSite.TabName == 'DOCUMENTS') {
-          // data = data.filter((item: any) => { return (item.Title != null) })
+        
+      }else{
+        try {
+          data = await web.lists.getById(allSite.ListId).items.select(allSite.Columns).orderBy('Modified', false).getAll();
         }
-      }
-      else {
-        data?.map((item: any) => {
-          item.fontColorTask = '#000066';
-          masterTaskData.map((masterTaskValue: any) => {
-            if (item?.Portfolio?.Id == masterTaskValue?.Id) {
-              if (masterTaskValue?.PortfolioType?.Title == 'Service') {
-                item.fontColorTask = '#228b22'
-              }
-            }
-          })
-          item.siteType = allSite?.TabName
-          item.listId = allSite.ListId;
-          item.siteUrl = baseUrl;
-          item.GmBHSiteCheck = item.siteUrl.includes("/GmBH");
-          item.siteUrlOld = item.siteUrl.replace('/SP', '')
-          item.siteImage = allSite?.SiteIcon;
-          item.SiteIcon = item.siteUrlOld + item.siteImage
-          item.AllusersName = [];
-          if (item?.FeedBack != undefined) {
-            item.descriptionsSearch = globalCommon.descriptionSearchData(item)
-        } else {
-          item.descriptionsSearch = '';
+        catch (error) {
+          console.error(error)
         }
-
-          if (item.GmBHSiteCheck == true) {
-            item.SiteIcon = item.siteUrl + "/SiteCollectionImages/ICONS/Foundation/Icon_GmBH.png";
-          }
-          item.TaskID = globalCommon.GetTaskId(item);
-          if (item.Modified != undefined) {
-            item.modifiedNew = moment(item?.Modified).format('DD/MM/YYYY HH:mm');
-          }
-          if (item.Created != undefined) {
-            item.createdNew = moment(item?.Created).format('DD/MM/YYYY')
-          }
-          if (item.DueDate != undefined) {
-            item.dueDateNew = moment(item?.DueDate).format('DD/MM/YYYY')
-          }
-          if (item.EventDate != undefined) {
-            item.eventDate = moment(item?.EventDate).format('DD/MM/YYYY')
-          }
-          if (item.PercentComplete != undefined) {
-            item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
-            item.PercentCompleteShow = item.PercentComplete + '%';
-          }
-          if (item.Author != undefined) {
-            (Users != undefined ? Users : allUsers).map((Users: any) => {
-              if (item.Author.Id == Users?.AssingedToUser?.Id) {
-                item.authorImage = Users.Item_x0020_Cover?.Url;
-                item.authorSuffix = Users.Suffix;
-                item.authorName = Users?.AssingedToUser?.Title;
-                item.authorId = Users?.AssingedToUser?.Id;
-
-              }
-            })
-            if (item?.authorImage == undefined && item.authorSuffix == undefined) {
-              item.authorDefaultName = item.Author?.Title;
-              item.authorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
-            }
-          }
-          if (item.Editor != undefined) {
-            (Users != undefined ? Users : allUsers).map((Users: any) => {
-              if (item.Editor.Id == Users?.AssingedToUser?.Id) {
-                item.editorImage = Users.Item_x0020_Cover?.Url;
-                item.editorSuffix = Users.Suffix;
-                item.editorName = Users?.AssingedToUser?.Title;
-                item.editorId = Users?.AssingedToUser?.Id;
-              }
-              if (item?.editorImage == undefined && item.editorSuffix == undefined) {
-                item.editorDefaultName = item.Editor.Title;
-                item.editorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
-              }
-
-            })
-          }
-          if (item.Portfolio != undefined) {
-            item.PortfolioTitle = item.Portfolio?.Title;
-            item.PortfolioID = item.Portfolio?.Id
-          }
-          if (item.TeamMembers?.length > 0) {
-            item?.TeamMembers?.map((teams: any) => {
-              (Users != undefined ? Users : allUsers).map((users: any) => {
-                if (teams?.Id == users.AssingedToUserId) {
-                  item.AllusersName.push(users)
-                }
-              })
-            })
-
-          }
-          if (item.ResponsibleTeam?.length > 0) {
-            item.ResponsibleTeam?.map((teamLeader: any) => {
-              (Users != undefined ? Users : allUsers).map((users: any) => {
-                if (teamLeader?.Id == users.AssingedToUserId) {
-                  item.AllusersName.push(users)
-                }
-              })
-            })
-          }
-          if (item.AssignedTo?.length > 0) {
-            item.AssignedTo?.map((workingMember: any) => {
-              (Users != undefined ? Users : allUsers).map((users: any) => {
-                if (workingMember?.Id == users.AssingedToUserId) {
-                  item.AllusersName.push(users)
-                }
-              })
-            })
-          }
-          if (item?.AllusersName?.length > 0) {
-            item['teamUserName'] = '';
-            item.AllusersName.forEach((items: any) => {
-              item['teamUserName'] += items.Title + ' ';
-            })
-          }
-        })
-        if (allSite.TabName == "EVENTS") {
-          data = data.filter((item: any) => { return (item.Title != null) })
-        }
-        if (allSite.TabName == 'SMART PAGES') {
-          data = data.filter((item: any) => { return (item.TaxType == "Smart Pages") })
-        }
-      }
-      if (allSite.AllTask == true) {
-        allDataFinal.push([...data])
-        siteNumber++;
-        currentAll.push(data)
-        if (allSitesDummy.length == siteNumber) {
-          setDuplicate([...duplicate, ...currentAll]);
-          var showAllData: any = [];
-          allDataFinal.map((sitesData: any) => {
-            showAllData.push(...sitesData)
-          })
-          setallSiteData(showAllData)
-          setTimeout(() => {
-            document.getElementById(`nav-ALL`)?.classList.add('show');
-            document.getElementById(`nav-ALL`)?.classList.add('active');
-            document.getElementById(`nav-ALL-tab`)?.classList.add('active');
-            setLoader(true);
-            setIsButtonDisabled(true)
-          }, 700);
-
-        }
-        allSite.AllTask = false;
-      }
-      else {
-        if (allSite.editFunction == true) {
-          var tempArray: any = [];
-          var AllSiteTempArray: any = [];
-          duplicate.map((allDup: any) => {
-            var oneSiteData: any = [];
-            allDup.map((updatedData: any) => {
-              if (updatedData.siteType != allSite.TabName) {
-                oneSiteData.push(updatedData)
-              }
-            })
-            if (oneSiteData != undefined && oneSiteData.length > 0) {
-              tempArray.push(oneSiteData)
-            }
-          })
-          tempArray.unshift([...data])
-          tempArray.map((itemALL: any) => {
-            AllSiteTempArray.push(...itemALL)
-          })
-          setDuplicate([...tempArray])
-          if (allSite.allEditFunction == true) {
-            sites.map((Sites: any) => {
-              if (Sites.TabName == "ALL") {
-                Sites.allEditFunction = true;
-              }
-            })
-            allSite.allEditFunction = true
-            setallSiteData(AllSiteTempArray)
-            setLoader(true);
-          } else {
-            setallSiteData(data)
-            setLoader(true);
-            setIsButtonDisabled(true)
-          }
-          allSite.editFunction = false;
-        } else {
-          setDuplicate([...duplicate, data])
-          setallSiteData(data)
-        }
-      }
-      allSite.noRepeat = true;
+        arangeData(data,allSite)
+      } 
     }
     // This else block is used for do not call Api again,which has been loaded.
     else {
@@ -491,12 +182,13 @@ export const Modified = (props: any) => {
       if (allSite.TabName == 'ALL') {
         duplicate.map((dupData: any) => {
           dupData.map((items: any) => {
-            if (items.siteType != 'DOCUMENTS' && items.siteType != 'FOLDERS' && items.siteType != 'COMPONENTS' && items.siteType != 'SERVICES') {
+            if (items.siteType != 'DOCUMENTS' && items.siteType != 'FOLDERS' && items.siteType != 'COMPONENTS' && items.siteType != 'SERVICES' && items.siteType != "Master Tasks") {
               duplicateValue.push(items)
             }
           })
         })
-        if (allSite.allNorepeat != true) {
+
+        if (allSite.allNorepeat != true || allSite.firstRepeat == true) {
           setallSiteData(duplicateValue)
 
           setTimeout(() => {
@@ -513,7 +205,7 @@ export const Modified = (props: any) => {
         var currentvalue: any = [];
         duplicate.map((dupData: any) => {
           dupData.map((items: any) => {
-            if (items.siteType == allSite.TabName ||items.MasterType==allSite.TabName) {
+            if (items.siteType == allSite.TabName || items.MasterType == allSite.TabName) {
               duplicateValue.push(items)
               currentvalue.push(items)
             }
@@ -530,194 +222,170 @@ export const Modified = (props: any) => {
     }
 
   }
-  const componentCheckboxChange = (event: any) => {
-    setComponentChecked(event.target.checked);
-    var storeComponent: any = [];
-    if (event.target.checked && serviceChecked == true) {
-      duplicate.map((dupdata: any) => {
-        dupdata.map((item: any) => {
-          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
-            masterTaskData.map((masterTaskValue: any) => {
-              if (item?.Portfolio?.Id == masterTaskValue?.Id) {
-                if (masterTaskValue?.PortfolioType?.Title == 'Component') {
-                  storeComponent.push(item)
-                }
-                if (masterTaskValue?.PortfolioType?.Title == 'Service') {
-                  item.fontColorTask = '#228b22'
-                  storeComponent.push(item)
-                }
+  const loadSiteConfiguration = async (allsite:any,web:any) => { 
+    let configvalue: any = [];
+    configvalue=await web.lists.getById(allsite?.ListId).items.select("Columns").filter( `WebpartId eq '${allsite?.FilterType}'`).getAll()
+     configvalue = JSON.parse(configvalue[0].Columns);                       
+          return configvalue
+}
 
-              }
-            })
-          }
-          if (item.siteType == type) {
-            masterTaskData.map((masterTaskValue: any) => {
-              if (item?.Portfolio?.Id == masterTaskValue?.Id) {
-                if (masterTaskValue?.PortfolioType?.Title == 'Component') {
-                  storeComponent.push(item)
-                }
-                if (masterTaskValue?.PortfolioType?.Title == 'Service') {
-                  item.fontColorTask = '#228b22'
-                  storeComponent.push(item)
-                }
+  const arangeData=(data:any,allSite:any)=>{
+    data?.map((item: any) => {
+      item.siteType = allSite.TabName;
+      item.listId = allSite.ListId;
+      item.siteUrl = baseUrl;
+      item.coloumns = allSite.Columns;
+      if (item.DueDate != undefined) {
+        item.dueDateNew = moment(item?.DueDate).format('DD/MM/YYYY')
+      }
+      if (item.Modified != undefined) {
+        item.modifiedNew = moment(item?.Modified).format('DD/MM/YYYY');
+      }
+      if (item.Created != undefined) {
+        item.createdNew = moment(item?.Created).format('DD/MM/YYYY')
+      }
+      if (item.File_x0020_Type != undefined) {
+        if (item.File_x0020_Type == "doc") {
+          item.File_x0020_Type = 'docx'
+        }
+        if (item.File_x0020_Type == 'jfif') {
+          item.File_x0020_Type = 'jpg'
+        }
+      }
+      if (allSite.TabName == 'FOLDERS') {
+        item.File_x0020_Type = 'folder';
+      }
 
-              }
-            })
-          }
-        })
-
-      })
+      if (item.Author != undefined) {
+        item.authorName = item?.Author?.Title;
+        item.authorDefaultImage = 'https://grueneweltweit.sharepoint.com/sites/GrueneWeltweit/washington/public/PublishingImages/Icons/icon_user.jpg';
+      }
+      if (item.Editor != undefined) {
+        item.editorName = item?.Editor?.Title;
+        item.editorDefaultImage = 'https://grueneweltweit.sharepoint.com/sites/GrueneWeltweit/washington/public/PublishingImages/Icons/icon_user.jpg';
+      }
+      if (item.PercentComplete != undefined) {
+        item.PercentComplete = parseInt((item.PercentComplete * 100).toFixed(0));
+        item.PercentCompleteShow = item.PercentComplete + '%';
+      }
+   
+    if (allSite.TabName == "EVENTS") {
+      data = data.filter((item: any) => { return (item.Title != null) })
     }
-    else if (event.target.checked) {
-      allSiteData.map((item: any) => {
-        masterTaskData.map((masterTaskValue: any) => {
-          if (item?.Portfolio?.Id == masterTaskValue.Id) {
-            if (masterTaskValue.PortfolioType?.Title == 'Component') {
-              storeComponent.push(item)
-            }
-          }
-        })
-      })
-    }
-    else if (event.target.checked == false && serviceChecked == true) {
-      duplicate.map((dupdata: any) => {
-        dupdata.map((item: any) => {
-          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
-            masterTaskData.map((masterTaskValue: any) => {
-              if (item?.Portfolio?.Id == masterTaskValue?.Id) {
-                if (masterTaskValue.PortfolioType?.Title == 'Service') {
-                  item.fontColorTask = '#228b22'
-                  storeComponent.push(item)
-                }
-              }
-            })
-          }
-          else if (item.siteType == type) {
-            masterTaskData.map((masterTaskValue: any) => {
-              if (item?.Portfolio?.Id == masterTaskValue?.Id) {
-                if (masterTaskValue.PortfolioType?.Title == 'Service') {
-                  item.fontColorTask = '#228b22'
-                  storeComponent.push(item)
-                }
-              }
-            })
-          }
-        })
-
-      })
-    }
-    else if (event.target.checked == false) {
-      duplicate.map((dupdata: any) => {
-        dupdata.map((data: any) => {
-          if (type == 'ALL' && data.siteType != 'DOCUMENTS' && data.siteType != 'FOLDERS' && data.siteType != 'COMPONENTS' && data.siteType != 'SERVICES') {
-            storeComponent.push(data)
-          }
-          else if (data.siteType == type) {
-            storeComponent.push(data)
-          }
-        })
-
-      })
-    }
-    setallSiteData(storeComponent)
-  }
-
-  const serviceCheckboxChange = (event: any) => {
-    var storeServices: any = [];
-    setServiceChecked(event.target.checked)
-    if (event.target.checked && componentChecked == true) {
-      duplicate.map((dupdata: any) => {
-        dupdata.map((item: any) => {
-          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
-            masterTaskData.map((masterTaskValue: any) => {
-              if (item?.Portfolio?.Id == masterTaskValue?.Id) {
-                if (masterTaskValue?.PortfolioType?.Title == 'Component') {
-                  storeServices.push(item)
-                }
-                if (masterTaskValue?.PortfolioType?.Title == 'Service') {
-                  item.fontColorTask = '#228b22'
-                  storeServices.push(item)
-                }
-
-              }
-            })
-          }
-          else if (item.siteType == type) {
-            masterTaskData.map((masterTaskValue: any) => {
-              if (item?.Portfolio?.Id == masterTaskValue.Id) {
-                if (masterTaskValue.PortfolioType?.Title == 'Component') {
-                  storeServices.push(item)
-                }
-                if (masterTaskValue.PortfolioType?.Title == 'Service') {
-                  item.fontColorTask = '#228b22'
-                  storeServices.push(item)
-                }
-
-              }
-            })
-          }
-        })
-
-      })
+    if (allSite.TabName == 'SMART PAGES') {
+      data = data.filter((item: any) => { return (item.ProfileType == "Smart Pages"|| item.ProfileType=="Event"|| item.ProfileType=='Topic') })
     }
 
-    else if (event.target.checked) {
-      allSiteData.map((item: any) => {
-        masterTaskData.map((masterTaskValue: any) => {
-          if (item?.Portfolio?.Id == masterTaskValue.Id) {
-            if (masterTaskValue?.PortfolioType?.Title == 'Service') {
-              item.fontColorTask = '#228b22'
-              storeServices.push(item)
-            }
-          }
+    })
+    data=data?.filter((filterValue:any)=>{return (filterValue?.ItemType!="Sprint" && filterValue?.ItemType!="Project")})
+    if (allSite.AllTask == true) {
+      allDataFinal.push([...data])
+      siteNumber++;
+      currentAll.push(data)
+      if (allSitesDummy.length == siteNumber) {
+        setDuplicate([...duplicate, ...currentAll]);
+        var showAllData: any = [];
+        allDataFinal.map((sitesData: any) => {
+          showAllData.push(...sitesData)
         })
-      })
-    }
-    else if (event.target.checked == false && componentChecked == true) {
-      duplicate.map((dupdata: any) => {
-        dupdata.map((item: any) => {
-          if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES') {
-            masterTaskData.map((masterTaskValue: any) => {
-              if (item?.Portfolio?.Id == masterTaskValue.Id) {
-                if (masterTaskValue?.PortfolioType?.Title == 'Component') {
-                  storeServices.push(item)
-                }
-              }
-            })
-          }
-          else if (item.siteType == type) {
-            masterTaskData.map((masterTaskValue: any) => {
-              if (item?.Portfolio?.Id == masterTaskValue.Id) {
-                if (masterTaskValue?.PortfolioType?.Title == 'Component') {
-                  storeServices.push(item)
-                }
-              }
-            })
-          }
-        })
+        setallSiteData(showAllData)
+        setTimeout(() => {
+          document.getElementById(`nav-ALL`)?.classList.add('show');
+          document.getElementById(`nav-ALL`)?.classList.add('active');
+          document.getElementById(`nav-ALL-tab`)?.classList.add('active');
+          setLoader(true);
+          setIsButtonDisabled(true)
+        }, 700);
 
-      })
+      }
+      allSite.AllTask = false;
     }
     else {
-      duplicate.map((dupdata: any) => {
-        dupdata.map((data: any) => {
-          if (type == 'ALL' && data.siteType != 'DOCUMENTS' && data.siteType != 'FOLDERS' && data.siteType != 'COMPONENTS' && data.siteType != 'SERVICES') {
-            storeServices.push(data)
-          }
-          if (data.siteType == type) {
-            storeServices.push(data)
+      if (allSite.editFunction == true) {
+        var tempArray: any = [];
+        var AllSiteTempArray: any = [];
+        duplicate.map((allDup: any) => {
+          var oneSiteData: any = [];
+          allDup.map((updatedData: any) => {
+            if (updatedData.siteType != allSite.TabName) {
+              oneSiteData.push(updatedData)
+            }
+          })
+          if (oneSiteData != undefined && oneSiteData.length > 0) {
+            tempArray.push(oneSiteData)
           }
         })
-
-      })
+        tempArray.unshift([...data])
+        tempArray.map((itemALL: any) => {
+          AllSiteTempArray.push(...itemALL)
+        })
+        setDuplicate([...tempArray])
+        if (allSite.allEditFunction == true) {
+          sites.map((Sites: any) => {
+            if (Sites.TabName == "ALL") {
+              Sites.allEditFunction = true;
+            }
+          })
+          allSite.allEditFunction = true
+          setallSiteData(AllSiteTempArray)
+          setLoader(true);
+        } else {
+          setallSiteData(data)
+          setLoader(true);
+          setIsButtonDisabled(true)
+        }
+        allSite.editFunction = false;
+      } else {
+        setDuplicate([...duplicate, data])
+        setallSiteData(data)
+      }
     }
-    setallSiteData(storeServices)
+    allSite.noRepeat = true;
   }
+  const getInformationList=(SitesConfig:any,baseUrl:any,allSite:any)=>{
+    let allEvents:any=[]
+    let count=0;
+    let columnUse:any=''
+    SitesConfig?.map((config: any) => {
+      const web = new Web(baseUrl + config?.siteUrl);
+      if(config?.EventlistId!=undefined){
+        columnUse='ID,Title,Description,SmartActivities/Title,SmartActivities/Id,SmartTopics/Title, SmartTopics/Id, SmartPages/Title, SmartPages/Id, FileLeafRef, IsVisible,Created, Modified,Author/Id, Author/Title,Editor/Title,Editor/Id,EventDate,EndDate,Location&$expand=Author,Editor,SmartActivities,SmartTopics,SmartPages'
+      } else{
+        columnUse='Id,Title,Modified,Created,ItemRank,Author/Title,Author/Id,Editor/Title,Editor/Id&$expand=Author,Editor'
+      }
+   web.lists.getById(config?.EventlistId!=undefined?config?.EventlistId:config.listId).items.select(columnUse).getAll().then((results:any)=>{
+    count++;
+    results.map((item:any)=>{
+      item.siteUrl = config.siteUrl.split('/')[1];
+      item.siteUse=item.siteUrl;
+      item.EventlistId = config.EventlistId;
+      allEvents.push(item)
+    })
+    if(SitesConfig.length==count){
+      arangeData(allEvents,allSite)   
+    }
+
+  })
+   });
+    return allEvents
+}
+  const deleteItemById = async (url: any, listId: any, item: any, itemId: any) => {
+    const web = new Web(url);
+    let result;
+    try {
+      result = (await web.lists.getById(listId).items.getById(itemId).delete());
+    }
+    catch (error) {
+      return Promise.reject(error);
+    }
+    return result;
+  }
+
 
   const deleteData = (dlData: any) => {
     var flag = confirm(`Are you sure, you want to delete?`)
     if (flag == true) {
-      globalCommon.deleteItemById(baseUrl, dlData.listId, dlData, dlData.Id).then(() => {
+      deleteItemById(baseUrl, dlData.listId, dlData, dlData.Id).then(() => {
         duplicate.map((dupDelte: any) => {
           dupDelte.map((dupItem: any, index: any) => {
             if (dupItem.Id == dlData.Id) {
@@ -755,6 +423,11 @@ export const Modified = (props: any) => {
     setEditValue(editComponentValue);
     setEditComponentPopUps(true)
   }
+  const editEvents = (editEvent: any) => {
+    editLists.siteUrl=baseUrl+ '/'+ editEvent?.siteUse
+    setEditValue(editEvent);
+    setIsEditEvent(true)
+  }
   const editDocOpen = (editDoc: any) => {
     setEditValue(editDoc);
     seteditDocPopUpOpen(true);
@@ -782,7 +455,6 @@ export const Modified = (props: any) => {
         }
         if (siteValue.TabName == "ALL" && siteValue.allEditFunction == true) {
           dummyValueSite.allEditFunction = true
-
         }
       })
       getCurrentData(dummyValueSite);
@@ -847,6 +519,9 @@ export const Modified = (props: any) => {
       }
     })
   }
+ const CallbackEvent=React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
+  setIsEditEvent(false)
+ },[])
 
   const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
 
@@ -867,23 +542,18 @@ export const Modified = (props: any) => {
           id: 'Id',
         },
         {
-          accessorKey: "FileLeafRef", placeholder: "Title", header: "",
+          accessorKey: "Title", placeholder: "Title", header: "",
           cell: ({ row }) =>
-            <>
-              {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ? <a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</> : undefined}
+            <div className="alignCenter">
+              {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ? <a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</> : undefined}
               <a data-interception="off" target='_blank' href={row.original.EncodedAbsUrl}>{row.original.FileLeafRef}</a>
-            </>
+            </div>
         },
         {
           accessorKey: 'Modified', cell: ({ row }) =>
             <>
               {row.original.modifiedNew}
-              <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
-                {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
-                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
-              </a>
+              <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row?.original?.editorDefaultImage}`} alt="" />
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
             if (row?.original?.editorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.modifiedNew?.includes(filterValue)) {
@@ -905,12 +575,7 @@ export const Modified = (props: any) => {
           cell: ({ row }) =>
             <>
               {row.original.createdNew}
-              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
-                {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
-              </a>
+              <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
             if (row?.original?.authorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.createdNew?.includes(filterValue)) {
@@ -943,7 +608,7 @@ export const Modified = (props: any) => {
             <>
               {type == 'WEB PAGES' ?
                 <>
-                  <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+                  <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
                 </>
                 : undefined}
             </>
@@ -964,23 +629,18 @@ export const Modified = (props: any) => {
           id: 'Id',
         },
         {
-          accessorKey: "FileLeafRef", placeholder: "Title", header: "", id: "FileLeafRef",
+          accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
           cell: ({ row }) =>
-            <>
-              {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ? <a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`alignIcon me-1 svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</> : undefined}
+            <div className="alignCenter">
+              {row.original.File_x0020_Type != undefined ? <>{type == 'FOLDERS' ? <a data-interception="off" target='_blank' href={row.original.FileDirRef}><span className={`svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span></a> : <span className={`svg__iconbox svg__icon--${row.original.File_x0020_Type}`}></span>}</> : undefined}
               <a data-interception="off" target='_blank' href={row.original.EncodedAbsUrl}>{row.original.FileLeafRef}</a>
-            </>
+            </div>
         },
         {
           accessorKey: 'Modified', cell: ({ row }) =>
             <>
               {row.original.modifiedNew}
-              <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
-                {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
-                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
-              </a>
+              <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.editorDefaultImage}`} alt="" />
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
             if (row?.original?.editorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.modifiedNew?.includes(filterValue)) {
@@ -1002,12 +662,7 @@ export const Modified = (props: any) => {
           cell: ({ row }) =>
             <>
               {row.original.createdNew}
-              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
-                {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
-              </a>
+              <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
             if (row?.original?.authorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.createdNew?.includes(filterValue)) {
@@ -1029,7 +684,7 @@ export const Modified = (props: any) => {
             <>
               {type == 'DOCUMENTS' || type == 'WEB PAGES' ?
                 <>
-                  <a onClick={() => editDocOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+                  <div className="mt--2" onClick={() => editDocOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
                 </>
                 : undefined}
             </>
@@ -1041,7 +696,7 @@ export const Modified = (props: any) => {
             <>
               {type == 'DOCUMENTS' || type == 'WEB PAGES' ?
                 <>
-                  <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+                  <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
                 </>
                 : undefined}
             </>
@@ -1049,7 +704,6 @@ export const Modified = (props: any) => {
         }
       ], [allSiteData])
   }
-
   else if (type == 'SMART PAGES') {
     columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
       [
@@ -1068,8 +722,9 @@ export const Modified = (props: any) => {
         {
           accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
           cell: ({ row }) =>
-            <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
-              {row.original.Title}
+            
+            <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/${row.original.ProfileType == "Smart Pages"?'Pages':'Profiles'}.aspx?SmartId=${row.original.Id}&Item=${row.original.Title}`}>
+              {row.original.Title}  
             </a>
         },
         {
@@ -1079,9 +734,9 @@ export const Modified = (props: any) => {
               {row.original.modifiedNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
-                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
+                  <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.editorImage}`} alt="" />
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.editorSuffix}</span>
+                    : <img title={row.original.editorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1107,9 +762,9 @@ export const Modified = (props: any) => {
               {row.original.createdNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+                  <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1144,7 +799,7 @@ export const Modified = (props: any) => {
           cell: ({ row }) =>
 
             <>
-              <a onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+              <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
             </>,
 
         }
@@ -1152,7 +807,7 @@ export const Modified = (props: any) => {
           id: 'delteSmartPages',
           cell: ({ row }) =>
             <>
-              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
             </>
 
         }
@@ -1210,9 +865,9 @@ export const Modified = (props: any) => {
               {row.original.createdNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+                  <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1247,7 +902,7 @@ export const Modified = (props: any) => {
           cell: ({ row }) =>
 
             <>
-              <a onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+              <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
             </>,
 
         }
@@ -1255,7 +910,7 @@ export const Modified = (props: any) => {
           id: 'delteSmartMetaData', size: 25,
           cell: ({ row }) =>
             <>
-              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
             </>
 
         }
@@ -1299,12 +954,7 @@ export const Modified = (props: any) => {
           accessorKey: 'Modified', cell: ({ row }) =>
             <>
               {row.original.modifiedNew}
-              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
-                {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
-                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
-              </a>
+              <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.editorDefaultImage}`} alt="" />
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
             if (row?.original?.editorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.modifiedNew?.includes(filterValue)) {
@@ -1326,12 +976,7 @@ export const Modified = (props: any) => {
           cell: ({ row }) =>
             <>
               {row.original.createdNew}
-              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
-                {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
-              </a>
+              <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
             if (row?.original?.authorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.createdNew?.includes(filterValue)) {
@@ -1352,7 +997,7 @@ export const Modified = (props: any) => {
           id: 'updateContact',
           cell: ({ row }) =>
             <>
-              <a onClick={() => editContactOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+              <div className="mt--2" onClick={() => editContactOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
             </>
 
         },
@@ -1360,7 +1005,7 @@ export const Modified = (props: any) => {
           id: 'deleteContact',
           cell: ({ row }) =>
             <>
-              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
             </>
 
         }
@@ -1380,7 +1025,7 @@ export const Modified = (props: any) => {
           accessorKey: "Title", placeholder: "Title", header: "", id: "Title",
           cell: ({ row }) =>
             <>
-              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Event-detail.aspx?ItemID=${row.original.Id}&Site=GmbH`}>
+              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/EventDetail.aspx?ItemID=${row.original.Id}&Site=${row.original.siteUse}`}>
                 {row.original.Title}
               </a>
             </>
@@ -1389,7 +1034,7 @@ export const Modified = (props: any) => {
           accessorKey: "ItemRank", placeholder: "ItemRank", header: "", id: "ItemRank",
           cell: ({ row }) =>
             <>
-              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Event-detail.aspx?ItemID=${row.original.Id}&Site=GmbH`}>
+              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Event-detail.aspx?ItemID=${row.original.Id}`}>
                 {row.original.ItemRank}
               </a>
             </>
@@ -1407,12 +1052,7 @@ export const Modified = (props: any) => {
           accessorKey: 'Modified', cell: ({ row }) =>
             <>
               {row.original.modifiedNew}
-              <a target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
-                {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
-                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
-              </a>
+              <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.editorDefaultImage}`} alt="" />
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
             if (row?.original?.editorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.modifiedNew?.includes(filterValue)) {
@@ -1434,12 +1074,7 @@ export const Modified = (props: any) => {
           cell: ({ row }) =>
             <>
               {row.original.createdNew}
-              <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
-                {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
-              </a>
+              <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
             if (row?.original?.authorName?.toLowerCase()?.includes(filterValue?.toLowerCase()) || row?.original?.createdNew?.includes(filterValue)) {
@@ -1460,7 +1095,7 @@ export const Modified = (props: any) => {
           id: 'updateEvents',
           cell: ({ row }) =>
             <>
-              <a onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+              <div className="mt--2" onClick={() => editEvents(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
             </>
 
         },
@@ -1468,7 +1103,7 @@ export const Modified = (props: any) => {
           id: 'deleteEvents',
           cell: ({ row }) =>
             <>
-              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
             </>
 
         }
@@ -1535,9 +1170,9 @@ export const Modified = (props: any) => {
               {row.original.createdNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+                  <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark mt--2" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1559,7 +1194,7 @@ export const Modified = (props: any) => {
           id: 'updateNews',
           cell: ({ row }) =>
             <>
-              <a onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+              <div className="mt--2" onClick={() => editEvents(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
             </>
 
         },
@@ -1567,13 +1202,13 @@ export const Modified = (props: any) => {
           id: 'deleteNews',
           cell: ({ row }) =>
             <>
-              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
             </>
 
         }
       ], [allSiteData])
   }
-  else if (type == 'COMPONENTS' || type == 'SERVICES' || type == 'TEAM-PORTFOLIO') {
+  else if (type == 'COMPONENTS' || type == 'SERVICES' || type == 'PORTFOLIO') {
     columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
 
       [
@@ -1587,16 +1222,17 @@ export const Modified = (props: any) => {
           accessorKey: 'PortfolioStructureID', placeholder: 'ID', header: "", id: 'PortfolioStructureID',
           cell: ({ row }) =>
             <>
-              <img className='workmember ms-1' src={`${baseUrl}${row.original.photoComponent}`} alt="" />
+              <span className='Dyicons mx-1 '>{row?.original?.ItemType?.toUpperCase()?.charAt(0)}
+                                </span>
               <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>{row.original.PortfolioStructureID}</span>
             </>
         },
         {
           accessorKey: "Title", placeholder: "Component Name", header: "", id: "Title",
           cell: ({ row }) =>
-            <span>  <a data-interception="off" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.Id}`}>
+            <div>  <a data-interception="off" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.Id}`}>
               {row.original.Title}
-            </a></span>
+            </a></div>
 
         },
         {
@@ -1667,9 +1303,9 @@ export const Modified = (props: any) => {
               </span>
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
                 {row.original.authorImage != undefined ?
-                  <img title={row.original.authorName} className='workmember ms-1' src={`${row.original.authorImage}`} alt="" />
-                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 bg-fxdark" >{row.original.authorSuffix}</span>
-                    : <img title={row.original.authorDefaultName} className='workmember ms-1' src={`${row.original.authorDefaultImage}`} alt="" />}
+                  <img title={row.original.authorName} className='workmember ms-1 mt--2' src={`${row.original.authorImage}`} alt="" />
+                  : row.original.authorSuffix != undefined ? <span title={row.original.authorName} className="workmember ms-1 mt--2 bg-fxdark" >{row.original.authorSuffix}</span>
+                    : <img title={row.original.authorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.authorDefaultImage}`} alt="" />}
               </a>
             </>
           , filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1690,7 +1326,7 @@ export const Modified = (props: any) => {
           id: 'updateComponent',
           cell: ({ row }) =>
             <>
-              <a onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+              <div className="mt--2" onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
             </>
 
         },
@@ -1698,7 +1334,7 @@ export const Modified = (props: any) => {
           id: 'deleteComponent',
           cell: ({ row }) =>
             <>
-              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
             </>
 
         },
@@ -1718,7 +1354,7 @@ export const Modified = (props: any) => {
           cell: ({ row, getValue }) => (
             <>
               {row.original.GmBHSiteCheck == false ? <img className='workmember me-1' src={`${row.original.SiteIcon}`}></img> : undefined}
-              <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={editLists} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allSiteData} />
+              <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={editLists} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allSiteData} />
             </>
           ),
           id: "TaskID",
@@ -1729,12 +1365,21 @@ export const Modified = (props: any) => {
         },
         {
           accessorKey: "Title",
-          cell: ({ row }) => (<>
-            <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
-              {row.original.Title}
-            </a>
-            {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>}
-            </>
+          cell: ({ row }) => (
+            <div className="alignCenter">
+              <span className={row.original.Title != undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
+                <>{row.original.Title != undefined ? <a className="manageText" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
+                  {row.original.Title}
+                </a> : ''}</>
+                <span className="tooltip-text pop-right">
+                  {row.original.Title != undefined ?
+
+                    row.original.Title : ""}
+                </span>
+              </span>
+
+              {row?.original?.descriptionsSearch?.length > 0 && <span className='alignIcon  mt--5 '><InfoIconsToolTip Discription={row?.original?.descriptionsSearch} row={row?.original} /></span>}
+            </div>
           ),
           id: "Title",
           placeholder: "Title", header: "",
@@ -1789,9 +1434,9 @@ export const Modified = (props: any) => {
               {row.original.modifiedNew}
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
                 {row.original.editorImage != undefined ?
-                  <img title={row.original.editorName} className='workmember ms-1' src={`${row.original.editorImage}`} alt="" />
-                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
-                    : <img title={row.original.editorDefaultName} className='workmember ms-1' src={`${row.original.editorDefaultImage}`} alt="" />}
+                  <img title={row.original.editorName} className='workmember ms-1 mt--2' src={`${row.original.editorImage}`} alt="" />
+                  : row.original.editorSuffix != undefined ? <span title={row.original.editorName} className="workmember mt--2 ms-1 bg-fxdark" >{row.original.editorSuffix}</span>
+                    : <img title={row.original.editorDefaultName} className='workmember ms-1 mt--2' src={`${row.original.editorDefaultImage}`} alt="" />}
               </a>
             </>,
           filterFn: (row: any, columnName: any, filterValue: any) => {
@@ -1854,7 +1499,7 @@ export const Modified = (props: any) => {
           cell: ({ row }) =>
 
             <>
-              <a onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></a>
+              <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
             </>,
 
         }
@@ -1862,7 +1507,7 @@ export const Modified = (props: any) => {
           id: 'delteTask',
           cell: ({ row }) =>
             <>
-              <a onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></a>
+              <div className="mt--2" onClick={() => deleteData(row.original)}><span className="alignIcon svg__iconbox hreflink mini svg__icon--trash"></span></div>
             </>
 
         }
@@ -1871,41 +1516,13 @@ export const Modified = (props: any) => {
   }
   return (
     <>
-      <div className="p-0  d-flex justify-content-between align-items-center " style={{ verticalAlign: "top" }}>
-        <h2 className="heading ">
-          <span>Last Modified Views</span></h2>
-        <div className="d-flex float-end">
-          <div className="me-1" >
-            <input className="form-check-input me-2"
-              type="checkbox"
-              checked={componentChecked}
-              onChange={componentCheckboxChange}
-            />
-            <label> COMPONENTS </label>
-
-
-          </div>
-
-          <div className="">
-            <input className="form-check-input me-1"
-              type="checkbox"
-              checked={serviceChecked}
-              onChange={serviceCheckboxChange}
-            />
-            <label>
-              SERVICES </label>
-          </div>
-        </div>
-      </div>
-
 
       <nav className="lastmodify">
         <div className="nav nav-tabs" id="nav-tab" role="tablist">
           {
             sites && sites.map((siteValue: any) =>
               <>
-
-                <button disabled={!isButtonDisabled} onClick={() => { getCurrentData(siteValue); }} className={`nav-link ${siteValue.TabName == sites[0].TabName ? 'active' : ''}`} id={`nav-${siteValue.TabName}-tab`} data-bs-toggle="tab" data-bs-target={`#nav-${siteValue.TabName}`} type="button" role="tab" aria-controls="nav-home" aria-selected="true"><div>{siteValue.DisplaySiteName}</div></button>
+                <button disabled={!isButtonDisabled} onClick={() => { getCurrentData(siteValue); }} className={`nav-link ${siteValue.TabName == sites[0].TabName ? 'active' : ''}`} id={`nav-${siteValue.TabName}-tab`} data-bs-toggle="tab" data-bs-target={`#nav-${siteValue.TabName}`} type="button" role="tab" aria-controls="nav-home" aria-selected="true"><div className={`${siteValue.TabName}`} style={{ color: type == siteValue.TabName ? siteValue?.SiteColur != undefined ? siteValue?.SiteColur : 'DefaultColour' : '' }}>{siteValue.DisplaySiteName}</div></button>
               </>
             )
           }
@@ -1937,10 +1554,11 @@ export const Modified = (props: any) => {
       {editComponentPopUps ? <EditComponent item={editValue} SelectD={editLists} Calls={closeEditComponent} portfolioTypeData={Portfoliotyped} /> : ''}
       {editDocPopUpOpen ? <EditDocumentpanel callbackeditpopup={callbackeditpopup} AllListId={editLists} Item={editValue} editData={editValue} Keydoc={true} Context={context} /> : ''}
       {/* {editWebPagePopUp?<EditPage context={editLists} Item={editValue} changes={changes}  updatedWebpages={updatedWebpages} />: ''} */}
-      <myContextValue.Provider value={{ ...myContextValue, allSite: allSite, allListId: editContactLists, loggedInUserName: props.props?.userDisplayName }}>
-        {editInstitutionPopUp ? <EditInstitutionPopup props={editValue} callBack={CloseConatactPopup} /> : null}
-      </myContextValue.Provider>
+        {editInstitutionPopUp ? <EditContactPopup allListId={editLists} props={editValue} callBack={CloseConatactPopup} /> : null}
+    
       {istimeEntryOpen && (<TimeEntryPopup props={currentTimeEntry} CallBackTimeEntry={TimeEntryCallBack} Context={editLists.Context}></TimeEntryPopup>)}
+      {isEditEvent?<EditEventCardPopup EditEventData={editValue} allListId={editLists} callBack={CallbackEvent} ></EditEventCardPopup>:''}
     </>
   )
+  // fixedWidth={true}
 }

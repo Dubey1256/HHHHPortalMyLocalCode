@@ -66,7 +66,7 @@ export const SendTeamMessage = async (mention_To: any, txtComment: any, Context:
                 let participants: any = []
                 TeamUser = res?.value;
                 let CurrentUserChatInfo = TeamUser.filter((items: any) => {
-                    if (items.userPrincipalName != undefined && currentUser.Email != undefined && items.userPrincipalName.toLowerCase() == currentUser.Email.toLowerCase())
+                    if (items.userPrincipalName != undefined && currentUser.Email != undefined && items.userPrincipalName?.toLowerCase() == currentUser?.Email?.toLowerCase())
                         return items
                 })
                 currentUser.ChatId = CurrentUserChatInfo[0]?.id;
@@ -74,9 +74,9 @@ export const SendTeamMessage = async (mention_To: any, txtComment: any, Context:
 
                 for (let index = 0; index < mention_To?.length; index++) {
                     for (let TeamUserIndex = 0; TeamUserIndex < TeamUser?.length; TeamUserIndex++) {
-                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index].toLowerCase() == TeamUser[TeamUserIndex].userPrincipalName.toLowerCase())
+                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == TeamUser[TeamUserIndex].userPrincipalName?.toLowerCase())
                             SelectedUser.push(TeamUser[TeamUserIndex])
-                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index].toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
+                        if (mention_To[index] != undefined && TeamUser[TeamUserIndex] != undefined && mention_To[index]?.toLowerCase() == 'stefan.hochhuth@hochhuth-consulting.de' && TeamUser[TeamUserIndex].id == 'b0f99ab1-aef3-475c-98bd-e68229168489')
                             SelectedUser.push(TeamUser[TeamUserIndex])
                     }
                 }
@@ -99,7 +99,7 @@ export const SendTeamMessage = async (mention_To: any, txtComment: any, Context:
                 if (mention_To != undefined && AllUsers != undefined && AllUsers?.length > 0 && mention_To?.length > 0) {
                     mention_To?.map((TeamUser: any) => {
                         AllUsers?.map((User: any) => {
-                            if (User?.AssingedToUser != undefined && User?.AssingedToUser?.EMail != undefined && User?.AssingedToUser?.EMail != '' && User?.AssingedToUser?.EMail?.toLowerCase() == TeamUser.toLowerCase()) {
+                            if (User?.AssingedToUser != undefined && User?.AssingedToUser?.EMail != undefined && User?.AssingedToUser?.EMail != '' && User?.AssingedToUser?.EMail?.toLowerCase() == TeamUser?.toLowerCase()) {
                                 IsSendTeamMessage += 1;
                             }
                         })
@@ -827,7 +827,7 @@ export const GetIconImageUrl = (listName: any, listUrl: any, Item: any) => {
         let TaskListsConfiguration = parseJSON(GlobalConstants.LIST_CONFIGURATIONS_TASKS);
         let TaskListItem = TaskListsConfiguration.filter(function (filterItem: any) {
             let SiteRelativeUrl = filterItem.siteUrl;
-            return (filterItem.Title.toLowerCase() == listName.toLowerCase() && SiteRelativeUrl.toLowerCase() == (listUrl).toLowerCase());
+            return (filterItem.Title?.toLowerCase() == listName?.toLowerCase() && SiteRelativeUrl?.toLowerCase() == (listUrl)?.toLowerCase());
         });
         if (TaskListItem.length > 0) {
             if (Item == undefined) {

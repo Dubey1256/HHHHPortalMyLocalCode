@@ -59,6 +59,12 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 isApprovalComment: false,
                 isShowLight: ""
             }
+            let CommentArray: any[] = JSON.parse(CreateTaskForThisPoint?.Comments?.length > 0 ? JSON.stringify(CreateTaskForThisPoint?.Comments) : '[]');
+            if (CommentArray?.length > 0) {
+                CommentArray?.unshift(CreateTaskFor)
+            } else {
+                CommentArray = [CreateTaskFor];
+            }
             let CreateTaskPointDataObject: any = {
                 Title: CreateTaskForThisPoint.Title,
                 Completed: "",
@@ -66,7 +72,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 SeeAbove: '',
                 Phone: '',
                 LowImportance: '',
-                Comments: [CreateTaskFor]
+                Comments: CommentArray
             }
             let FeedBackItem: any = {
                 Title: "FeedBackPicture" + param,

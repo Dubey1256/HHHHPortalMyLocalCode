@@ -2260,26 +2260,26 @@ function ReadyMadeTable(SelectedProp: any) {
 
     const AddStructureCallBackCall = React.useCallback((item) => {
         if (checkedList1?.current.length == 0) {
-            item[0]?.subRows.map((childs: any) => {
+            item[0]?.subRows?.map((childs: any) => {
                 copyDtaArray.unshift(childs)
 
             })
         } else {
             if (item[0]?.SelectedItem != undefined) {
                 copyDtaArray.map((val: any) => {
-                    item[0]?.subRows.map((childs: any) => {
+                    item[0]?.subRows?.map((childs: any) => {
                         if (item[0].SelectedItem == val.Id) {
-                            val.subRows.unshift(childs)
+                            val?.subRows?.unshift(childs)
                         }
-                        if (val.subRows != undefined && val.subRows.length > 0) {
-                            val.subRows?.map((child: any) => {
-                                if (item[0].SelectedItem == child.Id) {
-                                    child.subRows.unshift(childs)
+                        if (val?.subRows != undefined && val?.subRows?.length > 0) {
+                            val?.subRows?.map((child: any) => {
+                                if (item[0]?.SelectedItem == child?.Id) {
+                                    child?.subRows.unshift(childs)
                                 }
-                                if (child.subRows != undefined && child.subRows.length > 0) {
-                                    child.subRows?.map((Subchild: any) => {
+                                if (child?.subRows != undefined && child?.subRows?.length > 0) {
+                                    child?.subRows?.map((Subchild: any) => {
                                         if (item[0].SelectedItem == Subchild.Id) {
-                                            Subchild.subRows.unshift(childs)
+                                            Subchild?.subRows?.unshift(childs)
                                         }
                                     })
                                 }

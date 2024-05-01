@@ -1056,7 +1056,7 @@ function CreateTaskComponent(props: any) {
                         let newTitle = data?.data?.Title
                         let CreatedTaskID = data?.data?.Id
                         data.data.siteType = save.siteType;
-                        if (CategoryTitle?.indexOf('Immediate') > -1 || CategoryTitle?.indexOf('Email Notification') > -1) {
+                        if (CategoryTitle?.indexOf('Immediate') > -1) {
                             let listID = '3BBA0B9A-4A9F-4CE0-BC15-61F4F550D556'
                             var postData = {
                                 __metadata: { 'type': 'SP.Data.ImmediateNotificationsListItem' },
@@ -1120,7 +1120,9 @@ function CreateTaskComponent(props: any) {
                                     await globalCommon.SendTeamMessage(
                                         sendUserEmail,
                                         TeamMsg,
-                                        props.SelectedProp.Context
+                                        props.SelectedProp.Context,
+                                        AllListId
+
                                     );
                                 }
 

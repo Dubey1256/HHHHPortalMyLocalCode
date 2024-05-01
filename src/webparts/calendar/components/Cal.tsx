@@ -1464,7 +1464,9 @@ const SendEmail = (EventData: any, MyEventData: any) => {
               .getById(props.props.SmalsusLeaveCalendar)
               .items.add(eventData)
               .then(() => {
-                SendEmail(newEvent,eventData)
+                if(newEvent.type !== "Work From Home"){
+                  SendEmail(newEvent,eventData)
+                }
                 getEvents();
               })
           });

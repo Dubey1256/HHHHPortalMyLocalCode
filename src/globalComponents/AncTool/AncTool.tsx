@@ -223,6 +223,25 @@ const AncTool = (props: any) => {
         return groupedFolder;
     };
     // Get Files And Folders From Server //
+    const HandleSpecialChar = (inputString: any) => {
+        // Replace special characters with their proper Unicode equivalents
+        let convertedString = inputString;
+        Object.keys(specialCharactersMap).forEach(key => {
+            const value = specialCharactersMap[key];
+            convertedString = convertedString.replace(new RegExp(key, 'g'), value);
+        });
+        return convertedString;
+    }
+    const specialCharactersMap: { [key: string]: string } = {
+        'Ã¤': 'ä',
+        'Ã¼': 'ü',
+        'Ã¶': 'ö',
+        'ÃŸ': 'ß',
+        'Ã„': 'Ä',
+        'Ãœ': 'Ü',
+        'Ã–': 'Ö',
+        'Ã©': 'é',
+    };
     async function getExistingUploadedDocuments(): Promise<any[]> {
         try {
             let alreadyTaggedFiles: any = [];
@@ -237,6 +256,15 @@ const AncTool = (props: any) => {
             let newFilesArr: any = [];
             folders = [];
             files?.map((file: any) => {
+                if ((file?.Title == undefined || file?.Title == '') && file?.FileLeafRef != undefined) {
+                    file.Title = file?.FileLeafRef;
+                }
+                if (file?.FileLeafRef != undefined && file?.FileLeafRef != '') {
+                    file.FileLeafRef = HandleSpecialChar(file.FileLeafRef)
+                }
+                if (file?.Title != undefined && file?.Title != '') {
+                    file.Title = HandleSpecialChar(file.Title)
+                }
                 if (file?.Title != undefined && file?.File_x0020_Type != undefined) {
                     file.docType = file?.File_x0020_Type
                     newFilesArr.push(file)
@@ -258,7 +286,7 @@ const AncTool = (props: any) => {
                 if (file?.File_x0020_Type == 'jpg' || file?.File_x0020_Type == 'jfif') {
                     file.docType = 'jpeg'
                 }
-                if (file?.File_x0020_Type == 'doc') {
+                if (file?.File_x0020_Type == 'doc' || file?.File_x0020_Type == 'docx') {
                     file.docType = 'docx'
                 }
                 if (file?.Portfolios == undefined) {
@@ -270,8 +298,7 @@ const AncTool = (props: any) => {
                         file?.PortfoliosId?.push(Port?.Id)
                     })
                 }
-
-                if (file[siteName] != undefined && file[siteName].length > 0 && file[siteName].some((task: any) => task.Id == props?.item?.Id)) {
+                if (file[siteName] != undefined && file[siteName].length > 0 && file?.FileSystemObjectType != 1 && file[siteName].some((task: any) => task.Id == props?.item?.Id)) {
                     alreadyTaggedFiles.push(file);
                 }
                 if (file.FileSystemObjectType == 1) {
@@ -295,6 +322,12 @@ const AncTool = (props: any) => {
         fetchFilesFromFolder(folderPath)
             .then((files) => {
                 files?.map((file: any) => {
+                    if ((file?.Title == undefined || file?.Title == '') && file?.Name != undefined) {
+                        const lastIndex = file?.Name.lastIndexOf(".");
+                        const result = lastIndex !== -1 ? file?.Name.substring(0, lastIndex) : file?.Name;
+                        file.Title = result;
+                    }
+
                     file.docType = getFileType(file?.Name)
                 })
                 backupCurrentFolder = files;

@@ -11,26 +11,31 @@ import { Items } from '@pnp/sp/items';
 var TaskUser: any = []
 let arr: any = []
 let mastertaskdata: any = []
-// let isColumnDefultSortingDesc: any = false;
+
 export default function DocumentSearchPage(Props: any) {
     //#region Required Varibale on Page load BY PB
     var AllListId = Props.Selectedprops
-    AllListId.siteUrl = Props?.Selectedprops?.context?._pageContext?._web?.absoluteUrl
+    let SiteURL: string = Props?.Selectedprops?.context?._pageContext?._web?.absoluteUrl
+    AllListId.siteUrl = SiteURL;
+    let CurrentSiteCheck = SiteURL.indexOf("grueneweltweit") > -1;
     const PageContext = AllListId;
     const [AllDocs, setAllDocs] = useState([]);
     const [selectedItemId, setSelectedItem] = useState(undefined);
     const [isEditModalOpen, setisEditModalOpen] = useState(false);
-    // const [loading, setloading] = React.useState(false);
+   
 
 
     //#endregion
     //#region code to load All Documents By PB
+    function filterAndJoinTitles(array: any) {
+        const Titles = array?.filter((item: any) => item.Title).map((item: any) => item.Title);
+        const joinedTitles = Titles?.join(', ');
+        return joinedTitles;
+    }
     const LoadDocs = () => {
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
         web.lists.getById(PageContext.DocumentsListID).items.select("Id,Title,PriorityRank,File/Length,Year,Body,recipients,senderEmail,creationTime,Item_x0020_Cover,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl").filter('FSObjType eq 0').expand("Author,Editor,Portfolios,File").orderBy("Created", false).getAll()
-            .then((response: any) => {
-                // setloading(true);
-
+            .then((response: any) => {              
                 const filteredResponse = response.filter((Doc: any) => Doc.File_x0020_Type !== 'svg');
                 try {
                     filteredResponse.forEach((Doc: any) => {
@@ -56,9 +61,7 @@ export default function DocumentSearchPage(Props: any) {
                             })
                         })
                         AllProjectData.map((items: any, index: any) => {
-                            if (items.Title != undefined && items.Title != null) {
-                                // items.href = `${PageContext?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${items.Id}`
-
+                            if (items.Title != undefined && items.Title != null) {                              
                                 projectTitle += items.Title
                                 if (index < AllProjectData.length - 1) {
                                     projectTitle += ", ";
@@ -80,8 +83,8 @@ export default function DocumentSearchPage(Props: any) {
                                     projectStructureId += ", ";
                                 }
                             }
-                            projectStructureId = projectStructureId.split(",")
-                            
+                           projectStructureId = projectStructureId.split(",")
+
                         })
                         // For tasks start data-----
                         Doc.Portfolios.map((itemss: any) => {
@@ -114,9 +117,8 @@ export default function DocumentSearchPage(Props: any) {
 
                         console.log(AllPortfolioData)
                         // For tasks end -----
-                        console.log(AllProjectData)
-                        Doc.ProjectPortfolioTitle =
-                            Doc.CreatedDate = moment(Doc?.Created).format('DD/MM/YYYY');
+                        console.log(AllProjectData)                      
+                        Doc.CreatedDate = moment(Doc?.Created).format('DD/MM/YYYY');
                         Doc.ModifiedDate = moment(Doc?.Modified).format('DD/MM/YYYY HH:mm')
                         Doc.SiteIcon = PageContext.context._pageContext._web.title;
                         Doc.ProjectTitle = projectTitle;
@@ -124,9 +126,9 @@ export default function DocumentSearchPage(Props: any) {
                         Doc.Portfolioss = Portfolioss;
                         Doc.projectId = projectId;
                         Doc.projectStructureId = projectStructureId;
-                        Doc.Project = Project;
+                        Doc.Project = filterAndJoinTitles(Doc?.Portfolios)
                         Doc.portfolioId = portfolioId;
-                        Doc.FileSize = `${Math.ceil(Doc?.File?.Length / 1024)} KB`;               
+                        Doc.FileSize = `${Math.ceil(Doc?.File?.Length / 1024)} KB`;
                         Doc.AllModifiedImages = [];
                         Doc.AllCreatedImages = [];
                         let CreatedUserObj: any = {};
@@ -179,9 +181,7 @@ export default function DocumentSearchPage(Props: any) {
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
         web.lists.getById(PageContext.TaskUsertListID).items.select('Id,Suffix,Title,SortOrder,Item_x0020_Type,Item_x0020_Cover,AssingedToUserId,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType').expand('AssingedToUser').getAll().then((response: any) => {
             TaskUser = response;
-            LoadDocs();
-            // setloading(false);
-
+            LoadDocs();         
         }).catch((error: any) => {
             console.error(error);
         });
@@ -258,7 +258,7 @@ export default function DocumentSearchPage(Props: any) {
             cell: ({ row }) => (
                 <div className='alignCenter '>
                     <a target="_blank" className='alignCenter' data-interception="off" href={row?.original?.FileDirRef}>
-                        {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && (row?.original?.File_x0020_Type != 'jfif' && (row?.original?.File_x0020_Type === 'fig' || row?.original?.File_x0020_Type === 'mp4' ? (
+                        {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'xls' && row?.original?.File_x0020_Type != 'xlsx' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && (row?.original?.File_x0020_Type != 'jfif' && (row?.original?.File_x0020_Type === 'fig' || row?.original?.File_x0020_Type === 'mp4'  ? (
                             <span title={`${row?.original?.File_x0020_Type}`} className="svg__iconbox svg__icon--unknownFile"></span>
                         ) : (
                             <>
@@ -272,9 +272,11 @@ export default function DocumentSearchPage(Props: any) {
                                     )}
                             </>
                         )))}
-                        {row?.original?.File_x0020_Type == 'rar' && <span title={`${row?.original?.File_x0020_Type}`} className="svg__iconbox svg__icon--zip "></span>}
+                        {row?.original?.File_x0020_Type == 'rar' && <span title={`${row?.original?.File_x0020_Type}`} className="svg__iconbox svg__icon--zip"></span>}
+                        
                         {row?.original?.File_x0020_Type == 'msg' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--msg "></span> : ''}
-                        {(row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg') ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
+                        {(row?.original?.File_x0020_Type == 'jpeg'|| row?.original?.File_x0020_Type == 'jpg') ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
+                        {(row?.original?.File_x0020_Type == 'xls' || row?.original?.File_x0020_Type == 'xlsx')?<span title={`${row?.original?.File_x0020_Type}`} className="svg__iconbox svg__icon--xlsx"></span>:''}
                         {(row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx') ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--docx "></span> : ''}
                         {row?.original?.File_x0020_Type == 'jfif' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
                     </a>
@@ -322,8 +324,8 @@ export default function DocumentSearchPage(Props: any) {
                                     href={projectUrl}
                                     title={projectUrl} // Set the title attribute to the URL
                                     style={{ cursor: "pointer" }}
-                                
-                                    >
+
+                                >
                                     {projectIdFromUrl}
                                 </a>
                                 {index < projectTitles.length - 1 && ', '}
@@ -391,191 +393,7 @@ export default function DocumentSearchPage(Props: any) {
                     </div>
                 );
             }
-        },
-        // {
-        //     accessorKey: "Project",
-        //     placeholder: "Project/Portfolios",
-        //     header: "",
-        //     size: 200,
-        //     id: "Project",
-        //     cell: ({ row }) => {
-        //         const projectTitles = row?.original?.ProjectTitle;
-        //         const projectIds = row?.original?.projectId;
-        //         const portfoliosTitle = row?.original?.portfolioTitle;
-        //         const portfolioIdss = row?.original?.portfolioId;
-        //         let combinedChildren: any[] = [];
-        //         let combinedUrls: any[] = [];
-
-        //         if ((!Array.isArray(projectTitles) || !Array.isArray(projectIds) || projectTitles.length !== projectIds.length)
-        //             && (!Array.isArray(portfoliosTitle) || !Array.isArray(portfolioIdss) || portfoliosTitle.length !== portfolioIdss.length)) {
-        //             return null; // Both projectLinks and portfolioLinks are empty, so return null
-        //         }
-
-        //         if (Array.isArray(projectTitles) && Array.isArray(projectIds) && projectTitles.length === projectIds.length) {
-        //             const projectLinks = projectTitles.map((title: any, index: number) => {
-        //                 const projectId = projectIds[index].trim();
-        //                 const projectUrl = `${PageContext?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${projectId}`;
-        //                 const projectIdFromUrl = new URL(projectUrl).searchParams.get('ProjectId');
-
-        //                 return (
-        //                     <React.Fragment key={index}>
-        //                         <a
-        //                             target="_blank"
-        //                             data-interception="off"
-        //                             href={projectUrl}
-        //                             style={{ cursor: "pointer" }}>
-        //                             P{projectIdFromUrl}
-        //                         </a>
-        //                         {index < projectTitles.length - 1 && ', '}
-        //                     </React.Fragment>
-        //                 );
-        //             });
-
-        //             projectLinks.forEach(item => {
-        //                 if (item?.props?.children && item?.props?.children.length > 0 && item?.props?.children[0]?.props?.children) {
-        //                     combinedChildren.push(item.props?.children[0]?.props?.children);
-        //                     combinedUrls.push(item.props?.children[0]?.props?.href);
-        //                 }
-        //             });
-        //         }
-
-        //         if (Array.isArray(portfoliosTitle) && Array.isArray(portfolioIdss) && portfoliosTitle.length === portfolioIdss.length) {
-        //             const portfolioLinks = portfoliosTitle.map((title: any, index: number) => {
-        //                 const portfolioId = portfolioIdss[index].trim();
-
-        //                 return (
-        //                     <React.Fragment key={index}>
-        //                         <a
-        //                             target="_blank"
-        //                             data-interception="off"
-        //                             href={`${PageContext?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${portfolioId}`}
-        //                             style={{ cursor: "pointer" }}>
-        //                             {title}
-        //                         </a>
-        //                         {index < projectTitles.length - 1 && ', '}
-        //                     </React.Fragment>
-        //                 );
-        //             });
-
-        //             portfolioLinks.forEach(item => {
-        //                 if (item?.props?.children && item?.props?.children.length > 0 && item?.props?.children[0]?.props?.children) {
-        //                     combinedChildren.push(item?.props?.children[0]?.props?.children);
-        //                     combinedUrls.push(item.props?.children[0]?.props?.href);
-        //                 }
-        //             });
-        //         }
-
-        //         const handleClick = (url: string) => {
-        //             window.open(url, '_blank');
-        //         };
-
-        //         return (
-        //             <div>
-        //                 {combinedChildren.map((text, index) => (
-        //                     <React.Fragment key={index}>
-        //                         <a
-        //                             onClick={() => handleClick(combinedUrls[index])}
-        //                             style={{ cursor: "pointer" }}>
-        //                             {text}
-        //                         </a>
-        //                         {index < combinedChildren.length - 1 && ', '}
-        //                     </React.Fragment>
-        //                 ))}
-        //             </div>
-        //         );
-        //     }
-        // },
-        // {
-        //     accessorKey: "Project",
-        //     placeholder: "Project/Portfolios",
-        //     header: "",
-        //     size: 200,
-        //     id: "Project",
-        //     cell: ({ row }) => {
-        //         const projectTitles = row?.original?.ProjectTitle;
-        //         const projectIds = row?.original?.projectId;
-        //         const portfoliosTitle = row?.original?.portfolioTitle;
-        //         const portfolioIdss = row?.original?.portfolioId;
-        //         let combinedChildren: any[] = [];
-        //         let combinedUrls: any[] = [];
-
-        //         if (!Array.isArray(projectTitles) || !Array.isArray(projectIds) || projectTitles.length !== projectIds.length) {
-        //             return null;
-        //         }
-        //         if (!Array.isArray(portfoliosTitle) || !Array.isArray(portfolioIdss) || portfoliosTitle.length !== portfolioIdss.length) {
-        //             return null;
-        //         }
-
-        //         const projectLinks = projectTitles.map((title: any, index: number) => {
-        //             const projectId = projectIds[index].trim();
-        //             const projectUrl = `${PageContext?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${projectId}`;
-        //             const projectIdFromUrl = new URL(projectUrl).searchParams.get('ProjectId');
-
-        //             return (
-        //                 <React.Fragment key={index}>
-        //                     <a
-        //                         target="_blank"
-        //                         data-interception="off"
-        //                         href={projectUrl}
-        //                         style={{ cursor: "pointer" }}>
-        //                         P{projectIdFromUrl}
-        //                     </a>
-        //                     {index < projectTitles.length - 1 && ', '}
-        //                 </React.Fragment>
-        //             );
-        //         });
-
-        //         const portfolioLinks = portfoliosTitle?.map((title: any, index: number) => {
-        //             const portfolioId = portfolioIdss[index].trim();
-
-        //             return (
-        //                 <React.Fragment key={index}>
-        //                     <a
-        //                         target="_blank"
-        //                         data-interception="off"
-        //                         href={`${PageContext?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${portfolioId}`}
-        //                         style={{ cursor: "pointer" }}>
-        //                         {title}
-        //                     </a>
-        //                     {index < projectTitles.length - 1 && ', '}
-        //                 </React.Fragment>
-        //             );
-        //         });
-
-        //         // Concatenate and store the strings and URLs
-        //         projectLinks.forEach(item => {
-        //             if (item?.props?.children && item?.props?.children.length > 0 && item?.props?.children[0]?.props?.children) {
-        //                 combinedChildren.push(item.props?.children[0]?.props?.children);
-        //                 combinedUrls.push(item.props?.children[0]?.props?.href);
-        //             }
-        //         });
-        //         portfolioLinks.forEach(item => {
-        //             if (item?.props?.children && item?.props?.children.length > 0 && item?.props?.children[0]?.props?.children) {
-        //                 combinedChildren.push(item?.props?.children[0]?.props?.children);
-        //                 combinedUrls.push(item.props?.children[0]?.props?.href);
-        //             }
-        //         });
-
-        //         const handleClick = (url: string) => {
-        //             window.open(url, '_blank');
-        //         };
-
-        //         return (
-        //             <div>
-        //                 {combinedChildren.map((text, index) => (
-        //                     <React.Fragment key={index}>
-        //                         <a
-        //                             onClick={() => handleClick(combinedUrls[index])}
-        //                             style={{ cursor: "pointer" }}>
-        //                             {text}
-        //                         </a>
-        //                         {index < combinedChildren.length - 1 && ', '}
-        //                     </React.Fragment>
-        //                 ))}
-        //             </div>
-        //         );
-        //     }
-        // },
+        },        
         {
             accessorKey: "File_x0020_Type", placeholder: "File Type", header: "", size: 120, id: "File_x0020_Type",
             cell: ({ row }) => (
@@ -663,9 +481,11 @@ export default function DocumentSearchPage(Props: any) {
                 <h2 className="d-flex justify-content-between heading align-items-center siteColor serviceColor_Active">
                     <div>Document Search
                     </div>
-                    <div className="text-end fs-6">
-                        <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/document-search-old.aspx">Old Document Search</a>
-                    </div>
+                    {!CurrentSiteCheck &&
+                        <div className="text-end fs-6">
+                            <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/document-search-old.aspx">Old Document Search</a>
+                        </div>
+                    }
                 </h2>
             </div>
             {AllDocs && <div>
