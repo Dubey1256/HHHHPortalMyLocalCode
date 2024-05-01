@@ -41,7 +41,7 @@ import ColumnsSetting from './ColumnsSetting';
 import HeaderButtonMenuPopup from './HeaderButtonMenuPopup';
 import { Web } from 'sp-pnp-js';
 import { TbChevronDown, TbChevronUp, TbSelector } from 'react-icons/tb';
-import { myContextValue } from '../globalCommon';
+import { myContextValue, deepCopy } from '../globalCommon';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import moment from 'moment';
 // import TileBasedTasks from './TileBasedTasks';
@@ -282,7 +282,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const [trueRestructuring, setTrueRestructuring] = React.useState(false);
     // const [clickFlatView, setclickFlatView] = React.useState(false);
-    const [columnVisibility, setColumnVisibility] = React.useState({ descriptionsSearch: false, commentsSearch: false, timeSheetsDescriptionSearch: items?.ShowTimeSheetsDescriptionSearch === true ? true : false });
+    const [columnVisibility, setColumnVisibility] = React.useState<any>({ descriptionsSearch: false, commentsSearch: false, timeSheetsDescriptionSearch: items?.ShowTimeSheetsDescriptionSearch === true ? true : false });
     // const [columnVisibility, setColumnVisibility] = React.useState({});
     const [selectedFilterPannelData, setSelectedFilterPannelData] = React.useState<any>({
         Title: { Title: 'Title', Selected: true, lebel: 'Title' },
@@ -402,7 +402,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             }
             return elem;
         });
-    }, [columns]);
+    }, [items?.columns]);
     // ***************** coustmize Global Expende And Check Box End *****************
 
     const selectedFilterCallBack = React.useCallback((item: any) => {
@@ -490,7 +490,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
             console.error(error)
         }
     };
-    React.useLayoutEffect(() => {
+    React.useEffect(() => {
         const fetchData = async () => {
             try {
                 await fetchSettingConfrigrationData('');
@@ -498,7 +498,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                 console.error('Error:', error);
             }
         }; fetchData();
-    }, [columns]);
+    }, [items?.columns]);
 
     const defultColumnPrepare = () => {
         if (columns?.length > 0 && columns != undefined) {
@@ -1643,12 +1643,12 @@ const GlobalCommanTable = (items: any, ref: any) => {
                     </select>
                 </div> : ''
             }
-            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} /> : ''}
+            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} portfolioTypeData={items?.portfolioTypeData} context={items?.AllListId?.Context} AllListId={items?.AllListId} /> : ''}
             {selectedFilterPanelIsOpen && <SelectFilterPanel columns={columns} isOpen={selectedFilterPanelIsOpen} selectedFilterCount={selectedFilterCount} setSelectedFilterCount={setSelectedFilterCount} selectedFilterCallBack={selectedFilterCallBack} setSelectedFilterPannelData={setSelectedFilterPannelData} selectedFilterPannelData={selectedFilterPannelData} portfolioColor={portfolioColor} />}
             {dateColumnFilter && <DateColumnFilter portfolioTypeDataItemBackup={items?.portfolioTypeDataItemBackup} taskTypeDataItemBackup={items?.taskTypeDataItemBackup} portfolioTypeData={portfolioTypeData} taskTypeDataItem={items?.taskTypeDataItem} dateColumnFilterData={dateColumnFilterData} flatViewDataAll={items?.flatViewDataAll} data={data} setData={items?.setData} setLoaded={items?.setLoaded} isOpen={dateColumnFilter} selectedDateColumnFilter={selectedDateColumnFilter} portfolioColor={portfolioColor} Lable='DueDate' />}
             {bulkEditingSettingPopup && <BulkEditingConfrigation isOpen={bulkEditingSettingPopup} bulkEditingSetting={bulkEditingSetting} bulkEditingCongration={bulkEditingCongration} />}
             {columnSettingPopup && <ColumnsSetting showProgres={showProgress} ContextValue={items?.AllListId} settingConfrigrationData={settingConfrigrationData} tableSettingPageSize={tableSettingPageSize} tableHeight={parentRef?.current?.style?.height} wrapperHeight={wrapperHeight} columnOrder={columnOrder} setSorting={setSorting} sorting={sorting} headerGroup={table?.getHeaderGroups()} tableId={items?.tableId} showHeader={showHeaderLocalStored} isOpen={columnSettingPopup} columnSettingCallBack={columnSettingCallBack} columns={columns} columnVisibilityData={columnVisibility}
-                smartFabBasedColumnsSettingToggle={smartFabBasedColumnsSettingToggle} setSmartFabBasedColumnsSettingToggle={setSmartFabBasedColumnsSettingToggle} />}
+                smartFabBasedColumnsSettingToggle={smartFabBasedColumnsSettingToggle} setSmartFabBasedColumnsSettingToggle={setSmartFabBasedColumnsSettingToggle} data={items?.data} setData={items?.setData} />}
 
             {coustomButtonMenuPopup && <HeaderButtonMenuPopup isOpen={coustomButtonMenuPopup} coustomButtonMenuToolBoxCallback={coustomButtonMenuToolBoxCallback} setCoustomButtonMenuPopup={setCoustomButtonMenuPopup}
                 selectedRow={table?.getSelectedRowModel()?.flatRows} ShowTeamFunc={ShowTeamFunc} portfolioColor={portfolioColor}
