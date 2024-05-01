@@ -59,7 +59,7 @@ const CreateTaskCompareTool = (RequiredData: any) => {
                 isApprovalComment: false,
                 isShowLight: ""
             }
-            let CommentArray: any[] = CreateTaskForThisPoint?.Comments;
+            let CommentArray: any[] = JSON.parse(CreateTaskForThisPoint?.Comments?.length > 0 ? JSON.stringify(CreateTaskForThisPoint?.Comments) : '[]');
             if (CommentArray?.length > 0) {
                 CommentArray?.unshift(CreateTaskFor)
             } else {
