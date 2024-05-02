@@ -2144,8 +2144,8 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (StatusInput == 70) {
                     if (
-                        EditData.TeamMembers != undefined &&
-                        EditData.TeamMembers?.length > 0
+                        (EditData.TeamMembers != undefined &&
+                            EditData.TeamMembers?.length > 0) && (EditData.TeamMembers?.length != EditData?.AssignedTo?.length)
                     ) {
                         setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
                     } else if (EditData.ResponsibleTeam?.length > 0) {
@@ -3018,10 +3018,13 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.projectStructerId = structureiddata;
                                     Items.Call(dataEditor, "UpdatedData");
                                 } else {
+
                                     Items.Call(DataJSONUpdate, "UpdatedData");
                                 }
                             } else {
-                                Items.Call("Save");
+                                if (usedFor !== "TimeSheetPopup") {
+                                    Items.Call("Save");
+                                }
                             }
                         }
                     });
@@ -4855,13 +4858,13 @@ const EditTaskPopup = (Items: any) => {
             let copyWorkAction: any = [...WorkingAction]
             let CreateObject: any = {
                 CreatorName: CreatorData?.Title,
-                CreatorImage: CreatorData.UserImage,
-                CreatorID: CreatorData.Id,
+                CreatorImage: CreatorData?.UserImage,
+                CreatorID: CreatorData?.Id,
                 TaggedUsers: {
-                    Title: ApproverData.Title,
-                    Email: ApproverData.Email,
-                    AssingedToUserId: ApproverData.AssingedToUserId,
-                    userImage: ApproverData.Item_x0020_Cover?.Url,
+                    Title: ApproverData?.Title,
+                    Email: ApproverData?.Email,
+                    AssingedToUserId: ApproverData?.AssingedToUserId,
+                    userImage: ApproverData?.Item_x0020_Cover?.Url,
                 },
                 NotificationSend: false,
                 Comment: '',
@@ -5605,12 +5608,25 @@ const EditTaskPopup = (Items: any) => {
                 onDismiss={closeTimeSheetPopup}
                 isBlocking={TimeSheetPopup}
             >
-                <div
-                    className={
-                        ServicesTaskCheck ? "modal-body serviepannelgreena" : "modal-body"
-                    }
-                >
+                <div className="modal-body">
                     <TimeEntryPopup props={Items.Items} />
+                    <footer className="bg-f4">
+                        <div className="card-footer">
+                            <button
+                                className="btn btn-primary px-4 float-end"
+                                onClick={closeTimeSheetPopup}
+                            >
+                                OK
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-default me-1 float-end px-3"
+                                onClick={closeTimeSheetPopup}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </footer>
                 </div>
             </Panel>
 
@@ -6634,7 +6650,14 @@ const EditTaskPopup = (Items: any) => {
                                                                                         {ProjectData.Title}
                                                                                     </a>
                                                                                 </div>
-                                                                            ) : null}
+                                                                            ) :
+                                                                                <input
+                                                                                    type="text"
+                                                                                    className="form-control"
+                                                                                    placeholder="Search Project Here"
+                                                                                    value={ProjectSearchKey}
+                                                                                    onChange={(e) => autoSuggestionsForProject(e)}
+                                                                                />}
                                                                         </>
                                                                     );
                                                                 })}
