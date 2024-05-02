@@ -16,8 +16,8 @@ import EditInstitutionPopup from '../../contactSearch/components/contact-search/
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import EditPage from '../../../globalComponents/EditPanelPage/EditPage'
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
-import EditContactPopup from "./editLastmodified//EditContactPopup";
-import EditEventCardPopup from "./editLastmodified/EditEventCard";
+// import EditContactPopup from "./editLastmodified//EditContactPopup";
+// import EditEventCardPopup from "./editLastmodified/EditEventCard";
 let masterTaskData: any;
 let ActualSites: any = []
 let baseUrl: any
@@ -780,29 +780,15 @@ export const Modified = (props: any) => {
           placeholder: "Created",
           header: "",
           size: 125,
-        }, {
-          cell: (info: any) => (
-            <>
-              <a className="alignCenter" onClick={() => EditDataTimeEntryData(info?.row?.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
-                <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
-              </a></>
-          ),
-          id: 'AllEntry',
-          accessorKey: "",
-          canSort: false,
-          resetSorting: false,
-          resetColumnFilters: false,
-          placeholder: "",
-          size: 25
-        }, {
-          id: 'updateSmartPages',
-          cell: ({ row }) =>
+        }        // , {
+        //   id: 'updateSmartPages',
+        //   cell: ({ row }) =>
 
-            <>
-              <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>,
+        //     <>
+        //       <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
+        //     </>,
 
-        }
+        // }
         , {
           id: 'delteSmartPages',
           cell: ({ row }) =>
@@ -883,29 +869,17 @@ export const Modified = (props: any) => {
           placeholder: "Created",
           header: "",
           size: 125,
-        }, {
-          cell: (info: any) => (
-            <>
-              <a className="alignCenter" onClick={() => EditDataTimeEntryData(info?.row?.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
-                <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
-              </a></>
-          ),
-          id: 'AllEntry',
-          accessorKey: "",
-          canSort: false,
-          resetSorting: false,
-          resetColumnFilters: false,
-          placeholder: "",
-          size: 25
-        }, {
-          id: 'updateSmartMetaData', size: 25,
-          cell: ({ row }) =>
-
-            <>
-              <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>,
-
         }
+        // , 
+        // {
+        //   id: 'updateSmartMetaData', size: 25,
+        //   cell: ({ row }) =>
+
+        //     <>
+        //       <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
+        //     </>,
+
+        // }
         , {
           id: 'delteSmartMetaData', size: 25,
           cell: ({ row }) =>
@@ -992,15 +966,15 @@ export const Modified = (props: any) => {
           header: "",
           size: 125,
         },
-        {
+        // {
 
-          id: 'updateContact',
-          cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => editContactOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>
+        //   id: 'updateContact',
+        //   cell: ({ row }) =>
+        //     <>
+        //       <div className="mt--2" onClick={() => editContactOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
+        //     </>
 
-        },
+        // },
         {
           id: 'deleteContact',
           cell: ({ row }) =>
@@ -1090,15 +1064,15 @@ export const Modified = (props: any) => {
           header: "",
           size: 125,
         },
-        {
+        // {
 
-          id: 'updateEvents',
-          cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => editEvents(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>
+        //   id: 'updateEvents',
+        //   cell: ({ row }) =>
+        //     <>
+        //       <div className="mt--2" onClick={() => editEvents(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
+        //     </>
 
-        },
+        // },
         {
           id: 'deleteEvents',
           cell: ({ row }) =>
@@ -1189,15 +1163,15 @@ export const Modified = (props: any) => {
           header: "",
           size: 125,
         },
-        {
+        // {
 
-          id: 'updateNews',
-          cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => editEvents(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>
+        //   id: 'updateNews',
+        //   cell: ({ row }) =>
+        //     <>
+        //       <div className="mt--2" onClick={() => editEvents(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
+        //     </>
 
-        },
+        // },
         {
           id: 'deleteNews',
           cell: ({ row }) =>
@@ -1368,7 +1342,7 @@ export const Modified = (props: any) => {
           cell: ({ row }) => (
             <div className="alignCenter">
               <span className={row.original.Title != undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
-                <>{row.original.Title != undefined ? <a className="manageText" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
+                <>{row.original.Title != undefined ? <a className="manageText" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
                   {row.original.Title}
                 </a> : ''}</>
                 <span className="tooltip-text pop-right">
@@ -1516,7 +1490,10 @@ export const Modified = (props: any) => {
   }
   return (
     <>
-
+  <div className="p-0  d-flex justify-content-between align-items-center " style={{ verticalAlign: "top" }}>
+        <h2 className="heading ">
+          <span>Last Modified Views</span></h2>      
+      </div>
       <nav className="lastmodify">
         <div className="nav nav-tabs" id="nav-tab" role="tablist">
           {
@@ -1554,10 +1531,14 @@ export const Modified = (props: any) => {
       {editComponentPopUps ? <EditComponent item={editValue} SelectD={editLists} Calls={closeEditComponent} portfolioTypeData={Portfoliotyped} /> : ''}
       {editDocPopUpOpen ? <EditDocumentpanel callbackeditpopup={callbackeditpopup} AllListId={editLists} Item={editValue} editData={editValue} Keydoc={true} Context={context} /> : ''}
       {/* {editWebPagePopUp?<EditPage context={editLists} Item={editValue} changes={changes}  updatedWebpages={updatedWebpages} />: ''} */}
-        {editInstitutionPopUp ? <EditContactPopup allListId={editLists} props={editValue} callBack={CloseConatactPopup} /> : null}
+        {/* {editInstitutionPopUp ? 
+        <EditContactPopup allListId={editLists} props={editValue} callBack={CloseConatactPopup} EditCallBackItem={EditCallBackItem}  /> 
+        : null} */}
     
       {istimeEntryOpen && (<TimeEntryPopup props={currentTimeEntry} CallBackTimeEntry={TimeEntryCallBack} Context={editLists.Context}></TimeEntryPopup>)}
-      {isEditEvent?<EditEventCardPopup EditEventData={editValue} allListId={editLists} callBack={CallbackEvent} ></EditEventCardPopup>:''}
+      {/* {isEditEvent?
+      <EditEventCardPopup EditEventData={editValue} allListId={editLists} callBack={CallbackEvent} ></EditEventCardPopup>
+      :''} */}
     </>
   )
   // fixedWidth={true}
