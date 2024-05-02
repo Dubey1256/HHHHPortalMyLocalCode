@@ -1054,7 +1054,11 @@ const closeActivity = () => {
     }
 };
   const addActivity = (type: any) => {
-
+    keyRelevantPortfolioItems = [...Masterdata?.taggedPortfolios, ...TaskTaggedPortfolios]
+    if (checkedList?.TaskType?.Id == undefined) {
+      checkedList.NoteCall = type
+      setActivityPopup(true);
+  }
     if (checkedList?.TaskTypeId === 3 || checkedList?.TaskType?.Id === 3) {
       checkedList.NoteCall = "Task";
       setIsOpenActivity(true);
