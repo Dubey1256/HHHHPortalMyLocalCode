@@ -1379,7 +1379,7 @@ const SendEmail = (EventData: any, MyEventData: any) => {
       .sendEmail({
         Body: BindHtmlBody,
         Subject: "Leave Request - " + formattedstartDate +"-"+EventData?.Designation+"-"+EventData?.type+"-"+ EventData?.title , // Modified subject
-        To: ["ranu.trivedi@hochhuth-consulting.de","juli.kumari@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de","anubhav.shukla@hochhuth-consulting.de"],
+        To: ["ranu.trivedi@hochhuth-consulting.de","juli.kumari@hochhuth-consulting.de","prashant.kumar@hochhuth-consulting.de"],
         AdditionalHeaders: {
           "content-type": "text/html",
         },
