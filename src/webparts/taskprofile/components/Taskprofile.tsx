@@ -139,7 +139,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     const params = new URLSearchParams(window.location.search);
     console.log(params.get('taskId'));
     console.log(params.get('Site'));
-    this.site = params.get('Site');
+    function capitalizeFLetter(site:String) {
+      return site[0].toUpperCase() + site.slice(1);
+  }
+    this.site =  capitalizeFLetter(params.get('Site'))
 
     this.oldTaskLink = `${props.siteUrl}/SitePages/Task-Profile-Old.aspx?taskId=` + params.get('taskId') + "&Site=" + params.get('Site');
     this.state = {
@@ -172,7 +175,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       CommenttoPost: '',
       updateCommentText: {},
       updateReplyCommentText: {},
-      listName: params.get('Site'),
+      listName: this.site,
       itemID: Number(params.get('taskId')),
       isModalOpen: false,
       isEditModalOpen: false,

@@ -3062,7 +3062,7 @@ function TeamPortlioTable(SelectedProp: any) {
             },
             {
                 accessorKey: "descriptionsSearch",
-                placeholder: "descriptionsSearch",
+                placeholder: "Descriptions",
                 header: "",
                 resetColumnFilters: false,
                 id: "descriptionsSearch",
@@ -3070,7 +3070,7 @@ function TeamPortlioTable(SelectedProp: any) {
             },
             {
                 accessorKey: "commentsSearch",
-                placeholder: "commentsSearch",
+                placeholder: "Comments",
                 header: "",
                 resetColumnFilters: false,
                 id: "commentsSearch",
@@ -3078,7 +3078,7 @@ function TeamPortlioTable(SelectedProp: any) {
             },
             {
                 accessorKey: "timeSheetsDescriptionSearch",
-                placeholder: "timeSheetsDescriptionSearch",
+                placeholder: "Timesheets Description",
                 header: "",
                 resetColumnFilters: false,
                 id: "timeSheetsDescriptionSearch",
@@ -3265,16 +3265,19 @@ function TeamPortlioTable(SelectedProp: any) {
             copyDtaArray.map((val: any) => {
                 item[0]?.subRows?.map((childs: any) => {
                     if (item[0].SelectedItem == val.Id) {
+                        val.subRows = val.subRows === undefined ? [] : val?.subRows
                         val?.subRows?.unshift(childs)
                     }
-                    if (val?.subRows != undefined && val?.subRows?.length > 0) {
+                    if (val.subRows != undefined && val.subRows.length > 0) {
                         val.subRows?.map((child: any) => {
-                            if (item[0]?.SelectedItem == child.Id) {
+                            if (item[0].SelectedItem == child.Id) {
+                                child.subRows = child.subRows === undefined ? [] : child?.subRows
                                 child?.subRows?.unshift(childs)
                             }
-                            if (child?.subRows != undefined && child?.subRows?.length > 0) {
+                            if (child.subRows != undefined && child.subRows.length > 0) {
                                 child.subRows?.map((Subchild: any) => {
-                                    if (item[0]?.SelectedItem == Subchild?.Id) {
+                                    if (item[0].SelectedItem == Subchild.Id) {
+                                        Subchild.subRows = Subchild.subRows === undefined ? [] : Subchild?.subRows
                                         Subchild?.subRows.unshift(childs)
                                     }
                                 })
@@ -3285,7 +3288,7 @@ function TeamPortlioTable(SelectedProp: any) {
             })
 
         }
-        if (item != undefined && item?.length > 0 && item[0].SelectedItem == undefined) {
+        if (item != undefined && item.length > 0 && item[0].SelectedItem == undefined) {
             item.forEach((value: any) => {
                 copyDtaArray.unshift(value)
             })

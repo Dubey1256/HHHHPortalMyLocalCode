@@ -557,6 +557,12 @@ const CreateAllStructureComponent = (props: any) => {
             // })
           });
         }
+        else {
+          if (props.SelectedItem != undefined) {
+            //val.subRows = val.subRows === undefined ? [] : val?.subRows
+            val.subRows=subCompFeatures;
+          }
+        }
         if (val.compFeatures != undefined && val.compFeatures.length > 0) {
           val.subRows = val?.compFeatures;
         }

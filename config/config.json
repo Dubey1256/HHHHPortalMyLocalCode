@@ -115,14 +115,7 @@
         }
       ]
     },
-    "all-task-user-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/allTaskUser/AllTaskUserWebPart.js",
-          "manifest": "./src/webparts/allTaskUser/AllTaskUserWebPart.manifest.json"
-        }
-      ]
-    },
+   
     "my-pending-tasks-web-part": {
       "components": [
         {
@@ -517,7 +510,6 @@
     "CreateTaskWebPartStrings": "lib/webparts/createTask/loc/{locale}.js",
     "PermissionManagementWebPartStrings": "lib/webparts/permissionManagement/loc/{locale}.js",
     "FroalaEditorTestEnvWebPartStrings": "lib/webparts/froalaEditorTestEnv/loc/{locale}.js",
-    "AllTaskUserWebPartStrings": "lib/webparts/allTaskUser/loc/{locale}.js",
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
     "MyPendingTasksWebPartStrings": "lib/webparts/myPendingTasks/loc/{locale}.js",
     "TasksViewWebPartStrings": "lib/webparts/tasksView/loc/{locale}.js",

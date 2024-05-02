@@ -11,7 +11,7 @@ import { map } from "jquery";
 var taskUsers: any;
 let GroupByUsers: any = [];
 let AllMasterTasks: any[] = [];
-var currentUserData: any;
+var currentUserData: any = {};
 let DashboardConfig: any = [];
 let DashboardConfigBackUp: any = [];
 let allData: any = [];
