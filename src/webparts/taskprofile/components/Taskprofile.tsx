@@ -2100,7 +2100,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                         BottleneckData.TaggedUsers.userImage.length >
                                         0
                                         ? BottleneckData.TaggedUsers.userImage
-                                        : ""
+                                        : <span title="Default user icons" className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
                                     }
                                   />
                                   <span className="ms-1">{BottleneckData?.TaggedUsers?.Title}</span>
@@ -2292,7 +2292,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                         AttentionData.TaggedUsers.userImage.length >
                                         0
                                         ? AttentionData.TaggedUsers.userImage
-                                        : ""
+                                        : <span title="Default user icons" className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
                                     }
                                   />
                                   <span className="ms-1">{AttentionData?.TaggedUsers?.Title}</span>
