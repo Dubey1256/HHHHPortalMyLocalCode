@@ -71,10 +71,10 @@ const EditDocumentpanel = (props: any) => {
           if (Data.Portfolios != undefined && Data?.Portfolios?.length > 0) {
             Data?.Portfolios?.map((portfolio: any) => {
               mastertaskdetails.map((mastertask: any) => {
-                if (mastertask.Id == portfolio.Id && mastertask?.Item_x0020_Type != "Project") {
+                if (mastertask.Id == portfolio.Id && mastertask?.Item_x0020_Type != "Project" && mastertask.Item_x0020_Type != "Sprint") {
                   portfolioData.push(mastertask);
                 }
-                if (mastertask.Id == portfolio.Id && mastertask?.Item_x0020_Type == "Project") {
+                if (mastertask.Id == portfolio.Id && (mastertask?.Item_x0020_Type == "Project" || mastertask.Item_x0020_Type == "Sprint")) {
                   projectData.push(mastertask);
                 }
                 if (mastertask?.Item_x0020_Type == "Project") {
@@ -294,43 +294,6 @@ const EditDocumentpanel = (props: any) => {
       })
   }
 
-  // {
-  //   (EditdocumentsData?.recipients) ?
-  //     (JSON.parse(EditdocumentsData?.recipients)?.map((item: any) => {
-  //       if (item.recipType == "to") {
-  //         if (item.email.length > 1) {
-  //           ReceiverId += item.email + "; ";
-  //         }
-  //         recipientLabel = `To: ${ReceiverId}`;
-  //         return {
-  //           recipientLabel
-  //         }
-  //       }
-  //       let lastSemicolonIndex = recipientLabel.lastIndexOf(';');
-  //       if (lastSemicolonIndex !== -1) {
-  //         // Remove the last semicolon using substrings
-  //         recipientLabel = recipientLabel.substring(0, lastSemicolonIndex) + recipientLabel.substring(lastSemicolonIndex + 1);
-  //       }
-  //       if (item.recipType == "cc") {
-  //         ReceiverCC += item.email + "; ";
-  //         recipientLabelCC = `CC: ${ReceiverCC}`;
-  //         return {
-  //           recipientLabelCC
-  //         }
-  //       }
-  //       // let lastSemicolonIndexCC = recipientLabelCC.lastIndexOf(';');
-  //       // if (lastSemicolonIndexCC !== -1) {
-  //       //   // Remove the last semicolon using substrings
-  //       //   recipientLabelCC = recipientLabelCC.substring(0, lastSemicolonIndexCC) + recipientLabelCC.substring(lastSemicolonIndexCC + 1);
-  //       // }
-  //     })) :
-  //     ""
-  // }
-  // let lastSemicolonIndexCC = recipientLabelCC.lastIndexOf(';');
-  // if (lastSemicolonIndexCC !== -1) {
-  //   // Remove the last semicolon using substrings
-  //   recipientLabelCC = recipientLabelCC.substring(0, lastSemicolonIndexCC) + recipientLabelCC.substring(lastSemicolonIndexCC + 1);
-  // }
 
   const imageTabCallBack = React.useCallback((data: any) => {
     console.log(EditdocumentsData);
