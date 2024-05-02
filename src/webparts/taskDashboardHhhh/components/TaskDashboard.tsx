@@ -2117,7 +2117,7 @@ const TaskDashboard = (props: any) => {
     const AllSitesDats = (Tabs: any) => {
         if (Tabs == "AllImmediateTasks") {
             setCurrentView(Tabs)
-            setNameTop("Immediate tasks")
+           setNameTop("Immediate tasks")
             setValue(AllImmediateTasks)
         }
         else if (Tabs == "AllEmailTasks") {
