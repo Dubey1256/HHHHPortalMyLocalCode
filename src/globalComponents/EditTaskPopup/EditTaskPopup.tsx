@@ -7008,7 +7008,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                     }
                                                                                 />
                                                                             </>
-                                                                            : <span title="Default user icons" class="alignIcon svg__iconbox svg__icon--defaultUser "></span>
+                                                                            : <span title="Default user icons" className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
                                                                         }
                                                                     </a>
                                                                 </div>
