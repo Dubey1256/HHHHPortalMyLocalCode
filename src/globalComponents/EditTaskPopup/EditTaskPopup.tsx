@@ -3313,6 +3313,76 @@ const EditTaskPopup = (Items: any) => {
             });
         }
 
+// ----------------------for check Activity and worstream---------------------------------------------------------
+   let SelectedSites:any=''
+    var Tasklevel:any=''
+    var TaskID:any=''
+   if(EditData.TaskType.Id == 1){
+    let SelectedSites:any=''
+    var TaskTypeId:any = 1;
+    SiteTypes.map((dataItem: any) => {
+        if (dataItem.isSelected == true) {
+            SelectedSites = dataItem.Title;
+        }
+    });
+        let web = new Web(AllListIdData?.siteUrl);
+        let componentDetails: any = [];
+        componentDetails = await web.lists
+          .getByTitle(SelectedSites)
+          .items.select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel")
+          .expand("TaskType")
+          .orderBy("TaskLevel", false)
+          .filter("TaskType/Id eq 1")
+          .top(1)
+          .get();
+        console.log(componentDetails);
+        if (componentDetails.length == 0) {
+          var LatestId: any = 1;
+          Tasklevel = LatestId;
+          TaskID = "A" + LatestId;
+        } else {
+          var LatestId = componentDetails[0].TaskLevel + 1;
+          Tasklevel = LatestId;
+          TaskID = "A" + LatestId;
+        }
+      
+   }
+   if (EditData.TaskType.Id == 3) {
+    let WorstreamLatestId:any=''
+    SiteTypes.map((dataItem: any) => {
+        if (dataItem.isSelected == true) {
+            SelectedSites = dataItem.Title;
+        }
+    });
+    let componentDetails: any = [];
+    let web = new Web(AllListIdData?.siteUrl);
+    componentDetails = await web.lists
+        .getByTitle(SelectedSites)
+        .items
+        .select("FolderID,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,TaskLevel,FileLeafRef,Title,Id,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
+        .expand("TaskType,ParentTask,Author,Editor,AssignedTo")
+        .filter(("TaskType/Id eq 3") && ("ParentTask/Id eq '" + EditData?.Id + "'"))
+        .orderBy("Created", true)
+        .top(499)
+        .get()
+    console.log(componentDetails)
+    if (componentDetails?.length == 0) {
+        WorstreamLatestId = 1;
+    } 
+    else {
+        if( componentDetails[componentDetails?.length-1]?.TaskLevel){
+            WorstreamLatestId = componentDetails[componentDetails?.length-1]?.TaskLevel + 1;
+        }else{
+            WorstreamLatestId = componentDetails?.length + 1;
+        }
+      
+    }
+    Tasklevel = WorstreamLatestId++;
+    let removed = EditData?.TaskID?.split('-')[0];
+    TaskID = `${removed}-W${Tasklevel}`
+    var TaskTypeId:any = 3;
+}
+
         let UpdateDataObject: any = {
             IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : null,
             workingThisWeek: EditData.workingThisWeek
@@ -3323,6 +3393,9 @@ const EditTaskPopup = (Items: any) => {
                 : null,
             PriorityRank: EditData.PriorityRank,
             ItemRank: EditData.ItemRank,
+            TaskTypeId:TaskTypeId != undefined?TaskTypeId:null,
+            TaskID: TaskID != ''?TaskID:null,
+            TaskLevel: Tasklevel != ''?Tasklevel:null,
             Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
             Priority: Priority,
             StartDate: EditData.StartDate
@@ -3574,8 +3647,11 @@ const EditTaskPopup = (Items: any) => {
         let deletePost = confirm("Do you really want to delete this Task?");
         if (deletePost) {
             deleteItemFunction(TaskID, FunctionsType);
+            Items.Call("Delete-Task")
+
         } else {
             console.log("Your Task has not been deleted");
+            Items.Call()
         }
     };
     const deleteItemFunction = async (itemId: any, FnType: any) => {
@@ -5279,21 +5355,21 @@ const EditTaskPopup = (Items: any) => {
                                 </span>
                             </a>
                             <span> | </span>
-                            {SiteTypes?.length > 2 ? <> <a
+                            <a
                                 className="hreflink"
                                 onClick={() => CopyAndMovePopupFunction("Copy-Task")}
                             >
                                 Copy Task
                             </a>
-                                <span> | </span>
-                                <a
-                                    className="hreflink"
-                                    onClick={() => CopyAndMovePopupFunction("Move-Task")}
-                                >
-                                    {" "}
-                                    Move Task
-                                </a>{" "}
-                                | </> : null}
+                            <span> | </span>
+                            <a
+                                className="hreflink"
+                                onClick={() => CopyAndMovePopupFunction("Move-Task")}
+                            >
+                                {" "}
+                                Move Task
+                            </a>{" "}
+                            |
                             <span>
                                 {EditData.ID ? (
                                     <VersionHistory
@@ -5419,21 +5495,14 @@ const EditTaskPopup = (Items: any) => {
                                 </span>
                             </a>
                             <span> | </span>
-                            {SiteTypes?.length > 2 ? <> <a
-                                className="hreflink"
-                                onClick={() => CopyAndMovePopupFunction("Copy-Task")}
-                            >
+                            <a className="hreflink" onClick={CopyAndMovePopupFunction}>
                                 Copy Task
                             </a>
-                                <span> | </span>
-                                <a
-                                    className="hreflink"
-                                    onClick={() => CopyAndMovePopupFunction("Move-Task")}
-                                >
-                                    {" "}
-                                    Move Task
-                                </a>{" "}
-                                | </> : null}
+                            <span> | </span>
+                            <a className="hreflink" onClick={CopyAndMovePopupFunction}>
+                                {" "}
+                                Move Task
+                            </a>{" "}
                             |
                             <span>
                                 {EditData.ID ? (
@@ -5600,7 +5669,7 @@ const EditTaskPopup = (Items: any) => {
                 type={PanelType.custom}
                 customWidth="850px"
                 onDismiss={closeTimeSheetPopup}
-                isBlocking={false}
+                isBlocking={TimeSheetPopup}
             >
                 <div
                     className={
@@ -5761,9 +5830,11 @@ const EditTaskPopup = (Items: any) => {
                                                         //         ? Moment(EditData.Created).format("YYYY-MM-DD")
                                                         //         : ""
                                                         // }
-                                                        value={
+                                                        defaultValue={
                                                             EditData.StartDate
-                                                                ? Moment(EditData.StartDate).format("YYYY-MM-DD")
+                                                                ? Moment(EditData.StartDate).format(
+                                                                    "YYYY-MM-DD"
+                                                                )
                                                                 : ""
                                                         }
                                                         onChange={(e) =>
@@ -5796,7 +5867,7 @@ const EditTaskPopup = (Items: any) => {
                                                         //         ? Moment(EditData.Created).format("YYYY-MM-DD")
                                                         //         : ""
                                                         // }
-                                                        value={
+                                                        defaultValue={
                                                             EditData.DueDate
                                                                 ? Moment(EditData.DueDate).format("YYYY-MM-DD")
                                                                 : ""
@@ -5825,9 +5896,11 @@ const EditTaskPopup = (Items: any) => {
                                                         //         ? Moment(EditData.Created).format("YYYY-MM-DD")
                                                         //         : ""
                                                         // }
-                                                        value={
+                                                        defaultValue={
                                                             EditData.CompletedDate
-                                                                ? Moment(EditData.CompletedDate).format("YYYY-MM-DD")
+                                                                ? Moment(EditData.CompletedDate).format(
+                                                                    "YYYY-MM-DD"
+                                                                )
                                                                 : ""
                                                         }
                                                         onChange={(e) =>
@@ -8056,348 +8129,275 @@ const EditTaskPopup = (Items: any) => {
                                             Show task details <SlArrowDown />
                                         </h6>
                                         <div>
-                                        <div className="row">
-                                    <div className="col-md-5">
-                                        <div className="col-12 ">
-                                            <div className="input-group">
-                                                <div className="d-flex justify-content-between align-items-center mb-0  full-width">
-                                                    Title
-                                                    <span className="d-flex">
-                                                        <span className="form-check mx-2">
-                                                            <input
-                                                                className="form-check-input rounded-0"
-                                                                type="checkbox"
-                                                                checked={EditData.workingThisWeek}
-                                                                value={EditData.workingThisWeek}
-                                                                onChange={(e) =>
-                                                                    changeStatus(e, "workingThisWeek")
-                                                                }
-                                                            />
-                                                            <label className="form-check-label">
-                                                                Working This Week?
-                                                            </label>
-                                                        </span>
-
-                                                        <span className="form-check">
-                                                            <input
-                                                                className="form-check-input rounded-0"
-                                                                type="checkbox"
-                                                                checked={EditData.IsTodaysTask}
-                                                                value={EditData.IsTodaysTask}
-                                                                onChange={(e) =>
-                                                                    changeStatus(e, "IsTodaysTask")
-                                                                }
-                                                            />
-                                                            <label className="form-check-label">
-                                                                Working Today?
-                                                            </label>
-                                                        </span>
-                                                    </span>
-                                                </div>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    placeholder="Task Name"
-                                                    defaultValue={EditData.Title}
-                                                    onChange={(e) =>
-                                                        setUpdateTaskInfo({
-                                                            ...UpdateTaskInfo,
-                                                            Title: e.target.value,
-                                                        })
-                                                    }
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="mx-0 row taskdate ">
-                                            <div className="col-6 ps-0 mt-2">
-                                                <div className="input-group ">
-                                                    {/* <CDatePicker date={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}/> */}
-                                                    {/* <DatePicker value={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : null} onChange={(date) => setEditData({
-                                                        ...EditData, StartDate: date
-                                                    })} /> */}
-                                                    <label className="form-label full-width">
-                                                        Start Date
-                                                    </label>
-                                                    <input
-                                                        type="date"
-                                                        className="form-control"
-                                                        max="9999-12-31"
-                                                        // min={
-                                                        //     EditData.Created
-                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                        //         : ""
-                                                        // }
-                                                        value={
-                                                            EditData.StartDate
-                                                                ? Moment(EditData.StartDate).format("YYYY-MM-DD")
-                                                                : ""
-                                                        }
-                                                        onChange={(e) =>
-                                                            setEditData({
-                                                                ...EditData,
-                                                                StartDate: e.target.value,
-                                                            })
-                                                        }
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-6 ps-0 pe-0 mt-2">
-                                                <div className="input-group ">
-                                                    <div className="form-label full-width">
-                                                        Due Date
-                                                        <span title="Re-occurring Due Date">
-                                                            <input
-                                                                type="checkbox"
-                                                                className="form-check-input rounded-0 ms-2"
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <input
-                                                        type="date"
-                                                        className="form-control"
-                                                        placeholder="Enter Due Date"
-                                                        max="9999-12-31"
-                                                        // min={
-                                                        //     EditData.Created
-                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                        //         : ""
-                                                        // }
-                                                        value={
-                                                            EditData.DueDate
-                                                                ? Moment(EditData.DueDate).format("YYYY-MM-DD")
-                                                                : ""
-                                                        }
-                                                        onChange={(e) =>
-                                                            setEditData({
-                                                                ...EditData,
-                                                                DueDate: e.target.value,
-                                                            })
-                                                        }
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-6 ps-0 mt-2">
-                                                <div className="input-group ">
-                                                    <label className="form-label full-width">
-                                                        {" "}
-                                                        Completed Date{" "}
-                                                    </label>
-                                                    <input
-                                                        type="date"
-                                                        className="form-control"
-                                                        max="9999-12-31"
-                                                        // min={
-                                                        //     EditData.Created
-                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                        //         : ""
-                                                        // }
-                                                        value={
-                                                            EditData.CompletedDate
-                                                                ? Moment(EditData.CompletedDate).format("YYYY-MM-DD")
-                                                                : ""
-                                                        }
-                                                        onChange={(e) =>
-                                                            setEditData({
-                                                                ...EditData,
-                                                                CompletedDate: e.target.value,
-                                                            })
-                                                        }
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-6 ps-0 pe-0 mt-2">
-                                                <div className="input-group">
-                                                    <label className="form-label full-width">
-                                                        Item Rank
-                                                    </label>
-                                                    <select
-                                                        className="form-select"
-                                                        defaultValue={EditData.ItemRank}
-                                                        onChange={(e) =>
-                                                            setEditData({
-                                                                ...EditData,
-                                                                ItemRank: e.target.value,
-                                                            })
-                                                        }
-                                                    >
-                                                        {ItemRankArray.map(function (h: any, i: any) {
-                                                            return (
-                                                                <option
-                                                                    key={i}
-                                                                    selected={EditData.ItemRank == h.rank}
-                                                                    value={h.rank}
-                                                                >
-                                                                    {h.rankTitle}
-                                                                </option>
-                                                            );
-                                                        })}
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="mx-0 row mt-2 taskservices">
-                                            <div className="col-md-6  ps-0">
-                                                <div className="input-group mb-2">
-                                                    <label className="form-label full-width">
-                                                        Portfolio Item
-                                                    </label>
-                                                    {TaggedPortfolioData?.length > 0 ? (
-                                                        <div className="full-width">
-                                                            {TaggedPortfolioData?.map((com: any) => {
-                                                                return (
-                                                                    <div className="full-width replaceInput alignCenter">
-                                                                        <a
-                                                                            title={com.Title}
-                                                                            target="_blank"
-                                                                            data-interception="off"
-                                                                            className="textDotted"
-                                                                            href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
-                                                                        >
-                                                                            {com.Title}
-                                                                        </a>
-                                                                    </div>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    ) : (
-
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            value={SearchedServiceCompnentKey}
-                                                            onChange={(e) =>
-                                                                autoSuggestionsForServiceAndComponent(
-                                                                    e,
-                                                                    "Portfolio"
-                                                                )
-                                                            }
-                                                            placeholder="Search Portfolio Item"
-                                                        />
-                                                    )}
-                                                    <span className="input-group-text">
-                                                        <span
-                                                            title="Component Popup"
-                                                            onClick={() =>
-                                                                OpenTeamPortfolioPopupFunction(
-                                                                    EditData,
-                                                                    "Portfolio"
-                                                                )
-                                                            }
-                                                            className="svg__iconbox svg__icon--editBox"
-                                                        ></span>
-                                                    </span>
-                                                    {SearchedServiceCompnentData?.length > 0 ? (
-                                                        <div className="SmartTableOnTaskPopup">
-                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                {SearchedServiceCompnentData.map((Item: any) => {
-                                                                    return (
-                                                                        <li
-                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
-                                                                            key={Item.id}
-                                                                            onClick={() =>
-                                                                                setSelectedServiceAndCompnentData(
-                                                                                    Item,
-                                                                                    "Single"
-                                                                                )
+                                            <div className="row">
+                                                <div className="col-md-5">
+                                                    <div className="col-12 ">
+                                                        <div className="input-group">
+                                                            <div className="d-flex justify-content-between align-items-center mb-0  full-width">
+                                                                Title
+                                                                <span className="d-flex">
+                                                                    <span className="form-check mx-2">
+                                                                        <input
+                                                                            className="form-check-input rounded-0"
+                                                                            type="checkbox"
+                                                                            checked={EditData.workingThisWeek}
+                                                                            value={EditData.workingThisWeek}
+                                                                            onChange={(e) =>
+                                                                                changeStatus(e, "workingThisWeek")
                                                                             }
-                                                                        >
-                                                                            <a>{Item.Path}</a>
-                                                                        </li>
-                                                                    );
-                                                                })}
-                                                            </ul>
-                                                        </div>
-                                                    ) : null}
-                                                </div>
-
-                                                <div className="input-group mb-2">
-                                                    <label className="form-label full-width">
-                                                        Categories
-                                                    </label>
-                                                    {TaskCategoriesData?.length > 1 ? <>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            id="txtCategories"
-                                                            placeholder="Search Category Here"
-                                                            value={categorySearchKey}
-                                                            onChange={(e) => autoSuggestionsForCategory(e)}
-                                                        />
-                                                        {SearchedCategoryData?.length > 0 ? (
-                                                            <div className="SmartTableOnTaskPopup">
-                                                                <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                    {SearchedCategoryData.map((item: any) => {
-                                                                        return (
-                                                                            <li
-                                                                                className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
-                                                                                key={item.id}
-                                                                                onClick={() =>
-                                                                                    setSelectedCategoryData(
-                                                                                        [item],
-                                                                                        "For-Auto-Search"
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                <a>{item.Newlabel}</a>
-                                                                            </li>
-                                                                        );
-                                                                    })}
-                                                                </ul>
+                                                                        />
+                                                                        <label className="form-check-label">
+                                                                            Working This Week?
+                                                                        </label>
+                                                                    </span>
+                                                                    <span className="form-check">
+                                                                        <input
+                                                                            className="form-check-input rounded-0"
+                                                                            type="checkbox"
+                                                                            checked={EditData.IsTodaysTask}
+                                                                            value={EditData.IsTodaysTask}
+                                                                            onChange={(e) =>
+                                                                                changeStatus(e, "IsTodaysTask")
+                                                                            }
+                                                                        />
+                                                                        <label className="form-check-label">
+                                                                            Working Today?
+                                                                        </label>
+                                                                    </span>
+                                                                </span>
                                                             </div>
-                                                        ) : null}
-                                                        {TaskCategoriesData?.map(
-                                                            (type: any, index: number) => {
-                                                                if (
-                                                                    type.Title != "Phone" &&
-                                                                    type.Title != "Email Notification" &&
-                                                                    type.Title != "Immediate" &&
-                                                                    type.Title != "Approval" &&
-                                                                    type.Title != "Email" &&
-                                                                    type.Title != "Only Completed"
-                                                                ) {
-                                                                    return (
-                                                                        <div className="block w-100">
-                                                                            <a
-                                                                                style={{ color: "#fff !important" }}
-                                                                                className="textDotted"
-                                                                            >
-                                                                                {type.Title}
-                                                                            </a>
-                                                                            <span
-                                                                                onClick={() =>
-                                                                                    removeCategoryItem(
-                                                                                        type.Title,
-                                                                                        type.Id
-                                                                                    )
-                                                                                }
-                                                                                className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
-                                                                            ></span>
-                                                                        </div>
-                                                                    );
+                                                            <input
+                                                                type="text"
+                                                                className="form-control"
+                                                                placeholder="Task Name"
+                                                                defaultValue={EditData.Title}
+                                                                onChange={(e) =>
+                                                                    setEditData({
+                                                                        ...EditData,
+                                                                        Title: e.target.value,
+                                                                    })
                                                                 }
-                                                            }
-                                                        )}</> :
-                                                        <>
-                                                            {TaskCategoriesData?.length == 1 ?
-
-                                                                <div className="full-width">
-                                                                    {TaskCategoriesData?.map((CategoryItem: any) => {
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="mx-0 row taskdate ">
+                                                        <div className="col-6 ps-0 mt-2">
+                                                            <div className="input-group ">
+                                                                <label className="form-label full-width">
+                                                                    Start Date
+                                                                </label>
+                                                                <input
+                                                                    type="date"
+                                                                    className="form-control"
+                                                                    max="9999-12-31"
+                                                                    // min={
+                                                                    //     EditData.Created
+                                                                    //         ? Moment(EditData.Created).format(
+                                                                    //             "YYYY-MM-DD"
+                                                                    //         )
+                                                                    //         : ""
+                                                                    // }
+                                                                    defaultValue={
+                                                                        EditData.StartDate
+                                                                            ? Moment(EditData.StartDate).format(
+                                                                                "YYYY-MM-DD"
+                                                                            )
+                                                                            : ""
+                                                                    }
+                                                                    onChange={(e) =>
+                                                                        setEditData({
+                                                                            ...EditData,
+                                                                            StartDate: e.target.value,
+                                                                        })
+                                                                    }
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-6 ps-0 pe-0 mt-2">
+                                                            <div className="input-group ">
+                                                                <div className="form-label full-width">
+                                                                    Due Date
+                                                                    <span title="Re-occurring Due Date">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            className="form-check-input rounded-0 ms-2"
+                                                                        />
+                                                                    </span>
+                                                                </div>
+                                                                <input
+                                                                    type="date"
+                                                                    className="form-control"
+                                                                    placeholder="Enter Due Date"
+                                                                    max="9999-12-31"
+                                                                    // min={
+                                                                    //     EditData.Created
+                                                                    //         ? Moment(EditData.Created).format(
+                                                                    //             "YYYY-MM-DD"
+                                                                    //         )
+                                                                    //         : ""
+                                                                    // }
+                                                                    defaultValue={
+                                                                        EditData.DueDate
+                                                                            ? Moment(EditData.DueDate).format(
+                                                                                "YYYY-MM-DD"
+                                                                            )
+                                                                            : ""
+                                                                    }
+                                                                    onChange={(e) =>
+                                                                        setEditData({
+                                                                            ...EditData,
+                                                                            DueDate: e.target.value,
+                                                                        })
+                                                                    }
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-6 ps-0 mt-2">
+                                                            <div className="input-group ">
+                                                                <label className="form-label full-width">
+                                                                    {" "}
+                                                                    Completed Date{" "}
+                                                                </label>
+                                                                <input
+                                                                    type="date"
+                                                                    className="form-control"
+                                                                    max="9999-12-31"
+                                                                    // min={
+                                                                    //     EditData.Created
+                                                                    //         ? Moment(EditData.Created).format(
+                                                                    //             "YYYY-MM-DD"
+                                                                    //         )
+                                                                    //         : ""
+                                                                    // }
+                                                                    defaultValue={
+                                                                        EditData.CompletedDate
+                                                                            ? Moment(EditData.CompletedDate).format(
+                                                                                "YYYY-MM-DD"
+                                                                            )
+                                                                            : ""
+                                                                    }
+                                                                    onChange={(e) =>
+                                                                        setEditData({
+                                                                            ...EditData,
+                                                                            CompletedDate: e.target.value,
+                                                                        })
+                                                                    }
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-6 ps-0 pe-0 mt-2">
+                                                            <div className="input-group">
+                                                                <label className="form-label full-width">
+                                                                    Item Rank
+                                                                </label>
+                                                                <select
+                                                                    className="form-select"
+                                                                    defaultValue={EditData.ItemRank}
+                                                                    onChange={(e) =>
+                                                                        setEditData({
+                                                                            ...EditData,
+                                                                            ItemRank: e.target.value,
+                                                                        })
+                                                                    }
+                                                                >
+                                                                    {ItemRankArray.map(function (h: any, i: any) {
                                                                         return (
-                                                                            <div className="full-width replaceInput alignCenter">
-                                                                                <a
-                                                                                    title={CategoryItem.Title}
-                                                                                    target="_blank"
-                                                                                    data-interception="off"
-                                                                                    className="textDotted"
-                                                                                >
-                                                                                    {CategoryItem.Title}
-                                                                                </a>
-                                                                            </div>
+                                                                            <option
+                                                                                key={i}
+                                                                                selected={EditData.ItemRank == h.rank}
+                                                                                value={h.rank}
+                                                                            >
+                                                                                {h.rankTitle}
+                                                                            </option>
                                                                         );
                                                                     })}
-                                                                </div>
-                                                                :
-                                                                <>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="mx-0 row mt-2 taskservices">
+                                                        <div className="col-md-6 ps-0">
+                                                            <div className="input-group mb-2">
+                                                                <label className="form-label full-width">
+                                                                    Portfolio Item
+                                                                </label>
+                                                                {TaggedPortfolioData?.length > 0 ? (
+                                                                    <div className="full-width">
+                                                                        {TaggedPortfolioData?.map((com: any) => {
+                                                                            return (
+                                                                                <div className="full-width replaceInput alignCenter">
+                                                                                    <a
+                                                                                        title={com.Title}
+                                                                                        target="_blank"
+                                                                                        data-interception="off"
+                                                                                        className="textDotted"
+                                                                                        href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
+                                                                                    >
+                                                                                        {com.Title}
+                                                                                    </a>
+                                                                                </div>
+                                                                            );
+                                                                        })}
+                                                                    </div>
+                                                                ) : (
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        value={SearchedServiceCompnentKey}
+                                                                        onChange={(e) =>
+                                                                            autoSuggestionsForServiceAndComponent(
+                                                                                e,
+                                                                                "Portfolio"
+                                                                            )
+                                                                        }
+                                                                        placeholder="Search Portfolio Item"
+                                                                    />
+                                                                )}
+                                                                <span className="input-group-text">
+                                                                    <span
+                                                                        title="Component Popup"
+                                                                        onClick={() =>
+                                                                            OpenTeamPortfolioPopupFunction(
+                                                                                EditData,
+                                                                                "Portfolio"
+                                                                            )
+                                                                        }
+                                                                        className="svg__iconbox svg__icon--editBox"
+                                                                    ></span>
+                                                                </span>
+                                                                {SearchedServiceCompnentData?.length > 0 ? (
+                                                                    <div className="SmartTableOnTaskPopup">
+                                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                            {SearchedServiceCompnentData.map(
+                                                                                (Item: any) => {
+                                                                                    return (
+                                                                                        <li
+                                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                                                                            key={Item.id}
+                                                                                            onClick={() =>
+                                                                                                setSelectedServiceAndCompnentData(
+                                                                                                    Item,
+                                                                                                    "Single"
+                                                                                                )
+                                                                                            }
+                                                                                        >
+                                                                                            <a className="siteColor">
+                                                                                                {Item.Path}
+                                                                                            </a>
+                                                                                        </li>
+                                                                                    );
+                                                                                }
+                                                                            )}
+                                                                        </ul>
+                                                                    </div>
+                                                                ) : null}
+                                                            </div>
+
+                                                            <div className="input-group mb-2">
+                                                                <label className="form-label full-width">
+                                                                    Categories
+                                                                </label>
+                                                                {TaskCategoriesData?.length > 1 ? <>
                                                                     <input
                                                                         type="text"
                                                                         className="form-control"
@@ -8428,252 +8428,83 @@ const EditTaskPopup = (Items: any) => {
                                                                             </ul>
                                                                         </div>
                                                                     ) : null}
-                                                                </>
-                                                            }
-
-                                                        </>
-
-                                                    }
-
-                                                    <span
-                                                        className="input-group-text"
-                                                        title="Smart Category Popup"
-                                                        onClick={(e) =>
-                                                            EditComponentPicker(EditData, "Categories")
-                                                        }
-                                                    >
-                                                        <span className="svg__iconbox svg__icon--editBox"></span>
-                                                    </span>
-                                                </div>
-
-                                                <div className="col">
-                                                    <div className="col">
-                                                        <div className="form-check">
-                                                            <input
-                                                                className="form-check-input rounded-0"
-                                                                name="Phone"
-                                                                type="checkbox"
-                                                                checked={PhoneStatus}
-                                                                value={`${PhoneStatus}`}
-                                                                onClick={(e) => CategoryChange(e, "Phone", 199)}
-                                                            />
-                                                            <label className="form-check-label">Phone</label>
-                                                        </div>
-                                                        <div className="form-check">
-                                                            <input
-                                                                className="form-check-input rounded-0"
-                                                                type="checkbox"
-                                                                checked={EmailStatus}
-                                                                value={`${EmailStatus}`}
-                                                                onClick={(e) =>
-                                                                    CategoryChange(e, "Email Notification", 276)
-                                                                }
-                                                            />
-                                                            <label>Email Notification</label>
-                                                            <div className="form-check ms-2">
-                                                                <input
-                                                                    className="form-check-input rounded-0"
-                                                                    type="checkbox"
-                                                                    checked={OnlyCompletedStatus}
-                                                                    value={`${OnlyCompletedStatus}`}
-                                                                    onClick={(e) =>
-                                                                        CategoryChange(e, "Only Completed", 565)
-                                                                    }
-                                                                />
-                                                                <label>Only Completed</label>
-                                                            </div>
-                                                        </div>
-                                                        <div className="form-check">
-                                                            <input
-                                                                className="form-check-input rounded-0"
-                                                                type="checkbox"
-                                                                checked={ImmediateStatus}
-                                                                value={`${ImmediateStatus}`}
-                                                                onClick={(e) =>
-                                                                    CategoryChange(e, "Immediate", 228)
-                                                                }
-                                                            />
-                                                            <label>Immediate</label>
-                                                        </div>
-                                                        {/* {TaskCategoriesData != undefined &&
-                                                            TaskCategoriesData?.length > 0 ? (
-                                                            <div>
-                                                                {TaskCategoriesData?.map(
-                                                                    (type: any, index: number) => {
-                                                                        if (
-                                                                            type.Title != "Phone" &&
-                                                                            type.Title != "Email Notification" &&
-                                                                            type.Title != "Immediate" &&
-                                                                            type.Title != "Approval" &&
-                                                                            type.Title != "Email" &&
-                                                                            type.Title != "Only Completed"
-                                                                        ) {
-                                                                            return (
-                                                                                <div className="block w-100">
-                                                                                    <a
-                                                                                        style={{ color: "#fff !important" }}
-                                                                                        className="wid90"
-                                                                                    >
-                                                                                        {type.Title}
-                                                                                    </a>
-                                                                                    <span
-                                                                                        onClick={() =>
-                                                                                            removeCategoryItem(
-                                                                                                type.Title,
-                                                                                                type.Id
-                                                                                            )
-                                                                                        }
-                                                                                        className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
-                                                                                    ></span>
-                                                                                </div>
-                                                                            );
-                                                                        }
-                                                                    }
-                                                                )}
-                                                            </div>
-                                                        ) : null} */}
-                                                    </div>
-                                                    <div className="form-check mt-2">
-                                                        <label className="full-width">Approval</label>
-                                                        <input
-                                                            type="checkbox"
-                                                            className="form-check-input rounded-0"
-                                                            name="Approval"
-                                                            checked={ApprovalStatus}
-                                                            value={`${ApprovalStatus}`}
-                                                            onClick={(e) =>
-                                                                CategoryChange(e, "Approval", 227)
-                                                            }
-                                                        />
-                                                    </div>
-                                                    <div className="col ps-4 mb-1">
-                                                        <ul className="p-0 mt-1 list-none">
-                                                            <li className="SpfxCheckRadio">
-                                                                <input
-                                                                    className="radio"
-                                                                    name="ApprovalLevel"
-                                                                    type="radio"
-                                                                />
-                                                                <label className="form-check-label">
-                                                                    Normal Approval
-                                                                </label>
-                                                            </li>
-                                                            <li className="SpfxCheckRadio">
-                                                                <input
-                                                                    type="radio"
-                                                                    className="radio"
-                                                                    name="ApprovalLevel"
-                                                                />
-                                                                <label> Complex Approval</label>
-                                                            </li>
-                                                            <li className="SpfxCheckRadio">
-                                                                <input
-                                                                    type="radio"
-                                                                    className="radio"
-                                                                    name="ApprovalLevel"
-                                                                />
-                                                                <label>Quick Approval</label>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    {ApprovalStatus ? (
-                                                        <div>
-                                                            <div className="input-group mb-2">
-                                                                <label className="form-label full-width"></label>
-                                                                {ApproverData?.length > 1 ? <>
-                                                                    <input
-                                                                        type="text"
-                                                                        className="form-control"
-                                                                        placeholder="Search Approver's Name Here"
-                                                                        value={ApproverSearchKey}
-                                                                        onChange={(e) =>
-                                                                            autoSuggestionsForApprover(e, "OnTaskPopup")
-                                                                        }
-                                                                    />
-                                                                    {ApproverSearchedData?.length > 0 ? (
-                                                                        <div className="SmartTableOnTaskPopup">
-                                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                                {ApproverSearchedData.map((item: any) => {
-                                                                                    return (
-                                                                                        <li
-                                                                                            className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
-                                                                                            key={item.id}
+                                                                    {TaskCategoriesData?.map(
+                                                                        (type: any, index: number) => {
+                                                                            if (
+                                                                                type.Title != "Phone" &&
+                                                                                type.Title != "Email Notification" &&
+                                                                                type.Title != "Immediate" &&
+                                                                                type.Title != "Approval" &&
+                                                                                type.Title != "Email" &&
+                                                                                type.Title != "Only Completed"
+                                                                            ) {
+                                                                                return (
+                                                                                    <div className="block w-100">
+                                                                                        <a
+                                                                                            style={{ color: "#fff !important" }}
+                                                                                            className="textDotted"
+                                                                                        >
+                                                                                            {type.Title}
+                                                                                        </a>
+                                                                                        <span
                                                                                             onClick={() =>
-                                                                                                SelectApproverFromAutoSuggestion(
-                                                                                                    item, "Approver"
+                                                                                                removeCategoryItem(
+                                                                                                    type.Title,
+                                                                                                    type.Id
                                                                                                 )
                                                                                             }
-                                                                                        >
-                                                                                            <a>{item.NewLabel}</a>
-                                                                                        </li>
-                                                                                    );
-                                                                                })}
-                                                                            </ul>
-                                                                        </div>
-                                                                    ) : null}
-                                                                    {ApproverData?.map(
-                                                                        (type: any, index: number) => {
-
-                                                                            return (
-                                                                                <div className="block w-100">
-                                                                                    <a
-                                                                                        style={{ color: "#fff !important" }}
-                                                                                        className="textDotted"
-                                                                                    >
-                                                                                        {type.Title}
-                                                                                    </a>
-                                                                                    <span
-                                                                                        onClick={() => removeAssignedMember(type)}
-                                                                                        className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
-                                                                                    ></span>
-                                                                                </div>
-                                                                            );
+                                                                                            className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
+                                                                                        ></span>
+                                                                                    </div>
+                                                                                );
+                                                                            }
                                                                         }
-
                                                                     )}</> :
                                                                     <>
-                                                                        {ApproverData?.length == 1 ?
+                                                                        {TaskCategoriesData?.length == 1 ?
 
                                                                             <div className="full-width">
-
-                                                                                {ApproverData.map(
-                                                                                    (Approver: any, index: number) => {
-                                                                                        return (
-                                                                                            <div className="full-width replaceInput alignCenter">
-                                                                                                <a
-                                                                                                    className="hreflink"
-                                                                                                    target="_blank"
-                                                                                                    data-interception="off"
-                                                                                                >
-                                                                                                    {Approver.Title}
-                                                                                                </a>
-                                                                                            </div>
-                                                                                        );
-                                                                                    }
-                                                                                )}
+                                                                                {TaskCategoriesData?.map((CategoryItem: any) => {
+                                                                                    return (
+                                                                                        <div className="full-width replaceInput alignCenter">
+                                                                                            <a
+                                                                                                title={CategoryItem.Title}
+                                                                                                target="_blank"
+                                                                                                data-interception="off"
+                                                                                                className="textDotted"
+                                                                                            >
+                                                                                                {CategoryItem.Title}
+                                                                                            </a>
+                                                                                        </div>
+                                                                                    );
+                                                                                })}
                                                                             </div>
                                                                             :
                                                                             <>
                                                                                 <input
                                                                                     type="text"
                                                                                     className="form-control"
-                                                                                    id="txtApprover"
-                                                                                    // onChange={(e) => autoSuggestionsForCategory(e)}
-                                                                                    placeholder="Search Name Here!"
-                                                                                    value={ApproverSearchKey}
-                                                                                    onChange={(e) => autoSuggestionsForApprover(e, "OnTaskPopup")}
+                                                                                    id="txtCategories"
+                                                                                    placeholder="Search Category Here"
+                                                                                    value={categorySearchKey}
+                                                                                    onChange={(e) => autoSuggestionsForCategory(e)}
                                                                                 />
-                                                                                {ApproverSearchedDataForPopup?.length > 0 ? (
+                                                                                {SearchedCategoryData?.length > 0 ? (
                                                                                     <div className="SmartTableOnTaskPopup">
                                                                                         <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                                            {ApproverSearchedDataForPopup.map((item: any) => {
+                                                                                            {SearchedCategoryData.map((item: any) => {
                                                                                                 return (
                                                                                                     <li
-                                                                                                        className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                                        className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
                                                                                                         key={item.id}
-                                                                                                        onClick={() => SelectApproverFromAutoSuggestion(item, "Approver")}
+                                                                                                        onClick={() =>
+                                                                                                            setSelectedCategoryData(
+                                                                                                                [item],
+                                                                                                                "For-Auto-Search"
+                                                                                                            )
+                                                                                                        }
                                                                                                     >
-                                                                                                        <a>{item.NewLabel}</a>
+                                                                                                        <a>{item.Newlabel}</a>
                                                                                                     </li>
                                                                                                 );
                                                                                             })}
@@ -8682,526 +8513,745 @@ const EditTaskPopup = (Items: any) => {
                                                                                 ) : null}
                                                                             </>
                                                                         }
+
                                                                     </>
 
                                                                 }
 
                                                                 <span
-                                                                    className="input-group-text mt--10"
-                                                                    onClick={OpenApproverPopupFunction}
-                                                                    title="Approver Data Popup"
+                                                                    className="input-group-text"
+                                                                    title="Smart Category Popup"
+                                                                    onClick={(e) =>
+                                                                        EditComponentPicker(EditData, "Categories")
+                                                                    }
                                                                 >
-                                                                    <span className="svg__iconbox svg__icon--editBox mt--10"></span>
+                                                                    <span className="svg__iconbox svg__icon--editBox"></span>
                                                                 </span>
                                                             </div>
-                                                            <div className="Approval-History-section my-2">
-                                                                {ApproverHistoryData != undefined &&
-                                                                    ApproverHistoryData.length > 1 ? (
-                                                                    <div className="border p-1">
-                                                                        <div className="siteBdrBottom">
-                                                                            <p className="mb-1">Previous Approver</p>
-                                                                        </div>
-                                                                        {ApproverHistoryData.map(
-                                                                            (HistoryData: any, index: any) => {
-                                                                                if (
-                                                                                    index <
-                                                                                    ApproverHistoryData.length - 1
-                                                                                ) {
-                                                                                    return (
-                                                                                        <div
-                                                                                            className={
-                                                                                                index + 1 ==
-                                                                                                    ApproverHistoryData.length - 1
-                                                                                                    ? "alignCenter full-width justify-content-between py-1"
-                                                                                                    : "alignCenter  border-bottom full-width justify-content-between py-1"
-                                                                                            }
-                                                                                        >
-                                                                                            <div>
-                                                                                                {HistoryData.ApprovedDate}
-                                                                                            </div>
-                                                                                            <div>
-                                                                                                <img
-                                                                                                    title={
-                                                                                                        HistoryData.ApproverName
-                                                                                                    }
-                                                                                                    className="workmember ms-1"
-                                                                                                    src={
-                                                                                                        HistoryData?.ApproverImage
-                                                                                                            ?.length > 0
-                                                                                                            ? HistoryData?.ApproverImage
-                                                                                                            : ""
-                                                                                                    }
-                                                                                                />
-                                                                                            </div>
-
-                                                                                        </div>
-
-                                                                                    );
+                                                            <div className="col">
+                                                                <div className="col">
+                                                                    <div className="form-check">
+                                                                        <input
+                                                                            className="form-check-input rounded-0"
+                                                                            name="Phone"
+                                                                            type="checkbox"
+                                                                            checked={PhoneStatus}
+                                                                            value={`${PhoneStatus}`}
+                                                                            onClick={(e) =>
+                                                                                CategoryChange(e, "Phone", 199)
+                                                                            }
+                                                                        />
+                                                                        <label className="form-check-label">
+                                                                            Phone
+                                                                        </label>
+                                                                    </div>
+                                                                    <div className="form-check">
+                                                                        <input
+                                                                            className="form-check-input rounded-0"
+                                                                            type="checkbox"
+                                                                            checked={EmailStatus}
+                                                                            value={`${EmailStatus}`}
+                                                                            onClick={(e) =>
+                                                                                CategoryChange(
+                                                                                    e,
+                                                                                    "Email Notification",
+                                                                                    276
+                                                                                )
+                                                                            }
+                                                                        />
+                                                                        <label>Email Notification</label>
+                                                                        <div className="form-check ms-2">
+                                                                            <input
+                                                                                className="form-check-input rounded-0"
+                                                                                type="checkbox"
+                                                                                checked={OnlyCompletedStatus}
+                                                                                value={`${OnlyCompletedStatus}`}
+                                                                                onClick={(e) =>
+                                                                                    CategoryChange(
+                                                                                        e,
+                                                                                        "Only Completed",
+                                                                                        565
+                                                                                    )
                                                                                 }
+                                                                            />
+                                                                            <label>Only Completed</label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="form-check">
+                                                                        <input
+                                                                            className="form-check-input rounded-0"
+                                                                            type="checkbox"
+                                                                            checked={ImmediateStatus}
+                                                                            value={`${ImmediateStatus}`}
+                                                                            onClick={(e) =>
+                                                                                CategoryChange(e, "Immediate", 228)
+                                                                            }
+                                                                        />
+                                                                        <label>Immediate</label>
+                                                                    </div>
+                                                                    {TaskCategoriesData != undefined &&
+                                                                        TaskCategoriesData?.length > 0 ? (
+                                                                        <div>
+                                                                            {TaskCategoriesData?.map(
+                                                                                (type: any, index: number) => {
+                                                                                    if (
+                                                                                        type.Title != "Phone" &&
+                                                                                        type.Title !=
+                                                                                        "Email Notification" &&
+                                                                                        type.Title != "Immediate" &&
+                                                                                        type.Title != "Approval" &&
+                                                                                        type.Title != "Email" &&
+                                                                                        type.Title != "Only Completed"
+                                                                                    ) {
+                                                                                        return (
+                                                                                            <div className="block w-100">
+                                                                                                <a
+                                                                                                    className="wid90"
+                                                                                                    style={{
+                                                                                                        color: "#fff !important",
+                                                                                                    }}
+                                                                                                >
+                                                                                                    {type.Title}
+                                                                                                </a>
+                                                                                                <span
+                                                                                                    onClick={() =>
+                                                                                                        removeCategoryItem(
+                                                                                                            type.Title,
+                                                                                                            type.Id
+                                                                                                        )
+                                                                                                    }
+                                                                                                    className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
+                                                                                                ></span>
+                                                                                            </div>
+                                                                                        );
+                                                                                    }
+                                                                                }
+                                                                            )}
+                                                                        </div>
+                                                                    ) : null}
+                                                                </div>
+                                                                <div className="form-check mt-1">
+                                                                    <label className="full-width">Approval</label>
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        className="form-check-input rounded-0"
+                                                                        name="Approval"
+                                                                        checked={ApprovalStatus}
+                                                                        value={`${ApprovalStatus}`}
+                                                                        onClick={(e) =>
+                                                                            CategoryChange(e, "Approval", 227)
+                                                                        }
+                                                                    />
+                                                                </div>
+                                                                <div className="col ps-3 mb-1">
+                                                                    <ul className="p-0 mt-1 list-none ">
+                                                                        <li className="SpfxCheckRadio ">
+                                                                            <input
+                                                                                className="radio"
+                                                                                name="ApprovalLevel"
+                                                                                type="radio"
+                                                                            />
+                                                                            <label className="form-check-label">
+                                                                                Normal Approval
+                                                                            </label>
+                                                                        </li>
+                                                                        <li className="SpfxCheckRadio ">
+                                                                            <input
+                                                                                type="radio"
+                                                                                className="radio"
+                                                                                name="ApprovalLevel"
+                                                                            />
+                                                                            <label> Complex Approval</label>
+                                                                        </li>
+                                                                        <li className="SpfxCheckRadio">
+                                                                            <input
+                                                                                type="radio"
+                                                                                className="radio"
+                                                                                name="ApprovalLevel"
+                                                                            />
+                                                                            <label>Quick Approval</label>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                                {ApprovalStatus ? (
+                                                                    <div>
+                                                                        <div className="col-12">
+                                                                            <div className="input-group">
+                                                                                <label className="form-label full-width"></label>
+                                                                                {ApproverData != undefined &&
+                                                                                    ApproverData.length > 0 ? (
+                                                                                    <>
+                                                                                        {ApproverData.map(
+                                                                                            (Approver: any, index: number) => {
+                                                                                                return (
+                                                                                                    <div className="full-width replaceInput alignCenter">
+                                                                                                        <a
+                                                                                                            className="hreflink textDotted"
+                                                                                                            target="_blank"
+                                                                                                            data-interception="off"
+                                                                                                        >
+                                                                                                            {Approver.Title}
+                                                                                                        </a>
+                                                                                                    </div>
+                                                                                                );
+                                                                                            }
+                                                                                        )}
+                                                                                    </>
+                                                                                ) :
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        className="form-control"
+                                                                                        placeholder="Search Approver's Name Here"
+                                                                                        value={ApproverSearchKey}
+                                                                                        onChange={(e) =>
+                                                                                            autoSuggestionsForApprover(
+                                                                                                e,
+                                                                                                "OnTaskPopup"
+                                                                                            )
+                                                                                        }
+                                                                                    />
+                                                                                }
+                                                                                <span
+                                                                                    className="input-group-text mt--10"
+                                                                                    onClick={OpenApproverPopupFunction}
+                                                                                    title="Approver Data Popup"
+                                                                                >
+                                                                                    <span className="svg__iconbox svg__icon--editBox mt--10"></span>
+                                                                                </span>
+                                                                                {ApproverSearchedData?.length > 0 ? (
+                                                                                    <div className="SmartTableOnTaskPopup">
+                                                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                                            {ApproverSearchedData.map(
+                                                                                                (item: any) => {
+                                                                                                    return (
+                                                                                                        <li
+                                                                                                            className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                                                                                            key={item.id}
+                                                                                                            onClick={() =>
+                                                                                                                SelectApproverFromAutoSuggestion(
+                                                                                                                    item, "Approver"
+                                                                                                                )
+                                                                                                            }
+                                                                                                        >
+                                                                                                            <a>{item.NewLabel}</a>
+                                                                                                        </li>
+                                                                                                    );
+                                                                                                }
+                                                                                            )}
+                                                                                        </ul>
+                                                                                    </div>
+                                                                                ) : null}
+                                                                            </div>
+
+
+
+                                                                        </div>
+                                                                        <div className="Approval-History-section my-2">
+                                                                            {ApproverHistoryData != undefined &&
+                                                                                ApproverHistoryData.length > 1 ? (
+                                                                                <div className="border p-1">
+                                                                                    <div className="siteBdrBottom">
+                                                                                        <p className="mb-1">Previous Approver</p>
+                                                                                    </div>
+                                                                                    {ApproverHistoryData.map(
+                                                                                        (HistoryData: any, index: any) => {
+                                                                                            if (
+                                                                                                index <
+                                                                                                ApproverHistoryData.length - 1
+                                                                                            ) {
+                                                                                                return (
+                                                                                                    <div
+                                                                                                        className={
+                                                                                                            index + 1 ==
+                                                                                                                ApproverHistoryData.length - 1
+                                                                                                                ? "alignCenter full-width justify-content-between py-1"
+                                                                                                                : "alignCenter  border-bottom full-width justify-content-between py-1"
+                                                                                                        }
+                                                                                                    >
+                                                                                                        <div>
+                                                                                                            {HistoryData.ApprovedDate}
+                                                                                                        </div>
+                                                                                                        <div>
+                                                                                                            <img
+                                                                                                                title={
+                                                                                                                    HistoryData.ApproverName
+                                                                                                                }
+                                                                                                                className="workmember ms-1"
+                                                                                                                src={
+                                                                                                                    HistoryData?.ApproverImage
+                                                                                                                        ?.length > 0
+                                                                                                                        ? HistoryData?.ApproverImage
+                                                                                                                        : ""
+                                                                                                                }
+                                                                                                            />
+                                                                                                        </div>
+
+                                                                                                    </div>
+
+                                                                                                );
+                                                                                            }
+                                                                                        }
+                                                                                    )}
+                                                                                </div>
+                                                                            ) : null}
+                                                                        </div>
+                                                                    </div>
+                                                                ) : null}
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-6 ps-0 pe-0 pt-4">
+                                                            <div className="time-status">
+                                                                <div className="input-group">
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        placeholder="Enter Priority"
+                                                                        value={
+                                                                            EditData.PriorityRank
+                                                                                ? EditData.PriorityRank
+                                                                                : ""
+                                                                        }
+                                                                        onChange={(e) =>
+                                                                            ChangePriorityStatusFunction(e)
+                                                                        }
+                                                                    />
+                                                                </div>
+                                                                <ul className="p-0 mt-1">
+                                                                    <li className="form-check ">
+                                                                        <label className="SpfxCheckRadio">
+                                                                            <input
+                                                                                className="radio"
+                                                                                name="radioPriority"
+                                                                                type="radio"
+                                                                                checked={
+                                                                                    EditData.PriorityRank <= 10 &&
+                                                                                    EditData.PriorityRank >= 8
+                                                                                }
+                                                                                onChange={() =>
+                                                                                    setEditData({
+                                                                                        ...EditData,
+                                                                                        PriorityRank: 8,
+                                                                                    })
+                                                                                }
+                                                                            />
+                                                                            High{" "}
+                                                                        </label>
+                                                                    </li>
+                                                                    <li className="form-check ">
+                                                                        <label className="SpfxCheckRadio">
+                                                                            <input
+                                                                                className="radio"
+                                                                                name="radioPriority"
+                                                                                type="radio"
+                                                                                checked={
+                                                                                    EditData.PriorityRank <= 7 &&
+                                                                                    EditData.PriorityRank >= 4
+                                                                                }
+                                                                                onChange={() =>
+                                                                                    setEditData({
+                                                                                        ...EditData,
+                                                                                        PriorityRank: 4,
+                                                                                    })
+                                                                                }
+                                                                            />
+                                                                            Normal{" "}
+                                                                        </label>
+                                                                    </li>
+                                                                    <li className="form-check ">
+                                                                        <label className="SpfxCheckRadio">
+                                                                            <input
+                                                                                className="radio"
+                                                                                name="radioPriority"
+                                                                                type="radio"
+                                                                                checked={
+                                                                                    EditData.PriorityRank <= 3 &&
+                                                                                    EditData.PriorityRank > 0
+                                                                                }
+                                                                                onChange={() =>
+                                                                                    setEditData({
+                                                                                        ...EditData,
+                                                                                        PriorityRank: 1,
+                                                                                    })
+                                                                                }
+                                                                            />
+                                                                            Low{" "}
+                                                                        </label>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                            <div className="col-12 mb-2">
+                                                                <div className="input-group ">
+                                                                    <label className="form-label full-width">
+                                                                        Client Activity
+                                                                    </label>
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        placeholder="Client Activity"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                className="col-12"
+                                                                title="Relevant Portfolio Items"
+                                                            >
+                                                                <div className="input-group">
+                                                                    <label className="form-label full-width ">
+                                                                        {" "}
+                                                                        Linked Component Task{" "}
+                                                                    </label>
+                                                                    <input
+                                                                        type="text"
+                                                                        readOnly
+                                                                        className="form-control "
+                                                                    />
+                                                                    <span
+                                                                        className="input-group-text"
+                                                                        title="Linked Component Task Popup"
+                                                                        onClick={(e) =>
+                                                                            alert(
+                                                                                "We are working on It. This Feature Will Be Live Soon..."
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        <span className="svg__iconbox svg__icon--editBox"></span>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-12 mb-2 mt-2">
+                                                                <div className="input-group mb-2">
+                                                                    <label className="form-label full-width">
+                                                                        Linked Portfolios
+                                                                    </label>
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        value={SearchedLinkedPortfolioKey}
+                                                                        onChange={(e) =>
+                                                                            autoSuggestionsForServiceAndComponent(
+                                                                                e,
+                                                                                "Linked-Portfolios"
+                                                                            )
+                                                                        }
+                                                                        placeholder="Search Portfolio Components"
+                                                                    />
+                                                                    <span className="input-group-text">
+                                                                        <span
+                                                                            title="Component Popup"
+                                                                            onClick={() =>
+                                                                                OpenTeamPortfolioPopupFunction(
+                                                                                    EditData,
+                                                                                    "Linked-Portfolios"
+                                                                                )
+                                                                            }
+                                                                            className="svg__iconbox svg__icon--editBox"
+                                                                        ></span>
+                                                                    </span>
+                                                                    {SearchedLinkedPortfolioData?.length > 0 ? (
+                                                                        <div className="SmartTableOnTaskPopup">
+                                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                                {SearchedLinkedPortfolioData.map(
+                                                                                    (Item: any) => {
+                                                                                        return (
+                                                                                            <li
+                                                                                                className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                                                                                key={Item.id}
+                                                                                                onClick={() =>
+                                                                                                    setSelectedServiceAndCompnentData(
+                                                                                                        Item,
+                                                                                                        "Multi"
+                                                                                                    )
+                                                                                                }
+                                                                                            >
+                                                                                                <a>{Item.Path}</a>
+                                                                                            </li>
+                                                                                        );
+                                                                                    }
+                                                                                )}
+                                                                            </ul>
+                                                                        </div>
+                                                                    ) : null}
+                                                                </div>
+
+                                                                {linkedPortfolioData?.length > 0 ? (
+                                                                    <div className="full-width">
+                                                                        {linkedPortfolioData?.map(
+                                                                            (com: any, Index: any) => {
+                                                                                return (
+                                                                                    <>
+                                                                                        <div className="block w-100">
+                                                                                            <a
+                                                                                                className="wid90"
+                                                                                                title={com.Title}
+                                                                                                style={{
+                                                                                                    color: "#fff !important",
+                                                                                                }}
+                                                                                                target="_blank"
+                                                                                                data-interception="off"
+                                                                                                href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
+                                                                                            >
+                                                                                                {com.Title}
+                                                                                            </a>
+
+                                                                                            <span
+                                                                                                onClick={() =>
+                                                                                                    RemoveLinkedPortfolio(Index)
+                                                                                                }
+                                                                                                className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"
+                                                                                            ></span>
+                                                                                        </div>
+                                                                                    </>
+                                                                                );
                                                                             }
                                                                         )}
                                                                     </div>
                                                                 ) : null}
                                                             </div>
+                                                            <div className="col-12">
+                                                                <div className="input-group">
+                                                                    <label className="form-label full-width">
+                                                                        Project
+                                                                    </label>
+                                                                    {selectedProject != undefined &&
+                                                                        selectedProject.length > 0 ? (
+                                                                        <>
+                                                                            {selectedProject.map((ProjectData: any) => {
+                                                                                return (
+                                                                                    <>
+                                                                                        {ProjectData.Title != undefined ? (
+                                                                                            <div className="replaceInput alignCenter w-100">
+                                                                                                <a
+                                                                                                    className="hreflink textDotted"
+                                                                                                    target="_blank"
+                                                                                                    title={ProjectData.Title}
+                                                                                                    data-interception="off"
+                                                                                                    href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                                >
+                                                                                                    {ProjectData.Title}
+                                                                                                </a>
+                                                                                            </div>
+                                                                                        ) : null}
+                                                                                    </>
+                                                                                );
+                                                                            })}
+                                                                        </>
+                                                                    ) : <input
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        placeholder="Search Project Here"
+                                                                        value={ProjectSearchKey}
+                                                                        onChange={(e) =>
+                                                                            autoSuggestionsForProject(e)
+                                                                        }
+                                                                    />}
+
+                                                                    <span
+                                                                        className="input-group-text"
+                                                                        onClick={() =>
+                                                                            setProjectManagementPopup(true)
+                                                                        }
+                                                                        title="Project Items Popup"
+                                                                    >
+                                                                        <span className="svg__iconbox svg__icon--editBox"></span>
+                                                                    </span>
+                                                                    {SearchedProjectData?.length > 0 ? (
+                                                                        <div className="SmartTableOnTaskPopup">
+                                                                            <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                                {SearchedProjectData.map((item: any) => {
+                                                                                    return (
+                                                                                        <li
+                                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                                                                            key={item.id}
+                                                                                            onClick={() =>
+                                                                                                SelectProjectFromAutoSuggestion([
+                                                                                                    item,
+                                                                                                ])
+                                                                                            }
+                                                                                        >
+                                                                                            <a>{item?.Path}</a>
+                                                                                        </li>
+                                                                                    );
+                                                                                })}
+                                                                            </ul>
+                                                                        </div>
+                                                                    ) : null}
+                                                                </div>
+
+
+                                                            </div>
                                                         </div>
-                                                    ) : null}
-                                                </div>
-                                            </div>
-                                            <div className="col-6 ps-0 pe-0">
-                                                <div className="row">
-                                                    <div className="time-status col-md-6">
+                                                    </div>
+                                                    <div className="col-12 mb-2 taskurl">
                                                         <div className="input-group">
-                                                            <label className="form-label full-width">Priority</label>
+                                                            <label className="form-label full-width ">
+                                                                Relevant URL
+                                                            </label>
                                                             <input
                                                                 type="text"
                                                                 className="form-control"
-                                                                placeholder="Enter Priority"
-                                                                value={
-                                                                    EditData.PriorityRank
-                                                                        ? EditData.PriorityRank
+                                                                defaultValue={
+                                                                    EditData.ComponentLink != null
+                                                                        ? EditData.Relevant_Url
                                                                         : ""
                                                                 }
-                                                                onChange={(e) => ChangePriorityStatusFunction(e)}
+                                                                placeholder="Url"
+                                                                onChange={(e) =>
+                                                                    setEditData({
+                                                                        ...EditData,
+                                                                        Relevant_Url: e.target.value,
+                                                                    })
+                                                                }
                                                             />
-                                                        </div>
-                                                        <ul className="p-0 my-1">
-                                                            <li className="form-check ">
-                                                                <label className="SpfxCheckRadio">
-                                                                    <input
-                                                                        className="radio"
-                                                                        name="radioPriority"
-                                                                        type="radio"
-                                                                        checked={
-                                                                            EditData.PriorityRank <= 10 &&
-                                                                            EditData.PriorityRank >= 8
-                                                                        }
-                                                                        onChange={() =>
-                                                                            ChangePriorityStatusFunction({
-                                                                                target: {
-                                                                                    value: 8
-                                                                                }
-                                                                            })
-                                                                        }
-                                                                    />
-                                                                    High{" "}
-                                                                </label>
-                                                            </li>
-                                                            <li className="form-check ">
-                                                                <label className="SpfxCheckRadio">
-                                                                    <input
-                                                                        className="radio"
-                                                                        name="radioPriority"
-                                                                        type="radio"
-                                                                        checked={
-                                                                            EditData.PriorityRank <= 7 &&
-                                                                            EditData.PriorityRank >= 4
-                                                                        }
-                                                                        onChange={() =>
-                                                                            ChangePriorityStatusFunction({
-                                                                                target: {
-                                                                                    value: 4
-                                                                                }
-                                                                            })
-                                                                        }
-                                                                    />
-                                                                    Normal{" "}
-                                                                </label>
-                                                            </li>
-                                                            <li className="form-check ">
-                                                                <label className="SpfxCheckRadio">
-                                                                    <input
-                                                                        className="radio"
-                                                                        name="radioPriority"
-                                                                        type="radio"
-                                                                        checked={
-                                                                            EditData.PriorityRank <= 3 &&
-                                                                            EditData.PriorityRank > 0
-                                                                        }
-                                                                        onChange={() =>
-                                                                            ChangePriorityStatusFunction({
-                                                                                target: {
-                                                                                    value: 1
-                                                                                }
-                                                                            })
-                                                                        }
-                                                                    />
-                                                                    Low{" "}
-                                                                </label>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div className="col-md-6">
-                                                        <div className="input-group">
-                                                            <label className="form-label full-width">SmartPriority</label>
-                                                            <div className="bg-e9 w-100 py-1 px-2" style={{ border: '1px solid #CDD4DB' }}>
-                                                                <span className={EditData?.SmartPriority != undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
-                                                                    <>{EditData?.SmartPriority != undefined ? EditData?.SmartPriority : 0}</>
-                                                                    <span className="tooltip-text pop-right">
-                                                                        {EditData?.showFormulaOnHover != undefined ?
-
-                                                                            <SmartPriorityHover editValue={EditData} /> : ""}
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                                <div className="col-12 mb-2">
-                                                    <div className="input-group ">
-                                                        <label className="form-label full-width">
-                                                            Client Activity
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            placeholder="Client Activity"
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    className="col-12"
-                                                    title="Relevant Portfolio Items"
-                                                >
-                                                    <div className="input-group">
-                                                        <label className="form-label full-width ">
-                                                            {" "}
-                                                            Linked Component Task{" "}
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            readOnly
-                                                            className="form-control "
-                                                        />
-                                                        <span
-                                                            className="input-group-text"
-                                                            title="Linked Component Task Popup"
-                                                            onClick={(e) =>
-                                                                alert(
-                                                                    "We are working on It. This Feature Will Be Live Soon..."
-                                                                )
-                                                            }
-                                                        >
-                                                            <span className="svg__iconbox svg__icon--editBox"></span>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div className="col-12 mb-2 mt-2">
-                                                    <div className="input-group mb-2">
-                                                        <label className="form-label full-width">
-                                                            Linked Portfolio Items
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            value={SearchedLinkedPortfolioKey}
-                                                            onChange={(e) =>
-                                                                autoSuggestionsForServiceAndComponent(
-                                                                    e,
-                                                                    "Linked-Portfolios"
-                                                                )
-                                                            }
-                                                            placeholder="Search Portfolio Items"
-                                                        />
-                                                        <span className="input-group-text">
                                                             <span
-                                                                title="Component Popup"
-                                                                onClick={() =>
-                                                                    OpenTeamPortfolioPopupFunction(
-                                                                        EditData,
-                                                                        "Linked-Portfolios"
-                                                                    )
+                                                                className={
+                                                                    EditData.ComponentLink != null
+                                                                        ? "input-group-text"
+                                                                        : "input-group-text Disabled-Link"
                                                                 }
-                                                                className="svg__iconbox svg__icon--editBox"
-                                                            ></span>
-                                                        </span>
-                                                        {SearchedLinkedPortfolioData?.length > 0 ? (
-                                                            <div className="SmartTableOnTaskPopup">
-                                                                <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                    {SearchedLinkedPortfolioData.map(
-                                                                        (Item: any) => {
-                                                                            return (
-                                                                                <li
-                                                                                    className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
-                                                                                    key={Item.id}
-                                                                                    onClick={() =>
-                                                                                        setSelectedServiceAndCompnentData(
-                                                                                            Item,
-                                                                                            "Multi"
-                                                                                        )
-                                                                                    }
-                                                                                >
-                                                                                    <a>{Item.Path}</a>
-                                                                                </li>
-                                                                            );
-                                                                        }
-                                                                    )}
-                                                                </ul>
-                                                            </div>
-                                                        ) : null}
+                                                            >
+                                                                <a
+                                                                    target="_blank"
+                                                                    href={
+                                                                        EditData.ComponentLink != null
+                                                                            ? EditData.ComponentLink.Url
+                                                                            : ""
+                                                                    }
+                                                                    data-interception="off"
+                                                                >
+                                                                    <span className="svg__iconbox svg__icon--link"></span>
+                                                                </a>
+                                                            </span>
+                                                        </div>
                                                     </div>
+                                                </div>
 
-                                                    {linkedPortfolioData?.length > 0 ? (
-                                                        <div className="full-width">
-                                                            {linkedPortfolioData?.map(
-                                                                (com: any, Index: any) => {
-                                                                    return (
-                                                                        <>
-                                                                            <div className="block w-100">
-                                                                                <a
-                                                                                    title={com.Title}
-                                                                                    className="wid90"
-                                                                                    style={{ color: "#fff !important" }}
-                                                                                    target="_blank"
-                                                                                    data-interception="off"
-                                                                                    href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
-                                                                                >
-                                                                                    {com.Title}
-                                                                                </a>
+                                                <div className="col-md-3">
+                                                    {AllListIdData.isShowSiteCompostion ? (
+                                                        <div className="Sitecomposition">
+                                                            <div className="dropdown">
+                                                                <a className="sitebutton bg-fxdark d-flex justify-content-between">
+                                                                    <div
+                                                                        style={{ cursor: "pointer" }}
+                                                                        onClick={() =>
+                                                                            setComposition(composition ? false : true)
+                                                                        }
+                                                                    >
+                                                                        <span>
+                                                                            {composition ? (
+                                                                                <SlArrowDown />
+                                                                            ) : (
+                                                                                <SlArrowRight />
+                                                                            )}
+                                                                        </span>
+                                                                        <span className="mx-2">
+                                                                            Site Composition
+                                                                        </span>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span
+                                                                            className="svg__iconbox svg__icon--editBox hreflink"
+                                                                            title="Edit Site Composition"
+                                                                            onClick={() =>
+                                                                                setSiteCompositionShow(true)
+                                                                            }
+                                                                        ></span>
+                                                                    </div>
+                                                                </a>
+                                                                {composition &&
+                                                                    EditData.siteCompositionData?.length > 0 ? (
+                                                                    <div className="spxdropdown-menu">
+                                                                        <ul>
+                                                                            {EditData.siteCompositionData != undefined &&
+                                                                                EditData.siteCompositionData?.length > 0 ? (
+                                                                                <>
+                                                                                    {EditData.siteCompositionData?.map(
+                                                                                        (SiteDtls: any, i: any) => {
+                                                                                            return (
+                                                                                                <li className="Sitelist">
+                                                                                                    <span className="ms-2" title={SiteDtls.Title}>
+                                                                                                        <img
+                                                                                                            style={{ width: "22px" }}
+                                                                                                            src={SiteDtls.SiteImages}
+                                                                                                        />
+                                                                                                    </span>
 
-                                                                                <span
-                                                                                    onClick={() =>
-                                                                                        RemoveLinkedPortfolio(Index)
-                                                                                    }
-                                                                                    className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
-                                                                                ></span>
-                                                                            </div>
-                                                                        </>
-                                                                    );
-                                                                }
-                                                            )}
+                                                                                                    {SiteDtls.ClienTimeDescription !=
+                                                                                                        undefined && (
+                                                                                                            <span className="mx-2">
+                                                                                                                {Number(
+                                                                                                                    SiteDtls.ClienTimeDescription
+                                                                                                                ).toFixed(2)}
+                                                                                                                %
+                                                                                                            </span>
+                                                                                                        )}
+
+                                                                                                    <span className="d-inline">
+                                                                                                        {SiteDtls.ClientCategory != undefined && SiteDtls.ClientCategory.length > 0 ? SiteDtls.ClientCategory?.map((clientcat: any, Index: any) => {
+                                                                                                            return (
+                                                                                                                <div className={Index == SiteDtls.ClientCategory?.length - 1 ? "mb-0" : "mb-0 border-bottom"}>{clientcat.Title}</div>
+                                                                                                            )
+                                                                                                        }) : null}
+                                                                                                    </span>
+
+                                                                                                </li>
+                                                                                            );
+                                                                                        }
+                                                                                    )}
+                                                                                </>
+                                                                            ) : null}
+                                                                        </ul>
+                                                                    </div>
+                                                                ) : null}
+                                                                {EditData.siteCompositionData?.length > 0 ? (
+                                                                    <div className="bg-e9 border-1 p-1 total-time">
+                                                                        <label className="siteColor">Total Time</label>
+                                                                        {EditData.Id != null ? (
+                                                                            <span className="pull-right siteColor">
+                                                                                <SmartTotalTime
+                                                                                    props={EditData}
+                                                                                    callBack={SmartTotalTimeCallBack}
+                                                                                />{" "}
+                                                                                h
+                                                                            </span>
+                                                                        ) : null}
+                                                                    </div>
+                                                                ) : null}
+                                                            </div>
                                                         </div>
                                                     ) : null}
-                                                </div>
-                                                <div className="col-12">
-                                                    <div className="input-group">
-                                                        <label className="form-label full-width">
-                                                            Project
-                                                        </label>
-                                                        {selectedProject != undefined &&
-                                                            selectedProject.length > 0 ? (
-                                                            <>
-                                                                {selectedProject?.map((ProjectData: any) => {
-                                                                    return (
-                                                                        <>
-                                                                            {ProjectData.Title != undefined ? (
-                                                                                <div className="full-width replaceInput alignCenter">
-                                                                                    <a
 
-                                                                                        target="_blank"
-                                                                                        title={ProjectData.Title}
-                                                                                        data-interception="off"
-                                                                                        className="textDotted hreflink"
-                                                                                        href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
-                                                                                    >
-                                                                                        {ProjectData.Title}
-                                                                                    </a>
-                                                                                </div>
-                                                                            ) : null}
-                                                                        </>
-                                                                    );
-                                                                })}
-                                                            </>
-                                                        ) :
+                                                    <div className="col mt-2 clearfix">
+                                                        <div className="input-group taskTime">
+                                                            <label className="form-label full-width">
+                                                                Status
+                                                            </label>
                                                             <input
                                                                 type="text"
-                                                                className="form-control"
-                                                                placeholder="Search Project Here"
-                                                                value={ProjectSearchKey}
-                                                                onChange={(e) => autoSuggestionsForProject(e)}
+                                                                maxLength={3}
+                                                                placeholder="% Complete"
+                                                                //  disabled={InputFieldDisable}
+                                                                disabled
+                                                                readOnly
+                                                                className="bg-body form-control px-2"
+                                                                // defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined && Math.floor(EditData.PercentComplete) === EditData.PercentComplete ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
+                                                                value={PercentCompleteStatus}
+                                                                onChange={(e) => StatusAutoSuggestion(e)}
                                                             />
-                                                        }
-                                                        <span
-                                                            className="input-group-text"
-                                                            onClick={() => setProjectManagementPopup(true)}
-                                                            title="Project Items Popup"
-                                                        >
-                                                            <span className="svg__iconbox svg__icon--editBox"></span>
-                                                        </span>
-                                                        {SearchedProjectData?.length > 0 ? (
-                                                            <div className="SmartTableOnTaskPopup">
-                                                                <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                    {SearchedProjectData.map((item: any) => {
-                                                                        return (
-                                                                            <li
-                                                                                className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
-                                                                                key={item.id}
-                                                                                onClick={() =>
-                                                                                    SelectProjectFromAutoSuggestion([item])
-                                                                                }
-                                                                            >
-                                                                                <a>{item?.Path}</a>
-                                                                            </li>
-                                                                        );
-                                                                    })}
-                                                                </ul>
-                                                            </div>
-                                                        ) : null}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-12 mb-2 taskurl">
-                                            <div className="input-group">
-                                                <label className="form-label full-width ">
-                                                    Relevant URL
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    defaultValue={
-                                                        EditData.ComponentLink != null
-                                                            ? EditData.Relevant_Url
-                                                            : ""
-                                                    }
-                                                    placeholder="Url"
-                                                    onChange={(e) =>
-                                                        setEditData({
-                                                            ...EditData,
-                                                            Relevant_Url: e.target.value,
-                                                        })
-                                                    }
-                                                />
-                                                <span
-                                                    className={
-                                                        EditData.ComponentLink != null
-                                                            ? "input-group-text"
-                                                            : "input-group-text Disabled-Link"
-                                                    }
-                                                >
-                                                    <a
-                                                        target="_blank"
-                                                        href={
-                                                            EditData.ComponentLink != null
-                                                                ? EditData.ComponentLink.Url
-                                                                : ""
-                                                        }
-                                                        data-interception="off"
-                                                    >
-                                                        <span className="svg__iconbox svg__icon--link"></span>
-                                                    </a>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    <div className="col-md-3">
-                                        {AllListIdData.isShowSiteCompostion ? (
-                                            <div className="Sitecomposition mb-2">
-                                                <div className="dropdown">
-                                                    <a className="sitebutton bg-fxdark alignCenter justify-content-between">
-                                                        <div
-                                                            style={{ cursor: "pointer" }}
-                                                            onClick={() =>
-                                                                setComposition(composition ? false : true)
-                                                            }
-                                                        >
-                                                            <span>
-                                                                {composition ? (
-                                                                    <SlArrowDown />
-                                                                ) : (
-                                                                    <SlArrowRight />
-                                                                )}
+                                                            <span
+                                                                className="input-group-text"
+                                                                title="Status Popup"
+                                                                // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
+                                                                onClick={() =>
+                                                                    setSmartMedaDataUsedPanel("Status")
+                                                                }
+                                                            >
+                                                                <span
+                                                                    title="Edit Task"
+                                                                    className="svg__iconbox svg__icon--editBox"
+                                                                ></span>
                                                             </span>
-                                                            <span className="mx-2">Site Composition</span>
-                                                        </div>
-                                                        <span
-                                                            className="svg__iconbox svg__icon--editBox hreflink"
-                                                            title="Edit Site Composition"
-                                                            onClick={() => setSiteCompositionShow(true)}
-                                                        ></span>
-                                                    </a>
-                                                    {composition &&
-                                                        EditData.siteCompositionData?.length > 0 ? (
-                                                        <div className="spxdropdown-menu">
-                                                            <ul>
-                                                                {EditData.siteCompositionData != undefined &&
-                                                                    EditData.siteCompositionData?.length > 0 ? (
-                                                                    <>
-                                                                        {EditData.siteCompositionData?.map(
-                                                                            (SiteDtls: any, i: any) => {
-                                                                                return (
-                                                                                    <li className="Sitelist">
-                                                                                        <span className="ms-2" title={SiteDtls.Title}>
-                                                                                            <img
-                                                                                                style={{ width: "22px" }}
-                                                                                                src={SiteDtls.SiteImages}
-                                                                                            />
-                                                                                        </span>
-
-                                                                                        {SiteDtls.ClienTimeDescription !=
-                                                                                            undefined && (
-                                                                                                <span className="mx-2">
-                                                                                                    {Number(
-                                                                                                        SiteDtls.ClienTimeDescription
-                                                                                                    ).toFixed(1)}
-                                                                                                    %
-                                                                                                </span>
-                                                                                            )}
-
-                                                                                        <span className="d-inline">
-                                                                                            {SiteDtls.ClientCategory != undefined && SiteDtls.ClientCategory.length > 0 ? SiteDtls.ClientCategory?.map((clientcat: any, Index: any) => {
-                                                                                                return (
-                                                                                                    <div className={Index == SiteDtls.ClientCategory?.length - 1 ? "mb-0" : "mb-0 border-bottom"}>{clientcat.Title}</div>
-                                                                                                )
-                                                                                            }) : null}
-                                                                                        </span>
-
-                                                                                    </li>
-                                                                                );
-                                                                            }
-                                                                        )}
-                                                                    </>
-                                                                ) : null}
-                                                            </ul>
-                                                        </div>
-                                                    ) : null}
-                                                    {EditData.siteCompositionData?.length > 0 ? (
-                                                        <div className="bg-e9 border-1 p-1 total-time">
-                                                            <label className="siteColor">Total Time</label>
-                                                            {EditData.Id != null ? (
-                                                                <span className="pull-right siteColor">
-                                                                    <SmartTotalTime
-                                                                        props={EditData}
-                                                                        callBack={SmartTotalTimeCallBack}
-                                                                    />{" "}
-                                                                    h
-                                                                </span>
-                                                            ) : null}
-                                                        </div>
-                                                    ) : null}
-                                                </div>
-                                            </div>
-                                        ) : null}
-
-                                        <div className="col mt-2 clearfix">
-                                            <div className="input-group taskTime">
-                                                <label className="form-label full-width">Status</label>
-                                                <input
-                                                    type="text"
-                                                    maxLength={3}
-                                                    placeholder="% Complete"
-                                                    //  disabled={InputFieldDisable}
-                                                    disabled
-                                                    readOnly
-                                                    className="bg-body form-control px-2"
-                                                    // defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined && Math.floor(EditData.PercentComplete) === EditData.PercentComplete ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
-                                                    value={PercentCompleteStatus}
-                                                    onChange={(e) => StatusAutoSuggestion(e)}
-                                                />
-
-                                                <span
-                                                    className="input-group-text"
-                                                    title="Status Popup"
-                                                    // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
-                                                    onClick={() => setSmartMedaDataUsedPanel("Status")}
-                                                >
-                                                    <span
-                                                        title="Edit Task"
-                                                        className="svg__iconbox svg__icon--editBox"
-                                                    ></span>
-                                                </span>
-                                                {/* {PercentCompleteStatus?.length > 0 ?
+                                                            {/* {PercentCompleteStatus?.length > 0 ?
                                                     <span className="full-width ">
                                                         <label className="SpfxCheckRadio">
                                                             <input type='radio' className="my-2 radio" checked />
@@ -9209,559 +9259,310 @@ const EditTaskPopup = (Items: any) => {
                                                             {PercentCompleteStatus}
                                                         </label>
                                                     </span> : null} */}
-                                            </div>
-                                        </div>
-
-                                        <div className="row">
-                                            <div className="col mt-2 time-status">
-                                                <div>
-                                                    <div className="input-group">
-                                                        <label className="form-label full-width ">
-                                                            Time
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            maxLength={3}
-                                                            className="form-control"
-                                                            placeholder="Time"
-                                                            defaultValue={
-                                                                EditData.Mileage != null ? EditData.Mileage : ""
-                                                            }
-                                                            onChange={(e) =>
-                                                                setEditData({
-                                                                    ...EditData,
-                                                                    Mileage: e.target.value,
-                                                                })
-                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div className="row">
+                                                        <div className="col mt-2 time-status">
+                                                            <div>
+                                                                <div className="input-group">
+                                                                    <label className="form-label full-width ">
+                                                                        Time
+                                                                    </label>
+                                                                    <input
+                                                                        type="text"
+                                                                        maxLength={3}
+                                                                        className="form-control"
+                                                                        placeholder="Time"
+                                                                        defaultValue={
+                                                                            EditData.Mileage != null
+                                                                                ? EditData.Mileage
+                                                                                : ""
+                                                                        }
+                                                                        onChange={(e) =>
+                                                                            setEditData({
+                                                                                ...EditData,
+                                                                                Mileage: e.target.value,
+                                                                            })
+                                                                        }
+                                                                    />
+                                                                </div>
+                                                                <ul className="p-0 mt-1">
+                                                                    <li className="form-check">
+                                                                        <label className="SpfxCheckRadio">
+                                                                            <input
+                                                                                name="radioTime"
+                                                                                className=" radio"
+                                                                                checked={
+                                                                                    EditData.Mileage <= 15 &&
+                                                                                        EditData.Mileage > 0
+                                                                                        ? true
+                                                                                        : false
+                                                                                }
+                                                                                type="radio"
+                                                                                onChange={(e) =>
+                                                                                    setEditData({
+                                                                                        ...EditData,
+                                                                                        Mileage: "15",
+                                                                                    })
+                                                                                }
+                                                                                defaultChecked={
+                                                                                    EditData.Mileage <= 15 &&
+                                                                                        EditData.Mileage > 0
+                                                                                        ? true
+                                                                                        : false
+                                                                                }
+                                                                            />
+                                                                            Very Quick{" "}
+                                                                        </label>
+                                                                    </li>
+                                                                    <li className="form-check">
+                                                                        <label className="SpfxCheckRadio">
+                                                                            <input
+                                                                                name="radioTime"
+                                                                                className=" radio"
+                                                                                checked={
+                                                                                    EditData.Mileage <= 60 &&
+                                                                                        EditData.Mileage > 15
+                                                                                        ? true
+                                                                                        : false
+                                                                                }
+                                                                                type="radio"
+                                                                                onChange={(e) =>
+                                                                                    setEditData({
+                                                                                        ...EditData,
+                                                                                        Mileage: "60",
+                                                                                    })
+                                                                                }
+                                                                                defaultChecked={
+                                                                                    EditData.Mileage <= 60 &&
+                                                                                        EditData.Mileage > 15
+                                                                                        ? true
+                                                                                        : false
+                                                                                }
+                                                                            />
+                                                                            Quick
+                                                                        </label>
+                                                                    </li>
+                                                                    <li className="form-check">
+                                                                        <label className="SpfxCheckRadio">
+                                                                            <input
+                                                                                name="radioTime"
+                                                                                className="radio"
+                                                                                checked={
+                                                                                    EditData.Mileage <= 240 &&
+                                                                                        EditData.Mileage > 60
+                                                                                        ? true
+                                                                                        : false
+                                                                                }
+                                                                                type="radio"
+                                                                                onChange={(e) =>
+                                                                                    setEditData({
+                                                                                        ...EditData,
+                                                                                        Mileage: "240",
+                                                                                    })
+                                                                                }
+                                                                                defaultChecked={
+                                                                                    EditData.Mileage <= 240 &&
+                                                                                        EditData.Mileage > 60
+                                                                                        ? true
+                                                                                        : false
+                                                                                }
+                                                                            />
+                                                                            Medium
+                                                                        </label>
+                                                                    </li>
+                                                                    <li className="form-check">
+                                                                        <label className="SpfxCheckRadio">
+                                                                            <input
+                                                                                name="radioTime"
+                                                                                className=" radio"
+                                                                                checked={EditData.Mileage === "480"}
+                                                                                type="radio"
+                                                                                onChange={(e) =>
+                                                                                    setEditData({
+                                                                                        ...EditData,
+                                                                                        Mileage: "480",
+                                                                                    })
+                                                                                }
+                                                                                defaultChecked={
+                                                                                    EditData.Mileage <= 480 &&
+                                                                                        EditData.Mileage > 240
+                                                                                        ? true
+                                                                                        : false
+                                                                                }
+                                                                            />
+                                                                            Long
+                                                                        </label>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col mt-2 ps-0">
+                                                            <div className="input-group">
+                                                                <label className="form-label full-width">
+                                                                    {EditData.TaskAssignedUsers?.length > 0
+                                                                        ? "Working Member"
+                                                                        : ""}
+                                                                </label>
+                                                                {EditData.TaskAssignedUsers?.map(
+                                                                    (userDtl: any, index: any) => {
+                                                                        return (
+                                                                            <div className="TaskUsers" key={index}>
+                                                                                <a
+                                                                                    target="_blank"
+                                                                                    data-interception="off"
+                                                                                    href={`${siteUrls}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`}
+                                                                                >
+                                                                                    <img
+                                                                                        className="ProirityAssignedUserPhoto me-2"
+                                                                                        data-bs-placement="bottom"
+                                                                                        title={
+                                                                                            userDtl.Title ? userDtl.Title : ""
+                                                                                        }
+                                                                                        src={
+                                                                                            userDtl.Item_x0020_Cover
+                                                                                                ? userDtl.Item_x0020_Cover.Url
+                                                                                                : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+                                                                                        }
+                                                                                    />
+                                                                                </a>
+                                                                            </div>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-12 mb-2">
+                                                        <div className="input-group ">
+                                                            <label className="form-label full-width">
+                                                                Estimated Task Time Details
+                                                            </label>
+                                                            <div
+                                                                onChange={UpdateEstimatedTimeDescriptions}
+                                                                className="full-width"
+                                                            >
+                                                                <textarea
+                                                                    className="form-control p-1"
+                                                                    name="Description"
+                                                                    defaultValue={EstimatedDescription}
+                                                                    value={EstimatedDescription}
+                                                                    rows={1}
+                                                                    placeholder="Estimated Time Description"
+                                                                ></textarea>
+                                                                <div className="gap-2 my-1 d-flex">
+                                                                    <input
+                                                                        type="number"
+                                                                        className="col-6 my-1 p-1"
+                                                                        name="Time"
+                                                                        defaultValue={EstimatedTime}
+                                                                        value={EstimatedTime}
+                                                                        placeholder="Estimated Hours"
+                                                                    />
+                                                                    <button
+                                                                        className="btn btn-primary full-width my-1"
+                                                                        onClick={SaveEstimatedTimeDescription}
+                                                                    >
+                                                                        Submit
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-12 mb-2">
+                                                        {EditData?.EstimatedTimeDescriptionArray != null &&
+                                                            EditData?.EstimatedTimeDescriptionArray?.length >
+                                                            0 ? (
+                                                            <div className="border p-1">
+                                                                {EditData?.EstimatedTimeDescriptionArray?.map(
+                                                                    (EstimatedTimeData: any, Index: any) => {
+                                                                        return (
+                                                                            <div>
+                                                                                <div className="align-content-center border-bottom d-flex justify-content-between p-1">
+                                                                                    <img
+                                                                                        className="ProirityAssignedUserPhoto m-0"
+                                                                                        title={EstimatedTimeData.UserName}
+                                                                                        src={
+                                                                                            EstimatedTimeData.UserImage !=
+                                                                                                undefined &&
+                                                                                                EstimatedTimeData.UserImage
+                                                                                                    ?.length > 0
+                                                                                                ? EstimatedTimeData.UserImage
+                                                                                                : ""
+                                                                                        }
+                                                                                    />
+                                                                                    <span>
+                                                                                        {EstimatedTimeData.Team
+                                                                                            ? EstimatedTimeData.Team
+                                                                                            : null}
+                                                                                    </span>{" "}
+                                                                                    |
+                                                                                    <span>
+                                                                                        Time :{" "}
+                                                                                        {EstimatedTimeData.EstimatedTime
+                                                                                            ? EstimatedTimeData.EstimatedTime >
+                                                                                                1
+                                                                                                ? EstimatedTimeData.EstimatedTime +
+                                                                                                " hours"
+                                                                                                : EstimatedTimeData.EstimatedTime +
+                                                                                                " hour"
+                                                                                            : "0 hour"}
+                                                                                    </span>
+                                                                                    <span className="hover-text m-0 alignIcon">
+                                                                                        <span className="svg__iconbox svg__icon--info"></span>
+                                                                                        <span className="tooltip-text pop-right">
+                                                                                            {
+                                                                                                EstimatedTimeData.EstimatedTimeDescription
+                                                                                            }
+                                                                                        </span>
+                                                                                    </span>
+                                                                                    {/* <span title="Edit" className="svg__iconbox svg__icon--editBox" onClick={() => alert("We are working on this feature. It will be live soon..")}></span> */}
+                                                                                </div>
+                                                                            </div>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                                <div className="text-end">
+                                                                    <span>Total Estimated Time : </span>
+                                                                    <span className="mx-1">
+                                                                        {TotalEstimatedTime > 1
+                                                                            ? TotalEstimatedTime + " hours"
+                                                                            : TotalEstimatedTime + " hour"}{" "}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        ) : null}
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-4">
+                                                    <div className="full_width ">
+                                                        <CommentCard
+                                                            siteUrl={siteUrls}
+                                                            listName={Items?.Items?.siteType}
+                                                            itemID={Items.Items.Id}
+                                                            AllListId={AllListIdData}
+                                                            Context={Context}
+                                                            counter={counter}
                                                         />
                                                     </div>
-                                                    <ul className="p-0 mt-1">
-                                                        <li className="form-check">
-                                                            <label className="SpfxCheckRadio">
-                                                                <input
-                                                                    name="radioTime"
-                                                                    className=" radio"
-                                                                    checked={
-                                                                        EditData.Mileage <= 15 &&
-                                                                            EditData.Mileage > 0
-                                                                            ? true
-                                                                            : false
-                                                                    }
-                                                                    type="radio"
-                                                                    onChange={(e) =>
-                                                                        setEditData({ ...EditData, Mileage: "15" })
-                                                                    }
-                                                                    defaultChecked={
-                                                                        EditData.Mileage <= 15 &&
-                                                                            EditData.Mileage > 0
-                                                                            ? true
-                                                                            : false
-                                                                    }
-                                                                />
-                                                                Very Quick{" "}
+                                                    <div className="pull-right">
+                                                        <span className="">
+                                                            <label className="form-check-label mx-2">
+                                                                Waiting for HHHH response
                                                             </label>
-                                                        </li>
-                                                        <li className="form-check">
-                                                            <label className="SpfxCheckRadio">
-                                                                <input
-                                                                    name="radioTime"
-                                                                    className=" radio"
-                                                                    checked={
-                                                                        EditData.Mileage <= 60 &&
-                                                                            EditData.Mileage > 15
-                                                                            ? true
-                                                                            : false
-                                                                    }
-                                                                    type="radio"
-                                                                    onChange={(e) =>
-                                                                        setEditData({ ...EditData, Mileage: "60" })
-                                                                    }
-                                                                    defaultChecked={
-                                                                        EditData.Mileage <= 60 &&
-                                                                            EditData.Mileage > 15
-                                                                            ? true
-                                                                            : false
-                                                                    }
-                                                                />
-                                                                Quick
-                                                            </label>
-                                                        </li>
-                                                        <li className="form-check">
-                                                            <label className="SpfxCheckRadio">
-                                                                <input
-                                                                    name="radioTime"
-                                                                    className="radio"
-                                                                    checked={
-                                                                        EditData.Mileage <= 240 &&
-                                                                            EditData.Mileage > 60
-                                                                            ? true
-                                                                            : false
-                                                                    }
-                                                                    type="radio"
-                                                                    onChange={(e) =>
-                                                                        setEditData({ ...EditData, Mileage: "240" })
-                                                                    }
-                                                                    defaultChecked={
-                                                                        EditData.Mileage <= 240 &&
-                                                                            EditData.Mileage > 60
-                                                                            ? true
-                                                                            : false
-                                                                    }
-                                                                />
-                                                                Medium
-                                                            </label>
-                                                        </li>
-                                                        <li className="form-check">
-                                                            <label className="SpfxCheckRadio">
-                                                                <input
-                                                                    name="radioTime"
-                                                                    className=" radio"
-                                                                    checked={EditData.Mileage === "480"}
-                                                                    type="radio"
-                                                                    onChange={(e) =>
-                                                                        setEditData({ ...EditData, Mileage: "480" })
-                                                                    }
-                                                                    defaultChecked={
-                                                                        EditData.Mileage <= 480 &&
-                                                                            EditData.Mileage > 240
-                                                                            ? true
-                                                                            : false
-                                                                    }
-                                                                />
-                                                                Long
-                                                            </label>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div className="col mt-2">
-                                                <div className="input-group">
-                                                    <label className="form-label full-width">
-                                                        {EditData.TaskAssignedUsers?.length > 0
-                                                            ? "Working Member"
-                                                            : ""}
-                                                    </label>
-                                                    {EditData.TaskAssignedUsers?.map(
-                                                        (userDtl: any, index: any) => {
-                                                            return (
-                                                                <div className="TaskUsers" key={index}>
-                                                                    <a
-                                                                        target="_blank"
-                                                                        data-interception="off"
-                                                                        href={`${siteUrls}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`}
-                                                                    >
-                                                                        <img
-                                                                            className="ProirityAssignedUserPhoto me-2"
-                                                                            data-bs-placement="bottom"
-                                                                            title={userDtl.Title ? userDtl.Title : ""}
-                                                                            src={
-                                                                                userDtl.Item_x0020_Cover
-                                                                                    ? userDtl.Item_x0020_Cover.Url
-                                                                                    : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
-                                                                            }
-                                                                        />
-                                                                    </a>
-                                                                </div>
-                                                            );
-                                                        }
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="border p-2 mb-3">
-                                            <div>Estimated Task Time Details</div>
-                                            <div className="col-12">
-                                                <div
-                                                    onChange={UpdateEstimatedTimeDescriptions}
-                                                    className="full-width"
-                                                >
-                                                    <div className="input-group mt-2">
-                                                        <label className="form-label full-width">
-                                                            Select Category
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            defaultValue={EstimatedDescriptionCategory}
-                                                            value={EstimatedDescriptionCategory}
-                                                            placeholder="Select Category"
-                                                            onChange={(e) =>
-                                                                setEstimatedDescriptionCategory(e.target.value)
-                                                            }
-                                                        />
-                                                        <span
-                                                            className="input-group-text"
-                                                            title="Status Popup"
-                                                            onClick={() =>
-                                                                setSmartMedaDataUsedPanel("Estimated-Time")
-                                                            }
-                                                        >
-                                                            <span
-                                                                title="Edit Task"
-                                                                className="svg__iconbox svg__icon--editBox"
-                                                            ></span>
+                                                            <input
+                                                                className="form-check-input rounded-0"
+                                                                type="checkbox"
+                                                                checked={EditData.waitForResponse}
+                                                                value={EditData.waitForResponse}
+                                                                onChange={(e) =>
+                                                                    changeStatus(e, "waitForResponse")
+                                                                }
+                                                            />
                                                         </span>
                                                     </div>
-                                                    <div className="gap-2 my-1 d-flex">
-                                                        <input
-                                                            type="number"
-                                                            className="col-6 my-1 p-1"
-                                                            name="Time"
-                                                            defaultValue={EstimatedTime}
-                                                            value={EstimatedTime}
-                                                            placeholder="Estimated Hours"
-                                                        />
-                                                        <button
-                                                            className="btn btn-primary full-width my-1"
-                                                            onClick={SaveEstimatedTimeDescription}
-                                                        >
-                                                            Add
-                                                        </button>
-                                                    </div>
-                                                    <textarea
-                                                        className="form-control p-1"
-                                                        name="Description"
-                                                        defaultValue={EstimatedDescription}
-                                                        value={EstimatedDescription}
-                                                        rows={1}
-                                                        placeholder="Add comment if necessary"
-                                                    ></textarea>
                                                 </div>
                                             </div>
-                                            <div className="col-12">
-                                                {EditData?.EstimatedTimeDescriptionArray != null &&
-                                                    EditData?.EstimatedTimeDescriptionArray?.length > 0 ? (
-                                                    <div>
-                                                        {EditData?.EstimatedTimeDescriptionArray?.map(
-                                                            (EstimatedTimeData: any, Index: any) => {
-                                                                return (
-                                                                    <div className="align-content-center alignCenter justify-content-between py-1">
-                                                                        <div className="alignCenter">
-                                                                            <span className="me-1">
-                                                                                {EstimatedTimeData?.Team != undefined
-                                                                                    ? EstimatedTimeData.Team
-                                                                                    : EstimatedTimeData.Category !=
-                                                                                        undefined
-                                                                                        ? EstimatedTimeData.Category
-                                                                                        : null}
-                                                                            </span>{" "}
-                                                                            |
-                                                                            <span className="mx-1">
-                                                                                {EstimatedTimeData?.EstimatedTime
-                                                                                    ? EstimatedTimeData.EstimatedTime > 1
-                                                                                        ? EstimatedTimeData.EstimatedTime +
-                                                                                        " Hours"
-                                                                                        : EstimatedTimeData.EstimatedTime +
-                                                                                        " Hour"
-                                                                                    : "0 Hour"}
-                                                                            </span>
-                                                                            <img
-                                                                                className="ProirityAssignedUserPhoto m-0"
-                                                                                title={EstimatedTimeData.UserName}
-                                                                                src={
-                                                                                    EstimatedTimeData.UserImage !=
-                                                                                        undefined &&
-                                                                                        EstimatedTimeData.UserImage?.length >
-                                                                                        0
-                                                                                        ? EstimatedTimeData.UserImage
-                                                                                        : ""
-                                                                                }
-                                                                            />
-                                                                        </div>
-                                                                        {EstimatedTimeData?.EstimatedTimeDescription
-                                                                            ?.length > 0 ? (
-                                                                            <span className="hover-text m-0 alignIcon">
-                                                                                <span className="svg__iconbox svg__icon--info"></span>
-                                                                                <span className="tooltip-text pop-right">
-                                                                                    {
-                                                                                        EstimatedTimeData?.EstimatedTimeDescription
-                                                                                    }
-                                                                                </span>
-                                                                            </span>
-                                                                        ) : null}
-                                                                    </div>
-                                                                );
-                                                            }
-                                                        )}
-                                                        <div className="border-top pt-1">
-                                                            <span>Total Estimated Time : </span>
-                                                            <span className="mx-1">
-                                                                {TotalEstimatedTime > 1
-                                                                    ? TotalEstimatedTime + " hours"
-                                                                    : TotalEstimatedTime + " hour"}{" "}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                ) : null}
-                                            </div>
-                                        </div>
-                                        {/* <div className="Sitecomposition mb-3">
-                                            <a className="sitebutton bg-fxdark alignCenter justify-content-between">
-                                                <span className="alignCenter">
-                                                    <span className="svg__iconbox svg__icon--docx"></span>
-                                                    <span className="mx-2">Submit EOD Report</span>
-                                                </span>
-                                                <span className="svg__iconbox svg__icon--editBox hreflink" title="Submit EOD Report Popup"
-                                                    onClick={() => setOpenEODReportPopup(true)}>
-                                                </span>
-                                            </a>
-                                        </div> */}
-                                    </div>
-                                    <div className="col-md-4">
-                                        {/* This is used for bottleneck  */}
-                                        <div className="col ps-0">
-                                            <div className="input-group">
-                                                <label className="form-label full-width ">
-                                                    Bottleneck
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    value={BottleneckSearchKey}
-                                                    className="form-control"
-                                                    placeholder="Tag user for Bottleneck"
-                                                    onChange={(e) => autoSuggestionsForApprover(e, "Bottleneck")}
-                                                />
-                                                <span
-                                                    className="input-group-text"
-                                                    // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
-                                                    onClick={() => openBottleneckPopup("Bottleneck")}
-                                                >
-                                                    <span
-                                                        title="Add Comment"
-                                                        className="svg__iconbox svg__icon--editBox"
-                                                    ></span>
-                                                </span>
-                                                {BottleneckSearchedData?.length > 0 ? (
-                                                    <div className="SmartTableOnTaskPopup">
-                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                            {BottleneckSearchedData.map((item: any) => {
-                                                                return (
-                                                                    <li
-                                                                        className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
-                                                                        key={item.id}
-                                                                        onClick={() =>
-                                                                            SelectApproverFromAutoSuggestion(
-                                                                                item, "Bottleneck"
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <a>{item.NewLabel}</a>
-                                                                    </li>
-                                                                );
-                                                            })}
-                                                        </ul>
-                                                    </div>
-                                                ) : null}
-                                            </div>
-                                            {WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
-                                                if (WAItemData.Title == "Bottleneck" && WAItemData?.InformationData?.length > 0) {
-                                                    return (
-                                                        <div className="border p-1 mt-1">
-                                                            {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: number) => {
-                                                                return (
-                                                                    <div className="align-content-center alignCenter justify-content-between py-1">
-                                                                        <div className="alignCenter">
-                                                                            <img
-                                                                                className="ProirityAssignedUserPhoto m-0"
-                                                                                title={InfoData.TaggedUsers?.Title}
-                                                                                src={
-                                                                                    InfoData.TaggedUsers.userImage !=
-                                                                                        undefined &&
-                                                                                        InfoData.TaggedUsers.userImage.length >
-                                                                                        0
-                                                                                        ? InfoData.TaggedUsers.userImage
-                                                                                        : ""
-                                                                                }
-                                                                            />
-                                                                            <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
-                                                                        </div>
-
-                                                                        <div className="alignCenter">
-                                                                            <span
-                                                                                className="hover-text m-1"
-                                                                                onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
-                                                                            >
-                                                                                <LuBellPlus></LuBellPlus>
-                                                                                <span className="tooltip-text pop-left">
-                                                                                    Send reminder notifications
-                                                                                </span>
-                                                                            </span>
-                                                                            <span
-                                                                                className="m-0 img-info hover-text"
-                                                                                onClick={() =>
-                                                                                    openAddImageDescriptionFunction(
-                                                                                        InfoIndex,
-                                                                                        InfoData,
-                                                                                        "Bottleneck"
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                <span className="svg__iconbox svg__icon--comment"></span>
-                                                                                <span className="tooltip-text pop-left">
-                                                                                    {InfoData.Comment != undefined &&
-                                                                                        InfoData.Comment?.length > 1
-                                                                                        ? InfoData.Comment
-                                                                                        : "Add Comment"}
-                                                                                </span>
-                                                                            </span>
-                                                                            <span
-                                                                                className="hover-text m-0 alignIcon"
-                                                                                onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Remove", WAItemData.Title)}
-                                                                            >
-                                                                                <span className="svg__iconbox svg__icon--cross"></span>
-                                                                                <span className="tooltip-text pop-left">
-                                                                                    Remove user from bottleneck
-                                                                                </span>
-                                                                            </span>
-                                                                        </div>
-                                                                    </div>
-                                                                )
-                                                            })}
-                                                        </div>
-                                                    )
-                                                }
-                                            })}
-                                        </div>
-                                        {/* This is used for Attentions  */}
-                                        <div className="col mt-2 ps-0">
-                                            <div className="input-group">
-                                                <label className="form-label full-width ">
-                                                    Attention
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    value={AttentionSearchKey}
-                                                    className="form-control"
-                                                    placeholder="Tag user for attention"
-                                                    onChange={(e) => autoSuggestionsForApprover(e, "Attention")}
-                                                />
-                                                <span
-                                                    className="input-group-text"
-                                                    // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
-                                                    onClick={() => openBottleneckPopup("Attention")}
-                                                >
-                                                    <span
-                                                        title="Add Comment"
-                                                        className="svg__iconbox svg__icon--editBox"
-                                                    ></span>
-                                                </span>
-                                                {AttentionSearchedData?.length > 0 ? (
-                                                    <div className="SmartTableOnTaskPopup">
-                                                        <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                            {AttentionSearchedData.map((item: any) => {
-                                                                return (
-                                                                    <li
-                                                                        className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
-                                                                        key={item.id}
-                                                                        onClick={() =>
-                                                                            SelectApproverFromAutoSuggestion(
-                                                                                item, "Attention"
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <a>{item.NewLabel}</a>
-                                                                    </li>
-                                                                );
-                                                            })}
-                                                        </ul>
-                                                    </div>
-                                                ) : null}
-                                            </div>
-                                            {WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
-                                                if (WAItemData.Title == "Attention" && WAItemData?.InformationData?.length > 0) {
-                                                    return (
-                                                        <div className="border p-1 mt-1">
-                                                            {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: number) => {
-                                                                return (
-                                                                    <div className="align-content-center alignCenter justify-content-between py-1">
-                                                                        <div className="alignCenter">
-                                                                            <img
-                                                                                className="ProirityAssignedUserPhoto m-0"
-                                                                                title={InfoData.TaggedUsers?.Title}
-                                                                                src={
-                                                                                    InfoData.TaggedUsers.userImage !=
-                                                                                        undefined &&
-                                                                                        InfoData.TaggedUsers.userImage?.length >
-                                                                                        0
-                                                                                        ? InfoData.TaggedUsers.userImage
-                                                                                        : ""
-                                                                                }
-                                                                            />
-                                                                            <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
-                                                                        </div>
-
-                                                                        <div className="alignCenter">
-                                                                            <span
-                                                                                onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
-                                                                                className="hover-text m-1"
-                                                                            >
-                                                                                <LuBellPlus></LuBellPlus>
-                                                                                <span className="tooltip-text pop-left">
-                                                                                    Send reminder notifications
-                                                                                </span>
-                                                                            </span>
-                                                                            <span
-                                                                                className="m-0 img-info hover-text"
-                                                                                onClick={() =>
-                                                                                    openAddImageDescriptionFunction(
-                                                                                        InfoIndex,
-                                                                                        InfoData,
-                                                                                        "Attention"
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                <span className="svg__iconbox svg__icon--comment"></span>
-                                                                                <span className="tooltip-text pop-left">
-                                                                                    {InfoData.Comment != undefined &&
-                                                                                        InfoData.Comment?.length > 1
-                                                                                        ? InfoData.Comment
-                                                                                        : "Add Comment"}
-                                                                                </span>
-                                                                            </span>
-                                                                            <span
-                                                                                className="hover-text m-0 alignIcon"
-                                                                                onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Remove", WAItemData.Title)}
-                                                                            >
-                                                                                <span className="svg__iconbox svg__icon--cross"></span>
-                                                                                <span className="tooltip-text pop-left">
-                                                                                    Remove user from bottleneck
-                                                                                </span>
-                                                                            </span>
-                                                                        </div>
-                                                                    </div>
-                                                                )
-                                                            })}
-                                                        </div>
-                                                    )
-                                                }
-                                            })}
-                                        </div>
-                                        <div className="full_width mt-2">
-                                            <CommentCard
-                                                siteUrl={siteUrls}
-                                                listName={Items?.Items?.siteType}
-                                                itemID={Items.Items.Id}
-                                                AllListId={AllListIdData}
-                                                Context={Context}
-                                                counter={counter}
-                                            />
-                                        </div>
-                                        <div className="pull-right">
-                                            <span className="">
-                                                <label className="form-check-label mx-2">
-                                                    Waiting for HHHH response
-                                                </label>
-                                                <input
-                                                    className="form-check-input rounded-0"
-                                                    type="checkbox"
-                                                    checked={EditData.waitForResponse}
-                                                    value={EditData.waitForResponse}
-                                                    onChange={(e) => changeStatus(e, "waitForResponse")}
-                                                />
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
                                         </div>
                                     </div>
                                 ) : null}
@@ -10371,3 +10172,5 @@ export default React.memo(EditTaskPopup);
 // context:{Page Context}
 // }
 
+// step-2B :
+// <EditTaskPopup Items={Items} ></EditTaskPopup>
