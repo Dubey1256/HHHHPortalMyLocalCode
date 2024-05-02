@@ -22,7 +22,7 @@ export default function DocumentSearchPage(Props: any) {
     const [AllDocs, setAllDocs] = useState([]);
     const [selectedItemId, setSelectedItem] = useState(undefined);
     const [isEditModalOpen, setisEditModalOpen] = useState(false);
-   
+    const [loading, setloading] = React.useState(false);
 
 
     //#endregion
@@ -35,7 +35,9 @@ export default function DocumentSearchPage(Props: any) {
     const LoadDocs = () => {
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
         web.lists.getById(PageContext.DocumentsListID).items.select("Id,Title,PriorityRank,File/Length,Year,Body,recipients,senderEmail,creationTime,Item_x0020_Cover,Portfolios/Id,Portfolios/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl").filter('FSObjType eq 0').expand("Author,Editor,Portfolios,File").orderBy("Created", false).getAll()
-            .then((response: any) => {              
+            .then((response: any) => {
+
+
                 const filteredResponse = response.filter((Doc: any) => Doc.File_x0020_Type !== 'svg');
                 try {
                     filteredResponse.forEach((Doc: any) => {
@@ -55,13 +57,13 @@ export default function DocumentSearchPage(Props: any) {
                         Doc?.Title !== null ? Doc.Title = Doc.Title.split(".")[0] : Doc.Title;
                         Doc.Portfolios.map((item: any) => {
                             mastertaskdata.map((mastertask: any) => {
-                                if (mastertask.Id == item.Id && mastertask?.Item_x0020_Type == "Project") {
+                                if (mastertask.Id == item.Id && (mastertask?.Item_x0020_Type == "Project" || mastertask?.Item_x0020_Type == "Sprint")) {
                                     AllProjectData.push(mastertask)
                                 }
                             })
                         })
                         AllProjectData.map((items: any, index: any) => {
-                            if (items.Title != undefined && items.Title != null) {                              
+                            if (items.Title != undefined && items.Title != null) {
                                 projectTitle += items.Title
                                 if (index < AllProjectData.length - 1) {
                                     projectTitle += ", ";
@@ -83,13 +85,13 @@ export default function DocumentSearchPage(Props: any) {
                                     projectStructureId += ", ";
                                 }
                             }
-                           projectStructureId = projectStructureId.split(",")
+                            projectStructureId = projectStructureId.split(",")
 
                         })
                         // For tasks start data-----
                         Doc.Portfolios.map((itemss: any) => {
                             mastertaskdata.map((mastertasks: any) => {
-                                if (mastertasks.Id == itemss.Id && mastertasks?.Item_x0020_Type != "Project") {
+                                if (mastertasks.Id == itemss.Id && mastertasks?.Item_x0020_Type != "Project" && mastertasks?.Item_x0020_Type != "Sprint") {
                                     AllPortfolioData.push(mastertasks)
                                 }
                             })
@@ -117,7 +119,8 @@ export default function DocumentSearchPage(Props: any) {
 
                         console.log(AllPortfolioData)
                         // For tasks end -----
-                        console.log(AllProjectData)                      
+                        console.log(AllProjectData)
+                        // Doc.ProjectPortfolioTitle =
                         Doc.CreatedDate = moment(Doc?.Created).format('DD/MM/YYYY');
                         Doc.ModifiedDate = moment(Doc?.Modified).format('DD/MM/YYYY HH:mm')
                         Doc.SiteIcon = PageContext.context._pageContext._web.title;
@@ -146,7 +149,10 @@ export default function DocumentSearchPage(Props: any) {
                                 CreatedUserObj['Title'] = 'Stefan Hochhuth'
                                 CreatedUserObj['UserId'] = 32
                             }
-
+                            else if (User.AssingedToUser != undefined && User.AssingedToUser.Id != undefined && Doc.Editor.Id == User.AssingedToUser.Id && User.Item_x0020_Cover == undefined) {
+                                CreatedUserObj['Title'] = User.Title;
+                                CreatedUserObj['UserId'] = User.AssingedToUserId;
+                            }
                             if (User.AssingedToUser != undefined && User.AssingedToUser.Id != undefined && Doc.Editor.Id == User.AssingedToUser.Id && User.Item_x0020_Cover != undefined) {
                                 ModifiedUserObj['UserImage'] = User.Item_x0020_Cover.Url;
                                 ModifiedUserObj['Suffix'] = User.Suffix;
@@ -159,18 +165,27 @@ export default function DocumentSearchPage(Props: any) {
                                 ModifiedUserObj['Title'] = 'Stefan Hochhuth'
                                 ModifiedUserObj['UserId'] = 32
                             }
+                            else if (User.AssingedToUser != undefined && User.AssingedToUser.Id != undefined && Doc.Editor.Id == User.AssingedToUser.Id && User.Item_x0020_Cover == undefined) {
+                                ModifiedUserObj['Title'] = User.Title;
+                                ModifiedUserObj['UserId'] = User.AssingedToUserId;
+                            }
                         });
                         Doc.AllCreatedImages.push(CreatedUserObj);
                         Doc.AllModifiedImages.push(ModifiedUserObj)
 
                     });
+                    setloading(false)
+
                 } catch (e) {
                     console.log(e)
+                    setloading(false)
                 }
 
                 setAllDocs(filteredResponse);
             }).catch((error: any) => {
                 console.error(error);
+                setloading(false)
+
             });
     }
     //#endregion
@@ -181,12 +196,15 @@ export default function DocumentSearchPage(Props: any) {
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
         web.lists.getById(PageContext.TaskUsertListID).items.select('Id,Suffix,Title,SortOrder,Item_x0020_Type,Item_x0020_Cover,AssingedToUserId,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType').expand('AssingedToUser').getAll().then((response: any) => {
             TaskUser = response;
-            LoadDocs();         
+            LoadDocs();
         }).catch((error: any) => {
             console.error(error);
+            setloading(false)
+
         });
     }
     useEffect(() => {
+        setloading(true)
         LoadTaskUser()
         LoadMasterTaskList()
     }, []);
@@ -215,6 +233,7 @@ export default function DocumentSearchPage(Props: any) {
 
                 }).catch((error: any) => {
                     console.log(error)
+                    setloading(false)
                     reject(error)
                 })
         })
@@ -258,7 +277,7 @@ export default function DocumentSearchPage(Props: any) {
             cell: ({ row }) => (
                 <div className='alignCenter '>
                     <a target="_blank" className='alignCenter' data-interception="off" href={row?.original?.FileDirRef}>
-                        {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'xls' && row?.original?.File_x0020_Type != 'xlsx' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && (row?.original?.File_x0020_Type != 'jfif' && (row?.original?.File_x0020_Type === 'fig' || row?.original?.File_x0020_Type === 'mp4'  ? (
+                        {row?.original?.File_x0020_Type != 'msg' && row?.original?.File_x0020_Type != 'docx' && row?.original?.File_x0020_Type != 'doc' && row?.original?.File_x0020_Type != 'xls' && row?.original?.File_x0020_Type != 'xlsx' && row?.original?.File_x0020_Type != 'rar' && row?.original?.File_x0020_Type != 'jpeg' && row?.original?.File_x0020_Type != 'jpg' && (row?.original?.File_x0020_Type != 'jfif' && (row?.original?.File_x0020_Type === 'fig' || row?.original?.File_x0020_Type === 'mp4' ? (
                             <span title={`${row?.original?.File_x0020_Type}`} className="svg__iconbox svg__icon--unknownFile"></span>
                         ) : (
                             <>
@@ -273,10 +292,10 @@ export default function DocumentSearchPage(Props: any) {
                             </>
                         )))}
                         {row?.original?.File_x0020_Type == 'rar' && <span title={`${row?.original?.File_x0020_Type}`} className="svg__iconbox svg__icon--zip"></span>}
-                        
+
                         {row?.original?.File_x0020_Type == 'msg' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--msg "></span> : ''}
-                        {(row?.original?.File_x0020_Type == 'jpeg'|| row?.original?.File_x0020_Type == 'jpg') ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
-                        {(row?.original?.File_x0020_Type == 'xls' || row?.original?.File_x0020_Type == 'xlsx')?<span title={`${row?.original?.File_x0020_Type}`} className="svg__iconbox svg__icon--xlsx"></span>:''}
+                        {(row?.original?.File_x0020_Type == 'jpeg' || row?.original?.File_x0020_Type == 'jpg') ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
+                        {(row?.original?.File_x0020_Type == 'xls' || row?.original?.File_x0020_Type == 'xlsx') ? <span title={`${row?.original?.File_x0020_Type}`} className="svg__iconbox svg__icon--xlsx"></span> : ''}
                         {(row?.original?.File_x0020_Type == 'doc' || row?.original?.File_x0020_Type == 'docx') ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--docx "></span> : ''}
                         {row?.original?.File_x0020_Type == 'jfif' ? <span title={`${row?.original?.File_x0020_Type}`} className=" svg__iconbox svg__icon--jpeg "></span> : ''}
                     </a>
@@ -286,7 +305,8 @@ export default function DocumentSearchPage(Props: any) {
             ),
         },
         {
-            accessorKey: "Project",
+            // accessorFn: row?.Project,
+            accessorFn: (row) => row?.projectStructureId + " " + row?.Project + " " + row?.portfolioTitle,
             placeholder: "Project/Portfolios",
             header: "",
             size: 200,
@@ -393,7 +413,7 @@ export default function DocumentSearchPage(Props: any) {
                     </div>
                 );
             }
-        },        
+        },
         {
             accessorKey: "File_x0020_Type", placeholder: "File Type", header: "", size: 120, id: "File_x0020_Type",
             cell: ({ row }) => (
@@ -434,7 +454,7 @@ export default function DocumentSearchPage(Props: any) {
             },
         },
         {
-            accessorKey: "Modified",
+            accessorFn: (row) => row.Modified,
             cell: ({ row }) => (
                 <>
                     {row?.original?.ModifiedDate}
@@ -502,7 +522,7 @@ export default function DocumentSearchPage(Props: any) {
                 :
                 null
             }
-            {/* {loading && <PageLoad />} */}
+            {loading ? <PageLoad /> : ''}
         </>
     )
 }
