@@ -2137,7 +2137,7 @@ export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredD
 
         const emailBodyContent = `<p>Hi ${ReceiverName},</b></p>
             <p>${messageContent}</p>
-            <b>Task Description:</b> ${containerDiv.innerHTML}
+            ${containerDiv.innerHTML}
             <p>Task Link: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
             ${ItemDetails?.TaskId}-${ItemDetails?.Title}</a></p>
             <p><b>Thanks,</b></p>

@@ -717,7 +717,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               <p></p>
                Task Comment-<span style="background-color: yellow;">${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')}.</span>
               <p><br/></p>
-              <b>Task Details : </b> <span>${finalTaskInfo}</span>
+              <span>${finalTaskInfo}</span>
               <p></p>
               Task Link: <a href=${MsgURL}>Click here</a>
               <p></p>
