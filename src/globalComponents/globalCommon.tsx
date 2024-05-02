@@ -1850,7 +1850,7 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
         AllMasterTaskData = await web.lists
             .getById(Props.MasterTaskListID)
             .items
-            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "HelpInformationVerifiedJson", "HelpInformationVerified", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate",
+            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "HelpInformationVerifiedJson","FoundationPageUrl", "HelpInformationVerified", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate",
                 "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "Help_x0020_Information", "PriorityRank",
                 "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id",
                 "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "Deliverables",
@@ -2612,14 +2612,32 @@ export const AwtGroupingAndUpdatePrarticularColumn = async (findGrouping: any, A
     }
     return { findGrouping, flatdata };
 }
-export const replaceURLsWithAnchorTags = (text: any) => {
+export const replaceURLsWithAnchorTags = (text:any) => {
     // Regular expression to match URLs
-    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    var urlRegex = /(https?:\/\/[^\s<>"]+)(?=["'\s.,]|$)/g;
     // Replace URLs with anchor tags
-    var replacedText = text.replace(urlRegex, function (url: any) {
-        return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
+    var replacedText = text?.replace(urlRegex, function (url:any) {
+        if (!isURLInsideAnchorTag(url, text)) {
+            return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
+        } else {
+            return url;
+        }
     });
     return replacedText;
+}
+
+function isURLInsideAnchorTag(url:any, text:any) {
+    // Regular expression to match anchor tags
+    var anchorRegex = /<a\s+(?:[^>]*?\s+)?href=(["'])(.*?)\1/ig;
+    var matches = text?.match(anchorRegex);
+    if (matches) {
+        for (var i = 0; i < matches?.length; i++) {
+            if (matches[i]?.includes(url)) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 //--------------------------------------Share TimeSheet Report-----------------------------------------------------------------------
 
