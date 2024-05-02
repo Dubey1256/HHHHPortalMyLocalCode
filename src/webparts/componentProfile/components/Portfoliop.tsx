@@ -193,10 +193,6 @@ export const EditableField: React.FC<EditableFieldProps> = ({
     const handleSave = async () => {
       try {
         setmyFieldValue((prevValue: any) => parseInt(myfieldValue));
-
-        // if(type == "Number"){
-        //   setFieldValue(fieldValue/100);
-        // }
         let valpercent = parseInt(myfieldValue);
         let webs = new Web(web);
         await webs.lists
@@ -263,10 +259,6 @@ export const EditableField: React.FC<EditableFieldProps> = ({
     const handleSave = async () => {
       try {
         setFieldValue((prevValue: any) => fieldValue ? Moment(fieldValue).format("DD/MM/YYYY"): '');
-
-        // if(type == "Number"){
-        //   setFieldValue(fieldValue/100);
-        // }
         let webs = new Web(web);
         await webs.lists
           .getByTitle(listName)
@@ -323,10 +315,6 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   const handleSave = async () => {
     try {
       setFieldValue((prevValue: any) => fieldValue);
-
-      // if(type == "Number"){
-      //   setFieldValue(fieldValue/100);
-      // }
       let webs = new Web(web);
       await webs.lists
         .getByTitle(listName)
