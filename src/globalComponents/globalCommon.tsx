@@ -121,7 +121,7 @@ export const SendTeamMessage = async (mention_To: any, txtComment: any, Context:
                     return result;
                 }
                 else {
-                    alert("Something went wrong please try after sometime")
+                    console.log("Error In Global Common SendTeamMessage Function")
                 }
 
             });
@@ -1850,7 +1850,7 @@ export const GetServiceAndComponentAllData = async (Props?: any | null, filter?:
         AllMasterTaskData = await web.lists
             .getById(Props.MasterTaskListID)
             .items
-            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "HelpInformationVerifiedJson","FoundationPageUrl", "HelpInformationVerified", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate",
+            .select("ID", "Id", "Title", "PortfolioLevel", "PortfolioStructureID", "HelpInformationVerifiedJson", "FoundationPageUrl", "HelpInformationVerified", "Comments", "ItemRank", "Portfolio_x0020_Type", "Parent/Id", "Parent/Title", "DueDate",
                 "Created", "Body", "SiteCompositionSettings", "Sitestagging", "Item_x0020_Type", "Categories", "Short_x0020_Description_x0020_On", "Help_x0020_Information", "PriorityRank",
                 "Priority", "AssignedTo/Title", "TeamMembers/Id", "TeamMembers/Title", "ClientCategory/Id", "ClientCategory/Title", "PercentComplete", "ResponsibleTeam/Id", "Author/Id",
                 "Author/Title", "ResponsibleTeam/Title", "PortfolioType/Id", "PortfolioType/Color", "PortfolioType/IdRange", "PortfolioType/Title", "AssignedTo/Id", "Deliverables",
@@ -2614,47 +2614,65 @@ export const AwtGroupingAndUpdatePrarticularColumn = async (findGrouping: any, A
 }
 export const replaceURLsWithAnchorTags = (text: any) => {
     // Regular expression to match URLs
-    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    var urlRegex = /(https?:\/\/[^\s<>"]+)(?=["'\s.,]|$)/g;
     // Replace URLs with anchor tags
-    var replacedText = text.replace(urlRegex, function (url: any) {
-        return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
+    var replacedText = text?.replace(urlRegex, function (url: any) {
+        if (!isURLInsideAnchorTag(url, text)) {
+            return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
+        } else {
+            return url;
+        }
     });
     return replacedText;
 }
+
+function isURLInsideAnchorTag(url: any, text: any) {
+    // Regular expression to match anchor tags
+    var anchorRegex = /<a\s+(?:[^>]*?\s+)?href=(["'])(.*?)\1/ig;
+    var matches = text?.match(anchorRegex);
+    if (matches) {
+        for (var i = 0; i < matches?.length; i++) {
+            if (matches[i]?.includes(url)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 //--------------------------------------Share TimeSheet Report-----------------------------------------------------------------------
 
-export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, taskUser: any, Context: any, type: any) => {
+export const ShareTimeSheet = async (totalTimeDay: any, AllTaskTimeEntries: any, taskUser: any, Context: any, type: any) => {
     let AllData: any = []
     var isCustomDate = false;
     const currentLoginUserId = Context.pageContext?._legacyPageContext.userId;
     const CurrentUserTitle = Context.pageContext?._legacyPageContext?.userDisplayName;
 
-    var startDateMid =''
+    var startDateMid = ''
     var eventDateMid = ''
-    if (type == "Today" || type == "Yesterday" || type == "This Week" ||  type == "Last Week" || type == "This Month"){
+    if (type == "Today" || type == "Yesterday" || type == "This Week" || type == "Last Week" || type == "This Month") {
         const startDate = getStartingDate(type);
         const endDate = getEndingDate(type);
         const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
         const endDateMidnight = new Date(endDate.setHours(0, 0, 0, 0));
-    
-         startDateMid = moment(startDateMidnight).format("DD/MM/YYYY")
-         eventDateMid = moment(endDateMidnight).format("DD/MM/YYYY")
-      }
-      else{
+
+        startDateMid = moment(startDateMidnight).format("DD/MM/YYYY")
+        eventDateMid = moment(endDateMidnight).format("DD/MM/YYYY")
+    }
+    else {
         var splitDate = type.split(' - ')
-         startDateMid = splitDate[0]
-         eventDateMid = splitDate[1]
-         day = 'Custom'
-         if(splitDate[0] == splitDate[1]){
+        startDateMid = splitDate[0]
+        eventDateMid = splitDate[1]
+        day = 'Custom'
+        if (splitDate[0] == splitDate[1]) {
             isCustomDate = false
-         }
-         else{
+        }
+        else {
             isCustomDate = true;
-         }
-        
-      }
-     
-    
+        }
+
+    }
+
+
     var NewStartDate = startDateMid.split("/")
     var NewEndDate = eventDateMid.split("/")
 
@@ -2767,32 +2785,32 @@ export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, t
     function padWithZero(num: number): string {
         return num < 10 ? '0' + num : num.toString();
     }
-    
+
     function formatDate(date: Date): string {
         const day = padWithZero(date.getDate());
-        const month = padWithZero(date.getMonth() + 1); 
+        const month = padWithZero(date.getMonth() + 1);
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
     }
-      if (day == "Today") {
-        subject = "Daily Timesheet - " + CurrentUserTitle + " - " + currentDate + " - " + updatedCategoryTime.today +  " hours ";
-      } else if (day == "Yesterday") {
+    if (day == "Today") {
+        subject = "Daily Timesheet - " + CurrentUserTitle + " - " + currentDate + " - " + updatedCategoryTime.today + " hours ";
+    } else if (day == "Yesterday") {
         subject =
-          "Daily Timesheet - " +
-          CurrentUserTitle +
-          " - " +
-          yesterday +
-          " - " +
-          updatedCategoryTime.yesterday +
-          " hours ";
-      } else {
+            "Daily Timesheet - " +
+            CurrentUserTitle +
+            " - " +
+            yesterday +
+            " - " +
+            updatedCategoryTime.yesterday +
+            " hours ";
+    } else {
         subject =
-          "Daily Timesheet - " +
-          CurrentUserTitle +
-          " - " +
-          type;
-          day = 'Custom'
-      }
+            "Daily Timesheet - " +
+            CurrentUserTitle +
+            " - " +
+            type;
+        day = 'Custom'
+    }
     AllData.map((item: any) => {
         item.ClientCategories = ''
         item.ClientCategory.forEach((val: any, index: number) => {
@@ -2823,7 +2841,7 @@ export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, t
         `<table width="100%" align="center" cellpadding="0" cellspacing="0" border="0">
             <thead>
             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Username: </td><td style="padding: 5px 0px;"> <a style="text-decoration:none;" href='${Context?.pageContext?.web?.absoluteUrl}/SitePages/TaskDashboard.aspx?UserId=${currentLoginUserId}'>${CurrentUserTitle}</a></td></tr>
-            <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours ${day=='Custom'?day:'Total Time'} :</td><td style="padding: 5px 0px;">${totalTimeDay} Hours</td></tr>
+            <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours ${day == 'Custom' ? day : 'Total Time'} :</td><td style="padding: 5px 0px;">${totalTimeDay} Hours</td></tr>
             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600; padding: 5px 0px;width: 210px;">Total hours this week :</td><td style="padding: 5px 0px;">${updatedCategoryTime.thisWeek} Hours</td></tr>
             <tr valign="middle" style="font-size:15px;"><td style="font-weight:600;padding: 5px 0px;width: 210px;">Total hours this month :</td><td style="padding: 5px 0px;">${updatedCategoryTime.thisMonth} Hours</td></tr>
             <tr valign="middle" style="font-size:15px;"><td colspan="2" style="padding: 5px 0px;"><a style="text-decoration:none;" href ='${Context.pageContext?.web?.absoluteUrl}/SitePages/UserTimeEntry.aspx?userId=${currentLoginUserId}'>Click here to open Online-Timesheet</a></td></tr>

@@ -1215,7 +1215,7 @@ export const SendApprovalEmailNotificationBodyContent = (props: any) => {
                                                             <span style={{ color: '#333', background: '#fbfbfb' }}>{cmtData.AuthorName} - {cmtData.Created}</span></p>
                                                     </div>
                                                     <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
-                                                        <span style={{ color: '#333' }}>{cmtData.Description}</span></p>
+                                                        <span style={{ color: '#333' }} dangerouslySetInnerHTML={{ __html: cmtData.Description }}></span></p>
                                                 </div>
                                             })}
                                         </td>
@@ -1710,7 +1710,8 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                     <span style={{ fontWeight: '600' }}>{cmtData.AuthorName}</span> - {cmtData.Created}
                                                                 </div>
                                                                 <div>
-                                                                    {cmtData.Description}
+
+                                                                    <span dangerouslySetInnerHTML={{ __html: cmtData.Description }}></span>
                                                                 </div>
                                                             </div>
                                                             {cmtData?.ReplyMessages?.length > 0 && cmtData?.ReplyMessages?.map((replyData: any) => {
@@ -1720,7 +1721,7 @@ export const GenerateMSTeamsNotification = (RequiredData: any) => {
                                                                             <span style={{ fontWeight: '600' }}>{replyData.AuthorName}</span> - {replyData.Created}
                                                                         </div>
                                                                         <div>
-                                                                            {replyData.Description}
+                                                                            <span dangerouslySetInnerHTML={{ __html: replyData.Description }}></span>
                                                                         </div>
                                                                     </div>
                                                                 )
@@ -2136,7 +2137,7 @@ export const SendEmailNotificationForIRCTasksAndPriorityCheck = async (requiredD
 
         const emailBodyContent = `<p>Hi ${ReceiverName},</b></p>
             <p>${messageContent}</p>
-            <b>Task Description:</b> ${containerDiv.innerHTML}
+            ${containerDiv.innerHTML}
             <p>Task Link: <a href="${ItemDetails?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${ItemDetails?.Id}&Site=${ItemDetails?.siteType}">
             ${ItemDetails?.TaskId}-${ItemDetails?.Title}</a></p>
             <p><b>Thanks,</b></p>
