@@ -25,6 +25,9 @@ const TaskUserManagementApp = (props: any) => {
         const taskGroupsListData = fetchedData.filter((item: any) => item.ItemType === "Group");
 
         const updatedTaskUsersListData = taskUsersListData.map((item: any) => {
+            if (item.Item_x0020_Cover != undefined && item.Item_x0020_Cover != null){
+                item.Item_x002d_Image = item?.Item_x0020_Cover
+            }
             const approverTitles = item.Approver ? item.Approver.map((approver: any) => approver.Title).join(', ') : '';
             const roleTitles = item.Role ? item.Role.map((role: any) => role).join(', ') : '';
             if (item?.CategoriesItemsJson != null && item?.CategoriesItemsJson.includes("</div>")) {
