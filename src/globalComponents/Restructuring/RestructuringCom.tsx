@@ -2327,7 +2327,7 @@ const RestructuringCom = (props: any, ref: any) => {
                 if ((props?.queryItems?.Item_x0020_Type == "Feature" || props?.queryItems?.Item_x0020_Type == "SubComponent" || props?.queryItems?.Item_x0020_Type == "Component") && (items?.TaskType?.Id==1) && props?.queryItems != undefined && props?.queryItems != null && checkPortfoliosAlrt && items?.subRows?.length > 0) {
                   topCompo = false;
                   setQuery4TopIcon("");
-                  alert('You are not allowed to restructure this item !')
+                  // alert('You are not allowed to restructure this item !')
                   checkPortfoliosAlrt = false;
                 }
                 if ((props?.queryItems?.Item_x0020_Type == "Feature" || props?.queryItems?.Item_x0020_Type == "SubComponent" || props?.queryItems?.Item_x0020_Type == "Component") && (items?.TaskType?.Id==1) && props?.queryItems != undefined && props?.queryItems != null && checkPortfoliosAlrt && items?.subRows?.length === 0) {
@@ -6280,7 +6280,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
             newItemBackUp?.TaskType?.Id == 1 &&
             newItemBackUp?.Item_x0020_Type == "Task" &&
             (selectedItems[0]?.TaskType?.Id == 1 ||
-              selectedItems[0]?.TaskType?.Id == 3 ||
+              (selectedItems[0]?.TaskType?.Id == 3 && selectedItems[0]?.subRows?.length == 0) ||
               selectedItems[0]?.TaskType?.Id == 2) ? (
               <div className="mt-2">
                 <span>
@@ -6533,7 +6533,7 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
           </div>
 
               {
-                 (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.Item_x0020_Type == 'Feature' || newItemBackUp?.Item_x0020_Type == 'SubComponent' || newItemBackUp?.Item_x0020_Type == 'Component') && RestructureChecked[0]?.TaskType?.Id == 1  ?
+                 (newItemBackUp?.TaskType?.Id == 1) && RestructureChecked[0]?.TaskType?.Id == 1  ?
                  restructureItem.some((item:any) => Array.isArray(item?.subRows) && item.subRows.length > 0) ? "" :
                  <>
                  {"Select Task Type :"}
@@ -6573,50 +6573,11 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
               }
 
 
-          {/* {
-                  (newItemBackUp?.TaskType?.Id == 1 || newItemBackUp?.Item_x0020_Type == 'Feature' || newItemBackUp?.Item_x0020_Type == 'SubComponent' || newItemBackUp?.Item_x0020_Type == 'Component') && RestructureChecked[0]?.TaskType?.Id == 1 &&
-                  restructureItem.some((item:any) => Array.isArray(item?.subRows) && item.subRows.length > 0) ?
-                   '' : 
-                    <>
-                   {"Select Task Type :"}
-                    <label className="SpfxCheckRadio ms-3 me-1">
-                      <input
-                        type="radio"
-                        className="radio" 
-                        value="Workstream"
-                        checked={
-                          RestructureChecked[0]?.TaskType?.Id == 3
-                            ? true
-                            : RestructureChecked[0]?.TaskType?.Id == 1
-                            ? true
-                            : false
-                        }
-                        onChange={()=>setRestructure(RestructureChecked, 3)}/>
-                    </label>
-                    <label className="ms-1"> {"Workstream"} </label>
-                    <label className="SpfxCheckRadio ms-3 me-1">
-                      <input
-                        type="radio"
-                        className="radio"
-                        name="fav_language"
-                        value="Task"
-                        checked={
-                          RestructureChecked[0]?.TaskType?.Id === 2
-                            ? true
-                            : false
-                        }
-                        onChange={(e) =>
-                          setRestructure(RestructureChecked, 2)
-                        }
-                      />
-                    </label>
-                    <label className="ms-1"> {"Task"} </label>
-                  </>
-                } */}
+        
           {selectedItems != undefined &&
           selectedItems?.length > 1 &&
-          selectedItems[0]?.Item_x0020_Type == "Task" &&
-          selectedItems[0]?.TaskType?.Id == 2 ? (
+          RestructureChecked[0]?.Item_x0020_Type == "Task" &&
+          (RestructureChecked[0]?.TaskType?.Id == 2 || selectedItems[0]?.TaskType?.Id == 2) ? (
             <div className="mt-2">
               <span>
                 {newItemBackUp?.Item_x0020_Type != "Task" ? (
@@ -6654,53 +6615,9 @@ if (newItemBackUp?.Item_x0020_Type == 'Sprint' || newItemBackUp?.Item_x0020_Type
                     </label>
                     <label className="ms-1"> {"Task"} </label>
                   </>
-                ) : (
-                  <>
-                    {
-                    newItemBackUp?.Item_x0020_Type == "Task" &&
-                    newItemBackUp?.TaskType?.Id == 1 ? (
-                      <>
-                       {"Select Task Type :"}
-                        <label className="SpfxCheckRadio ms-3 me-1">
-                          <input
-                            type="radio"
-                            className="radio"
-                            
-                            value="Workstream"
-                            checked={
-                              RestructureChecked[0]?.TaskType?.Id == 3
-                                ? true
-                                : RestructureChecked[0]?.TaskType?.Id == 1
-                                ? true
-                                : false
-                            }
-                            onChange={()=>setRestructure(RestructureChecked, 3)}
-                          />
-                        </label>
-                        <label className="ms-1"> {"Workstream"} </label>
-                        <label className="SpfxCheckRadio ms-3 me-1">
-                          <input
-                            type="radio"
-                            className="radio"
-                            name="fav_language"
-                            value="Task"
-                            checked={
-                              RestructureChecked[0]?.TaskType?.Id === 2
-                                ? true
-                                : false
-                            }
-                            onChange={(e) =>
-                              setRestructure(RestructureChecked, 2)
-                            }
-                          />
-                        </label>
-                        <label className="ms-1"> {"Task"} </label>
-                      </>
-                    ) : (
-                      ""
-                    )}
-                  </>
-                )}
+                ) : 
+               ""
+                }
               </span>
             </div>
           ) : (
