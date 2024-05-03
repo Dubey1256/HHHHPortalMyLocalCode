@@ -51,6 +51,7 @@ const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
     const [isSendEODReport, setisSendEODReport] = React.useState(false);
     const [selectedTimeReport, setSelectedTimeReport] = React.useState('');
+    const [showTimeEntryIcon, setshowTimeEntryIcon] = React.useState(true);
     const [timeEntryTotal, setTimeEntryTotal] = React.useState(0);
     const [currentView, setCurrentView] = React.useState('Home');
     const [taskTimeDetails, setTaskTimeDetails] = React.useState([]);
@@ -98,7 +99,10 @@ const TaskDashboard = (props: any) => {
     React.useEffect(() => {
         try {
             isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
-            isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
+            isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : "";
+            if (isShowTimeEntry == false) {
+                setshowTimeEntryIcon(false)
+            }
         } catch (error: any) {
             console.log(error)
         }
@@ -1200,19 +1204,20 @@ const TaskDashboard = (props: any) => {
             {
                 cell: ({ row }) => (
                     <>
-                        <a
-                            onClick={(e) => EditDataTimeEntry(e, row.original)}
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="auto"
-                            title="Click To Edit Timesheet"
-                        >
-                            <span
-                                className="alignIcon  svg__iconbox svg__icon--clock"
+                        {showTimeEntryIcon &&
+                            <a
+                                onClick={(e) => EditDataTimeEntry(e, row.original)}
                                 data-bs-toggle="tooltip"
-                                data-bs-placement="bottom"
+                                data-bs-placement="auto"
                                 title="Click To Edit Timesheet"
-                            ></span>
-                        </a>
+                            >
+                                <span
+                                    className="alignIcon  svg__iconbox svg__icon--clock"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="bottom"
+                                    title="Click To Edit Timesheet"
+                                ></span>
+                            </a>}
                         <span
                             title="Edit Task"
                             onClick={() => EditPopup(row?.original)}

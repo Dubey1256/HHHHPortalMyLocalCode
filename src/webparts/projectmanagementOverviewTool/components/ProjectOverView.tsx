@@ -48,6 +48,7 @@ let flatProjectsData: any
 export default function ProjectOverview(props: any) {
     const [TableProperty, setTableProperty] = React.useState([]);
     const [openTimeEntryPopup, setOpenTimeEntryPopup] = React.useState(false);
+    const [showTimeEntryIcon, setshowTimeEntryIcon] = React.useState(true);
     const [currentUserData, setCurrentUserData]: any = React.useState({});
     const [onLeaveEmployees, setOnLeaveEmployees] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
@@ -89,6 +90,9 @@ export default function ProjectOverview(props: any) {
             $("#workbenchPageContent").addClass("hundred");
             isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
             isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
+            if (isShowTimeEntry == false) {
+                setshowTimeEntryIcon(false)
+            }
             const params = new URLSearchParams(window.location.search);
             let query = params.get("SelectedView");
             if (query == 'ProjectsTask') {
@@ -573,9 +577,10 @@ export default function ProjectOverview(props: any) {
                     <>
                         {row?.original?.siteType === "Project" ? <span title={row?.original?.Item_x0020_Type != "Project" ? "Edit Sprint" : "Edit Project"} onClick={(e) => EditComponentPopup(row?.original)} className="alignIcon svg__iconbox svg__icon--edit hreflink" ></span> : ''}
                         {row?.original?.Item_x0020_Type === "tasks" ? <>
-                            <span onClick={(e) => EditDataTimeEntry(e, row.original)}
-                                className="svg__iconbox svg__icon--clock"
-                                title="Click To Edit Timesheet"  ></span>
+                            {showTimeEntryIcon &&
+                                <span onClick={(e) => EditDataTimeEntry(e, row.original)}
+                                    className="svg__iconbox svg__icon--clock"
+                                    title="Click To Edit Timesheet"  ></span>}
                             <span title="Edit Task" onClick={(e) => EditPopup(row?.original)} className="alignIcon svg__iconbox svg__icon--edit hreflink" ></span>
                         </> : ''}
                     </>
@@ -1721,7 +1726,7 @@ export default function ProjectOverview(props: any) {
                 const categorizedUsers: any = [];
 
                 // Iterate over the users
-                let filterTaskUser = AllListId.siteUrl.includes("GrueneWeltweit") ? (AllTaskUsers.filter((item:any)=>item.technicalGroup !== "SPFx Team")): AllTaskUsers
+                let filterTaskUser = AllListId.siteUrl.includes("GrueneWeltweit") ? (AllTaskUsers.filter((item: any) => item.technicalGroup !== "SPFx Team")) : AllTaskUsers
                 for (const user of filterTaskUser) {
                     const category = user?.technicalGroup;
                     let categoryObject = categorizedUsers?.find((obj: any) => obj?.Title === category);

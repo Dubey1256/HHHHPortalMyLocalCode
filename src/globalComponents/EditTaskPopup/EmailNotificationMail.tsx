@@ -17,25 +17,25 @@ const EmailNotificationMail = (props: any) => {
     mention_To.push(props?.items.TaskCreatorData[0].Email);
     if (mention_To.length > 0) {
       
-      if (props.items.Categories.indexOf('Email Notification') != -1) {
+      if (props?.items?.Categories?.indexOf('Email Notification') != -1) {
         Subjects = `[Email Notification - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] Task Completed`
       }
-      if (props.items.Categories.indexOf('Immediate') != -1 && props.statusValue == '90') {
+      if (props?.items?.Categories?.indexOf('Immediate') != -1 && props.statusValue == '90') {
         Subjects = `[Immediate - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] Immediate  Task Completed`
       }
-      if (props.items.Categories.indexOf('Immediate') != -1 && props.statusValue == '0') {
+      if (props?.items?.Categories?.indexOf('Immediate') != -1 && props.statusValue == '0') {
         Subjects = `[Immediate - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] New Immediate  Task Created`
       }
-      if (props.items.Categories.indexOf('Immediate') != -1 && props.statusValue == '5') {
+      if (props?.items?.Categories?.indexOf('Immediate') != -1 && props.statusValue == '5') {
         Subjects = `[Immediate - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] Immediate Task acknowledged`
       }
-      if (props.items.Categories.indexOf('Immediate') != -1 && props.statusValue == '10') {
+      if (props?.items?.Categories?.indexOf('Immediate') != -1 && props.statusValue == '10') {
         Subjects = `[Immediate - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] Immediate Task is worked on`
       }
-      if (props.items.Categories.indexOf('Immediate') != -1 && props.statusValue == '80') {
+      if (props?.items?.Categories?.indexOf('Immediate') != -1 && props.statusValue == '80') {
         Subjects = `[Immediate - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] Immediate Task only QA pending`
       }
-      if (props.items.Categories.indexOf('Design') != -1 && props.statusValue == '90') {
+      if (props?.items?.Categories?.indexOf('Design') != -1 && props.statusValue == '90') {
         Subjects = `[Design - ${props.items.siteType} - ${props.items.TaskId} ${props.items.Title}] Design Task awaiting QA`
       }
       let category = joinObjectValues(props.items?.TaskCategories)
@@ -265,7 +265,7 @@ const EmailNotificationMail = (props: any) => {
                       <td style={{ padding: '10pt' }}></td>
                     </tr>
                     <tr>
-                    {(props.items.Categories.indexOf('Design') != -1 && props.statusValue == '90' && props.items?.ImageData.length > 0) &&
+                    {(props?.items?.Categories?.indexOf('Design') != -1 && props.statusValue == '90' && props.items?.ImageData.length > 0) &&
                       <td width='200pt' valign="top">
                         <table>
                             <>
