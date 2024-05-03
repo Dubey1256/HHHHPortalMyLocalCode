@@ -8111,7 +8111,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             }
                                                                         />
                                                                         <label className="form-check-label">
-                                                                            Working This Week?
+                                                                            Working This Week
                                                                         </label>
                                                                     </span>
 
@@ -8126,7 +8126,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             }
                                                                         />
                                                                         <label className="form-check-label">
-                                                                            Working Today?
+                                                                            Working Today
                                                                         </label>
                                                                     </span>
                                                                 </span>
