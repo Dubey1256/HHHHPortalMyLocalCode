@@ -1557,7 +1557,7 @@ function EditProjectPopup(item: any) {
                                           <div className="TaskUsers">
                                             <a target="_blank"
                                             >
-                                              <img className="ProirityAssignedUserPhoto ms-2" src={
+                                              <img className="ProirityAssignedUserPhoto ms-2" title={userDtl?.Title} src={
                                                 userDtl?.Item_x0020_Cover?.Url
                                                   ? userDtl?.Item_x0020_Cover?.Url
                                                   : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
