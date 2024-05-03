@@ -62,7 +62,7 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                     if (Object.keys(updateMasterTaskData)?.length > 0 && elem?.original?.siteType === "Master Tasks") {
                         updatePromise = web.lists.getById(elem?.original?.listId).items.getById(elem?.original?.Id).update(updateMasterTaskData);
                         updatePromises.push(updatePromise);
-                    } else if (Object.keys(updateData)?.length > 0) {
+                    } else if (Object.keys(updateData)?.length > 0 || Object.keys(updateStatusAndCat)?.length > 0) {
                         let RequiredData: any = {
                             ItemDetails: elem?.original,
                             RequiredListIds: item?.ContextValue,
