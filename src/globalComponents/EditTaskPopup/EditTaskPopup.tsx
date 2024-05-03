@@ -3379,9 +3379,6 @@ let UpdateDataObject: any = {
         : null,
     PriorityRank: EditData.PriorityRank,
     ItemRank: EditData.ItemRank,
-    TaskTypeId:TaskTypeId != undefined?TaskTypeId:null,
-    TaskID: TaskID != ''?TaskID:null,
-    TaskLevel: Tasklevel != ''?Tasklevel:null,
     Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
     Priority: Priority,
     StartDate: EditData.StartDate
