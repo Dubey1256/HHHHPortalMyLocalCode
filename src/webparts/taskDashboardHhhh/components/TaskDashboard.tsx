@@ -391,6 +391,16 @@ const TaskDashboard = (props: any) => {
     // All Sites Task
     const LoadAllSiteTasks = async function () {
         await loadAllComponent()
+        try {
+            let CMSTaskCategories = JSON.parse(
+                localStorage.getItem("taskCategoryType")
+            );
+            CMSTaskCategories = CMSTaskCategories?.filter((item: any) => item?.Title != "Bottleneck")
+            let stringifiedCategories = JSON.stringify(CMSTaskCategories)
+            localStorage.setItem("taskCategoryType", stringifiedCategories);
+        } catch (error) {
+            console.log(error)
+        }
         let AllSiteTasks: any = [];
         let approverTask: any = [];
         let CMSTask: any = [];
@@ -415,10 +425,10 @@ const TaskDashboard = (props: any) => {
                         if (task?.EstimatedTimeDescription != undefined && task?.EstimatedTimeDescription != '' && task?.EstimatedTimeDescription != null) {
                             EstimatedDesc = JSON.parse(task?.EstimatedTimeDescription)
                         }
-                        let workingAct:any=[]
+                        let workingAct: any = []
                         if (task?.WorkingAction != undefined && task?.WorkingAction != '' && task?.WorkingAction != null) {
                             workingAct = JSON.parse(task?.WorkingAction)
-                            task.WorkingAction=workingAct;
+                            task.WorkingAction = workingAct;
                         }
                         task.HierarchyData = [];
                         task.EstimatedTime = 0;
@@ -492,10 +502,10 @@ const TaskDashboard = (props: any) => {
                             taskUsers?.map((user: any) => {
                                 if (user.AssingedToUserId == taskUser.Id) {
                                     if (user?.Title != undefined) {
-                                        if(task.TeamMembersSearch?.includes(user?.Title)){
+                                        if (task.TeamMembersSearch?.includes(user?.Title)) {
                                             task.TeamMembersSearch = task.TeamMembersSearch
                                         }
-                                        else{
+                                        else {
                                             task.TeamMembersSearch = task.TeamMembersSearch + " " + user?.Title;
                                         }
                                     }
@@ -512,11 +522,11 @@ const TaskDashboard = (props: any) => {
                         const isImmediate = checkUserExistence('Immediate', task?.TaskCategories);
                         const isEmailNotification = checkUserExistence('Email Notification', task?.TaskCategories);
                         const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
-                       
+
                         if (task?.WorkingAction?.length > 0) {
-                             task?.WorkingAction?.forEach((data:any) => {
-                               if (data?.Title === "Bottleneck") {
-                                isBottleneckTask=true;
+                            task?.WorkingAction?.forEach((data: any) => {
+                                if (data?.Title === "Bottleneck") {
+                                    isBottleneckTask = true;
                                     // data?.InformationData?.forEach((userBottleneckTasks:any) => {
                                     //      if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currenUserAssignedToUserId) {
                                     //             // userBottleneckTasks.TaggedUsers.isBottleneck = true;
@@ -524,10 +534,10 @@ const TaskDashboard = (props: any) => {
                                     //             isBottleneckTask=true;
                                     //         }
                                     //   });
-                                 }
-                             });
+                                }
+                            });
                         }
-  
+
                         if (isCurrentUserApprover && task?.PercentComplete == '1') {
                             approverTask.push(task)
                         }
@@ -652,19 +662,19 @@ const TaskDashboard = (props: any) => {
                 let isBottleneckTask = checkUserExistence('Bottleneck', task?.TaskCategories);
                 let isBottleneckTaskNew = false;
                 if (task?.WorkingAction?.length > 0) {
-                    task?.WorkingAction?.forEach((data:any) => {
-                      if (data?.Title === "Bottleneck") {
-                       
-                           data?.InformationData?.forEach((userBottleneckTasks:any) => {
+                    task?.WorkingAction?.forEach((data: any) => {
+                        if (data?.Title === "Bottleneck") {
+
+                            data?.InformationData?.forEach((userBottleneckTasks: any) => {
                                 if (userBottleneckTasks?.TaggedUsers?.AssingedToUserId == currentUserId) {
-                                       // userBottleneckTasks.TaggedUsers.isBottleneck = true;
-                                       // AllBottleNeckTasks.push(userBottleneckTasks)
-                                       isBottleneckTaskNew=true;
-                                   }
-                             });
+                                    // userBottleneckTasks.TaggedUsers.isBottleneck = true;
+                                    // AllBottleNeckTasks.push(userBottleneckTasks)
+                                    isBottleneckTaskNew = true;
+                                }
+                            });
                         }
                     });
-               }
+                }
 
                 // Testing Only Please Remove Before deployement
                 // const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
@@ -681,7 +691,7 @@ const TaskDashboard = (props: any) => {
                 } else if (task?.workingThisWeek && (isCurrentUserAssigned)) {
                     workingThisWeekTask.push(task)
                     alreadyPushed = true;
-                } if ((isBottleneckTask && (isCurrentUserAssigned))||isBottleneckTaskNew ) {
+                } if ((isBottleneckTask && (isCurrentUserAssigned)) || isBottleneckTaskNew) {
                     bottleneckTask.push(task)
                     alreadyPushed = true;
                 } if (!alreadyPushed && (isCurrentUserAssigned)) {
@@ -848,13 +858,13 @@ const TaskDashboard = (props: any) => {
             {
                 accessorFn: (row) => row?.SmartPriority,
                 cell: ({ row }: any) => row?.original?.SmartPriority !== null && (
-                    <span className={row?.original?.SmartPriority!= undefined ? "hover-text hreflink m-0 r sxsvc" : "hover-text hreflink m-0 cssc"}>
-                    <>{row?.original?.SmartPriority!= undefined ? row?.original?.SmartPriority : 0}</>
-                    <span className="tooltip-text pop-right">
-                      {row?.original?.SmartPriority != undefined ?
-                        <SmartPriorityHover editValue={row?.original} /> : ""}
+                    <span className={row?.original?.SmartPriority != undefined ? "hover-text hreflink m-0 r sxsvc" : "hover-text hreflink m-0 cssc"}>
+                        <>{row?.original?.SmartPriority != undefined ? row?.original?.SmartPriority : 0}</>
+                        <span className="tooltip-text pop-right">
+                            {row?.original?.SmartPriority != undefined ?
+                                <SmartPriorityHover editValue={row?.original} /> : ""}
+                        </span>
                     </span>
-                  </span> 
                 ),
                 filterFn: (row: any, columnId: any, filterValue: any) => {
 
@@ -1916,7 +1926,7 @@ const TaskDashboard = (props: any) => {
     const sendAllWorkingTodayTasks = () => {
         let text = '';
         let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
-       // let to: any = ["prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de"];
+        // let to: any = ["prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let taskCount = 0;
@@ -1941,19 +1951,19 @@ const TaskDashboard = (props: any) => {
                     userGroup?.childs?.map((teamMember: any) => {
                         if (!onLeaveEmployees.some((emp: any) => emp == teamMember?.AssingedToUserId)) {
                             if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Mobile Team" || userGroup.Title == "Design Team" || userGroup.Title == "Smalsus Lead Team" || userGroup.Title == "Trainees") {
-                                estimatedTimeUsersCount+=1;
+                                estimatedTimeUsersCount += 1;
                             }
                             let body: any = '';
                             let body1: any = [];
                             let tasksCopy: any = [];
-                            let UserTotalTime = 0 
+                            let UserTotalTime = 0
                             tasksCopy = filterCurrentUserWorkingTodayTask(teamMember?.AssingedToUserId)
                             if (tasksCopy?.length > 0) {
                                 tasksCopy = tasksCopy?.sort((a: any, b: any) => {
                                     return b?.SmartPriority - a?.SmartPriority;
                                 });
                                 tasksCopy?.map((item: any) => {
-                                    taskCount+=1;
+                                    taskCount += 1;
                                     let teamUsers: any = [];
                                     item?.AssignedTo?.map((item1: any) => {
                                         teamUsers.push(item1?.Title)
@@ -1965,7 +1975,7 @@ const TaskDashboard = (props: any) => {
                                         item.TaskDueDatenew = '';
                                     if (item.Categories == undefined || item.Categories == '')
                                         item.Categories = '';
-                                
+
                                     let EstimatedTimeEntry = 0;
                                     let EstimatedTimeEntryDesc = '';
                                     if (todaysDrafTimeEntry?.length > 0) {
@@ -2062,8 +2072,8 @@ const TaskDashboard = (props: any) => {
                 + '<h3>'
                 + currentUserData?.Title
                 + '</h3>'
-                subject = `[Todays Working Tasks - Team Wise] ${Moment(new Date()).format('YYYY-MM-DD')} - ${taskCount} Tasks`
-                SendEmailFinal(to, subject, sendAllTasks.replaceAll("," , "  "));
+            subject = `[Todays Working Tasks - Team Wise] ${Moment(new Date()).format('YYYY-MM-DD')} - ${taskCount} Tasks`
+            SendEmailFinal(to, subject, sendAllTasks.replaceAll(",", "  "));
 
         }
 
@@ -2089,7 +2099,7 @@ const TaskDashboard = (props: any) => {
     const AllSitesDats = (Tabs: any) => {
         if (Tabs == "AllImmediateTasks") {
             setCurrentView(Tabs)
-            setNameTop("Immeditate tasks")
+            setNameTop("Immediate tasks")
             setValue(AllImmediateTasks)
         }
         else if (Tabs == "AllEmailTasks") {
@@ -2155,7 +2165,7 @@ const TaskDashboard = (props: any) => {
                                     <li className="nav__item  pb-1 pt-0">
 
                                     </li>
-                                    {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Santosh Kumar"  || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
+                                    {currentUserData?.Title == "Deepak Trivedi" || currentUserData?.Title == "Santosh Kumar" || currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
                                         <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
                                             Share Everyone's Today's Task
                                         </a> : ''}
@@ -2284,7 +2294,7 @@ const TaskDashboard = (props: any) => {
                                         {workingTodayTasks?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable'>
                                                 <>
-                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={workingTodayTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
+                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={workingTodayTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
                                                 </>
                                             </div>
                                             : <div className='text-center full-width'>
@@ -2299,7 +2309,7 @@ const TaskDashboard = (props: any) => {
                                         {thisWeekTasks?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable' >
                                                 <>
-                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={thisWeekTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
+                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={thisWeekTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
                                                 </>
                                             </div> : <div className='text-center full-width'>
                                                 <span>No Working This Week Tasks Available</span>
@@ -2312,7 +2322,7 @@ const TaskDashboard = (props: any) => {
                                         {UserImmediateTasks?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable'>
                                                 <>
-                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={UserImmediateTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
+                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={UserImmediateTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
                                                 </>
                                             </div>
                                             : <div className='text-center full-width'>
@@ -2326,7 +2336,7 @@ const TaskDashboard = (props: any) => {
                                         {bottleneckTasks?.length > 0 ?
                                             <div className='Alltable border-0 dashboardTable '>
                                                 <>
-                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={bottleneckTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
+                                                    <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={bottleneckTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
                                                 </>
                                             </div>
                                             : <div className='text-center full-width'>
@@ -2344,7 +2354,7 @@ const TaskDashboard = (props: any) => {
                                             <>
                                                 <div className='Alltable border-0 dashboardTable float-none' >
                                                     <>
-                                                        <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={AllAssignedTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
+                                                        <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnsName} data={AllAssignedTasks} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
                                                     </>
                                                 </div>
 
@@ -2396,9 +2406,9 @@ const TaskDashboard = (props: any) => {
                                                 <div className='AccordionContent timeEntryReport'  >
                                                     {weeklyTimeReport?.length > 0 ?
                                                         <>
-                                                        <div className='Alltable border-0 dashboardTable float-none' >
-                                                            <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnTimeReport} data={weeklyTimeReport} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
-                                                        </div>
+                                                            <div className='Alltable border-0 dashboardTable float-none' >
+                                                                <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnTimeReport} data={weeklyTimeReport} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
+                                                            </div>
                                                         </> : <div className='text-center full-width border p-3'>
                                                             <span>No Time Entry Available</span>
                                                         </div>}
@@ -2427,7 +2437,7 @@ const TaskDashboard = (props: any) => {
 
                                         <div className='Alltable dashboardTable float-none'>
                                             <>
-                                                <GlobalCommanTable AllListId={AllListId} showPagination={true} columns={columnsName} data={value} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true}/>
+                                                <GlobalCommanTable AllListId={AllListId} showPagination={true} columns={columnsName} data={value} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
                                             </>
                                         </div>
 

@@ -115,14 +115,7 @@
         }
       ]
     },
-    "all-task-user-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/allTaskUser/AllTaskUserWebPart.js",
-          "manifest": "./src/webparts/allTaskUser/AllTaskUserWebPart.manifest.json"
-        }
-      ]
-    },
+   
     "my-pending-tasks-web-part": {
       "components": [
         {
@@ -463,7 +456,14 @@
         }
       ]
     }
-   
+   ,"last-modified-web-part": {
+    "components": [
+      {
+        "entrypoint": "./lib/webparts/lastModified/LastModifiedWebPart.js",
+        "manifest": "./src/webparts/lastModified/LastModifiedWebPart.manifest.json"
+      }
+    ]
+  }
   },
   "externals": {
     "bootstrap-css": {
@@ -510,7 +510,6 @@
     "CreateTaskWebPartStrings": "lib/webparts/createTask/loc/{locale}.js",
     "PermissionManagementWebPartStrings": "lib/webparts/permissionManagement/loc/{locale}.js",
     "FroalaEditorTestEnvWebPartStrings": "lib/webparts/froalaEditorTestEnv/loc/{locale}.js",
-    "AllTaskUserWebPartStrings": "lib/webparts/allTaskUser/loc/{locale}.js",
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
     "MyPendingTasksWebPartStrings": "lib/webparts/myPendingTasks/loc/{locale}.js",
     "TasksViewWebPartStrings": "lib/webparts/tasksView/loc/{locale}.js",
@@ -543,7 +542,7 @@
     "HhhhSmartMetadataPortfolioWebPartStrings": "lib/webparts/hhhhSmartMetadataPortfolio/loc/{locale}.js",
     "HhhhProfileWebPartStrings": "lib/webparts/hhhhProfile/loc/{locale}.js",
     "HhhcontactWebPartStrings": "lib/webparts/hhhcontact/loc/{locale}.js",
-    "HhhhcontactprofileWebPartStrings": "lib/webparts/hhhhcontactprofile/loc/{locale}.js"
- 
+    "HhhhcontactprofileWebPartStrings": "lib/webparts/hhhhcontactprofile/loc/{locale}.js",
+    "LastModifiedWebPartStrings": "lib/webparts/lastModified/loc/{locale}.js"
   }
 }

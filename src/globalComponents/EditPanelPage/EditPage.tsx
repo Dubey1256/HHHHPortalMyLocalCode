@@ -142,7 +142,7 @@ const EditPage = (props: any) => {
               <label className='form-label full-width'>
                 Title
               </label>
-              <input type='text' className='form-control' value={data?.Page_x002d_Title != undefined && data?.Page_x002d_Title != null ? data?.Page_x002d_Title : ''} onChange={(e: any) => onChangeInput("Page_x002d_Title", e.target.value)} />
+              <input type='text' className='form-control' value={data?.Page_x002d_Title != undefined && data?.Page_x002d_Title != null ? data?.Page_x002d_Title : data?.Title != null && data?.Title != undefined ? data?.Title: ''} onChange={(e: any) => onChangeInput("Page_x002d_Title", e.target.value)} />
 
             </div>
             <div className='col input-group'>

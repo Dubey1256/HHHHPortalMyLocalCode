@@ -735,10 +735,10 @@ const TeamSmartFilter = (item: any) => {
                 })
                 if (checkCallData === true) {
                     item?.setLoaded(false);
-                  const fetchData= await item?.LoadAllSiteTasksAllData();
-                  if(fetchData?.length===0){
-                    item?.setLoaded(true);
-                  }
+                    const fetchData = await item?.LoadAllSiteTasksAllData();
+                    if (fetchData?.length === 0) {
+                        item?.setLoaded(true);
+                    }
                     setLoadeAllData(true);
                 }
             }
@@ -1022,7 +1022,7 @@ const TeamSmartFilter = (item: any) => {
             );
         }
         let allFinalResult = filteredMasterTaskData.concat(filteredTaskData);
-        if(allFinalResult?.length==0){
+        if (allFinalResult?.length == 0) {
             item?.setLoaded(true)
         }
         setFinalArray(allFinalResult);
@@ -1110,13 +1110,15 @@ const TeamSmartFilter = (item: any) => {
                 return true;
             }
             if (isCreatedBy === true) {
-                let result = teamMembers.some((member: any) => member.Title === data?.Author?.Title?.replace(/\s+/g, ' '));
+                // let result = teamMembers.some((member: any) => member.Title === data?.Author?.Title?.replace(/\s+/g, ' '));
+                let result = teamMembers.some((member: any) => member.Id === data?.Author?.Id);
                 if (result === true) {
                     return true;
                 }
             }
             if (isModifiedby === true) {
-                let result = teamMembers.some((member: any) => member.Title === data?.Editor?.Title?.replace(/\s+/g, ' '));
+                // let result = teamMembers.some((member: any) => member.Title === data?.Editor?.Title?.replace(/\s+/g, ' '));
+                let result = teamMembers.some((member: any) => member.Id === data?.Editor?.Id);
                 if (result === true) {
                     return true;
                 }
@@ -1611,12 +1613,12 @@ const TeamSmartFilter = (item: any) => {
                 setStartDate(last30DaysStartDate);
                 setEndDate(last30DaysEndDate);
                 break;
-                case "last3months":
-                    const lastMonthEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
-                    const last3MonthsStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 3, 1); 
-                    setStartDate(last3MonthsStartDate);
-                    setEndDate(lastMonthEndDate);
-                    break;
+            case "last3months":
+                const lastMonthEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
+                const last3MonthsStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 3, 1);
+                setStartDate(last3MonthsStartDate);
+                setEndDate(lastMonthEndDate);
+                break;
             case "thisyear":
                 const yearStartDate = new Date(currentDate.getFullYear(), 0, 1);
                 setStartDate(yearStartDate);
@@ -2193,7 +2195,7 @@ const TeamSmartFilter = (item: any) => {
                                                                                             <div className="fw-semibold ms-8 f-16 text-dark">{Group.Title}</div>
                                                                                         </div>
                                                                                         <div className='dataSecChild'>
-                                                                                            {Group?.values?.sort((a:any,b:any)=>a.SortOrder-b.SortOrder)?.map((insideCheckBox: any) => {
+                                                                                            {Group?.values?.sort((a: any, b: any) => a.SortOrder - b.SortOrder)?.map((insideCheckBox: any) => {
                                                                                                 return (
                                                                                                     <label className='alignCenter f-16 dataSecChildSec'>
                                                                                                         <input type="checkbox" className={"form-check-input cursor-pointer mt-0"} checked={MainGroup?.checked?.some((datachecked: any) => datachecked == insideCheckBox?.Id)} onChange={() => selectChild(insideCheckBox)} />

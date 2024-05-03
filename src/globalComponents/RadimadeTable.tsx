@@ -2053,7 +2053,7 @@ function ReadyMadeTable(SelectedProp: any) {
             },
             {
                 accessorKey: "descriptionsSearch",
-                placeholder: "descriptionsSearch",
+                placeholder: "Descriptions",
                 header: "",
                 resetColumnFilters: false,
                 id: "descriptionsSearch",
@@ -2061,7 +2061,7 @@ function ReadyMadeTable(SelectedProp: any) {
             },
             {
                 accessorKey: "commentsSearch",
-                placeholder: "commentsSearch",
+                placeholder: "Comments",
                 header: "",
                 resetColumnFilters: false,
                 id: "commentsSearch",
@@ -2069,7 +2069,7 @@ function ReadyMadeTable(SelectedProp: any) {
             },
             {
                 accessorKey: "timeSheetsDescriptionSearch",
-                placeholder: "timeSheetsDescriptionSearch",
+                placeholder: "Timesheets Description",
                 header: "",
                 resetColumnFilters: false,
                 id: "timeSheetsDescriptionSearch",
@@ -2258,53 +2258,45 @@ function ReadyMadeTable(SelectedProp: any) {
     };
 
 
-    const AddStructureCallBackCall = React.useCallback((item) => {
-        if (checkedList1?.current.length == 0) {
-            item[0]?.subRows.map((childs: any) => {
-                copyDtaArray.unshift(childs)
-
-            })
-        } else {
-            if (item[0]?.SelectedItem != undefined) {
-                copyDtaArray.map((val: any) => {
-                    item[0]?.subRows.map((childs: any) => {
-                        if (item[0].SelectedItem == val.Id) {
-                            val.subRows.unshift(childs)
-                        }
-                        if (val.subRows != undefined && val.subRows.length > 0) {
-                            val.subRows?.map((child: any) => {
-                                if (item[0].SelectedItem == child.Id) {
-                                    child.subRows.unshift(childs)
-                                }
-                                if (child.subRows != undefined && child.subRows.length > 0) {
-                                    child.subRows?.map((Subchild: any) => {
-                                        if (item[0].SelectedItem == Subchild.Id) {
-                                            Subchild.subRows.unshift(childs)
-                                        }
-                                    })
-                                }
-                            })
-                        }
-                    })
+ 
+    const callbackdataAllStructure = React.useCallback((item) => {
+        if (item[0]?.SelectedItem != undefined) {
+            copyDtaArray.map((val: any) => {
+                item[0]?.subRows?.map((childs: any) => {
+                    if (item[0].SelectedItem == val.Id) {
+                        val.subRows = val.subRows === undefined ? [] : val?.subRows
+                        val?.subRows?.unshift(childs)
+                    }
+                    if (val.subRows != undefined && val.subRows.length > 0) {
+                        val.subRows?.map((child: any) => {
+                            if (item[0].SelectedItem == child.Id) {
+                                child.subRows = child.subRows === undefined ? [] : child?.subRows
+                                child?.subRows?.unshift(childs)
+                            }
+                            if (child.subRows != undefined && child.subRows.length > 0) {
+                                child.subRows?.map((Subchild: any) => {
+                                    if (item[0].SelectedItem == Subchild.Id) {
+                                        Subchild.subRows = Subchild.subRows === undefined ? [] : Subchild?.subRows
+                                        Subchild?.subRows.unshift(childs)
+                                    }
+                                })
+                            }
+                        })
+                    }
                 })
-
-            }
+            })
 
         }
-        if (item != undefined && item?.length > 0 && item[0].SelectedItem == undefined) {
+        if (item != undefined && item.length > 0 && item[0].SelectedItem == undefined) {
             item.forEach((value: any) => {
                 copyDtaArray.unshift(value)
             })
         }
-
-
-
         setOpenAddStructurePopup(false);
         console.log(item)
         renderData = [];
         renderData = renderData.concat(copyDtaArray)
         refreshData();
-        checkedList1.current = []
 
     }, [])
     const CreateOpenCall = React.useCallback((item) => { }, []);
@@ -2476,9 +2468,7 @@ function ReadyMadeTable(SelectedProp: any) {
             setIsOpenActivity(false)
             setIsOpenWorkstream(false)
             setActivityPopup(false)
-            if (res?.data?.PercentComplete != 0) {
-                res.data.PercentComplete = res?.data?.PercentComplete * 100;
-            }
+            
             const updated = updatedDataDataFromPortfolios(copyDtaArray, res?.data);
             if (updated) {
                 renderData = [];
@@ -2729,9 +2719,9 @@ function ReadyMadeTable(SelectedProp: any) {
                     </section>
                 </div>
             </section>
-            <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={AddStructureCallBackCall} >
+            <Panel onRenderHeader={onRenderCustomHeaderMain1} type={PanelType.custom} customWidth="600px" isOpen={OpenAddStructurePopup} isBlocking={false} onDismiss={callbackdataAllStructure} >
                 <CreateAllStructureComponent
-                    Close={AddStructureCallBackCall}
+                    Close={callbackdataAllStructure}
                     taskUser={AllUsers}
                     portfolioTypeData={portfolioTypeData}
                     PropsValue={ContextValue}

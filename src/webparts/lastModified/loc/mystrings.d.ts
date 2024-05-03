@@ -1,4 +1,4 @@
-declare interface IAllTaskUserWebPartStrings {
+declare interface ILastModifiedWebPartStrings {
   PropertyPaneDescription: string;
   BasicGroupName: string;
   DescriptionFieldLabel: string;
@@ -10,9 +10,10 @@ declare interface IAllTaskUserWebPartStrings {
   AppTeamsTabEnvironment: string;
   AppOfficeEnvironment: string;
   AppOutlookEnvironment: string;
+  UnknownEnvironment: string;
 }
 
-declare module 'AllTaskUserWebPartStrings' {
-  const strings: IAllTaskUserWebPartStrings;
+declare module 'LastModifiedWebPartStrings' {
+  const strings: ILastModifiedWebPartStrings;
   export = strings;
 }

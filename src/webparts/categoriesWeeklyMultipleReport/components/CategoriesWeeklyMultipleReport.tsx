@@ -26,6 +26,7 @@ import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import PageLoader from '../../../globalComponents/pageLoader';
 import GraphData from '../../../globalComponents/GraphicalChart/GraphicData';
 import { BsBarChartLine } from "react-icons/bs";
+import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 //import alasql from 'alasql';
 let AllMasterTasks: any = [];
 let portfolioColor: any = '';
@@ -47,7 +48,7 @@ export interface ICategoriesWeeklyMultipleReportState {
   opentaggedtask: any;
   openTaggedTaskArray: any;
   IsTimeEntry: any;
-  cmsTimeComponent: any;
+  TimeComponent: any;
   SelecteddateChoice: any;
   PresetData: any;
   AllTimeEntryItem: any;
@@ -87,6 +88,7 @@ export interface ICategoriesWeeklyMultipleReportState {
   loadbarchart: boolean,
   IsOpenbulkUpdate: boolean,
   bulkupdatetext: any,
+
 }
 
 export default class CategoriesWeeklyMultipleReport extends React.Component<ICategoriesWeeklyMultipleReportProps, ICategoriesWeeklyMultipleReportState> {
@@ -116,7 +118,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       opentaggedtask: false,
       openTaggedTaskArray: [],
       IsTimeEntry: false,
-      cmsTimeComponent: [],
+      TimeComponent: [],
       SelecteddateChoice: 'Last3Month',
 
       PresetData: {},
@@ -283,6 +285,14 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         id: "TotalSmartTime",
       },
       {
+        accessorKey: "timeSheetsDescriptionSearch",
+        placeholder: "TimeSheets Description",
+        header: "",
+        resetColumnFilters: false,
+        id: "timeSheetsDescriptionSearch",
+        isColumnVisible: false
+      },
+      {
         accessorFn: (row: any) => row?.SmartHoursTotal,
         cell: ({ row }: any) => (
           <div className="alignCenter">
@@ -353,13 +363,20 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     ]
     this.timePopup = [
       {
+        // accessorKey: "",
+        // placeholder: "",
+        // hasCheckbox: false,
+        // hasCustomExpanded: false,
+        // hasExpanded: false,
+        // isHeaderNotAvlable: true,
+        // size: 5,
+        // id: 'Id',
         accessorKey: "",
         placeholder: "",
         hasCheckbox: false,
         hasCustomExpanded: false,
         hasExpanded: false,
-        isHeaderNotAvlable: true,
-        size: 5,
+        size: 25,
         id: 'Id',
       },
       {
@@ -380,12 +397,26 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         placeholder: "",
         size: 42,
       },
+      // {
+      //   accessorKey: "TaskID",
+      //   placeholder: "Task ID",
+      //   header: "",
+      //   resetColumnFilters: false,
+      //   size: 120,
+      //   id: "TaskID",
+      // }, 
       {
+        accessorFn: (row: any) => row?.TaskTitle,
+        cell: ({ row }: any) => (
+          <dd className='bg-Ff position-relative'>
+            <ReactPopperTooltipSingleLevel CMSToolId={this.state.AllTimeEntryItem['TaskId']} row={this.state.AllTimeEntryItem} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={this?.state?.AllTimeEntryItem} AllListId={AllListId} />
+
+          </dd>
+        ),
         accessorKey: "TaskID",
         placeholder: "Task ID",
         header: "",
         resetColumnFilters: false,
-        size: 120,
         id: "TaskID",
       },
       {
@@ -394,7 +425,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           <div className="alignCenter">
             <span className="columnFixedTitle">
               <a className="text-content hreflink" title={row?.original?.TaskTitle} data-interception="off" target="_blank" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }}
-                href={this.props.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.TaskItemID + "&Site=" + row?.original?.siteType} >
+                href={this.props.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.TaskItemID + "&Site=" + row?.original?.siteType === 'OffshoreTasks' ? 'Offshore Tasks' : row?.original?.siteType} >
                 {row?.original?.TaskTitle}
                 {/* <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : childRef?.current?.globalFilter} /> */}
               </a>
@@ -582,15 +613,11 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
   }
   private OpenPopupQuick = function (e: any, item: any) {
-    try {
-      let newValue = globalCommon?.deepCopy(item)
-      this.setState({ QuickEditItem: newValue })
-      // this.setState({ IsRoundUpValues: true, bindrowValue: item, scrollPosition: window.pageYOffset })
-      this.setState({ IsRoundUpValues: true, bindrowValue: newValue })
-      // this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-    } catch (e) {
-      console.log(e);
-    }
+    let selectedItem = globalCommon.deepCopy(item);
+    this.setState({ QuickEditItem: selectedItem })
+    // this.setState({ IsRoundUpValues: true, bindrowValue: item, scrollPosition: window.pageYOffset })
+    this.setState({ IsRoundUpValues: true, bindrowValue: item })
+    // this.scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
   }
   private cancelIsRoundUpValues = (type: any) => {
     this.setState({ IsRoundUpValues: false, scrollPosition: window.pageYOffset }, () => {
@@ -603,55 +630,51 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({ IsOpenbulkUpdate: false });
   }
   private saveIsRoundUpValues = (type: any) => {
-    try {
 
-      let QuickEditItem = globalCommon?.deepCopy(this?.state?.QuickEditItem);
-      this?.state?.AllTimeEntry?.forEach((pare: any) => {
-        if (pare.getUserName === this.state.bindrowValue?.getParentRows()[0]?.original?.getUserName) {
-          pare?.subRows?.forEach((child: any, indexitem: any) => {
-            if (QuickEditItem?.index === indexitem) {
-              child.Rountfiguretime = this.state.bindrowValue?.original?.Rountfiguretime;
-              child.IsColor = true;
-              console.log(child.Rountfiguretime);
-              pare.RoundAdjustedTime = ((parseFloat(pare?.RoundAdjustedTime || 0) + parseFloat(child?.Rountfiguretime || 0)))
-              pare.RoundAdjustedTime = ((parseFloat(pare?.RoundAdjustedTime || 0) - parseFloat(QuickEditItem?.original?.Rountfiguretime || 0)))// + (parseFloat(item?.RoundAdjustedTime) + parseFloat(obj.Rountfiguretime)))
-              this.RoundAdjustedTimeTimeEntry = (parseFloat(this.RoundAdjustedTimeTimeEntry || 0) - parseFloat(QuickEditItem?.original?.Rountfiguretime || 0))
-              this.RoundAdjustedTimeTimeEntry = (parseFloat(this.RoundAdjustedTimeTimeEntry || 0) + parseFloat(child.Rountfiguretime || 0))
-              this.RoundAdjustedTimeTimeEntry = this.RoundAdjustedTimeTimeEntry.toFixed(2);
+    let QuickEditItem: any = globalCommon.deepCopy(this?.state?.QuickEditItem);
+    this?.state?.AllTimeEntry?.forEach((pare: any) => {
+      if (pare.getUserName === this.state.bindrowValue?.getParentRows()[0]?.original?.getUserName) {
+        pare?.subRows?.forEach((child: any, indexitem: any) => {
+          if (QuickEditItem?.index === indexitem) {
+            child.Rountfiguretime = this.state.bindrowValue?.original?.Rountfiguretime;
+            child.IsColor = true;
+            console.log(child.Rountfiguretime);
+            pare.RoundAdjustedTime = ((parseFloat(pare?.RoundAdjustedTime || 0) + parseFloat(child?.Rountfiguretime || 0)))
+            pare.RoundAdjustedTime = ((parseFloat(pare?.RoundAdjustedTime || 0) - parseFloat(QuickEditItem?.original?.Rountfiguretime || 0)))// + (parseFloat(item?.RoundAdjustedTime) + parseFloat(obj.Rountfiguretime)))
+            this.RoundAdjustedTimeTimeEntry = (parseFloat(this.RoundAdjustedTimeTimeEntry || 0) - parseFloat(QuickEditItem?.original?.Rountfiguretime || 0))
+            this.RoundAdjustedTimeTimeEntry = (parseFloat(this.RoundAdjustedTimeTimeEntry || 0) + parseFloat(child.Rountfiguretime || 0))
+            this.RoundAdjustedTimeTimeEntry = this.RoundAdjustedTimeTimeEntry.toFixed(2);
 
-            }
-          })
-        }
+          }
+        })
+      }
 
-      })
-      this.setState({
-        showDateTime: (
-          <span className='alignCenter'>
-            <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({(this?.TotalTimeEntry / 8).toFixed(2)} days)</label>
-            <label className="mx-1">|</label>
-            <label>
-              <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({(this?.SmartTotalTimeEntry / 8).toFixed(2)} days)</div>
-              <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({(this?.RoundSmartTotalTimeEntry / 8).toFixed(2)} days)</div>
-            </label>
-            <label className="mx-1">|</label>
-            <label>
-              <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
-              <div className={'text-danger  boldClable'}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
-            </label>
-          </span>
-        ),
-      });
-      this.setState({ IsRoundUpValues: false });
-      this.setState({ isFocused: true });
-      this.renderData = [];
-      this.renderData = this.renderData.concat(this.state.showDateTime)
-      this.refreshData();
-      // window.scrollTo(0, this.state.scrollPosition || 0);
+    })
+    this.setState({
+      showDateTime: (
+        <span className='alignCenter'>
+          <label className='ms-1'> items | Time: {this?.TotalTimeEntry} | hours ({(this?.TotalTimeEntry / 8).toFixed(2)} days)</label>
+          <label className="mx-1">|</label>
+          <label>
+            <div className="">Smart Hours: {this?.SmartTotalTimeEntry} ({(this?.SmartTotalTimeEntry / 8).toFixed(2)} days)</div>
+            <div className="">Smart Hours (Roundup): {this?.RoundSmartTotalTimeEntry} ({(this?.RoundSmartTotalTimeEntry / 8).toFixed(2)} days)</div>
+          </label>
+          <label className="mx-1">|</label>
+          <label>
+            <div className="">Adjusted Hours: {this?.AdjustedimeEntry} hours ({(this?.AdjustedimeEntry / 8).toFixed(2)} days)</div>
+            <div className={'text-danger  boldClable'}>Adjusted Hours (Roundup): {this?.RoundAdjustedTimeTimeEntry} ({(this?.RoundAdjustedTimeTimeEntry / 8).toFixed(2)} days)</div>
+          </label>
+        </span>
+      ),
+    });
+    this.setState({ IsRoundUpValues: false });
+    this.setState({ isFocused: true });
+    this.renderData = [];
+    this.renderData = this.renderData.concat(this.state.showDateTime)
+    this.refreshData();
+    // window.scrollTo(0, this.state.scrollPosition || 0);
 
 
-    } catch (e) {
-      console.log(e)
-    }
   }
 
   private hideItems = function (e: any, item: any) {
@@ -1322,6 +1345,52 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({ AllTimeEntry: [] })
     this.updatefilter();
   }
+  // private async generateTimeEntry() {
+  //   //Create filter Creteria based on Dates and Selected users
+  //   //let filters = '(('; //use when with date filter
+  //   let filters = '('; //use when without date filter
+  //   let ImageSelectedUsers = this.state.ImageSelectedUsers;
+  //   if (ImageSelectedUsers != undefined && ImageSelectedUsers.length > 0) {
+  //     ImageSelectedUsers.forEach(function (obj: any, index: any) {
+  //       if (obj != undefined && obj.AssingedToUserId != undefined) {
+  //         if (ImageSelectedUsers != undefined && ImageSelectedUsers.length - 1 == index)
+  //           filters += "(Author eq '" + obj.AssingedToUserId + "')";
+  //         else
+  //           filters += "(Author eq '" + obj.AssingedToUserId + "') or ";
+  //       }
+  //     });
+  //     //filters += ") and ((TaskDate le '"+ this.state.enddate.toISOString()  +"') and ";
+  //     //filters += "(TaskDate ge '"+ this.state.startdate.toISOString()  +"'))";   
+  //     filters += ")";
+  //   }
+
+  //   console.log(filters);
+
+  //   let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
+  //   let resultsOfTimeSheet2 = await web.lists
+  //     .getByTitle('TasksTimesheet2')
+  //     .items
+  //     .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'TaskMigration/Id', 'TaskMigration/Title', 'TaskMigration/Created', 'AuthorId')
+  //     .filter(filters)
+  //     .expand('TaskMigration')
+  //     .getAll(4999);
+  //   console.log(resultsOfTimeSheet2);
+
+  //   let resultsofTimeSheetNew = await web.lists
+  //     .getByTitle('TaskTimeSheetListNew')
+  //     .items
+  //     .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'AuthorId', 'TaskGruene/Id', 'TaskGruene/Title', 'TaskGruene/Created', 'TaskDE/Id', 'TaskDE/Title', 'TaskDE/Created', 'TaskEducation/Id', 'TaskEducation/Title', 'TaskEducation/Created', 'TaskEI/Id', 'TaskEI/Title', 'TaskEI/Created', 'TaskEPS/Id', 'TaskEPS/Title', 'TaskEPS/Created', 'TaskGender/Id', 'TaskGender/Title', 'TaskGender/Created', 'TaskHealth/Id', 'TaskHealth/Title', 'TaskHealth/Created', 'TaskHHHH/Id', 'TaskHHHH/Title', 'TaskHHHH/Created', 'TaskKathaBeck/Id', 'TaskKathaBeck/Title', 'TaskKathaBeck/Created', 'TaskQA/Id', 'TaskQA/Title', 'TaskQA/Created','TaskOffshoreTasks/Id', 'TaskOffshoreTasks/Title', 'TaskOffshoreTasks/Created')
+  //     .filter(filters)
+  //     .expand('TaskGruene', 'TaskDE', 'TaskEducation', 'TaskEI', 'TaskEPS', 'TaskGender', 'TaskHealth', 'TaskHHHH', 'TaskKathaBeck', 'TaskQA', 'TaskOffshoreTasks')
+  //     .getAll(4999);
+  //   console.log(resultsofTimeSheetNew);
+
+  //   let AllTimeSheetResult = (resultsOfTimeSheet2).concat(resultsofTimeSheetNew);
+  //   console.log(AllTimeSheetResult);
+
+  //   this.LoadTimeSheetData(AllTimeSheetResult);
+
+  // }
   private async generateTimeEntry() {
 
     //Create filter Creteria based on Dates and Selected users
@@ -1373,7 +1442,112 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
 
     }
-   
+    // let columns: any = "Id, Title, TaskDate, TaskTime, AdditionalTimeEntry, Description, Modified, TaskMigration/Id, TaskMigration/Title, TaskMigration/Created, AuthorId&$expand=TaskMigration"
+    // let expended: any = 'TaskMigration';
+    // let columns2: any = "Id, Title, TaskDate, TaskTime, AdditionalTimeEntry, Description, Modified, AuthorId, TaskGruene/Id, TaskGruene/Title, TaskGruene/Created, TaskDE/Id, TaskDE/Title, TaskDE/Created, TaskEducation/Id, TaskEducation/Title, TaskEducation/Created, TaskEI/Id, TaskEI/Title, TaskEI/Created, TaskEPS/Id, TaskEPS/Title, TaskEPS/Created, TaskGender/Id, TaskGender/Title, TaskGender/Created, TaskHealth/Id, TaskHealth/Title, TaskHealth/Created, TaskHHHH/Id, TaskHHHH/Title, TaskHHHH/Created, TaskKathaBeck/Id, TaskKathaBeck/Title, TaskKathaBeck/Created, TaskQA/Id, TaskQA/Title, TaskQA/Created, TaskOffshoreTasks/Id, TaskOffshoreTasks/Title, TaskOffshoreTasks/Created";
+    // let expen: any = "TaskGruene, TaskDE, TaskEducation, TaskEI, TaskEPS, TaskGender, TaskHealth, TaskHHHH, TaskKathaBeck, TaskQA, TaskOffshoreTasks";
+    // let listItems: any = []
+    // if (timelist?.length > 0) {
+
+
+    //   let arrayItems = JSON.parse(timelist[0].Configurations);
+    //   let listsInfo: any = [];
+    //   arrayItems.forEach(async (entry: any) => {
+    //     if (entry?.listName === 'TasksTimesheet2'){
+    //       (async () => {
+    //         globalCommon.calculateBatches(entry)
+    //        .then(function (batchesInfo: any) {
+    //          batchesInfo.forEach((batchInfo: any) => {
+    //            listsInfo.push(batchInfo);
+    //          });
+    //          // LoadAllTimeSheetData(listsInfo);
+    //        });
+    //    })();
+    //     }
+    //       // listItems += await globalCommon._pnpPagedSearchClick(entry.siteUrl, entry.listId, columns, filters, expended);
+    //     if (entry?.listName === 'TaskTimeSheetListNew'){
+    //       (async () => {
+    //         globalCommon.calculateBatches(entry)
+    //        .then(function (batchesInfo: any) {
+    //          batchesInfo.forEach((batchInfo: any) => {
+    //            listsInfo.push(batchInfo);
+    //          });
+    //          // LoadAllTimeSheetData(listsInfo);
+    //        });
+    //    })();
+    //     }
+    //       // await globalCommon._pnpPagedSearchClick(entry.siteUrl, entry.listId, columns2, filters, expen).then((items) => {
+    //       //   console.log(items);
+    //       // })
+    //       //   .catch((error) => {
+    //       //     console.error(error);
+    //       //   });
+    //   })
+    // let array: any = [];
+    // arrayItems.forEach(async (entry: any) => {
+    //   if (entry?.listName === 'TasksTimesheet2') { }
+    //   array.push({ 'SiteUrl': entry.siteUrl, "listId": entry.listId, "columns": columns, "filters": filters, "expend": expended });
+    //   if (entry?.listName === 'TaskTimeSheetListNew') {
+    //     array.push({ 'SiteUrl': entry.siteUrl, "listId": entry.listId, "columns": columns2, "filters": filters, "expend": expen });
+    //   }
+    // })
+    // let listsInfo: any = [];
+    // if (array != undefined && array.length > 0) {
+    //   array.forEach(async (TimeSheet: any) => {
+    //     (async () => {
+    //        globalCommon.calculateBatches(TimeSheet)
+    //       .then(function (batchesInfo: any) {
+    //         batchesInfo.forEach((batchInfo: any) => {
+    //           listsInfo.push(batchInfo);
+    //         });
+    //         // LoadAllTimeSheetData(listsInfo);
+    //       });
+    //   })();
+
+    //   });
+    // }
+    // console.log(listsInfo);
+
+    // }
+
+
+    // let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
+    // let array: any = [];
+    // let resultsOfTimeSheet: any = await web.lists
+    //   .getByTitle('TasksTimesheet2')
+    //   .items
+    //   .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'TaskMigration/Id', 'TaskMigration/Title', 'TaskMigration/Created', 'AuthorId')
+    //   // .filter(filters)
+    //   .expand('TaskMigration')
+    //   .getAll();
+    // console.log(resultsOfTimeSheet);
+
+
+
+
+    // let resultsofTimeSheetNew = await web.lists
+    //   .getByTitle('TaskTimeSheetListNew')
+    //   .items
+    //   .select('Id', 'Title', 'TaskDate', 'TaskTime', 'AdditionalTimeEntry', 'Description', 'Modified', 'AuthorId', 'TaskGruene/Id', 'TaskGruene/Title', 'TaskGruene/Created', 'TaskDE/Id', 'TaskDE/Title', 'TaskDE/Created', 'TaskEducation/Id', 'TaskEducation/Title', 'TaskEducation/Created', 'TaskEI/Id', 'TaskEI/Title', 'TaskEI/Created', 'TaskEPS/Id', 'TaskEPS/Title', 'TaskEPS/Created', 'TaskGender/Id', 'TaskGender/Title', 'TaskGender/Created', 'TaskHealth/Id', 'TaskHealth/Title', 'TaskHealth/Created', 'TaskHHHH/Id', 'TaskHHHH/Title', 'TaskHHHH/Created', 'TaskKathaBeck/Id', 'TaskKathaBeck/Title', 'TaskKathaBeck/Created', 'TaskQA/Id', 'TaskQA/Title', 'TaskQA/Created', 'TaskOffshoreTasks/Id', 'TaskOffshoreTasks/Title', 'TaskOffshoreTasks/Created')
+    //   //.filter(filters)
+    //   .expand('TaskGruene', 'TaskDE', 'TaskEducation', 'TaskEI', 'TaskEPS', 'TaskGender', 'TaskHealth', 'TaskHHHH', 'TaskKathaBeck', 'TaskQA', 'TaskOffshoreTasks')
+    //   .getAll();
+    // console.log(resultsofTimeSheetNew);
+
+    // let AllTimeSheetResult = (resultsOfTimeSheet).concat(resultsofTimeSheetNew);
+    // console.log(AllTimeSheetResult);
+    // if (ImageSelectedUsers != undefined && ImageSelectedUsers.length > 0) {
+    //   ImageSelectedUsers.forEach(function (obj: any, index: any) {
+    //     if (obj != undefined && obj.AssingedToUserId != undefined) {
+    //       let arra = AllTimeSheetResult.filter((eleme: any) => obj.AssingedToUserId === eleme.AuthorId);
+    //       if (arra?.length > 0) {
+    //         array = array.concat(arra);
+    //       }
+    //     }
+    //   })
+    // }
+    // this.LoadTimeSheetData(array);
+
   }
 
   private LoadTimeSheetData(AllTimeSheetResult: any) {
@@ -1549,9 +1723,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   }
   private async GetAllSiteTaskData(filterItemTimeTab: any, getAllTimeEntry: any) {
     let callcount = 0;
-    let AllSiteTask: any = [];
+    let AllSiteTasks: any = [];
     let AllTimeEntryItem: any = [];
-  
     let PortfolioComponent = true;
     let PortfolioService = true;
     let web = new Web(this.props.Context.pageContext.web.absoluteUrl);
@@ -1580,6 +1753,19 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               console.log(Item)
             Item.siteName = itemtype.ListName;
             Item.listId = itemtype.listId
+            // Item.timeSheetsDescriptionSearch = "";
+            // if (Item.FeedBack != null) {
+            //   let message = JSON.parse(Item.FeedBack);
+            //   let feedbackArray = message[0]?.FeedBackDescriptions;
+            //   if (feedbackArray != undefined && feedbackArray.length > 0) {
+            //     let CommentBoxText = feedbackArray[0]?.Title?.replace(
+            //       /(<([^>]+)>)/gi,
+            //       ""
+            //     );
+            //     Item.timeSheetsDescriptionSearch = CommentBoxText;
+
+            //   }
+            // }
             Item.IsCheckedComponent = false;
             Item.IsCheckedService = false;
             if (Item?.Portfolio?.Title !== undefined) {
@@ -1608,10 +1794,10 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
               Item.NewCompletedDate = Item.CompletedDate;
               Item.NewCreated = Item.Created;
               if (Item.Created != undefined)
-                Item.FiltercreatedDate = ''
+                Item.FiltercreatedDate = '';
               if (Item.CompletedDate != undefined)
-                Item.FilterCompletedDate = ''
-              AllSiteTask.push(Item);
+                Item.FilterCompletedDate = '';
+              AllSiteTasks.push(Item);
             }
 
 
@@ -1619,12 +1805,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         }
       }
 
-      console.log(AllSiteTask);
+      console.log(AllSiteTasks);
 
       console.log(this.state.filterItems);
       let filterItems = this.state.filterItems;
       getAllTimeEntry.forEach(function (filterItem: any) {
-        AllSiteTask.forEach(function (getItem: any) {
+        AllSiteTasks.forEach(function (getItem: any) {
           if (getItem.ID == 4090)
             console.log(getItem)
           if (getItem.ID == 3227)
@@ -1635,6 +1821,8 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             filterItem.clientCategory = '';
             filterItem.clientCategoryIds = '';
             //if ()
+            // filterItem.timeSheetsDescriptionSearch = "";
+            // filterItem.timeSheetsDescriptionSearch += getItem.Description;
             if (getItem?.ClientCategory?.length > 0) {
               getItem?.ClientCategory?.forEach(function (client: any) {
                 if (client.Title != undefined && filterItem.clientCategoryIds.indexOf(client.Id.toString()) == -1) {
@@ -2019,6 +2207,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
           filte.boldRow = 'boldClable'
           //filte.PortfolioType =PortfolioType
           filte.lableColor = 'f-bg';
+          filte.timeSheetsDescriptionSearch = ""
           let TimeInExcel = 0;
           if (filte.childs != undefined) {
             filte.childs.forEach(function (child: any) {
@@ -2040,23 +2229,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                           }
                         })
                       }
-
-
-                      // if (client.SiteName != undefined && client.SiteName == 'EPS' && time.First?.indexOf('PSE') > -1)
-                      //   totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
-                      // if (client.SiteName != undefined && client.SiteName == 'Migration' && time.First?.indexOf('Migration') > -1)
-                      //   totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
-                      // if (client.SiteName != undefined && client.SiteName == 'Education' && time.First?.indexOf('Education') > -1)
-                      //   totalnew += ((time.Effort * client.ClienTimeDescription) / 100)
-                      // if (client.SiteName != undefined && client.SiteName == 'Shareweb' && time?.First?.indexOf('PSE') > -1)
-                      //   totalnew += ((time.Effort * 25) / 100)
-                      // if (client.SiteName != undefined && client.SiteName == 'Shareweb' && time?.First?.indexOf('e+i') > -1)
-                      //   totalnew += ((time.Effort * 60) / 100)
-                      // if (client.SiteName != undefined && client.SiteName == 'Shareweb' && time?.First?.indexOf('Migration') > -1)
-                      //   totalnew += ((time.Effort * 5) / 100)
-                      // if (client.SiteName != undefined && client.SiteName == 'Shareweb' && time?.First?.indexOf('Education') > -1)
-                      //   totalnew += ((time.Effort * 10) / 100)
-
                     })
                   } else { totalnew += time.Effort; }
                   // } else if (time.ClientTime != undefined ){ totalnew += time.Effort;}
@@ -2153,6 +2325,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       this.TotalTimeEntry = this.SmartTotalTimeEntry;
       //  $scope.TotalTimeEntry 
       this.CategoryItemsArray.forEach(function (filte: any) {
+        filte.timeSheetsDescriptionSearch = '';
         if (filte.AdjustedTime != undefined) {
           filte.AdjustedTime = filte?.AdjustedTime?.toFixed(2);;
         }
@@ -2171,6 +2344,12 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
       this.CategoryItemsArray.forEach((obj: any) => {
         obj.subRows = obj.childs;
         obj?.subRows?.forEach((chil: any) => {
+          chil.timeSheetsDescriptionSearch = '';
+          chil?.AllTask?.map((elem: any) => {
+            if (elem?.Description) {
+              chil.timeSheetsDescriptionSearch += elem?.Description
+            }
+          })
           chil.QuickEditItem = false;
         })
       })
@@ -2183,6 +2362,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         obj.NewTimeEntryDate = new Date(obj.TimeEntrykDateNew);
         obj?.subRows?.forEach((sub: any) => {
           sub.Site = sub.Firstlevel;
+          obj.timeSheetsDescriptionSearch += sub?.timeSheetsDescriptionSearch
           sub.TaskTime = sub.SmartHoursTotal;
           sub.Time = sub.SmartHoursTotal;
           sub.NewTimeEntryDate = obj.TimeEntrykDateNew;
@@ -2224,8 +2404,9 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
 
       });
 
+      // this.AllTimeEntryBackup = JSON.parse(JSON.stringify(this.AllTimeEntry));
       this.rerenderEntire(this.AllTimeEntry);
-      
+      //this.rerender();
 
     }
   }
@@ -2484,6 +2665,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
             let smarttotalvalue = 0;
             let smarttotalvalueNew = 0;
             let resultarray: any = [];
+            let timeSheetsDescriptionSearch: any = "";
             if (ImageSelectedUsers != undefined && ImageSelectedUsers.length > 0) {
               ImageSelectedUsers.forEach(function (item: any) {
                 let results = selectedMembers.filter((itemnew: any) => itemnew.Secondlevel != '' && obj.Secondlevel != undefined && itemnew.Secondlevel == obj.Secondlevel && itemnew.AuthorId == item.AssingedToUserId);
@@ -2502,11 +2684,23 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                 if (results != undefined && results.length > 0) {
                   let smarttotalvalue = 0;
                   let smarttotalvalueNew = 0;
+
                   results.forEach(function (resu: any) {
-                    if (resu.Effort != undefined && resu.Effort && item.SmartTime != undefined)
+                    resu.timeSheetsDescriptionSearch = "";
+                    if (resu.Effort != undefined && resu.Effort && item.SmartTime != undefined) {
                       smarttotalvalue += resu.Effort;
-                    else if (item.SmartTime == undefined)
+                      if (resu?.Description != undefined && resu?.Description != null) {
+                        timeSheetsDescriptionSearch += resu.Description;
+                        resu.timeSheetsDescriptionSearch += resu.Description;
+                      }
+                    }
+                    else if (item.SmartTime == undefined) {
                       smarttotalvalueNew += resu.Effort;
+                      if (resu?.Description != undefined && resu?.Description != null) {
+                        timeSheetsDescriptionSearch += resu.Description;
+                        resu.timeSheetsDescriptionSearch += resu.Description;
+                      }
+                    }
                   })
                   if (item.SmartTime != undefined) {
                     if (ChildItem['TotalSmartTime'] == undefined || ChildItem['TotalSmartTime'] == '')
@@ -2524,7 +2718,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
                 }
               })
             }
-
+            Item['timeSheetsDescriptionSearch'] = timeSheetsDescriptionSearch;
             ChildItem['Firstlevel'] = First;
             ChildItem['Thirdlevel'] = Thirdlevel;
             ChildItem['Secondlevel'] = Secondlevel;
@@ -2821,7 +3015,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
   }
   private EditDataTimeEntryData = (e: any, item: any) => {
     this.setState({ IsTimeEntry: true });
-    this.setState({ cmsTimeComponent: item });
+    this.setState({ TimeComponent: item });
   };
 
   private cancelPresetPopup = (type: any) => {
@@ -3080,7 +3274,6 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     this.setState({ AllTimeEntry: this.AllTimeEntry });
     this.rerenderEntire(this.state.AllTimeEntry);
     this.setState({ AdjustedTimePopup: false });
-    
   }
   private getexportChilds = (item: any) => {
     if (item != undefined || item != null) {
@@ -4243,7 +4436,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         {
           this?.state?.IsTimeEntry && (
             <TimeEntryPopup
-              props={this?.state?.cmsTimeComponent}
+              props={this?.state?.TimeComponent}
               CallBackTimeEntry={this?.TimeEntryCallBack}
               Context={AllListId.Context}
             ></TimeEntryPopup>
@@ -4399,3 +4592,5 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
     );
   }
 }
+
+
