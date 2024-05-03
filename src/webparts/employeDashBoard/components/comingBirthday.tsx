@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Web } from 'sp-pnp-js';
 import { myContextValue } from '../../../globalComponents/globalCommon';
 import ManageConfigPopup from '../../../globalComponents/ManageConfigPopup';
+import AddConfiguration from '../../../globalComponents/AddConfiguration';
 let data: any;
 let endOfWeek: any;
 let today: any;
@@ -124,7 +125,8 @@ export default function ComingBirthday(UpcomingBday: any) {
                 </div>
             </div>
             <span>
-                {IsManageConfigPopup && <ManageConfigPopup SelectedItem={SelectedItem} IsManageConfigPopup={IsManageConfigPopup} CloseOpenConfigPopup={CloseOpenConfigPopup} />}
+                {/* {IsManageConfigPopup && <ManageConfigPopup SelectedItem={SelectedItem} IsManageConfigPopup={IsManageConfigPopup} CloseOpenConfigPopup={CloseOpenConfigPopup} />} */}
+                {IsManageConfigPopup && <AddConfiguration DashboardConfigBackUp={ContextData?.DashboardConfigBackUp} SingleWebpart={true} props={ContextData?.propsValue} EditItem={SelectedItem} IsOpenPopup={SelectedItem} CloseConfigPopup={CloseOpenConfigPopup} />}
             </span>
         </>
     )
