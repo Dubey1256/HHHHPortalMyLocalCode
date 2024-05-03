@@ -697,7 +697,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                         <div className='tbl-button'>
                             <button type='button' className='btn btn-primary position-relative' style={{ zIndex: "99" }} onClick={() => setOpenGroupPopup(true)}>Add Team Group</button>
                         </div>
-                        <GlobalCommanTable columns={columns2} data={groupData} callBackData={callBackData} showHeader={true} />
+                        <GlobalCommanTable columns={columns2} data={groupData} callBackData={callBackData} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
                     </div>
                 </div>
             </div>

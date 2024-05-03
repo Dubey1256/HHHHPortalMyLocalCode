@@ -479,9 +479,13 @@ const ProjectManagementMain = (props: any) => {
   };
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
     if (elem?.TaskType != undefined) {
-      setCheckedList(elem)
-    } else {
-      setCheckedList({})
+      setCheckedList(elem);
+    }
+      else if (elem?.TaskType == undefined) {
+        selectedItem = elem
+      }
+       else {
+      setCheckedList({});
     }
   }, []);
   const onRenderCustomHeaderMain = () => {
