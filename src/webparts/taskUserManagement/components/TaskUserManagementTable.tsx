@@ -18,6 +18,7 @@ import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import { FaChevronDown, FaChevronRight, FaMinusSquare, FaPlusSquare, FaSquare, FaCheckSquare } from 'react-icons/fa';
 import { Col, Container, Row } from "react-bootstrap";
 import { SPHttpClient } from "@microsoft/sp-http";
+let EmailNotification: any
 
 const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUrl, AllListid, TaskUserListId, context, fetchAPIData, smartMetaDataItems }: any) => {
     const [data, setData] = React.useState<any>([]);
@@ -69,8 +70,12 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     // When the member to update is set, initialize the Member states
     useEffect(() => {
         if (memberToUpdate) {
+          if(memberToUpdate?.IsApprovalMail != null && memberToUpdate?.IsApprovalMail != undefined){
             setSelectedApprovalType(memberToUpdate?.IsApprovalMail);
-            setSelectedCompany(memberToUpdate?.Company);
+          }
+          else{
+            setSelectedApprovalType("Decide Case By Case")
+          }            setSelectedCompany(memberToUpdate?.Company);
             // setSelectedRoles(memberToUpdate.Role || []);
             setSelectedRoles(Array.isArray(memberToUpdate.Role) ? memberToUpdate.Role : []);
             setIsActive(memberToUpdate?.IsActive);
@@ -215,6 +220,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 // Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x0020_Cover != undefined ? imageUrl?.Item_x0020_Cover?.Url : memberToUpdate.Item_x0020_Cover.Url},
                 Item_x0020_Cover: { "__metadata": { type: "SP.FieldUrlValue" }, Description: "Description", Url: imageUrl?.Item_x002d_Image?.Url || imageUrl?.Item_x0020_Cover?.Url || (memberToUpdate?.Item_x0020_Cover?.Url || null) },
                 CategoriesItemsJson: JSON.stringify(selectedCategories),
+                Email: EmailNotification
             };
 
             await web.lists.getById(TaskUserListId).items.getById(memberToUpdate.Id).update(updatedData).then((res: any) => {
@@ -246,6 +252,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 setAssignedToUser([])
                 setSuffix("")
                 setOpenUpdateMemberPopup(false);
+                EmailNotification = ""
                 fetchAPIData()
             }).catch(error => {
                 console.error("Error updating item: ", error);
@@ -452,6 +459,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
     let userSuffix: string = undefined;
     if (items.length > 0) {
         let userMail = items[0].id.split("|")[2];
+        EmailNotification = userMail
         let userInfo = await getUserInfo(userMail);
         userId = userInfo.Id;
         userTitle = userInfo.Title;
