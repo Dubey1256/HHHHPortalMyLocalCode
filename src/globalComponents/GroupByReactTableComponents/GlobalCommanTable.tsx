@@ -1587,7 +1587,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         </tbody>
                     </table>
                     {data?.length === 0 && <div className='mt-2'>
-                        <div className='d-flex justify-content-center' style={{ height: "30px", color: portfolioColor ? `${portfolioColor}` : "#000069" }}>No data available</div>
+                        <div className='d-flex justify-content-center siteColor' style={{ height: "30px"}}>No data available</div>
                     </div>}
                 </div>
             </div>
