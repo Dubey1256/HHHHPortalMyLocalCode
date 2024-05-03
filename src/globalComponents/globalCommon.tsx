@@ -856,7 +856,7 @@ export const makePostDataForApprovalProcess = async (postData: any) => {
             }
         })
         var Item = { TaskUsers: '', postData: '' };
-        if ((postData?.Categories?.toLowerCase().indexOf('approval') > -1) && UserManager != undefined && UserManager?.length > 0) {
+        if ((postData?.Categories?.toLowerCase()?.indexOf('approval') > -1) && UserManager != undefined && UserManager?.length > 0) {
             //postData.PercentComplete = 0.01;
             //postData.Status = "For Approval";
             var isAvailable = false;
@@ -966,7 +966,7 @@ export const getListNameFromItemProperties = (item: any) => {
         listName = metadataType.split('.');
     listName = listName[2];
     if (listName != undefined)
-        listName = listName.substr(0, listName.indexOf('ListItem'));
+        listName = listName.substr(0, listName?.indexOf('ListItem'));
     return listName;
 }
 
@@ -3355,7 +3355,7 @@ const GetleaveUser = async (TaskUser: any, Context: any) => {
         })
     })
     finalData = todayLeaveUsers.filter((val: any, TaskId: any, array: any) => {
-        return array.indexOf(val) == TaskId;
+        return array?.indexOf(val) == TaskId;
     })
     console.log(finalData)
     return finalData

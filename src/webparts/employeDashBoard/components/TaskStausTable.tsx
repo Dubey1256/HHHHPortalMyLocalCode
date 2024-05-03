@@ -580,7 +580,7 @@ const TaskStatusTbl = (Tile: any) => {
         isColumnVisible: true,
         cell: ({ row, getValue }: any) => (
           <span className="d-flex">
-            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={item?.Tasks} AllListId={ContextData?.propsValue?.Context} />
+            <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} row={row?.original} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={item?.Tasks} AllListId={ContextData?.propsValue?.Context} />
           </span>
         ),
       },

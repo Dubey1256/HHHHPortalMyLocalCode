@@ -234,7 +234,7 @@ export const UpdateTaskStatusFunction = async (RequiredData: any): Promise<any> 
             let TaskCategories: string = ItemDetails?.TaskCategories?.map((item: any) => item.Title).join(', ');
             let TaskCategoriesIds: any = ItemDetails?.TaskCategories?.map((Item: any) => Item.Id);
             let ApproverIds: any = GetTaskUsersData?.ApproversData?.map((Item: any) => Item.Id);
-            let UniqueIds = TaskCategoriesIds.filter((number: any, index: any, array: any) => array.indexOf(number) === index);
+            let UniqueIds = TaskCategoriesIds.filter((number: any, index: any, array: any) => array?.indexOf(number) === index);
             let ReceiveRejectedTaskUserId: any = [];
             let ReceiverEmail: any = [];
 
