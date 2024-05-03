@@ -482,9 +482,13 @@ const ProjectManagementMain = (props: any) => {
   };
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
     if (elem?.TaskType != undefined) {
-      setCheckedList(elem)
-    } else {
-      setCheckedList({})
+      setCheckedList(elem);
+    }
+      else if (elem?.TaskType == undefined) {
+        selectedItem = elem
+      }
+       else {
+      setCheckedList({});
     }
   }, []);
   const onRenderCustomHeaderMain = () => {
@@ -614,6 +618,7 @@ const ProjectManagementMain = (props: any) => {
     setIsTaggedCompTask(false)
     setCreateTaskId({ portfolioData: null, portfolioType: null })
     renderData = backupTableData;
+    LoadAllSiteTasks();
     refreshData()
   }, []);
   const CreateTask = React.useCallback(() => {
@@ -2214,7 +2219,7 @@ const ProjectManagementMain = (props: any) => {
                                       </dl>
                                     </div>
                                     {/* <div className="col-md-12 url"><div className="d-flex p-0"><div className="bg-fxdark p-2"><label>Url</label></div><div className="bg-light p-2 text-break full-width"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></div></div></div> */}
-                                    <div className="col-md-12 pe-0"><dl><dt className="bg-fxdark UrlLabel">Url</dt><dd className="bg-light UrlField"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></dd></dl></div>
+                                    <div className="col-md-12 pe-1"><dl><dt className="bg-fxdark UrlLabel">Url</dt><dd className="bg-light UrlField"><a target="_blank" data-interception="off" href={Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}>  {Masterdata?.ComponentLink?.Url != undefined ? Masterdata?.ComponentLink?.Url : ''}</a></dd></dl></div>
                                     {
                                       Masterdata?.Body != undefined ? <div className="mt-2 col-md-12  detailsbox">
                                         <details className="pe-0" open>

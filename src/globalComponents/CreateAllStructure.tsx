@@ -221,7 +221,7 @@ const CreateAllStructureComponent = (props: any) => {
           );
         }
 
-        let level = PortfolioStructureId[0]?.PortfolioLevel + 1;
+        let level = PortfolioStructureId[0] === undefined ? 1 : PortfolioStructureId[0]?.PortfolioLevel + 1;
         let PortfolioStr = "C" + level;
         const componentItem = {
           Item_x0020_Type: "Component",
@@ -545,14 +545,14 @@ const CreateAllStructureComponent = (props: any) => {
           Item_x0020_Type: "Component",
         });
       }
-      hierarchyData?.forEach((val: any) => {
+       hierarchyData?.forEach((val: any) => {
         if (props.SelectedItem != undefined) {
           val.SelectedItem = props.SelectedItem.Id;
         }
         if (val.subcomponents != undefined && val.subcomponents.length > 0) {
           val.subRows = val?.subcomponents;
           val.subcomponents.forEach((b: any) => {
-            b.subRows = b?.features;
+            b.subRows = b?.subCompFeatures;
             // b?.features.forEach((fea: any) => {
             // })
           });

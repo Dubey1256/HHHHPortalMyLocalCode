@@ -218,19 +218,21 @@ function EditProjectPopup(item: any) {
   };
 
   const StatusArray = [
+    { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
     { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
     { value: 2, status: "2% Follow Up", taskStatusComment: "Follow Up" },
     { value: 3, status: "3% Approved", taskStatusComment: "Approved" },
+    { value: 4, status: "4% Checking", taskStatusComment: "Checking" },
     { value: 5, status: "5% Acknowledged", taskStatusComment: "Acknowledged" },
+    { value: 8, status: "8% Priority Check", taskStatusComment: "Priority Check" },
+    { value: 9, status: "9% Ready To Go", taskStatusComment: "Ready To Go" },
     { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
     { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
+    { value: 75, status: "75% Deployment Pending", taskStatusComment: "Deployment Pending" },
     { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
-    { value: 90, status: "90% Project completed", taskStatusComment: "Task completed" },
-    { value: 93, status: "93% For Review", taskStatusComment: "For Review" },
-    { value: 96, status: "96% Follow-up later", taskStatusComment: "Follow-up later" },
-    { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
-    { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
-  ]
+    { value: 90, status: "90% Task completed", taskStatusComment: "Task completed" },
+    { value: 100, status: "100% Closed", taskStatusComment: "Closed" },
+  ];
   const handlePickerBlur = () => {
     setActivePicker(null);
   };
@@ -1858,7 +1860,7 @@ function EditProjectPopup(item: any) {
                                                     >
                                                       {type.Title}
                                                     </a>
-                                                    <span className="hreflink ml-auto svg__icon--cross svg__iconbox"
+                                                    <span className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
                                                       onClick={() =>
                                                         deleteCategories(type.Id)
                                                       }> </span>
@@ -1960,7 +1962,7 @@ function EditProjectPopup(item: any) {
                                         return (
                                           <>
                                             <span style={{ backgroundColor: com?.PortfolioType?.Color }} className="block w-100" >
-                                              <a className='hreflink wid90' target="_blank" href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                              <a className='hreflink wid90' target="_blank" href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
                                               <span onClick={() => RemoveSelectedServiceComponent(com.Id, "Portfolios")} className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"></span>
 
                                             </span>

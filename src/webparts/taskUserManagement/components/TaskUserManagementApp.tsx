@@ -52,7 +52,7 @@ const TaskUserManagementApp = (props: any) => {
       }
 
     let context = props.props.context
-    context.siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+    context.siteUrl = context.pageContext.web.absoluteUrl;
     context.SitePagesList = props.props.SitePagesList;
 
     return (
