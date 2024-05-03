@@ -409,7 +409,7 @@ export default class CategoriesWeeklyMultipleReport extends React.Component<ICat
         accessorFn: (row: any) => row?.TaskTitle,
         cell: ({ row }: any) => (
           <dd className='bg-Ff position-relative'>
-            <ReactPopperTooltipSingleLevel ShareWebId={this.state.AllTimeEntryItem['TaskId']} row={this.state.AllTimeEntryItem} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={this?.state?.AllTimeEntryItem} AllListId={AllListId} />
+            <ReactPopperTooltipSingleLevel CMSToolId={this.state.AllTimeEntryItem['TaskId']} row={this.state.AllTimeEntryItem} singleLevel={true} masterTaskData={AllMasterTasks} AllSitesTaskData={this?.state?.AllTimeEntryItem} AllListId={AllListId} />
 
           </dd>
         ),
