@@ -189,19 +189,14 @@ const EditTaskPopup = (Items: any) => {
     const [ApproverHistoryData, setApproverHistoryData] = useState([]);
     const [LastUpdateTaskData, setLastUpdateTaskData] = useState<any>({});
     const [SitesTaggingData, setSitesTaggingData] = useState<any>([]);
-    const [SearchedServiceCompnentData, setSearchedServiceCompnentData] =
-        useState<any>([]);
-    const [SearchedLinkedPortfolioData, setSearchedLinkedPortfolioData] =
-        useState<any>([]);
-    const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] =
-        useState<any>("");
-    const [SearchedLinkedPortfolioKey, setSearchedLinkedPortfolioKey] =
-        useState<any>("");
+    const [SearchedServiceCompnentData, setSearchedServiceCompnentData] = useState<any>([]);
+    const [SearchedLinkedPortfolioData, setSearchedLinkedPortfolioData] = useState<any>([]);
+    const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = useState<any>("");
+    const [SearchedLinkedPortfolioKey, setSearchedLinkedPortfolioKey] = useState<any>("");
     const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = useState(false);
     const [IsCopyOrMovePanel, setIsCopyOrMovePanel] = useState<any>("");
     const [EstimatedDescription, setEstimatedDescription] = useState("");
-    const [EstimatedDescriptionCategory, setEstimatedDescriptionCategory] =
-        useState("");
+    const [EstimatedDescriptionCategory, setEstimatedDescriptionCategory] = useState("");
     const [EstimatedTime, setEstimatedTime] = useState<any>("");
     const [TotalEstimatedTime, setTotalEstimatedTime] = useState(0);
     const [SiteCompositionShow, setSiteCompositionShow] = useState(false);
@@ -3304,105 +3299,178 @@ const EditTaskPopup = (Items: any) => {
             });
         }
 
-        let UpdateDataObject: any = {
-            IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : null,
-            workingThisWeek: EditData.workingThisWeek
-                ? EditData.workingThisWeek
-                : null,
-            waitForResponse: EditData.waitForResponse
-                ? EditData.waitForResponse
-                : null,
-            PriorityRank: EditData.PriorityRank,
-            ItemRank: EditData.ItemRank,
-            Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
-            Priority: Priority,
-            StartDate: EditData.StartDate
-                ? Moment(EditData.StartDate).format("MM-DD-YYYY")
-                : null,
-            PercentComplete:
-                UpdateTaskInfo.PercentCompleteStatus != ""
-                    ? Number(UpdateTaskInfo.PercentCompleteStatus) / 100
-                    : EditData.PercentComplete
-                        ? EditData.PercentComplete / 100
-                        : 0,
-            Categories: CategoriesTitle ? CategoriesTitle : null,
-            PortfolioId: smartComponentsIds === "" ? null : smartComponentsIds,
-            RelevantPortfolioId: {
-                results:
-                    RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0
-                        ? RelevantPortfolioIds
-                        : [],
-            },
-            TaskCategoriesId: {
-                results:
-                    CategoryTypeID != undefined && CategoryTypeID.length > 0
-                        ? CategoryTypeID
-                        : [],
-            },
 
-            DueDate: EditData.DueDate
-                ? Moment(EditData.DueDate).format("MM-DD-YYYY")
-                : null,
-            CompletedDate: EditData.CompletedDate
-                ? Moment(EditData.CompletedDate).format("MM-DD-YYYY")
-                : null,
-            Status: taskStatus
-                ? taskStatus
-                : EditData.Status
-                    ? EditData.Status
-                    : null,
-            Mileage: EditData.Mileage ? EditData.Mileage : "",
-            AssignedToId: {
-                results:
-                    AssignedToIds != undefined && AssignedToIds.length > 0
-                        ? AssignedToIds
-                        : [],
-            },
-            ResponsibleTeamId: {
-                results:
-                    ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0
-                        ? ResponsibleTeamIds
-                        : [],
-            },
-            TeamMembersId: {
-                results:
-                    TeamMemberIds != undefined && TeamMemberIds.length > 0
-                        ? TeamMemberIds
-                        : [],
-            },
-            FeedBack:
-                updateFeedbackArray?.length > 0
-                    ? JSON.stringify(updateFeedbackArray)
-                    : null,
-            ComponentLink: {
-                __metadata: { type: "SP.FieldUrlValue" },
-                Description: EditData.Relevant_Url ? EditData.Relevant_Url : "",
-                Url: EditData.Relevant_Url ? EditData.Relevant_Url : "",
-            },
-            //BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
-            ProjectId: selectedProject.length > 0 ? selectedProject[0].Id : null,
-            ApproverId: {
-                results:
-                    ApproverIds != undefined && ApproverIds.length > 0 ? ApproverIds : [],
-            },
-            Sitestagging: ClientTimeData?.length > 0 ? JSON.stringify(ClientTimeData) : null,
-            ClientCategoryId: {
-                results:
-                    ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0
-                        ? ClientCategoryIDs
-                        : [],
-            },
-            // SiteCompositionSettings: SiteCompositionSetting,
-            ApproverHistory:
-                ApproverHistoryData?.length > 0
-                    ? JSON.stringify(ApproverHistoryData)
-                    : null,
-            EstimatedTime: EditData.EstimatedTime ? EditData.EstimatedTime : null,
-            EstimatedTimeDescription: EditData.EstimatedTimeDescriptionArray
-                ? JSON.stringify(EditData.EstimatedTimeDescriptionArray)
-                : null,
-            WorkingAction: WorkingAction?.length > 0 ? JSON.stringify(WorkingAction) : null
-        };
+        // ----------------------for check Activity and worstream---------------------------------------------------------
+   let SelectedSites:any=''
+   var Tasklevel:any=''
+   var TaskID:any=''
+  if(EditData.TaskType.Id == 1){
+   let SelectedSites:any=''
+   var TaskTypeId:any = 1;
+   SiteTypes.map((dataItem: any) => {
+       if (dataItem.isSelected == true) {
+           SelectedSites = dataItem.Title;
+       }
+   });
+       let web = new Web(AllListIdData?.siteUrl);
+       let componentDetails: any = [];
+       componentDetails = await web.lists
+         .getByTitle(SelectedSites)
+         .items.select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel")
+         .expand("TaskType")
+         .orderBy("TaskLevel", false)
+         .filter("TaskType/Id eq 1")
+         .top(1)
+         .get();
+       console.log(componentDetails);
+       if (componentDetails.length == 0) {
+         var LatestId: any = 1;
+         Tasklevel = LatestId;
+         TaskID = "A" + LatestId;
+       } else {
+         var LatestId = componentDetails[0].TaskLevel + 1;
+         Tasklevel = LatestId;
+         TaskID = "A" + LatestId;
+       }
+     
+  }
+  if (EditData.TaskType.Id == 3) {
+   let WorstreamLatestId:any=''
+   SiteTypes.map((dataItem: any) => {
+       if (dataItem.isSelected == true) {
+           SelectedSites = dataItem.Title;
+       }
+   });
+   let componentDetails: any = [];
+   let web = new Web(AllListIdData?.siteUrl);
+   componentDetails = await web.lists
+       .getByTitle(SelectedSites)
+       .items
+       .select("FolderID,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,TaskLevel,FileLeafRef,Title,Id,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
+       .expand("TaskType,ParentTask,Author,Editor,AssignedTo")
+       .filter(("TaskType/Id eq 3") && ("ParentTask/Id eq '" + EditData?.Id + "'"))
+       .orderBy("Created", true)
+       .top(499)
+       .get()
+   console.log(componentDetails)
+   if (componentDetails?.length == 0) {
+       WorstreamLatestId = 1;
+   } 
+   else {
+       if( componentDetails[componentDetails?.length-1]?.TaskLevel){
+           WorstreamLatestId = componentDetails[componentDetails?.length-1]?.TaskLevel + 1;
+       }else{
+           WorstreamLatestId = componentDetails?.length + 1;
+       }
+     
+   }
+   Tasklevel = WorstreamLatestId++;
+   let removed = EditData?.TaskID?.split('-')[0];
+   TaskID = `${removed}-W${Tasklevel}`
+   var TaskTypeId:any = 3;
+}
+let UpdateDataObject: any = {
+    IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : null,
+    workingThisWeek: EditData.workingThisWeek
+        ? EditData.workingThisWeek
+        : null,
+    waitForResponse: EditData.waitForResponse
+        ? EditData.waitForResponse
+        : null,
+    PriorityRank: EditData.PriorityRank,
+    ItemRank: EditData.ItemRank,
+    TaskTypeId:TaskTypeId != undefined?TaskTypeId:null,
+    TaskID: TaskID != ''?TaskID:null,
+    TaskLevel: Tasklevel != ''?Tasklevel:null,
+    Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
+    Priority: Priority,
+    StartDate: EditData.StartDate
+        ? Moment(EditData.StartDate).format("MM-DD-YYYY")
+        : null,
+    PercentComplete:
+        UpdateTaskInfo.PercentCompleteStatus != ""
+            ? Number(UpdateTaskInfo.PercentCompleteStatus) / 100
+            : EditData.PercentComplete
+                ? EditData.PercentComplete / 100
+                : 0,
+    Categories: CategoriesTitle ? CategoriesTitle : null,
+    PortfolioId: smartComponentsIds === "" ? null : smartComponentsIds,
+    RelevantPortfolioId: {
+        results:
+            RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0
+                ? RelevantPortfolioIds
+                : [],
+    },
+    TaskCategoriesId: {
+        results:
+            CategoryTypeID != undefined && CategoryTypeID.length > 0
+                ? CategoryTypeID
+                : [],
+    },
+
+    DueDate: EditData.DueDate
+        ? Moment(EditData.DueDate).format("MM-DD-YYYY")
+        : null,
+    CompletedDate: EditData.CompletedDate
+        ? Moment(EditData.CompletedDate).format("MM-DD-YYYY")
+        : null,
+    Status: taskStatus
+        ? taskStatus
+        : EditData.Status
+            ? EditData.Status
+            : null,
+    Mileage: EditData.Mileage ? EditData.Mileage : "",
+    AssignedToId: {
+        results:
+            AssignedToIds != undefined && AssignedToIds.length > 0
+                ? AssignedToIds
+                : [],
+    },
+    ResponsibleTeamId: {
+        results:
+            ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0
+                ? ResponsibleTeamIds
+                : [],
+    },
+    TeamMembersId: {
+        results:
+            TeamMemberIds != undefined && TeamMemberIds.length > 0
+                ? TeamMemberIds
+                : [],
+    },
+    FeedBack:
+        updateFeedbackArray?.length > 0
+            ? JSON.stringify(updateFeedbackArray)
+            : null,
+    ComponentLink: {
+        __metadata: { type: "SP.FieldUrlValue" },
+        Description: EditData.Relevant_Url ? EditData.Relevant_Url : "",
+        Url: EditData.Relevant_Url ? EditData.Relevant_Url : "",
+    },
+    //BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
+    ProjectId: selectedProject.length > 0 ? selectedProject[0].Id : null,
+    ApproverId: {
+        results:
+            ApproverIds != undefined && ApproverIds.length > 0 ? ApproverIds : [],
+    },
+    Sitestagging: ClientTimeData?.length > 0 ? JSON.stringify(ClientTimeData) : null,
+    ClientCategoryId: {
+        results:
+            ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0
+                ? ClientCategoryIDs
+                : [],
+    },
+    // SiteCompositionSettings: SiteCompositionSetting,
+    ApproverHistory:
+        ApproverHistoryData?.length > 0
+            ? JSON.stringify(ApproverHistoryData)
+            : null,
+    EstimatedTime: EditData.EstimatedTime ? EditData.EstimatedTime : null,
+    EstimatedTimeDescription: EditData.EstimatedTimeDescriptionArray
+        ? JSON.stringify(EditData.EstimatedTimeDescriptionArray)
+        : null,
+    WorkingAction: WorkingAction?.length > 0 ? JSON.stringify(WorkingAction) : null
+};
         return UpdateDataObject;
     };
 
@@ -4705,13 +4773,13 @@ const EditTaskPopup = (Items: any) => {
                     if (selectedData?.Id != undefined) {
                         let CreateObject: any = {
                             CreatorName: CreatorData?.Title,
-                            CreatorImage: CreatorData.UserImage,
-                            CreatorID: CreatorData.Id,
+                            CreatorImage: CreatorData?.UserImage,
+                            CreatorID: CreatorData?.Id,
                             TaggedUsers: {
-                                Title: selectedData.Title,
-                                Email: selectedData.Email,
-                                AssingedToUserId: selectedData.AssingedToUserId,
-                                userImage: selectedData.Item_x0020_Cover?.Url,
+                                Title: selectedData?.Title,
+                                Email: selectedData?.Email,
+                                AssingedToUserId: selectedData?.AssingedToUserId,
+                                userImage: selectedData?.Item_x0020_Cover?.Url,
                             },
                             NotificationSend: false,
                             Comment: '',
@@ -4720,8 +4788,8 @@ const EditTaskPopup = (Items: any) => {
                         if (copyWorkAction?.length > 0) {
                             copyWorkAction?.map((DataItem: any) => {
                                 if (DataItem.Title == useFor) {
-                                    CreateObject.Id = DataItem.InformationData?.length;
-                                    DataItem.InformationData.push(CreateObject);
+                                    CreateObject.Id = DataItem?.InformationData?.length;
+                                    DataItem?.InformationData.push(CreateObject);
                                 }
                             })
                         } else {
@@ -4737,8 +4805,8 @@ const EditTaskPopup = (Items: any) => {
                             ]
                             TempArrya?.map((TempItem: any) => {
                                 if (TempItem.Title == useFor) {
-                                    CreateObject.Id = TempItem.InformationData?.length;
-                                    TempItem.InformationData.push(CreateObject);
+                                    CreateObject.Id = TempItem?.InformationData?.length;
+                                    TempItem?.InformationData.push(CreateObject);
                                 }
                             })
 
@@ -5719,7 +5787,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 }
                                                             />
                                                             <label className="form-check-label">
-                                                                Working This Week?
+                                                                Working This Week
                                                             </label>
                                                         </span>
 
@@ -5734,7 +5802,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 }
                                                             />
                                                             <label className="form-check-label">
-                                                                Working Today?
+                                                                Working Today
                                                             </label>
                                                         </span>
                                                     </span>
@@ -6994,7 +7062,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         data-interception="off"
                                                                         href={`${siteUrls}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`}
                                                                     >
-                                                                        {userDtl?.Item_x0020_Cover.Url?.Url?.length > 0
+                                                                        {userDtl?.Item_x0020_Cover?.Url?.length > 0
                                                                             ?
                                                                             <>
                                                                                 <img
@@ -7008,7 +7076,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                     }
                                                                                 />
                                                                             </>
-                                                                            : <span title="Default user icons" className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
+                                                                            : <span title={userDtl.Title ? userDtl.Title : ""} className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto "></span>
                                                                         }
                                                                     </a>
                                                                 </div>
@@ -7120,7 +7188,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 />
                                                                             ) : (
                                                                                 <span
-                                                                                    title="Default user icons"
+                                                                                    title={EstimatedTimeData.UserName}
                                                                                     className="alignIcon svg__iconbox svg__icon--defaultUser "
                                                                                 ></span>
                                                                             )}
@@ -7233,8 +7301,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                 />
                                                                             ) : (
                                                                                 <span
-                                                                                    title="Default user icons"
-                                                                                    className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                                    title={InfoData.TaggedUsers?.Title}
+                                                                                    className="alignIcon svg__iconbox ProirityAssignedUserPhoto svg__icon--defaultUser "
                                                                                 ></span>
                                                                             )}
                                                                             <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
@@ -7354,8 +7422,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                 />
                                                                             ) : (
                                                                                 <span
-                                                                                    title="Default user icons"
-                                                                                    className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                                    title={InfoData.TaggedUsers?.Title}
+                                                                                    className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto "
                                                                                 ></span>
                                                                             )}
                                                                             <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
@@ -8111,7 +8179,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             }
                                                                         />
                                                                         <label className="form-check-label">
-                                                                            Working This Week?
+                                                                            Working This Week
                                                                         </label>
                                                                     </span>
 
@@ -8126,7 +8194,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             }
                                                                         />
                                                                         <label className="form-check-label">
-                                                                            Working Today?
+                                                                            Working Today
                                                                         </label>
                                                                     </span>
                                                                 </span>
@@ -9033,7 +9101,13 @@ const EditTaskPopup = (Items: any) => {
                                                                                                     {ProjectData.Title}
                                                                                                 </a>
                                                                                             </div>
-                                                                                        ) : null}
+                                                                                        ) : <input
+                                                                                            type="text"
+                                                                                            className="form-control"
+                                                                                            placeholder="Search Project Here"
+                                                                                            value={ProjectSearchKey}
+                                                                                            onChange={(e) => autoSuggestionsForProject(e)}
+                                                                                        />}
                                                                                     </>
                                                                                 );
                                                                             })}
@@ -9399,8 +9473,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                         />
                                                                                     ) : (
                                                                                         <span
-                                                                                            title="Default user icons"
-                                                                                            className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                                            title={userDtl.Title ? userDtl.Title : ""}
+                                                                                            className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto"
                                                                                         ></span>
                                                                                     )}
                                                                                 </a>
@@ -9514,8 +9588,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                             />
                                                                                         ) : (
                                                                                             <span
-                                                                                                title="Default user icons"
-                                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                                                title={EstimatedTimeData.UserName}
+                                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto"
                                                                                             ></span>
                                                                                         )}
                                                                                     </div>
@@ -9627,8 +9701,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                             />
                                                                                         ) : (
                                                                                             <span
-                                                                                                title="Default user icons"
-                                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                                                title={InfoData.TaggedUsers?.Title}
+                                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto"
                                                                                             ></span>
                                                                                         )}
                                                                                         <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
@@ -9748,8 +9822,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                             />
                                                                                         ) : (
                                                                                             <span
-                                                                                                title="Default user icons"
-                                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                                                title={InfoData.TaggedUsers?.Title}
+                                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto"
                                                                                             ></span>
                                                                                         )}
                                                                                         <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
