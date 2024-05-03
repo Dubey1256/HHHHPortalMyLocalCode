@@ -154,9 +154,9 @@ export default function VersionHistory(props: any) {
                         if(itm.childs != undefined){
                             itm.childs.map((childitem:any)=>{
                                 taskUsers.map((user:any)=>{
-                                    if(childitem.Editor.LookupId === user.AssingedToUserId){
-                                        childitem.ItemImage = user.Item_x0020_Cover.Url;
-                                        childitem.UserId = user.AssingedToUserId;
+                                    if(childitem?.Editor?.LookupId === user?.AssingedToUserId){
+                                        childitem.ItemImage = user?.Item_x0020_Cover?.Url;
+                                        childitem.UserId = user?.AssingedToUserId;
                                     }
                                 })
                             })
@@ -1012,7 +1012,7 @@ export default function VersionHistory(props: any) {
                                             <td>
                                                 <div className="alignCenter">
                                                     <a href={`${siteTypeUrl}/Lists/${sitetype}/DispForm.aspx?ID=${itm.ID}&VersionNo=${itm.version}`} target='_blank' data-interception="off">{itm?.ModifiedDate}</a>
-                                                    <a href={`${siteTypeUrl}/SitePages/TaskDashboard.aspx?UserId=${itm.UserId}`} target='_blank' data-interception='off'>{itm?.ItemImage ? <img className='workmember hreflink ms-1' src={itm?.ItemImage} title={itm?.ModifiedBy} /> : <span title={itm?.ModifiedBy ? itm?.ModifiedBy : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span> }</a>
+                                                    <a href={`${siteTypeUrl}/SitePages/TaskDashboard.aspx?UserId=${itm.UserId}&Name=${itm?.ModifiedBy}`} target='_blank' data-interception='off'>{itm?.ItemImage ? <img className='workmember hreflink ms-1' src={itm?.ItemImage} title={itm?.ModifiedBy} /> : <span title={itm?.ModifiedBy ? itm?.ModifiedBy : "Default user icons"} className="alignIcon svg__iconbox svg__icon--defaultUser "></span> }</a>
                                                 </div>
                                             </td>
                                         </tr>
