@@ -1867,7 +1867,7 @@ const EditTaskPopup = (Items: any) => {
     var count = 0;
     const loadTaskUsers = async () => {
         var AllTaskUsers: any = [];
-        let currentUserId = Context.pageContext._legacyPageContext.userId;
+        let currentUserId = Context?.pageContext?._legacyPageContext?.userId;
         const web = new Web(siteUrls);
         taskUsers = await web.lists
             .getById(AllListIdData?.TaskUsertListID)
@@ -3301,74 +3301,7 @@ const EditTaskPopup = (Items: any) => {
 
 
         // ----------------------for check Activity and worstream---------------------------------------------------------
-   let SelectedSites:any=''
-   var Tasklevel:any=''
-   var TaskID:any=''
-  if(EditData?.TaskType?.Id == 1){
-   let SelectedSites:any=''
-   var TaskTypeId:any = 1;
-   SiteTypes?.map((dataItem: any) => {
-       if (dataItem?.isSelected == true) {
-           SelectedSites = dataItem.Title;
-       }
-   });
-       let web = new Web(AllListIdData?.siteUrl);
-       let componentDetails: any = [];
-       componentDetails = await web.lists
-         .getByTitle(SelectedSites)
-         .items.select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel")
-         .expand("TaskType")
-         .orderBy("TaskLevel", false)
-         .filter("TaskType/Id eq 1")
-         .top(1)
-         .get();
-       console.log(componentDetails);
-       if (componentDetails.length == 0) {
-         var LatestId: any = 1;
-         Tasklevel = LatestId;
-         TaskID = "A" + LatestId;
-       } else {
-         var LatestId = componentDetails[0].TaskLevel + 1;
-         Tasklevel = LatestId;
-         TaskID = "A" + LatestId;
-       }
-     
-  }
-  if (EditData?.TaskType?.Id == 3) {
-   let WorstreamLatestId:any=''
-   SiteTypes?.map((dataItem: any) => {
-       if (dataItem?.isSelected == true) {
-           SelectedSites = dataItem.Title;
-       }
-   });
-   let componentDetails: any = [];
-   let web = new Web(AllListIdData?.siteUrl);
-   componentDetails = await web.lists
-       .getByTitle(SelectedSites)
-       .items
-       .select("FolderID,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,TaskLevel,FileLeafRef,Title,Id,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
-       .expand("TaskType,ParentTask,Author,Editor,AssignedTo")
-       .filter(("TaskType/Id eq 3") && ("ParentTask/Id eq '" + EditData?.Id + "'"))
-       .orderBy("Created", true)
-       .top(499)
-       .get()
-   console.log(componentDetails)
-   if (componentDetails?.length == 0) {
-       WorstreamLatestId = 1;
-   } 
-   else {
-       if( componentDetails[componentDetails?.length-1]?.TaskLevel){
-           WorstreamLatestId = componentDetails[componentDetails?.length-1]?.TaskLevel + 1;
-       }else{
-           WorstreamLatestId = componentDetails?.length + 1;
-       }
-     
-   }
-   Tasklevel = WorstreamLatestId++;
-   let removed = EditData?.TaskID?.split('-')[0];
-   TaskID = `${removed}-W${Tasklevel}`
-   var TaskTypeId:any = 3;
-}
+ 
 let UpdateDataObject: any = {
     IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : null,
     workingThisWeek: EditData.workingThisWeek
