@@ -27,6 +27,8 @@ const AddConfiguration = (props: any) => {
     let [CustomUserFilter, setCutomUserFilter] = React.useState([{ value: 'Approver', status: "Me As Approver", }, { value: 'TeamLeader', status: "Me As Team Lead", }]);
     const LoadSmartFav = () => {
         let SmartFavData: any = []
+        if (props?.SingleWebpart != undefined && props?.SingleWebpart == true)
+            setIsCheck(true);
         const web = new Web(props?.props?.Context?._pageContext?._web?.absoluteUrl);
         web.lists.getById(props?.props?.AdminConfigurationListId).items.select("Title", "Id", "Value", "Key", "Configurations").filter("Key eq 'Smartfavorites'").getAll().then((data: any) => {
             data.forEach((config: any) => {
@@ -411,7 +413,7 @@ const AddConfiguration = (props: any) => {
                                                         <label className='form-label full-width'>Row Position</label>
                                                         <input className='form-control' type='text' placeholder="Row" value={items?.WebpartPosition?.Row}
                                                             onChange={(e) => {
-                                                                const updatedItems = [...NewItem]; updatedItems[index] = { ...items, WebpartPosition: { ...items.WebpartPosition, Row: parseInt(e.target.value) } };
+                                                                const updatedItems = [...NewItem]; updatedItems[index] = { ...items, WebpartPosition: { ...items.WebpartPosition, Row: e.target.value.trim() === '' ? '' : parseInt(e.target.value) } };
                                                                 setNewItem(updatedItems);
                                                             }} />
                                                     </div>
@@ -421,7 +423,8 @@ const AddConfiguration = (props: any) => {
                                                         <label className='form-label full-width'>Column Position</label>
                                                         <input className='form-control' type='text' placeholder="Column" value={items?.WebpartPosition?.Column}
                                                             onChange={(e) => {
-                                                                const updatedItems = [...NewItem]; updatedItems[index] = { ...items, WebpartPosition: { ...items.WebpartPosition, Column: parseInt(e.target.value) } };
+                                                                const updatedItems = [...NewItem];
+                                                                updatedItems[index] = { ...items, WebpartPosition: { ...items.WebpartPosition, Column: e.target.value.trim() === '' ? '' : parseInt(e.target.value) } };
                                                                 setNewItem(updatedItems);
                                                             }} />
                                                     </div>
