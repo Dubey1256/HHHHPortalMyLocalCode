@@ -4816,8 +4816,6 @@ let UpdateDataObject: any = {
 
                 })
             }
-
-
             setWorkingAction([...copyWorkAction]);
             console.log("Bottleneck All Details:", copyWorkAction)
             setUseFor("")
@@ -4918,13 +4916,13 @@ let UpdateDataObject: any = {
             let copyWorkAction: any = [...WorkingAction]
             let CreateObject: any = {
                 CreatorName: CreatorData?.Title,
-                CreatorImage: CreatorData.UserImage,
-                CreatorID: CreatorData.Id,
+                CreatorImage: CreatorData?.UserImage,
+                CreatorID: CreatorData?.Id,
                 TaggedUsers: {
-                    Title: ApproverData.Title,
-                    Email: ApproverData.Email,
-                    AssingedToUserId: ApproverData.AssingedToUserId,
-                    userImage: ApproverData.Item_x0020_Cover?.Url,
+                    Title: ApproverData?.Title,
+                    Email: ApproverData?.Email,
+                    AssingedToUserId: ApproverData?.AssingedToUserId,
+                    userImage: ApproverData?.Item_x0020_Cover?.Url,
                 },
                 NotificationSend: false,
                 Comment: '',
