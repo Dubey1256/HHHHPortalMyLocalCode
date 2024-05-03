@@ -2612,14 +2612,32 @@ export const AwtGroupingAndUpdatePrarticularColumn = async (findGrouping: any, A
     }
     return { findGrouping, flatdata };
 }
-export const replaceURLsWithAnchorTags = (text: any) => {
+export const replaceURLsWithAnchorTags = (text:any) => {
     // Regular expression to match URLs
-    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    var urlRegex = /(https?:\/\/[^\s<>"]+)(?=["'\s.,]|$)/g;
     // Replace URLs with anchor tags
-    var replacedText = text.replace(urlRegex, function (url: any) {
-        return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
+    var replacedText = text?.replace(urlRegex, function (url:any) {
+        if (!isURLInsideAnchorTag(url, text)) {
+            return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
+        } else {
+            return url;
+        }
     });
     return replacedText;
+}
+
+function isURLInsideAnchorTag(url:any, text:any) {
+    // Regular expression to match anchor tags
+    var anchorRegex = /<a\s+(?:[^>]*?\s+)?href=(["'])(.*?)\1/ig;
+    var matches = text?.match(anchorRegex);
+    if (matches) {
+        for (var i = 0; i < matches?.length; i++) {
+            if (matches[i]?.includes(url)) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 //--------------------------------------Share TimeSheet Report-----------------------------------------------------------------------
 
@@ -2757,13 +2775,42 @@ export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, t
             updatedCategoryTime[newKey] = timeSheetData[key];
         }
     }
-
-    if (day == 'Today') {
-        var subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + currentDate + ' - ' + (updatedCategoryTime.today) + ' hours '
+    var subject: any;
+    // if (day == 'Today') {
+    //     subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + currentDate + ' - ' + (updatedCategoryTime.today) + ' hours '
+    // }
+    // if (day == 'Yesterday') {
+    //     subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + yesterday + ' - ' + (updatedCategoryTime.yesterday) + ' hours '
+    // }
+    function padWithZero(num: number): string {
+        return num < 10 ? '0' + num : num.toString();
     }
-    if (day == 'Yesterday') {
-        var subject = "Daily Timesheet - " + CurrentUserTitle + ' - ' + yesterday + ' - ' + (updatedCategoryTime.yesterday) + ' hours '
+    
+    function formatDate(date: Date): string {
+        const day = padWithZero(date.getDate());
+        const month = padWithZero(date.getMonth() + 1); 
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
     }
+      if (day == "Today") {
+        subject = "Daily Timesheet - " + CurrentUserTitle + " - " + currentDate + " - " + updatedCategoryTime.today +  " hours ";
+      } else if (day == "Yesterday") {
+        subject =
+          "Daily Timesheet - " +
+          CurrentUserTitle +
+          " - " +
+          yesterday +
+          " - " +
+          updatedCategoryTime.yesterday +
+          " hours ";
+      } else {
+        subject =
+          "Daily Timesheet - " +
+          CurrentUserTitle +
+          " - " +
+          type;
+          day = 'Custom'
+      }
     AllData.map((item: any) => {
         item.ClientCategories = ''
         item.ClientCategory.forEach((val: any, index: number) => {
@@ -2779,7 +2826,7 @@ export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, t
         text =
             '<tr>' +
             '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.siteType + '</td>'
-            + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Project-Management-Profile.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px">' + (item?.Project == undefined ? '' : item?.Project.Title) + '</span></a>' + '</p>' + '</td>'
+            + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/PX-Profile.aspx?ProjectId=' + item.Project?.Id + '><span style="font-size:13px">' + (item?.Project == undefined ? '' : item?.Project.Title) + '</span></a>' + '</p>' + '</td>'
             + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:135px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Portfolio-Profile.aspx?taskId=' + item?.Portfolio?.Id + '><span style="font-size:13px">' + (item.Portfolio == undefined ? '' : item.Portfolio.Title) + '</span></a>' + '</p>' + '</td>'
             + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:250px;text-align:center">' + '<p style="margin:0px;">' + '<a style="text-decoration:none;" href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px">' + item.Title + '</span></a>' + '</p>' + '</td>'
             + '<td style="border:1px solid #ccc;border-right:0px;border-top:0px;line-height:24px;font-size:13px;padding:5px;width:40px;text-align:center">' + item?.TaskTime + '</td>'
@@ -2821,6 +2868,7 @@ export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, t
         + '</table>'
 
     body = body.replaceAll('>,<', '><').replaceAll(',', '')
+    let EmailSubject: string = `TimeSheet : ${currentDate}`;
 
     let confirmation = confirm('Your' + ' ' + input + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + userApprover + ')' + '.' + '\n' + 'Do you want to continue?')
     if (confirmation) {
@@ -2841,8 +2889,6 @@ export const ShareTimeSheet = async (totalTimeDay:any,AllTaskTimeEntries: any, t
             }).then(() => {
                 console.log("Email Sent!");
                 alert('Email sent sucessfully');
-
-
             }).catch((err) => {
                 console.log(err.message);
             });
