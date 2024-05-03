@@ -113,7 +113,7 @@ const CreateActivity = (props: any) => {
         setTaskUrl(props?.SiteUrl);
       }
     }
-
+    setSelectedItem(props?.selectedItem)
     if (props?.selectedItem?.AssignedTo?.length > 0) {
       setTaskAssignedTo(props?.selectedItem?.AssignedTo);
     }
@@ -132,7 +132,6 @@ const CreateActivity = (props: any) => {
     } else if (props?.selectedItem?.ClientCategory?.results?.length > 0) {
       ClientCategoriesData = props?.selectedItem?.ClientCategory?.results;
     }
-    setSelectedItem(props?.selectedItem);
     let targetDiv: any = document?.querySelector(".ms-Panel-main");
     if (props?.selectedItem?.PortfolioType?.Color != undefined) { //Changes Made by Robin
       setTimeout(() => {

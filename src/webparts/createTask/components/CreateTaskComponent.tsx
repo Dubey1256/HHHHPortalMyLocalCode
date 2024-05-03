@@ -372,12 +372,12 @@ function CreateTaskComponent(props: any) {
                 }
                 if (externalSite == true) {
                     const parts = paramSiteUrl?.toLowerCase()?.split("/");
-                    const sitePagesIndex = parts.indexOf("sites");
+                    const sitePagesIndex = parts?.indexOf("sites");
                     let completeUrl = parts.slice(sitePagesIndex).join("/");
-                    let foundationUrl: any = completeUrl.toLowerCase().split("/");
-                    let foundationPageIndex = foundationUrl.indexOf("sitepages")
-                    foundationUrl = foundationUrl.slice(foundationPageIndex).join("/")
-                    let PageUrl = foundationUrl.toLowerCase().split('?')[0];
+                    let foundationUrl: any = completeUrl?.toLowerCase().split("/");
+                    let foundationPageIndex = foundationUrl?.indexOf("sitepages")
+                    foundationUrl = foundationUrl?.slice(foundationPageIndex).join("/")
+                    let PageUrl = foundationUrl?.toLowerCase().split('?')[0];
                     PageUrl = '/' + PageUrl;
                     PageUrl = PageUrl.split('#')[0];
                     let foundCom = AllComponents?.find((item: any) => {

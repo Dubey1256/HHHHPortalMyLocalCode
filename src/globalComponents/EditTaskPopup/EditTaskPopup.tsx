@@ -189,19 +189,14 @@ const EditTaskPopup = (Items: any) => {
     const [ApproverHistoryData, setApproverHistoryData] = useState([]);
     const [LastUpdateTaskData, setLastUpdateTaskData] = useState<any>({});
     const [SitesTaggingData, setSitesTaggingData] = useState<any>([]);
-    const [SearchedServiceCompnentData, setSearchedServiceCompnentData] =
-        useState<any>([]);
-    const [SearchedLinkedPortfolioData, setSearchedLinkedPortfolioData] =
-        useState<any>([]);
-    const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] =
-        useState<any>("");
-    const [SearchedLinkedPortfolioKey, setSearchedLinkedPortfolioKey] =
-        useState<any>("");
+    const [SearchedServiceCompnentData, setSearchedServiceCompnentData] = useState<any>([]);
+    const [SearchedLinkedPortfolioData, setSearchedLinkedPortfolioData] = useState<any>([]);
+    const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = useState<any>("");
+    const [SearchedLinkedPortfolioKey, setSearchedLinkedPortfolioKey] = useState<any>("");
     const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = useState(false);
     const [IsCopyOrMovePanel, setIsCopyOrMovePanel] = useState<any>("");
     const [EstimatedDescription, setEstimatedDescription] = useState("");
-    const [EstimatedDescriptionCategory, setEstimatedDescriptionCategory] =
-        useState("");
+    const [EstimatedDescriptionCategory, setEstimatedDescriptionCategory] = useState("");
     const [EstimatedTime, setEstimatedTime] = useState<any>("");
     const [TotalEstimatedTime, setTotalEstimatedTime] = useState(0);
     const [SiteCompositionShow, setSiteCompositionShow] = useState(false);
@@ -1711,12 +1706,12 @@ const EditTaskPopup = (Items: any) => {
 
     // ################ this is for Smart category change and remove function #############
 
-    const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
+    const removeCategoryItem = (TypeCategory: any) => {
         let tempString: any;
         let tempArray2: any = [];
         BackupTaskCategoriesData = [];
         TaskCategoriesData?.map((dataType: any) => {
-            if (dataType.Id != TypeId) {
+            if (dataType.Title != TypeCategory) {
                 tempArray2.push(dataType);
                 BackupTaskCategoriesData.push(dataType);
             }
@@ -1733,7 +1728,7 @@ const EditTaskPopup = (Items: any) => {
         tempCategoryData = tempString;
         setTaskCategoriesData(tempArray2);
     };
-    const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
+    const CategoryChange = (e: any, typeValue: any) => {
         isApprovalByStatus = false;
         if (e == "false") {
             var statusValue: any = e;
@@ -1742,13 +1737,13 @@ const EditTaskPopup = (Items: any) => {
             var statusValue: any = e.target.value;
         }
         let type: any = typeValue;
-        let Id: any = IdValue;
-        CategoryChangeUpdateFunction(statusValue, type, Id);
+        // let Id: any = IdValue;
+        CategoryChangeUpdateFunction(statusValue, type);
     };
 
-    const CategoryChangeUpdateFunction = (Status: any, type: any, Id: any) => {
+    const CategoryChangeUpdateFunction = (Status: any, type: any) => {
         if (Status == "true") {
-            removeCategoryItem(type, Id);
+            removeCategoryItem(type);
             if (type == "Phone") {
                 setPhoneStatus(false);
             }
@@ -1820,11 +1815,7 @@ const EditTaskPopup = (Items: any) => {
                             });
                         });
                     }
-                    // else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
-                    //     TaskCreatorApproverBackupArray.map((dataItem: any) => {
-                    //         tempArray.push(dataItem);
-                    //     })
-                    // }
+
                     const finalData = tempArray.filter(
                         (val: any, id: any, array: any) => {
                             return array?.indexOf(val) == id;
@@ -1836,10 +1827,7 @@ const EditTaskPopup = (Items: any) => {
                     setApproverData(finalData);
                     setCheckApproverData(finalData);
                     setApprovalStatus(true);
-                    // setApprovalTaskStatus(true)
-                    // if(isApprovalByStatus == false){
-                    //     setApproverData(TaskApproverBackupArray);
-                    // }
+
 
                     Items.sendApproverMail = true;
                     StatusOptions?.map((item: any) => {
@@ -2293,7 +2281,7 @@ const EditTaskPopup = (Items: any) => {
                 var e: any = "false";
                 EditData.TaskApprovers = finalData;
                 EditData.CurrentUserData = currentUserData;
-                CategoryChange(e, "Approval", 227);
+                CategoryChange(e, "Approval");
             }
             if (StatusData.value == 2) {
                 setInputFieldDisable(true);
@@ -3018,7 +3006,6 @@ const EditTaskPopup = (Items: any) => {
                                     dataEditor.data.projectStructerId = structureiddata;
                                     Items.Call(dataEditor, "UpdatedData");
                                 } else {
-
                                     Items.Call(DataJSONUpdate, "UpdatedData");
                                 }
                             } else {
@@ -3312,105 +3299,178 @@ const EditTaskPopup = (Items: any) => {
             });
         }
 
-        let UpdateDataObject: any = {
-            IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : null,
-            workingThisWeek: EditData.workingThisWeek
-                ? EditData.workingThisWeek
-                : null,
-            waitForResponse: EditData.waitForResponse
-                ? EditData.waitForResponse
-                : null,
-            PriorityRank: EditData.PriorityRank,
-            ItemRank: EditData.ItemRank,
-            Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
-            Priority: Priority,
-            StartDate: EditData.StartDate
-                ? Moment(EditData.StartDate).format("MM-DD-YYYY")
-                : null,
-            PercentComplete:
-                UpdateTaskInfo.PercentCompleteStatus != ""
-                    ? Number(UpdateTaskInfo.PercentCompleteStatus) / 100
-                    : EditData.PercentComplete
-                        ? EditData.PercentComplete / 100
-                        : 0,
-            Categories: CategoriesTitle ? CategoriesTitle : null,
-            PortfolioId: smartComponentsIds === "" ? null : smartComponentsIds,
-            RelevantPortfolioId: {
-                results:
-                    RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0
-                        ? RelevantPortfolioIds
-                        : [],
-            },
-            TaskCategoriesId: {
-                results:
-                    CategoryTypeID != undefined && CategoryTypeID.length > 0
-                        ? CategoryTypeID
-                        : [],
-            },
 
-            DueDate: EditData.DueDate
-                ? Moment(EditData.DueDate).format("MM-DD-YYYY")
-                : null,
-            CompletedDate: EditData.CompletedDate
-                ? Moment(EditData.CompletedDate).format("MM-DD-YYYY")
-                : null,
-            Status: taskStatus
-                ? taskStatus
-                : EditData.Status
-                    ? EditData.Status
-                    : null,
-            Mileage: EditData.Mileage ? EditData.Mileage : "",
-            AssignedToId: {
-                results:
-                    AssignedToIds != undefined && AssignedToIds.length > 0
-                        ? AssignedToIds
-                        : [],
-            },
-            ResponsibleTeamId: {
-                results:
-                    ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0
-                        ? ResponsibleTeamIds
-                        : [],
-            },
-            TeamMembersId: {
-                results:
-                    TeamMemberIds != undefined && TeamMemberIds.length > 0
-                        ? TeamMemberIds
-                        : [],
-            },
-            FeedBack:
-                updateFeedbackArray?.length > 0
-                    ? JSON.stringify(updateFeedbackArray)
-                    : null,
-            ComponentLink: {
-                __metadata: { type: "SP.FieldUrlValue" },
-                Description: EditData.Relevant_Url ? EditData.Relevant_Url : "",
-                Url: EditData.Relevant_Url ? EditData.Relevant_Url : "",
-            },
-            //BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
-            ProjectId: selectedProject.length > 0 ? selectedProject[0].Id : null,
-            ApproverId: {
-                results:
-                    ApproverIds != undefined && ApproverIds.length > 0 ? ApproverIds : [],
-            },
-            Sitestagging: ClientTimeData?.length > 0 ? JSON.stringify(ClientTimeData) : null,
-            ClientCategoryId: {
-                results:
-                    ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0
-                        ? ClientCategoryIDs
-                        : [],
-            },
-            // SiteCompositionSettings: SiteCompositionSetting,
-            ApproverHistory:
-                ApproverHistoryData?.length > 0
-                    ? JSON.stringify(ApproverHistoryData)
-                    : null,
-            EstimatedTime: EditData.EstimatedTime ? EditData.EstimatedTime : null,
-            EstimatedTimeDescription: EditData.EstimatedTimeDescriptionArray
-                ? JSON.stringify(EditData.EstimatedTimeDescriptionArray)
-                : null,
-            WorkingAction: WorkingAction?.length > 0 ? JSON.stringify(WorkingAction) : null
-        };
+        // ----------------------for check Activity and worstream---------------------------------------------------------
+   let SelectedSites:any=''
+   var Tasklevel:any=''
+   var TaskID:any=''
+  if(EditData.TaskType.Id == 1){
+   let SelectedSites:any=''
+   var TaskTypeId:any = 1;
+   SiteTypes.map((dataItem: any) => {
+       if (dataItem.isSelected == true) {
+           SelectedSites = dataItem.Title;
+       }
+   });
+       let web = new Web(AllListIdData?.siteUrl);
+       let componentDetails: any = [];
+       componentDetails = await web.lists
+         .getByTitle(SelectedSites)
+         .items.select("Id,Title,TaskType/Id,TaskType/Title,TaskLevel")
+         .expand("TaskType")
+         .orderBy("TaskLevel", false)
+         .filter("TaskType/Id eq 1")
+         .top(1)
+         .get();
+       console.log(componentDetails);
+       if (componentDetails.length == 0) {
+         var LatestId: any = 1;
+         Tasklevel = LatestId;
+         TaskID = "A" + LatestId;
+       } else {
+         var LatestId = componentDetails[0].TaskLevel + 1;
+         Tasklevel = LatestId;
+         TaskID = "A" + LatestId;
+       }
+     
+  }
+  if (EditData.TaskType.Id == 3) {
+   let WorstreamLatestId:any=''
+   SiteTypes.map((dataItem: any) => {
+       if (dataItem.isSelected == true) {
+           SelectedSites = dataItem.Title;
+       }
+   });
+   let componentDetails: any = [];
+   let web = new Web(AllListIdData?.siteUrl);
+   componentDetails = await web.lists
+       .getByTitle(SelectedSites)
+       .items
+       .select("FolderID,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,TaskLevel,FileLeafRef,Title,Id,PercentComplete,Priority,Created,Modified,TaskType/Id,TaskType/Title,ParentTask/Id,ParentTask/Title,Author/Id,Author/Title,Editor/Id,Editor/Title")
+       .expand("TaskType,ParentTask,Author,Editor,AssignedTo")
+       .filter(("TaskType/Id eq 3") && ("ParentTask/Id eq '" + EditData?.Id + "'"))
+       .orderBy("Created", true)
+       .top(499)
+       .get()
+   console.log(componentDetails)
+   if (componentDetails?.length == 0) {
+       WorstreamLatestId = 1;
+   } 
+   else {
+       if( componentDetails[componentDetails?.length-1]?.TaskLevel){
+           WorstreamLatestId = componentDetails[componentDetails?.length-1]?.TaskLevel + 1;
+       }else{
+           WorstreamLatestId = componentDetails?.length + 1;
+       }
+     
+   }
+   Tasklevel = WorstreamLatestId++;
+   let removed = EditData?.TaskID?.split('-')[0];
+   TaskID = `${removed}-W${Tasklevel}`
+   var TaskTypeId:any = 3;
+}
+let UpdateDataObject: any = {
+    IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : null,
+    workingThisWeek: EditData.workingThisWeek
+        ? EditData.workingThisWeek
+        : null,
+    waitForResponse: EditData.waitForResponse
+        ? EditData.waitForResponse
+        : null,
+    PriorityRank: EditData.PriorityRank,
+    ItemRank: EditData.ItemRank,
+    TaskTypeId:TaskTypeId != undefined?TaskTypeId:null,
+    TaskID: TaskID != ''?TaskID:null,
+    TaskLevel: Tasklevel != ''?Tasklevel:null,
+    Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
+    Priority: Priority,
+    StartDate: EditData.StartDate
+        ? Moment(EditData.StartDate).format("MM-DD-YYYY")
+        : null,
+    PercentComplete:
+        UpdateTaskInfo.PercentCompleteStatus != ""
+            ? Number(UpdateTaskInfo.PercentCompleteStatus) / 100
+            : EditData.PercentComplete
+                ? EditData.PercentComplete / 100
+                : 0,
+    Categories: CategoriesTitle ? CategoriesTitle : null,
+    PortfolioId: smartComponentsIds === "" ? null : smartComponentsIds,
+    RelevantPortfolioId: {
+        results:
+            RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0
+                ? RelevantPortfolioIds
+                : [],
+    },
+    TaskCategoriesId: {
+        results:
+            CategoryTypeID != undefined && CategoryTypeID.length > 0
+                ? CategoryTypeID
+                : [],
+    },
+
+    DueDate: EditData.DueDate
+        ? Moment(EditData.DueDate).format("MM-DD-YYYY")
+        : null,
+    CompletedDate: EditData.CompletedDate
+        ? Moment(EditData.CompletedDate).format("MM-DD-YYYY")
+        : null,
+    Status: taskStatus
+        ? taskStatus
+        : EditData.Status
+            ? EditData.Status
+            : null,
+    Mileage: EditData.Mileage ? EditData.Mileage : "",
+    AssignedToId: {
+        results:
+            AssignedToIds != undefined && AssignedToIds.length > 0
+                ? AssignedToIds
+                : [],
+    },
+    ResponsibleTeamId: {
+        results:
+            ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0
+                ? ResponsibleTeamIds
+                : [],
+    },
+    TeamMembersId: {
+        results:
+            TeamMemberIds != undefined && TeamMemberIds.length > 0
+                ? TeamMemberIds
+                : [],
+    },
+    FeedBack:
+        updateFeedbackArray?.length > 0
+            ? JSON.stringify(updateFeedbackArray)
+            : null,
+    ComponentLink: {
+        __metadata: { type: "SP.FieldUrlValue" },
+        Description: EditData.Relevant_Url ? EditData.Relevant_Url : "",
+        Url: EditData.Relevant_Url ? EditData.Relevant_Url : "",
+    },
+    //BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
+    ProjectId: selectedProject.length > 0 ? selectedProject[0].Id : null,
+    ApproverId: {
+        results:
+            ApproverIds != undefined && ApproverIds.length > 0 ? ApproverIds : [],
+    },
+    Sitestagging: ClientTimeData?.length > 0 ? JSON.stringify(ClientTimeData) : null,
+    ClientCategoryId: {
+        results:
+            ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0
+                ? ClientCategoryIDs
+                : [],
+    },
+    // SiteCompositionSettings: SiteCompositionSetting,
+    ApproverHistory:
+        ApproverHistoryData?.length > 0
+            ? JSON.stringify(ApproverHistoryData)
+            : null,
+    EstimatedTime: EditData.EstimatedTime ? EditData.EstimatedTime : null,
+    EstimatedTimeDescription: EditData.EstimatedTimeDescriptionArray
+        ? JSON.stringify(EditData.EstimatedTimeDescriptionArray)
+        : null,
+    WorkingAction: WorkingAction?.length > 0 ? JSON.stringify(WorkingAction) : null
+};
         return UpdateDataObject;
     };
 
@@ -3798,7 +3858,7 @@ const EditTaskPopup = (Items: any) => {
             }
         }
         if (PhoneCount > 0) {
-            CategoryChangeUpdateFunction("false", "Phone", 199);
+            CategoryChangeUpdateFunction("false", "Phone");
         }
     };
 
@@ -4713,13 +4773,13 @@ const EditTaskPopup = (Items: any) => {
                     if (selectedData?.Id != undefined) {
                         let CreateObject: any = {
                             CreatorName: CreatorData?.Title,
-                            CreatorImage: CreatorData.UserImage,
-                            CreatorID: CreatorData.Id,
+                            CreatorImage: CreatorData?.UserImage,
+                            CreatorID: CreatorData?.Id,
                             TaggedUsers: {
-                                Title: selectedData.Title,
-                                Email: selectedData.Email,
-                                AssingedToUserId: selectedData.AssingedToUserId,
-                                userImage: selectedData.Item_x0020_Cover?.Url,
+                                Title: selectedData?.Title,
+                                Email: selectedData?.Email,
+                                AssingedToUserId: selectedData?.AssingedToUserId,
+                                userImage: selectedData?.Item_x0020_Cover?.Url,
                             },
                             NotificationSend: false,
                             Comment: '',
@@ -4728,8 +4788,8 @@ const EditTaskPopup = (Items: any) => {
                         if (copyWorkAction?.length > 0) {
                             copyWorkAction?.map((DataItem: any) => {
                                 if (DataItem.Title == useFor) {
-                                    CreateObject.Id = DataItem.InformationData?.length;
-                                    DataItem.InformationData.push(CreateObject);
+                                    CreateObject.Id = DataItem?.InformationData?.length;
+                                    DataItem?.InformationData.push(CreateObject);
                                 }
                             })
                         } else {
@@ -4745,8 +4805,8 @@ const EditTaskPopup = (Items: any) => {
                             ]
                             TempArrya?.map((TempItem: any) => {
                                 if (TempItem.Title == useFor) {
-                                    CreateObject.Id = TempItem.InformationData?.length;
-                                    TempItem.InformationData.push(CreateObject);
+                                    CreateObject.Id = TempItem?.InformationData?.length;
+                                    TempItem?.InformationData.push(CreateObject);
                                 }
                             })
 
@@ -4756,8 +4816,6 @@ const EditTaskPopup = (Items: any) => {
 
                 })
             }
-
-
             setWorkingAction([...copyWorkAction]);
             console.log("Bottleneck All Details:", copyWorkAction)
             setUseFor("")
@@ -5727,7 +5785,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 }
                                                             />
                                                             <label className="form-check-label">
-                                                                Working This Week?
+                                                                Working This Week
                                                             </label>
                                                         </span>
 
@@ -5742,7 +5800,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 }
                                                             />
                                                             <label className="form-check-label">
-                                                                Working Today?
+                                                                Working Today
                                                             </label>
                                                         </span>
                                                     </span>
@@ -6019,8 +6077,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             <span
                                                                                 onClick={() =>
                                                                                     removeCategoryItem(
-                                                                                        type.Title,
-                                                                                        type.Id
+                                                                                        type.Title
                                                                                     )
                                                                                 }
                                                                                 className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
@@ -6108,7 +6165,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 type="checkbox"
                                                                 checked={PhoneStatus}
                                                                 value={`${PhoneStatus}`}
-                                                                onClick={(e) => CategoryChange(e, "Phone", 199)}
+                                                                onClick={(e) => CategoryChange(e, "Phone")}
                                                             />
                                                             <label className="form-check-label">Phone</label>
                                                         </div>
@@ -6119,7 +6176,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 checked={EmailStatus}
                                                                 value={`${EmailStatus}`}
                                                                 onClick={(e) =>
-                                                                    CategoryChange(e, "Email Notification", 276)
+                                                                    CategoryChange(e, "Email Notification")
                                                                 }
                                                             />
                                                             <label>Email Notification</label>
@@ -6130,7 +6187,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     checked={OnlyCompletedStatus}
                                                                     value={`${OnlyCompletedStatus}`}
                                                                     onClick={(e) =>
-                                                                        CategoryChange(e, "Only Completed", 565)
+                                                                        CategoryChange(e, "Only Completed")
                                                                     }
                                                                 />
                                                                 <label>Only Completed</label>
@@ -6143,7 +6200,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 checked={ImmediateStatus}
                                                                 value={`${ImmediateStatus}`}
                                                                 onClick={(e) =>
-                                                                    CategoryChange(e, "Immediate", 228)
+                                                                    CategoryChange(e, "Immediate")
                                                                 }
                                                             />
                                                             <label>Immediate</label>
@@ -6195,7 +6252,7 @@ const EditTaskPopup = (Items: any) => {
                                                             checked={ApprovalStatus}
                                                             value={`${ApprovalStatus}`}
                                                             onClick={(e) =>
-                                                                CategoryChange(e, "Approval", 227)
+                                                                CategoryChange(e, "Approval")
                                                             }
                                                         />
                                                     </div>
@@ -6650,14 +6707,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                         {ProjectData.Title}
                                                                                     </a>
                                                                                 </div>
-                                                                            ) :
-                                                                                <input
-                                                                                    type="text"
-                                                                                    className="form-control"
-                                                                                    placeholder="Search Project Here"
-                                                                                    value={ProjectSearchKey}
-                                                                                    onChange={(e) => autoSuggestionsForProject(e)}
-                                                                                />}
+                                                                            ) : null}
                                                                         </>
                                                                     );
                                                                 })}
@@ -7010,16 +7060,22 @@ const EditTaskPopup = (Items: any) => {
                                                                         data-interception="off"
                                                                         href={`${siteUrls}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`}
                                                                     >
-                                                                        <img
-                                                                            className="ProirityAssignedUserPhoto me-2"
-                                                                            data-bs-placement="bottom"
-                                                                            title={userDtl.Title ? userDtl.Title : ""}
-                                                                            src={
-                                                                                userDtl.Item_x0020_Cover
-                                                                                    ? userDtl.Item_x0020_Cover.Url
-                                                                                    : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
-                                                                            }
-                                                                        />
+                                                                        {userDtl?.Item_x0020_Cover?.Url?.length > 0
+                                                                            ?
+                                                                            <>
+                                                                                <img
+                                                                                    className="ProirityAssignedUserPhoto me-2"
+                                                                                    data-bs-placement="bottom"
+                                                                                    title={userDtl.Title ? userDtl.Title : ""}
+                                                                                    src={
+                                                                                        userDtl.Item_x0020_Cover
+                                                                                            ? userDtl.Item_x0020_Cover.Url
+                                                                                            : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+                                                                                    }
+                                                                                />
+                                                                            </>
+                                                                            : <span title={userDtl.Title ? userDtl.Title : ""} className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto "></span>
+                                                                        }
                                                                     </a>
                                                                 </div>
                                                             );
@@ -7115,18 +7171,25 @@ const EditTaskPopup = (Items: any) => {
                                                                                         " Hour"
                                                                                     : "0 Hour"}
                                                                             </span>
-                                                                            <img
-                                                                                className="ProirityAssignedUserPhoto m-0"
-                                                                                title={EstimatedTimeData.UserName}
-                                                                                src={
-                                                                                    EstimatedTimeData.UserImage !=
-                                                                                        undefined &&
-                                                                                        EstimatedTimeData.UserImage?.length >
-                                                                                        0
-                                                                                        ? EstimatedTimeData.UserImage
-                                                                                        : ""
-                                                                                }
-                                                                            />
+                                                                            {EstimatedTimeData?.UserImage?.length > 0 ? (
+                                                                                <img
+                                                                                    className="ProirityAssignedUserPhoto m-0"
+                                                                                    title={EstimatedTimeData.UserName}
+                                                                                    src={
+                                                                                        EstimatedTimeData.UserImage !=
+                                                                                            undefined &&
+                                                                                            EstimatedTimeData.UserImage?.length >
+                                                                                            0
+                                                                                            ? EstimatedTimeData.UserImage
+                                                                                            : ""
+                                                                                    }
+                                                                                />
+                                                                            ) : (
+                                                                                <span
+                                                                                    title={EstimatedTimeData.UserName}
+                                                                                    className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                                ></span>
+                                                                            )}
                                                                         </div>
                                                                         {EstimatedTimeData?.EstimatedTimeDescription
                                                                             ?.length > 0 ? (
@@ -7221,18 +7284,25 @@ const EditTaskPopup = (Items: any) => {
                                                                 return (
                                                                     <div className="align-content-center alignCenter justify-content-between py-1">
                                                                         <div className="alignCenter">
-                                                                            <img
-                                                                                className="ProirityAssignedUserPhoto m-0"
-                                                                                title={InfoData.TaggedUsers?.Title}
-                                                                                src={
-                                                                                    InfoData.TaggedUsers.userImage !=
-                                                                                        undefined &&
-                                                                                        InfoData.TaggedUsers.userImage.length >
-                                                                                        0
-                                                                                        ? InfoData.TaggedUsers.userImage
-                                                                                        : ""
-                                                                                }
-                                                                            />
+                                                                            {InfoData?.TaggedUsers?.userImage?.length > 0 ? (
+                                                                                <img
+                                                                                    className="ProirityAssignedUserPhoto m-0"
+                                                                                    title={InfoData.TaggedUsers?.Title}
+                                                                                    src={
+                                                                                        InfoData.TaggedUsers.userImage !=
+                                                                                            undefined &&
+                                                                                            InfoData.TaggedUsers.userImage.length >
+                                                                                            0
+                                                                                            ? InfoData.TaggedUsers.userImage
+                                                                                            : ""
+                                                                                    }
+                                                                                />
+                                                                            ) : (
+                                                                                <span
+                                                                                    title={InfoData.TaggedUsers?.Title}
+                                                                                    className="alignIcon svg__iconbox ProirityAssignedUserPhoto svg__icon--defaultUser "
+                                                                                ></span>
+                                                                            )}
                                                                             <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
                                                                         </div>
 
@@ -7335,18 +7405,25 @@ const EditTaskPopup = (Items: any) => {
                                                                 return (
                                                                     <div className="align-content-center alignCenter justify-content-between py-1">
                                                                         <div className="alignCenter">
-                                                                            <img
-                                                                                className="ProirityAssignedUserPhoto m-0"
-                                                                                title={InfoData.TaggedUsers?.Title}
-                                                                                src={
-                                                                                    InfoData.TaggedUsers.userImage !=
-                                                                                        undefined &&
-                                                                                        InfoData.TaggedUsers.userImage?.length >
-                                                                                        0
-                                                                                        ? InfoData.TaggedUsers.userImage
-                                                                                        : ""
-                                                                                }
-                                                                            />
+                                                                            {InfoData?.TaggedUsers?.userImage?.length > 0 ? (
+                                                                                <img
+                                                                                    className="ProirityAssignedUserPhoto m-0"
+                                                                                    title={InfoData.TaggedUsers?.Title}
+                                                                                    src={
+                                                                                        InfoData.TaggedUsers.userImage !=
+                                                                                            undefined &&
+                                                                                            InfoData.TaggedUsers.userImage?.length >
+                                                                                            0
+                                                                                            ? InfoData.TaggedUsers.userImage
+                                                                                            : ""
+                                                                                    }
+                                                                                />
+                                                                            ) : (
+                                                                                <span
+                                                                                    title={InfoData.TaggedUsers?.Title}
+                                                                                    className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto "
+                                                                                ></span>
+                                                                            )}
                                                                             <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
                                                                         </div>
 
@@ -8100,7 +8177,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             }
                                                                         />
                                                                         <label className="form-check-label">
-                                                                            Working This Week?
+                                                                            Working This Week
                                                                         </label>
                                                                     </span>
 
@@ -8115,7 +8192,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             }
                                                                         />
                                                                         <label className="form-check-label">
-                                                                            Working Today?
+                                                                            Working Today
                                                                         </label>
                                                                     </span>
                                                                 </span>
@@ -8392,8 +8469,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                         <span
                                                                                             onClick={() =>
                                                                                                 removeCategoryItem(
-                                                                                                    type.Title,
-                                                                                                    type.Id
+                                                                                                    type.Title
                                                                                                 )
                                                                                             }
                                                                                             className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
@@ -8481,7 +8557,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             type="checkbox"
                                                                             checked={PhoneStatus}
                                                                             value={`${PhoneStatus}`}
-                                                                            onClick={(e) => CategoryChange(e, "Phone", 199)}
+                                                                            onClick={(e) => CategoryChange(e, "Phone")}
                                                                         />
                                                                         <label className="form-check-label">Phone</label>
                                                                     </div>
@@ -8492,7 +8568,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             checked={EmailStatus}
                                                                             value={`${EmailStatus}`}
                                                                             onClick={(e) =>
-                                                                                CategoryChange(e, "Email Notification", 276)
+                                                                                CategoryChange(e, "Email Notification")
                                                                             }
                                                                         />
                                                                         <label>Email Notification</label>
@@ -8503,7 +8579,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 checked={OnlyCompletedStatus}
                                                                                 value={`${OnlyCompletedStatus}`}
                                                                                 onClick={(e) =>
-                                                                                    CategoryChange(e, "Only Completed", 565)
+                                                                                    CategoryChange(e, "Only Completed")
                                                                                 }
                                                                             />
                                                                             <label>Only Completed</label>
@@ -8516,7 +8592,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             checked={ImmediateStatus}
                                                                             value={`${ImmediateStatus}`}
                                                                             onClick={(e) =>
-                                                                                CategoryChange(e, "Immediate", 228)
+                                                                                CategoryChange(e, "Immediate")
                                                                             }
                                                                         />
                                                                         <label>Immediate</label>
@@ -8568,7 +8644,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         checked={ApprovalStatus}
                                                                         value={`${ApprovalStatus}`}
                                                                         onClick={(e) =>
-                                                                            CategoryChange(e, "Approval", 227)
+                                                                            CategoryChange(e, "Approval")
                                                                         }
                                                                     />
                                                                 </div>
@@ -9023,7 +9099,13 @@ const EditTaskPopup = (Items: any) => {
                                                                                                     {ProjectData.Title}
                                                                                                 </a>
                                                                                             </div>
-                                                                                        ) : null}
+                                                                                        ) : <input
+                                                                                            type="text"
+                                                                                            className="form-control"
+                                                                                            placeholder="Search Project Here"
+                                                                                            value={ProjectSearchKey}
+                                                                                            onChange={(e) => autoSuggestionsForProject(e)}
+                                                                                        />}
                                                                                     </>
                                                                                 );
                                                                             })}
@@ -9376,17 +9458,25 @@ const EditTaskPopup = (Items: any) => {
                                                                                     data-interception="off"
                                                                                     href={`${siteUrls}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`}
                                                                                 >
-                                                                                    <img
-                                                                                        className="ProirityAssignedUserPhoto me-2"
-                                                                                        data-bs-placement="bottom"
-                                                                                        title={userDtl.Title ? userDtl.Title : ""}
-                                                                                        src={
-                                                                                            userDtl.Item_x0020_Cover
-                                                                                                ? userDtl.Item_x0020_Cover.Url
-                                                                                                : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
-                                                                                        }
-                                                                                    />
+                                                                                    {userDtl?.Item_x0020_Cover?.Url?.length > 0 ? (
+                                                                                        <img
+                                                                                            className="ProirityAssignedUserPhoto me-2"
+                                                                                            data-bs-placement="bottom"
+                                                                                            title={userDtl.Title ? userDtl.Title : ""}
+                                                                                            src={
+                                                                                                userDtl.Item_x0020_Cover
+                                                                                                    ? userDtl.Item_x0020_Cover.Url
+                                                                                                    : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+                                                                                            }
+                                                                                        />
+                                                                                    ) : (
+                                                                                        <span
+                                                                                            title={userDtl.Title ? userDtl.Title : ""}
+                                                                                            className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto"
+                                                                                        ></span>
+                                                                                    )}
                                                                                 </a>
+
                                                                             </div>
                                                                         );
                                                                     }
@@ -9481,18 +9571,25 @@ const EditTaskPopup = (Items: any) => {
                                                                                                     " Hour"
                                                                                                 : "0 Hour"}
                                                                                         </span>
-                                                                                        <img
-                                                                                            className="ProirityAssignedUserPhoto m-0"
-                                                                                            title={EstimatedTimeData.UserName}
-                                                                                            src={
-                                                                                                EstimatedTimeData.UserImage !=
-                                                                                                    undefined &&
-                                                                                                    EstimatedTimeData.UserImage?.length >
-                                                                                                    0
-                                                                                                    ? EstimatedTimeData.UserImage
-                                                                                                    : ""
-                                                                                            }
-                                                                                        />
+                                                                                        {EstimatedTimeData?.UserImage?.length > 0 ? (
+                                                                                            <img
+                                                                                                className="ProirityAssignedUserPhoto m-0"
+                                                                                                title={EstimatedTimeData.UserName}
+                                                                                                src={
+                                                                                                    EstimatedTimeData.UserImage !=
+                                                                                                        undefined &&
+                                                                                                        EstimatedTimeData.UserImage?.length >
+                                                                                                        0
+                                                                                                        ? EstimatedTimeData.UserImage
+                                                                                                        : ""
+                                                                                                }
+                                                                                            />
+                                                                                        ) : (
+                                                                                            <span
+                                                                                                title={EstimatedTimeData.UserName}
+                                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto"
+                                                                                            ></span>
+                                                                                        )}
                                                                                     </div>
                                                                                     {EstimatedTimeData?.EstimatedTimeDescription
                                                                                         ?.length > 0 ? (
@@ -9587,18 +9684,25 @@ const EditTaskPopup = (Items: any) => {
                                                                             return (
                                                                                 <div className="align-content-center alignCenter justify-content-between py-1">
                                                                                     <div className="alignCenter">
-                                                                                        <img
-                                                                                            className="ProirityAssignedUserPhoto m-0"
-                                                                                            title={InfoData.TaggedUsers?.Title}
-                                                                                            src={
-                                                                                                InfoData.TaggedUsers.userImage !=
-                                                                                                    undefined &&
-                                                                                                    InfoData.TaggedUsers.userImage.length >
-                                                                                                    0
-                                                                                                    ? InfoData.TaggedUsers.userImage
-                                                                                                    : ""
-                                                                                            }
-                                                                                        />
+                                                                                        {InfoData?.TaggedUsers?.userImage?.length > 0 ? (
+                                                                                            <img
+                                                                                                className="ProirityAssignedUserPhoto m-0"
+                                                                                                title={InfoData.TaggedUsers?.Title}
+                                                                                                src={
+                                                                                                    InfoData.TaggedUsers.userImage !=
+                                                                                                        undefined &&
+                                                                                                        InfoData.TaggedUsers.userImage.length >
+                                                                                                        0
+                                                                                                        ? InfoData.TaggedUsers.userImage
+                                                                                                        : ""
+                                                                                                }
+                                                                                            />
+                                                                                        ) : (
+                                                                                            <span
+                                                                                                title={InfoData.TaggedUsers?.Title}
+                                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto"
+                                                                                            ></span>
+                                                                                        )}
                                                                                         <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
                                                                                     </div>
 
@@ -9701,18 +9805,25 @@ const EditTaskPopup = (Items: any) => {
                                                                             return (
                                                                                 <div className="align-content-center alignCenter justify-content-between py-1">
                                                                                     <div className="alignCenter">
-                                                                                        <img
-                                                                                            className="ProirityAssignedUserPhoto m-0"
-                                                                                            title={InfoData.TaggedUsers?.Title}
-                                                                                            src={
-                                                                                                InfoData.TaggedUsers.userImage !=
-                                                                                                    undefined &&
-                                                                                                    InfoData.TaggedUsers.userImage?.length >
-                                                                                                    0
-                                                                                                    ? InfoData.TaggedUsers.userImage
-                                                                                                    : ""
-                                                                                            }
-                                                                                        />
+                                                                                        {InfoData?.TaggedUsers?.userImage?.length > 0 ? (
+                                                                                            <img
+                                                                                                className="ProirityAssignedUserPhoto m-0"
+                                                                                                title={InfoData.TaggedUsers?.Title}
+                                                                                                src={
+                                                                                                    InfoData.TaggedUsers.userImage !=
+                                                                                                        undefined &&
+                                                                                                        InfoData.TaggedUsers.userImage?.length >
+                                                                                                        0
+                                                                                                        ? InfoData.TaggedUsers.userImage
+                                                                                                        : ""
+                                                                                                }
+                                                                                            />
+                                                                                        ) : (
+                                                                                            <span
+                                                                                                title={InfoData.TaggedUsers?.Title}
+                                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto"
+                                                                                            ></span>
+                                                                                        )}
                                                                                         <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
                                                                                     </div>
 
