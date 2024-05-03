@@ -615,6 +615,7 @@ const closeActivity = () => {
     setIsTaggedCompTask(false)
     setCreateTaskId({ portfolioData: null, portfolioType: null })
     renderData = backupTableData;
+    LoadAllSiteTasks();
     refreshData()
   }, []);
   const CreateTask = React.useCallback(() => {
