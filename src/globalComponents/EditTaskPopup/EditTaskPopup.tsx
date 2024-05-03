@@ -4705,13 +4705,13 @@ const EditTaskPopup = (Items: any) => {
                     if (selectedData?.Id != undefined) {
                         let CreateObject: any = {
                             CreatorName: CreatorData?.Title,
-                            CreatorImage: CreatorData.UserImage,
-                            CreatorID: CreatorData.Id,
+                            CreatorImage: CreatorData?.UserImage,
+                            CreatorID: CreatorData?.Id,
                             TaggedUsers: {
-                                Title: selectedData.Title,
-                                Email: selectedData.Email,
-                                AssingedToUserId: selectedData.AssingedToUserId,
-                                userImage: selectedData.Item_x0020_Cover?.Url,
+                                Title: selectedData?.Title,
+                                Email: selectedData?.Email,
+                                AssingedToUserId: selectedData?.AssingedToUserId,
+                                userImage: selectedData?.Item_x0020_Cover?.Url,
                             },
                             NotificationSend: false,
                             Comment: '',
@@ -4720,8 +4720,8 @@ const EditTaskPopup = (Items: any) => {
                         if (copyWorkAction?.length > 0) {
                             copyWorkAction?.map((DataItem: any) => {
                                 if (DataItem.Title == useFor) {
-                                    CreateObject.Id = DataItem.InformationData?.length;
-                                    DataItem.InformationData.push(CreateObject);
+                                    CreateObject.Id = DataItem?.InformationData?.length;
+                                    DataItem?.InformationData.push(CreateObject);
                                 }
                             })
                         } else {
@@ -4737,8 +4737,8 @@ const EditTaskPopup = (Items: any) => {
                             ]
                             TempArrya?.map((TempItem: any) => {
                                 if (TempItem.Title == useFor) {
-                                    CreateObject.Id = TempItem.InformationData?.length;
-                                    TempItem.InformationData.push(CreateObject);
+                                    CreateObject.Id = TempItem?.InformationData?.length;
+                                    TempItem?.InformationData.push(CreateObject);
                                 }
                             })
 
@@ -9033,7 +9033,13 @@ const EditTaskPopup = (Items: any) => {
                                                                                                     {ProjectData.Title}
                                                                                                 </a>
                                                                                             </div>
-                                                                                        ) : null}
+                                                                                        ) : <input
+                                                                                            type="text"
+                                                                                            className="form-control"
+                                                                                            placeholder="Search Project Here"
+                                                                                            value={ProjectSearchKey}
+                                                                                            onChange={(e) => autoSuggestionsForProject(e)}
+                                                                                        />}
                                                                                     </>
                                                                                 );
                                                                             })}
