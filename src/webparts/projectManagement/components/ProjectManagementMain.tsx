@@ -1045,7 +1045,7 @@ const closeActivity = () => {
     setActiveTile(type)
     if (checkedList?.TaskType === undefined) {
         checkedList.NoteCall = type;
-
+        selectedItem.NoteCall = type;
     }
     if (checkedList?.TaskType?.Id == 1) {
         checkedList.NoteCall = type;
@@ -2470,9 +2470,9 @@ const closeActivity = () => {
                 context={AllListId.Context}
                 LoadAllSiteTasks={LoadAllSiteTasks}
                 selectedItem={
-                  (checkedList != null && checkedList.Id != null)
+                  checkedList != null && checkedList.Id != null
                   ? checkedList
-                  : (selectedItem != null && selectedItem.Id != null) ? selectedItem : null
+                  : selectedItem
                 }
                 taggedPortfolioItem={taggedPortfolioItem}
               ></CreateActivity>
