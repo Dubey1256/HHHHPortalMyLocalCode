@@ -189,19 +189,14 @@ const EditTaskPopup = (Items: any) => {
     const [ApproverHistoryData, setApproverHistoryData] = useState([]);
     const [LastUpdateTaskData, setLastUpdateTaskData] = useState<any>({});
     const [SitesTaggingData, setSitesTaggingData] = useState<any>([]);
-    const [SearchedServiceCompnentData, setSearchedServiceCompnentData] =
-        useState<any>([]);
-    const [SearchedLinkedPortfolioData, setSearchedLinkedPortfolioData] =
-        useState<any>([]);
-    const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] =
-        useState<any>("");
-    const [SearchedLinkedPortfolioKey, setSearchedLinkedPortfolioKey] =
-        useState<any>("");
+    const [SearchedServiceCompnentData, setSearchedServiceCompnentData] = useState<any>([]);
+    const [SearchedLinkedPortfolioData, setSearchedLinkedPortfolioData] = useState<any>([]);
+    const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = useState<any>("");
+    const [SearchedLinkedPortfolioKey, setSearchedLinkedPortfolioKey] = useState<any>("");
     const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = useState(false);
     const [IsCopyOrMovePanel, setIsCopyOrMovePanel] = useState<any>("");
     const [EstimatedDescription, setEstimatedDescription] = useState("");
-    const [EstimatedDescriptionCategory, setEstimatedDescriptionCategory] =
-        useState("");
+    const [EstimatedDescriptionCategory, setEstimatedDescriptionCategory] = useState("");
     const [EstimatedTime, setEstimatedTime] = useState<any>("");
     const [TotalEstimatedTime, setTotalEstimatedTime] = useState(0);
     const [SiteCompositionShow, setSiteCompositionShow] = useState(false);
@@ -5719,7 +5714,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 }
                                                             />
                                                             <label className="form-check-label">
-                                                                Working This Week?
+                                                                Working This Week
                                                             </label>
                                                         </span>
 
@@ -5734,7 +5729,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 }
                                                             />
                                                             <label className="form-check-label">
-                                                                Working Today?
+                                                                Working Today
                                                             </label>
                                                         </span>
                                                     </span>
@@ -6994,7 +6989,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         data-interception="off"
                                                                         href={`${siteUrls}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`}
                                                                     >
-                                                                        {userDtl?.Item_x0020_Cover.Url?.Url?.length > 0
+                                                                        {userDtl?.Item_x0020_Cover?.Url?.length > 0
                                                                             ?
                                                                             <>
                                                                                 <img
@@ -7008,7 +7003,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                     }
                                                                                 />
                                                                             </>
-                                                                            : <span title="Default user icons" className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
+                                                                            : <span title={userDtl.Title ? userDtl.Title : ""} className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto "></span>
                                                                         }
                                                                     </a>
                                                                 </div>
@@ -7120,7 +7115,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 />
                                                                             ) : (
                                                                                 <span
-                                                                                    title="Default user icons"
+                                                                                    title={EstimatedTimeData.UserName}
                                                                                     className="alignIcon svg__iconbox svg__icon--defaultUser "
                                                                                 ></span>
                                                                             )}
@@ -7233,8 +7228,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                 />
                                                                             ) : (
                                                                                 <span
-                                                                                    title="Default user icons"
-                                                                                    className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                                    title={InfoData.TaggedUsers?.Title}
+                                                                                    className="alignIcon svg__iconbox ProirityAssignedUserPhoto svg__icon--defaultUser "
                                                                                 ></span>
                                                                             )}
                                                                             <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
@@ -7354,8 +7349,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                 />
                                                                             ) : (
                                                                                 <span
-                                                                                    title="Default user icons"
-                                                                                    className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                                    title={InfoData.TaggedUsers?.Title}
+                                                                                    className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto "
                                                                                 ></span>
                                                                             )}
                                                                             <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
@@ -9405,8 +9400,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                         />
                                                                                     ) : (
                                                                                         <span
-                                                                                            title="Default user icons"
-                                                                                            className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                                            title={userDtl.Title ? userDtl.Title : ""}
+                                                                                            className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto"
                                                                                         ></span>
                                                                                     )}
                                                                                 </a>
@@ -9520,8 +9515,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                             />
                                                                                         ) : (
                                                                                             <span
-                                                                                                title="Default user icons"
-                                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                                                title={EstimatedTimeData.UserName}
+                                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto"
                                                                                             ></span>
                                                                                         )}
                                                                                     </div>
@@ -9633,8 +9628,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                             />
                                                                                         ) : (
                                                                                             <span
-                                                                                                title="Default user icons"
-                                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                                                title={InfoData.TaggedUsers?.Title}
+                                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto"
                                                                                             ></span>
                                                                                         )}
                                                                                         <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
@@ -9754,8 +9749,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                             />
                                                                                         ) : (
                                                                                             <span
-                                                                                                title="Default user icons"
-                                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser "
+                                                                                                title={InfoData.TaggedUsers?.Title}
+                                                                                                className="alignIcon svg__iconbox svg__icon--defaultUser ProirityAssignedUserPhoto"
                                                                                             ></span>
                                                                                         )}
                                                                                         <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>

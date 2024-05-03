@@ -124,12 +124,12 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             .getByTitle(this.state.listName)
             .items
             .getById(this.state.itemID)
-            .select("ID","TaskID" ,"TaskType","ParentTask","Id", "DueDate", "ComponentLink", "PriorityRank", "TaskCategories/Id", "TaskCategories/Title", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Sitestagging", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+            .select("ID", "Title", "DueDate", "ComponentLink", "PriorityRank", "TaskCategories/Id", "TaskCategories/Title", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Sitestagging", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
             .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "Portfolio", "Editor", "Project", "TaskCategories")
             .get()
         }
       } else {
-        taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID","TaskID" ,"TaskType","ParentTask","Id", "ComponentLink", "PriorityRank", "DueDate", "TaskCategories/Id", "TaskCategories/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+        taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "ComponentLink", "PriorityRank", "DueDate", "TaskCategories/Id", "TaskCategories/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
           .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "Portfolio", "PortfolioType", "Editor", "Project", "TaskCategories")
           .get()
       }
@@ -717,7 +717,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               <p></p>
                Task Comment-<span style="background-color: yellow;">${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')}.</span>
               <p><br/></p>
-              <span>${finalTaskInfo}</span>
+          <span>${finalTaskInfo}</span>
               <p></p>
               Task Link: <a href=${MsgURL}>Click here</a>
               <p></p>
@@ -727,7 +727,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               <b>Hi ${this.state?.ReplyParent?.AuthorName},</b>
               Task Comment-<span style="background-color: yellow;">${txtComment}.</span>
               <p><br/></p>
-              <b>Task Details : </b> <span>${finalTaskInfo}</span>
+              <span>${finalTaskInfo}</span>
               <p></p>
               Task Link: <a href=${MsgURL}>Click here</a>
               <p></p>
@@ -741,7 +741,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           <p></p>
           Task Comment-<span style="background-color: yellow;">${txtComment}.</span>
           <p><br/></p>
-          <b>Task Details : </b> <span>${finalTaskInfo}</span>
+          <span>${finalTaskInfo}</span>
           <p></p>
           Task Link: <a href=${MsgURL}>Click here</a>
           <p></p>
