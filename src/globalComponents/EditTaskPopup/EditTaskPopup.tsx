@@ -3304,10 +3304,10 @@ const EditTaskPopup = (Items: any) => {
    let SelectedSites:any=''
    var Tasklevel:any=''
    var TaskID:any=''
-  if(EditData.TaskType.Id == 1){
+  if(EditData?.TaskType?.Id == 1){
    let SelectedSites:any=''
    var TaskTypeId:any = 1;
-   SiteTypes.map((dataItem: any) => {
+   SiteTypes?.map((dataItem: any) => {
        if (dataItem.isSelected == true) {
            SelectedSites = dataItem.Title;
        }
@@ -3334,9 +3334,9 @@ const EditTaskPopup = (Items: any) => {
        }
      
   }
-  if (EditData.TaskType.Id == 3) {
+  if (EditData?.TaskType?.Id == 3) {
    let WorstreamLatestId:any=''
-   SiteTypes.map((dataItem: any) => {
+   SiteTypes?.map((dataItem: any) => {
        if (dataItem.isSelected == true) {
            SelectedSites = dataItem.Title;
        }

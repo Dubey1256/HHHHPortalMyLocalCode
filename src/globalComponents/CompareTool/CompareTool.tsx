@@ -240,10 +240,10 @@ const CompareTool = (props: any) => {
     }
 
     const getStructureData = function (Item: any) {
-        Item?.AllTimeSpentDetails.map((item: any) => {
+        Item?.AllTimeSpentDetails?.map((item: any) => {
             if (item.TimesheetTitle == undefined || item.TimesheetTitle.Id == undefined) {
                 item.Expanded = true;
-                Item?.AllTimeSpentDetails.map((val: any) => {
+                Item?.AllTimeSpentDetails?.map((val: any) => {
                     if (val.TimesheetTitle != undefined && val.TimesheetTitle.Id != undefined && val.TimesheetTitle.Id == item.Id) {
                         val.isShifted = true;
                         val?.AdditionalTime.forEach((value: any) => {
@@ -257,9 +257,9 @@ const CompareTool = (props: any) => {
             }
         })
         Item.AllTimeSpentDetails = Item.AllTimeSpentDetails.filter((type: { isShifted: boolean; }) => type.isShifted == false)
-        Item?.AllTimeSpentDetails.map((item: any) => {
+        Item?.AllTimeSpentDetails?.map((item: any) => {
             if (item.AdditionalTime.length > 0) {
-                item?.AdditionalTime.map((val: any) => {
+                item?.AdditionalTime?.map((val: any) => {
                     var NewDate = val.TaskDate;
                     try {
                         getDateForTimeEntry(NewDate, val);
@@ -299,6 +299,7 @@ const CompareTool = (props: any) => {
         Item.finalData = finalData;
     }
     const GetTaskTime = async (Item: any) => {
+
         var site = Item.siteType.replace(' ', '');
         var listID = "";//"464FB776-E4B3-404C-8261-7D3C50FF343F";
         // if (site != undefined && site == 'Migration' || site == 'ALAKDigital')
@@ -325,7 +326,7 @@ const CompareTool = (props: any) => {
         const web = new Web(props?.contextValue?.siteUrl);
         await web.lists.getById(listID).items.select(select)
             .getAll().then((data: any) => {
-                data?.d?.results.map((time: any) => {
+                data?.d?.results?.map((time: any) => {
                     time.IsItemUpdated = false;
                     time.select = false;
                 })
@@ -333,13 +334,13 @@ const CompareTool = (props: any) => {
                 Item.CopyAllTimeSpentDetails = [...Item.AllTimeSpentDetails];
                 var totletimeparentcount = 0;
                 Item.AllAvailableTitle = [];
-                Item?.AllTimeSpentDetails.map((item: any) => {
+                Item?.AllTimeSpentDetails?.map((item: any) => {
                     if (item.TimesheetTitle != undefined && item.TimesheetTitle.Id != undefined) {
                         if (item.AdditionalTimeEntry != undefined && item.AdditionalTimeEntry != '') {
                             try {
                                 item.AdditionalTime = JSON.parse(item.AdditionalTimeEntry);
                                 if (item.AdditionalTime.length > 0) {
-                                    item?.AdditionalTime.map((additionalTime: any) => {
+                                    item?.AdditionalTime?.map((additionalTime: any) => {
                                         var time = parseFloat(additionalTime.TaskTime)
                                         if (!isNaN(time))
                                             totletimeparentcount += time;
@@ -368,7 +369,7 @@ const CompareTool = (props: any) => {
                 })
                 getStructureData(Item);
                 Item.AllSiteData = [...Item.copyAllSites]
-                Item?.AllSiteData.map((site: any) => {
+                Item?.AllSiteData?.map((site: any) => {
                     if (site.ClienTimeDescription != undefined && site.ClienTimeDescription != '')
                         if (Item.siteType != undefined && site.Title != undefined && Item.siteType == site.Title && site.ClienTimeParcent == undefined && site.flag == true) {
                             site.ClienTimeParcent = parseFloat(((totletimeparentcount * parseFloat((site.ClienTimeDescription).toFixed(2))) / 100).toFixed(2));
@@ -383,6 +384,7 @@ const CompareTool = (props: any) => {
                     alert(JSON.stringify(error));
 
                 });
+
     }
     // const TimeEntryColumnsFirst = React.useMemo<ColumnDef<any, unknown>[]>(
     //     () => [
@@ -652,13 +654,13 @@ const CompareTool = (props: any) => {
                         datas[0].FeedBackDescription = [];
                     datas[0].AssignToUsers = [];
                     datas[0].TeamMembersUsers = [];
-                    datas[0]["SiteIcon"] = SmartMetaDataAllItems?.Sites.map((site: any) => {
+                    datas[0]["SiteIcon"] = SmartMetaDataAllItems?.Sites?.map((site: any) => {
                         if (site.Title === items.siteType) {
                             return site.Item_x005F_x0020_Cover?.Url;
                         }
                         return null; // Or any other default value if the condition is not met
                     }).filter((url: any) => url !== null)[0];
-                    SmartMetaDataAllItems?.Sites.map((site: any) => { return site?.Item_x005F_x0020_Cover?.Url; site.Title === items.siteType })
+                    SmartMetaDataAllItems?.Sites?.map((site: any) => { return site?.Item_x005F_x0020_Cover?.Url; site.Title === items.siteType })
                     //datas[0]["SiteIcon"] = site?.Item_x005F_x0020_Cover?.Url;
                     datas[0].TaskTimeSheetCategoriesGrouping = JSON.parse(JSON.stringify(SmartMetaDataAllItems?.TimeSheetCategory));
                     datas[0].TaskCategories = datas[0]?.TaskCategories === undefined ? [] : datas[0]?.TaskCategories;
@@ -723,10 +725,10 @@ const CompareTool = (props: any) => {
 
                     datas[0].TaskID = globalCommon.GetTaskId(datas[0]);
                     datas[0].siteUrl = props?.contextValue?.siteUrl,
-                        datas[0].listId = items?.listId === undefined ? props?.contextValue?.MasterTaskListID : items?.listId,
-                        datas[0].siteType = (items.siteType === undefined || items.siteType ==="Project") ? "Master Tasks" : items.siteType,
-                        getDocuments(datas)
-                    if (datas[0]?.TaskType?.Id != undefined)
+                        datas[0].listId = items?.listId === undefined ? props?.contextValue?.MasterTaskListID : items?.listId;
+                    datas[0].siteType = (items.siteType === undefined || items.siteType === "Project") ? "Master Tasks" : items.siteType;
+                    getDocuments(datas);
+                    if (datas[0]?.TaskType?.Id != undefined && props?.contextValue?.TimeEntry?.toLowerCase() === "true")
                         GetTaskTime(datas[0]);
                     a.push(...datas);
                     if (selectedData?.length === a?.length)
@@ -744,20 +746,57 @@ const CompareTool = (props: any) => {
         // setData(a);
     };
 
+    // const getDocuments = async (data: any) => {
+    //     try {
+    //         let filter = ''
+    //         if (data[0]?.TaskType?.Id != undefined)
+    //             filter = data[0]?.siteType + `/Id eq ${data[0]?.Id}`
+    //         else filter = `Portfolios/Id eq ${data[0]?.Id}`
+    //         let web = new Web(props?.contextValue?.siteUrl);
+    //         let items = await web.lists
+    //             .getById("D0F88B8F-D96D-4E12-B612-2706BA40FB08").items
+    //             .select('Id', 'Title', 'Portfolios/Id', 'Portfolios/Title', 'EPS/Id', 'EPS/Title', 'EI/Id', 'EI/Title',
+    //                 'HHHH/Id', 'HHHH/Title', 'Education/Id', 'Education/Title', 'Gruene/Id', 'Gruene/Title',
+    //                 'QA/Id', 'QA/Title', 'Shareweb/Id', 'Shareweb/Title',
+    //                 'DE/Id', 'DE/Title', 'Gender/Id', 'Gender/Title', 'EncodedAbsUrl', 'File_x0020_Type')
+    //             .expand('Portfolios,EPS,EI,HHHH,Education,Gruene,QA,Shareweb,DE,Gender')
+    //             .filter(filter)
+    //             .getAll();
+
+    //         if (items?.length > 0) {
+    //             items.forEach((obj: any) => {
+    //                 obj.property = 'tagDoc';
+    //             })
+    //         }
+    //         data[0].tagDoc = items;
+    //         console.log(items);
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // };
+
     const getDocuments = async (data: any) => {
         try {
+
             let filter = ''
+            let dynamicColumns = 'Id,Title,Portfolios/Id,Portfolios/Title,EncodedAbsUrl,File_x0020_Type';
+            let expendedColumns = 'Portfolios';
+            SmartMetaDataAllItems?.Sites?.forEach((site: any) => {
+                if (site?.Title != "Master Tasks" && site?.Title != "Shareweb" && site?.Title != "Small Projects" && site?.Title != "Education" && site?.Title != "QA" && site?.Title != "Gender" && site?.Title != "SDC Sites" && site?.Title != "SP Online" && site?.Title != "DRR" && site?.Title != "Health") {
+                    if (site.Title != undefined && site?.Title?.toLowerCase() == "offshore tasks")
+                        site.Title = "OffShoreTask";
+                    dynamicColumns += ',' + site.Title + '/Id,' + site.Title + '/Title';
+                    expendedColumns += ',' + site.Title
+                } ``
+            })
             if (data[0]?.TaskType?.Id != undefined)
                 filter = data[0]?.siteType + `/Id eq ${data[0]?.Id}`
             else filter = `Portfolios/Id eq ${data[0]?.Id}`
             let web = new Web(props?.contextValue?.siteUrl);
             let items = await web.lists
-                .getById("D0F88B8F-D96D-4E12-B612-2706BA40FB08").items
-                .select('Id', 'Title', 'Portfolios/Id', 'Portfolios/Title', 'EPS/Id', 'EPS/Title', 'EI/Id', 'EI/Title',
-                    'HHHH/Id', 'HHHH/Title', 'Education/Id', 'Education/Title', 'Gruene/Id', 'Gruene/Title',
-                    'QA/Id', 'QA/Title', 'Shareweb/Id', 'Shareweb/Title',
-                    'DE/Id', 'DE/Title', 'Gender/Id', 'Gender/Title', 'EncodedAbsUrl', 'File_x0020_Type')
-                .expand('Portfolios,EPS,EI,HHHH,Education,Gruene,QA,Shareweb,DE,Gender')
+                .getById(props?.contextValue?.DocumentListID ===undefined ? props?.contextValue?.DocumentsListID :props?.contextValue?.DocumentListID).items
+                .select(dynamicColumns)
+                .expand(expendedColumns)
                 .filter(filter)
                 .getAll();
 
@@ -774,12 +813,11 @@ const CompareTool = (props: any) => {
     };
 
 
-
     const onRenderCustomHeaderMain = () => {
         return (
             <>
                 <div className="subheading">
-                    Compare {data?.length > 0 && data[0]?.TaskType?.Id != undefined ? 'Task Tool' : 'Components'}
+                    Compare {data?.length > 0 && data[0]?.TaskType?.Id != undefined ? 'Tasks' : (data[0]?.Item_x0020_Type === "Project" ? "Px" : 'Components')}
 
                 </div>
                 {data?.length > 0 && data[0]?.TaskType?.Id != undefined ? <Tooltip ComponentId={1723} /> : <Tooltip ComponentId={611} />}
@@ -834,7 +872,7 @@ const CompareTool = (props: any) => {
         console.log(params.get('Item2'));
         if (props?.compareData?.length == 2) {
             let selectedDataValue: any = []
-            props?.compareData.map((elem: any) => {
+            props?.compareData?.map((elem: any) => {
                 if (elem) {
                     selectedDataValue.push(elem?.original)
                 }
@@ -925,7 +963,7 @@ const CompareTool = (props: any) => {
                 updatedItems[indexValue][property] = findUnSelected
                 if (!IsExistsData(updatedItems[index][property], taggedItems))
                     updatedItems[index][property].unshift(taggedItems);
-                updatedItems[index][property].map((elem: any) => {
+                updatedItems[index][property]?.map((elem: any) => {
                     if (elem.checked)
                         elem.checked = false
                 })
@@ -936,7 +974,7 @@ const CompareTool = (props: any) => {
                 if (updatedItems[index][property]?.length > 0 && selectedItems?.length > 0) {
                     if (!IsExistsData(updatedItems[index][property], selectedItems[0])) {
                         updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
-                        updatedItems[index][property].map((elem: any) => {
+                        updatedItems[index][property]?.map((elem: any) => {
                             if (elem.checked)
                                 elem.checked = false
                         })
@@ -955,7 +993,7 @@ const CompareTool = (props: any) => {
                 if (updatedItems[index][property]?.length > 0 && selectedItems?.length > 0) {
                     if (!IsExistsDataNew(updatedItems[index][property], selectedItems[0])) {
                         updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
-                        updatedItems[index][property].map((elem: any) => {
+                        updatedItems[index][property]?.map((elem: any) => {
                             if (elem.checked)
                                 elem.checked = false
                         })
@@ -976,7 +1014,7 @@ const CompareTool = (props: any) => {
                 if (updatedItems[index][property]?.length > 0 && selectedItems?.length > 0) {
                     if (!IsExistsData(updatedItems[index][property], selectedItems[0])) {
                         updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
-                        updatedItems[index][property].map((elem: any) => {
+                        updatedItems[index][property]?.map((elem: any) => {
                             if (elem.checked)
                                 elem.checked = false
                         })
@@ -1013,7 +1051,7 @@ const CompareTool = (props: any) => {
             if (updatedItems[index][property]?.length > 0 && selectedItems?.length > 0) {
                 if (!IsExistsData(updatedItems[index][property], selectedItems[0])) {
                     updatedItems[index][property] = [...updatedItems[index][property], ...selectedItems];
-                    updatedItems[index][property].map((elem: any) => {
+                    updatedItems[index][property]?.map((elem: any) => {
                         if (elem.selected)
                             elem.ItemMoved = 'Moved'
                     })
@@ -1071,7 +1109,7 @@ const CompareTool = (props: any) => {
     }, []);
 
     const saveEditorData = () => {
-        if (openComment?.fieldName === 'Comments') {
+        if (htmlEditor?.fieldName === 'Description') {
             let dataItem: any = (floraData != undefined &&
                 floraData != null
                 ? floraData
@@ -1172,7 +1210,7 @@ const CompareTool = (props: any) => {
     }
     var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
         var Items: any = [];
-        metadataItems.map((taxItem: any) => {
+        metadataItems?.map((taxItem: any) => {
             if (taxItem.TaxType === taxType)
                 Items.push(taxItem);
         });
@@ -1305,13 +1343,13 @@ const CompareTool = (props: any) => {
                             item["Newlabel"] = item.Newlabel;
                             AutoCompleteItemsArray.push(item);
                             if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
-                                item.childs.map((childitem: any) => {
+                                item.childs?.map((childitem: any) => {
                                     if (childitem.Newlabel != undefined) {
                                         childitem["Newlabel"] = item["Newlabel"] + " > " + childitem.Title;
                                         AutoCompleteItemsArray.push(childitem);
                                     }
                                     if (childitem.childs.length > 0) {
-                                        childitem.childs.map((subchilditem: any) => {
+                                        childitem.childs?.map((subchilditem: any) => {
                                             if (subchilditem.Newlabel != undefined) {
                                                 subchilditem["Newlabel"] = childitem["Newlabel"] + " > " + subchilditem.Title;
                                                 AutoCompleteItemsArray.push(subchilditem);
@@ -1342,7 +1380,7 @@ const CompareTool = (props: any) => {
 
                 // ############## this is used for filttering time sheet category data from smart medatadata list ##########
                 if (AllTimesheetCategoriesData?.length > 0) {
-                    AllTimesheetCategoriesData = AllTimesheetCategoriesData.map((TimeSheetCategory: any) => {
+                    AllTimesheetCategoriesData = AllTimesheetCategoriesData?.map((TimeSheetCategory: any) => {
                         TimeSheetCategory.subRows = [];
                         TimeSheetCategory.values = [];
                         TimeSheetCategory.IsSelectTimeEntry = false;
@@ -1645,7 +1683,7 @@ const CompareTool = (props: any) => {
         try {
             if (taggedtasks?.length > 0) {
                 taggedtasks.forEach((element: any) => {
-                    let postData:any = {
+                    let postData: any = {
                         // PortfolioId: Firstitem.Id,
                     }
                     if (Firstitem.Item_x0020_Type != "Project" || Firstitem.Item_x0020_Type != "Sprint") {
@@ -1736,6 +1774,7 @@ const CompareTool = (props: any) => {
         //     postData.ServiceId = { "results": [Item.Id] };
         // }
 
+        //  return SharewebListService.UpdateListItemByListId(GlobalConstants.ADMIN_SITE_URL, GlobalConstants.QUESTIONHELPDESCRIPTION_LISTID, postData, obj.Id);
     }
     const componentPost = (Item: any, type: any) => {
         try {
@@ -2184,7 +2223,7 @@ const CompareTool = (props: any) => {
         if (type == 'Keep2')
             var flag = confirm("This operation will save all changes in " + data[1].Title + " 2 and delete " + data[0].Title + " 1. Do you want to continue?");
         if (type == 'KeepBoth')
-            var flag = confirm("This operation will save all changes in both the Compare " + data[0].TaskType?.Id != undefined ? "Task" : "Components" + " .  Do you want to continue?");
+            var flag = confirm("This operation will save all changes in both the Compare " + (data[0].TaskType?.Id != undefined  ? "Task" : "Components" )+ " .  Do you want to continue?");
 
         if (flag) {
             if (type == 'Keep1') {
@@ -2230,7 +2269,7 @@ const CompareTool = (props: any) => {
         setTaskItem(undefined);
     }
     const checkboxValueHandler = (id: any, Items: any) => {
-        Items.map((checkbox: any) =>
+        Items?.map((checkbox: any) =>
             checkbox.id === id ? { ...checkbox, checked: !checkbox.checked } : checkbox
         )
 
@@ -3095,7 +3134,7 @@ const CompareTool = (props: any) => {
                                     {autoSearch?.itemIndex === 1 && autoSearch?.property === 'TaskCategories' && SearchedCategoryData?.length > 0 ? (
                                         <div className="SmartTableOnTaskPopup">
                                             <ul className="list-group hreflink scrollbar maXh-200">
-                                                {SearchedCategoryData.map((item: any) => {
+                                                {SearchedCategoryData?.map((item: any) => {
                                                     return (
                                                         <li className="hreflink list-group-item rounded-0 p-1 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                             <a>{item.Newlabel}</a>
@@ -4344,7 +4383,12 @@ const CompareTool = (props: any) => {
                                         <textarea value={(comments == null || comments == '') ? '' : comments} onChange={(e) => handleInputChange(e)} className="form-control" rows={2} placeholder="Enter your comments here"></textarea>
 
                                     </div>
-                                    <div className='text-end mt-1'> <span className='btn btn-primary hreflink' onClick={() => PostComment('txtCommentModal')} >Post</span></div>
+                                    <div className='text-end mt-1'>
+                                        <footer className='text-end'>
+                                            <button type="button" className='btn btn-primary hreflink' onClick={() => PostComment('txtCommentModal')}>Post</button>
+                                            <button type="button" className="btn btn-default" onClick={(e) => closeAllCommentModal(e)}>Cancel</button>
+                                        </footer>
+                                    </div>
 
                                 </div>
                                 {catItem["Comments"] != null && catItem["Comments"]?.length > 0 && catItem["Comments"]?.map((cmtData: any, i: any) => {
@@ -4365,7 +4409,7 @@ const CompareTool = (props: any) => {
                                                     <a className="hreflink" title='Edit' onClick={() => { bindEditorData(cmtData, i, "Description", true) }} >
                                                         <span className='svg__iconbox svg__icon--edit'></span>
                                                     </a>
-                                                    <a className="hreflink" title="Delete" onClick={() => { bindEditorData(cmtData, i, "Description", true) }}>
+                                                    <a className="hreflink" title="Delete" onClick={() => { bindEditorData(cmtData, i, "Comments", true) }}>
 
                                                         <span className='svg__iconbox svg__icon--trash'></span>
                                                     </a>
@@ -4387,9 +4431,9 @@ const CompareTool = (props: any) => {
 
                         </div>
                     </div>
-                    <footer className='text-end'>
+                    {/* <footer className='text-end'>
                         <button type="button" className="btn btn-default" onClick={(e) => closeAllCommentModal(e)}>Cancel</button>
-                    </footer>
+                    </footer> */}
 
                 </div>
 
