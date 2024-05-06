@@ -713,25 +713,21 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             if (this.state?.ReplyParent?.MsTeamCreated == undefined)
               this.state.ReplyParent.MsTeamCreated = ''
             const PreMsg = `
-              <b>Hi ${this.state?.ReplyParent?.Header.replaceAll('@', '')},</b>
-              <p></p>
                Task Comment-<span style="background-color: yellow;">${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')}.</span>
               <p><br/></p>
-          <span>${finalTaskInfo}</span>
               <p></p>
               Task Link: <a href=${MsgURL}>Click here</a>
               <p></p>
-              <b>Thanks,<br/>Task Management Team</b>
+              <span>${finalTaskInfo}</span>
+             
           `;
             const CurrentMsg = `
-              <b>Hi ${this.state?.ReplyParent?.AuthorName},</b>
               Task Comment-<span style="background-color: yellow;">${txtComment}.</span>
               <p><br/></p>
-              <span>${finalTaskInfo}</span>
-              <p></p>
               Task Link: <a href=${MsgURL}>Click here</a>
               <p></p>
-              <b>Thanks,<br/>Task Management Team</b>
+              <span>${finalTaskInfo}</span>
+              <p></p>
           `;
             TeamsMessage = `<blockquote>${this.state?.ReplyParent?.AuthorName} ${this.state?.ReplyParent?.MsTeamCreated} </br> ${PreMsg} </blockquote>${CurrentMsg}`;
           }
