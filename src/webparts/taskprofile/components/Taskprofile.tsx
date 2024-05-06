@@ -2350,7 +2350,8 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
 
 
-                          } <span className="pull-right ml-auto svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Portfolio")}></span>
+                          } 
+                          <span className="pull-right ml-auto svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Portfolio")}></span>
 
                         </dd>
                       </dl>
