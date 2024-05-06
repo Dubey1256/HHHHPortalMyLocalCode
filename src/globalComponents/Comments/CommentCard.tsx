@@ -713,7 +713,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             if (this.state?.ReplyParent?.MsTeamCreated == undefined)
               this.state.ReplyParent.MsTeamCreated = ''
             const PreMsg = `
-               Task Comment-<span style="background-color: yellow;">${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')}.</span>
+               Task Comment:<span style="background-color: yellow;">${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')}.</span>
               <p><br/></p>
               <p></p>
               Task Link: <a href=${MsgURL}>Click here</a>
@@ -722,7 +722,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
              
           `;
             const CurrentMsg = `
-              Task Comment-<span style="background-color: yellow;">${txtComment}.</span>
+              Task Comment:<span style="background-color: yellow;">${txtComment}.</span>
               <p><br/></p>
               Task Link: <a href=${MsgURL}>Click here</a>
               <p></p>
