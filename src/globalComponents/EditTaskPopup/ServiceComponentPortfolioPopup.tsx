@@ -657,6 +657,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             })
         }
         setOpenAddStructurePopup(false);
+        GetComponents();
         console.log(item)
         renderData = [];
         renderData = renderData.concat(copyDtaArray)
