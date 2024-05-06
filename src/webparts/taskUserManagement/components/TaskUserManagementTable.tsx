@@ -705,7 +705,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                         <div className='tbl-button'>
                             <button type='button' className='btn btn-primary position-relative' style={{ zIndex: "99" }} onClick={() => setOpenPopup(true)}>Add Team Member</button>
                         </div>
-                        <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} showHeader={true} />
+                        <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} showHeader={true} hideOpenNewTableIcon={true} hideTeamIcon={true} />
                     </div>
                 </div>
                 <div className="tab-pane" id="TEAMGROUPS" role="tabpanel" aria-labelledby="TEAMGROUPS">
@@ -1053,7 +1053,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                             <div>
                                 <ImagesC
                                     EditdocumentsData={memberToUpdate}
-                                    setData={setImageUrl}
+                                    setData={setMemberToUpdate}
                                     AllListId={TaskUserListId}
                                     Context={context}
                                     callBack={imageTabCallBack}
