@@ -2330,7 +2330,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           }
                           {this.state?.Result["Portfolio"] != null &&
 
-                            <a className="hreflinktext-content w-100" target="_blank" data-interception="off"  title={this.state?.Result["Portfolio"]?.Title} href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state?.Result["Portfolio"].Id}`}>
+                            <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state?.Result["Portfolio"].Id}`}>
 
                               {this.state?.Result["Portfolio"]?.Title}
 
@@ -2345,11 +2345,11 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Project</dt>
-                        <dd className='bg-Ff full-width columnFixedTitle'>
+                        <dd className='bg-Ff full-width'>
                           <div>
-                            {ProjectData?.Title != undefined ? <a className="hreflink text-content w-100" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
+                            {ProjectData?.Title != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
                               <ReactPopperTooltipSingleLevel CMSToolId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
-                            <span className="pull-right  ml-auto svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
+                            <span className="pull-right svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
                           </div>
                         </dd>
                       </dl>
