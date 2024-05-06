@@ -753,7 +753,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getById(this.state?.itemID)
       .update({
         FeedBack: JSON.stringify(this.state?.Result?.FeedBack),
-        Status: this?.state?.Result?.Status
+      
       });
 
     this.setState({
@@ -1169,25 +1169,18 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       if (tempData?.ApproverData != undefined && tempData?.ApproverData?.length > 0) {
         tempData?.ApproverData?.forEach((ba: any) => {
           if (ba.isShowLight == 'Reject') {
-
-            data.Status = "Follow Up",
               ba.Status = 'Rejected by'
           }
           if (ba.isShowLight == 'Approve') {
             ba.Status = 'Approved by'
-            data.Status = "Approved"
+            
           }
           if (ba.isShowLight == 'Maybe') {
-            data.Status = "Follow Up",
               ba.Status = 'For discussion with'
           }
-
-
         })
       }
-      this.setState({
-        Result: data,
-      }),
+    
         console.log(tempData);
       console.log(this.state.Result["FeedBack"][0]?.FeedBackDescriptions);
       await this.onPost();
@@ -1224,24 +1217,18 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       if (tempData?.Subtext[subchileindex] != undefined && tempData?.Subtext[subchileindex]?.ApproverData != undefined) {
         tempData?.Subtext[subchileindex]?.ApproverData?.forEach((ba: any) => {
           if (ba.isShowLight == 'Reject') {
-            data.Status = "Follow Up",
               ba.Status = 'Rejected by'
           }
           if (ba.isShowLight == 'Approve') {
-            data.Status = "Approved"
             ba.Status = 'Approved by '
           }
           if (ba.isShowLight == 'Maybe') {
-            data.Status = "Follow Up",
               ba.Status = 'For discussion with'
           }
 
-
         })
       }
-      this.setState({
-        Result: data,
-      }),
+    
         console.log(tempData);
       console.log(this.state.Result["FeedBack"][0]?.FeedBackDescriptions);
       console.log(this.state?.emailcomponentopen)
@@ -1421,6 +1408,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       taskStatus = "Follow Up"
     }
     this.state.Result.PercentComplete = changespercentage1
+    this.state.Result.Status = taskStatus
     const web = new Web(this.props.siteUrl);
     await web.lists.getByTitle(this.state.Result.listName)
 
