@@ -2424,7 +2424,7 @@ const TaskDashboard = (props: any) => {
                                                 <div className='AccordionContent timeEntryReport'  >
                                                     {weeklyTimeReport?.length > 0 ?
                                                         <>
-                                                            <div className='Alltable border-0 dashboardTable float-none' >
+                                                            <div className='Alltable border-0  dashboardTable float-none' >
                                                                 <GlobalCommanTable AllListId={AllListId} wrapperHeight="100%" columns={columnTimeReport} data={weeklyTimeReport} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                                             </div>
                                                         </> : <div className='text-center full-width border p-3'>
@@ -2453,7 +2453,7 @@ const TaskDashboard = (props: any) => {
                                 <div className='AccordionContent'>
                                     {(value && value?.length > 0) ?
 
-                                        <div className='Alltable dashboardTable float-none'>
+                                        <div className='Alltable border-0 dashboardTable float-none'>
                                             <>
                                                 <GlobalCommanTable AllListId={AllListId} showPagination={true} columns={columnsName} data={value} callBackData={inlineCallBack} pageName={"ProjectOverview"} TaskUsers={taskUsers} showHeader={true} />
                                             </>
