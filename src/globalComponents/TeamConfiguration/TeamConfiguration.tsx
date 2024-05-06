@@ -120,7 +120,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 .getById(this.props.ItemInfo.listId)
                 .items
                 .getById(this.props.ItemInfo.Id)
-                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id" )
+                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id")
                 .expand("TeamMembers", "AssignedTo", "ResponsibleTeam")
                 .get()
         } else {
@@ -128,7 +128,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 .getByTitle('Master Tasks')
                 .items
                 .getById(this.props.ItemInfo.Id)
-                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id" )
+                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "TeamMembers/Title", "TeamMembers/Id", "ResponsibleTeam/Title", "ResponsibleTeam/Id")
                 .expand("TeamMembers", "AssignedTo", "ResponsibleTeam")
                 .get()
         }
@@ -419,7 +419,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                             <span className='alignCenter'>
                                 {this.state.TeamUserExpended ?
                                     <SlArrowDown onClick={() => this.setState({ TeamUserExpended: false })}></SlArrowDown>
-                                    
+
                                     :
                                     <SlArrowRight onClick={() => this.setState({ TeamUserExpended: true })}></SlArrowRight>
                                 }
@@ -473,7 +473,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
 
                                 <div className="col-sm-7">
                                     <h6 className='mb-1'>Team Members</h6>
-                                    <div className="d-flex pb-1 UserTimeTabGray" style={{paddingTop:"3px"}}>
+                                    <div className="d-flex pb-1 UserTimeTabGray" style={{ paddingTop: "3px" }}>
                                         <div className="col-sm-5 border-end p-0" >
                                             <div className="col"
                                                 onDrop={(e) => this.onDropTeam(e, this.state.ResponsibleTeam, 'Team Leaders', this.state.taskUsers, 'ResponsibleTeam')}
@@ -524,7 +524,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                     <div className="col"
                                         onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers, 'Assigned User')}
                                         onDragOver={(e) => e.preventDefault()}>
-                                        <div className="d-flex  working-box"  style={{padding:"8px 0px 7px 0px"}} >
+                                        <div className="d-flex  working-box" style={{ padding: "8px 0px 7px 0px" }} >
                                             <div className='flex-wrap' data-placeholder="Working Members">
                                                 {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
                                                     return <img
@@ -545,12 +545,11 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                 </div>
 
                                 <div className="col-sm-2">
-                                   
-                                        <div className="dustbin bg-siteColor" onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
-                                            onDragOver={(e) => e.preventDefault()}>
-                                            <span className="svg__iconbox svg__icon--palmTree" title="Drag user here to  remove user from team for this Network Activity."></span>
-                                        </div>
-                                  
+                                    <div className="dustbin bg-siteColor" onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
+                                        onDragOver={(e) => e.preventDefault()}>
+                                        <span className="light svg__iconbox svg__icon--palmTree" title="Drag user here to  remove user from team for this Network Activity."></span>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
