@@ -1017,7 +1017,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                             <div>
                                 <ImagesC
                                     EditdocumentsData={memberToUpdate}
-                                    setData={setImageUrl}
+                                    setData={setMemberToUpdate}
                                     AllListId={TaskUserListId}
                                     Context={context}
                                     callBack={imageTabCallBack}
