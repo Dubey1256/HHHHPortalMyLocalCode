@@ -306,6 +306,14 @@
         }
       ]
     },
+    "task-profile-template-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/taskProfileTemplate/TaskProfileTemplateWebPart.js",
+          "manifest": "./src/webparts/taskProfileTemplate/TaskProfileTemplateWebPart.manifest.json"
+        }
+      ]
+    },
     "last-modified-views-web-part": {
       "components": [
         {

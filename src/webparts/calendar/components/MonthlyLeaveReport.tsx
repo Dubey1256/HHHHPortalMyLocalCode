@@ -54,7 +54,7 @@ export const MonthlyLeaveReport = (props: any) => {
         .expand("Author,Editor,AssingedToUser,UserGroup,Approver").orderBy("Title", true).get();
 
       let filteredData = Data.filter((item: any) =>
-        item.Title != 'HHHH Team' && item.Title != 'External Staff' && item.Title != 'Ex Staff'
+        item.Title != 'HHHH Team' && item.Title != 'External Staff' && item.Title != 'Ex Staff' && item.Title != "Kristina Kovach" && item.Title!="Alina Chyhasova"
       )
       // const mydata = Data.filter((item) => item.UserGroupId != null && item.UserGroupId !== 131 && item.UserGroupId !== 147 && item.UserGroupId !== 7 && item.AssingedToUserId !== 9);
       for (let index = 0; index < filteredData?.length; index++) {
@@ -734,8 +734,9 @@ export const MonthlyLeaveReport = (props: any) => {
                           <div className="team ">
                             <label className="BdrBtm">
                               <input style={{ display: 'none' }} className="" type="checkbox" onClick={(e) => SelectedGroup(e, users)} />
-                              {users?.ItemType == "Group" &&
+                              {users?.ItemType == "Group" && users.Title != "User Experience Team" &&
                                 <>
+                                 
                                   {users.Title}
                                 </>
                               }

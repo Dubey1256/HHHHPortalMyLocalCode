@@ -63,6 +63,7 @@ const Designation = [
   { key: "HR", text: "HR" },
   { key: "Admin", text: "Admin" },
   { key: "Management", text: "Management" },
+  { key: "Mobile Team", text: "Mobile Team" },
   { key: "JTM (Junior Task Manager)", text: "JTM (Junior Task Manager)" }
 ];
 let newEvent: any
@@ -385,25 +386,58 @@ const Apps = (props: any) => {
         const { recurrence } = result;
         const rule = recurrence?.rule?.[0];
         const firstDayOfWeek = rule?.firstDayOfWeek || 'su';
-        const startDate = new Date(recurrenceData?.EventDate);
+        function resetTime(dateString:any) {
+          let date = new Date(dateString);
+          date.setHours(0, 0, 0, 0);
+          return date; // Return the date object
+        }
+         const myeventdate:any = resetTime(recurrenceData?.EventDate);
+        const startDate = new Date(myeventdate);
         let repeatInstance = 0;
-
-        if (rule?.repeatInstances && rule.repeatInstances[0] > 0) {
+        let windowEndDate: any;
+        
+        const myeventdateitem:any = resetTime(recurrenceData?.EndDate)
+        let RecurreEndDate = new Date(myeventdateitem);
+        if (rule?.repeatForever != undefined && rule?.repeatForever[0] === 'FALSE') {
+          RecurreEndDate.setFullYear(startDate.getFullYear() + 4);
+          const formattedEndDate = RecurreEndDate.toISOString();
+          windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(formattedEndDate).setHours(0, 0, 0, 0);
+        } else if (rule?.repeatInstances && rule?.repeatInstances[0] > 0) {
           repeatInstance = Number(rule.repeatInstances[0]);
+          const newrepeatance = repeatInstance - 1;
+          // repeatInstance -1;
+          // let myenddateOccur= endDate.setDate(startDate.getDate() + repeatInstance);
+          let myenddateOccur = RecurreEndDate.setDate(startDate.getDate() + newrepeatance);
+          windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(myenddateOccur).setHours(0, 0, 0, 0);
         }
-        let useCount = false
+        else {
+          windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(recurrenceData?.EndDate).setHours(0, 0, 0, 0);
+        }
+        // if (rule?.repeatInstances && rule?.repeatInstances[0] > 0) {
+        //   repeatInstance = Number(rule.repeatInstances[0]);
+        // }
+        let useCount = false;
         if (recurrenceData?.RecurrenceData?.includes('daily')) {
-          useCount = true
+          useCount = true;
         }
+
         let count = 0;
-        const windowEndDate = rule.windowEnd ? new Date(rule.windowEnd[0]).setHours(0, 0, 0, 0) : new Date(recurrenceData?.EndDate).setHours(0, 0, 0, 0);
+
+        // Adjusting start date for daily recurrence
+        if (useCount) {
+          startDate.setDate(startDate.getDate() - 1); // Exclude the start date for daily recurrence
+        }
+        // if (windowEndDate !== undefined) {
+        //   windowEndDate = new Date(windowEndDate).setDate(new Date(windowEndDate).getDate() - 1);
+        // }
         while (dates.length < repeatInstance || new Date(dates[dates.length - 1] || startDate).setHours(0, 0, 0, 0) < windowEndDate) {
-          if ((repeatInstance != 0 ? count > repeatInstance : new Date(dates[dates.length - 1]).setHours(0, 0, 0, 0) > windowEndDate) && useCount == true) {
-            break
+          if ((repeatInstance !== 0 ? count > repeatInstance : new Date(dates[dates.length - 1]).setHours(0, 0, 0, 0) > windowEndDate) && useCount) {
+            break;
           }
           count++;
-          if (calculateNextDate(rule, firstDayOfWeek, new Date(dates[dates.length - 1] || startDate), dates, windowEndDate, AllEvents, recurrenceData) === 'break')
+          if (calculateNextDate(rule, firstDayOfWeek, new Date(dates[dates.length - 1] || startDate), dates, windowEndDate, AllEvents, recurrenceData) === 'break') {
             break;
+          }
         }
         if (AllEvents?.length > 0) {
           const { repeat } = rule;
@@ -449,6 +483,7 @@ const Apps = (props: any) => {
   }
   const eventDataForBinding = (eventDetails: any, currentDate: any) => {
     let event: any = {};
+    
     event = {
       ...eventDetails,
       EndDate: new Date(currentDate).toISOString(),
@@ -462,12 +497,17 @@ const Apps = (props: any) => {
 
   function handleDailyRecurrence(frequency: any, currentDate: any, dates: any, AllEvents: any, eventDetails: any, windowEndDate: any, repeatInstance: any) {
     const dayFrequency = parseInt(frequency.dayFrequency);
+    const nextDate = new Date(currentDate);
+    nextDate.setDate(nextDate.getDate() + 1);
+    currentDate.setHours(0, 0, 0, 0);
     let count = 0;
     let result = '';
     if (frequency?.weekday == 'TRUE') {
-      let AllWeekDaysOfWeek = getWeekDays(currentDate)
+      let AllWeekDaysOfWeek = getWeekDays(nextDate)
       AllWeekDaysOfWeek?.map((DayOfWeek: any) => {
-        if (new Date(eventDetails?.EventDate).setHours(0, 0, 0, 0) <= new Date(DayOfWeek).setHours(0, 0, 0, 0) && new Date(DayOfWeek).setHours(0, 0, 0, 0) < new Date(windowEndDate).setHours(0, 0, 0, 0)) {
+
+        const endDate = new Date(windowEndDate);
+        if (new Date(eventDetails?.EventDate).setHours(0, 0, 0, 0) <= new Date(DayOfWeek).setHours(0, 0, 0, 0) && new Date(DayOfWeek).setHours(0, 0, 0, 0) < endDate.setDate(endDate.getDate() + 1)) {
           const event = eventDataForBinding(eventDetails, DayOfWeek);
           AllEvents.push(event);
           dates.push(new Date(DayOfWeek));
@@ -477,8 +517,10 @@ const Apps = (props: any) => {
       })
 
     } else {
+  
       while (count < repeatInstance && new Date(currentDate).setHours(0, 0, 0, 0) < windowEndDate) {
         currentDate.setDate(currentDate.getDate() + dayFrequency);
+
         const event = eventDataForBinding(eventDetails, currentDate);
         AllEvents.push(event);
         dates.push(new Date(currentDate));
@@ -699,7 +741,7 @@ const Apps = (props: any) => {
 
   const getLocalDateTime = async (date: string | Date): Promise<string> => {
     try {
-      const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/GmBH");
+      const web = new Web(props.props.siteUrl);
       const localTime = await web.regionalSettings.timeZone.utcToLocalTime(
         date
       );
@@ -781,6 +823,16 @@ const Apps = (props: any) => {
     const eventYear = eventDate.getFullYear(); // Get year of the event
     return { year: eventYear, month: eventMonth };
   }
+  // const handleNavigate = (newDate: any) => {
+  //   const { year: currentYear, month: currentMonth } = getYearMonthFromDate(newDate);
+
+  //   const filteredData = events.filter((event: any) => {
+  //     const { year, month } = getYearMonthFromDate(event.start);
+  //     return month === currentMonth && year === currentYear;
+  //   });
+  //   localArr = processDataArray(filteredData);
+  //   setRecurringEvents(filteredData);
+  // };
   const handleNavigate = (newDate: any, newView: any) => {
     setview(newView || 'months');
     const { year: currentYear, month: currentMonth } = getYearMonthFromDate(newDate);
@@ -895,6 +947,7 @@ const Apps = (props: any) => {
       setIsChecked(event.alldayevent);
       setIsFirstHalfDChecked(event.HalfDay);
       setisSecondtHalfDChecked(event.HalfDayTwo);
+      setRecurrenceData(event.RecurrenceData);
 
       if (event.alldayevent || event.HalfDay || event.HalfDayTwo) {
         setDisableTime(true);
@@ -920,7 +973,7 @@ const Apps = (props: any) => {
       setSelectedTime(`${startHour}:${startMin}`);
       setEndDate(endDate);
       setSelectedTimeEnd(`${endHour}:${endMin}`);
-      setRecurrenceData(eventItem.RecurrenceData);
+      // setRecurrenceData(eventItem.RecurrenceData);
       setShowRecurrenceSeriesInfo(true);
       setEditRecurrenceEvent(true);
 
@@ -1108,6 +1161,8 @@ const Apps = (props: any) => {
       };
 
       const results = await web.lists.getById(props.props.SmalsusLeaveCalendar).items.add(addEventItem);
+
+      getEvents();
       return results;
     } catch (error) {
       return Promise.reject(error);
@@ -1144,6 +1199,8 @@ const Apps = (props: any) => {
       const results = await web.lists.getById(props.props.SmalsusLeaveCalendar)
         .items.getById(eventPass.Id)
         .update(editedEventItem);
+
+      getEvents();
       return results;
     } catch (error) {
       return Promise.reject(error);
@@ -1190,8 +1247,9 @@ const Apps = (props: any) => {
       } else if (editRecurrenceEvent) {
         const editEventData: any = {
           EventType: "1",
-          EmployeeId: title_Id,
           Title: mytitle,
+          Event_x002d_Type: type,
+          Designation: dType,
           EventDate: new Date(start),
           EndDate: new Date(end),
           fRecurrence: true,

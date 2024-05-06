@@ -1,6 +1,7 @@
 
 import * as React from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
+import ReactDOM from "react-dom";
 import * as $ from "jquery";
 import * as Moment from "moment";
 import { Web, sp } from "sp-pnp-js";
@@ -18,7 +19,7 @@ import {
     Panel,
     PanelType
 } from "office-ui-fabric-react";
-
+import { LuBellPlus } from "react-icons/lu";
 import { FaExpandAlt } from "react-icons/fa";
 import { RiDeleteBin6Line, RiH6 } from "react-icons/ri";
 import { SlArrowDown, SlArrowRight, SlUserUnfollow } from "react-icons/sl";
@@ -49,7 +50,7 @@ var CommentBoxData: any = [];
 var SubCommentBoxData: any = [];
 var timesheetData: any = [];
 var updateFeedbackArray: any = [];
-let tempShareWebTypeData: any = [];
+let BackupTaskCategoriesData: any = [];
 var tempCategoryData: any = "";
 var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
@@ -98,7 +99,7 @@ const EditTaskPopup = (Items: any) => {
     // Items.Items.Id = Items?.Items?.ID;
     Items.Items.Id =
         Items.Items.Id != undefined ? Items.Items.Id : Items.Items.ID;
-    let ShareWebConfigData: any = [];
+    let SiteWebConfigData: any = [];
     const [TaskImages, setTaskImages] = useState([]);
     const [SmartMetaDataAllItems, setSmartMetaDataAllItems] = useState<any>([]);
     const [IsComponentPicker, setIsComponentPicker] = useState(false);
@@ -108,7 +109,7 @@ const EditTaskPopup = (Items: any) => {
     const [TaggedPortfolioData, setTaggedPortfolioData] = useState([]);
     const [linkedPortfolioData, setLinkedPortfolioData] = useState([]);
     const [CategoriesData, setCategoriesData] = useState("");
-    const [ShareWebTypeData, setShareWebTypeData] = useState([]);
+    const [TaskCategoriesData, setTaskCategoriesData] = useState([]);
     const [BasicImageData, setBasicImageData] = useState([]);
     const [AllCategoryData, setAllCategoryData] = useState([]);
     const [SearchedCategoryData, setSearchedCategoryData] = useState([]);
@@ -444,7 +445,7 @@ const EditTaskPopup = (Items: any) => {
                     tempArray.push(site);
                 }
                 if (site.Title !== undefined && site.Title == "Shareweb") {
-                    ShareWebConfigData = site.Configurations;
+                    SiteWebConfigData = site.Configurations;
                 }
             });
             setSiteTypes(tempArray);
@@ -677,7 +678,7 @@ const EditTaskPopup = (Items: any) => {
                     TaxonomyItems.push(item);
                 }
                 uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
-                    return array.indexOf(val) == id;
+                    return array?.indexOf(val) == id;
                 });
             }
         });
@@ -1074,13 +1075,13 @@ const EditTaskPopup = (Items: any) => {
                         let tempArray: any = [];
                         const TaskApproverBackupTemp = TaskApproverBackupArray?.filter(
                             (val: any, id: any, array: any) => {
-                                return array.indexOf(val) == id;
+                                return array?.indexOf(val) == id;
                             }
                         );
                         const TaskCreatorApproverBackupTemp =
                             TaskCreatorApproverBackupArray?.filter(
                                 (val: any, id: any, array: any) => {
-                                    return array.indexOf(val) == id;
+                                    return array?.indexOf(val) == id;
                                 }
                             );
 
@@ -1206,7 +1207,7 @@ const EditTaskPopup = (Items: any) => {
                 ) {
                     const finalData = TaskCreatorApproverBackupArray?.filter(
                         (val: any, id: any, array: any) => {
-                            return array.indexOf(val) == id;
+                            return array?.indexOf(val) == id;
                         }
                     );
                     TaskCreatorApproverBackupArray = finalData;
@@ -1227,9 +1228,9 @@ const EditTaskPopup = (Items: any) => {
                 ) {
                     let tempArray: any = [];
                     tempArray = item.TaskCategories;
-                    setShareWebTypeData(item.TaskCategories);
+                    setTaskCategoriesData(item.TaskCategories);
                     tempArray?.map((tempData: any) => {
-                        tempShareWebTypeData.push(tempData);
+                        BackupTaskCategoriesData.push(tempData);
                     });
                 }
                 if (item.RelevantPortfolio?.length > 0) {
@@ -1517,7 +1518,7 @@ const EditTaskPopup = (Items: any) => {
                                 LinkedPortfolioDataBackup.concat(DataItem);
                             const finalData = LinkedPortfolioDataBackup?.filter(
                                 (val: any, id: any, array: any) => {
-                                    return array.indexOf(val) == id;
+                                    return array?.indexOf(val) == id;
                                 }
                             );
                             setLinkedPortfolioData(finalData);
@@ -1581,8 +1582,8 @@ const EditTaskPopup = (Items: any) => {
     const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         setIsComponentPicker(false);
         let uniqueIds: any = {};
-        let checkForOnHoldAndBottleneck: any = tempShareWebTypeData?.some((category: any) => category.Title === "On-Hold" && category.Title === "Bottleneck");
-        let checkForDesign: any = tempShareWebTypeData?.some((category: any) => category.Title === "Design");
+        let checkForOnHoldAndBottleneck: any = BackupTaskCategoriesData?.some((category: any) => category.Title === "On-Hold" && category.Title === "Bottleneck");
+        let checkForDesign: any = BackupTaskCategoriesData?.some((category: any) => category.Title === "Design");
         if (usedFor == "For-Panel") {
             let TempArrya: any = [];
             selectCategoryData?.map((selectedData: any) => {
@@ -1613,7 +1614,7 @@ const EditTaskPopup = (Items: any) => {
                     setSendCategoryName(selectedData?.Title);
                 }
             })
-            tempShareWebTypeData = TempArrya;
+            BackupTaskCategoriesData = TempArrya;
         } else {
             selectCategoryData.forEach((existingData: any) => {
                 if ((existingData.Title == "On-Hold" || existingData.Title == "Bottleneck") && !checkForOnHoldAndBottleneck) {
@@ -1621,21 +1622,21 @@ const EditTaskPopup = (Items: any) => {
                     setOnHoldPanel(true);
                     setSendCategoryName(existingData.Title)
                 } else {
-                    tempShareWebTypeData.push(existingData);
+                    BackupTaskCategoriesData.push(existingData);
                 }
             });
         }
-        const result: any = tempShareWebTypeData.filter((item: any) => {
+        const result: any = BackupTaskCategoriesData.filter((item: any) => {
             if (!uniqueIds[item.Id]) {
                 uniqueIds[item.Id] = true;
                 return true;
             }
             return false;
         });
-        tempShareWebTypeData = result;
+        BackupTaskCategoriesData = result;
         let updatedItem = {
             ...EditDataBackup,
-            TaskCategories: tempShareWebTypeData,
+            TaskCategories: BackupTaskCategoriesData,
         };
         let SmartPriority = globalCommon.calculateSmartPriority(updatedItem)
         updatedItem = {
@@ -1657,7 +1658,7 @@ const EditTaskPopup = (Items: any) => {
             setApproverData([]);
         }
         if (usedFor === "For-Panel" || usedFor === "For-Auto-Search") {
-            setShareWebTypeData(result);
+            setTaskCategoriesData(result);
             if (usedFor === "For-Auto-Search") {
                 setSearchedCategoryData([]);
                 setCategorySearchKey("");
@@ -1674,16 +1675,16 @@ const EditTaskPopup = (Items: any) => {
         setOnHoldPanel(false);
         if (usedFor == "Save") {
             let uniqueIds: any = {};
-            tempShareWebTypeData.push(onHoldCategory[0]);
-            const result: any = tempShareWebTypeData.filter((item: any) => {
+            BackupTaskCategoriesData.push(onHoldCategory[0]);
+            const result: any = BackupTaskCategoriesData.filter((item: any) => {
                 if (!uniqueIds[item.Id]) {
                     uniqueIds[item.Id] = true;
                     return true;
                 }
                 return false;
             });
-            tempShareWebTypeData = result;
-            setShareWebTypeData(result);
+            BackupTaskCategoriesData = result;
+            setTaskCategoriesData(result);
         }
         onHoldCategory = [];
     }, []);
@@ -1710,14 +1711,14 @@ const EditTaskPopup = (Items: any) => {
 
     // ################ this is for Smart category change and remove function #############
 
-    const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
+    const removeCategoryItem = (TypeCategory: any) => {
         let tempString: any;
         let tempArray2: any = [];
-        tempShareWebTypeData = [];
-        ShareWebTypeData?.map((dataType: any) => {
-            if (dataType.Id != TypeId) {
+        BackupTaskCategoriesData = [];
+        TaskCategoriesData?.map((dataType: any) => {
+            if (dataType.Title != TypeCategory) {
                 tempArray2.push(dataType);
-                tempShareWebTypeData.push(dataType);
+                BackupTaskCategoriesData.push(dataType);
             }
         });
         if (tempArray2 != undefined && tempArray2.length > 0) {
@@ -1730,9 +1731,9 @@ const EditTaskPopup = (Items: any) => {
         }
         setCategoriesData(tempString);
         tempCategoryData = tempString;
-        setShareWebTypeData(tempArray2);
+        setTaskCategoriesData(tempArray2);
     };
-    const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
+    const CategoryChange = (e: any, typeValue: any) => {
         isApprovalByStatus = false;
         if (e == "false") {
             var statusValue: any = e;
@@ -1741,13 +1742,13 @@ const EditTaskPopup = (Items: any) => {
             var statusValue: any = e.target.value;
         }
         let type: any = typeValue;
-        let Id: any = IdValue;
-        CategoryChangeUpdateFunction(statusValue, type, Id);
+        // let Id: any = IdValue;
+        CategoryChangeUpdateFunction(statusValue, type);
     };
 
-    const CategoryChangeUpdateFunction = (Status: any, type: any, Id: any) => {
+    const CategoryChangeUpdateFunction = (Status: any, type: any) => {
         if (Status == "true") {
-            removeCategoryItem(type, Id);
+            removeCategoryItem(type);
             if (type == "Phone") {
                 setPhoneStatus(false);
             }
@@ -1775,10 +1776,10 @@ const EditTaskPopup = (Items: any) => {
                 setCategoriesData(category);
                 tempCategoryData = category;
                 if (
-                    tempShareWebTypeData != undefined &&
-                    tempShareWebTypeData.length > 0
+                    BackupTaskCategoriesData != undefined &&
+                    BackupTaskCategoriesData.length > 0
                 ) {
-                    tempShareWebTypeData.map((tempItem: any) => {
+                    BackupTaskCategoriesData.map((tempItem: any) => {
                         if (tempItem.Title == type) {
                             CheckTaagedCategory = false;
                         }
@@ -1791,14 +1792,14 @@ const EditTaskPopup = (Items: any) => {
                     AutoCompleteItemsArray.map((dataItem: any) => {
                         if (dataItem.Title == type) {
                             if (CheckTaagedCategory) {
-                                ShareWebTypeData.push(dataItem);
-                                tempShareWebTypeData.push(dataItem);
+                                TaskCategoriesData.push(dataItem);
+                                BackupTaskCategoriesData.push(dataItem);
 
                             }
                         }
                     });
                 }
-                // setSearchedCategoryData(tempShareWebTypeData);
+                // setSearchedCategoryData(BackupTaskCategoriesData);
                 if (type == "Phone") {
                     setPhoneStatus(true);
                 }
@@ -1826,7 +1827,7 @@ const EditTaskPopup = (Items: any) => {
                     // }
                     const finalData = tempArray.filter(
                         (val: any, id: any, array: any) => {
-                            return array.indexOf(val) == id;
+                            return array?.indexOf(val) == id;
                         }
                     );
 
@@ -1861,7 +1862,7 @@ const EditTaskPopup = (Items: any) => {
         }
         let updatedItem = {
             ...EditDataBackup,
-            TaskCategories: tempShareWebTypeData,
+            TaskCategories: BackupTaskCategoriesData,
         };
         let SmartPriority = globalCommon.calculateSmartPriority(updatedItem)
         updatedItem = {
@@ -2143,8 +2144,8 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (StatusInput == 70) {
                     if (
-                        EditData.TeamMembers != undefined &&
-                        EditData.TeamMembers?.length > 0
+                        (EditData.TeamMembers != undefined &&
+                            EditData.TeamMembers?.length > 0) && (EditData.TeamMembers?.length != EditData?.AssignedTo?.length)
                     ) {
                         setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
                     } else if (EditData.ResponsibleTeam?.length > 0) {
@@ -2284,7 +2285,7 @@ const EditTaskPopup = (Items: any) => {
                     });
                 }
                 const finalData = tempArray.filter((val: any, id: any, array: any) => {
-                    return array.indexOf(val) == id;
+                    return array?.indexOf(val) == id;
                 });
                 setTaskAssignedTo(finalData);
                 setTaskTeamMembers(finalData);
@@ -2292,7 +2293,7 @@ const EditTaskPopup = (Items: any) => {
                 var e: any = "false";
                 EditData.TaskApprovers = finalData;
                 EditData.CurrentUserData = currentUserData;
-                CategoryChange(e, "Approval", 227);
+                CategoryChange(e, "Approval");
             }
             if (StatusData.value == 2) {
                 setInputFieldDisable(true);
@@ -2442,13 +2443,13 @@ const EditTaskPopup = (Items: any) => {
     const setModalIsOpenToFalse = () => {
         Items.Call("Close");
         // callBack();
-        tempShareWebTypeData = [];
+        BackupTaskCategoriesData = [];
         AllMetaData = [];
         taskUsers = [];
         CommentBoxData = [];
         SubCommentBoxData = [];
         updateFeedbackArray = [];
-        tempShareWebTypeData = [];
+        BackupTaskCategoriesData = [];
         tempCategoryData = [];
         SiteTypeBackupArray = [];
         currentUserBackupArray = [];
@@ -2603,7 +2604,7 @@ const EditTaskPopup = (Items: any) => {
                         let NewSmartPriority: any = globalCommon.calculateSmartPriority(UpdatedDataObject)
                         UpdatedDataObject.SmartPriority = NewSmartPriority;
                         UpdatedDataObject.siteUrl = siteUrls;
-                        UpdatedDataObject.CommentsArray = UpdatedDataObject?.Comments != null  ? typeof UpdatedDataObject?.CommentsArray === "object"? JSON.parse(UpdatedDataObject?.Comments):UpdatedDataObject?.Comments: null
+                        UpdatedDataObject.CommentsArray = UpdatedDataObject?.Comments != null ? typeof UpdatedDataObject?.CommentsArray === "object" ? JSON.parse(UpdatedDataObject?.Comments) : UpdatedDataObject?.Comments : null
                         let WorkingActionData = UpdatedDataObject?.WorkingAction?.length > 0 ? JSON.parse(UpdatedDataObject?.WorkingAction) : [];
                         WorkingActionData?.map((ItemData: any) => {
                             ItemData.InformationData?.map(async (InfoItem: any) => {
@@ -2615,7 +2616,8 @@ const EditTaskPopup = (Items: any) => {
                                         Context: Items.context,
                                         ActionType: ItemData.Title,
                                         ReasonStatement: InfoItem.Comment,
-                                        UpdatedDataObject: UpdatedDataObject
+                                        UpdatedDataObject: UpdatedDataObject,
+                                        RequiredListIds: AllListIdData
                                     }
                                     await GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
                                         console.log("Ms Teams Notifications send")
@@ -2628,7 +2630,7 @@ const EditTaskPopup = (Items: any) => {
                             UpdateWorkinActionJSON(WorkingActionData);
                         }
                         const uniqueIds: any = {};
-                        const result = tempShareWebTypeData.filter((item: any) => {
+                        const result = BackupTaskCategoriesData.filter((item: any) => {
                             if (!uniqueIds[item.Id]) {
                                 uniqueIds[item.Id] = true;
                                 return true;
@@ -2638,83 +2640,92 @@ const EditTaskPopup = (Items: any) => {
                         const TaskCategories = result.map((item: any) => item.Title).join(', ');
                         const CheckForInformationRequestCategory: any = TaskCategories.includes("Information Request");
                         let checkStatusUpdate = Number(taskPercentageValue) * 100;
-                        // This is used for send MS Teams Notification 
-                        if (TaskCategories !== "Bottleneck" && TaskCategories !== "Immediate" && TaskCategories !== "Design") {
-                            try {
-                                const sendUserEmails: string[] = [];
-                                let AssignedUserName = '';
-                                const addEmailAndUserName = (userItem: any) => {
-                                    if (userItem.AssingedToUserId !== currentUserId) {
-                                        sendUserEmails.push(userItem.Email);
-                                        AssignedUserName = AssignedUserName ? "Team" : userItem.Title;
-                                    }
-                                };
 
-                                if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
+
+                        // This is used for send MS Teams Notification 
+
+                        try {
+                            const sendUserEmails: string[] = [];
+                            let AssignedUserName = '';
+                            const addEmailAndUserName = (userItem: any) => {
+                                if (userItem?.AssingedToUserId !== currentUserId) {
+                                    sendUserEmails.push(userItem.Email);
+                                    AssignedUserName = AssignedUserName ? "Team" : userItem?.Title;
+                                }
+                            };
+
+                            if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
+                                taskUsers?.forEach((allUserItem: any) => {
+                                    if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
+                                        addEmailAndUserName(allUserItem);
+                                    }
+                                });
+                            } else {
+                                const usersToCheck = TeamLeaderChanged && TeamMemberChanged ? TaskResponsibleTeam?.concat(TaskAssignedTo) :
+                                    TeamLeaderChanged ? UpdatedDataObject?.ResponsibleTeam :
+                                        TeamMemberChanged || IsTaskStatusUpdated ? TaskAssignedTo : [];
+
+                                usersToCheck.forEach((userDtl: any) => {
                                     taskUsers?.forEach((allUserItem: any) => {
-                                        if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                        if (userDtl.Id === allUserItem?.AssingedToUserId) {
                                             addEmailAndUserName(allUserItem);
                                         }
                                     });
+                                });
+                            }
+                            let CommonMsg = '';
+                            const sendMSGCheck = (checkStatusUpdate === 80 || checkStatusUpdate === 70) && IsTaskStatusUpdated;
+                            const SendUserEmailFinal: any = sendUserEmails?.filter((item: any, index: any) => sendUserEmails?.indexOf(item) === index);
+
+                            if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
+                                CommonMsg = ` Task created from your end has been set to 8%. Please take necessary action.`;
+                                let functionType: any = '';
+                                if (checkStatusUpdate === 90 && CheckForInformationRequestCategory) {
+                                    functionType = "Information-Request"
                                 } else {
-                                    const usersToCheck = TeamLeaderChanged && TeamMemberChanged ? TaskResponsibleTeam.concat(TaskAssignedTo) :
-                                        TeamLeaderChanged ? UpdatedDataObject?.ResponsibleTeam :
-                                            TeamMemberChanged || IsTaskStatusUpdated ? TaskAssignedTo : [];
-
-                                    usersToCheck.forEach((userDtl: any) => {
-                                        taskUsers?.forEach((allUserItem: any) => {
-                                            if (userDtl.Id === allUserItem.AssingedToUserId) {
-                                                addEmailAndUserName(allUserItem);
-                                            }
-                                        });
-                                    });
+                                    functionType = "Priority-Check"
                                 }
-                                let CommonMsg = '';
-                                const sendMSGCheck = (checkStatusUpdate === 80 || checkStatusUpdate === 70) && IsTaskStatusUpdated;
-                                const SendUserEmailFinal: any = sendUserEmails.filter((item: any, index: any) => sendUserEmails.indexOf(item) === index);
-                                if (SendMsgToAuthor || (checkStatusUpdate === 90 && CheckForInformationRequestCategory)) {
-                                    CommonMsg = ` Task created from your end has been set to 8%. Please take necessary action.`;
-                                    let functionType: any = '';
-                                    if (checkStatusUpdate === 90 && CheckForInformationRequestCategory) {
-                                        functionType = "Information-Request"
-                                    } else {
-                                        functionType = "Priority-Check"
-                                    }
-                                    let RequiredDataForNotification: any = {
-                                        ItemDetails: UpdatedDataObject,
-                                        ReceiverEmail: SendUserEmailFinal,
-                                        Context: Context,
-                                        usedFor: functionType,
-                                        ReceiverName: AssignedUserName
-                                    }
-                                    GlobalFunctionForUpdateItems.SendEmailNotificationForIRCTasksAndPriorityCheck(RequiredDataForNotification);
-                                } else if (TeamMemberChanged && TeamLeaderChanged) {
-                                    CommonMsg = `You have been marked as TL/working member in the below task. Please take necessary action.`;
-                                } else if (TeamMemberChanged) {
-                                    CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`;
-                                } else if (TeamLeaderChanged) {
-                                    CommonMsg = `You have been marked as a Lead on the below task. Please take necessary action.`;
-                                } else if (IsTaskStatusUpdated) {
-                                    switch (checkStatusUpdate) {
-                                        case 80:
-                                            CommonMsg = `Below task has been set to 80%, please review it.`;
-                                            break;
-                                        case 70:
-                                            CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`;
-                                            break;
-                                    }
+                                let RequiredDataForNotification: any = {
+                                    ItemDetails: UpdatedDataObject,
+                                    ReceiverEmail: SendUserEmailFinal,
+                                    Context: Context,
+                                    usedFor: functionType,
+                                    ReceiverName: AssignedUserName,
+                                    RequiredListIds: AllListIdData
                                 }
+                                GlobalFunctionForUpdateItems.SendEmailNotificationForIRCTasksAndPriorityCheck(RequiredDataForNotification);
+                            }
 
-                                const SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> 
+                            else if (TeamMemberChanged && TeamLeaderChanged) {
+                                CommonMsg = `You have been marked as TL/working member in the below task. Please take necessary action.`;
+                            } else if (TeamMemberChanged) {
+                                CommonMsg = `You have been marked as a working member on the below task. Please take necessary action (Analyse the points in the task, fill up the Estimation, Set to 10%).`;
+                            } else if (TeamLeaderChanged) {
+                                CommonMsg = `You have been marked as a Lead on the below task. Please take necessary action.`;
+                            } else if (IsTaskStatusUpdated) {
+                                switch (checkStatusUpdate) {
+                                    case 80:
+                                        CommonMsg = `Below task has been set to 80%, please review it.`;
+                                        break;
+                                    case 70:
+                                        CommonMsg = `Below task has been re-opened. Please review it and take necessary action on priority basis.`;
+                                        break;
+                                }
+                            }
+
+                            const emailMessage = GlobalFunctionForUpdateItems?.GenerateMSTeamsNotification(UpdatedDataObject);
+                            const containerDiv = document.createElement('div');
+                            const reactElement = React.createElement(emailMessage?.type, emailMessage?.props);
+                            ReactDOM.render(reactElement, containerDiv);
+
+                            const SendMessage = `<p><b>Hi ${AssignedUserName},</b> </p></br><p>${CommonMsg}</p> 
                                 </br> 
+                                    ${containerDiv.innerHTML}
                                     <p>
                                     Task Link:  
-                                    <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject.Id + "&Site=" + UpdatedDataObject.siteType}>
-                                     ${UpdatedDataObject.TaskId}-${UpdatedDataObject.Title}
+                                    <a href=${siteUrls + "/SitePages/Task-Profile.aspx?taskId=" + UpdatedDataObject?.Id + "&Site=" + UpdatedDataObject?.siteType}>
+                                     Click-here
                                     </a>
-                                    </br>
-                                    Task Category: ${TaskCategories}</br>
-                                    Smartpriority: <b>${UpdatedDataObject?.SmartPriority}</b></br>
                                     </p>
                                     <p></p>
                                     <b>
@@ -2724,24 +2735,24 @@ const EditTaskPopup = (Items: any) => {
                                     `;
 
 
-                                if ((sendMSGCheck || SendMsgToAuthor || TeamMemberChanged || TeamLeaderChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
-                                    if (sendUserEmails.length > 0) {
-                                        // await sendTeamMessagePromise(SendUserEmailFinal, SendMessage, Items.context)
-                                        globalCommon.SendTeamMessage(SendUserEmailFinal, SendMessage, Items.context).then(() => {
-                                            console.log("MS Teams Message Send Succesfully !!!!")
-                                        }).catch((error) => {
-                                            console.log("MS Teams Message Not Send !!!!", error.message)
-                                        })
-                                    }
+                            if ((sendMSGCheck || SendMsgToAuthor || TeamMemberChanged || TeamLeaderChanged) && ((Number(taskPercentageValue) * 100) + 1 <= 85 || taskPercentageValue == 0)) {
+                                if (sendUserEmails.length > 0) {
+                                    // await sendTeamMessagePromise(SendUserEmailFinal, SendMessage, Items.context,AllListIdData)
+                                    globalCommon.SendTeamMessage(SendUserEmailFinal, SendMessage, Items.context, AllListIdData).then(() => {
+                                        console.log("MS Teams Message Send Succesfully !!!!")
+                                    }).catch((error) => {
+                                        console.log("MS Teams Message Not Send !!!!", error.message)
+                                    })
                                 }
-                            } catch (error) {
-                                console.log("Error", error.message);
                             }
+                        } catch (error) {
+                            console.log("Error", error.message);
                         }
+
                         let Createtordata: any = []
-                        if ((IsTaskStatusUpdated || checkStatusUpdate == 0) && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject.Categories == 'Immediate') {
+                        if (IsTaskStatusUpdated && (checkStatusUpdate == 80 || checkStatusUpdate == 5) && UpdatedDataObject?.Categories?.indexOf('Immediate') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
-                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
                                 }
 
@@ -2754,7 +2765,8 @@ const EditTaskPopup = (Items: any) => {
                                     Context: Items.context,
                                     ActionType: "Immediate",
                                     ReasonStatement: '',
-                                    UpdatedDataObject: UpdatedDataObject
+                                    UpdatedDataObject: UpdatedDataObject,
+                                    RequiredListIds: AllListIdData
                                 }
                                 GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
                                     console.log("Ms Teams Notifications send")
@@ -2765,7 +2777,82 @@ const EditTaskPopup = (Items: any) => {
 
 
                         }
-                        if (IsTaskStatusUpdated && checkStatusUpdate == 90 && UpdatedDataObject.Categories == 'Design') {
+                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.indexOf('Immediate') != -1) {
+                            taskUsers?.forEach((allUserItem: any) => {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem?.AssingedToUserId) {
+                                    Createtordata.push(allUserItem);
+                                }
+
+                            });
+
+                            Createtordata?.map((InfoItem: any) => {
+                                let DataForNotification: any = {
+                                    ReceiverName: InfoItem?.Title,
+                                    sendUserEmail: [InfoItem?.Email],
+                                    Context: Items.context,
+                                    ActionType: "Immediate",
+                                    ReasonStatement: '',
+                                    UpdatedDataObject: UpdatedDataObject,
+                                    RequiredListIds: AllListIdData
+                                }
+                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    console.log("Ms Teams Notifications send")
+                                })
+
+                            })
+
+
+
+                        }
+
+                        if (IsTaskStatusUpdated && checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.indexOf('Design') != -1) {
+                            taskUsers?.forEach((allUserItem: any) => {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                    Createtordata.push(allUserItem);
+                                }
+                            });
+                            Createtordata?.map((InfoItem: any) => {
+
+                                let DataForNotification: any = {
+                                    ReceiverName: 'kristina',
+                                    sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
+                                    Context: Items.context,
+                                    ActionType: "Design",
+                                    ReasonStatement: "",
+                                    UpdatedDataObject: UpdatedDataObject,
+                                    RequiredListIds: AllListIdData
+                                }
+                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    console.log("Ms Teams Notifications send")
+                                })
+
+                            })
+                        }
+
+                        if (Items?.pageType == 'createTask' && checkStatusUpdate == 0 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
+                            taskUsers?.forEach((allUserItem: any) => {
+                                if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
+                                    Createtordata.push(allUserItem);
+                                }
+
+                            });
+                            Createtordata?.map((InfoItem: any) => {
+                                let DataForNotification: any = {
+                                    ReceiverName: 'Robert',
+                                    sendUserEmail: ['robert.ungethuem@hochhuth-consulting.de'],
+                                    Context: Items.context,
+                                    ActionType: "User Experience - UX",
+                                    ReasonStatement: "",
+                                    UpdatedDataObject: UpdatedDataObject,
+                                    RequiredListIds: AllListIdData
+                                }
+                                GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
+                                    console.log("Ms Teams Notifications send")
+                                })
+                            })
+                        }
+
+                        if (checkStatusUpdate == 90 && UpdatedDataObject?.Categories?.indexOf('User Experience - UX') != -1) {
                             taskUsers?.forEach((allUserItem: any) => {
                                 if (UpdatedDataObject?.Author?.Id === allUserItem.AssingedToUserId) {
                                     Createtordata.push(allUserItem);
@@ -2776,12 +2863,13 @@ const EditTaskPopup = (Items: any) => {
                             Createtordata?.map((InfoItem: any) => {
 
                                 let DataForNotification: any = {
-                                    ReceiverName: InfoItem?.Title,
-                                    sendUserEmail: [InfoItem?.Email],
+                                    ReceiverName: 'kristina',
+                                    sendUserEmail: ['kristina.kovach@hochhuth-consulting.de'],
                                     Context: Items.context,
-                                    ActionType: "Design",
+                                    ActionType: "User Experience - UX",
                                     ReasonStatement: "",
-                                    UpdatedDataObject: UpdatedDataObject
+                                    UpdatedDataObject: UpdatedDataObject,
+                                    RequiredListIds: AllListIdData
                                 }
                                 GlobalFunctionForUpdateItems.SendMSTeamsNotificationForWorkingActions(DataForNotification).then(() => {
                                     console.log("Ms Teams Notifications send")
@@ -2793,23 +2881,6 @@ const EditTaskPopup = (Items: any) => {
 
                         }
 
-                        // This is used for send Email Notification for design Category Task 
-
-                        if (SendDesignEmailStatus && (taskPercentageValue < 20 || taskPercentageValue == 0 || taskPercentageValue == undefined)) {
-                            let EmailRecievers: any = [];
-                            taskUsers?.map((userItemData: any) => {
-                                if (userItemData.AssingedToUserId !== currentUserId && (userItemData.Title == "Robert Ungethuem" || userItemData.Title == "Alina Chyhasova")) {
-                                    EmailRecievers.push(userItemData);
-                                }
-                            })
-                            if (EmailRecievers?.length > 0) {
-                                globalCommon.sendImmediateEmailNotifications(UpdatedDataObject.Id, siteUrl, EditData?.listId, UpdatedDataObject, EmailRecievers, 'DesignMail', taskUsers, Context).then((response: any) => {
-                                    console.log(response);
-                                    console.log("Design Email Notification Sent !!");
-                                });
-
-                            }
-                        }
 
                         if (ApproverData != undefined && ApproverData.length > 0) {
                             taskUsers.forEach((val: any) => {
@@ -2840,15 +2911,15 @@ const EditTaskPopup = (Items: any) => {
                                 //EditData.TaskApprovers.push(EditData?.Author)
                             }
                         }
-                        let spaceIndex = EditData.TaskCreatorData[0]?.Title.lastIndexOf(' ');
+                        let spaceIndex = EditData.TaskCreatorData[0]?.Title?.lastIndexOf(' ');
                         if (spaceIndex !== -1) {
-                            TaskDetailsFromCall[0].CreatorTitle = EditData.TaskCreatorData[0]?.Title.substring(0, spaceIndex);
+                            TaskDetailsFromCall[0].CreatorTitle = EditData.TaskCreatorData[0]?.Title?.substring(0, spaceIndex);
                         } else {
                             console.log("No last name found");
                         }
                         let CalculateStatusPercentages: any = TaskDetailsFromCall[0].PercentComplete ? TaskDetailsFromCall[0].PercentComplete
-                                : 0;
-                        if (CalculateStatusPercentages == 90 && EmailStatus == true) {
+                            : 0;
+                        if (IsTaskStatusUpdated && CalculateStatusPercentages == 90 && EmailStatus == true) {
                             setLastUpdateTaskData(TaskDetailsFromCall[0]);
                             ValueStatus = "90";
                             setSendEmailNotification(true);
@@ -2857,13 +2928,13 @@ const EditTaskPopup = (Items: any) => {
                         if (usedFor == "Image-Tab") {
                             GetExtraLookupColumnData();
                         } else {
-                            tempShareWebTypeData = [];
+                            BackupTaskCategoriesData = [];
                             AllMetaData = [];
                             taskUsers = [];
                             CommentBoxData = [];
                             SubCommentBoxData = [];
                             updateFeedbackArray = [];
-                            tempShareWebTypeData = [];
+                            BackupTaskCategoriesData = [];
                             tempCategoryData = "";
                             SiteTypeBackupArray = [];
                             currentUserBackupArray = [];
@@ -2900,7 +2971,7 @@ const EditTaskPopup = (Items: any) => {
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
                             }
-                            if (TaskDetailsFromCall[0].Categories == 'Design' && CalculateStatusPercentage == 90) {
+                            if (TaskDetailsFromCall[0]?.Categories?.indexOf('Immediate') != -1 && CalculateStatusPercentage == 0 && Items?.pageType == 'createTask') {
                                 ValueStatus = CalculateStatusPercentage;
                                 setSendEmailNotification(true);
                                 Items.StatusUpdateMail = true;
@@ -2950,7 +3021,9 @@ const EditTaskPopup = (Items: any) => {
                                     Items.Call(DataJSONUpdate, "UpdatedData");
                                 }
                             } else {
-                                Items.Call("Save");
+                                if (usedFor !== "TimeSheetPopup") {
+                                    Items.Call("Save");
+                                }
                             }
                         }
                     });
@@ -3027,7 +3100,7 @@ const EditTaskPopup = (Items: any) => {
             if (ApproverData == undefined && ApproverData.length == 0) {
                 const finalData = tempArrayApprover.filter(
                     (val: any, id: any, array: any) => {
-                        return array.indexOf(val) == id;
+                        return array?.indexOf(val) == id;
                     }
                 );
                 TaskAssignedTo = finalData;
@@ -3130,7 +3203,7 @@ const EditTaskPopup = (Items: any) => {
         let CategoriesTitle: any = "";
         let uniqueIds: any = {};
 
-        const result: any = tempShareWebTypeData.filter((item: any) => {
+        const result: any = BackupTaskCategoriesData.filter((item: any) => {
             if (!uniqueIds[item.Id]) {
                 uniqueIds[item.Id] = true;
                 return true;
@@ -3160,13 +3233,13 @@ const EditTaskPopup = (Items: any) => {
 
         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
             TaskAssignedTo?.map((taskInfo) => {
-                if(taskInfo.AssingedToUserId != undefined){
-                    AssignedToIds.push(taskInfo.AssingedToUserId);   
+                if (taskInfo.AssingedToUserId != undefined) {
+                    AssignedToIds.push(taskInfo.AssingedToUserId);
                 }
-                else{
+                else {
                     AssignedToIds.push(taskInfo.Id);
                 }
-               
+
             });
         }
 
@@ -3175,10 +3248,10 @@ const EditTaskPopup = (Items: any) => {
                 if (ApproverInfo.AssingedToUserId != undefined) {
                     ApproverIds.push(ApproverInfo.AssingedToUserId)
                 }
-                else{
+                else {
                     ApproverIds.push(ApproverInfo.Id);
                 }
-               
+
             });
         }
 
@@ -3187,10 +3260,10 @@ const EditTaskPopup = (Items: any) => {
                 if (taskInfo.AssingedToUserId != undefined) {
                     TeamMemberIds.push(taskInfo.AssingedToUserId)
                 }
-                else{
+                else {
                     TeamMemberIds.push(taskInfo.Id);
                 }
-               
+
             });
         }
 
@@ -3214,10 +3287,10 @@ const EditTaskPopup = (Items: any) => {
                 if (taskInfo.AssingedToUserId != undefined) {
                     ResponsibleTeamIds.push(taskInfo.AssingedToUserId)
                 }
-                else{
+                else {
                     ResponsibleTeamIds.push(taskInfo.Id);
                 }
-               
+
             });
         }
         if (
@@ -3499,8 +3572,11 @@ const EditTaskPopup = (Items: any) => {
         let deletePost = confirm("Do you really want to delete this Task?");
         if (deletePost) {
             deleteItemFunction(TaskID, FunctionsType);
+            Items.Call("Delete-Task")
+
         } else {
             console.log("Your Task has not been deleted");
+            Items.Call()
         }
     };
     const deleteItemFunction = async (itemId: any, FnType: any) => {
@@ -3679,7 +3755,7 @@ const EditTaskPopup = (Items: any) => {
                     PhoneCount = PhoneCount + 1;
                 }
             });
-            if (ApprovedStatusCount == 0 && EditDataBackup?.PercentComplete != 0) {
+            if (ApprovedStatusCount == 0 && EditDataBackup?.PercentComplete > 0 && EditDataBackup?.PercentComplete < 5 && IsTaskStatusUpdated) {
                 let teamMember = [];
                 let AssignedTo = [];
                 if (EditDataBackup?.Categories?.includes("Approval")) {
@@ -3708,7 +3784,7 @@ const EditTaskPopup = (Items: any) => {
             else {
                 let teamMember = [];
                 let AssignedTo = [];
-                if (EditDataBackup?.Categories?.includes("Approval") && EditDataBackup?.PercentComplete != 0) {
+                if (EditDataBackup?.Categories?.includes("Approval") && EditDataBackup?.PercentComplete > 0 && EditDataBackup?.PercentComplete < 5 && IsTaskStatusUpdated) {
                     teamMember.push(currentUserBackupArray?.[0]?.AssingedToUser)
                     AssignedTo.push(currentUserBackupArray?.[0]?.AssingedToUser)
                     setTaskAssignedTo(AssignedTo)
@@ -3721,7 +3797,7 @@ const EditTaskPopup = (Items: any) => {
             }
         }
         if (PhoneCount > 0) {
-            CategoryChangeUpdateFunction("false", "Phone", 199);
+            CategoryChangeUpdateFunction("false", "Phone");
         }
     };
 
@@ -4767,6 +4843,7 @@ const EditTaskPopup = (Items: any) => {
     };
 
 
+
     const SelectApproverFromAutoSuggestion = (ApproverData: any, usedFor: string) => {
         setApproverSearchedData([]);
         setApproverSearchedDataForPopup([]);
@@ -4821,12 +4898,12 @@ const EditTaskPopup = (Items: any) => {
             setWorkingAction([...copyWorkAction]);
             console.log("Bottleneck All Details:", copyWorkAction)
         } else {
-            let ApproverHistoryObject: any 
+            let ApproverHistoryObject: any
             selectApproverFunction(ApproverData);
             setTaskAssignedTo([ApproverData]);
             setTaskTeamMembers([ApproverData]);
             TaskApproverBackupArray = [ApproverData];
-            if(useFor=="Bottleneck"||useFor=="Attention"){
+            if (useFor == "Bottleneck" || useFor == "Attention") {
                 ApproverHistoryObject = {
                     ApproverName: ApproverData.Title,
                     ApprovedDate: Moment(new Date())
@@ -4840,17 +4917,17 @@ const EditTaskPopup = (Items: any) => {
                             : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
                     ApproverSuffix: ApproverData.Suffix,
                     ApproverEmail: ApproverData.Email,
-                };  
-            }else{
+                };
+            } else {
                 StatusOptions?.map((item: any) => {
-                    if (item.value == 1 ) {
+                    if (item.value == 1) {
                         Items.sendApproverMail = true;
                         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: "1" });
                         setPercentCompleteStatus(item.status);
                         setTaskStatus(item.taskStatusComment);
                     }
                 });
-                 ApproverHistoryObject = {
+                ApproverHistoryObject = {
                     ApproverName: ApproverData.Title,
                     ApprovedDate: Moment(new Date())
                         .tz("Europe/Berlin")
@@ -4865,10 +4942,11 @@ const EditTaskPopup = (Items: any) => {
                     ApproverEmail: ApproverData.Email,
                 };
             }
-          
+
             ApproverHistoryData.push(ApproverHistoryObject);
         }
     };
+
 
     // *********** this is for Send Email Notification for Approval Category Task Functions ****************************
 
@@ -5003,6 +5081,7 @@ const EditTaskPopup = (Items: any) => {
                     ActionType: ActionType,
                     ReasonStatement: InfoData.Comment,
                     UpdatedDataObject: EditDataBackup,
+                    RequiredListIds: AllListIdData
                 }
                 GlobalFunctionForUpdateItems.MSTeamsReminderMessage(RequiredData);
                 alert("The reminder has been sent to the user.");
@@ -5201,21 +5280,23 @@ const EditTaskPopup = (Items: any) => {
                                     Delete This Item
                                 </span>
                             </a>
-                            <span> | </span>
-                            <a
-                                className="hreflink"
-                                onClick={() => CopyAndMovePopupFunction("Copy-Task")}
-                            >
-                                Copy Task
-                            </a>
-                            <span> | </span>
-                            <a
-                                className="hreflink"
-                                onClick={() => CopyAndMovePopupFunction("Move-Task")}
-                            >
-                                {" "}
-                                Move Task
-                            </a>{" "}
+                            {SiteTypes?.length > 2 ? <>
+                                <span> | </span>
+                                <a
+                                    className="hreflink"
+                                    onClick={() => CopyAndMovePopupFunction("Copy-Task")}
+                                >
+                                    Copy Task
+                                </a>
+                                <span> | </span>
+                                <a
+                                    className="hreflink"
+                                    onClick={() => CopyAndMovePopupFunction("Move-Task")}
+                                >
+                                    {" "}
+                                    Move Task
+                                </a>{" "}
+                            </> : null}
                             |
                             <span>
                                 {EditData.ID ? (
@@ -5341,15 +5422,23 @@ const EditTaskPopup = (Items: any) => {
                                     Delete This Item
                                 </span>
                             </a>
-                            <span> | </span>
-                            <a className="hreflink" onClick={CopyAndMovePopupFunction}>
-                                Copy Task
-                            </a>
-                            <span> | </span>
-                            <a className="hreflink" onClick={CopyAndMovePopupFunction}>
-                                {" "}
-                                Move Task
-                            </a>{" "}
+                            {SiteTypes?.length > 2 ? <>
+                                <span> | </span>
+                                <a
+                                    className="hreflink"
+                                    onClick={() => CopyAndMovePopupFunction("Copy-Task")}
+                                >
+                                    Copy Task
+                                </a>
+                                <span> | </span>
+                                <a
+                                    className="hreflink"
+                                    onClick={() => CopyAndMovePopupFunction("Move-Task")}
+                                >
+                                    {" "}
+                                    Move Task
+                                </a>{" "}
+                            </> : null}
                             |
                             <span>
                                 {EditData.ID ? (
@@ -5518,12 +5607,25 @@ const EditTaskPopup = (Items: any) => {
                 onDismiss={closeTimeSheetPopup}
                 isBlocking={TimeSheetPopup}
             >
-                <div
-                    className={
-                        ServicesTaskCheck ? "modal-body serviepannelgreena" : "modal-body"
-                    }
-                >
+                <div className="modal-body">
                     <TimeEntryPopup props={Items.Items} />
+                    <footer className="bg-f4">
+                        <div className="card-footer">
+                            <button
+                                className="btn btn-primary px-4 float-end"
+                                onClick={closeTimeSheetPopup}
+                            >
+                                OK
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-default me-1 float-end px-3"
+                                onClick={closeTimeSheetPopup}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </footer>
                 </div>
             </Panel>
 
@@ -5624,7 +5726,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 }
                                                             />
                                                             <label className="form-check-label">
-                                                                Working This Week
+                                                                Working This Week?
                                                             </label>
                                                         </span>
 
@@ -5639,7 +5741,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 }
                                                             />
                                                             <label className="form-check-label">
-                                                                Working Today
+                                                                Working Today?
                                                             </label>
                                                         </span>
                                                     </span>
@@ -5672,16 +5774,14 @@ const EditTaskPopup = (Items: any) => {
                                                         type="date"
                                                         className="form-control"
                                                         max="9999-12-31"
-                                                        min={
-                                                            EditData.Created
-                                                                ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                                : ""
-                                                        }
-                                                        defaultValue={
+                                                        // min={
+                                                        //     EditData.Created
+                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
+                                                        //         : ""
+                                                        // }
+                                                        value={
                                                             EditData.StartDate
-                                                                ? Moment(EditData.StartDate).format(
-                                                                    "YYYY-MM-DD"
-                                                                )
+                                                                ? Moment(EditData.StartDate).format("YYYY-MM-DD")
                                                                 : ""
                                                         }
                                                         onChange={(e) =>
@@ -5709,12 +5809,12 @@ const EditTaskPopup = (Items: any) => {
                                                         className="form-control"
                                                         placeholder="Enter Due Date"
                                                         max="9999-12-31"
-                                                        min={
-                                                            EditData.Created
-                                                                ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                                : ""
-                                                        }
-                                                        defaultValue={
+                                                        // min={
+                                                        //     EditData.Created
+                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
+                                                        //         : ""
+                                                        // }
+                                                        value={
                                                             EditData.DueDate
                                                                 ? Moment(EditData.DueDate).format("YYYY-MM-DD")
                                                                 : ""
@@ -5738,16 +5838,14 @@ const EditTaskPopup = (Items: any) => {
                                                         type="date"
                                                         className="form-control"
                                                         max="9999-12-31"
-                                                        min={
-                                                            EditData.Created
-                                                                ? Moment(EditData.Created).format("YYYY-MM-DD")
-                                                                : ""
-                                                        }
-                                                        defaultValue={
+                                                        // min={
+                                                        //     EditData.Created
+                                                        //         ? Moment(EditData.Created).format("YYYY-MM-DD")
+                                                        //         : ""
+                                                        // }
+                                                        value={
                                                             EditData.CompletedDate
-                                                                ? Moment(EditData.CompletedDate).format(
-                                                                    "YYYY-MM-DD"
-                                                                )
+                                                                ? Moment(EditData.CompletedDate).format("YYYY-MM-DD")
                                                                 : ""
                                                         }
                                                         onChange={(e) =>
@@ -5827,8 +5925,6 @@ const EditTaskPopup = (Items: any) => {
                                                             }
                                                             placeholder="Search Portfolio Item"
                                                         />
-
-
                                                     )}
                                                     <span className="input-group-text">
                                                         <span
@@ -5870,7 +5966,7 @@ const EditTaskPopup = (Items: any) => {
                                                     <label className="form-label full-width">
                                                         Categories
                                                     </label>
-                                                    {ShareWebTypeData?.length > 1 ? <>
+                                                    {TaskCategoriesData?.length > 1 ? <>
                                                         <input
                                                             type="text"
                                                             className="form-control"
@@ -5901,7 +5997,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 </ul>
                                                             </div>
                                                         ) : null}
-                                                        {ShareWebTypeData?.map(
+                                                        {TaskCategoriesData?.map(
                                                             (type: any, index: number) => {
                                                                 if (
                                                                     type.Title != "Phone" &&
@@ -5922,8 +6018,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             <span
                                                                                 onClick={() =>
                                                                                     removeCategoryItem(
-                                                                                        type.Title,
-                                                                                        type.Id
+                                                                                        type.Title
                                                                                     )
                                                                                 }
                                                                                 className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
@@ -5934,10 +6029,10 @@ const EditTaskPopup = (Items: any) => {
                                                             }
                                                         )}</> :
                                                         <>
-                                                            {ShareWebTypeData?.length == 1 ?
+                                                            {TaskCategoriesData?.length == 1 ?
 
                                                                 <div className="full-width">
-                                                                    {ShareWebTypeData?.map((CategoryItem: any) => {
+                                                                    {TaskCategoriesData?.map((CategoryItem: any) => {
                                                                         return (
                                                                             <div className="full-width replaceInput alignCenter">
                                                                                 <a
@@ -6011,7 +6106,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 type="checkbox"
                                                                 checked={PhoneStatus}
                                                                 value={`${PhoneStatus}`}
-                                                                onClick={(e) => CategoryChange(e, "Phone", 199)}
+                                                                onClick={(e) => CategoryChange(e, "Phone")}
                                                             />
                                                             <label className="form-check-label">Phone</label>
                                                         </div>
@@ -6022,7 +6117,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 checked={EmailStatus}
                                                                 value={`${EmailStatus}`}
                                                                 onClick={(e) =>
-                                                                    CategoryChange(e, "Email Notification", 276)
+                                                                    CategoryChange(e, "Email Notification")
                                                                 }
                                                             />
                                                             <label>Email Notification</label>
@@ -6033,7 +6128,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     checked={OnlyCompletedStatus}
                                                                     value={`${OnlyCompletedStatus}`}
                                                                     onClick={(e) =>
-                                                                        CategoryChange(e, "Only Completed", 565)
+                                                                        CategoryChange(e, "Only Completed")
                                                                     }
                                                                 />
                                                                 <label>Only Completed</label>
@@ -6046,15 +6141,15 @@ const EditTaskPopup = (Items: any) => {
                                                                 checked={ImmediateStatus}
                                                                 value={`${ImmediateStatus}`}
                                                                 onClick={(e) =>
-                                                                    CategoryChange(e, "Immediate", 228)
+                                                                    CategoryChange(e, "Immediate")
                                                                 }
                                                             />
                                                             <label>Immediate</label>
                                                         </div>
-                                                        {/* {ShareWebTypeData != undefined &&
-                                                            ShareWebTypeData?.length > 0 ? (
+                                                        {/* {TaskCategoriesData != undefined &&
+                                                            TaskCategoriesData?.length > 0 ? (
                                                             <div>
-                                                                {ShareWebTypeData?.map(
+                                                                {TaskCategoriesData?.map(
                                                                     (type: any, index: number) => {
                                                                         if (
                                                                             type.Title != "Phone" &&
@@ -6098,7 +6193,7 @@ const EditTaskPopup = (Items: any) => {
                                                             checked={ApprovalStatus}
                                                             value={`${ApprovalStatus}`}
                                                             onClick={(e) =>
-                                                                CategoryChange(e, "Approval", 227)
+                                                                CategoryChange(e, "Approval")
                                                             }
                                                         />
                                                     </div>
@@ -6389,13 +6484,13 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="col-md-6">
                                                         <div className="input-group">
                                                             <label className="form-label full-width">SmartPriority</label>
-                                                            <div className="bg-e9 w-100 py-1 px-2" style={{border:'1px solid #CDD4DB'}}>
+                                                            <div className="bg-e9 w-100 py-1 px-2" style={{ border: '1px solid #CDD4DB' }}>
                                                                 <span className={EditData?.SmartPriority != undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
                                                                     <>{EditData?.SmartPriority != undefined ? EditData?.SmartPriority : 0}</>
                                                                     <span className="tooltip-text pop-right">
                                                                         {EditData?.showFormulaOnHover != undefined ?
-                                                
-                                                                        <SmartPriorityHover editValue={EditData}/> : ""}
+
+                                                                            <SmartPriorityHover editValue={EditData} /> : ""}
                                                                     </span>
                                                                 </span>
                                                             </div>
@@ -7134,10 +7229,10 @@ const EditTaskPopup = (Items: any) => {
 
                                                                         <div className="alignCenter">
                                                                             <span
-                                                                                className="hover-text m-0 alignIcon"
+                                                                                className="hover-text m-1"
                                                                                 onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
                                                                             >
-                                                                                <span className="svg__iconbox svg__icon--clock dark"></span>
+                                                                                <LuBellPlus></LuBellPlus>
                                                                                 <span className="tooltip-text pop-left">
                                                                                     Send reminder notifications
                                                                                 </span>
@@ -7249,9 +7344,9 @@ const EditTaskPopup = (Items: any) => {
                                                                         <div className="alignCenter">
                                                                             <span
                                                                                 onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
-                                                                                className="hover-text m-0 alignIcon"
+                                                                                className="hover-text m-1"
                                                                             >
-                                                                                <span className="svg__iconbox svg__icon--clock dark"></span>
+                                                                                <LuBellPlus></LuBellPlus>
                                                                                 <span className="tooltip-text pop-left">
                                                                                     Send reminder notifications
                                                                                 </span>
@@ -7616,7 +7711,7 @@ const EditTaskPopup = (Items: any) => {
                     {IsComponentPicker && (
                         <Picker
                             props={EditData}
-                            selectedCategoryData={ShareWebTypeData}
+                            selectedCategoryData={TaskCategoriesData}
                             usedFor="Task-Popup"
                             siteUrls={siteUrls}
                             AllListId={AllListIdData}
@@ -7999,6 +8094,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             Working This Week?
                                                                         </label>
                                                                     </span>
+
                                                                     <span className="form-check">
                                                                         <input
                                                                             className="form-check-input rounded-0"
@@ -8021,8 +8117,8 @@ const EditTaskPopup = (Items: any) => {
                                                                 placeholder="Task Name"
                                                                 defaultValue={EditData.Title}
                                                                 onChange={(e) =>
-                                                                    setEditData({
-                                                                        ...EditData,
+                                                                    setUpdateTaskInfo({
+                                                                        ...UpdateTaskInfo,
                                                                         Title: e.target.value,
                                                                     })
                                                                 }
@@ -8032,6 +8128,10 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="mx-0 row taskdate ">
                                                         <div className="col-6 ps-0 mt-2">
                                                             <div className="input-group ">
+                                                                {/* <CDatePicker date={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}/> */}
+                                                                {/* <DatePicker value={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : null} onChange={(date) => setEditData({
+                                                        ...EditData, StartDate: date
+                                                    })} /> */}
                                                                 <label className="form-label full-width">
                                                                     Start Date
                                                                 </label>
@@ -8039,18 +8139,14 @@ const EditTaskPopup = (Items: any) => {
                                                                     type="date"
                                                                     className="form-control"
                                                                     max="9999-12-31"
-                                                                    min={
-                                                                        EditData.Created
-                                                                            ? Moment(EditData.Created).format(
-                                                                                "YYYY-MM-DD"
-                                                                            )
-                                                                            : ""
-                                                                    }
-                                                                    defaultValue={
+                                                                    // min={
+                                                                    //     EditData.Created
+                                                                    //         ? Moment(EditData.Created).format("YYYY-MM-DD")
+                                                                    //         : ""
+                                                                    // }
+                                                                    value={
                                                                         EditData.StartDate
-                                                                            ? Moment(EditData.StartDate).format(
-                                                                                "YYYY-MM-DD"
-                                                                            )
+                                                                            ? Moment(EditData.StartDate).format("YYYY-MM-DD")
                                                                             : ""
                                                                     }
                                                                     onChange={(e) =>
@@ -8078,18 +8174,14 @@ const EditTaskPopup = (Items: any) => {
                                                                     className="form-control"
                                                                     placeholder="Enter Due Date"
                                                                     max="9999-12-31"
-                                                                    min={
-                                                                        EditData.Created
-                                                                            ? Moment(EditData.Created).format(
-                                                                                "YYYY-MM-DD"
-                                                                            )
-                                                                            : ""
-                                                                    }
-                                                                    defaultValue={
+                                                                    // min={
+                                                                    //     EditData.Created
+                                                                    //         ? Moment(EditData.Created).format("YYYY-MM-DD")
+                                                                    //         : ""
+                                                                    // }
+                                                                    value={
                                                                         EditData.DueDate
-                                                                            ? Moment(EditData.DueDate).format(
-                                                                                "YYYY-MM-DD"
-                                                                            )
+                                                                            ? Moment(EditData.DueDate).format("YYYY-MM-DD")
                                                                             : ""
                                                                     }
                                                                     onChange={(e) =>
@@ -8111,18 +8203,14 @@ const EditTaskPopup = (Items: any) => {
                                                                     type="date"
                                                                     className="form-control"
                                                                     max="9999-12-31"
-                                                                    min={
-                                                                        EditData.Created
-                                                                            ? Moment(EditData.Created).format(
-                                                                                "YYYY-MM-DD"
-                                                                            )
-                                                                            : ""
-                                                                    }
-                                                                    defaultValue={
+                                                                    // min={
+                                                                    //     EditData.Created
+                                                                    //         ? Moment(EditData.Created).format("YYYY-MM-DD")
+                                                                    //         : ""
+                                                                    // }
+                                                                    value={
                                                                         EditData.CompletedDate
-                                                                            ? Moment(EditData.CompletedDate).format(
-                                                                                "YYYY-MM-DD"
-                                                                            )
+                                                                            ? Moment(EditData.CompletedDate).format("YYYY-MM-DD")
                                                                             : ""
                                                                     }
                                                                     onChange={(e) =>
@@ -8165,7 +8253,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                     </div>
                                                     <div className="mx-0 row mt-2 taskservices">
-                                                        <div className="col-md-6 ps-0">
+                                                        <div className="col-md-6  ps-0">
                                                             <div className="input-group mb-2">
                                                                 <label className="form-label full-width">
                                                                     Portfolio Item
@@ -8189,6 +8277,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         })}
                                                                     </div>
                                                                 ) : (
+
                                                                     <input
                                                                         type="text"
                                                                         className="form-control"
@@ -8217,26 +8306,22 @@ const EditTaskPopup = (Items: any) => {
                                                                 {SearchedServiceCompnentData?.length > 0 ? (
                                                                     <div className="SmartTableOnTaskPopup">
                                                                         <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                            {SearchedServiceCompnentData.map(
-                                                                                (Item: any) => {
-                                                                                    return (
-                                                                                        <li
-                                                                                            className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
-                                                                                            key={Item.id}
-                                                                                            onClick={() =>
-                                                                                                setSelectedServiceAndCompnentData(
-                                                                                                    Item,
-                                                                                                    "Single"
-                                                                                                )
-                                                                                            }
-                                                                                        >
-                                                                                            <a className="siteColor">
-                                                                                                {Item.Path}
-                                                                                            </a>
-                                                                                        </li>
-                                                                                    );
-                                                                                }
-                                                                            )}
+                                                                            {SearchedServiceCompnentData.map((Item: any) => {
+                                                                                return (
+                                                                                    <li
+                                                                                        className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                                                                        key={Item.id}
+                                                                                        onClick={() =>
+                                                                                            setSelectedServiceAndCompnentData(
+                                                                                                Item,
+                                                                                                "Single"
+                                                                                            )
+                                                                                        }
+                                                                                    >
+                                                                                        <a>{Item.Path}</a>
+                                                                                    </li>
+                                                                                );
+                                                                            })}
                                                                         </ul>
                                                                     </div>
                                                                 ) : null}
@@ -8246,7 +8331,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <label className="form-label full-width">
                                                                     Categories
                                                                 </label>
-                                                                {ShareWebTypeData?.length > 1 ? <>
+                                                                {TaskCategoriesData?.length > 1 ? <>
                                                                     <input
                                                                         type="text"
                                                                         className="form-control"
@@ -8277,7 +8362,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             </ul>
                                                                         </div>
                                                                     ) : null}
-                                                                    {ShareWebTypeData?.map(
+                                                                    {TaskCategoriesData?.map(
                                                                         (type: any, index: number) => {
                                                                             if (
                                                                                 type.Title != "Phone" &&
@@ -8298,8 +8383,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                         <span
                                                                                             onClick={() =>
                                                                                                 removeCategoryItem(
-                                                                                                    type.Title,
-                                                                                                    type.Id
+                                                                                                    type.Title
                                                                                                 )
                                                                                             }
                                                                                             className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
@@ -8310,10 +8394,10 @@ const EditTaskPopup = (Items: any) => {
                                                                         }
                                                                     )}</> :
                                                                     <>
-                                                                        {ShareWebTypeData?.length == 1 ?
+                                                                        {TaskCategoriesData?.length == 1 ?
 
                                                                             <div className="full-width">
-                                                                                {ShareWebTypeData?.map((CategoryItem: any) => {
+                                                                                {TaskCategoriesData?.map((CategoryItem: any) => {
                                                                                     return (
                                                                                         <div className="full-width replaceInput alignCenter">
                                                                                             <a
@@ -8344,7 +8428,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                             {SearchedCategoryData.map((item: any) => {
                                                                                                 return (
                                                                                                     <li
-                                                                                                        className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                                                                                        className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
                                                                                                         key={item.id}
                                                                                                         onClick={() =>
                                                                                                             setSelectedCategoryData(
@@ -8377,6 +8461,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     <span className="svg__iconbox svg__icon--editBox"></span>
                                                                 </span>
                                                             </div>
+
                                                             <div className="col">
                                                                 <div className="col">
                                                                     <div className="form-check">
@@ -8386,13 +8471,9 @@ const EditTaskPopup = (Items: any) => {
                                                                             type="checkbox"
                                                                             checked={PhoneStatus}
                                                                             value={`${PhoneStatus}`}
-                                                                            onClick={(e) =>
-                                                                                CategoryChange(e, "Phone", 199)
-                                                                            }
+                                                                            onClick={(e) => CategoryChange(e, "Phone")}
                                                                         />
-                                                                        <label className="form-check-label">
-                                                                            Phone
-                                                                        </label>
+                                                                        <label className="form-check-label">Phone</label>
                                                                     </div>
                                                                     <div className="form-check">
                                                                         <input
@@ -8401,11 +8482,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             checked={EmailStatus}
                                                                             value={`${EmailStatus}`}
                                                                             onClick={(e) =>
-                                                                                CategoryChange(
-                                                                                    e,
-                                                                                    "Email Notification",
-                                                                                    276
-                                                                                )
+                                                                                CategoryChange(e, "Email Notification")
                                                                             }
                                                                         />
                                                                         <label>Email Notification</label>
@@ -8416,11 +8493,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 checked={OnlyCompletedStatus}
                                                                                 value={`${OnlyCompletedStatus}`}
                                                                                 onClick={(e) =>
-                                                                                    CategoryChange(
-                                                                                        e,
-                                                                                        "Only Completed",
-                                                                                        565
-                                                                                    )
+                                                                                    CategoryChange(e, "Only Completed")
                                                                                 }
                                                                             />
                                                                             <label>Only Completed</label>
@@ -8433,53 +8506,50 @@ const EditTaskPopup = (Items: any) => {
                                                                             checked={ImmediateStatus}
                                                                             value={`${ImmediateStatus}`}
                                                                             onClick={(e) =>
-                                                                                CategoryChange(e, "Immediate", 228)
+                                                                                CategoryChange(e, "Immediate")
                                                                             }
                                                                         />
                                                                         <label>Immediate</label>
                                                                     </div>
-                                                                    {ShareWebTypeData != undefined &&
-                                                                        ShareWebTypeData?.length > 0 ? (
-                                                                        <div>
-                                                                            {ShareWebTypeData?.map(
-                                                                                (type: any, index: number) => {
-                                                                                    if (
-                                                                                        type.Title != "Phone" &&
-                                                                                        type.Title !=
-                                                                                        "Email Notification" &&
-                                                                                        type.Title != "Immediate" &&
-                                                                                        type.Title != "Approval" &&
-                                                                                        type.Title != "Email" &&
-                                                                                        type.Title != "Only Completed"
-                                                                                    ) {
-                                                                                        return (
-                                                                                            <div className="block w-100">
-                                                                                                <a
-                                                                                                    className="wid90"
-                                                                                                    style={{
-                                                                                                        color: "#fff !important",
-                                                                                                    }}
-                                                                                                >
-                                                                                                    {type.Title}
-                                                                                                </a>
-                                                                                                <span
-                                                                                                    onClick={() =>
-                                                                                                        removeCategoryItem(
-                                                                                                            type.Title,
-                                                                                                            type.Id
-                                                                                                        )
-                                                                                                    }
-                                                                                                    className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
-                                                                                                ></span>
-                                                                                            </div>
-                                                                                        );
-                                                                                    }
-                                                                                }
-                                                                            )}
-                                                                        </div>
-                                                                    ) : null}
+                                                                    {/* {TaskCategoriesData != undefined &&
+                                                            TaskCategoriesData?.length > 0 ? (
+                                                            <div>
+                                                                {TaskCategoriesData?.map(
+                                                                    (type: any, index: number) => {
+                                                                        if (
+                                                                            type.Title != "Phone" &&
+                                                                            type.Title != "Email Notification" &&
+                                                                            type.Title != "Immediate" &&
+                                                                            type.Title != "Approval" &&
+                                                                            type.Title != "Email" &&
+                                                                            type.Title != "Only Completed"
+                                                                        ) {
+                                                                            return (
+                                                                                <div className="block w-100">
+                                                                                    <a
+                                                                                        style={{ color: "#fff !important" }}
+                                                                                        className="wid90"
+                                                                                    >
+                                                                                        {type.Title}
+                                                                                    </a>
+                                                                                    <span
+                                                                                        onClick={() =>
+                                                                                            removeCategoryItem(
+                                                                                                type.Title,
+                                                                                                type.Id
+                                                                                            )
+                                                                                        }
+                                                                                        className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
+                                                                                    ></span>
+                                                                                </div>
+                                                                            );
+                                                                        }
+                                                                    }
+                                                                )}
+                                                            </div>
+                                                        ) : null} */}
                                                                 </div>
-                                                                <div className="form-check mt-1">
+                                                                <div className="form-check mt-2">
                                                                     <label className="full-width">Approval</label>
                                                                     <input
                                                                         type="checkbox"
@@ -8488,13 +8558,13 @@ const EditTaskPopup = (Items: any) => {
                                                                         checked={ApprovalStatus}
                                                                         value={`${ApprovalStatus}`}
                                                                         onClick={(e) =>
-                                                                            CategoryChange(e, "Approval", 227)
+                                                                            CategoryChange(e, "Approval")
                                                                         }
                                                                     />
                                                                 </div>
-                                                                <div className="col ps-3 mb-1">
-                                                                    <ul className="p-0 mt-1 list-none ">
-                                                                        <li className="SpfxCheckRadio ">
+                                                                <div className="col ps-4 mb-1">
+                                                                    <ul className="p-0 mt-1 list-none">
+                                                                        <li className="SpfxCheckRadio">
                                                                             <input
                                                                                 className="radio"
                                                                                 name="ApprovalLevel"
@@ -8504,7 +8574,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 Normal Approval
                                                                             </label>
                                                                         </li>
-                                                                        <li className="SpfxCheckRadio ">
+                                                                        <li className="SpfxCheckRadio">
                                                                             <input
                                                                                 type="radio"
                                                                                 className="radio"
@@ -8524,76 +8594,121 @@ const EditTaskPopup = (Items: any) => {
                                                                 </div>
                                                                 {ApprovalStatus ? (
                                                                     <div>
-                                                                        <div className="col-12">
-                                                                            <div className="input-group">
-                                                                                <label className="form-label full-width"></label>
-                                                                                {ApproverData != undefined &&
-                                                                                    ApproverData.length > 0 ? (
-                                                                                    <>
-                                                                                        {ApproverData.map(
-                                                                                            (Approver: any, index: number) => {
-                                                                                                return (
-                                                                                                    <div className="full-width replaceInput alignCenter">
-                                                                                                        <a
-                                                                                                            className="hreflink textDotted"
-                                                                                                            target="_blank"
-                                                                                                            data-interception="off"
-                                                                                                        >
-                                                                                                            {Approver.Title}
-                                                                                                        </a>
-                                                                                                    </div>
-                                                                                                );
-                                                                                            }
-                                                                                        )}
-                                                                                    </>
-                                                                                ) :
-                                                                                    <input
-                                                                                        type="text"
-                                                                                        className="form-control"
-                                                                                        placeholder="Search Approver's Name Here"
-                                                                                        value={ApproverSearchKey}
-                                                                                        onChange={(e) =>
-                                                                                            autoSuggestionsForApprover(
-                                                                                                e,
-                                                                                                "OnTaskPopup"
-                                                                                            )
-                                                                                        }
-                                                                                    />
-                                                                                }
-                                                                                <span
-                                                                                    className="input-group-text mt--10"
-                                                                                    onClick={OpenApproverPopupFunction}
-                                                                                    title="Approver Data Popup"
-                                                                                >
-                                                                                    <span className="svg__iconbox svg__icon--editBox mt--10"></span>
-                                                                                </span>
+                                                                        <div className="input-group mb-2">
+                                                                            <label className="form-label full-width"></label>
+                                                                            {ApproverData?.length > 1 ? <>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    className="form-control"
+                                                                                    placeholder="Search Approver's Name Here"
+                                                                                    value={ApproverSearchKey}
+                                                                                    onChange={(e) =>
+                                                                                        autoSuggestionsForApprover(e, "OnTaskPopup")
+                                                                                    }
+                                                                                />
                                                                                 {ApproverSearchedData?.length > 0 ? (
                                                                                     <div className="SmartTableOnTaskPopup">
                                                                                         <ul className="autosuggest-list maXh-200 scrollbar list-group">
-                                                                                            {ApproverSearchedData.map(
-                                                                                                (item: any) => {
-                                                                                                    return (
-                                                                                                        <li
-                                                                                                            className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
-                                                                                                            key={item.id}
-                                                                                                            onClick={() =>
-                                                                                                                SelectApproverFromAutoSuggestion(
-                                                                                                                    item, "Approver"
-                                                                                                                )
-                                                                                                            }
-                                                                                                        >
-                                                                                                            <a>{item.NewLabel}</a>
-                                                                                                        </li>
-                                                                                                    );
-                                                                                                }
-                                                                                            )}
+                                                                                            {ApproverSearchedData.map((item: any) => {
+                                                                                                return (
+                                                                                                    <li
+                                                                                                        className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                                                                                        key={item.id}
+                                                                                                        onClick={() =>
+                                                                                                            SelectApproverFromAutoSuggestion(
+                                                                                                                item, "Approver"
+                                                                                                            )
+                                                                                                        }
+                                                                                                    >
+                                                                                                        <a>{item.NewLabel}</a>
+                                                                                                    </li>
+                                                                                                );
+                                                                                            })}
                                                                                         </ul>
                                                                                     </div>
                                                                                 ) : null}
-                                                                            </div>
+                                                                                {ApproverData?.map(
+                                                                                    (type: any, index: number) => {
 
+                                                                                        return (
+                                                                                            <div className="block w-100">
+                                                                                                <a
+                                                                                                    style={{ color: "#fff !important" }}
+                                                                                                    className="textDotted"
+                                                                                                >
+                                                                                                    {type.Title}
+                                                                                                </a>
+                                                                                                <span
+                                                                                                    onClick={() => removeAssignedMember(type)}
+                                                                                                    className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
+                                                                                                ></span>
+                                                                                            </div>
+                                                                                        );
+                                                                                    }
 
+                                                                                )}</> :
+                                                                                <>
+                                                                                    {ApproverData?.length == 1 ?
 
+                                                                                        <div className="full-width">
+
+                                                                                            {ApproverData.map(
+                                                                                                (Approver: any, index: number) => {
+                                                                                                    return (
+                                                                                                        <div className="full-width replaceInput alignCenter">
+                                                                                                            <a
+                                                                                                                className="hreflink"
+                                                                                                                target="_blank"
+                                                                                                                data-interception="off"
+                                                                                                            >
+                                                                                                                {Approver.Title}
+                                                                                                            </a>
+                                                                                                        </div>
+                                                                                                    );
+                                                                                                }
+                                                                                            )}
+                                                                                        </div>
+                                                                                        :
+                                                                                        <>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="form-control"
+                                                                                                id="txtApprover"
+                                                                                                // onChange={(e) => autoSuggestionsForCategory(e)}
+                                                                                                placeholder="Search Name Here!"
+                                                                                                value={ApproverSearchKey}
+                                                                                                onChange={(e) => autoSuggestionsForApprover(e, "OnTaskPopup")}
+                                                                                            />
+                                                                                            {ApproverSearchedDataForPopup?.length > 0 ? (
+                                                                                                <div className="SmartTableOnTaskPopup">
+                                                                                                    <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                                                        {ApproverSearchedDataForPopup.map((item: any) => {
+                                                                                                            return (
+                                                                                                                <li
+                                                                                                                    className="hreflink list-group-item rounded-0 list-group-item-action"
+                                                                                                                    key={item.id}
+                                                                                                                    onClick={() => SelectApproverFromAutoSuggestion(item, "Approver")}
+                                                                                                                >
+                                                                                                                    <a>{item.NewLabel}</a>
+                                                                                                                </li>
+                                                                                                            );
+                                                                                                        })}
+                                                                                                    </ul>
+                                                                                                </div>
+                                                                                            ) : null}
+                                                                                        </>
+                                                                                    }
+                                                                                </>
+
+                                                                            }
+
+                                                                            <span
+                                                                                className="input-group-text mt--10"
+                                                                                onClick={OpenApproverPopupFunction}
+                                                                                title="Approver Data Popup"
+                                                                            >
+                                                                                <span className="svg__iconbox svg__icon--editBox mt--10"></span>
+                                                                            </span>
                                                                         </div>
                                                                         <div className="Approval-History-section my-2">
                                                                             {ApproverHistoryData != undefined &&
@@ -8648,85 +8763,105 @@ const EditTaskPopup = (Items: any) => {
                                                                 ) : null}
                                                             </div>
                                                         </div>
-                                                        <div className="col-6 ps-0 pe-0 pt-4">
-                                                            <div className="time-status">
-                                                                <div className="input-group">
-                                                                    <input
-                                                                        type="text"
-                                                                        className="form-control"
-                                                                        placeholder="Enter Priority"
-                                                                        value={
-                                                                            EditData.PriorityRank
-                                                                                ? EditData.PriorityRank
-                                                                                : ""
-                                                                        }
-                                                                        onChange={(e) =>
-                                                                            ChangePriorityStatusFunction(e)
-                                                                        }
-                                                                    />
+                                                        <div className="col-6 ps-0 pe-0">
+                                                            <div className="row">
+                                                                <div className="time-status col-md-6">
+                                                                    <div className="input-group">
+                                                                        <label className="form-label full-width">Priority</label>
+                                                                        <input
+                                                                            type="text"
+                                                                            className="form-control"
+                                                                            placeholder="Enter Priority"
+                                                                            value={
+                                                                                EditData.PriorityRank
+                                                                                    ? EditData.PriorityRank
+                                                                                    : ""
+                                                                            }
+                                                                            onChange={(e) => ChangePriorityStatusFunction(e)}
+                                                                        />
+                                                                    </div>
+                                                                    <ul className="p-0 my-1">
+                                                                        <li className="form-check ">
+                                                                            <label className="SpfxCheckRadio">
+                                                                                <input
+                                                                                    className="radio"
+                                                                                    name="radioPriority"
+                                                                                    type="radio"
+                                                                                    checked={
+                                                                                        EditData.PriorityRank <= 10 &&
+                                                                                        EditData.PriorityRank >= 8
+                                                                                    }
+                                                                                    onChange={() =>
+                                                                                        ChangePriorityStatusFunction({
+                                                                                            target: {
+                                                                                                value: 8
+                                                                                            }
+                                                                                        })
+                                                                                    }
+                                                                                />
+                                                                                High{" "}
+                                                                            </label>
+                                                                        </li>
+                                                                        <li className="form-check ">
+                                                                            <label className="SpfxCheckRadio">
+                                                                                <input
+                                                                                    className="radio"
+                                                                                    name="radioPriority"
+                                                                                    type="radio"
+                                                                                    checked={
+                                                                                        EditData.PriorityRank <= 7 &&
+                                                                                        EditData.PriorityRank >= 4
+                                                                                    }
+                                                                                    onChange={() =>
+                                                                                        ChangePriorityStatusFunction({
+                                                                                            target: {
+                                                                                                value: 4
+                                                                                            }
+                                                                                        })
+                                                                                    }
+                                                                                />
+                                                                                Normal{" "}
+                                                                            </label>
+                                                                        </li>
+                                                                        <li className="form-check ">
+                                                                            <label className="SpfxCheckRadio">
+                                                                                <input
+                                                                                    className="radio"
+                                                                                    name="radioPriority"
+                                                                                    type="radio"
+                                                                                    checked={
+                                                                                        EditData.PriorityRank <= 3 &&
+                                                                                        EditData.PriorityRank > 0
+                                                                                    }
+                                                                                    onChange={() =>
+                                                                                        ChangePriorityStatusFunction({
+                                                                                            target: {
+                                                                                                value: 1
+                                                                                            }
+                                                                                        })
+                                                                                    }
+                                                                                />
+                                                                                Low{" "}
+                                                                            </label>
+                                                                        </li>
+                                                                    </ul>
                                                                 </div>
-                                                                <ul className="p-0 mt-1">
-                                                                    <li className="form-check ">
-                                                                        <label className="SpfxCheckRadio">
-                                                                            <input
-                                                                                className="radio"
-                                                                                name="radioPriority"
-                                                                                type="radio"
-                                                                                checked={
-                                                                                    EditData.PriorityRank <= 10 &&
-                                                                                    EditData.PriorityRank >= 8
-                                                                                }
-                                                                                onChange={() =>
-                                                                                    setEditData({
-                                                                                        ...EditData,
-                                                                                        PriorityRank: 8,
-                                                                                    })
-                                                                                }
-                                                                            />
-                                                                            High{" "}
-                                                                        </label>
-                                                                    </li>
-                                                                    <li className="form-check ">
-                                                                        <label className="SpfxCheckRadio">
-                                                                            <input
-                                                                                className="radio"
-                                                                                name="radioPriority"
-                                                                                type="radio"
-                                                                                checked={
-                                                                                    EditData.PriorityRank <= 7 &&
-                                                                                    EditData.PriorityRank >= 4
-                                                                                }
-                                                                                onChange={() =>
-                                                                                    setEditData({
-                                                                                        ...EditData,
-                                                                                        PriorityRank: 4,
-                                                                                    })
-                                                                                }
-                                                                            />
-                                                                            Normal{" "}
-                                                                        </label>
-                                                                    </li>
-                                                                    <li className="form-check ">
-                                                                        <label className="SpfxCheckRadio">
-                                                                            <input
-                                                                                className="radio"
-                                                                                name="radioPriority"
-                                                                                type="radio"
-                                                                                checked={
-                                                                                    EditData.PriorityRank <= 3 &&
-                                                                                    EditData.PriorityRank > 0
-                                                                                }
-                                                                                onChange={() =>
-                                                                                    setEditData({
-                                                                                        ...EditData,
-                                                                                        PriorityRank: 1,
-                                                                                    })
-                                                                                }
-                                                                            />
-                                                                            Low{" "}
-                                                                        </label>
-                                                                    </li>
-                                                                </ul>
+                                                                <div className="col-md-6">
+                                                                    <div className="input-group">
+                                                                        <label className="form-label full-width">SmartPriority</label>
+                                                                        <div className="bg-e9 w-100 py-1 px-2" style={{ border: '1px solid #CDD4DB' }}>
+                                                                            <span className={EditData?.SmartPriority != undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
+                                                                                <>{EditData?.SmartPriority != undefined ? EditData?.SmartPriority : 0}</>
+                                                                                <span className="tooltip-text pop-right">
+                                                                                    {EditData?.showFormulaOnHover != undefined ?
+
+                                                                                        <SmartPriorityHover editValue={EditData} /> : ""}
+                                                                                </span>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
                                                             </div>
                                                             <div className="col-12 mb-2">
                                                                 <div className="input-group ">
@@ -8770,7 +8905,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <div className="col-12 mb-2 mt-2">
                                                                 <div className="input-group mb-2">
                                                                     <label className="form-label full-width">
-                                                                        Linked Portfolios
+                                                                        Linked Portfolio Items
                                                                     </label>
                                                                     <input
                                                                         type="text"
@@ -8782,7 +8917,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 "Linked-Portfolios"
                                                                             )
                                                                         }
-                                                                        placeholder="Search Portfolio Components"
+                                                                        placeholder="Search Portfolio Items"
                                                                     />
                                                                     <span className="input-group-text">
                                                                         <span
@@ -8803,7 +8938,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                     (Item: any) => {
                                                                                         return (
                                                                                             <li
-                                                                                                className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
+                                                                                                className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
                                                                                                 key={Item.id}
                                                                                                 onClick={() =>
                                                                                                     setSelectedServiceAndCompnentData(
@@ -8830,11 +8965,9 @@ const EditTaskPopup = (Items: any) => {
                                                                                     <>
                                                                                         <div className="block w-100">
                                                                                             <a
-                                                                                                className="wid90"
                                                                                                 title={com.Title}
-                                                                                                style={{
-                                                                                                    color: "#fff !important",
-                                                                                                }}
+                                                                                                className="wid90"
+                                                                                                style={{ color: "#fff !important" }}
                                                                                                 target="_blank"
                                                                                                 data-interception="off"
                                                                                                 href={`${siteUrls}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
@@ -8846,7 +8979,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                 onClick={() =>
                                                                                                     RemoveLinkedPortfolio(Index)
                                                                                                 }
-                                                                                                className="bg-light ml-auto hreflink svg__icon--cross svg__iconbox"
+                                                                                                className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
                                                                                             ></span>
                                                                                         </div>
                                                                                     </>
@@ -8864,16 +8997,17 @@ const EditTaskPopup = (Items: any) => {
                                                                     {selectedProject != undefined &&
                                                                         selectedProject.length > 0 ? (
                                                                         <>
-                                                                            {selectedProject.map((ProjectData: any) => {
+                                                                            {selectedProject?.map((ProjectData: any) => {
                                                                                 return (
                                                                                     <>
                                                                                         {ProjectData.Title != undefined ? (
-                                                                                            <div className="replaceInput alignCenter w-100">
+                                                                                            <div className="full-width replaceInput alignCenter">
                                                                                                 <a
-                                                                                                    className="hreflink textDotted"
+
                                                                                                     target="_blank"
                                                                                                     title={ProjectData.Title}
                                                                                                     data-interception="off"
+                                                                                                    className="textDotted hreflink"
                                                                                                     href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
                                                                                                 >
                                                                                                     {ProjectData.Title}
@@ -8884,21 +9018,18 @@ const EditTaskPopup = (Items: any) => {
                                                                                 );
                                                                             })}
                                                                         </>
-                                                                    ) : <input
-                                                                        type="text"
-                                                                        className="form-control"
-                                                                        placeholder="Search Project Here"
-                                                                        value={ProjectSearchKey}
-                                                                        onChange={(e) =>
-                                                                            autoSuggestionsForProject(e)
-                                                                        }
-                                                                    />}
-
+                                                                    ) :
+                                                                        <input
+                                                                            type="text"
+                                                                            className="form-control"
+                                                                            placeholder="Search Project Here"
+                                                                            value={ProjectSearchKey}
+                                                                            onChange={(e) => autoSuggestionsForProject(e)}
+                                                                        />
+                                                                    }
                                                                     <span
                                                                         className="input-group-text"
-                                                                        onClick={() =>
-                                                                            setProjectManagementPopup(true)
-                                                                        }
+                                                                        onClick={() => setProjectManagementPopup(true)}
                                                                         title="Project Items Popup"
                                                                     >
                                                                         <span className="svg__iconbox svg__icon--editBox"></span>
@@ -8912,9 +9043,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                             className="hreflink list-group-item rounded-0 p-1 list-group-item-action"
                                                                                             key={item.id}
                                                                                             onClick={() =>
-                                                                                                SelectProjectFromAutoSuggestion([
-                                                                                                    item,
-                                                                                                ])
+                                                                                                SelectProjectFromAutoSuggestion([item])
                                                                                             }
                                                                                         >
                                                                                             <a>{item?.Path}</a>
@@ -8925,8 +9054,6 @@ const EditTaskPopup = (Items: any) => {
                                                                         </div>
                                                                     ) : null}
                                                                 </div>
-
-
                                                             </div>
                                                         </div>
                                                     </div>
@@ -8976,9 +9103,9 @@ const EditTaskPopup = (Items: any) => {
 
                                                 <div className="col-md-3">
                                                     {AllListIdData.isShowSiteCompostion ? (
-                                                        <div className="Sitecomposition">
+                                                        <div className="Sitecomposition mb-2">
                                                             <div className="dropdown">
-                                                                <a className="sitebutton bg-fxdark d-flex justify-content-between">
+                                                                <a className="sitebutton bg-fxdark alignCenter justify-content-between">
                                                                     <div
                                                                         style={{ cursor: "pointer" }}
                                                                         onClick={() =>
@@ -8992,19 +9119,13 @@ const EditTaskPopup = (Items: any) => {
                                                                                 <SlArrowRight />
                                                                             )}
                                                                         </span>
-                                                                        <span className="mx-2">
-                                                                            Site Composition
-                                                                        </span>
+                                                                        <span className="mx-2">Site Composition</span>
                                                                     </div>
-                                                                    <div>
-                                                                        <span
-                                                                            className="svg__iconbox svg__icon--editBox hreflink"
-                                                                            title="Edit Site Composition"
-                                                                            onClick={() =>
-                                                                                setSiteCompositionShow(true)
-                                                                            }
-                                                                        ></span>
-                                                                    </div>
+                                                                    <span
+                                                                        className="svg__iconbox svg__icon--editBox hreflink"
+                                                                        title="Edit Site Composition"
+                                                                        onClick={() => setSiteCompositionShow(true)}
+                                                                    ></span>
                                                                 </a>
                                                                 {composition &&
                                                                     EditData.siteCompositionData?.length > 0 ? (
@@ -9029,7 +9150,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                             <span className="mx-2">
                                                                                                                 {Number(
                                                                                                                     SiteDtls.ClienTimeDescription
-                                                                                                                ).toFixed(2)}
+                                                                                                                ).toFixed(1)}
                                                                                                                 %
                                                                                                             </span>
                                                                                                         )}
@@ -9071,9 +9192,7 @@ const EditTaskPopup = (Items: any) => {
 
                                                     <div className="col mt-2 clearfix">
                                                         <div className="input-group taskTime">
-                                                            <label className="form-label full-width">
-                                                                Status
-                                                            </label>
+                                                            <label className="form-label full-width">Status</label>
                                                             <input
                                                                 type="text"
                                                                 maxLength={3}
@@ -9091,9 +9210,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 className="input-group-text"
                                                                 title="Status Popup"
                                                                 // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
-                                                                onClick={() =>
-                                                                    setSmartMedaDataUsedPanel("Status")
-                                                                }
+                                                                onClick={() => setSmartMedaDataUsedPanel("Status")}
                                                             >
                                                                 <span
                                                                     title="Edit Task"
@@ -9110,6 +9227,7 @@ const EditTaskPopup = (Items: any) => {
                                                     </span> : null} */}
                                                         </div>
                                                     </div>
+
                                                     <div className="row">
                                                         <div className="col mt-2 time-status">
                                                             <div>
@@ -9123,9 +9241,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         className="form-control"
                                                                         placeholder="Time"
                                                                         defaultValue={
-                                                                            EditData.Mileage != null
-                                                                                ? EditData.Mileage
-                                                                                : ""
+                                                                            EditData.Mileage != null ? EditData.Mileage : ""
                                                                         }
                                                                         onChange={(e) =>
                                                                             setEditData({
@@ -9149,10 +9265,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 }
                                                                                 type="radio"
                                                                                 onChange={(e) =>
-                                                                                    setEditData({
-                                                                                        ...EditData,
-                                                                                        Mileage: "15",
-                                                                                    })
+                                                                                    setEditData({ ...EditData, Mileage: "15" })
                                                                                 }
                                                                                 defaultChecked={
                                                                                     EditData.Mileage <= 15 &&
@@ -9177,10 +9290,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 }
                                                                                 type="radio"
                                                                                 onChange={(e) =>
-                                                                                    setEditData({
-                                                                                        ...EditData,
-                                                                                        Mileage: "60",
-                                                                                    })
+                                                                                    setEditData({ ...EditData, Mileage: "60" })
                                                                                 }
                                                                                 defaultChecked={
                                                                                     EditData.Mileage <= 60 &&
@@ -9205,10 +9315,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 }
                                                                                 type="radio"
                                                                                 onChange={(e) =>
-                                                                                    setEditData({
-                                                                                        ...EditData,
-                                                                                        Mileage: "240",
-                                                                                    })
+                                                                                    setEditData({ ...EditData, Mileage: "240" })
                                                                                 }
                                                                                 defaultChecked={
                                                                                     EditData.Mileage <= 240 &&
@@ -9228,10 +9335,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 checked={EditData.Mileage === "480"}
                                                                                 type="radio"
                                                                                 onChange={(e) =>
-                                                                                    setEditData({
-                                                                                        ...EditData,
-                                                                                        Mileage: "480",
-                                                                                    })
+                                                                                    setEditData({ ...EditData, Mileage: "480" })
                                                                                 }
                                                                                 defaultChecked={
                                                                                     EditData.Mileage <= 480 &&
@@ -9246,7 +9350,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 </ul>
                                                             </div>
                                                         </div>
-                                                        <div className="col mt-2 ps-0">
+                                                        <div className="col mt-2">
                                                             <div className="input-group">
                                                                 <label className="form-label full-width">
                                                                     {EditData.TaskAssignedUsers?.length > 0
@@ -9265,9 +9369,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                     <img
                                                                                         className="ProirityAssignedUserPhoto me-2"
                                                                                         data-bs-placement="bottom"
-                                                                                        title={
-                                                                                            userDtl.Title ? userDtl.Title : ""
-                                                                                        }
+                                                                                        title={userDtl.Title ? userDtl.Title : ""}
                                                                                         src={
                                                                                             userDtl.Item_x0020_Cover
                                                                                                 ? userDtl.Item_x0020_Cover.Url
@@ -9282,23 +9384,40 @@ const EditTaskPopup = (Items: any) => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="col-12 mb-2">
-                                                        <div className="input-group ">
-                                                            <label className="form-label full-width">
-                                                                Estimated Task Time Details
-                                                            </label>
+                                                    <div className="border p-2 mb-3">
+                                                        <div>Estimated Task Time Details</div>
+                                                        <div className="col-12">
                                                             <div
                                                                 onChange={UpdateEstimatedTimeDescriptions}
                                                                 className="full-width"
                                                             >
-                                                                <textarea
-                                                                    className="form-control p-1"
-                                                                    name="Description"
-                                                                    defaultValue={EstimatedDescription}
-                                                                    value={EstimatedDescription}
-                                                                    rows={1}
-                                                                    placeholder="Estimated Time Description"
-                                                                ></textarea>
+                                                                <div className="input-group mt-2">
+                                                                    <label className="form-label full-width">
+                                                                        Select Category
+                                                                    </label>
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        defaultValue={EstimatedDescriptionCategory}
+                                                                        value={EstimatedDescriptionCategory}
+                                                                        placeholder="Select Category"
+                                                                        onChange={(e) =>
+                                                                            setEstimatedDescriptionCategory(e.target.value)
+                                                                        }
+                                                                    />
+                                                                    <span
+                                                                        className="input-group-text"
+                                                                        title="Status Popup"
+                                                                        onClick={() =>
+                                                                            setSmartMedaDataUsedPanel("Estimated-Time")
+                                                                        }
+                                                                    >
+                                                                        <span
+                                                                            title="Edit Task"
+                                                                            className="svg__iconbox svg__icon--editBox"
+                                                                        ></span>
+                                                                    </span>
+                                                                </div>
                                                                 <div className="gap-2 my-1 d-flex">
                                                                     <input
                                                                         type="number"
@@ -9312,79 +9431,328 @@ const EditTaskPopup = (Items: any) => {
                                                                         className="btn btn-primary full-width my-1"
                                                                         onClick={SaveEstimatedTimeDescription}
                                                                     >
-                                                                        Submit
+                                                                        Add
                                                                     </button>
                                                                 </div>
+                                                                <textarea
+                                                                    className="form-control p-1"
+                                                                    name="Description"
+                                                                    defaultValue={EstimatedDescription}
+                                                                    value={EstimatedDescription}
+                                                                    rows={1}
+                                                                    placeholder="Add comment if necessary"
+                                                                ></textarea>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="col-12 mb-2">
-                                                        {EditData?.EstimatedTimeDescriptionArray != null &&
-                                                            EditData?.EstimatedTimeDescriptionArray?.length >
-                                                            0 ? (
-                                                            <div className="border p-1">
-                                                                {EditData?.EstimatedTimeDescriptionArray?.map(
-                                                                    (EstimatedTimeData: any, Index: any) => {
-                                                                        return (
-                                                                            <div>
-                                                                                <div className="align-content-center border-bottom d-flex justify-content-between p-1">
-                                                                                    <img
-                                                                                        className="ProirityAssignedUserPhoto m-0"
-                                                                                        title={EstimatedTimeData.UserName}
-                                                                                        src={
-                                                                                            EstimatedTimeData.UserImage !=
-                                                                                                undefined &&
-                                                                                                EstimatedTimeData.UserImage
-                                                                                                    ?.length > 0
-                                                                                                ? EstimatedTimeData.UserImage
-                                                                                                : ""
-                                                                                        }
-                                                                                    />
-                                                                                    <span>
-                                                                                        {EstimatedTimeData.Team
-                                                                                            ? EstimatedTimeData.Team
-                                                                                            : null}
-                                                                                    </span>{" "}
-                                                                                    |
-                                                                                    <span>
-                                                                                        Time :{" "}
-                                                                                        {EstimatedTimeData.EstimatedTime
-                                                                                            ? EstimatedTimeData.EstimatedTime >
-                                                                                                1
-                                                                                                ? EstimatedTimeData.EstimatedTime +
-                                                                                                " hours"
-                                                                                                : EstimatedTimeData.EstimatedTime +
-                                                                                                " hour"
-                                                                                            : "0 hour"}
-                                                                                    </span>
-                                                                                    <span className="hover-text m-0 alignIcon">
-                                                                                        <span className="svg__iconbox svg__icon--info"></span>
-                                                                                        <span className="tooltip-text pop-right">
-                                                                                            {
-                                                                                                EstimatedTimeData.EstimatedTimeDescription
-                                                                                            }
+                                                        <div className="col-12">
+                                                            {EditData?.EstimatedTimeDescriptionArray != null &&
+                                                                EditData?.EstimatedTimeDescriptionArray?.length > 0 ? (
+                                                                <div>
+                                                                    {EditData?.EstimatedTimeDescriptionArray?.map(
+                                                                        (EstimatedTimeData: any, Index: any) => {
+                                                                            return (
+                                                                                <div className="align-content-center alignCenter justify-content-between py-1">
+                                                                                    <div className="alignCenter">
+                                                                                        <span className="me-1">
+                                                                                            {EstimatedTimeData?.Team != undefined
+                                                                                                ? EstimatedTimeData.Team
+                                                                                                : EstimatedTimeData.Category !=
+                                                                                                    undefined
+                                                                                                    ? EstimatedTimeData.Category
+                                                                                                    : null}
+                                                                                        </span>{" "}
+                                                                                        |
+                                                                                        <span className="mx-1">
+                                                                                            {EstimatedTimeData?.EstimatedTime
+                                                                                                ? EstimatedTimeData.EstimatedTime > 1
+                                                                                                    ? EstimatedTimeData.EstimatedTime +
+                                                                                                    " Hours"
+                                                                                                    : EstimatedTimeData.EstimatedTime +
+                                                                                                    " Hour"
+                                                                                                : "0 Hour"}
                                                                                         </span>
-                                                                                    </span>
-                                                                                    {/* <span title="Edit" className="svg__iconbox svg__icon--editBox" onClick={() => alert("We are working on this feature. It will be live soon..")}></span> */}
+                                                                                        <img
+                                                                                            className="ProirityAssignedUserPhoto m-0"
+                                                                                            title={EstimatedTimeData.UserName}
+                                                                                            src={
+                                                                                                EstimatedTimeData.UserImage !=
+                                                                                                    undefined &&
+                                                                                                    EstimatedTimeData.UserImage?.length >
+                                                                                                    0
+                                                                                                    ? EstimatedTimeData.UserImage
+                                                                                                    : ""
+                                                                                            }
+                                                                                        />
+                                                                                    </div>
+                                                                                    {EstimatedTimeData?.EstimatedTimeDescription
+                                                                                        ?.length > 0 ? (
+                                                                                        <span className="hover-text m-0 alignIcon">
+                                                                                            <span className="svg__iconbox svg__icon--info"></span>
+                                                                                            <span className="tooltip-text pop-right">
+                                                                                                {
+                                                                                                    EstimatedTimeData?.EstimatedTimeDescription
+                                                                                                }
+                                                                                            </span>
+                                                                                        </span>
+                                                                                    ) : null}
                                                                                 </div>
-                                                                            </div>
-                                                                        );
-                                                                    }
-                                                                )}
-                                                                <div className="text-end">
-                                                                    <span>Total Estimated Time : </span>
-                                                                    <span className="mx-1">
-                                                                        {TotalEstimatedTime > 1
-                                                                            ? TotalEstimatedTime + " hours"
-                                                                            : TotalEstimatedTime + " hour"}{" "}
-                                                                    </span>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                                    <div className="border-top pt-1">
+                                                                        <span>Total Estimated Time : </span>
+                                                                        <span className="mx-1">
+                                                                            {TotalEstimatedTime > 1
+                                                                                ? TotalEstimatedTime + " hours"
+                                                                                : TotalEstimatedTime + " hour"}{" "}
+                                                                        </span>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        ) : null}
+                                                            ) : null}
+                                                        </div>
                                                     </div>
+                                                    {/* <div className="Sitecomposition mb-3">
+                                            <a className="sitebutton bg-fxdark alignCenter justify-content-between">
+                                                <span className="alignCenter">
+                                                    <span className="svg__iconbox svg__icon--docx"></span>
+                                                    <span className="mx-2">Submit EOD Report</span>
+                                                </span>
+                                                <span className="svg__iconbox svg__icon--editBox hreflink" title="Submit EOD Report Popup"
+                                                    onClick={() => setOpenEODReportPopup(true)}>
+                                                </span>
+                                            </a>
+                                        </div> */}
                                                 </div>
                                                 <div className="col-md-4">
-                                                    <div className="full_width ">
+                                                    {/* This is used for bottleneck  */}
+                                                    <div className="col ps-0">
+                                                        <div className="input-group">
+                                                            <label className="form-label full-width ">
+                                                                Bottleneck
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                value={BottleneckSearchKey}
+                                                                className="form-control"
+                                                                placeholder="Tag user for Bottleneck"
+                                                                onChange={(e) => autoSuggestionsForApprover(e, "Bottleneck")}
+                                                            />
+                                                            <span
+                                                                className="input-group-text"
+                                                                // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
+                                                                onClick={() => openBottleneckPopup("Bottleneck")}
+                                                            >
+                                                                <span
+                                                                    title="Add Comment"
+                                                                    className="svg__iconbox svg__icon--editBox"
+                                                                ></span>
+                                                            </span>
+                                                            {BottleneckSearchedData?.length > 0 ? (
+                                                                <div className="SmartTableOnTaskPopup">
+                                                                    <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                        {BottleneckSearchedData.map((item: any) => {
+                                                                            return (
+                                                                                <li
+                                                                                    className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                                                                    key={item.id}
+                                                                                    onClick={() =>
+                                                                                        SelectApproverFromAutoSuggestion(
+                                                                                            item, "Bottleneck"
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    <a>{item.NewLabel}</a>
+                                                                                </li>
+                                                                            );
+                                                                        })}
+                                                                    </ul>
+                                                                </div>
+                                                            ) : null}
+                                                        </div>
+                                                        {WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
+                                                            if (WAItemData.Title == "Bottleneck" && WAItemData?.InformationData?.length > 0) {
+                                                                return (
+                                                                    <div className="border p-1 mt-1">
+                                                                        {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: number) => {
+                                                                            return (
+                                                                                <div className="align-content-center alignCenter justify-content-between py-1">
+                                                                                    <div className="alignCenter">
+                                                                                        <img
+                                                                                            className="ProirityAssignedUserPhoto m-0"
+                                                                                            title={InfoData.TaggedUsers?.Title}
+                                                                                            src={
+                                                                                                InfoData.TaggedUsers.userImage !=
+                                                                                                    undefined &&
+                                                                                                    InfoData.TaggedUsers.userImage.length >
+                                                                                                    0
+                                                                                                    ? InfoData.TaggedUsers.userImage
+                                                                                                    : ""
+                                                                                            }
+                                                                                        />
+                                                                                        <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
+                                                                                    </div>
+
+                                                                                    <div className="alignCenter">
+                                                                                        <span
+                                                                                            className="hover-text m-1"
+                                                                                            onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
+                                                                                        >
+                                                                                            <LuBellPlus></LuBellPlus>
+                                                                                            <span className="tooltip-text pop-left">
+                                                                                                Send reminder notifications
+                                                                                            </span>
+                                                                                        </span>
+                                                                                        <span
+                                                                                            className="m-0 img-info hover-text"
+                                                                                            onClick={() =>
+                                                                                                openAddImageDescriptionFunction(
+                                                                                                    InfoIndex,
+                                                                                                    InfoData,
+                                                                                                    "Bottleneck"
+                                                                                                )
+                                                                                            }
+                                                                                        >
+                                                                                            <span className="svg__iconbox svg__icon--comment"></span>
+                                                                                            <span className="tooltip-text pop-left">
+                                                                                                {InfoData.Comment != undefined &&
+                                                                                                    InfoData.Comment?.length > 1
+                                                                                                    ? InfoData.Comment
+                                                                                                    : "Add Comment"}
+                                                                                            </span>
+                                                                                        </span>
+                                                                                        <span
+                                                                                            className="hover-text m-0 alignIcon"
+                                                                                            onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Remove", WAItemData.Title)}
+                                                                                        >
+                                                                                            <span className="svg__iconbox svg__icon--cross"></span>
+                                                                                            <span className="tooltip-text pop-left">
+                                                                                                Remove user from bottleneck
+                                                                                            </span>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            )
+                                                                        })}
+                                                                    </div>
+                                                                )
+                                                            }
+                                                        })}
+                                                    </div>
+                                                    {/* This is used for Attentions  */}
+                                                    <div className="col mt-2 ps-0">
+                                                        <div className="input-group">
+                                                            <label className="form-label full-width ">
+                                                                Attention
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                value={AttentionSearchKey}
+                                                                className="form-control"
+                                                                placeholder="Tag user for attention"
+                                                                onChange={(e) => autoSuggestionsForApprover(e, "Attention")}
+                                                            />
+                                                            <span
+                                                                className="input-group-text"
+                                                                // onClick={() => openTaskStatusUpdatePopup(EditData, "Status")}
+                                                                onClick={() => openBottleneckPopup("Attention")}
+                                                            >
+                                                                <span
+                                                                    title="Add Comment"
+                                                                    className="svg__iconbox svg__icon--editBox"
+                                                                ></span>
+                                                            </span>
+                                                            {AttentionSearchedData?.length > 0 ? (
+                                                                <div className="SmartTableOnTaskPopup">
+                                                                    <ul className="autosuggest-list maXh-200 scrollbar list-group">
+                                                                        {AttentionSearchedData.map((item: any) => {
+                                                                            return (
+                                                                                <li
+                                                                                    className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                                                                                    key={item.id}
+                                                                                    onClick={() =>
+                                                                                        SelectApproverFromAutoSuggestion(
+                                                                                            item, "Attention"
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    <a>{item.NewLabel}</a>
+                                                                                </li>
+                                                                            );
+                                                                        })}
+                                                                    </ul>
+                                                                </div>
+                                                            ) : null}
+                                                        </div>
+                                                        {WorkingAction?.map((WAItemData: any, ItemIndex: number) => {
+                                                            if (WAItemData.Title == "Attention" && WAItemData?.InformationData?.length > 0) {
+                                                                return (
+                                                                    <div className="border p-1 mt-1">
+                                                                        {WAItemData?.InformationData?.map((InfoData: any, InfoIndex: number) => {
+                                                                            return (
+                                                                                <div className="align-content-center alignCenter justify-content-between py-1">
+                                                                                    <div className="alignCenter">
+                                                                                        <img
+                                                                                            className="ProirityAssignedUserPhoto m-0"
+                                                                                            title={InfoData.TaggedUsers?.Title}
+                                                                                            src={
+                                                                                                InfoData.TaggedUsers.userImage !=
+                                                                                                    undefined &&
+                                                                                                    InfoData.TaggedUsers.userImage?.length >
+                                                                                                    0
+                                                                                                    ? InfoData.TaggedUsers.userImage
+                                                                                                    : ""
+                                                                                            }
+                                                                                        />
+                                                                                        <span className="ms-1">{InfoData?.TaggedUsers?.Title}</span>
+                                                                                    </div>
+
+                                                                                    <div className="alignCenter">
+                                                                                        <span
+                                                                                            onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Reminder", WAItemData.Title)}
+                                                                                            className="hover-text m-1"
+                                                                                        >
+                                                                                            <LuBellPlus></LuBellPlus>
+                                                                                            <span className="tooltip-text pop-left">
+                                                                                                Send reminder notifications
+                                                                                            </span>
+                                                                                        </span>
+                                                                                        <span
+                                                                                            className="m-0 img-info hover-text"
+                                                                                            onClick={() =>
+                                                                                                openAddImageDescriptionFunction(
+                                                                                                    InfoIndex,
+                                                                                                    InfoData,
+                                                                                                    "Attention"
+                                                                                                )
+                                                                                            }
+                                                                                        >
+                                                                                            <span className="svg__iconbox svg__icon--comment"></span>
+                                                                                            <span className="tooltip-text pop-left">
+                                                                                                {InfoData.Comment != undefined &&
+                                                                                                    InfoData.Comment?.length > 1
+                                                                                                    ? InfoData.Comment
+                                                                                                    : "Add Comment"}
+                                                                                            </span>
+                                                                                        </span>
+                                                                                        <span
+                                                                                            className="hover-text m-0 alignIcon"
+                                                                                            onClick={() => BottleneckAndAttentionFunction(InfoData, InfoIndex, "Remove", WAItemData.Title)}
+                                                                                        >
+                                                                                            <span className="svg__iconbox svg__icon--cross"></span>
+                                                                                            <span className="tooltip-text pop-left">
+                                                                                                Remove user from bottleneck
+                                                                                            </span>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            )
+                                                                        })}
+                                                                    </div>
+                                                                )
+                                                            }
+                                                        })}
+                                                    </div>
+                                                    <div className="full_width mt-2">
                                                         <CommentCard
                                                             siteUrl={siteUrls}
                                                             listName={Items?.Items?.siteType}
@@ -9404,9 +9772,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 type="checkbox"
                                                                 checked={EditData.waitForResponse}
                                                                 value={EditData.waitForResponse}
-                                                                onChange={(e) =>
-                                                                    changeStatus(e, "waitForResponse")
-                                                                }
+                                                                onChange={(e) => changeStatus(e, "waitForResponse")}
                                                             />
                                                         </span>
                                                     </div>

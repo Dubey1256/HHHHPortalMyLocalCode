@@ -109,28 +109,32 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private async GetResult() {
     let web = new Web(this.props.siteUrl);
     let taskDetails = [];
-    if (this.state.listName != undefined && this.state.listName != null && this.state.listName != "") {
-      if (this.state.listName == "Master Tasks") {
-        taskDetails = await web.lists
-          .getByTitle(this.state.listName)
-          .items
-          .getById(this.state.itemID)
-          .select("ID", "Title", "DueDate", "ComponentLink", "PriorityRank", "TaskCategories/Id", "TaskCategories/Title", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "Sitestagging", "ClientTime", "Editor/Title", "Modified", "Comments")
-          .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "SharewebTaskType", "Editor", "Project", "TaskCategories")
-          .get()
+    try {
+      if (this.state.listName != undefined && this.state.listName != null && this.state.listName != "") {
+        if (this.state.listName == "Master Tasks") {
+          taskDetails = await web.lists
+            .getByTitle(this.state.listName)
+            .items
+            .getById(this.state.itemID)
+            .select("ID", "Title", "DueDate", "ComponentLink", "PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Sitestagging", "ClientTime", "Editor/Title", "Modified", "Comments")
+            .expand("TeamMembers", "Author", "ResponsibleTeam", "PortfolioType", "Editor")
+            .get()
+        } else {
+          taskDetails = await web.lists
+            .getByTitle(this.state.listName)
+            .items
+            .getById(this.state.itemID)
+            .select("ID", "Title", "DueDate", "ComponentLink", "PriorityRank", "TaskCategories/Id", "TaskCategories/Title", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "Sitestagging", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+            .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "Portfolio", "Editor", "Project", "TaskCategories")
+            .get()
+        }
       } else {
-        taskDetails = await web.lists
-          .getByTitle(this.state.listName)
-          .items
-          .getById(this.state.itemID)
-          .select("ID", "Title", "DueDate", "ComponentLink", "PriorityRank", "TaskCategories/Id", "TaskCategories/Title", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "Sitestagging", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
-          .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "PortfolioType", "SharewebTaskType", "Portfolio", "Editor", "Project", "TaskCategories")
+        taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "ComponentLink", "PriorityRank", "DueDate", "TaskCategories/Id", "TaskCategories/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
+          .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "Portfolio", "PortfolioType", "Editor", "Project", "TaskCategories")
           .get()
       }
-    } else {
-      taskDetails = await web.lists.getById(this.state.listId).items.getById(this.state.itemID).select("ID", "Title", "ComponentLink", "PriorityRank", "DueDate", "TaskCategories/Id", "TaskCategories/Title", "Project/Id", "Project/Title", "Project/PriorityRank", "PortfolioType/Id", "PortfolioType/Title", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "TeamMembers/Title", "TeamMembers/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "Sitestagging", "FeedBack", "ResponsibleTeam/Title", "ResponsibleTeam/Id", "SharewebTaskType/Title", "ClientTime", "Portfolio/Id", "Portfolio/Title", "Portfolio/PortfolioStructureID", "Editor/Title", "Modified", "Comments")
-        .expand("TeamMembers", "Author", "ClientCategory", "ResponsibleTeam", "SharewebTaskType", "Portfolio", "PortfolioType", "Editor", "Project", "TaskCategories")
-        .get()
+    } catch (e) {
+      console.log(e)
     }
     await this.GetTaskUsers();
     console.log("this is result function")
@@ -155,67 +159,68 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     // taskDetails.taskPriorityOnHover = taskDetails?.PriorityRank;
     // taskDetails.showFormulaOnHover;
     taskDetails.SmartPriority = globalCommon?.calculateSmartPriority(taskDetails);
-    let tempTask = {
-      ID: 'T' + taskDetails["ID"],
-      TaskId: globalCommon.GetTaskId(taskDetails),
-      Title: taskDetails["Title"],
-      SmartPriority: taskDetails["SmartPriority"],
-      ComponentLink: taskDetails["ComponentLink"],
-      Portfolio: taskDetails["Portfolio"],
-      DueDate: taskDetails["DueDate"] != null ? (new Date(taskDetails["DueDate"])).toLocaleDateString() : '',
-      Categories: taskDetails["Categories"],
-      StartDate: taskDetails["StartDate"] != null ? (new Date(taskDetails["StartDate"])).toLocaleDateString() : '',
-      CompletedDate: taskDetails["CompletedDate"] != null ? (new Date(taskDetails["CompletedDate"])).toLocaleDateString() : '',
-      Status: taskDetails["Status"],
-      TeamLeader: taskDetails["ResponsibleTeam"] != null ? this.GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null,
-      TeamMembers: taskDetails["TeamMembers"] != null ? this.GetUserObjectFromCollection(taskDetails["TeamMembers"]) : null,
-      PercentComplete: taskDetails["PercentComplete"],
-      Priority: taskDetails["Priority"],
-      Created: taskDetails["Created"] != null ? (new Date(taskDetails["Created"])).toLocaleDateString() : '',
-      Modified: taskDetails["Modified"] != null ? (new Date(taskDetails["Modified"])).toLocaleDateString() : '',
-      ModifiedBy: this.GetUserObjectArr(taskDetails["Editor"]),
-      Author: this.GetUserObjectArr(taskDetails["Author"]),
-      component_url: taskDetails["component_x0020_link"],
-      Comments: JSON.parse(taskDetails["Comments"]),
-      FeedBack: JSON.parse(taskDetails["FeedBack"]),
-      SharewebTaskType: taskDetails["SharewebTaskType"] != null ? taskDetails["SharewebTaskType"].Title : '',
-      PortfolioType: taskDetails["PortfolioType"],
-      TaskUrl: `${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID}&Site=${this.state.listName}`
-    };
-    if (tempTask["PortfolioType"] != undefined && tempTask["PortfolioType"] == "Service") {
-      color = true;
-    }
-    if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
-      commentlength = tempTask?.Comments?.length;
-    }
-    if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
-      tempTask["Comments"]?.map((item: any) => {
-        if (item?.AuthorImage != undefined && item?.AuthorImage.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
-          var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
-          // item.AuthorImage = `${this.props.Context._pageContext._site.absoluteUrl}` + imgurl;
-          item.AuthorImage = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
-        }
-        // item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
-        // })
-        // this.taskUsers.map((user: any) => {
-        //   if (user.AssingedToUser !=undefined && user.AssingedToUser.Id === item.AuthorId)
-        //     item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
-        // })
-      })
-      tempTask["Comments"].sort(function (a: any, b: any) {
-        // let keyA = a.ID,
-        //   keyB = b.ID;
-        let keyA = new Date(a.Created),
-          keyB = new Date(b.Created);
-        // Compare the 2 dates
-        if (keyA < keyB) return 1;
-        if (keyA > keyB) return -1;
-        return 0;
+    try {
+      let tempTask = {
+        ID: 'T' + taskDetails["ID"],
+        TaskId: globalCommon.GetTaskId(taskDetails),
+        Title: taskDetails["Title"],
+        SmartPriority: taskDetails["SmartPriority"],
+        ComponentLink: taskDetails["ComponentLink"],
+        Portfolio: taskDetails["Portfolio"],
+        DueDate: taskDetails["DueDate"] != null ? (new Date(taskDetails["DueDate"])).toLocaleDateString() : '',
+        Categories: taskDetails["Categories"],
+        StartDate: taskDetails["StartDate"] != null ? (new Date(taskDetails["StartDate"])).toLocaleDateString() : '',
+        CompletedDate: taskDetails["CompletedDate"] != null ? (new Date(taskDetails["CompletedDate"])).toLocaleDateString() : '',
+        Status: taskDetails["Status"],
+        TeamLeader: taskDetails["ResponsibleTeam"] != null ? this.GetUserObjectFromCollection(taskDetails["ResponsibleTeam"]) : null,
+        TeamMembers: taskDetails["TeamMembers"] != null ? this.GetUserObjectFromCollection(taskDetails["TeamMembers"]) : null,
+        PercentComplete: taskDetails["PercentComplete"],
+        Priority: taskDetails["Priority"],
+        Created: taskDetails["Created"] != null ? (new Date(taskDetails["Created"])).toLocaleDateString() : '',
+        Modified: taskDetails["Modified"] != null ? (new Date(taskDetails["Modified"])).toLocaleDateString() : '',
+        ModifiedBy: this.GetUserObjectArr(taskDetails["Editor"]),
+        Author: this.GetUserObjectArr(taskDetails["Author"]),
+        component_url: taskDetails["component_x0020_link"],
+        Comments: JSON.parse(taskDetails["Comments"]),
+        FeedBack: JSON.parse(taskDetails["FeedBack"]),
+        PortfolioType: taskDetails["PortfolioType"],
+        TaskUrl: `${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID}&Site=${this.state.listName}`
+      };
+      if (tempTask["PortfolioType"] != undefined && tempTask["PortfolioType"] == "Service") {
+        color = true;
+      }
+      if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
+        commentlength = tempTask?.Comments?.length;
+      }
+      if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
+        tempTask["Comments"]?.map((item: any) => {
+          if (item?.AuthorImage != undefined && item?.AuthorImage.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
+            var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
+            // item.AuthorImage = `${this.props.Context._pageContext._site.absoluteUrl}` + imgurl;
+            item.AuthorImage = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
+          }
+          // item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
+          // })
+          // this.taskUsers.map((user: any) => {
+          //   if (user.AssingedToUser !=undefined && user.AssingedToUser.Id === item.AuthorId)
+          //     item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
+          // })
+        })
+        tempTask["Comments"].sort(function (a: any, b: any) {
+          // let keyA = a.ID,
+          //   keyB = b.ID;
+          let keyA = new Date(a.Created),
+            keyB = new Date(b.Created);
+          // Compare the 2 dates
+          if (keyA < keyB) return 1;
+          if (keyA > keyB) return -1;
+          return 0;
+        });
+      }
+      this.setState({
+        Result: tempTask
       });
-    }
-    this.setState({
-      Result: tempTask
-    });
+    } catch (e) { console.log(e) }
   }
   private GetUserObjectFromCollection(UsersValues: any) {
     console.log("this is GetUserObjectFromCollection function")
@@ -248,7 +253,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     // console.log("Cuurent User Name - " + r['Title']);  
     //}); 
     let taskUsers = [];
-    taskUsers = await web.lists.getById(this.props?.AllListId?.TaskUsertListID).items.select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail').filter("ItemType eq 'User'").expand('AssingedToUser').get();
+    taskUsers = await web.lists.getById(this.props?.AllListId?.TaskUsertListID).items.select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'UserGroup/Id', 'UserGroup/Title').filter("ItemType eq 'User'").expand('AssingedToUser', 'UserGroup').get();
+    taskUsers = taskUsers?.filter((User: any) => User?.UserGroup == undefined || User?.UserGroup?.Title != "Ex Staff")
     this.taskUsers = taskUsers;
     if (this.taskUsers != undefined && this.taskUsers.length > 0) {
       for (let index = 0; index < this.taskUsers.length; index++) {
@@ -374,7 +380,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     //let txtComment = draftToHtml(convertToRaw(this.state.editorState.getCurrentContent()));
     let txtComment = this.state.editorChangeValue;
     if (txtComment != '') {
-      let temp = {
+      let temp: any = {
         AuthorImage: this.currentUser?.Item_x0020_Cover != null ? this.currentUser?.Item_x0020_Cover?.Url : '',
         AuthorName: this.currentUser?.Title != null ? this.currentUser?.Title : this.props.Context.pageContext._user.displayName,
         MsTeamCreated: updateCommentPost?.MsTeamCreated,
@@ -386,6 +392,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         editable: false,
         CommentFor: updateCommentPost?.CommentFor
       };
+      if ("ReplyMessages" in updateCommentPost) {
+        temp.ReplyMessages = updateCommentPost?.ReplyMessages
+      }
       //Add object in feedback
       //delete the value before add new value
       let elementPosition = 0;
@@ -600,6 +609,28 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }
   }
   private setMentionValue(e: any) {
+    try {
+      const matches = e.target.value.split("@[")
+      this.topCommenters?.map((topCmnt: any, i: any) => {
+        const element = document.getElementById(topCmnt?.id);
+        if (element)
+          element.classList.remove("active");
+        if (matches) {
+          matches?.map((Email: any) => {
+            if (Email != undefined)
+              Email = Email?.trim()
+            if (Email != undefined && Email != '' && (topCmnt?.id.toLowerCase().indexOf(Email?.trim()?.toLowerCase()) > -1 || Email.toLowerCase().indexOf(topCmnt?.id?.trim()?.toLowerCase()) > -1)) {
+              if (element) {
+                element.classList.add("active");
+              }
+            }
+          })
+        }
+      })
+
+    } catch (e) {
+      console.log(e)
+    }
     if (this.state?.Result != undefined && this.state?.Result?.Comments != undefined && this.state?.Result?.Comments?.length > 0) {
       this.state?.Result?.Comments?.forEach((element: any) => {
         element.isReplyMsg = false;
@@ -686,7 +717,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               <p></p>
                Task Comment-<span style="background-color: yellow;">${this.state?.ReplyParent?.Description.replace(/<\/?[^>]+(>|$)/g, '')}.</span>
               <p><br/></p>
-              <b>Task Details : </b> <span>${finalTaskInfo}</span>
+          <span>${finalTaskInfo}</span>
               <p></p>
               Task Link: <a href=${MsgURL}>Click here</a>
               <p></p>
@@ -696,7 +727,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               <b>Hi ${this.state?.ReplyParent?.AuthorName},</b>
               Task Comment-<span style="background-color: yellow;">${txtComment}.</span>
               <p><br/></p>
-              <b>Task Details : </b> <span>${finalTaskInfo}</span>
+              <span>${finalTaskInfo}</span>
               <p></p>
               Task Link: <a href=${MsgURL}>Click here</a>
               <p></p>
@@ -710,7 +741,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           <p></p>
           Task Comment-<span style="background-color: yellow;">${txtComment}.</span>
           <p><br/></p>
-          <b>Task Details : </b> <span>${finalTaskInfo}</span>
+          <span>${finalTaskInfo}</span>
           <p></p>
           Task Link: <a href=${MsgURL}>Click here</a>
           <p></p>
@@ -718,7 +749,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       `;
           }
 
-          await globalCommon.SendTeamMessage(mention_To, TeamsMessage, this.props.Context)
+          await globalCommon.SendTeamMessage(mention_To, TeamsMessage, this.props.Context, this.props?.AllListId)
           //  this.SendEmail(emailprops);
           this.setState({
             ChildLevel: false,
@@ -920,8 +951,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               </div>
               {/* onKeyDown={this.handleKeyDown} onMouseDown={this.handleMouseClick} */}
               <span className='clintlist'>
-                <MentionsInput   placeholder='Recipients Name' value={this.state?.mentionValue ? this.state?.mentionValue : ""} onChange={(e) => this.setMentionValue(e)}
-                  className="form-control  "
+                <MentionsInput placeholder='Recipients Name' value={this.state?.mentionValue ? this.state?.mentionValue : ""} onChange={(e) => this.setMentionValue(e)}
+                  className="form-control"
                   classNames={mentionClass}>
                   <Mention trigger="@" data={this.mentionUsers} appendSpaceOnAdd={true} />
                   {/* {this.state.keyPressed && this.mentionUsers && this.state?.mentionValue ? 

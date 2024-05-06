@@ -2339,9 +2339,9 @@ function ReadyMadeTable(SelectedProp: any) {
             arr.push(dataToPush)
             return true;
         }
-        else if (dataToPush?.PortfolioId == SelectedProp?.SelectedItem?.Portfolio?.Id && SelectedProp?.SelectedItem?.TaskType?.Title == "workstream") {
+        else if (dataToPush?.PortfolioId == SelectedProp?.SelectedItem?.Portfolio?.Id && SelectedProp?.SelectedItem?.TaskType?.Title == "Workstream") {
             arr.push(dataToPush)
-
+         return true;
         }
 
         else if (dataToPush?.PortfolioId === SelectedProp?.SelectedItem?.Id && dataToPush?.TaskTypeId == 2 && dataToPush?.ParentTaskId === null) {

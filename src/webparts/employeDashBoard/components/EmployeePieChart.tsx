@@ -27,7 +27,7 @@ const EmployeePieChart = (SelectedProps: any) => {
     for (let i: any = new Date(startOfWeek); i <= today; i.setDate(i.getDate() + 1)) {
       dateArray.push(new Date(i));
     }
-    const dateStrings = dateArray.map(date => date.toLocaleDateString());   
+    const dateStrings = dateArray.map(date => date.toLocaleDateString());
     weekDate = weekDate.concat(dateStrings);
     loadAllTimeEntry();
   }
@@ -94,6 +94,7 @@ const EmployeePieChart = (SelectedProps: any) => {
   }
   barChartData = {
     series: [{
+      name: 'Time (Hours)',
       data: data,
     }],
     options: {
@@ -146,6 +147,7 @@ const EmployeePieChart = (SelectedProps: any) => {
           },
         },
       },
+
     },
   };
   const setModalIsOpenToFalse = () => {
@@ -155,7 +157,7 @@ const EmployeePieChart = (SelectedProps: any) => {
     return (
       <>
         <div className="subheading">
-            This Week's TimeSheet ({sumBarTime})
+          This Week's TimeSheet ({sumBarTime})
         </div>
       </>
     );
@@ -178,7 +180,7 @@ const EmployeePieChart = (SelectedProps: any) => {
   return (
     <>
       <Panel type={PanelType.medium} isOpen={SelectedProps?.IsOpenTimeSheetPopup} onDismiss={setModalIsOpenToFalse} onRenderHeader={onRenderCustomHeaderMain} isBlocking={false} onRenderFooter={onRenderCustomFooterMain}>
-        <div id="bar-chart border">         
+        <div id="bar-chart border">
           <div className='alignCenter'>
             <span className='fw-bold'>
             </span>

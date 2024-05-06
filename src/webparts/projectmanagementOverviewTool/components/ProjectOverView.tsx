@@ -109,7 +109,8 @@ export default function ProjectOverview(props: any) {
             isShowTimeEntry: isShowTimeEntry,
             isShowSiteCompostion: isShowSiteCompostion,
             SmalsusLeaveCalendar: props?.props?.SmalsusLeaveCalendar,
-            TaskTypeID: props?.props?.TaskTypeID
+            TaskTypeID: props?.props?.TaskTypeID,
+            Context: props?.props?.Context
         }
         TaskUser()
         loadTodaysLeave();

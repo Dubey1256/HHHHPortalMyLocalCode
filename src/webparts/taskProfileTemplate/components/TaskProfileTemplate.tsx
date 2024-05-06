@@ -2901,7 +2901,6 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
               <button className='btn btn-default ms-1' onClick={this.Closecommentpopup}>Cancel</button>
             </footer>
 
-
           </Panel>}
 
           {this.state.ApprovalHistoryPopup ? <ApprovalHistoryPopup
