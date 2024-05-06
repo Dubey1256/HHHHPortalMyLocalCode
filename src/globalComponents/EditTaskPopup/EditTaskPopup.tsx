@@ -506,11 +506,11 @@ const EditTaskPopup = (Items: any) => {
                         []);
                 }
 
-                // ############## this is used for filttering time sheet category data from smart medatadata list ##########
+                // ############## this is used for flittering time sheet category data from smartMetaData list ##########
                 if (AllTimesheetCategoriesData?.length > 0) {
                     AllTimesheetCategoriesData = AllTimesheetCategoriesData.map(
                         (TimeSheetCategory: any) => {
-                            if (TimeSheetCategory.ParentId == 303) {
+                            if (TimeSheetCategory?.TaxType == "TimesheetCategories") {
                                 TempTimeSheetCategoryArray.push(TimeSheetCategory);
                             }
                         }
@@ -3301,106 +3301,106 @@ const EditTaskPopup = (Items: any) => {
 
 
         // ----------------------for check Activity and worstream---------------------------------------------------------
- 
-let UpdateDataObject: any = {
-    IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : null,
-    workingThisWeek: EditData.workingThisWeek
-        ? EditData.workingThisWeek
-        : null,
-    waitForResponse: EditData.waitForResponse
-        ? EditData.waitForResponse
-        : null,
-    PriorityRank: EditData.PriorityRank,
-    ItemRank: EditData.ItemRank,
-    Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
-    Priority: Priority,
-    StartDate: EditData.StartDate
-        ? Moment(EditData.StartDate).format("MM-DD-YYYY")
-        : null,
-    PercentComplete:
-        UpdateTaskInfo.PercentCompleteStatus != ""
-            ? Number(UpdateTaskInfo.PercentCompleteStatus) / 100
-            : EditData.PercentComplete
-                ? EditData.PercentComplete / 100
-                : 0,
-    Categories: CategoriesTitle ? CategoriesTitle : null,
-    PortfolioId: smartComponentsIds === "" ? null : smartComponentsIds,
-    RelevantPortfolioId: {
-        results:
-            RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0
-                ? RelevantPortfolioIds
-                : [],
-    },
-    TaskCategoriesId: {
-        results:
-            CategoryTypeID != undefined && CategoryTypeID.length > 0
-                ? CategoryTypeID
-                : [],
-    },
 
-    DueDate: EditData.DueDate
-        ? Moment(EditData.DueDate).format("MM-DD-YYYY")
-        : null,
-    CompletedDate: EditData.CompletedDate
-        ? Moment(EditData.CompletedDate).format("MM-DD-YYYY")
-        : null,
-    Status: taskStatus
-        ? taskStatus
-        : EditData.Status
-            ? EditData.Status
-            : null,
-    Mileage: EditData.Mileage ? EditData.Mileage : "",
-    AssignedToId: {
-        results:
-            AssignedToIds != undefined && AssignedToIds.length > 0
-                ? AssignedToIds
-                : [],
-    },
-    ResponsibleTeamId: {
-        results:
-            ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0
-                ? ResponsibleTeamIds
-                : [],
-    },
-    TeamMembersId: {
-        results:
-            TeamMemberIds != undefined && TeamMemberIds.length > 0
-                ? TeamMemberIds
-                : [],
-    },
-    FeedBack:
-        updateFeedbackArray?.length > 0
-            ? JSON.stringify(updateFeedbackArray)
-            : null,
-    ComponentLink: {
-        __metadata: { type: "SP.FieldUrlValue" },
-        Description: EditData.Relevant_Url ? EditData.Relevant_Url : "",
-        Url: EditData.Relevant_Url ? EditData.Relevant_Url : "",
-    },
-    //BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
-    ProjectId: selectedProject.length > 0 ? selectedProject[0].Id : null,
-    ApproverId: {
-        results:
-            ApproverIds != undefined && ApproverIds.length > 0 ? ApproverIds : [],
-    },
-    Sitestagging: ClientTimeData?.length > 0 ? JSON.stringify(ClientTimeData) : null,
-    ClientCategoryId: {
-        results:
-            ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0
-                ? ClientCategoryIDs
-                : [],
-    },
-    // SiteCompositionSettings: SiteCompositionSetting,
-    ApproverHistory:
-        ApproverHistoryData?.length > 0
-            ? JSON.stringify(ApproverHistoryData)
-            : null,
-    EstimatedTime: EditData.EstimatedTime ? EditData.EstimatedTime : null,
-    EstimatedTimeDescription: EditData.EstimatedTimeDescriptionArray
-        ? JSON.stringify(EditData.EstimatedTimeDescriptionArray)
-        : null,
-    WorkingAction: WorkingAction?.length > 0 ? JSON.stringify(WorkingAction) : null
-};
+        let UpdateDataObject: any = {
+            IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : null,
+            workingThisWeek: EditData.workingThisWeek
+                ? EditData.workingThisWeek
+                : null,
+            waitForResponse: EditData.waitForResponse
+                ? EditData.waitForResponse
+                : null,
+            PriorityRank: EditData.PriorityRank,
+            ItemRank: EditData.ItemRank,
+            Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
+            Priority: Priority,
+            StartDate: EditData.StartDate
+                ? Moment(EditData.StartDate).format("MM-DD-YYYY")
+                : null,
+            PercentComplete:
+                UpdateTaskInfo.PercentCompleteStatus != ""
+                    ? Number(UpdateTaskInfo.PercentCompleteStatus) / 100
+                    : EditData.PercentComplete
+                        ? EditData.PercentComplete / 100
+                        : 0,
+            Categories: CategoriesTitle ? CategoriesTitle : null,
+            PortfolioId: smartComponentsIds === "" ? null : smartComponentsIds,
+            RelevantPortfolioId: {
+                results:
+                    RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0
+                        ? RelevantPortfolioIds
+                        : [],
+            },
+            TaskCategoriesId: {
+                results:
+                    CategoryTypeID != undefined && CategoryTypeID.length > 0
+                        ? CategoryTypeID
+                        : [],
+            },
+
+            DueDate: EditData.DueDate
+                ? Moment(EditData.DueDate).format("MM-DD-YYYY")
+                : null,
+            CompletedDate: EditData.CompletedDate
+                ? Moment(EditData.CompletedDate).format("MM-DD-YYYY")
+                : null,
+            Status: taskStatus
+                ? taskStatus
+                : EditData.Status
+                    ? EditData.Status
+                    : null,
+            Mileage: EditData.Mileage ? EditData.Mileage : "",
+            AssignedToId: {
+                results:
+                    AssignedToIds != undefined && AssignedToIds.length > 0
+                        ? AssignedToIds
+                        : [],
+            },
+            ResponsibleTeamId: {
+                results:
+                    ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0
+                        ? ResponsibleTeamIds
+                        : [],
+            },
+            TeamMembersId: {
+                results:
+                    TeamMemberIds != undefined && TeamMemberIds.length > 0
+                        ? TeamMemberIds
+                        : [],
+            },
+            FeedBack:
+                updateFeedbackArray?.length > 0
+                    ? JSON.stringify(updateFeedbackArray)
+                    : null,
+            ComponentLink: {
+                __metadata: { type: "SP.FieldUrlValue" },
+                Description: EditData.Relevant_Url ? EditData.Relevant_Url : "",
+                Url: EditData.Relevant_Url ? EditData.Relevant_Url : "",
+            },
+            //BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
+            ProjectId: selectedProject.length > 0 ? selectedProject[0].Id : null,
+            ApproverId: {
+                results:
+                    ApproverIds != undefined && ApproverIds.length > 0 ? ApproverIds : [],
+            },
+            Sitestagging: ClientTimeData?.length > 0 ? JSON.stringify(ClientTimeData) : null,
+            ClientCategoryId: {
+                results:
+                    ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0
+                        ? ClientCategoryIDs
+                        : [],
+            },
+            // SiteCompositionSettings: SiteCompositionSetting,
+            ApproverHistory:
+                ApproverHistoryData?.length > 0
+                    ? JSON.stringify(ApproverHistoryData)
+                    : null,
+            EstimatedTime: EditData.EstimatedTime ? EditData.EstimatedTime : null,
+            EstimatedTimeDescription: EditData.EstimatedTimeDescriptionArray
+                ? JSON.stringify(EditData.EstimatedTimeDescriptionArray)
+                : null,
+            WorkingAction: WorkingAction?.length > 0 ? JSON.stringify(WorkingAction) : null
+        };
         return UpdateDataObject;
     };
 
