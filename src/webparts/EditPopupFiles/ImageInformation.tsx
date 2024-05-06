@@ -202,6 +202,7 @@ const ImagetabFunction = (props: any) => {
                         itemFolderName: selectfolder2
                     }
                     taskItem.Item_x002d_Image = recentUploadPic
+                    taskItem.Item_x0020_Cover = recentUploadPic
                     //   props.EditdocumentsData=taskItem
                     setEditData(taskItem)
                     props.setData(taskItem)
@@ -241,6 +242,7 @@ const ImagetabFunction = (props: any) => {
         } else {
             let taskItem = { ...editData };
             taskItem.Item_x002d_Image = null;
+            taskItem.Item_x0020_Cover = null;
             setEditData(taskItem)
             props.setData(taskItem)
         }
@@ -254,6 +256,7 @@ const ImagetabFunction = (props: any) => {
 
         }
         taskItem.Item_x002d_Image = ExistingImagePicDetails;
+        taskItem.Item_x0020_Cover = ExistingImagePicDetails;
         setEditData(taskItem)
         props.setData(taskItem)
     }
@@ -272,6 +275,7 @@ const ImagetabFunction = (props: any) => {
 
             }
             taskItem.Item_x002d_Image = searchImagePicDetails;
+            taskItem.Item_x0020_Cover = searchImagePicDetails;
             setEditData(taskItem)
             props.setData(taskItem)
 
@@ -285,6 +289,7 @@ const ImagetabFunction = (props: any) => {
 
             }
             taskItem.Item_x002d_Image = searchImagePicDetails;
+            taskItem.Item_x0020_Cover = searchImagePicDetails;
             setEditData(taskItem)
             props.setData(taskItem)
         }
@@ -297,6 +302,7 @@ const ImagetabFunction = (props: any) => {
 
             }
             taskItem.Item_x002d_Image = searchImagePicDetails;
+            taskItem.Item_x0020_Cover = searchImagePicDetails;
             setEditData(taskItem)
             props.setData(taskItem)
         }
