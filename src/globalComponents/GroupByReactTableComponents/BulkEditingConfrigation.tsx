@@ -2,8 +2,9 @@ import * as React from "react";
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
+import Tooltip from "../Tooltip";
 const BulkEditingConfrigation = (item: any) => {
-    const [checkboxValues, setCheckboxValues] = React.useState({ priority: false, status: false, dueDate: false, itemRank: false, categories: false, clientCategories: false, Project: false, FeatureType: false });
+    const [checkboxValues, setCheckboxValues] = React.useState(Object?.keys(item?.bulkEditingCongration)?.length > 0 ? item?.bulkEditingCongration : { priority: false, status: false, dueDate: false, itemRank: false, categories: false, clientCategories: false, Project: false, FeatureType: false });
 
     const handleCheckboxChange = (checkboxName: any) => {
         setCheckboxValues((prevValues: any) => ({
@@ -21,6 +22,7 @@ const BulkEditingConfrigation = (item: any) => {
         return (
             <>
                 <div className="alignCenter subheading"><span className="siteColor">Bulk Editing Configurations</span></div>
+                <Tooltip ComponentId={6797} />
             </>
         );
     };
