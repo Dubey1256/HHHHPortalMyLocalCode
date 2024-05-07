@@ -56,7 +56,7 @@ const RootLevelDashboard = (props: any) => {
     }
     AllListId = {
       MasterTaskListID: props?.props?.MasterTaskListID,
-      TaskUsertListID: props?.props?.TaskUsertListID,
+      TaskUserListID: props?.props?.TaskUserListID,
       SmartMetadataListID: props?.props?.SmartMetadataListID,
       //SiteTaskListID:this.props?.props?.SiteTaskListID,
       TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,

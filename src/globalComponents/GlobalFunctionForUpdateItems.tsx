@@ -143,7 +143,7 @@ export const BulkUpdateTaskInfo = async (RequiredData: any): Promise<any> => {
     return new Promise(async (resolve, reject) => {
         try {
             const { ItemDetails, RequiredListIds, UpdatedData, Context, AllTaskUsers } = RequiredData || {};
-            const GetTaskUsersData: any = await GetCurrentUserData({ ListId: RequiredListIds?.TaskUsertListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context });
+            const GetTaskUsersData: any = await GetCurrentUserData({ ListId: RequiredListIds?.TaskUserListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context });
             const AllTaskUsersData = GetTaskUsersData?.AllUsersData;
             let StatusUpdatedJSON: any = {};
             let TaskCategoryUpdatedJSON: any = {};
@@ -226,7 +226,7 @@ export const UpdateTaskStatusFunction = async (RequiredData: any): Promise<any> 
             let CheckEmailCategoryTask = ItemDetails.TaskCategories?.some((category: any) => category.Title === "Email Notification");
             let CheckImmediateCategoryTask = ItemDetails.TaskCategories?.some((category: any) => category.Title === "Immediate");
             let CheckDesignCategoryTask = ItemDetails.TaskCategories?.some((category: any) => category.Title === "Design");
-            const GetTaskUsersData: any = await GetCurrentUserData({ ListId: RequiredListIds?.TaskUsertListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context })
+            const GetTaskUsersData: any = await GetCurrentUserData({ ListId: RequiredListIds?.TaskUserListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context })
             const AllTaskUsersData = GetTaskUsersData?.AllUsersData;
             const CurrentUserData = GetTaskUsersData?.CurrentUser;
             const ApproversData = GetTaskUsersData?.ApproversData;
@@ -547,7 +547,7 @@ export const UpdateTaskCategoryFunction = async (RequiredData: any): Promise<any
             let CheckApprovalCategoryTask = TaskCategories?.some((category: any) => category.Title === "Approval");
             let CheckBottleneckCategoryTask = TaskCategories?.some((category: any) => category.Title === "Bottleneck");
             let CheckAttentionCategoryTask = TaskCategories?.some((category: any) => category?.IsSendAttentionEmail?.Id !== undefined);
-            const GetTaskUsersData: any = await GetCurrentUserData({ ListId: RequiredListIds?.TaskUsertListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context })
+            const GetTaskUsersData: any = await GetCurrentUserData({ ListId: RequiredListIds?.TaskUserListID, ListSiteURL: RequiredListIds?.siteUrl, Context: Context })
             const AllTaskUsersData = GetTaskUsersData?.AllUsersData;
             let ReceiverEmail: any = [];
             if (ItemDetails.TaskCategories?.length > 0) {

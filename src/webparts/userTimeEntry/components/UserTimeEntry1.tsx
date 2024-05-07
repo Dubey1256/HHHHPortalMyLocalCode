@@ -133,7 +133,7 @@ export default class UserTimeEntry extends React.Component<IUserTimeEntryProps, 
     let taskUsers = [];
     let results = [];
     results = await web.lists
-      .getById(this.props.TaskUsertListID)
+      .getById(this.props.TaskUserListID)
       .items
       .select('Id', 'IsShowReportPage', 'UserGroupId', 'Suffix', 'SmartTime', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
       //.filter("ItemType eq 'User'")

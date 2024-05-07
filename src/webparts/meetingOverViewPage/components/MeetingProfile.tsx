@@ -212,7 +212,7 @@ const MeetingProfile = (props: any) => {
 
       web.lists
         // .getByTitle("Task Users")
-        .getById(props?.props.TaskUsertListID)
+        .getById(props?.props.TaskUserListID)
         .items
         .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
         .filter("ItemType eq 'User'")
@@ -243,7 +243,7 @@ const MeetingProfile = (props: any) => {
     await loadAllComponent()
     AllListId = {
       MasterTaskListID: props?.props?.MasterTaskListID,
-      TaskUsertListID: props?.props?.TaskUsertListID,
+      TaskUserListID: props?.props?.TaskUserListID,
       SmartMetadataListID: props?.props?.SmartMetadataListID,
       meetingId: query,
       listId: props?.props?.MasterTaskListID,
@@ -431,7 +431,7 @@ const MeetingProfile = (props: any) => {
     let PropsObject: any = {
       MasterTaskListID: AllListId?.MasterTaskListID,
       siteUrl: AllListId?.siteUrl,
-      TaskUserListId: AllListId?.TaskUsertListID,
+      TaskUserListId: AllListId?.TaskUserListID,
     }
     let componentDetails: any = [];
     let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)

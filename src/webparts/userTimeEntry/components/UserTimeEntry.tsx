@@ -600,7 +600,7 @@ export default class UserTimeEntry extends React.Component<
     let taskUsers = [];
     let results = [];
     results = await web.lists
-      .getById(this.props.TaskUsertListID)
+      .getById(this.props.TaskUserListID)
       .items.select(
         "Id",
         "IsShowReportPage",
