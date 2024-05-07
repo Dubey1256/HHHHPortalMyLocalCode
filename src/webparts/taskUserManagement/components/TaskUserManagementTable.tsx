@@ -149,24 +149,38 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
             }
         })
 
-        await web.lists.getById(TaskUserListId).items.add({
-            Title: addTitle[0]?.text,
-            AssingedToUserId:userId != null ? userId : null,
-            Email:addTitle[0]?.secondaryText,
-            ItemType: "User",
-            Company:null,
-            IsActive: true,
-            IsTaskNotifications: false,
-        }).then((res: any) => {
-            console.log(res);
-            const newItem = res.data;
-            setData((prevData: any) => [...prevData, newItem]);
-            setTitle("");
-            setAddTitle("");
-            fetchAPIData()
-            setAutoSuggestData(null)
-            setOpenPopup(false);
-        })
+        const taskUsers = await web.lists
+        .getById(TaskUserListId)
+        .items.filter(`AssingedToUser/Id eq '${userId}'`)
+        .getAll();
+    
+        if(taskUsers != undefined && taskUsers.length > 0){
+            alert('User already exist')
+        }
+        else{
+            await web.lists.getById(TaskUserListId).items.add({
+                Title: addTitle[0]?.text,
+                AssingedToUserId:(userId != null && userId.length > 0) ? userId : null,
+                Email:addTitle[0]?.secondaryText,
+                ItemType: "User",
+                Company:null,
+                IsActive: false,
+                IsTaskNotifications: false,
+            }).then((res: any) => {
+                console.log(res);
+                const newItem = res.data;
+                setData((prevData: any) => [...prevData, newItem]);
+                setTitle("");
+                setAddTitle("");
+                setIsUserNameValid(true);
+                setMemberToUpdate(newItem);
+                setOpenUpdateMemberPopup(true);
+                fetchAPIData()
+                setAutoSuggestData(null)
+                setOpenPopup(false);
+            })
+        }
+       
     }
 
     const addNewGroup = async () => {
@@ -746,7 +760,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                                     <PeoplePicker
                                         context={context}
                                         principalTypes={[PrincipalType.User]}
-                                        personSelectionLimit={10}
+                                        personSelectionLimit={1}
                                         titleText="Select People"
                                         resolveDelay={1000}
                                         onChange={getPeoplePickerItems}

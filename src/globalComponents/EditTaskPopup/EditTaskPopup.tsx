@@ -3300,9 +3300,6 @@ const EditTaskPopup = (Items: any) => {
             });
         }
 
-
-        // ----------------------for check Activity and worstream---------------------------------------------------------
-
         let UpdateDataObject: any = {
             IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : null,
             workingThisWeek: EditData.workingThisWeek
