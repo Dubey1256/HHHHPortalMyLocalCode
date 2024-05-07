@@ -852,13 +852,13 @@ const BulkEditingFeature = (props: any) => {
         }
     }, []);
     const bulkEditingSettingPopupEvent = () => {
-        if (props?.selectedData.length > 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true && isActive.FeatureType != true)) {
+        if (props?.selectedData.length > 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true && isActive.FeatureType != true && activeCategory?.length === 0)) {
             alert("No Tiles are selected")
-        } else if (props?.selectedData.length <= 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true || isActive.FeatureType === true)) {
+        } else if (props?.selectedData.length <= 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true || isActive.FeatureType === true || activeCategory?.length > 0)) {
             alert("No items are selected")
-        } else if (props?.selectedData.length <= 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true && isActive.FeatureType != true)) {
+        } else if (props?.selectedData.length <= 0 && (isActive.priority != true && isActive.DueDate != true && isActive.PercentComplete != true && isActive.Project != true && isActive.FeatureType != true && activeCategory?.length === 0)) {
             alert("No items are selected")
-        } else if (props?.selectedData.length > 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true || isActive.FeatureType === true)) {
+        } else if (props?.selectedData.length > 0 && (isActive.priority === true || isActive.DueDate === true || isActive.PercentComplete === true || isActive.Project === true || isActive.FeatureType === true || activeCategory?.length > 0)) {
             setBulkEditingSettingPopup(true);
         }
     }

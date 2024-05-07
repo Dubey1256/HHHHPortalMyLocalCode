@@ -19,7 +19,7 @@ import { GrNext, GrPrevious } from "react-icons/gr";
 import * as Moment from "moment";
 import Slider from "react-slick";
 import HighlightableCell from "../../../globalComponents/highlight";
-import { MdOutlineGppGood, MdGppBad } from "react-icons/Md";
+import { MdOutlineGppGood, MdGppBad } from "react-icons/md";
 import { Panel } from '@fluentui/react';
 let Count = 0;
 let DashboardConfig: any = [];
@@ -684,9 +684,9 @@ const TaskStatusTbl = (Tile: any) => {
       },
       {
 
-        accessorFn: (row: any) => row?.percentage,
+        accessorFn: (row: any) => row?.PercentComplete,
         cell: ({ row }: any) => (
-          <div className="text-center">{row?.original?.percentage}</div>
+          <div className="text-center">{row?.original?.PercentComplete}</div>
         ),
         id: "PercentComplete",
         placeholder: "Status",
@@ -1145,7 +1145,7 @@ const TaskStatusTbl = (Tile: any) => {
                   </div>
                   <div className="Alltable" draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropTable(e, config?.Status, config)} >
                     {config?.Tasks != undefined && (
-                      <GlobalCommanTable wrapperHeight="300px" bulkEditIcon={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
+                      <GlobalCommanTable wrapperHeight="300px" bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} multiSelect={true} ref={childRef} AllListId={ContextData?.propsValue} columnSettingIcon={true} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={config?.Tasks} callBackData={callBackData}
                         pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
                     )}
                     {config?.WebpartTitle == 'Waiting for Approval' && <span>
@@ -1235,7 +1235,7 @@ const TaskStatusTbl = (Tile: any) => {
                                   <>
                                     <h3 className="f-15">{user?.Title} {Date?.DisplayDate} Task</h3>
                                     <div key={index} className="Alltable mb-2" onDragStart={(e) => handleDragStart(e, user)} draggable={true} onDragOver={(e) => e.preventDefault()} onDrop={(e) => onDropUser(e, user, config, Date?.DisplayDate)} style={{ height: "300px" }}>
-                                      <GlobalCommanTable bulkEditIcon={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" columnSettingIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
+                                      <GlobalCommanTable bulkEditIcon={true} updatedSmartFilterFlatView={true} dashBoardbulkUpdateCallBack={dashBoardbulkUpdateCallBack} DashboardContextData={setBulkUpdateDataCallBack} smartFavTableConfig={smartFavTableConfig} wrapperHeight="300px" columnSettingIcon={true} multiSelect={true} tableId={"DashboardID" + ContextData?.DashboardId + "WebpartId" + config?.Id + "Dashboard"} ref={childRef} smartTimeTotalFunction={LoadTimeSheet} SmartTimeIconShow={true} AllListId={AllListId} showHeader={true} TaskUsers={AllTaskUser} portfolioColor={'#000066'} columns={config.column} data={Date.Tasks}
                                         callBackData={callBackData} pageSize={config?.configurationData[0]?.showPageSizeSetting?.tablePageSize} showPagination={config?.configurationData[0]?.showPageSizeSetting?.showPagination} />
                                     </div>
                                   </>
@@ -1341,4 +1341,3 @@ const TaskStatusTbl = (Tile: any) => {
   );
 };
 export default TaskStatusTbl;
-
