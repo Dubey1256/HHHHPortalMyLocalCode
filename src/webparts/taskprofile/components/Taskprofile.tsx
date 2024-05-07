@@ -1393,7 +1393,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     if ((countApprove == 0 && percentageStatus == "Approve" && (pervious.isShowLight == "Reject" || pervious.isShowLight == "Maybe") && pervious.isShowLight != undefined)) {
       changespercentage = true;
     }
-
+    if ((countApprove == 0 && percentageStatus == "Maybe" && (pervious?.isShowLight == "Reject" || pervious?.isShowLight == "Maybe") && pervious.isShowLight != undefined)) {
+      changespercentage =false;
+    }
 
     let taskStatus = "";
     if (changespercentage == true) {
@@ -2330,7 +2332,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           }
                           {this.state?.Result["Portfolio"] != null &&
 
-                            <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state?.Result["Portfolio"].Id}`}>
+                            <a className="hreflink text-content w-100" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state?.Result["Portfolio"].Id}`}>
 
                               {this.state?.Result["Portfolio"]?.Title}
 
@@ -2339,17 +2341,17 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
 
                           } 
-                          <span className="pull-right ml-auto svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Portfolio")}></span>
+                          <span className="ml-auto pull-right svg__icon--editBox svg__iconbox w-25" onClick={() => this?.openPortfolioPopupFunction("Portfolio")}></span>
 
                         </dd>
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Project</dt>
-                        <dd className='bg-Ff full-width'>
+                        <dd className='bg-Ff full-width columnFixedTitle'>
                           <div>
-                            {ProjectData?.Title != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
+                            {ProjectData?.Title != undefined ? <a className="hreflink text-content w-100" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
                               <ReactPopperTooltipSingleLevel CMSToolId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
-                            <span className="pull-right svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
+                            <span className="ml-auto pull-right svg__icon--editBox svg__iconbox w-25" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
                           </div>
                         </dd>
                       </dl>
