@@ -873,12 +873,10 @@ const inlineEditingcolumns = (props: any) => {
     setUpdateTaskInfo({
       ...UpdateTaskInfo,
       PercentCompleteStatus: StatusData.value,
-    });
-    setPercentCompleteStatus(StatusData.status);
-    setTaskStatus(StatusData.taskStatusComment);
-    setPercentCompleteCheck(false);
-    StatusValue = StatusData.value
-    if (StatusData.value == 1) {
+  });
+  setPercentCompleteCheck(false);
+  StatusValue = StatusData.value
+  if (StatusData.value == 1) {
       let tempArray: any = [];
       if (
         TaskApproverBackupArray != undefined &&
@@ -915,7 +913,8 @@ const inlineEditingcolumns = (props: any) => {
       setEditData((prevState: any) => ({
         ...prevState,
         IsTodaysTask: false,
-        workingThisWeek: false
+        workingThisWeek: false,
+        CompletedDate: undefined
       }));
       if (
         EditData.TeamMembers != undefined &&
@@ -925,13 +924,14 @@ const inlineEditingcolumns = (props: any) => {
       } else {
         setWorkingMember(143);
       }
-      setEditData((prevState: any) => ({
-        ...prevState,
-        IsTodaysTask: false,
-        CompletedDate: undefined
-      }));
-    }
-    if (StatusData.value == 70) {
+      StatusArray?.map((item: any) => {
+        if (StatusData.value == item.value) {
+            setPercentCompleteStatus(item.status);
+            setTaskStatus(item.taskStatusComment);
+        }
+    });
+  }
+  if (StatusData.value == 70) {
       if (
         EditData.TeamMembers != undefined &&
         EditData.TeamMembers?.length > 0
@@ -940,12 +940,24 @@ const inlineEditingcolumns = (props: any) => {
       } else {
         setWorkingMember(0);
       }
-    }
+      StatusArray?.map((item: any) => {
+        if (StatusData.value == item.value) {
+            setPercentCompleteStatus(item.status);
+            setTaskStatus(item.taskStatusComment);
+        }
+    });
+  }
 
     if (StatusData.value == 5) {
       EditData.CompletedDate = undefined;
       EditData.IsTodaysTask = false;
-    }
+      StatusArray?.map((item: any) => {
+        if (StatusData.value == item.value) {
+            setPercentCompleteStatus(item.status);
+            setTaskStatus(item.taskStatusComment);
+        }
+    });
+  }
 
     if (StatusData.value == 10) {
       EditData.CompletedDate = undefined;
@@ -956,8 +968,14 @@ const inlineEditingcolumns = (props: any) => {
         ...prevState,
         IsTodaysTask: true
       }));
-    }
-    if (
+      StatusArray?.map((item: any) => {
+        if (StatusData.value == item.value) {
+            setPercentCompleteStatus(item.status);
+            setTaskStatus(item.taskStatusComment);
+        }
+    });
+  }
+  if (
       StatusData.value == 93 ||
       StatusData.value == 96 ||
       StatusData.value == 99
@@ -969,10 +987,10 @@ const inlineEditingcolumns = (props: any) => {
       }));
       setWorkingMember(32);
       StatusArray?.map((item: any) => {
-        if (StatusData.value == item.value) {
-          setPercentCompleteStatus(item.status);
-          setTaskStatus(item.taskStatusComment);
-        }
+          if (StatusData.value == item.value) {
+              setPercentCompleteStatus(item.status);
+              setTaskStatus(item.taskStatusComment);
+          }
       });
   }
   if (StatusData.value == 90) {
@@ -993,12 +1011,12 @@ const inlineEditingcolumns = (props: any) => {
         CompletedDate: Moment(new Date()).format("MM-DD-YYYY")
       }));
       StatusArray?.map((item: any) => {
-        if (StatusData.value == item.value) {
-          setPercentCompleteStatus(item.status);
-          setTaskStatus(item.taskStatusComment);
-        }
+          if (StatusData.value == item.value) {
+              setPercentCompleteStatus(item.status);
+              setTaskStatus(item.taskStatusComment);
+          }
       });
-    }
+  }
   };
   const closeTaskStatusUpdatePopup = () => {
     setTaskStatusPopup(false);
