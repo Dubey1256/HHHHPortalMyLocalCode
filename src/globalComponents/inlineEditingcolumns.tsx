@@ -569,8 +569,9 @@ const inlineEditingcolumns = (props: any) => {
         postData.AssignedToId = { results: AssignedToIds ?? [] };
         postData.StartDate = EditData?.StartDate
         postData.CompletedDate = EditData?.CompletedDate
+        postData.Status = taskStatus
         break;
-
+        
       case 'DueDate':
         postData.DueDate = newDueDate;
         break;
@@ -636,6 +637,7 @@ const inlineEditingcolumns = (props: any) => {
         setTaskStatusPopup(false);
         setTaskPriorityPopup(false);
         setTeamMembersPopup(false);
+        setTaskStatus("")
         clearEstimations();
         setRemark(false);
         closeTaskDueDate();
