@@ -711,7 +711,7 @@ const inlineEditingcolumns = (props: any) => {
     }
     onHoldCategory = [];
   }, []);
-  const DDComponentCallBack = (dt: any) => {
+ const DDComponentCallBack = React.useCallback((dt: any) => {
     setTeamConfig(dt);
 
     if (dt?.AssignedTo?.length > 0) {
@@ -725,6 +725,9 @@ const inlineEditingcolumns = (props: any) => {
       });
       setTaskAssignedTo(tempAssigned);
     }
+    else{
+      setTaskAssignedTo([])
+    }
     if (dt?.TeamMemberUsers?.length > 0) {
       let tempTeam: any = [];
       dt.TeamMemberUsers?.map((arrayData: any) => {
@@ -735,6 +738,9 @@ const inlineEditingcolumns = (props: any) => {
         }
       });
       setTaskTeamMembers(tempTeam);
+    }
+    else{
+      setTaskTeamMembers([])
     }
     if (dt?.ResponsibleTeam?.length > 0) {
       let tempResponsible: any = [];
@@ -747,7 +753,10 @@ const inlineEditingcolumns = (props: any) => {
       });
       setTaskResponsibleTeam(tempResponsible);
     }
-  };
+    else{
+      setTaskResponsibleTeam([])
+    }
+  },[]);
 
   const EditComponentPicker = (item: any) => {
     setIsComponentPicker(true);

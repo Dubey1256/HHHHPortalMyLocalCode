@@ -629,9 +629,9 @@ const TeamSmartFilter = (item: any) => {
             filterGroupsData?.forEach((element: any) => {
                 if (element?.checked?.length > 0) {
                     if (element?.selectAllChecked === true || element?.checked?.length === element?.ValueLength) {
-                        CategoriesandStatusInfo.push(element.Title + ':(' + "all" + ')')
+                        CategoriesandStatusInfo.push(element.Title + ': (' + "all" + ')')
                     } else {
-                        CategoriesandStatusInfo.push(element.Title + ':(' + element.checked.length + ')')
+                        CategoriesandStatusInfo.push(element.Title + ': (' + element.checked.length + ')')
                     }
                 }
             });
@@ -641,9 +641,9 @@ const TeamSmartFilter = (item: any) => {
             allStites?.forEach((element: any) => {
                 if (element?.checked?.length > 0) {
                     if (element?.selectAllChecked === true) {
-                        sitesCountInfo.push(element.Title + ':(' + "all" + ')')
+                        sitesCountInfo.push(element.Title + ': (' + "all" + ')')
                     } else {
-                        sitesCountInfo.push(element.Title + ':(' + element.checked.length + ')')
+                        sitesCountInfo.push(element.Title + ': (' + element.checked.length + ')')
                     }
                 }
             });
@@ -654,25 +654,25 @@ const TeamSmartFilter = (item: any) => {
             allFilterClintCatogryData?.forEach((element: any) => {
                 if (element?.checked?.length > 0) {
                     if (element?.selectAllChecked === true || element?.checked?.length === element?.ValueLength) {
-                        clientCategoryCountInfo.push(element.Title + ':(' + "all" + ')')
+                        clientCategoryCountInfo.push(element.Title + ': (' + "all" + ')')
                     } else {
-                        clientCategoryCountInfo.push(element.Title + ':(' + element.checked.length + ')')
+                        clientCategoryCountInfo.push(element.Title + ': (' + element.checked.length + ')')
                     }
                 }
             });
             clientCategoryCount = clientCategoryCountInfo.join(' | ');
         }
         if (selectedProject?.length > 0) {
-            projectCountInfo.push("Project" + ':(' + selectedProject?.length + ')')
+            projectCountInfo.push("Project" + ': (' + selectedProject?.length + ')')
             projectCount = projectCountInfo.join(' | ');
         }
         if (TaskUsersData?.length > 0) {
             TaskUsersData?.forEach((element: any) => {
                 if (element?.checked?.length > 0) {
                     if (element?.selectAllChecked === true) {
-                        teamMembersCountInfo.push(element.Title + ':(' + "all" + ')')
+                        teamMembersCountInfo.push(element.Title + ': (' + "all" + ')')
                     } else {
-                        teamMembersCountInfo.push(element.Title + ':(' + element.checked.length + ')')
+                        teamMembersCountInfo.push(element.Title + ': (' + element.checked.length + ')')
                     }
                 }
             });
@@ -689,7 +689,7 @@ const TeamSmartFilter = (item: any) => {
             trueCount++;
         }
         if (trueCount > 0) {
-            dateCountInfo.push("Date" + ':(' + trueCount + ')')
+            dateCountInfo.push("Date" + ': (' + trueCount + ')')
             dateCount = dateCountInfo.join(' | ');
         }
         setCategoriesandStatusInfo(CategoriesandStatus)
