@@ -516,6 +516,24 @@ const EditTaskPopup = (Items: any) => {
                         }
                     );
                 }
+
+                if (TempTimeSheetCategoryArray?.length > 0) {
+                    TempTimeSheetCategoryArray = TempTimeSheetCategoryArray.reduce(function (
+                        previous: any,
+                        current: any
+                    ) {
+                        let alreadyExists: any =
+                            previous.filter(function (item: any) {
+                                return item.Title === current.Title;
+                            }).length > 0;
+                        if (!alreadyExists) {
+                            previous.push(current);
+                        }
+                        return previous;
+                    },
+                        []);
+                }
+
                 setAllCategoryData(AutoCompleteItemsArray);
                 let AllSmartMetaDataGroupBy: any = {
                     TimeSheetCategory: TempTimeSheetCategoryArray,
