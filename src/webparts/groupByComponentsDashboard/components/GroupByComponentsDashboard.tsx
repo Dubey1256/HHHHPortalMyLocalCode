@@ -13,7 +13,7 @@ export default class GroupByComponentsDashboard extends React.Component<IGroupBy
       userDisplayName,
       Context,
       MasterTaskListID,
-      TaskUsertListID,
+      TaskUserListID,
       SmartMetadataListID,
       PortFolioTypeID,
     } = this.props;

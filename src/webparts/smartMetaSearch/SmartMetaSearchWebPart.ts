@@ -16,7 +16,7 @@ export interface ISmartMetaSearchWebPartProps {
   description: string;
   SmartMetadataListID:'01a34938-8c7e-4ea6-a003-cee649e8c67a';
   ContextValue:any;
-  TaskUsertListID:'b318ba84-e21d-4876-8851-88b94b9dc300';
+  TaskUserListID:'b318ba84-e21d-4876-8851-88b94b9dc300';
   PortFolioTypeID:'c21ab0e4-4984-4ef7-81b5-805efaa3752e';
   MasterTaskListID:'ec34b38f-0669-480a-910c-f84e92e58adf';
   TaskTimeSheetListID:'464fb776-e4b3-404c-8261-7d3c50ff343f';
@@ -43,7 +43,7 @@ export default class SmartMetaSearchWebPart extends BaseClientSideWebPart<ISmart
         SmartMetadataListID:this.properties.SmartMetadataListID,
         ContextValue:this.context,
         siteUrl: this.context.pageContext.web.absoluteUrl,
-        TaskUsertListID: this.properties.TaskUsertListID, 
+        TaskUserListID: this.properties.TaskUserListID, 
         PortFolioTypeID:this.properties.PortFolioTypeID, 
         MasterTaskListID: this.properties.MasterTaskListID,                                  
         TaskTimeSheetListID:this.properties.TaskTimeSheetListID,
@@ -134,8 +134,8 @@ export default class SmartMetaSearchWebPart extends BaseClientSideWebPart<ISmart
                 PropertyPaneTextField('SmartMetadataListID', {
                   label:"SmartMetadataListID"
                 }),
-                PropertyPaneTextField('TaskUsertListID', {
-                  label:"TaskUsertListID"
+                PropertyPaneTextField('TaskUserListID', {
+                  label:"TaskUserListID"
                 }),                              
                 PropertyPaneTextField("PortFolioTypeID", {
                   label: "Portfolio Type List",

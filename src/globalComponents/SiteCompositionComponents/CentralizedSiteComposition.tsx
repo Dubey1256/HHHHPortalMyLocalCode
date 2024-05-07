@@ -465,7 +465,7 @@ const CentralizedSiteComposition = (Props: any) => {
         let PropsObject: any = {
             MasterTaskListID: RequiredListIds?.MasterTaskListID,
             siteUrl: RequiredListIds?.siteUrl,
-            TaskUserListId: RequiredListIds?.TaskUsertListID,
+            TaskUserListId: RequiredListIds?.TaskUserListID,
             usedFor: "Site-Composition"
         }
         let componentDetails: any = [];

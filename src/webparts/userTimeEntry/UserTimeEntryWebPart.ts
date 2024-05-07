@@ -14,7 +14,7 @@ import { IUserTimeEntryProps } from './components/IUserTimeEntryProps';
 
 export interface IUserTimeEntryWebPartProps {
   description: string;
-  TaskUsertListID: any,
+  TaskUserListID: any,
   SmartMetadataListID: any,
   MasterTaskListID: any,
   TaskTypeID: any,
@@ -48,7 +48,7 @@ export default class UserTimeEntryWebPart extends BaseClientSideWebPart<IUserTim
         TaskTypeID: this.properties.TaskTypeID,
         PortFolioTypeID: this.properties.PortFolioTypeID,
         siteUrl: this.context.pageContext.web.absoluteUrl,
-        TaskUsertListID: this.properties.TaskUsertListID,
+        TaskUserListID: this.properties.TaskUserListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,   
         TimeEntry: this.properties.TimeEntry,
         SiteCompostion: this.properties.SiteCompostion     
@@ -106,7 +106,7 @@ export default class UserTimeEntryWebPart extends BaseClientSideWebPart<IUserTim
                 PropertyPaneTextField('SmartMetadataListID', {
                   label: 'Smart Metadata ListID'
                 }),
-                PropertyPaneTextField('TaskUsertListID', {
+                PropertyPaneTextField('TaskUserListID', {
                   label: 'Task users ListID'
                 }),                
                 PropertyPaneTextField("MasterTaskListID", {

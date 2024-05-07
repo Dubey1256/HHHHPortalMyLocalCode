@@ -92,7 +92,7 @@ const EmailComponenet = (props: any) => {
   const getTaskUser = async () => {
     let web = new Web(props.Listdata.siteUrl);
     await web.lists
-      .getById(props.Listdata.TaskUsertListID)
+      .getById(props.Listdata.TaskUserListID)
       .items.orderBy("Created", true)
       .filter("UserGroupId ne 295")
       .get()

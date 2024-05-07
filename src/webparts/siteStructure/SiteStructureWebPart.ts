@@ -17,7 +17,7 @@ export interface ISiteStructureWebPartProps {
   ContextData: any
   SPSitesListUrl: string;
   TopNavigationListID: any;
-  TaskUsertListID: string;
+  TaskUserListID: string;
 }
 
 export default class SiteStructureWebPart extends BaseClientSideWebPart<ISiteStructureWebPartProps> {
@@ -37,7 +37,7 @@ export default class SiteStructureWebPart extends BaseClientSideWebPart<ISiteStr
         ContextData: this.context.pageContext,
         SPSitesListUrl: this.context.pageContext.web.absoluteUrl,
         TopNavigationListID: this.properties.TopNavigationListID,
-        TaskUsertListID: this.properties.TaskUsertListID,
+        TaskUserListID: this.properties.TaskUserListID,
       }
     );
 
@@ -118,8 +118,8 @@ export default class SiteStructureWebPart extends BaseClientSideWebPart<ISiteStr
                 PropertyPaneTextField('TopNavigationListID', {
                   label: 'TopNavigationListID'
                 }),
-                PropertyPaneTextField('TaskUsertListID', {
-                  label: 'TaskUsertListID'
+                PropertyPaneTextField('TaskUserListID', {
+                  label: 'TaskUserListID'
                 }),
               ]
             }

@@ -794,7 +794,7 @@ const CompareTool = (props: any) => {
             else filter = `Portfolios/Id eq ${data[0]?.Id}`
             let web = new Web(props?.contextValue?.siteUrl);
             let items = await web.lists
-                .getById(props?.contextValue?.DocumentListID ===undefined ? props?.contextValue?.DocumentsListID :props?.contextValue?.DocumentListID).items
+                .getById(props?.contextValue?.DocumenstlistID ===undefined ? props?.contextValue?.DocumentsListID :props?.contextValue?.DocumenstlistID).items
                 .select(dynamicColumns)
                 .expand(expendedColumns)
                 .filter(filter)
@@ -1624,7 +1624,7 @@ const CompareTool = (props: any) => {
                         // Update item by Id
                         globalCommon.updateItemById(
                             props?.contextValue?.siteUrl,
-                            props?.contextValue?.DocumentListID ?? 'D0F88B8F-D96D-4E12-B612-2706BA40FB08',
+                            props?.contextValue?.DocumenstlistID ?? 'D0F88B8F-D96D-4E12-B612-2706BA40FB08',
                             postData,
                             element.Id
                         )
@@ -1654,7 +1654,7 @@ const CompareTool = (props: any) => {
                         let postData = {
                             PortfoliosId: { "results": PortfolioIds },
                         }
-                        globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.DocumentListID === undefined ? 'D0F88B8F-D96D-4E12-B612-2706BA40FB08' : props?.contextValue?.DocumentListID, postData, element.Id)
+                        globalCommon.updateItemById(props?.contextValue?.siteUrl, props?.contextValue?.DocumenstlistID === undefined ? 'D0F88B8F-D96D-4E12-B612-2706BA40FB08' : props?.contextValue?.DocumenstlistID, postData, element.Id)
                             .then((returnresult) => {
                                 console.log(returnresult);
                                 // result.smartTime = String(returnresult)
