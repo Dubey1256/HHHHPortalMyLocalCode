@@ -2306,11 +2306,14 @@ const EditTaskPopup = (Items: any) => {
             }
             if (StatusData.value == 70) {
                 if (
-                    EditData.TeamMembers != undefined &&
-                    EditData.TeamMembers?.length > 0
+                    (EditData.TeamMembers != undefined &&
+                        EditData.TeamMembers?.length > 0) && (EditData.TeamMembers?.length != EditData?.AssignedTo?.length)
                 ) {
                     setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
-                } else {
+                } else if (EditData.ResponsibleTeam?.length > 0) {
+                    setWorkingMemberFromTeam(EditData.ResponsibleTeam, "Development", 0);
+                }
+                else {
                     setWorkingMember(0);
                 }
             }
