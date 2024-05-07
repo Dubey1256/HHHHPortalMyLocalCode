@@ -455,6 +455,13 @@
           "manifest": "./src/webparts/hhhhcontactprofile/HhhhcontactprofileWebPart.manifest.json"
         }
       ]
+    },"task-notification-management-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/taskNotificationManagement/TaskNotificationManagementWebPart.js",
+          "manifest": "./src/webparts/taskNotificationManagement/TaskNotificationManagementWebPart.manifest.json"
+        }
+      ]
     }
    ,"last-modified-web-part": {
     "components": [
@@ -484,6 +491,7 @@
     }
   },
   "localizedResources": {
+    "TaskNotificationManagementWebPartStrings": "lib/webparts/taskNotificationManagement/loc/{locale}.js",
     "RootTeamPortfolioTableWebPartStrings": "lib/webparts/rootTeamPortfolioTable/loc/{locale}.js",
     "HelloSpfxWebPartStrings": "lib/webparts/helloSpfx/loc/{locale}.js",
     "EmployeProfileWebPartStrings": "lib/webparts/employeProfile/loc/{locale}.js",
