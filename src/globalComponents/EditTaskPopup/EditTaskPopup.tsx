@@ -1381,7 +1381,7 @@ const EditTaskPopup = (Items: any) => {
             MasterTaskListID: AllListIdData.MasterTaskListID,
             siteUrl: AllListIdData.siteUrl,
             ComponentType: ComponentType,
-            TaskUserListId: AllListIdData.TaskUsertListID,
+            TaskUserListId: AllListIdData.TaskUserListID,
         };
         let CallBackData = await globalCommon.GetServiceAndComponentAllData(
             PropsObject
@@ -1869,7 +1869,7 @@ const EditTaskPopup = (Items: any) => {
         let currentUserId = Context?.pageContext?._legacyPageContext?.userId;
         const web = new Web(siteUrls);
         taskUsers = await web.lists
-            .getById(AllListIdData?.TaskUsertListID)
+            .getById(AllListIdData?.TaskUserListID)
             .items.select(
                 "Id,UserGroupId,TimeCategory,CategoriesItemsJson,IsActive,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name"
             )
@@ -2306,11 +2306,14 @@ const EditTaskPopup = (Items: any) => {
             }
             if (StatusData.value == 70) {
                 if (
-                    EditData.TeamMembers != undefined &&
-                    EditData.TeamMembers?.length > 0
+                    (EditData.TeamMembers != undefined &&
+                        EditData.TeamMembers?.length > 0) && (EditData.TeamMembers?.length != EditData?.AssignedTo?.length)
                 ) {
                     setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
-                } else {
+                } else if (EditData.ResponsibleTeam?.length > 0) {
+                    setWorkingMemberFromTeam(EditData.ResponsibleTeam, "Development", 0);
+                }
+                else {
                     setWorkingMember(0);
                 }
             }
@@ -3296,9 +3299,6 @@ const EditTaskPopup = (Items: any) => {
                 delete SCItems?.ClientCategory;
             });
         }
-
-
-        // ----------------------for check Activity and worstream---------------------------------------------------------
 
         let UpdateDataObject: any = {
             IsTodaysTask: EditData.IsTodaysTask ? EditData.IsTodaysTask : null,

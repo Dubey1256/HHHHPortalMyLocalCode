@@ -15,7 +15,7 @@ import { IProjectManagementProps } from './components/IProjectManagementProps';
 export interface IProjectManagementWebPartProps {
   description: string;
   MasterTaskListID: any;
-  TaskUsertListID: any;
+  TaskUserListID: any;
   SmartMetadataListID: any;
   SmartInformationListID: any;
   DocumentsListID: any;
@@ -44,7 +44,7 @@ export default class ProjectManagementWebPart extends BaseClientSideWebPart<IPro
         Context: this.context,
         siteUrl: this.context.pageContext.web.absoluteUrl,
         MasterTaskListID: this.properties.MasterTaskListID,
-        TaskUsertListID: this.properties.TaskUsertListID,
+        TaskUserListID: this.properties.TaskUserListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
         SmartInformationListID: this.properties.SmartInformationListID,
         DocumentsListID: this.properties.DocumentsListID,
@@ -114,8 +114,8 @@ export default class ProjectManagementWebPart extends BaseClientSideWebPart<IPro
                 PropertyPaneTextField('MasterTaskListID', {
                   label: "MasterTaskListID"
                 }),
-                PropertyPaneTextField('TaskUsertListID', {
-                  label: "TaskUsertListID"
+                PropertyPaneTextField('TaskUserListID', {
+                  label: "TaskUserListID"
                 }),
                 PropertyPaneTextField('SmartMetadataListID', {
                   label: "SmartMetadataListID"

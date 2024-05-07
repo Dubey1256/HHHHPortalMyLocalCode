@@ -15,7 +15,7 @@ import { ISmartConnectProps } from './components/ISmartConnectProps';
 export interface ISmartConnectWebPartProps {
   description: string;
   MasterTaskListID: "ec34b38f-0669-480a-910c-f84e92e58adf";
-  TaskUsertListID: "b318ba84-e21d-4876-8851-88b94b9dc300";
+  TaskUserListID: "b318ba84-e21d-4876-8851-88b94b9dc300";
   SmartMetadataListID: "01a34938-8c7e-4ea6-a003-cee649e8c67a";
 }
 
@@ -35,7 +35,7 @@ export default class SmartConnectWebPart extends BaseClientSideWebPart<ISmartCon
         userDisplayName: this.context.pageContext.user.displayName,
         siteUrl: this.context.pageContext.web.absoluteUrl,
         MasterTaskListID: this.properties.MasterTaskListID,
-        TaskUsertListID: this.properties.TaskUsertListID,
+        TaskUserListID: this.properties.TaskUserListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
 
       }
@@ -95,7 +95,7 @@ export default class SmartConnectWebPart extends BaseClientSideWebPart<ISmartCon
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField("TaskUsertListID", {
+                PropertyPaneTextField("TaskUserListID", {
                   label: "Task User List",
                 }),
                 PropertyPaneTextField("SmartMetadataListID", {

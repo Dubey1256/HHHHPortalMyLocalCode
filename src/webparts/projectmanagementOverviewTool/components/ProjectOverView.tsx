@@ -106,7 +106,7 @@ export default function ProjectOverview(props: any) {
         }
         AllListId = {
             MasterTaskListID: props?.props?.MasterTaskListID,
-            TaskUsertListID: props?.props?.TaskUsertListID,
+            TaskUserListID: props?.props?.TaskUserListID,
             SmartMetadataListID: props?.props?.SmartMetadataListID,
             //SiteTaskListID:this.props?.props?.SiteTaskListID,
             TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
@@ -150,11 +150,11 @@ export default function ProjectOverview(props: any) {
         $(' #SpfxProgressbar').hide();
     }
     const TaskUser = async () => {
-        if (AllListId?.TaskUsertListID != undefined) {
+        if (AllListId?.TaskUserListID != undefined) {
             let web = new Web(AllListId?.siteUrl);
             let taskUser = [];
             taskUser = await web.lists
-                .getById(AllListId?.TaskUsertListID)
+                .getById(AllListId?.TaskUserListID)
                 .items
                 .select("Id,UserGroupId,Suffix,Title,technicalGroup,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,UserGroup/Id,ItemType,Approver/Id,Approver/Title,Approver/Name")
                 .top(5000)
@@ -191,7 +191,7 @@ export default function ProjectOverview(props: any) {
         let PropsObject: any = {
             MasterTaskListID: AllListId.MasterTaskListID,
             siteUrl: AllListId.siteUrl,
-            TaskUserListId: AllListId.TaskUsertListID,
+            TaskUserListId: AllListId.TaskUserListID,
         }
         let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
         if (results?.AllData?.length > 0) {
@@ -543,8 +543,8 @@ export default function ProjectOverview(props: any) {
                                             href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
                                             target="_blank"
                                             data-interception="off"
-                                        >{row?.original?.AuthorImg != undefined ?
-                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.AuthorImg} /> :
+                                        >{row?.original?.createdImg != undefined ?
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} /> :
                                             <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
                                             }
 

@@ -17,7 +17,7 @@ export interface IHhhhSmartMetadataPortfolioWebPartProps {
   SPSitesListUrl: string;
   SmartMetadataListID: string;
   SPTopNavigationListID: string;
-  TaskUsertListID: string
+  TaskUserListID: string
   description: string;
   PageUrl: any
   siteUrl: any
@@ -42,7 +42,7 @@ export default class HhhhSmartMetadataPortfolioWebPart extends BaseClientSideWeb
         SPSiteConfigListID: this.properties.SPSiteConfigListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
         SPTopNavigationListID: this.properties.SPTopNavigationListID,
-        TaskUsertListID: this.properties.TaskUsertListID,
+        TaskUserListID: this.properties.TaskUserListID,
         PageUrl: this.context?.pageContext?.site?.serverRequestPath,
         siteUrl: this.context.pageContext.web.absoluteUrl,
         Context: this.context
@@ -131,8 +131,8 @@ export default class HhhhSmartMetadataPortfolioWebPart extends BaseClientSideWeb
                 PropertyPaneTextField('SPTopNavigationListID', {
                   label: 'SPTopNavigationListID'
                 }),
-                PropertyPaneTextField('TaskUsertListID', {
-                  label: 'TaskUsertListID'
+                PropertyPaneTextField('TaskUserListID', {
+                  label: 'TaskUserListID'
                 }),
               ]
             }

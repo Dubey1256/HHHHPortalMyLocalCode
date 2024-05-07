@@ -66,27 +66,6 @@ const ShowConfirmation = (props:any)=>{
                 </div>
             </Modal>            
 
-           
-           {/* <Panel type={PanelType.medium} isOpen={isdelete} onRenderHeader={onRenderCustomHeaderMain} isBlocking={false}>
-                <div>
-                <ModalBody>
-                        <div>
-                            <h5>{confirmationItem?.Description}</h5>
-                        </div>
-                </ModalBody>
-                <footer className='bg-f4' style={{position: 'absolute', bottom: '0px', width:'100%', zIndex:'9'}}>
-                        <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">                                                      
-                            <div className="footer-right">                                                                   
-                                {props.ItemTypeItem !== undefined ?<span>
-                                    <button type="button" className="btn btn-primary me-2" onClick={()=>sendmsg(true)}>{confirmationItem?.ButtonTitle}</button>
-                                    <button type="button" className="btn btn-default btn-default mx-1 me-4" onClick={()=>sendmsg(false)}>Cancel</button>
-                                </span> : <span>
-                                    <button type="button" className="btn btn-primary me-2" onClick={cancelpopup}>OK</button> </span>}
-                            </div>                            
-                        </div>
-                    </footer>
-                </div>
-            </Panel>  */}
         </>
     )
 }

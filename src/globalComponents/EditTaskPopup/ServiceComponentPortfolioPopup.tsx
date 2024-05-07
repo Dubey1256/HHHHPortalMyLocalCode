@@ -18,6 +18,7 @@ import CompareTool from "../CompareTool/CompareTool";
 import AddProject from "../../webparts/projectmanagementOverviewTool/components/AddProject";
 import EditProjectPopup from "../EditProjectPopup";
 import CreateAllStructureComponent from "../CreateAllStructure";
+import RadimadeTable from "../../globalComponents/RadimadeTable"
 var LinkedServicesBackupArray: any = [];
 var MultiSelectedData: any = [];
 let AllMetadata: any = [];
@@ -70,17 +71,17 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         } else {
             // Code to run on subsequent renders (check and uncheck events)
             // For example:
-            if (portfolioSelectionTableRef?.current?.table?.getSelectedRowModel()?.flatRows?.length > 0) {
+            if (CheckBoxData?.length > 0) {
                 let allCheckData: any = [];
-                portfolioSelectionTableRef?.current?.table?.getSelectedRowModel()?.flatRows?.forEach((elem: any) => {
-                    allCheckData.push(elem?.original);
+                CheckBoxData?.forEach((elem: any) => {
+                    allCheckData.push(elem)
                 });
                 setdataUpper(allCheckData);
             } else {
                 setdataUpper([]);
             }
         }
-    }, [initialRender, portfolioSelectionTableRef?.current?.table?.getSelectedRowModel()?.flatRows]);
+    }, [initialRender, portfolioSelectionTableRef?.current?.table?.getSelectedRowModel()?.flatRows, CheckBoxData]);
     
     // Default selectionType
     
@@ -191,11 +192,11 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     };
     const loadTaskUsers = async () => {
         let taskUser: any = [];
-        if (Dynamic?.TaskUsertListID != undefined) {
+        if (Dynamic?.TaskUserListID != undefined) {
             try {
                 let web = new Web(Dynamic?.siteUrl);
                 taskUser = await web.lists
-                    .getById(Dynamic?.TaskUsertListID)
+                    .getById(Dynamic?.TaskUserListID)
                     .items
                     .select("Id,UserGroupId,Suffix,IsActive,Title,Email,SortOrder,Role,showAllTimeEntry,Company,Group,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
                     .filter('IsActive eq 1')
@@ -224,7 +225,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 MasterTaskListID: Dynamic.MasterTaskListID,
                 siteUrl: Dynamic.siteUrl,
                 ComponentType: ComponentType,
-                TaskUserListId: Dynamic.TaskUsertListID,
+                TaskUserListId: Dynamic.TaskUserListID,
                 selectedItems: selectedDataArray
             }
             if (showProject == true) {
@@ -779,7 +780,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     return (
         <Panel
             type={PanelType.custom}
-            customWidth="1100px"
+            customWidth="1600px"
             isOpen={true}
             onDismiss={(e: any) => closePanel(e)}
             onRenderHeader={onRenderCustomHeader}
@@ -851,36 +852,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     </div>
 }
 
-                    {/* {dataUpper?.length > 0 &&    
-    <div className="col-sm-12 p-0 smart">
-        <div className="">
-             <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Title</th>
-                        <th>Team</th>
-                        <th>Created</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {dataUpper?.map((item: any) => {
-                        return (
-                            <tr key={item.PortfolioStructureID}>
-                                <td>{item.PortfolioStructureID}</td>
-                                <td>{item.Title}</td>
-                                <td><ShowTaskTeamMembers props={item} TaskUsers={AllUsers} /></td>
-                                <td>{item.DisplayCreateDate}</td>
-                            </tr>
-                        )
-                    })}
-                </tbody>
-            </table>
-        </div>
-    </div>
-} */}
-
-                        {showProject !== true &&
+                        {/* {showProject !== true &&
                             <div className="tbl-headings p-2 bg-white">
                                 <span className="leftsec">
                                     {ShowingAllData[0]?.FilterShowhideShwingData == true ? <label>
@@ -906,36 +878,16 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                                         </label>}
                                 </span>
                             </div>
-                        }
+                        } */}
                        
                         <div className="col-sm-12 p-0 smart">
                             <div className="">
-                                <GlobalCommanTable columns={columns}  customHeaderButtonAvailable={true} customTableHeaderButtons={customTableHeaderButtons1}  ref={portfolioSelectionTableRef} showHeader={true} data={data} selectedData={selectedDataArray} callBackData={callBackData} multiSelect={IsSelectionsBelow} />
+                            <RadimadeTable configration={"AllCSF"} AllListId={Dynamic} tableId="TaskPopup" setCheckBoxData={setCheckBoxData} showProject={showProject} ComponentFilter={"Component"} multiSelect={true}/>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            {/* <Panel
-                onRenderHeader={onRenderCustomHeaderMain1}
-                type={PanelType.large}
-                isOpen={OpenAddStructurePopup}
-                isBlocking={false}
-                onDismiss={callbackdataAllStructure}
-            >
-                  <CreateAllStructureComponent
-                    Close={callbackdataAllStructure}
-                    taskUser={AllUsers}
-                    portfolioTypeData={PortfolitypeData}
-                    PropsValue={Dynamic}
-                    SelectedItem={
-                        checkedList != null && checkedList?.Id != undefined
-                            ? checkedList
-                            : props
-                    }
-                />
-             
-            </Panel> */}
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain1}
                 type={PanelType.large}

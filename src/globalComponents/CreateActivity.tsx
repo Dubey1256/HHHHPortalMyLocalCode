@@ -156,11 +156,11 @@ const CreateActivity = (props: any) => {
   }, [IsComponentPicker]);
   //***************** Load All task Users***************** */
   const getTaskUsers = async () => {
-    if (AllListId?.TaskUsertListID != undefined) {
+    if (AllListId?.TaskUserListID != undefined) {
       let web = new Web(AllListId?.siteUrl);
       let taskUser = [];
       taskUser = await web.lists
-        .getById(AllListId?.TaskUsertListID)
+        .getById(AllListId?.TaskUserListID)
         .items.select(
           "Id,UserGroupId,Suffix,Title,IsTaskNotifications,IsApprovalMail,CategoriesItemsJson,technicalGroup,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,UserGroup/Id,ItemType,Approver/Id,Approver/Title,Approver/Name"
         )
@@ -205,7 +205,7 @@ const CreateActivity = (props: any) => {
     let PropsObject: any = {
       MasterTaskListID: AllListId.MasterTaskListID,
       siteUrl: AllListId.siteUrl,
-      TaskUserListId: AllListId.TaskUsertListID,
+      TaskUserListId: AllListId.TaskUserListID,
     }
     let componentDetails: any = [];
     let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)

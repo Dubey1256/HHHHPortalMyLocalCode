@@ -177,7 +177,7 @@ const ProjectManagementMain = (props: any) => {
     }
     AllListId = {
       MasterTaskListID: props?.props?.MasterTaskListID,
-      TaskUsertListID: props?.props?.TaskUsertListID,
+      TaskUserListID: props?.props?.TaskUserListID,
       SmartMetadataListID: props?.props?.SmartMetadataListID,
       //SiteTaskListID:this.props?.props?.SiteTaskListID,
       TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
@@ -250,7 +250,7 @@ const ProjectManagementMain = (props: any) => {
     try {
       let web = new Web(AllListId?.siteUrl);
       taskUser = await web.lists
-        .getById(AllListId?.TaskUsertListID)
+        .getById(AllListId?.TaskUserListID)
         .items
         .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
         .get();
@@ -1023,7 +1023,7 @@ const ProjectManagementMain = (props: any) => {
     let PropsObject: any = {
       MasterTaskListID: AllListId.MasterTaskListID,
       siteUrl: AllListId.siteUrl,
-      TaskUserListId: AllListId.TaskUsertListID,
+      TaskUserListId: AllListId.TaskUserListID,
     }
     let componentDetails: any = [];
     let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
