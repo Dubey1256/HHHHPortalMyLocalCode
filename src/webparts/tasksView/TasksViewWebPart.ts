@@ -10,7 +10,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import * as strings from 'TasksViewWebPartStrings';
 
 export interface ITasksViewWebPartProps {
-  TaskUsertListID: string;
+  TaskUserListID: string;
   ListConfigurationListID: string;
 }
 
@@ -24,7 +24,7 @@ export default class TasksViewWebPart extends BaseClientSideWebPart<ITasksViewWe
     const element: React.ReactElement<ITasksViewAppProps> = React.createElement(
       TasksViewApp,
       {
-        taskUsersListId: this.properties.TaskUsertListID,
+        taskUsersListId: this.properties.TaskUserListID,
         listConfigurationListId: this.properties.ListConfigurationListID
       }
     );
@@ -56,7 +56,7 @@ export default class TasksViewWebPart extends BaseClientSideWebPart<ITasksViewWe
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('TaskUsertListID', {
+                PropertyPaneTextField('TaskUserListID', {
                   label: "Task User List'"
                 }),
                 PropertyPaneTextField("ListConfigurationListID", {

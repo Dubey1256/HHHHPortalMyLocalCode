@@ -17,7 +17,7 @@ export interface IUpdateTopNavigationWebPartProps {
   description: string;
   Context:any;
   TopNavigationListID:"7ee58156-c976-46b6-9b08-b700bf8e724b",
-  TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
+  TaskUserListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
 }
 
 export default class UpdateTopNavigationWebPart extends BaseClientSideWebPart<IUpdateTopNavigationWebPartProps> {
@@ -34,7 +34,7 @@ export default class UpdateTopNavigationWebPart extends BaseClientSideWebPart<IU
         environmentMessage: this._environmentMessage,
         siteUrl: this.context.pageContext.web.absoluteUrl,
         TopNavigationListID: this.properties.TopNavigationListID,
-        TaskUsertListID: this.properties.TaskUsertListID,
+        TaskUserListID: this.properties.TaskUserListID,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         Context: this.context,
         userDisplayName: this.context.pageContext.user.displayName
@@ -105,8 +105,8 @@ export default class UpdateTopNavigationWebPart extends BaseClientSideWebPart<IU
                 PropertyPaneTextField('TopNavigationListID', {
                   label: 'TopNavigation List'
                 }),
-                PropertyPaneTextField('TaskUsertListID', {
-                  label: 'TaskUsertListID'
+                PropertyPaneTextField('TaskUserListID', {
+                  label: 'TaskUserListID'
                 })
               ]
             },

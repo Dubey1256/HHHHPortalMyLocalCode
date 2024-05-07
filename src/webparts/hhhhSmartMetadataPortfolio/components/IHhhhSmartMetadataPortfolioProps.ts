@@ -9,7 +9,7 @@ export interface IHhhhSmartMetadataPortfolioProps {
   SPTopNavigationListID: string
   PageUrl: any
   SPSitesListUrl: string;
-  TaskUsertListID: string;
+  TaskUserListID: string;
   siteUrl: any
   Context: any
 }

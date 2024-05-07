@@ -56,7 +56,7 @@ export const Modified = (props: any) => {
 
   const storeEditList = () => {
     const editListsAll = {
-      TaskUsertListID: props?.props?.TaskUsertListID,
+      TaskUserListID: props?.props?.TaskUserListID,
       SmartMetadataListID: props?.props?.SmartMetadataListID,
       MasterTaskListID: props?.props.MasterTaskListID,
       TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
@@ -74,7 +74,7 @@ export const Modified = (props: any) => {
       NewsListId:props?.props?.NewsListId,
       EventListId:props?.props?.EventListId,
       context: props?.props?.context,
-      TaskUserListId: props?.props?.TaskUsertListID,
+      TaskUserListId: props?.props?.TaskUserListID,
       isShowTimeEntry: props?.props?.TimeEntry,
 
     }
