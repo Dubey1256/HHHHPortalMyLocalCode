@@ -41,7 +41,7 @@ const Tabless = (props: any) => {
   let count: any = 0;
   let AllListId: any = {
     MasterTaskListID: props?.Items?.MasterTaskListID,
-    TaskUsertListID: props?.Items?.TaskUsertListID,
+    TaskUserListID: props?.Items?.TaskUserListID,
     SmartMetadataListID: props?.Items?.SmartMetadataListID,
     //SiteTaskListID:this.props?.props?.SiteTaskListID,
     TaskTimeSheetListID: props?.Items?.TaskTimeSheetListID,
@@ -129,7 +129,7 @@ const Tabless = (props: any) => {
   const getTaskUserData = async () => {
     const web = new Web(props.Items.siteUrl);
     await web.lists
-      .getById(props.Items.TaskUsertListID)
+      .getById(props.Items.TaskUserListID)
       .items.select(
         "AssingedToUser/Title",
         "AssingedToUser/Id",

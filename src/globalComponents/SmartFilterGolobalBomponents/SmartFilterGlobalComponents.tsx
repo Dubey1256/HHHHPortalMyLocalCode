@@ -38,7 +38,7 @@ const SmartFilterSearchGlobal = (item: any) => {
         let web = new Web(ContextValue?.siteUrl);
         let taskUsers = [];
         let results = await web.lists
-            .getById(ContextValue.TaskUsertListID)
+            .getById(ContextValue.TaskUserListID)
             .items
             .select('Id', 'Role', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', "AssingedToUser/Name", 'UserGroupId', 'UserGroup/Id', "ItemType")
             // .filter('IsActive eq 1')

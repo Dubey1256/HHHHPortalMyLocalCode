@@ -137,11 +137,11 @@ const DocumentPopup = (props: any) => {
     }
     const LoadDocItem = () => {
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
-        web.lists.getById(PageContext.DocumentListId).items.select('Id,Url,Title,ItemRank,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created, Modified,Author/Name,Author/Title,Editor/Name,File/Name,Editor/Title,Gender/Id,Gender/Title,HHHH/Id,HHHH/Title,DE/Id,DE/Title,EI/Id,EI/Title,EPS/Id,EPS/Title,Education/Id,Education/Title,Shareweb/Id,Shareweb/Title,SharewebTask/Id,SharewebTask/Title').filter('Id eq ' + props.Item.Id).expand('Author,SharewebTask,DE,EI,EPS,Education,Shareweb,Gender,HHHH,Editor,Author,Editor,File').getAll()
+        web.lists.getById(PageContext.DocumenstlistId).items.select('Id,Url,Title,ItemRank,FileDirRef,FileLeafRef,File_x0020_Type,Year,EncodedAbsUrl,Created, Modified,Author/Name,Author/Title,Editor/Name,File/Name,Editor/Title,Gender/Id,Gender/Title,HHHH/Id,HHHH/Title,DE/Id,DE/Title,EI/Id,EI/Title,EPS/Id,EPS/Title,Education/Id,Education/Title,Shareweb/Id,Shareweb/Title,SharewebTask/Id,SharewebTask/Title').filter('Id eq ' + props.Item.Id).expand('Author,SharewebTask,DE,EI,EPS,Education,Shareweb,Gender,HHHH,Editor,Author,Editor,File').getAll()
             .then((response: any) => {
                 let FirstOjb = response[0];
                 try {
-                    web.lists.getById(PageContext.DocumentListId).items.select('Id,Title,Foundation/Id,Foundation/Title,QA/Id,QA/Title,Health/Id,Health/Title,Gruene/Id,Gruene/Title,OffShoreTask/Id,OffShoreTask/Id,OffShoreTask/Title').filter('Id eq ' + props.Item.Id).expand('Foundation,QA,OffShoreTask,Health,Gruene').getAll()
+                    web.lists.getById(PageContext.DocumenstlistId).items.select('Id,Title,Foundation/Id,Foundation/Title,QA/Id,QA/Title,Health/Id,Health/Title,Gruene/Id,Gruene/Title,OffShoreTask/Id,OffShoreTask/Id,OffShoreTask/Title').filter('Id eq ' + props.Item.Id).expand('Foundation,QA,OffShoreTask,Health,Gruene').getAll()
                         .then((response: any) => {
                             try {
                                 let SecondOjb = response[0];
@@ -474,7 +474,7 @@ const DocumentPopup = (props: any) => {
         if (ServicesComponentsIds != undefined && UpdatedItem.selectedValue === 'Services')
             updateDataValue.SharewebTaskId = { "results": ServicesComponentsIds };
         let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
-        web.lists.getById(PageContext.DocumentListId).items.getById(UpdatedItem.Id).update(updateDataValue).then((response: any) => {
+        web.lists.getById(PageContext.DocumenstlistId).items.getById(UpdatedItem.Id).update(updateDataValue).then((response: any) => {
             //   alert("Update successful")
             props.closeEditPopup()
         }).catch((error: any) => {
@@ -542,7 +542,7 @@ const DocumentPopup = (props: any) => {
         var flag: any = confirm('Do you want to delete this item')
         if (flag) {
             let web = new Web(PageContext.context._pageContext._web.absoluteUrl + '/')
-            web.lists.getById(PageContext.DocumentListId).items.getById(Id).recycle().then(() => {
+            web.lists.getById(PageContext.DocumenstlistId).items.getById(Id).recycle().then(() => {
                 alert("delete successfully")
                 props.closeEditPopup()
             }).catch((error: any) => {

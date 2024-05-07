@@ -5,7 +5,7 @@ export interface IUserTimeEntryProps {
   hasTeamsContext: boolean;
   userDisplayName: string;
   Context: any;
-  TaskUsertListID: any,
+  TaskUserListID: any,
   SmartMetadataListID: any,
   siteUrl: any,
   MasterTaskListID: any,

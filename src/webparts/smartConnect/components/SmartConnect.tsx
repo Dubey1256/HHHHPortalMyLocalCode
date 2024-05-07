@@ -14,7 +14,7 @@ export default class SmartConnect extends React.Component<ISmartConnectProps, {}
       environmentMessage,
       hasTeamsContext,
       userDisplayName,
-      TaskUsertListID,
+      TaskUserListID,
       SmartMetadataListID,
       MasterTaskListID,
       siteUrl,

@@ -147,7 +147,7 @@ const RootTeamPortfolioTableData = (props: any) => {
     try {
       const web = new Web(config?.siteUrl);
       const taskUsers = await web.lists
-        .getById(config?.TaskUsertListID)
+        .getById(config?.TaskUserListID)
         .items.select(
           "Id",
           "Email",

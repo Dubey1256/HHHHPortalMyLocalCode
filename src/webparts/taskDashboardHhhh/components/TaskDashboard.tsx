@@ -114,7 +114,7 @@ const TaskDashboard = (props: any) => {
         // sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
         AllListId = {
             MasterTaskListID: props?.props?.MasterTaskListID,
-            TaskUsertListID: props?.props?.TaskUsertListID,
+            TaskUserListID: props?.props?.TaskUserListID,
             SmartMetadataListID: props?.props?.SmartMetadataListID,
             //SiteTaskListID:this.props?.props?.SiteTaskListID,
             TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
@@ -191,7 +191,7 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Last Month') {
             const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
             const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
-            var change = (Moment(startingDateOfLastMonth).add(28, 'days').format())
+            var change = (Moment(startingDateOfLastMonth).add(17, 'days').format())
             var b = new Date(change)
             formattedDate = b;
         } else if (startDateOf == 'Last Week') {
@@ -1371,11 +1371,11 @@ const TaskDashboard = (props: any) => {
     }
     const loadTaskUsers = async () => {
         let taskUser;
-        if (AllListId?.TaskUsertListID != undefined) {
+        if (AllListId?.TaskUserListID != undefined) {
             try {
                 let web = new Web(AllListId?.siteUrl);
                 taskUser = await web.lists
-                    .getById(AllListId?.TaskUsertListID)
+                    .getById(AllListId?.TaskUserListID)
                     .items
                     .select("Id,UserGroupId,TimeCategory,Suffix,IsActive,Title,Email,SortOrder,Role,showAllTimeEntry,Company,Group,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
                     .filter('IsActive eq 1')

@@ -7,7 +7,7 @@ export interface ISmartMetaSearchProps {
   SmartMetadataListID:string;
   ContextValue:any;
   siteUrl:string;
-  TaskUsertListID:string;   
+  TaskUserListID:string;   
   PortFolioTypeID:string;
   MasterTaskListID:string;
   DocumentsListID:string;

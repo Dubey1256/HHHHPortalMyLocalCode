@@ -12,7 +12,7 @@ const HHHHQuickPanel = ({props}: any) => {
   let allListId = {
     siteUrl: props?.siteUrl,
     MasterTaskListID: props?.MasterTaskListID,
-    TaskUsertListID: props?.TaskUsertListID,
+    TaskUserListID: props?.TaskUserListID,
     SmartMetadataListID: props?.SmartMetadataListID,
     SmartInformationListID: props?.SmartInformationListID,
     DocumentsListID: props?.DocumentsListID,

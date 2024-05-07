@@ -211,7 +211,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       MasterTaskListID: this.props?.MasterTaskListID,
       siteUrl: this.props?.siteUrl,
       ComponentType: ComponentType,
-      TaskUserListId: this.props?.TaskUsertListID,
+      TaskUserListId: this.props?.TaskUserListID,
     };
     let CallBackData = await globalCommon.GetServiceAndComponentAllData(PropsObject)
     if (CallBackData?.AllData != undefined && CallBackData?.AllData?.length > 0) {
@@ -271,7 +271,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .get()
     AllListId = {
       MasterTaskListID: this.props.MasterTaskListID,
-      TaskUsertListID: this.props.TaskUsertListID,
+      TaskUserListID: this.props.TaskUserListID,
       SmartMetadataListID: this.props.SmartMetadataListID,
       //SiteTaskListID:this.props.SiteTaskListID,
       TaskTimeSheetListID: this.props.TaskTimeSheetListID,
@@ -543,7 +543,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     var taskDeatails = this.state.Result;
     taskUsers = await web.lists
       // .getByTitle("Task Users")
-      .getById(this.props.TaskUsertListID)
+      .getById(this.props.TaskUserListID)
       .items
       .select('Id', 'Email', 'Approver/Id', 'Approver/Title', 'Approver/Name', 'Suffix', 'UserGroup/Id', 'UserGroup/Title', 'Team', 'Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
       .filter("ItemType eq 'User'")
