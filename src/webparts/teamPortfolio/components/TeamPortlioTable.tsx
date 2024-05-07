@@ -10,7 +10,6 @@ import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryCompone
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
-import { PortfolioStructureCreationCard } from "../../../globalComponents/tableControls/PortfolioStructureCreation";
 import CreateActivity from "../../../globalComponents/CreateActivity";
 import CreateWS from "../../../globalComponents/CreateWS";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -18,11 +17,8 @@ import Tooltip from "../../../globalComponents/Tooltip";
 import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
-import Loader from "react-loader";
-import { Bars } from 'react-loader-spinner'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
-import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import TeamSmartFilter from "../../../globalComponents/SmartFilterGolobalBomponents/TeamSmartFilter";
