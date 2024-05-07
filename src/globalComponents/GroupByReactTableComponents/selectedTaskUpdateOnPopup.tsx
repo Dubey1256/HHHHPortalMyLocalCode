@@ -152,7 +152,9 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                             }
                         });
                     }
+                    if (item?.setData) {
                     item?.setData(allData);
+                    }
                     setLoaded(true);
                     item?.bulkEditingSetting();
                 } else if (item?.updatedSmartFilterFlatView === true || item?.clickFlatView === true) {
@@ -232,7 +234,11 @@ const SelectedTaskUpdateOnPopup = (item: any) => {
                             } return elem;
                         });
                     }
+                    if (item?.setData) {
                     item?.setData((prev: any) => updatedAllData);
+                    } else if (item?.DashboardContextData) {
+                        item?.dashBoardbulkUpdateCallBack(item?.tableId, updatedAllData);
+                    }
                     setLoaded(true);
                     item?.bulkEditingSetting();
                 }
