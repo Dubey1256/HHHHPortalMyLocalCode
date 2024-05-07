@@ -16,7 +16,7 @@ export default class CreateTask extends React.Component<ICreateTaskProps, {}> {
       Context,
       siteUrl,
       MasterTaskListID,
-      TaskUsertListID,
+      TaskUserListID,
       SmartMetadataListID,
       SmartInformationListID,
       DocumentsListID,

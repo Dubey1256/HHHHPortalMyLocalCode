@@ -14,7 +14,7 @@ export default function ParentportfolioPage(props: any) {
     const getComponentItem = async () => {
 
         const sitesId = {
-            TaskUsertListID: props?.props?.TaskUsertListID,
+            TaskUserListID: props?.props?.TaskUserListID,
             SmartMetadataListID: props?.props?.SmartMetadataListID,
             MasterTaskListID: props?.props.MasterTaskListID,
             DocumentsListID: props?.props?.DocumentsListID,

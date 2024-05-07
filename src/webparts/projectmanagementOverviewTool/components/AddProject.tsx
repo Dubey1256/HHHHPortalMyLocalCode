@@ -201,7 +201,7 @@ const AddProject = (props: any) => {
         let PropsObject: any = {
             MasterTaskListID: props?.AllListId.MasterTaskListID,
             siteUrl: props?.AllListId.siteUrl,
-            TaskUserListId: props?.AllListId.TaskUsertListID,
+            TaskUserListId: props?.AllListId.TaskUserListID,
         }
         let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
         if (results?.AllData?.length > 0) {

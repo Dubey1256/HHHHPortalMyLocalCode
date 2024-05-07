@@ -14,7 +14,7 @@ export default class MeetingOverview extends React.Component<IMeetingOverviewPro
       userDisplayName,
       siteUrl,
       MasterTaskListID,
-      TaskUsertListID,
+      TaskUserListID,
       SmartMetadataListID,
       SmartInformationListID,
       DocumentsListID,

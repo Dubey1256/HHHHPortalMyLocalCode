@@ -807,7 +807,7 @@ function SmartConnectTable(SelectedProp: any) {
         let web = new Web(SelectedProp.siteUrl);
         let Response = [];
         Response = await web.lists
-            .getById(SelectedProp.TaskUsertListID)
+            .getById(SelectedProp.TaskUserListID)
             .items
             .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'UserGroup/Id')
             .expand('AssingedToUser', 'UserGroup')
