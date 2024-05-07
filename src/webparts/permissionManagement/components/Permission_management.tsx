@@ -38,7 +38,7 @@ const Permission_management = (props: any) => {
     let web = new Web(props?.context?.siteUrl);
     let AllTasksMatches: any = [];
     AllTasksMatches = await web.lists
-      .getById(props?.context?.TaskUsertListID)
+      .getById(props?.context?.TaskUserListID)
       .items.getAll(4000)
       .then((data: any) => {
         setTaskUser(data);

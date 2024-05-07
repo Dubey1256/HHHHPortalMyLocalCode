@@ -1135,7 +1135,18 @@ const GlobalCommanTable = (items: any, ref: any) => {
 
     React.useEffect(() => {
         if (bulkEditingCongration?.Project === true && table?.getSelectedRowModel()?.flatRows?.length > 0 && projectTiles?.length === 0) {
-            setProjectTiles(table?.getSelectedRowModel()?.flatRows)
+            let collectedProjectData: any[] = [];
+            let titlesProjectSet = new Set();
+            table?.getSelectedRowModel()?.flatRows?.forEach((elem: any) => {
+                if (elem.original?.Project) {
+                    if (!titlesProjectSet.has(elem.original?.Project?.Id)) {
+                        titlesProjectSet.add(elem.original?.Project?.Id);
+                        collectedProjectData.push(elem);
+                    }
+                }
+            });
+            let uniqueProjectDataArray = [...collectedProjectData];
+            setProjectTiles(uniqueProjectDataArray);
         }
         if (bulkEditingCongration?.categories === true && table?.getSelectedRowModel()?.flatRows?.length > 0 && categoriesTiles?.length === 0) {
             let collectedData: any = [];
@@ -1587,7 +1598,7 @@ const GlobalCommanTable = (items: any, ref: any) => {
                         </tbody>
                     </table>
                     {data?.length === 0 && <div className='mt-2'>
-                        <div className='d-flex justify-content-center siteColor' style={{ height: "30px"}}>No data available</div>
+                        <div className='d-flex justify-content-center siteColor' style={{ height: "30px" }}>No data available</div>
                     </div>}
                 </div>
             </div>

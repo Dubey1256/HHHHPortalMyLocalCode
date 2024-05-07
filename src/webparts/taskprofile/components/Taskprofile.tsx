@@ -753,7 +753,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getById(this.state?.itemID)
       .update({
         FeedBack: JSON.stringify(this.state?.Result?.FeedBack),
-        Status: this?.state?.Result?.Status
+      
       });
 
     this.setState({
@@ -1169,25 +1169,18 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       if (tempData?.ApproverData != undefined && tempData?.ApproverData?.length > 0) {
         tempData?.ApproverData?.forEach((ba: any) => {
           if (ba.isShowLight == 'Reject') {
-
-            data.Status = "Follow Up",
               ba.Status = 'Rejected by'
           }
           if (ba.isShowLight == 'Approve') {
             ba.Status = 'Approved by'
-            data.Status = "Approved"
+            
           }
           if (ba.isShowLight == 'Maybe') {
-            data.Status = "Follow Up",
               ba.Status = 'For discussion with'
           }
-
-
         })
       }
-      this.setState({
-        Result: data,
-      }),
+    
         console.log(tempData);
       console.log(this.state.Result["FeedBack"][0]?.FeedBackDescriptions);
       await this.onPost();
@@ -1224,24 +1217,18 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       if (tempData?.Subtext[subchileindex] != undefined && tempData?.Subtext[subchileindex]?.ApproverData != undefined) {
         tempData?.Subtext[subchileindex]?.ApproverData?.forEach((ba: any) => {
           if (ba.isShowLight == 'Reject') {
-            data.Status = "Follow Up",
               ba.Status = 'Rejected by'
           }
           if (ba.isShowLight == 'Approve') {
-            data.Status = "Approved"
             ba.Status = 'Approved by '
           }
           if (ba.isShowLight == 'Maybe') {
-            data.Status = "Follow Up",
               ba.Status = 'For discussion with'
           }
 
-
         })
       }
-      this.setState({
-        Result: data,
-      }),
+    
         console.log(tempData);
       console.log(this.state.Result["FeedBack"][0]?.FeedBackDescriptions);
       console.log(this.state?.emailcomponentopen)
@@ -1406,7 +1393,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     if ((countApprove == 0 && percentageStatus == "Approve" && (pervious.isShowLight == "Reject" || pervious.isShowLight == "Maybe") && pervious.isShowLight != undefined)) {
       changespercentage = true;
     }
-
+    if ((countApprove == 0 && percentageStatus == "Maybe" && (pervious?.isShowLight == "Reject" || pervious?.isShowLight == "Maybe") && pervious.isShowLight != undefined)) {
+      changespercentage =false;
+    }
 
     let taskStatus = "";
     if (changespercentage == true) {
@@ -1421,6 +1410,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       taskStatus = "Follow Up"
     }
     this.state.Result.PercentComplete = changespercentage1
+    this.state.Result.Status = taskStatus
     const web = new Web(this.props.siteUrl);
     await web.lists.getByTitle(this.state.Result.listName)
 
@@ -2342,7 +2332,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           }
                           {this.state?.Result["Portfolio"] != null &&
 
-                            <a className="hreflinktext-content w-100" target="_blank" data-interception="off"  title={this.state?.Result["Portfolio"]?.Title} href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state?.Result["Portfolio"].Id}`}>
+                            <a className="hreflink text-content w-100" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state?.Result["Portfolio"].Id}`}>
 
                               {this.state?.Result["Portfolio"]?.Title}
 
@@ -2351,7 +2341,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
 
                           } 
-                          <span className="pull-right ml-auto svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Portfolio")}></span>
+                          <span className="ml-auto pull-right svg__icon--editBox svg__iconbox w-25" onClick={() => this?.openPortfolioPopupFunction("Portfolio")}></span>
 
                         </dd>
                       </dl>
@@ -2361,7 +2351,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           <div>
                             {ProjectData?.Title != undefined ? <a className="hreflink text-content w-100" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
                               <ReactPopperTooltipSingleLevel CMSToolId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
-                            <span className="pull-right  ml-auto svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
+                            <span className="ml-auto pull-right svg__icon--editBox svg__iconbox w-25" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
                           </div>
                         </dd>
                       </dl>
