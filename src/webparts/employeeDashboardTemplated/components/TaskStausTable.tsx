@@ -78,7 +78,7 @@ const TaskStatusTbl = (Tile: any) => {
     };
   }
   let AllListId: any = {
-    TaskUsertListID: ContextData?.propsValue?.TaskUsertListID,
+    TaskUserListID: ContextData?.propsValue?.TaskUserListID,
     SmartMetadataListID: ContextData?.propsValue?.SmartMetadataListID,
     MasterTaskListID: ContextData?.propsValue?.MasterTaskListID,
     siteUrl: ContextData?.siteUrl,

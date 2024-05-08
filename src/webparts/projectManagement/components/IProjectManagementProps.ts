@@ -7,7 +7,7 @@ export interface IProjectManagementProps {
   Context :any;
   siteUrl : any;
   MasterTaskListID: any;
-  TaskUsertListID: any;
+  TaskUserListID: any;
   SmartMetadataListID:any;
   SmartInformationListID: any;
   DocumentsListID: any;

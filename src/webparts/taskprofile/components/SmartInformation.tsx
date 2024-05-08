@@ -168,7 +168,7 @@ const SmartInformation = (props: any, ref: any) => {
     let web = new Web(props.AllListId?.siteUrl);
     let taskUsers = [];
     taskUsers = await web.lists
-      .getById(props?.AllListId?.TaskUsertListID)
+      .getById(props?.AllListId?.TaskUserListID)
       .items
       .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
       .filter("ItemType eq 'User'")

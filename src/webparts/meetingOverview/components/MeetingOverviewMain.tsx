@@ -53,7 +53,7 @@ const MeetingOverviewMain = (props: any) => {
         }
         AllListId = {
             MasterTaskListID: props?.props?.MasterTaskListID,
-            TaskUsertListID: props?.props?.TaskUsertListID,
+            TaskUserListID: props?.props?.TaskUserListID,
             SmartMetadataListID: props?.props?.SmartMetadataListID,
             //SiteTaskListID:this.props?.props?.SiteTaskListID,
             TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
@@ -72,11 +72,11 @@ const MeetingOverviewMain = (props: any) => {
 
     }, [])
     const TaskUser = async () => {
-        if (AllListId?.TaskUsertListID != undefined) {
+        if (AllListId?.TaskUserListID != undefined) {
             let web = new Web(AllListId?.siteUrl);
             let taskUser = [];
             taskUser = await web.lists
-                .getById(AllListId?.TaskUsertListID)
+                .getById(AllListId?.TaskUserListID)
                 .items
                 .select("Id,UserGroupId,Suffix,Title,technicalGroup,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,UserGroup/Id,ItemType,Approver/Id,Approver/Title,Approver/Name")
                 .top(5000)

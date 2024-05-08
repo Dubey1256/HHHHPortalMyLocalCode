@@ -358,7 +358,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
       MasterTaskListID: RequireData.MasterTaskListID,
       siteUrl: RequireData?.siteUrl,
       ComponentType: "Component",
-      TaskUserListId: RequireData.TaskUsertListID,
+      TaskUserListId: RequireData.TaskUserListID,
     };
     let CallBackData = await globalCommon.GetServiceAndComponentAllData(
       PropsObject
@@ -513,7 +513,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
   const GetTaskUsers = async () => {
     let taskUsers = [];
     taskUsers = await web.lists
-      .getById(RequireData.TaskUsertListID)
+      .getById(RequireData.TaskUserListID)
       .items.top(4999)
       .get();
     AllUsers = taskUsers;
