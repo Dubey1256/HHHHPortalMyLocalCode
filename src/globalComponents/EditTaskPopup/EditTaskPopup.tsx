@@ -516,6 +516,24 @@ const EditTaskPopup = (Items: any) => {
                         }
                     );
                 }
+
+                if (TempTimeSheetCategoryArray?.length > 0) {
+                    TempTimeSheetCategoryArray = TempTimeSheetCategoryArray.reduce(function (
+                        previous: any,
+                        current: any
+                    ) {
+                        let alreadyExists: any =
+                            previous.filter(function (item: any) {
+                                return item.Title === current.Title;
+                            }).length > 0;
+                        if (!alreadyExists) {
+                            previous.push(current);
+                        }
+                        return previous;
+                    },
+                        []);
+                }
+
                 setAllCategoryData(AutoCompleteItemsArray);
                 let AllSmartMetaDataGroupBy: any = {
                     TimeSheetCategory: TempTimeSheetCategoryArray,
@@ -6630,7 +6648,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                         title={ProjectData.Title}
                                                                                         data-interception="off"
                                                                                         className="textDotted hreflink"
-                                                                                        href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                        href={`${siteUrls}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData.Id}`}
                                                                                     >
                                                                                         {ProjectData.Title}
                                                                                     </a>
@@ -9022,7 +9040,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                     title={ProjectData.Title}
                                                                                                     data-interception="off"
                                                                                                     className="textDotted hreflink"
-                                                                                                    href={`${siteUrls}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData.Id}`}
+                                                                                                    href={`${siteUrls}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData.Id}`}
                                                                                                 >
                                                                                                     {ProjectData.Title}
                                                                                                 </a>

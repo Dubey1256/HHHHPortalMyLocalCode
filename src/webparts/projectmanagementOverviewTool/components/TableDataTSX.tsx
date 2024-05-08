@@ -46,7 +46,7 @@ const TableDataTSX = (props: any) => {
         //         accessor: 'Title',
         //         Cell: ({ row }: any) => (
         //             <span>
-        //                 <a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${row?.Id}`} data-interception="off" target="_blank">{row.values.Title}</a>
+        //                 <a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/PX-Profile.aspx?ProjectId=${row?.Id}`} data-interception="off" target="_blank">{row.values.Title}</a>
         //             </span>
         //         )
         //     },
