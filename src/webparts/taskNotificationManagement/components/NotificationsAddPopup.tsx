@@ -5,18 +5,6 @@ import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/People
 import * as Moment from 'moment';
 import Button from 'react-bootstrap/Button';
 import * as globalCommon from "../../../globalComponents/globalCommon";
-
-
-import {
-    makeStyles,
-    shorthands,
-
-    Caption1,
-    Text,
-    tokens,
-    Subtitle1,
-} from "@fluentui/react-components";
-import { MoreHorizontal20Regular } from "@fluentui/react-icons";
 import { Card, CardHeader, CardPreview } from "@fluentui/react-components";
 import moment from 'moment';
 import { SpaTwoTone } from '@material-ui/icons';
@@ -263,6 +251,7 @@ export const NotificationsAddPopup = (props: any) => {
                                 </span>
                             </div>
                             <div className='peoplePickerPermission mb-2' style={{ zIndex: '999999999999' }}>
+                                
                                 <PeoplePicker
                                     context={props?.AllListId?.Context}
                                     principalTypes={[PrincipalType.User, PrincipalType.SharePointGroup, PrincipalType.SecurityGroup, PrincipalType.DistributionList]}
