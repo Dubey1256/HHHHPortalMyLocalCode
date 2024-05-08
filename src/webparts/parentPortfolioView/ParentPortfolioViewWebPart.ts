@@ -14,7 +14,7 @@ import { IParentPortfolioViewProps } from './components/IParentPortfolioViewProp
 
 export interface IParentPortfolioViewWebPartProps {
   description: string;
-  TaskUsertListID:string;
+  TaskUserListID:string;
   SmartMetadataListID:string;
   MasterTaskListID :string;
   TaskTimeSheetListID:string;
@@ -43,7 +43,7 @@ export default class ParentPortfolioViewWebPart extends BaseClientSideWebPart<IP
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        TaskUsertListID: this.properties.TaskUsertListID,
+        TaskUserListID: this.properties.TaskUserListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
         SmartHelptListID: this.properties.SmartHelptListID,
         PortFolioTypeID:this.properties.PortFolioTypeID,
@@ -134,7 +134,7 @@ export default class ParentPortfolioViewWebPart extends BaseClientSideWebPart<IP
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
                 }),
-                PropertyPaneTextField('TaskUsertListID',{
+                PropertyPaneTextField('TaskUserListID',{
                   label:'TaskUserListID'
                 }),
                 PropertyPaneTextField('SmartMetadataListID',{

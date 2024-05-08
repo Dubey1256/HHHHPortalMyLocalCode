@@ -206,7 +206,7 @@ const TaskMangementTable = (props: any) => {
     const getTaskUsers = async () => {
         let taskUsers = [];
         taskUsers = await web.lists
-            .getById(item?.TaskUsertListID)
+            .getById(item?.TaskUserListID)
             .items.select(
                 "Id",
                 "Email",

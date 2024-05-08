@@ -49,6 +49,7 @@ const SelectFilterPanel = (props: any) => {
                 <div className="alignCenter subheading">
                     <span style={{ color: `${props?.portfolioColor}` }} className="siteColor">Settings Advanced Search</span>
                 </div>
+                <Tooltip ComponentId={839} />
             </>
         );
     };

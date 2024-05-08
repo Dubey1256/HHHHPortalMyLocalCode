@@ -10,7 +10,6 @@ import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryCompone
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
-import { PortfolioStructureCreationCard } from "../../../globalComponents/tableControls/PortfolioStructureCreation";
 import CreateActivity from "../../../globalComponents/CreateActivity";
 import CreateWS from "../../../globalComponents/CreateWS";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -18,11 +17,8 @@ import Tooltip from "../../../globalComponents/Tooltip";
 import { ColumnDef } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
-import Loader from "react-loader";
-import { Bars } from 'react-loader-spinner'
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
-import SmartFilterSearchGlobal from "../../../globalComponents/SmartFilterGolobalBomponents/SmartFilterGlobalComponents";
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 import TeamSmartFilter from "../../../globalComponents/SmartFilterGolobalBomponents/TeamSmartFilter";
@@ -150,7 +146,7 @@ function TeamPortlioTable(SelectedProp: any) {
         let web = new Web(ContextValue.siteUrl);
         let taskUsers = [];
         taskUsers = await web.lists
-            .getById(ContextValue.TaskUsertListID)
+            .getById(ContextValue.TaskUserListID)
             .items.select(
                 "Id",
                 "Email",
@@ -2182,7 +2178,7 @@ function TeamPortlioTable(SelectedProp: any) {
     //                 cell: ({ row, column, getValue }: any) => (
     //                     <>
     //                         {row?.original?.ProjectTitle != (null || undefined) &&
-    //                             <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.ProjectId}`} >
+    //                             <span ><a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: `${row?.original?.PortfolioType?.Color}` }} data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={`${ContextValue.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.ProjectId}`} >
     //                                 <ReactPopperTooltip CMSToolId={row?.original?.projectStructerId} projectToolShow={true} row={row} AllListId={ContextValue} /></a></span>
     //                         }
     //                     </>
@@ -3065,7 +3061,7 @@ function TeamPortlioTable(SelectedProp: any) {
             },
             {
                 accessorKey: "descriptionsSearch",
-                placeholder: "descriptionsSearch",
+                placeholder: "Descriptions",
                 header: "",
                 resetColumnFilters: false,
                 id: "descriptionsSearch",
@@ -3073,7 +3069,7 @@ function TeamPortlioTable(SelectedProp: any) {
             },
             {
                 accessorKey: "commentsSearch",
-                placeholder: "commentsSearch",
+                placeholder: "Comments",
                 header: "",
                 resetColumnFilters: false,
                 id: "commentsSearch",
@@ -3081,7 +3077,7 @@ function TeamPortlioTable(SelectedProp: any) {
             },
             {
                 accessorKey: "timeSheetsDescriptionSearch",
-                placeholder: "timeSheetsDescriptionSearch",
+                placeholder: "Timesheets Description",
                 header: "",
                 resetColumnFilters: false,
                 id: "timeSheetsDescriptionSearch",
@@ -3268,16 +3264,19 @@ function TeamPortlioTable(SelectedProp: any) {
             copyDtaArray.map((val: any) => {
                 item[0]?.subRows?.map((childs: any) => {
                     if (item[0].SelectedItem == val.Id) {
+                        val.subRows = val.subRows === undefined ? [] : val?.subRows
                         val?.subRows?.unshift(childs)
                     }
-                    if (val?.subRows != undefined && val?.subRows?.length > 0) {
+                    if (val.subRows != undefined && val.subRows.length > 0) {
                         val.subRows?.map((child: any) => {
-                            if (item[0]?.SelectedItem == child.Id) {
+                            if (item[0].SelectedItem == child.Id) {
+                                child.subRows = child.subRows === undefined ? [] : child?.subRows
                                 child?.subRows?.unshift(childs)
                             }
-                            if (child?.subRows != undefined && child?.subRows?.length > 0) {
+                            if (child.subRows != undefined && child.subRows.length > 0) {
                                 child.subRows?.map((Subchild: any) => {
-                                    if (item[0]?.SelectedItem == Subchild?.Id) {
+                                    if (item[0].SelectedItem == Subchild.Id) {
+                                        Subchild.subRows = Subchild.subRows === undefined ? [] : Subchild?.subRows
                                         Subchild?.subRows.unshift(childs)
                                     }
                                 })
@@ -3288,7 +3287,7 @@ function TeamPortlioTable(SelectedProp: any) {
             })
 
         }
-        if (item != undefined && item?.length > 0 && item[0].SelectedItem == undefined) {
+        if (item != undefined && item.length > 0 && item[0].SelectedItem == undefined) {
             item.forEach((value: any) => {
                 copyDtaArray.unshift(value)
             })

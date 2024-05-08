@@ -15,7 +15,7 @@ export default class ProjectmanagementOverviewTool extends React.Component<IProj
       userDisplayName,
       siteUrl,
       MasterTaskListID,
-      TaskUsertListID,
+      TaskUserListID,
       SmartMetadataListID,
       SmartInformationListID,
       DocumentsListID,

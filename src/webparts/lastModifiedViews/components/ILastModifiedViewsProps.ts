@@ -5,7 +5,7 @@ export interface ILastModifiedViewsProps {
   hasTeamsContext: boolean;
   userDisplayName: String;
   ListConfigurationListId:String;
-  TaskUsertListID:String;
+  TaskUserListID:String;
   SmartMetadataListID:String;
   MasterTaskListID:String;
   TaskTimeSheetListID:String;

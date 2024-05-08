@@ -36,7 +36,7 @@ const AllMasterTaskLoad = (props: any) => {
       MasterTaskListID: props?.props?.MasterTaskListID,
       TaskTypeID: props?.props?.TaskTypeID,
       siteUrl: props?.props?.siteUrl,
-      TaskUsertListID: props?.props?.TaskUsertListID,
+      TaskUserListID: props?.props?.TaskUserListID,
       SmartMetadataListID: props?.props?.SmartMetadataListID,
       DocumentsListID: props?.props?.DocumentsListID,
       SmartHelptListID: props?.props?.SmartHelptListID,

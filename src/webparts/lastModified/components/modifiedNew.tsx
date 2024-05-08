@@ -1,11 +1,9 @@
-
 import PageLoader from '../../../globalComponents/pageLoader';
 import moment from 'moment';
 import { ColumnDef } from '@tanstack/react-table'
 import React, { useEffect, useRef, useState } from 'react'
 import { Web } from "sp-pnp-js"
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable'
-import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers'
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import EditComponent from '../../EditPopupFiles/EditComponent'
@@ -16,8 +14,6 @@ import EditInstitutionPopup from '../../contactSearch/components/contact-search/
 import { myContextValue } from '../../../globalComponents/globalCommon'
 import EditPage from '../../../globalComponents/EditPanelPage/EditPage'
 import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
-import EditContactPopup from "./editLastmodified//EditContactPopup";
-import EditEventCardPopup from "./editLastmodified/EditEventCard";
 let masterTaskData: any;
 let ActualSites: any = []
 let baseUrl: any
@@ -60,7 +56,7 @@ export const Modified = (props: any) => {
 
   const storeEditList = () => {
     const editListsAll = {
-      TaskUsertListID: props?.props?.TaskUsertListID,
+      TaskUserListID: props?.props?.TaskUserListID,
       SmartMetadataListID: props?.props?.SmartMetadataListID,
       MasterTaskListID: props?.props.MasterTaskListID,
       TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
@@ -78,7 +74,7 @@ export const Modified = (props: any) => {
       NewsListId:props?.props?.NewsListId,
       EventListId:props?.props?.EventListId,
       context: props?.props?.context,
-      TaskUserListId: props?.props?.TaskUsertListID,
+      TaskUserListId: props?.props?.TaskUserListID,
       isShowTimeEntry: props?.props?.TimeEntry,
 
     }
@@ -159,7 +155,6 @@ export const Modified = (props: any) => {
     }
     // 
     if (allSite.noRepeat != true) {
-    
       var data: any = [];
       if(allSite?.NumerousSite==true){
         loadSiteConfiguration(allSite,web).then((response:any)=>{
@@ -169,6 +164,9 @@ export const Modified = (props: any) => {
       }else{
         try {
           data = await web.lists.getById(allSite.ListId).items.select(allSite.Columns).orderBy('Modified', false).getAll();
+          data?.map((items0:any)=>{
+            items0.listId = allSite?.ListId;
+          })
         }
         catch (error) {
           console.error(error)
@@ -232,9 +230,7 @@ export const Modified = (props: any) => {
   const arangeData=(data:any,allSite:any)=>{
     data?.map((item: any) => {
       item.siteType = allSite.TabName;
-      item.listId = allSite.ListId;
-      item.siteUrl = baseUrl;
-      item.coloumns = allSite.Columns;
+      item.siteUrl = baseUrl
       if (item.DueDate != undefined) {
         item.dueDateNew = moment(item?.DueDate).format('DD/MM/YYYY')
       }
@@ -356,8 +352,11 @@ export const Modified = (props: any) => {
    web.lists.getById(config?.EventlistId!=undefined?config?.EventlistId:config.listId).items.select(columnUse).getAll().then((results:any)=>{
     count++;
     results.map((item:any)=>{
-      item.siteUrl = config.siteUrl.split('/')[1];
-      item.siteUse=item.siteUrl;
+      
+      item.siteUse=config?.siteUrl?.split('/')[1];;
+      item.LinkSite=config?.siteUrl
+      item.numerousSite=true;
+      item.listId=config.EventlistId!=undefined?config.EventlistId:config.listId
       item.EventlistId = config.EventlistId;
       allEvents.push(item)
     })
@@ -384,8 +383,12 @@ export const Modified = (props: any) => {
 
   const deleteData = (dlData: any) => {
     var flag = confirm(`Are you sure, you want to delete?`)
+    var URL=baseUrl;
     if (flag == true) {
-      deleteItemById(baseUrl, dlData.listId, dlData, dlData.Id).then(() => {
+      if(dlData.numerousSite==true){
+        URL=baseUrl+dlData.LinkSite
+      }
+      deleteItemById(URL, dlData.listId, dlData, dlData.Id).then(() => {
         duplicate.map((dupDelte: any) => {
           dupDelte.map((dupItem: any, index: any) => {
             if (dupItem.Id == dlData.Id) {
@@ -424,7 +427,7 @@ export const Modified = (props: any) => {
     setEditComponentPopUps(true)
   }
   const editEvents = (editEvent: any) => {
-    editLists.siteUrl=baseUrl+ '/'+ editEvent?.siteUse
+    // editLists.siteUrl=baseUrl+ '/'+ editEvent?.siteUse
     setEditValue(editEvent);
     setIsEditEvent(true)
   }
@@ -443,54 +446,67 @@ export const Modified = (props: any) => {
   }
   const editTaskCallBack = (data: any) => {
     setEditTaskPopUpOpen(false);
-    var dummyValueSite: any = [];
-    var updateData: any = data.data;
-
-    if (updateData != undefined) {
+    var updateData: any = data?.data;
+    if(updateData!=undefined){
       sites.map((siteValue: any) => {
-        if (siteValue.TabName == updateData.siteType) {
+        if (siteValue.TabName == type) {
           siteValue.noRepeat = false;
           siteValue.editFunction = true;
-          dummyValueSite = siteValue;
-        }
-        if (siteValue.TabName == "ALL" && siteValue.allEditFunction == true) {
-          dummyValueSite.allEditFunction = true
+          getCurrentData(siteValue)
         }
       })
-      getCurrentData(dummyValueSite);
     }
+    
+    // var dummyValueSite: any = [];
+    // var updateData: any = data.data;
+
+    // if (updateData != undefined) {
+    //   sites.map((siteValue: any) => {
+    //     if (siteValue.TabName == updateData.siteType) {
+    //       siteValue.noRepeat = false;
+    //       siteValue.editFunction = true;
+    //       dummyValueSite = siteValue;
+    //     }
+    //     if (siteValue.TabName == "ALL" && siteValue.allEditFunction == true) {
+    //       dummyValueSite.allEditFunction = true
+    //     }
+    //   })
+    //   getCurrentData(dummyValueSite);
+    // }
   }
   const CloseConatactPopup = () => {
+    setEditInstitutionPopUp(false)
+  }
+  const EditCallBackItem=(updateData: any)=>{
+    if(updateData !== undefined && updateData !== null){
+      sites.map((siteValue: any) => {
+        if(siteValue.TabName==type){
+          siteValue.noRepeat = false;
+          siteValue.editFunction = true;
+          getCurrentData(siteValue)
+        }
+      })
+    }
     setEditInstitutionPopUp(false)
   }
   const closeEditComponent = (item: any) => {
     setEditComponentPopUps(false)
     // Portfolio_x0020_Type
-    if (item?.PortfolioType?.Title == "Component") {
+    if (item?.PortfolioType?.Title !=undefined) {
       sites.map((siteValue: any) => {
-        if (siteValue.TabName == 'COMPONENTS') {
+        if (siteValue.TabName == type) {
           siteValue.noRepeat = false;
           siteValue.editFunction = true;
           getCurrentData(siteValue)
         }
       })
     }
-    else if (item?.PortfolioType?.Title == "Service") {
-      sites.map((siteValue: any) => {
-        if (siteValue.TabName == 'SERVICES') {
-          siteValue.noRepeat = false;
-          siteValue.editFunction = true;
-          getCurrentData(siteValue)
-        }
-      })
-    }
-
   };
   const callbackeditpopup = (item: any) => {
     if (item != undefined) {
       seteditDocPopUpOpen(false);
       sites.map((siteValue: any) => {
-        if (siteValue.TabName == 'DOCUMENTS') {
+        if (siteValue.TabName == type) {
           siteValue.noRepeat = false;
           siteValue.editFunction = true;
           getCurrentData(siteValue)
@@ -512,7 +528,7 @@ export const Modified = (props: any) => {
   }
   const updatedWebpages = () => {
     sites.map((siteValue: any) => {
-      if (siteValue.TabName == 'WEB PAGES') {
+        if (siteValue.TabName == type) {
         siteValue.noRepeat = false;
         siteValue.editFunction = true;
         getCurrentData(siteValue)
@@ -780,29 +796,15 @@ export const Modified = (props: any) => {
           placeholder: "Created",
           header: "",
           size: 125,
-        }, {
-          cell: (info: any) => (
-            <>
-              <a className="alignCenter" onClick={() => EditDataTimeEntryData(info?.row?.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
-                <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
-              </a></>
-          ),
-          id: 'AllEntry',
-          accessorKey: "",
-          canSort: false,
-          resetSorting: false,
-          resetColumnFilters: false,
-          placeholder: "",
-          size: 25
-        }, {
-          id: 'updateSmartPages',
-          cell: ({ row }) =>
+        }        // , {
+        //   id: 'updateSmartPages',
+        //   cell: ({ row }) =>
 
-            <>
-              <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>,
+        //     <>
+        //       <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
+        //     </>,
 
-        }
+        // }
         , {
           id: 'delteSmartPages',
           cell: ({ row }) =>
@@ -857,7 +859,6 @@ export const Modified = (props: any) => {
           header: "",
           size: 145,
         }
-
         , {
           accessorKey: "Created",
           cell: ({ row }) =>
@@ -883,29 +884,17 @@ export const Modified = (props: any) => {
           placeholder: "Created",
           header: "",
           size: 125,
-        }, {
-          cell: (info: any) => (
-            <>
-              <a className="alignCenter" onClick={() => EditDataTimeEntryData(info?.row?.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
-                <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
-              </a></>
-          ),
-          id: 'AllEntry',
-          accessorKey: "",
-          canSort: false,
-          resetSorting: false,
-          resetColumnFilters: false,
-          placeholder: "",
-          size: 25
-        }, {
-          id: 'updateSmartMetaData', size: 25,
-          cell: ({ row }) =>
-
-            <>
-              <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>,
-
         }
+        // , 
+        // {
+        //   id: 'updateSmartMetaData', size: 25,
+        //   cell: ({ row }) =>
+
+        //     <>
+        //       <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
+        //     </>,
+
+        // }
         , {
           id: 'delteSmartMetaData', size: 25,
           cell: ({ row }) =>
@@ -992,15 +981,15 @@ export const Modified = (props: any) => {
           header: "",
           size: 125,
         },
-        {
+        // {
 
-          id: 'updateContact',
-          cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => editContactOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>
+        //   id: 'updateContact',
+        //   cell: ({ row }) =>
+        //     <>
+        //       <div className="mt--2" onClick={() => editContactOpen(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
+        //     </>
 
-        },
+        // },
         {
           id: 'deleteContact',
           cell: ({ row }) =>
@@ -1090,15 +1079,15 @@ export const Modified = (props: any) => {
           header: "",
           size: 125,
         },
-        {
+        // {
 
-          id: 'updateEvents',
-          cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => editEvents(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>
+        //   id: 'updateEvents',
+        //   cell: ({ row }) =>
+        //     <>
+        //       <div className="mt--2" onClick={() => editEvents(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
+        //     </>
 
-        },
+        // },
         {
           id: 'deleteEvents',
           cell: ({ row }) =>
@@ -1189,15 +1178,15 @@ export const Modified = (props: any) => {
           header: "",
           size: 125,
         },
-        {
+        // {
 
-          id: 'updateNews',
-          cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => editEvents(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>
+        //   id: 'updateNews',
+        //   cell: ({ row }) =>
+        //     <>
+        //       <div className="mt--2" onClick={() => editEvents(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
+        //     </>
 
-        },
+        // },
         {
           id: 'deleteNews',
           cell: ({ row }) =>
@@ -1224,13 +1213,13 @@ export const Modified = (props: any) => {
             <>
               <span className='Dyicons mx-1 '>{row?.original?.ItemType?.toUpperCase()?.charAt(0)}
                                 </span>
-              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>{row.original.PortfolioStructureID}</span>
+              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '' }}>{row.original.PortfolioStructureID}</span>
             </>
         },
         {
           accessorKey: "Title", placeholder: "Component Name", header: "", id: "Title",
           cell: ({ row }) =>
-            <div>  <a data-interception="off" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.Id}`}>
+            <div>  <a data-interception="off" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '' }} target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.Id}`}>
               {row.original.Title}
             </a></div>
 
@@ -1239,7 +1228,7 @@ export const Modified = (props: any) => {
           accessorKey: 'DueDate',
           cell: ({ row }) =>
             <>
-              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>
+              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '' }}>
                 {row.original.dueDateNew}
               </span>
             </>
@@ -1268,7 +1257,7 @@ export const Modified = (props: any) => {
           accessorKey: 'Modified'
           , cell: ({ row }) =>
             <>
-              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>
+              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '' }}>
                 {row.original.modifiedNew}
               </span>
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.editorId}&Name=${row.original.editorName}`}>
@@ -1298,7 +1287,7 @@ export const Modified = (props: any) => {
           accessorKey: "Created",
           cell: ({ row }) =>
             <>
-              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>
+              <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '' }}>
                 {row.original.createdNew}
               </span>
               <a data-interception="off" target='_blank' href={`${baseUrl}/SitePages/TaskDashboard.aspx?UserId=${row.original.authorId}&Name=${row.original.authorName}`}>
@@ -1354,7 +1343,7 @@ export const Modified = (props: any) => {
           cell: ({ row, getValue }) => (
             <>
               {row.original.GmBHSiteCheck == false ? <img className='workmember me-1' src={`${row.original.SiteIcon}`}></img> : undefined}
-              <ReactPopperTooltipSingleLevel ShareWebId={getValue()} row={row?.original} AllListId={editLists} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allSiteData} />
+              <ReactPopperTooltipSingleLevel CMSToolId={getValue()} row={row?.original} AllListId={editLists} singleLevel={true} masterTaskData={masterTaskData} AllSitesTaskData={allSiteData} />
             </>
           ),
           id: "TaskID",
@@ -1367,8 +1356,8 @@ export const Modified = (props: any) => {
           accessorKey: "Title",
           cell: ({ row }) => (
             <div className="alignCenter">
-              <span className={row.original.Title != undefined ? "hover-text hreflink m-0 siteColor sxsvc" : "hover-text hreflink m-0 siteColor cssc"}>
-                <>{row.original.Title != undefined ? <a className="manageText" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
+              <span className={row.original.Title != undefined ? "hover-text hreflink m-0  sxsvc" : "hover-text hreflink m-0  cssc"}>
+                <>{row.original.Title != undefined ? <a className="manageText" style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.siteType}`}>
                   {row.original.Title}
                 </a> : ''}</>
                 <span className="tooltip-text pop-right">
@@ -1387,10 +1376,9 @@ export const Modified = (props: any) => {
         {
           accessorKey: 'PortfolioTitle', placeholder: 'Component', header: '', id: 'PortfolioTitle',
           cell: ({ row }) =>
-            <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.PortfolioID}`}>
+            <a style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '' }} data-interception="off" target='_blank' href={`${baseUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row.original.PortfolioID}`}>
               {row.original.PortfolioTitle}
             </a>
-
         },
         {
           accessorFn: (row: any) => row?.DueDate,
@@ -1481,20 +1469,6 @@ export const Modified = (props: any) => {
           header: "",
           size: 125,
         }, {
-          cell: (info: any) => (
-            <>
-              <a className="alignCenter" onClick={() => EditDataTimeEntryData(info?.row?.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
-                <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
-              </a></>
-          ),
-          id: 'AllEntry',
-          accessorKey: "",
-          canSort: false,
-          resetSorting: false,
-          resetColumnFilters: false,
-          placeholder: "",
-          size: 25
-        }, {
           id: 'updateTask',
           cell: ({ row }) =>
 
@@ -1516,12 +1490,15 @@ export const Modified = (props: any) => {
   }
   return (
     <>
-
+  <div className="p-0  d-flex justify-content-between align-items-center " style={{ verticalAlign: "top" }}>
+        <h2 className="heading ">
+          <span>Last Modified Views</span></h2>      
+      </div>
       <nav className="lastmodify">
         <div className="nav nav-tabs" id="nav-tab" role="tablist">
           {
             sites && sites.map((siteValue: any) =>
-              <>
+               <>
                 <button disabled={!isButtonDisabled} onClick={() => { getCurrentData(siteValue); }} className={`nav-link ${siteValue.TabName == sites[0].TabName ? 'active' : ''}`} id={`nav-${siteValue.TabName}-tab`} data-bs-toggle="tab" data-bs-target={`#nav-${siteValue.TabName}`} type="button" role="tab" aria-controls="nav-home" aria-selected="true"><div className={`${siteValue.TabName}`} style={{ color: type == siteValue.TabName ? siteValue?.SiteColur != undefined ? siteValue?.SiteColur : 'DefaultColour' : '' }}>{siteValue.DisplaySiteName}</div></button>
               </>
             )
@@ -1554,10 +1531,14 @@ export const Modified = (props: any) => {
       {editComponentPopUps ? <EditComponent item={editValue} SelectD={editLists} Calls={closeEditComponent} portfolioTypeData={Portfoliotyped} /> : ''}
       {editDocPopUpOpen ? <EditDocumentpanel callbackeditpopup={callbackeditpopup} AllListId={editLists} Item={editValue} editData={editValue} Keydoc={true} Context={context} /> : ''}
       {/* {editWebPagePopUp?<EditPage context={editLists} Item={editValue} changes={changes}  updatedWebpages={updatedWebpages} />: ''} */}
-        {editInstitutionPopUp ? <EditContactPopup allListId={editLists} props={editValue} callBack={CloseConatactPopup} /> : null}
+        {/* {editInstitutionPopUp ? 
+        <EditContactPopup allListId={editLists} props={editValue} callBack={CloseConatactPopup} EditCallBackItem={EditCallBackItem}  /> 
+        : null} */}
     
       {istimeEntryOpen && (<TimeEntryPopup props={currentTimeEntry} CallBackTimeEntry={TimeEntryCallBack} Context={editLists.Context}></TimeEntryPopup>)}
-      {isEditEvent?<EditEventCardPopup EditEventData={editValue} allListId={editLists} callBack={CallbackEvent} ></EditEventCardPopup>:''}
+      {/* {isEditEvent?
+      <EditEventCardPopup EditEventData={editValue} allListId={editLists} callBack={CallbackEvent} ></EditEventCardPopup>
+      :''} */}
     </>
   )
   // fixedWidth={true}

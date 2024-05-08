@@ -19,7 +19,7 @@ const DashboardConfiguration = (props: any) => {
         console.log(e);
     }
     let AllListId: any = {
-        TaskUsertListID: props?.AdminConfigurationListId,
+        TaskUserListID: props?.AdminConfigurationListId,
         siteUrl: props?.props?.Context?._pageContext?._web?.absoluteUrl,
         Context: props?.props?.Context
 

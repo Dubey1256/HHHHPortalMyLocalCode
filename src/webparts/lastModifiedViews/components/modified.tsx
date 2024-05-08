@@ -66,7 +66,7 @@ export const Modified = (props: any) => {
 
   const getAllUsers = async () => {
     let web = new Web(baseUrl);
-    Users = await web.lists.getById(props?.props?.TaskUsertListID).items.select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver").get();
+    Users = await web.lists.getById(props?.props?.TaskUserListID).items.select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver").get();
     setAllUsers(Users)
     if (baseUrl.toLowerCase().includes("gmbh")) {
       setGmbhSite(true)
@@ -76,7 +76,7 @@ export const Modified = (props: any) => {
       }
     }
     const editListsAll = {
-      TaskUsertListID: props?.props?.TaskUsertListID,
+      TaskUserListID: props?.props?.TaskUserListID,
       SmartMetadataListID: props?.props?.SmartMetadataListID,
       MasterTaskListID: props?.props.MasterTaskListID,
       TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
@@ -91,7 +91,7 @@ export const Modified = (props: any) => {
       SmartHelptListID: props?.props?.SmartHelptListID,
       PortFolioTypeID: props?.props?.PortFolioTypeID,
       context: props?.props?.context,
-      TaskUserListId: props?.props?.TaskUsertListID,
+      TaskUserListId: props?.props?.TaskUserListID,
       isShowTimeEntry:props?.props?.TimeEntry,
 
     }
@@ -298,14 +298,14 @@ export const Modified = (props: any) => {
             })
           }
         })
-        if (allSite.TabName == 'DOCUMENTS') {
-          // data = data.filter((item: any) => { return (item.Title != null) })
+        if (allSite.TabName == 'TEAM-PORTFOLIO') {
+          data = data.filter((item: any) => { return (item.Item_x0020_Type!= "Sprint" &&item.Item_x0020_Type!='Project') })
         }
       }
       else {
         data?.map((item: any) => {
           item.fontColorTask = '#000066';
-          masterTaskData.map((masterTaskValue: any) => {
+            masterTaskData?.map((masterTaskValue: any) => {
             if (item?.Portfolio?.Id == masterTaskValue?.Id) {
               if (masterTaskValue?.PortfolioType?.Title == 'Service') {
                 item.fontColorTask = '#228b22'
@@ -539,7 +539,7 @@ export const Modified = (props: any) => {
       duplicate.map((dupdata: any) => {
         dupdata.map((item: any) => {
           if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES' && item.siteType != "Master Tasks") {
-            masterTaskData.map((masterTaskValue: any) => {
+            masterTaskData?.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
                   storeComponent.push(item)
@@ -553,7 +553,7 @@ export const Modified = (props: any) => {
             })
           }
           if (item.siteType == type) {
-            masterTaskData.map((masterTaskValue: any) => {
+            masterTaskData?.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
                   storeComponent.push(item)
@@ -572,7 +572,7 @@ export const Modified = (props: any) => {
     }
     else if (event.target.checked) {
       allSiteData.map((item: any) => {
-        masterTaskData.map((masterTaskValue: any) => {
+        masterTaskData?.map((masterTaskValue: any) => {
           if (item?.Portfolio?.Id == masterTaskValue.Id) {
             if (masterTaskValue.PortfolioType?.Title == 'Component') {
               storeComponent.push(item)
@@ -585,7 +585,7 @@ export const Modified = (props: any) => {
       duplicate.map((dupdata: any) => {
         dupdata.map((item: any) => {
           if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES' &&  item.siteType != "Master Tasks") {
-            masterTaskData.map((masterTaskValue: any) => {
+            masterTaskData?.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue.PortfolioType?.Title == 'Service') {
                   item.fontColorTask = '#228b22'
@@ -595,7 +595,7 @@ export const Modified = (props: any) => {
             })
           }
           else if (item.siteType == type) {
-            masterTaskData.map((masterTaskValue: any) => {
+            masterTaskData?.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue.PortfolioType?.Title == 'Service') {
                   item.fontColorTask = '#228b22'
@@ -631,7 +631,7 @@ export const Modified = (props: any) => {
       duplicate.map((dupdata: any) => {
         dupdata.map((item: any) => {
           if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES' && item.siteType != "Master Tasks") {
-            masterTaskData.map((masterTaskValue: any) => {
+            masterTaskData?.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue?.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
                   storeServices.push(item)
@@ -645,7 +645,7 @@ export const Modified = (props: any) => {
             })
           }
           else if (item.siteType == type) {
-            masterTaskData.map((masterTaskValue: any) => {
+            masterTaskData?.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue.Id) {
                 if (masterTaskValue.PortfolioType?.Title == 'Component') {
                   storeServices.push(item)
@@ -665,7 +665,7 @@ export const Modified = (props: any) => {
 
     else if (event.target.checked) {
       allSiteData.map((item: any) => {
-        masterTaskData.map((masterTaskValue: any) => {
+        masterTaskData?.map((masterTaskValue: any) => {
           if (item?.Portfolio?.Id == masterTaskValue.Id) {
             if (masterTaskValue?.PortfolioType?.Title == 'Service') {
               item.fontColorTask = '#228b22'
@@ -679,7 +679,7 @@ export const Modified = (props: any) => {
       duplicate.map((dupdata: any) => {
         dupdata.map((item: any) => {
           if (type == 'ALL' && item.siteType != 'DOCUMENTS' && item.siteType != 'FOLDERS' && item.siteType != 'COMPONENTS' && item.siteType != 'SERVICES' && item.siteType != "Master Tasks") {
-            masterTaskData.map((masterTaskValue: any) => {
+            masterTaskData?.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
                   storeServices.push(item)
@@ -1589,7 +1589,8 @@ export const Modified = (props: any) => {
           accessorKey: 'PortfolioStructureID', placeholder: 'ID', header: "", id: 'PortfolioStructureID',
           cell: ({ row }) =>
             <>
-              <img className='workmember ms-1' src={`${baseUrl}${row.original.photoComponent}`} alt="" />
+               <span className='Dyicons mx-1 '>{row?.original?.ItemType?.toUpperCase()?.charAt(0)}
+                                </span>
               <span style={row?.original?.fontColorTask != undefined ? { color: `${row?.original?.fontColorTask}` } : { color: '#0000BC' }}>{row.original.PortfolioStructureID}</span>
             </>
         },

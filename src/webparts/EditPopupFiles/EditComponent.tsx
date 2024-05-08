@@ -358,7 +358,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
       MasterTaskListID: RequireData.MasterTaskListID,
       siteUrl: RequireData?.siteUrl,
       ComponentType: "Component",
-      TaskUserListId: RequireData.TaskUsertListID,
+      TaskUserListId: RequireData.TaskUserListID,
     };
     let CallBackData = await globalCommon.GetServiceAndComponentAllData(
       PropsObject
@@ -490,7 +490,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
 
   var isItemExists = function (arr: any, Id: any) {
     var isExists = false;
-    $.each(arr, function (index: any, items: any) {
+    arr?.map((items: any,index: any)=>{
       if (items.ID === Id) {
         isExists = true;
         return false;
@@ -513,7 +513,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
   const GetTaskUsers = async () => {
     let taskUsers = [];
     taskUsers = await web.lists
-      .getById(RequireData.TaskUsertListID)
+      .getById(RequireData.TaskUserListID)
       .items.top(4999)
       .get();
     AllUsers = taskUsers;
@@ -732,7 +732,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
     let ParentData: any = [];
     let tempArray1: any = [];
     let tempArray2: any = [];
-    $.each(Tasks, function (index: any, item: any) {
+    Tasks?.map((item: any,index: any)=>{
       if (item?.Short_x0020_Description_x0020_On) {
         item.Short_x0020_Description_x0020_Onlength = getPlainTextFromHTML(
           item?.Short_x0020_Description_x0020_On
@@ -943,25 +943,14 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
         item.Item_x0020_Type == "Feature"
       ) {
         ParentId = item.Parent.Id;
-        let urln = `${RequireData.siteUrl}/_api/lists/getbyid(${RequireData.MasterTaskListID})/items?$select=Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`;
-        $.ajax({
-          url: urln,
-          method: "GET",
-          headers: {
-            Accept: "application/json; odata=verbose",
-          },
-          success: function (data) {
-            ParentData = ParentData.concat(data.d.results);
-            if (data.d.__next) {
-              urln = data.d.__next;
-            } else SetParentData(ParentData);
-            // console.log(responsen);
-          },
-          error: function (error) {
-            console.log(error);
-            // error handler code goes here
-          },
-        });
+        let web = new Web(RequireData?.siteUrl);
+         web.lists.getById(RequireData?.MasterTaskListID).items.select(`Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`).get().then((response:any)=>{
+          ParentData = ParentData?.concat(response);         
+          SetParentData(ParentData)
+        
+         }).catch((error:any)=>{
+          console.log(error)
+         }) 
       }
     });
     //  deferred.resolve(Tasks);
@@ -1543,7 +1532,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
             smartComponentData != undefined &&
             smartComponentData.length >= 0
           ) {
-            $.each(smartComponentData, function (index: any, smart: any) {
+        smartComponentData?.map(( smart: any,index: any)=>{
               smartComponentsIds.push(smart.Id);
             });
           }
@@ -1576,7 +1565,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
             linkedComponentData != undefined &&
             linkedComponentData?.length >= 0
           ) {
-            $.each(linkedComponentData, function (index: any, smart: any) {
+            linkedComponentData?.map(( smart: any,index: any)=>{
               RelevantPortfolioIds = smart.Id;
               PortfolioIds.push(smart.Id);
             });
@@ -1587,7 +1576,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
       if (filterdata != undefined && filterdata?.length > 0) {
         filterdata?.map((com: any) => {
           if (filterdata != undefined && filterdata?.length >= 0) {
-            $.each(filterdata, function (index: any, smart: any) {
+           filterdata?.map((smart: any,index: any )=> {
               RelevantProjectIds = smart.Id;
               ProjectId.push(smart.Id);
             });
@@ -2223,23 +2212,18 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
 
   //  ######################  This is  Client Category Get Data Call From Backend  #######################
 
-  const loadAllClientCategoryData = function (SmartTaxonomy: any) {
-    var AllTaskusers = [];
+  const loadAllClientCategoryData = async function (SmartTaxonomy: any) {
+    var AllTaskusers:any = [];
     var AllMetaData: any = [];
     var TaxonomyItems: any = [];
-    var url =
-      `${RequireData.siteUrl}/_api/web/lists/getbyid('${RequireData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` +
-      SmartTaxonomy +
-      "'";
-    $.ajax({
-      url: url,
-      method: "GET",
-      headers: {
-        Accept: "application/json; odata=verbose",
-      },
-      success: function (data) {
-        AllTaskusers = data.d.results;
-        $.each(AllTaskusers, function (index: any, item: any) {
+    let web=new Web(RequireData?.siteUrl)
+    try{
+      AllTaskusers=await web.lists.getById(RequireData?.SmartMetadataListID).items.select(`Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq ${SmartTaxonomy}`).getAll()
+    }  
+      catch (error) {
+          console.error(error)
+        }
+        AllTaskusers?.map((index: any, item: any)=> {
           if (
             item.Title.toLowerCase() == "pse" &&
             item.TaxType == "Client Category"
@@ -2270,12 +2254,10 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
           // AllClientCategoryDataBackup = AllMetaData;
           BuildClieantCategoryAllDataArray(AllMetaData);
         }
-      },
-      error: function (error: any) {
-        console.log("Error:", error);
-      },
-    });
-  };
+      
+      
+    
+      }
 
   const BuildClieantCategoryAllDataArray = (DataItem: any) => {
     let MainParentArray: any = [];
@@ -2410,31 +2392,22 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
     }
   };
   let AutoCompleteItems: any = [];
-  const loadAllCategoryData = function (SmartTaxonomy: any) {
-    var AllTaskusers = [];
+  const loadAllCategoryData = async function (SmartTaxonomy: any) {
+    let web=new Web(RequireData?.siteUrl)
+    
+    var AllTaskusers:any = [];
 
     var AllMetaData: any = [];
 
     var TaxonomyItems: any = [];
-
-    var url =
-      `${RequireData?.siteUrl}/_api/web/lists/getbyid('${RequireData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` +
-      SmartTaxonomy +
-      "'";
-
-    $.ajax({
-      url: url,
-
-      method: "GET",
-
-      headers: {
-        Accept: "application/json; odata=verbose",
-      },
-
-      success: function (data) {
-        AllTaskusers = data.d.results;
-
-        $.each(AllTaskusers, function (index: any, item: any) {
+    try{
+      AllTaskusers=await web.lists.getById(RequireData?.SmartMetadataListID).items.select(`Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq${SmartTaxonomy}`).getAll()
+    }
+    catch (error) {
+      console.error(error)
+    }
+           
+        AllTaskusers?.map(( item: any,index: any)=>{
           if (
             item.Title.toLowerCase() == "pse" &&
             item.TaxType == "Client Category"
@@ -2473,12 +2446,8 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
             }
           });
         }
-      },
 
-      error: function (error: any) {
-        console.log("Error:", error);
-      },
-    });
+    
   };
   var loadSmartTaxonomyPortfolioPopup = (
     AllTaxonomyItems: any,
@@ -2488,7 +2457,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
 
     var uniqueNames: any = [];
 
-    $.each(AllTaxonomyItems, function (index: any, item: any) {
+    AllTaxonomyItems?.map((item: any,index: any)=>{
       if (item.ParentID == 0 && SmartTaxonomy == item.TaxType) {
         TaxonomyItems.push(item);
 
@@ -2509,7 +2478,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
   const getChilds = (item: any, items: any) => {
     item.childs = [];
 
-    $.each(items, function (index: any, childItem: any) {
+    items?.map(( childItem: any,index: any)=> {
       if (
         childItem.ParentID != undefined &&
         parseInt(childItem.ParentID) == item.ID
@@ -2850,7 +2819,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
         console.log(i);
         SmartHelpDetails.map((catId: any, index: any) => {
           if (item_Id == catId.Id) {
-            SmartHelpDetails.splice(index, 1);
+            SmartHelpDetails?.splice(index, 1);
           }
         });
       });
@@ -3866,7 +3835,7 @@ function EditInstitution({ item, SelectD, Calls, usedFor, portfolioTypeData, }: 
                               )}
 
                             {filterdata && filterdata.length == 1 ? (
-                              //    "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=4310"
+                              //    "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/PX-Profile.aspx?ProjectId=4310"
                               <div className="w-100">
                                 {filterdata?.map((items: any, Index: any) => (
                                   <div

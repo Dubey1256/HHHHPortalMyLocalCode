@@ -113,7 +113,7 @@ const CreateActivity = (props: any) => {
         setTaskUrl(props?.SiteUrl);
       }
     }
-
+    setSelectedItem(props?.selectedItem)
     if (props?.selectedItem?.AssignedTo?.length > 0) {
       setTaskAssignedTo(props?.selectedItem?.AssignedTo);
     }
@@ -132,7 +132,6 @@ const CreateActivity = (props: any) => {
     } else if (props?.selectedItem?.ClientCategory?.results?.length > 0) {
       ClientCategoriesData = props?.selectedItem?.ClientCategory?.results;
     }
-    setSelectedItem(props?.selectedItem);
     let targetDiv: any = document?.querySelector(".ms-Panel-main");
     if (props?.selectedItem?.PortfolioType?.Color != undefined) { //Changes Made by Robin
       setTimeout(() => {
@@ -157,11 +156,11 @@ const CreateActivity = (props: any) => {
   }, [IsComponentPicker]);
   //***************** Load All task Users***************** */
   const getTaskUsers = async () => {
-    if (AllListId?.TaskUsertListID != undefined) {
+    if (AllListId?.TaskUserListID != undefined) {
       let web = new Web(AllListId?.siteUrl);
       let taskUser = [];
       taskUser = await web.lists
-        .getById(AllListId?.TaskUsertListID)
+        .getById(AllListId?.TaskUserListID)
         .items.select(
           "Id,UserGroupId,Suffix,Title,IsTaskNotifications,IsApprovalMail,CategoriesItemsJson,technicalGroup,Email,SortOrder,Role,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,UserGroup/Id,ItemType,Approver/Id,Approver/Title,Approver/Name"
         )
@@ -206,7 +205,7 @@ const CreateActivity = (props: any) => {
     let PropsObject: any = {
       MasterTaskListID: AllListId.MasterTaskListID,
       siteUrl: AllListId.siteUrl,
-      TaskUserListId: AllListId.TaskUsertListID,
+      TaskUserListId: AllListId.TaskUserListID,
     }
     let componentDetails: any = [];
     let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)

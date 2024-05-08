@@ -115,14 +115,7 @@
         }
       ]
     },
-    "all-task-user-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/allTaskUser/AllTaskUserWebPart.js",
-          "manifest": "./src/webparts/allTaskUser/AllTaskUserWebPart.manifest.json"
-        }
-      ]
-    },
+   
     "my-pending-tasks-web-part": {
       "components": [
         {
@@ -469,6 +462,13 @@
           "manifest": "./src/webparts/hhhhcontactprofile/HhhhcontactprofileWebPart.manifest.json"
         }
       ]
+    },"task-notification-management-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/taskNotificationManagement/TaskNotificationManagementWebPart.js",
+          "manifest": "./src/webparts/taskNotificationManagement/TaskNotificationManagementWebPart.manifest.json"
+        }
+      ]
     }
    ,"last-modified-web-part": {
     "components": [
@@ -498,6 +498,7 @@
     }
   },
   "localizedResources": {
+    "TaskNotificationManagementWebPartStrings": "lib/webparts/taskNotificationManagement/loc/{locale}.js",
     "RootTeamPortfolioTableWebPartStrings": "lib/webparts/rootTeamPortfolioTable/loc/{locale}.js",
     "HelloSpfxWebPartStrings": "lib/webparts/helloSpfx/loc/{locale}.js",
     "EmployeProfileWebPartStrings": "lib/webparts/employeProfile/loc/{locale}.js",
@@ -524,7 +525,6 @@
     "CreateTaskWebPartStrings": "lib/webparts/createTask/loc/{locale}.js",
     "PermissionManagementWebPartStrings": "lib/webparts/permissionManagement/loc/{locale}.js",
     "FroalaEditorTestEnvWebPartStrings": "lib/webparts/froalaEditorTestEnv/loc/{locale}.js",
-    "AllTaskUserWebPartStrings": "lib/webparts/allTaskUser/loc/{locale}.js",
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
     "MyPendingTasksWebPartStrings": "lib/webparts/myPendingTasks/loc/{locale}.js",
     "TasksViewWebPartStrings": "lib/webparts/tasksView/loc/{locale}.js",

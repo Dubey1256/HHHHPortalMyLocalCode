@@ -59,7 +59,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
 
         let taskUsers: any = [];
         results = await web.lists
-            .getById(this.props.AllListId?.TaskUsertListID)
+            .getById(this.props.AllListId?.TaskUserListID)
             .items
             .select('Id', 'IsActive', 'UserGroupId', 'Suffix', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
             .filter('IsActive eq 1')

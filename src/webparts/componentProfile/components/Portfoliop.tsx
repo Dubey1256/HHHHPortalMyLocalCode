@@ -193,10 +193,6 @@ export const EditableField: React.FC<EditableFieldProps> = ({
     const handleSave = async () => {
       try {
         setmyFieldValue((prevValue: any) => parseInt(myfieldValue));
-
-        // if(type == "Number"){
-        //   setFieldValue(fieldValue/100);
-        // }
         let valpercent = parseInt(myfieldValue);
         let webs = new Web(web);
         await webs.lists
@@ -221,13 +217,13 @@ export const EditableField: React.FC<EditableFieldProps> = ({
     if (editing) {
       return (
         <div className="editcolumn">
-           <select value={myfieldValue} onChange={handleInputChanges}>
-          {statusDropDown.map((item: any, index: any) => (
-          <option key={index} value={item.rank}>
-             {item.rankTitle}
-             </option>
-              ))}
-           </select>
+          <select value={myfieldValue} onChange={handleInputChanges}>
+            {statusDropDown.map((item: any, index: any) => (
+              <option key={index} value={item.rank}>
+                {item.rankTitle}
+              </option>
+            ))}
+          </select>
           <span>
             <a onClick={handleSave}>
               <span className="svg__iconbox svg__icon--Save"></span>
@@ -262,11 +258,7 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   if (type == "Date") {
     const handleSave = async () => {
       try {
-        setFieldValue((prevValue: any) => fieldValue ? Moment(fieldValue).format("DD/MM/YYYY"): '');
-
-        // if(type == "Number"){
-        //   setFieldValue(fieldValue/100);
-        // }
+        setFieldValue((prevValue: any) => fieldValue ? Moment(fieldValue).format("DD/MM/YYYY") : '');
         let webs = new Web(web);
         await webs.lists
           .getByTitle(listName)
@@ -323,10 +315,6 @@ export const EditableField: React.FC<EditableFieldProps> = ({
   const handleSave = async () => {
     try {
       setFieldValue((prevValue: any) => fieldValue);
-
-      // if(type == "Number"){
-      //   setFieldValue(fieldValue/100);
-      // }
       let webs = new Web(web);
       await webs.lists
         .getByTitle(listName)
@@ -1166,41 +1154,41 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                         {/* Changes done by Robin End*/}
                         {(item?.Item_x0020_Type == "SubComponent" ||
                           item?.Item_x0020_Type == "Feature") && (
-                          <>
-                            <li>
-                              {/* if="Task.PortfolioType=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                              {ParentData != undefined &&
-                                ParentData[0]?.Parent?.Id != undefined &&
-                                ParentData?.map((ParentD: any) => {
-                                  return (
-                                    <>
-                                      {ParentD?.Parent != undefined && (
-                                        <a
-                                          target="_blank"
-                                          data-interception="off"
-                                          href={`${SelectedProp.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentD?.Parent?.Id}`}
-                                        >
-                                          {ParentD?.Parent?.Title}
-                                        </a>
-                                      )}
-                                    </>
-                                  );
-                                })}
-                            </li>
-                            <li>
-                              {/* if="Task.PortfolioType=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                              {item?.Parent != undefined && (
-                                <a
-                                  target="_blank"
-                                  data-interception="off"
-                                  href={`${SelectedProp.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.Parent?.Id}`}
-                                >
-                                  {item?.Parent?.Title}
-                                </a>
-                              )}
-                            </li>
-                          </>
-                        )}
+                            <>
+                              <li>
+                                {/* if="Task.PortfolioType=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                                {ParentData != undefined &&
+                                  ParentData[0]?.Parent?.Id != undefined &&
+                                  ParentData?.map((ParentD: any) => {
+                                    return (
+                                      <>
+                                        {ParentD?.Parent != undefined && (
+                                          <a
+                                            target="_blank"
+                                            data-interception="off"
+                                            href={`${SelectedProp.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentD?.Parent?.Id}`}
+                                          >
+                                            {ParentD?.Parent?.Title}
+                                          </a>
+                                        )}
+                                      </>
+                                    );
+                                  })}
+                              </li>
+                              <li>
+                                {/* if="Task.PortfolioType=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                                {item?.Parent != undefined && (
+                                  <a
+                                    target="_blank"
+                                    data-interception="off"
+                                    href={`${SelectedProp.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.Parent?.Id}`}
+                                  >
+                                    {item?.Parent?.Title}
+                                  </a>
+                                )}
+                              </li>
+                            </>
+                          )}
 
                         <li>
                           <a>{item?.Title}</a>
@@ -1318,20 +1306,20 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                       </span>
                       {SelectedProp?.Context?._pageContext?._web?.title ===
                         "SP" && (
-                        <span className="text-end fs-6">
-                          <a
-                            target="_blank"
-                            data-interception="off"
-                            href={
-                              SelectedProp.siteUrl +
-                              "/SitePages/Portfolio-Profile-Old.aspx?taskId=" +
-                              ID
-                            }
-                          >
-                            Old Portfolio profile page
-                          </a>
-                        </span>
-                      )}
+                          <span className="text-end fs-6">
+                            <a
+                              target="_blank"
+                              data-interception="off"
+                              href={
+                                SelectedProp.siteUrl +
+                                "/SitePages/Portfolio-Profile-Old.aspx?taskId=" +
+                                ID
+                              }
+                            >
+                              Old Portfolio profile page
+                            </a>
+                          </span>
+                        )}
                     </h2>
                   </>
                 ))}
@@ -1381,8 +1369,8 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                   value={
                                     item?.StartDate != undefined
                                       ? Moment(item?.StartDate).format(
-                                          "DD/MM/YYYY"
-                                        )
+                                        "DD/MM/YYYY"
+                                      )
                                       : ""
                                   }
                                   TaskProfilePriorityCallback={null}
@@ -1465,45 +1453,45 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                           <span className="hreflink">
                                             {item?.PortfolioType?.Title ==
                                               "Component" && (
-                                              <>
-                                                <a
-                                                  target="_blank"
-                                                  data-interception="off"
-                                                  href={
-                                                    SelectedProp.siteUrl +
-                                                    "/SitePages/Team-Portfolio.aspx?ComponentID=" +
-                                                    item?.Parent?.Id
-                                                  }
-                                                >
-                                                  <img
-                                                    src={require("../../../Assets/ICON/edit_page.svg")}
-                                                    width="20"
-                                                    height="25"
-                                                  />{" "}
-                                                </a>
-                                              </>
-                                            )}
+                                                <>
+                                                  <a
+                                                    target="_blank"
+                                                    data-interception="off"
+                                                    href={
+                                                      SelectedProp.siteUrl +
+                                                      "/SitePages/Team-Portfolio.aspx?ComponentID=" +
+                                                      item?.Parent?.Id
+                                                    }
+                                                  >
+                                                    <img
+                                                      src={require("../../../Assets/ICON/edit_page.svg")}
+                                                      width="20"
+                                                      height="25"
+                                                    />{" "}
+                                                  </a>
+                                                </>
+                                              )}
                                             {item?.PortfolioType?.Title ==
                                               "Service" && (
-                                              <>
-                                                <a
-                                                  target="_blank"
-                                                  data-interception="off"
-                                                  href={
-                                                    SelectedProp.siteUrl +
-                                                    "/SitePages/Team-Portfolio.aspx?ComponentID=" +
-                                                    item?.Parent?.Id
-                                                  }
-                                                >
-                                                  {" "}
-                                                  <img
-                                                    src={require("../../../Assets/ICON/edit_page.svg")}
-                                                    width="30"
-                                                    height="25"
-                                                  />{" "}
-                                                </a>
-                                              </>
-                                            )}
+                                                <>
+                                                  <a
+                                                    target="_blank"
+                                                    data-interception="off"
+                                                    href={
+                                                      SelectedProp.siteUrl +
+                                                      "/SitePages/Team-Portfolio.aspx?ComponentID=" +
+                                                      item?.Parent?.Id
+                                                    }
+                                                  >
+                                                    {" "}
+                                                    <img
+                                                      src={require("../../../Assets/ICON/edit_page.svg")}
+                                                      width="30"
+                                                      height="25"
+                                                    />{" "}
+                                                  </a>
+                                                </>
+                                              )}
                                           </span>
                                         </span>
                                       </span>
@@ -1530,8 +1518,8 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                                     value={
                                       item?.DueDate != undefined
                                         ? Moment(item?.DueDate).format(
-                                            "DD/MM/YYYY"
-                                          )
+                                          "DD/MM/YYYY"
+                                        )
                                         : ""
                                     }
                                     TaskProfilePriorityCallback={null}
@@ -1686,8 +1674,8 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                               value={
                                 item?.CompletedDate != undefined
                                   ? Moment(item?.CompletedDate).format(
-                                      "DD/MM/YYYY"
-                                    )
+                                    "DD/MM/YYYY"
+                                  )
                                   : ""
                               }
                               TaskProfilePriorityCallback={null}
@@ -1796,6 +1784,27 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                           </details>
                         )}
                         {/* Project Management Box End */}
+
+                        {/* Admin Notes */}
+                        {data[0]?.AdminNotes !== null &&
+                          removeHtmlAndNewline(data[0]?.AdminNotes).trim() !== "" && (
+                            <details open>
+                              <summary className="alignCenter">
+                                <label className="toggler full_width">
+                                  Admin Notes
+                                </label>
+                              </summary>
+                              <div className="border border-top-0 p-2">
+                                <p
+                                  className="m-0"
+                                  dangerouslySetInnerHTML={{
+                                    __html: data[0]?.AdminNotes,
+                                  }}
+                                ></p>
+                              </div>
+                            </details>
+                          )}
+
                         {/* Description */}
                         {data[0]?.Body !== null &&
                           removeHtmlAndNewline(data[0]?.Body).trim() !== "" && (
@@ -1851,12 +1860,12 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                             </summary>
                             <div className="border border-top-0 p-2">
                               {AllQuestion.map((item) => (
-                              <p
-                                        className="m-0"
-                                        dangerouslySetInnerHTML={{
-                                          __html: item?.Body,
-                                        }}
-                                      ></p>
+                                <p
+                                  className="m-0"
+                                  dangerouslySetInnerHTML={{
+                                    __html: item?.Body,
+                                  }}
+                                ></p>
                               ))}
                             </div>
                           </details>
@@ -1871,14 +1880,14 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                               </label>
                             </summary>
                             <div className="border border-top-0 p-2">
-                              
-                                  {AllHelp.map((item) => (
-                                      <p className="m-0"
-                                        dangerouslySetInnerHTML={{
-                                          __html: item?.Body,
-                                        }}
-                                      ></p>
-                                  ))}
+
+                              {AllHelp.map((item) => (
+                                <p className="m-0"
+                                  dangerouslySetInnerHTML={{
+                                    __html: item?.Body,
+                                  }}
+                                ></p>
+                              ))}
                             </div>
                           </details>
                         )}
@@ -2084,12 +2093,12 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
                             ></span>
                           </a>
                           {composition &&
-                          data?.length > 0 &&
-                          data[0]?.siteCompositionData?.length > 0 ? (
+                            data?.length > 0 &&
+                            data[0]?.siteCompositionData?.length > 0 ? (
                             <div className="spxdropdown-menu">
                               <ul>
                                 {data[0]?.siteCompositionData != undefined &&
-                                data[0]?.siteCompositionData?.length > 0 ? (
+                                  data[0]?.siteCompositionData?.length > 0 ? (
                                   <>
                                     {data[0]?.siteCompositionData?.map(
                                       (SiteDtls: any, i: any) => {
@@ -2107,40 +2116,40 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
 
                                             {SiteDtls.ClienTimeDescription !=
                                               undefined && (
-                                              <span className="mx-2">
-                                                {Number(
-                                                  SiteDtls.ClienTimeDescription
-                                                ).toFixed(1)}
-                                                %
-                                              </span>
-                                            )}
+                                                <span className="mx-2">
+                                                  {Number(
+                                                    SiteDtls.ClienTimeDescription
+                                                  ).toFixed(1)}
+                                                  %
+                                                </span>
+                                              )}
 
                                             <span className="d-inline">
                                               {SiteDtls.ClientCategory !=
                                                 undefined &&
-                                              SiteDtls.ClientCategory.length > 0
+                                                SiteDtls.ClientCategory.length > 0
                                                 ? SiteDtls.ClientCategory?.map(
-                                                    (
-                                                      clientcat: any,
-                                                      Index: any
-                                                    ) => {
-                                                      return (
-                                                        <div
-                                                          className={
-                                                            Index ==
+                                                  (
+                                                    clientcat: any,
+                                                    Index: any
+                                                  ) => {
+                                                    return (
+                                                      <div
+                                                        className={
+                                                          Index ==
                                                             SiteDtls
                                                               .ClientCategory
                                                               ?.length -
-                                                              1
-                                                              ? "mb-0"
-                                                              : "mb-0 border-bottom"
-                                                          }
-                                                        >
-                                                          {clientcat.Title}
-                                                        </div>
-                                                      );
-                                                    }
-                                                  )
+                                                            1
+                                                            ? "mb-0"
+                                                            : "mb-0 border-bottom"
+                                                        }
+                                                      >
+                                                        {clientcat.Title}
+                                                      </div>
+                                                    );
+                                                  }
+                                                )
                                                 : null}
                                             </span>
                                           </li>
@@ -2227,7 +2236,7 @@ function Portfolio({ SelectedProp, TaskUser }: any) {
         </section>
 
         {/* table secation artical */}
-        {data?.length>0 && <RadimadeTable   tableId="PortfolioProfile"  AllListId={ContextValue} configration={"CSFAWT"} SelectedItem={data[0]}  ComponentFilter={data[0]?.PortfolioType?.Title} TaskFilter={ "PercentComplete lt '0.90' or PercentComplete eq null "}></RadimadeTable>}
+        {data?.length > 0 && <RadimadeTable tableId="PortfolioProfile" AllListId={ContextValue} configration={"CSFAWT"} SelectedItem={data[0]} ComponentFilter={data[0]?.PortfolioType?.Title} TaskFilter={"PercentComplete lt '0.90' or PercentComplete eq null "}></RadimadeTable>}
         {/* {data.map((item: any) => (
           <ComponentTable
             props={item}
