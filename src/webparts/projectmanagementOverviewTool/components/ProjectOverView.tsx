@@ -207,7 +207,7 @@ export default function ProjectOverview(props: any) {
                 let TaxonomyItems = [];
                 smartmeta = await web.lists
                     .getById(AllListId?.SmartMetadataListID)
-                    .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "Configurations", "Description", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+                    .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "Configurations", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
                     .top(5000)
                     .expand("Parent")
                     .get();
