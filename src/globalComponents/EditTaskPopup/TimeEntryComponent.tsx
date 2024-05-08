@@ -2107,7 +2107,7 @@ function reverseArray(arr: any) {
               : "";
         }
       });
-      if (item.props.siteType == "Offshore Tasks") {
+      if (item.props.siteType == "Offshore Tasks" ||  item.props.siteType == "Offshore%20Tasks") {
         var siteType = "OffshoreTasks";
         var filteres = "Task" + siteType + "/Id eq " + item.props.Id;
         var linkedSite = "Task" + siteType;

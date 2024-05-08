@@ -1711,12 +1711,12 @@ const EditTaskPopup = (Items: any) => {
 
     // ################ this is for Smart category change and remove function #############
 
-    const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
+    const removeCategoryItem = (TypeCategory: any) => {
         let tempString: any;
         let tempArray2: any = [];
         BackupTaskCategoriesData = [];
         TaskCategoriesData?.map((dataType: any) => {
-            if (dataType.Id != TypeId) {
+            if (dataType.Title != TypeCategory) {
                 tempArray2.push(dataType);
                 BackupTaskCategoriesData.push(dataType);
             }
@@ -1733,7 +1733,7 @@ const EditTaskPopup = (Items: any) => {
         tempCategoryData = tempString;
         setTaskCategoriesData(tempArray2);
     };
-    const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
+    const CategoryChange = (e: any, typeValue: any) => {
         isApprovalByStatus = false;
         if (e == "false") {
             var statusValue: any = e;
@@ -1742,13 +1742,13 @@ const EditTaskPopup = (Items: any) => {
             var statusValue: any = e.target.value;
         }
         let type: any = typeValue;
-        let Id: any = IdValue;
-        CategoryChangeUpdateFunction(statusValue, type, Id);
+        // let Id: any = IdValue;
+        CategoryChangeUpdateFunction(statusValue, type);
     };
 
-    const CategoryChangeUpdateFunction = (Status: any, type: any, Id: any) => {
+    const CategoryChangeUpdateFunction = (Status: any, type: any) => {
         if (Status == "true") {
-            removeCategoryItem(type, Id);
+            removeCategoryItem(type);
             if (type == "Phone") {
                 setPhoneStatus(false);
             }
@@ -2293,7 +2293,7 @@ const EditTaskPopup = (Items: any) => {
                 var e: any = "false";
                 EditData.TaskApprovers = finalData;
                 EditData.CurrentUserData = currentUserData;
-                CategoryChange(e, "Approval", 227);
+                CategoryChange(e, "Approval");
             }
             if (StatusData.value == 2) {
                 setInputFieldDisable(true);
@@ -3797,7 +3797,7 @@ const EditTaskPopup = (Items: any) => {
             }
         }
         if (PhoneCount > 0) {
-            CategoryChangeUpdateFunction("false", "Phone", 199);
+            CategoryChangeUpdateFunction("false", "Phone");
         }
     };
 
@@ -6018,8 +6018,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             <span
                                                                                 onClick={() =>
                                                                                     removeCategoryItem(
-                                                                                        type.Title,
-                                                                                        type.Id
+                                                                                        type.Title
                                                                                     )
                                                                                 }
                                                                                 className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
@@ -6107,7 +6106,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 type="checkbox"
                                                                 checked={PhoneStatus}
                                                                 value={`${PhoneStatus}`}
-                                                                onClick={(e) => CategoryChange(e, "Phone", 199)}
+                                                                onClick={(e) => CategoryChange(e, "Phone")}
                                                             />
                                                             <label className="form-check-label">Phone</label>
                                                         </div>
@@ -6118,7 +6117,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 checked={EmailStatus}
                                                                 value={`${EmailStatus}`}
                                                                 onClick={(e) =>
-                                                                    CategoryChange(e, "Email Notification", 276)
+                                                                    CategoryChange(e, "Email Notification")
                                                                 }
                                                             />
                                                             <label>Email Notification</label>
@@ -6129,7 +6128,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     checked={OnlyCompletedStatus}
                                                                     value={`${OnlyCompletedStatus}`}
                                                                     onClick={(e) =>
-                                                                        CategoryChange(e, "Only Completed", 565)
+                                                                        CategoryChange(e, "Only Completed")
                                                                     }
                                                                 />
                                                                 <label>Only Completed</label>
@@ -6142,7 +6141,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 checked={ImmediateStatus}
                                                                 value={`${ImmediateStatus}`}
                                                                 onClick={(e) =>
-                                                                    CategoryChange(e, "Immediate", 228)
+                                                                    CategoryChange(e, "Immediate")
                                                                 }
                                                             />
                                                             <label>Immediate</label>
@@ -6194,7 +6193,7 @@ const EditTaskPopup = (Items: any) => {
                                                             checked={ApprovalStatus}
                                                             value={`${ApprovalStatus}`}
                                                             onClick={(e) =>
-                                                                CategoryChange(e, "Approval", 227)
+                                                                CategoryChange(e, "Approval")
                                                             }
                                                         />
                                                     </div>
@@ -8384,8 +8383,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                         <span
                                                                                             onClick={() =>
                                                                                                 removeCategoryItem(
-                                                                                                    type.Title,
-                                                                                                    type.Id
+                                                                                                    type.Title
                                                                                                 )
                                                                                             }
                                                                                             className="bg-light hreflink ml-auto svg__icon--cross svg__iconbox"
@@ -8473,7 +8471,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             type="checkbox"
                                                                             checked={PhoneStatus}
                                                                             value={`${PhoneStatus}`}
-                                                                            onClick={(e) => CategoryChange(e, "Phone", 199)}
+                                                                            onClick={(e) => CategoryChange(e, "Phone")}
                                                                         />
                                                                         <label className="form-check-label">Phone</label>
                                                                     </div>
@@ -8484,7 +8482,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             checked={EmailStatus}
                                                                             value={`${EmailStatus}`}
                                                                             onClick={(e) =>
-                                                                                CategoryChange(e, "Email Notification", 276)
+                                                                                CategoryChange(e, "Email Notification")
                                                                             }
                                                                         />
                                                                         <label>Email Notification</label>
@@ -8495,7 +8493,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                 checked={OnlyCompletedStatus}
                                                                                 value={`${OnlyCompletedStatus}`}
                                                                                 onClick={(e) =>
-                                                                                    CategoryChange(e, "Only Completed", 565)
+                                                                                    CategoryChange(e, "Only Completed")
                                                                                 }
                                                                             />
                                                                             <label>Only Completed</label>
@@ -8508,7 +8506,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             checked={ImmediateStatus}
                                                                             value={`${ImmediateStatus}`}
                                                                             onClick={(e) =>
-                                                                                CategoryChange(e, "Immediate", 228)
+                                                                                CategoryChange(e, "Immediate")
                                                                             }
                                                                         />
                                                                         <label>Immediate</label>
@@ -8560,7 +8558,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         checked={ApprovalStatus}
                                                                         value={`${ApprovalStatus}`}
                                                                         onClick={(e) =>
-                                                                            CategoryChange(e, "Approval", 227)
+                                                                            CategoryChange(e, "Approval")
                                                                         }
                                                                     />
                                                                 </div>

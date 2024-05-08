@@ -1842,7 +1842,7 @@ const CentralizedSiteComposition = (Props: any) => {
                             }
                             SiteCompositionData = [SCDummyJSON]
                         }
-                        let tempSiteSetting: any = [{ Proportional: false, Manual: false, Protected: false, Deluxe: false, Standard: true }]
+                        let tempSiteSetting: any = [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]
                         siteSettingData = tempSiteSetting;
                     }
                 }
@@ -1927,7 +1927,7 @@ const CentralizedSiteComposition = (Props: any) => {
                             }
                             SiteCompositionData = [SCDummyJSON]
                         }
-                        let tempSiteSetting: any = [{ Proportional: false, Manual: false, Protected: false, Deluxe: false, Standard: true }]
+                        let tempSiteSetting: any = [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]
                         siteSettingData = tempSiteSetting;
                     }
                 }

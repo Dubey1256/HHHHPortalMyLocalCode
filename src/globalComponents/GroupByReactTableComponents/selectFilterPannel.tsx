@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Panel, PanelType } from 'office-ui-fabric-react';
+import Tooltip from "../Tooltip";
 const SelectFilterPanel = (props: any) => {
     const [propColumns, setPropColumns] = React.useState<any>([]);
     const [allcontent, setAllContent] = React.useState<any>()

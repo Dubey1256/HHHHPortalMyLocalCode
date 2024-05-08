@@ -154,7 +154,7 @@ const Header = () => {
         <div className='mb-5'><a className="pull-right empCol hreflink" onClick={(e) => openAnnouncementPopup(e)}> Add Announcement </a>
         </div>
         : ''} */}
-      {annouceMents.length > 0 && (<section className='annocumentSec'>
+      {/* {annouceMents.length > 0 && (<section className='annocumentSec'>
         <div id="carouselExampleIndicators" className="carousel slide" data-bs-ride="carousel">
           <div className="carousel-indicators">
             {annouceMents?.map((items: any, index: number) => {
@@ -174,7 +174,7 @@ const Header = () => {
             })}
           </div>
         </div>
-      </section>)}
+      </section>)} */}
       <section className="tabSec">
         <div className="row">
           <div className='col-10'>

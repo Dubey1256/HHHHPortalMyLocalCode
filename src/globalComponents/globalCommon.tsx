@@ -2612,14 +2612,32 @@ export const AwtGroupingAndUpdatePrarticularColumn = async (findGrouping: any, A
     }
     return { findGrouping, flatdata };
 }
-export const replaceURLsWithAnchorTags = (text: any) => {
+export const replaceURLsWithAnchorTags = (text:any) => {
     // Regular expression to match URLs
-    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    var urlRegex = /(https?:\/\/[^\s<>"]+)(?=["'\s.,]|$)/g;
     // Replace URLs with anchor tags
-    var replacedText = text.replace(urlRegex, function (url: any) {
-        return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
+    var replacedText = text?.replace(urlRegex, function (url:any) {
+        if (!isURLInsideAnchorTag(url, text)) {
+            return '<a href="' + url + '" target="_blank" data-interception="off" class="hreflink">' + url + '</a>';
+        } else {
+            return url;
+        }
     });
     return replacedText;
+}
+
+function isURLInsideAnchorTag(url:any, text:any) {
+    // Regular expression to match anchor tags
+    var anchorRegex = /<a\s+(?:[^>]*?\s+)?href=(["'])(.*?)\1/ig;
+    var matches = text?.match(anchorRegex);
+    if (matches) {
+        for (var i = 0; i < matches?.length; i++) {
+            if (matches[i]?.includes(url)) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 //--------------------------------------Share TimeSheet Report-----------------------------------------------------------------------
 
