@@ -411,7 +411,7 @@ const ProjectManagementMain = (props: any) => {
                   const titleWords = masterItm?.Title.toLowerCase();
                   const includesAnyKeyword = suggestedKeywords.some((keyword: any) => titleWords.includes(keyword));
                   const isNotMatchingTitles = titleWords !== fetchedProject?.Title.toLowerCase() && titleWords !== 'latest annual report';
-                  return includesAnyKeyword && isNotMatchingTitles
+                  return includesAnyKeyword && isNotMatchingTitles && masterItm?.Item_x0020_Type !== 'Project' && masterItm?.Item_x0020_Type !== 'Sprint';
                 });
               }
             }
