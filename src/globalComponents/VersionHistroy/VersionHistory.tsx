@@ -825,7 +825,7 @@ export default function VersionHistory(props: any) {
             }
             return (
             <div>
-                {key === 'Project' ? <a href={`${siteTypeUrl}/SitePages/Project-Management.aspx?ProjectId=${obj.LookupId}`} target='_blank' data-interception="off">{obj.LookupValue}</a>:
+                {key === 'Project' ? <a href={`${siteTypeUrl}/SitePages/PX-Profile.aspx?ProjectId=${obj.LookupId}`} target='_blank' data-interception="off">{obj.LookupValue}</a>:
                 key === 'Portfolio' ? <a href={`${siteTypeUrl}/SitePages/Portfolio-Profile.aspx?taskId=${obj.LookupId}`} target='_blank' data-interception="off">{obj.LookupValue}</a> :
                 obj?.LookupValue}
             </div>)
