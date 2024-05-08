@@ -1321,6 +1321,8 @@ function EditProjectPopup(item: any) {
     let selectCats = CategoriesData;
     if (!selectCats?.some((cat: any) => cat?.Id == item.Id)) {
       selectCats?.push(item)
+    }else{
+      selectCats = selectCats?.filter((cat: any) => cat?.Id != item.Id)
     }
     setCategoriesData(selectCats)
     setSearchedCategoryData([]);
