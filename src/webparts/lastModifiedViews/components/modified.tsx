@@ -277,9 +277,10 @@ export const Modified = (props: any) => {
 
               }
             })
-            if (item?.authorImage == undefined && item.authorSuffix == undefined) {
+            if (item?.authorImage == undefined && item?.authorSuffix == undefined) {
               item.authorDefaultName = item.Author?.Title;
-              item.authorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
+              item.authorDefaultImage = baseUrl+'/SiteCollectionImages/ICONS/32/icon_user.jpg';
+                   
             }
           }
           if (item.Editor != undefined) {
@@ -290,9 +291,10 @@ export const Modified = (props: any) => {
                 item.editorName = Users?.AssingedToUser?.Title;
                 item.editorId = Users?.AssingedToUser?.Id;
               }
-              if (item?.editorImage == undefined && item.editorSuffix == undefined) {
+              if (item?.editorImage == undefined && item?.editorSuffix == undefined) {
                 item.editorDefaultName = item.Editor.Title;
-                item.editorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
+                item.editorDefaultImage =baseUrl+'/SiteCollectionImages/ICONS/32/icon_user.jpg';
+                
               }
 
             })
@@ -356,9 +358,10 @@ export const Modified = (props: any) => {
 
               }
             })
-            if (item?.authorImage == undefined && item.authorSuffix == undefined) {
+            if (item?.authorImage == undefined && item?.authorSuffix == undefined) {
               item.authorDefaultName = item.Author?.Title;
-              item.authorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
+              item.authorDefaultImage = baseUrl+'/SiteCollectionImages/ICONS/32/icon_user.jpg';
+              
             }
           }
           if (item.Editor != undefined) {
@@ -369,9 +372,9 @@ export const Modified = (props: any) => {
                 item.editorName = Users?.AssingedToUser?.Title;
                 item.editorId = Users?.AssingedToUser?.Id;
               }
-              if (item?.editorImage == undefined && item.editorSuffix == undefined) {
+              if (item?.editorImage == undefined && item?.editorSuffix == undefined) {
                 item.editorDefaultName = item.Editor.Title;
-                item.editorDefaultImage = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg";
+                item.editorDefaultImage =baseUrl+'/SiteCollectionImages/ICONS/32/icon_user.jpg';
               }
 
             })
@@ -421,6 +424,7 @@ export const Modified = (props: any) => {
         if (allSite.TabName == 'SMART PAGES') {
           data = data.filter((item: any) => { return (item.TaxType == "Smart Pages") })
         }
+        
       }
       if (allSite.AllTask == true) {
         allDataFinal.push([...data])
@@ -688,7 +692,7 @@ export const Modified = (props: any) => {
             })
           }
           else if (item.siteType == type) {
-            masterTaskData.map((masterTaskValue: any) => {
+            masterTaskData?.map((masterTaskValue: any) => {
               if (item?.Portfolio?.Id == masterTaskValue.Id) {
                 if (masterTaskValue?.PortfolioType?.Title == 'Component') {
                   storeServices.push(item)
@@ -796,25 +800,33 @@ export const Modified = (props: any) => {
   const closeEditComponent = (item: any) => {
     setEditComponentPopUps(false)
     // Portfolio_x0020_Type
-    if (item?.PortfolioType?.Title == "Component") {
+    // if (item?.PortfolioType?.Title != "Component") {
+    //   sites.map((siteValue: any) => {
+    //     if (siteValue.TabName == 'COMPONENTS') {
+    //       siteValue.noRepeat = false;
+    //       siteValue.editFunction = true;
+    //       getCurrentData(siteValue)
+    //     }
+    //   })
+    // }
+    // else if (item?.PortfolioType?.Title == "Service") {
+    //   sites.map((siteValue: any) => {
+    //     if (siteValue.TabName == 'SERVICES') {
+    //       siteValue.noRepeat = false;
+    //       siteValue.editFunction = true;
+    //       getCurrentData(siteValue)
+    //     }
+    //   })
+    // }
+    if (item?.PortfolioType?.Title !=undefined) {
       sites.map((siteValue: any) => {
-        if (siteValue.TabName == 'COMPONENTS') {
+        if (siteValue.TabName == type) {
           siteValue.noRepeat = false;
           siteValue.editFunction = true;
           getCurrentData(siteValue)
         }
       })
     }
-    else if (item?.PortfolioType?.Title == "Service") {
-      sites.map((siteValue: any) => {
-        if (siteValue.TabName == 'SERVICES') {
-          siteValue.noRepeat = false;
-          siteValue.editFunction = true;
-          getCurrentData(siteValue)
-        }
-      })
-    }
-
   };
   const callbackeditpopup = (item: any) => {
     if (item != undefined) {
@@ -1127,29 +1139,7 @@ export const Modified = (props: any) => {
           placeholder: "Created",
           header: "",
           size: 125,
-        }, {
-          cell: (info: any) => (
-            <>
-              <a className="alignCenter" onClick={() => EditDataTimeEntryData(info?.row?.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
-                <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
-              </a></>
-          ),
-          id: 'AllEntry',
-          accessorKey: "",
-          canSort: false,
-          resetSorting: false,
-          resetColumnFilters: false,
-          placeholder: "",
-          size: 25
-        }, {
-          id: 'updateSmartPages',
-          cell: ({ row }) =>
-
-            <>
-              <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>,
-
-        }
+        }, 
         , {
           id: 'delteSmartPages',
           cell: ({ row }) =>
@@ -1230,29 +1220,7 @@ export const Modified = (props: any) => {
           placeholder: "Created",
           header: "",
           size: 125,
-        }, {
-          cell: (info: any) => (
-            <>
-              <a className="alignCenter" onClick={() => EditDataTimeEntryData(info?.row?.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet">
-                <span className="svg__iconbox svg__icon--clock dark" data-bs-toggle="tooltip" data-bs-placement="bottom"></span>
-              </a></>
-          ),
-          id: 'AllEntry',
-          accessorKey: "",
-          canSort: false,
-          resetSorting: false,
-          resetColumnFilters: false,
-          placeholder: "",
-          size: 25
-        }, {
-          id: 'updateSmartMetaData', size: 25,
-          cell: ({ row }) =>
-
-            <>
-              <div className="mt--2" onClick={() => editPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>,
-
-        }
+        }, 
         , {
           id: 'delteSmartMetaData', size: 25,
           cell: ({ row }) =>
@@ -1457,15 +1425,7 @@ export const Modified = (props: any) => {
           header: "",
           size: 125,
         },
-        {
-
-          id: 'updateEvents',
-          cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>
-
-        },
+        
         {
           id: 'deleteEvents',
           cell: ({ row }) =>
@@ -1556,15 +1516,7 @@ export const Modified = (props: any) => {
           header: "",
           size: 125,
         },
-        {
-
-          id: 'updateNews',
-          cell: ({ row }) =>
-            <>
-              <div className="mt--2" onClick={() => editComponentPopUp(row.original)}><span className="alignIcon svg__iconbox svg__icon--edit"></span></div>
-            </>
-
-        },
+        
         {
           id: 'deleteNews',
           cell: ({ row }) =>
@@ -1577,7 +1529,6 @@ export const Modified = (props: any) => {
   }
   else if (type == 'COMPONENTS' || type == 'SERVICES' || type == 'TEAM-PORTFOLIO') {
     columns = React.useMemo<ColumnDef<any, unknown>[]>(() =>
-
       [
         {
           accessorKey: "",
