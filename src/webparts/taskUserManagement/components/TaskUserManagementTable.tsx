@@ -775,7 +775,7 @@ const TaskUserManagementTable = ({ TaskUsersListData, TaskGroupsListData, baseUr
                 </div>
 
                 <footer className='modal-footer mt-2'>
-                    <button type='button' className='btn me-2 btn-primary' onClick={() => addTeamMember()}>Save</button>
+                    <button type='button' disabled={addTitle==''?true:false} className='btn me-2 btn-primary' onClick={() => addTeamMember()}>Save</button>
                     <button type='button' className='btn btn-default' onClick={cancelAdd}>Cancel</button>
                 </footer>
 
