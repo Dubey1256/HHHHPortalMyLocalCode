@@ -19,6 +19,7 @@ import ShowTeamMembers from '../../../globalComponents/ShowTeamMember';
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import InfoIconsToolTip from '../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip';
 import RestructuringCom from '../../../globalComponents/Restructuring/RestructuringCom';
+import CompareTool from "../../../globalComponents/CompareTool/CompareTool";
 var siteConfig: any = []
 let AllProjectDataWithAWT: any = [];
 var AllTaskUsers: any = [];
@@ -30,6 +31,7 @@ let AllProject: any = [];
 let timeSheetConfig: any = {};
 var AllListId: any = {};
 var currentUserId: '';
+let todaysDrafTimeEntry = [];
 var currentUser: any = [];
 let AllTimeEntries: any = [];
 let headerOptions: any = {
@@ -46,6 +48,7 @@ let flatProjectsData: any
 export default function ProjectOverview(props: any) {
     const [TableProperty, setTableProperty] = React.useState([]);
     const [openTimeEntryPopup, setOpenTimeEntryPopup] = React.useState(false);
+    const [showTimeEntryIcon, setshowTimeEntryIcon] = React.useState(true);
     const [currentUserData, setCurrentUserData]: any = React.useState({});
     const [onLeaveEmployees, setOnLeaveEmployees] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
@@ -61,7 +64,7 @@ export default function ProjectOverview(props: any) {
     const [isAddStructureOpen, setIsAddStructureOpen] = React.useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [AllTaskUser, setAllTaskUser] = React.useState([]);
-    const [SharewebComponent, setSharewebComponent] = React.useState('');
+    const [CMSToolComponent, setCMSToolComponent] = React.useState('');
     const [categoryGroup, setCategoryGroup] = React.useState([]);
     const [data, setData] = React.useState([]);
     const [flatData, setFlatData] = React.useState([]);
@@ -75,6 +78,8 @@ export default function ProjectOverview(props: any) {
     const [taskTypeDataItem, setTaskTypeDataItem] = React.useState([]);
     const [portfolioTypeConfrigration, setPortfolioTypeConfrigration] = React.useState<any>([{ Title: 'Project', Suffix: 'P', Level: 1 }, { Title: 'Sprint', Suffix: 'X', Level: 2 }]);
     const [portfolioTypeDataItem, setPortFolioTypeIcon] = React.useState([]);
+    const [openCompareToolPopup, setOpenCompareToolPopup] = React.useState(false);
+    const [ActiveCompareToolButton, setActiveCompareToolButton] = React.useState(false);
     const childRef = React.useRef<any>();
     const restructuringRef = React.useRef<any>();
     React.useEffect(() => {
@@ -85,10 +90,13 @@ export default function ProjectOverview(props: any) {
             $("#workbenchPageContent").addClass("hundred");
             isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
             isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
+            if (isShowTimeEntry == false) {
+                setshowTimeEntryIcon(false)
+            }
             const params = new URLSearchParams(window.location.search);
             let query = params.get("SelectedView");
             if (query == 'ProjectsTask') {
-                setSelectedView('grouped')
+                setSelectedView('Projects')
             }
             if (query == 'TodaysTask') {
                 changeToggleWorkingToday()
@@ -98,7 +106,7 @@ export default function ProjectOverview(props: any) {
         }
         AllListId = {
             MasterTaskListID: props?.props?.MasterTaskListID,
-            TaskUsertListID: props?.props?.TaskUsertListID,
+            TaskUserListID: props?.props?.TaskUserListID,
             SmartMetadataListID: props?.props?.SmartMetadataListID,
             //SiteTaskListID:this.props?.props?.SiteTaskListID,
             TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
@@ -110,7 +118,8 @@ export default function ProjectOverview(props: any) {
             isShowSiteCompostion: isShowSiteCompostion,
             SmalsusLeaveCalendar: props?.props?.SmalsusLeaveCalendar,
             TaskTypeID: props?.props?.TaskTypeID,
-            Context: props?.props?.Context
+            Context: props?.props?.Context,
+            context: props?.props?.Context
         }
         TaskUser()
         loadTodaysLeave();
@@ -141,11 +150,11 @@ export default function ProjectOverview(props: any) {
         $(' #SpfxProgressbar').hide();
     }
     const TaskUser = async () => {
-        if (AllListId?.TaskUsertListID != undefined) {
+        if (AllListId?.TaskUserListID != undefined) {
             let web = new Web(AllListId?.siteUrl);
             let taskUser = [];
             taskUser = await web.lists
-                .getById(AllListId?.TaskUsertListID)
+                .getById(AllListId?.TaskUserListID)
                 .items
                 .select("Id,UserGroupId,Suffix,Title,technicalGroup,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,UserGroup/Id,ItemType,Approver/Id,Approver/Title,Approver/Name")
                 .top(5000)
@@ -174,6 +183,7 @@ export default function ProjectOverview(props: any) {
 
     const editTaskCallBack = React.useCallback((item: any) => {
         setisOpenEditPopup(false);
+        LoadAllSiteTasks();
     }, []);
 
     const loadAllComponent = async () => {
@@ -181,7 +191,7 @@ export default function ProjectOverview(props: any) {
         let PropsObject: any = {
             MasterTaskListID: AllListId.MasterTaskListID,
             siteUrl: AllListId.siteUrl,
-            TaskUserListId: AllListId.TaskUsertListID,
+            TaskUserListId: AllListId.TaskUserListID,
         }
         let results = await globalCommon.GetServiceAndComponentAllData(PropsObject)
         if (results?.AllData?.length > 0) {
@@ -278,7 +288,7 @@ export default function ProjectOverview(props: any) {
                 cell: ({ row, getValue }) => (
                     <div>
                         <>
-                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.TaskID} AllListId={AllListId} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
+                            <ReactPopperTooltipSingleLevel CMSToolId={row?.original?.TaskID} AllListId={AllListId} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
 
                         </>
                     </div>
@@ -533,8 +543,8 @@ export default function ProjectOverview(props: any) {
                                             href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
                                             target="_blank"
                                             data-interception="off"
-                                        >{row?.original?.AuthorImg != undefined ?
-                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.AuthorImg} /> :
+                                        >{row?.original?.createdImg != undefined ?
+                                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} /> :
                                             <span className='svg__iconbox svg__icon--defaultUser grey' title={row?.original?.Author?.Title}></span>
                                             }
 
@@ -567,9 +577,10 @@ export default function ProjectOverview(props: any) {
                     <>
                         {row?.original?.siteType === "Project" ? <span title={row?.original?.Item_x0020_Type != "Project" ? "Edit Sprint" : "Edit Project"} onClick={(e) => EditComponentPopup(row?.original)} className="alignIcon svg__iconbox svg__icon--edit hreflink" ></span> : ''}
                         {row?.original?.Item_x0020_Type === "tasks" ? <>
-                            <span onClick={(e) => EditDataTimeEntry(e, row.original)}
-                                className="svg__iconbox svg__icon--clock"
-                                title="Click To Edit Timesheet"  ></span>
+                            {showTimeEntryIcon &&
+                                <span onClick={(e) => EditDataTimeEntry(e, row.original)}
+                                    className="svg__iconbox svg__icon--clock"
+                                    title="Click To Edit Timesheet"  ></span>}
                             <span title="Edit Task" onClick={(e) => EditPopup(row?.original)} className="alignIcon svg__iconbox svg__icon--edit hreflink" ></span>
                         </> : ''}
                     </>
@@ -895,7 +906,7 @@ export default function ProjectOverview(props: any) {
 
 
         let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de", "deepak@hochhuth-consulting.de"];
-        //let to: any = ["abhishek.tiwari@hochhuth-consulting.de", "ranu.trivedi@hochhuth-consulting.de"];
+        // let to: any = ["abhishek.tiwari@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let groupedData = data;
@@ -905,7 +916,6 @@ export default function ProjectOverview(props: any) {
             var subject = "Today's Working Tasks Under Projects";
             const GroupedPromises = await groupedData?.map(async (group: any) => {
                 body += projectEmailContent(group, false)
-
             })
 
             let sendAllTasks =
@@ -1147,7 +1157,7 @@ export default function ProjectOverview(props: any) {
         item['listName'] = 'Master Tasks';
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);
-        setSharewebComponent(item);
+        setCMSToolComponent(item);
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
 
@@ -1716,7 +1726,8 @@ export default function ProjectOverview(props: any) {
                 const categorizedUsers: any = [];
 
                 // Iterate over the users
-                for (const user of AllTaskUsers) {
+                let filterTaskUser = AllListId.siteUrl.includes("GrueneWeltweit") ? (AllTaskUsers.filter((item: any) => item.technicalGroup !== "SPFx Team")) : AllTaskUsers
+                for (const user of filterTaskUser) {
                     const category = user?.technicalGroup;
                     let categoryObject = categorizedUsers?.find((obj: any) => obj?.Title === category);
                     // If the category doesn't exist, create a new category object
@@ -1837,6 +1848,17 @@ export default function ProjectOverview(props: any) {
     const restructureFunct = (items: any) => {
         setTrueRestructuring(items);
     }
+    React.useEffect(() => {
+        if (childRef?.current?.table?.getSelectedRowModel()?.flatRows.length === 2) {
+            if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != undefined && (childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.Item_x0020_Type != 'Tasks' || childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != 'Tasks')) {
+                setActiveCompareToolButton(true);
+            } else if (childRef?.current?.table?.getSelectedRowModel()?.flatRows[0]?.original?.TaskType != undefined && childRef?.current?.table?.getSelectedRowModel()?.flatRows[1]?.original?.TaskType != undefined) {
+                setActiveCompareToolButton(true);
+            }
+        } else {
+            setActiveCompareToolButton(false);
+        }
+    }, [childRef?.current?.table?.getSelectedRowModel()?.flatRows])
     const customTableHeaderButtons = (
         <>
             {((TableProperty?.length === 1 && TableProperty[0]?.original?.Item_x0020_Type != "Feature" && TableProperty[0]?.original?.Item_x0020_Type != "Sprint" &&
@@ -1847,21 +1869,36 @@ export default function ProjectOverview(props: any) {
                 :
                 <button type="button" disabled className="btn btn-primary" title=" Add Structure"> {" "} Add Structure{" "}</button>}
 
-            {
-                trueRestructuring == true ?
-                    <RestructuringCom AllSitesTaskData={AllSitesAllTasks} AllMasterTasksData={MyAllData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllTaskUser} contextValue={AllListId} allData={workingTodayFiltered ? data : flatData} restructureCallBack={restructureCallback} findPage={"ProjectOverView"} restructureItem={childRef.current.table.getSelectedRowModel().flatRows} />
-                    : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>
-            }
+            {trueRestructuring == true ?
+                <RestructuringCom AllSitesTaskData={AllSitesAllTasks} AllMasterTasksData={MyAllData} restructureFunct={restructureFunct} ref={restructuringRef} taskTypeId={AllTaskUser} contextValue={AllListId} allData={workingTodayFiltered ? data : flatData} restructureCallBack={restructureCallback} findPage={"ProjectOverView"} restructureItem={childRef.current.table.getSelectedRowModel().flatRows} />
+                : <button type="button" title="Restructure" disabled={true} className="btn btn-primary">Restructure</button>}
             <label className="switch me-2" htmlFor="checkbox">
-                <input checked={showAllAWTGrouped} onChange={() => { changeToggleAWT() }} type="checkbox" id="checkbox" />
-                {showAllAWTGrouped === true ? <div className="slider round" title="Switch To Project/Sprints Only"  ></div> : <div title='Swtich to Show All AWT Items' className="slider round"></div>}
+                <input checked={showAllAWTGrouped} onChange={() => { changeToggleAWT(); }} type="checkbox" id="checkbox" />
+                {showAllAWTGrouped === true ? <div className="slider round" title="Switch To Project/Sprints Only"></div> : <div title='Swtich to Show All AWT Items' className="slider round"></div>}
             </label> <label className="switch me-2" htmlFor="checkbox1">
-                <input checked={workingTodayFiltered} onChange={() => { changeToggleWorkingToday() }} type="checkbox" id="checkbox1" />
-                {workingTodayFiltered === true ? <div className="slider round" title='Swtich to Show All Items' ></div> : <div title="Switch To Working Today's" className="slider round"></div>}
+                <input checked={workingTodayFiltered} onChange={() => { changeToggleWorkingToday(); }} type="checkbox" id="checkbox1" />
+                {workingTodayFiltered === true ? <div className="slider round" title='Swtich to Show All Items'></div> : <div title="Switch To Working Today's" className="slider round"></div>}
             </label>
-        </>
-    )
 
+            {(ActiveCompareToolButton) ?
+                <button type="button" className="btn btn-primary" title='Compare' style={{ color: '#fff' }} onClick={() => trigerAllEventButton("Compare")}>Compare</button> :
+                <button type="button" className="btn btn-primary" style={{ color: '#fff' }} disabled={true}>Compare</button>}
+        </>
+
+    )
+    const compareToolCallBack = React.useCallback((compareData) => {
+        if (compareData != "close") {
+            setOpenCompareToolPopup(false);
+        } else {
+            setOpenCompareToolPopup(false);
+        }
+    }, []);
+
+    const trigerAllEventButton = (eventValue: any) => {
+        if (eventValue === "Compare") {
+            setOpenCompareToolPopup(true);
+        }
+    }
 
     return (
         <>
@@ -1894,7 +1931,7 @@ export default function ProjectOverview(props: any) {
                                             : ''}
                                     </div>
                                 </div>
-                                <section className="Tabl1eContentSection row taskprofilepagegreen">
+                                <section className="TableContentSection row taskprofilepagegreen">
                                     <div className="container-fluid p-0">
                                         <section className="TableSection">
                                             <div className="container p-0">
@@ -1925,10 +1962,11 @@ export default function ProjectOverview(props: any) {
                         ""
                     )
                 }
-                {IsComponent && <EditProjectPopup props={SharewebComponent} AllListId={AllListId} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
+                {IsComponent && <EditProjectPopup props={CMSToolComponent} AllListId={AllListId} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
                 {ShowTeamPopup === true ? <ShowTeamMembers props={checkData} callBack={showTaskTeamCAllBack} TaskUsers={AllTaskUser} /> : ''}
                 {openTimeEntryPopup && <TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />}
                 {isAddStructureOpen && <AddProject CallBack={CallBack} items={CheckBoxData} PageName={"ProjectOverview"} AllListId={AllListId} data={data} />}
+                {openCompareToolPopup && <CompareTool isOpen={openCompareToolPopup} compareToolCallBack={compareToolCallBack} compareData={childRef?.current?.table?.getSelectedRowModel()?.flatRows} contextValue={props?.props} />}
             </div >
             {pageLoaderActive ? <PageLoader /> : ''
             }

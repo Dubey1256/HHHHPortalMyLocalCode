@@ -48,7 +48,7 @@ const inlineEditingcolumns = (props: any) => {
   const [showEditPencil, setShowEditPencil] = React.useState(false);
   const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
   const [taskCategoriesPopup, setTaskCategoriesPopup] = React.useState(false);
-  const [SharewebCategory, setSharewebCategory] = React.useState("");
+  const [TaskCat, setTaskCat] = React.useState("");
   const [instantCategories, setInstantCategories] = React.useState([]);
   const [TaskPriorityPopup, setTaskPriorityPopup] = React.useState(false);
   const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState("");
@@ -83,6 +83,7 @@ const inlineEditingcolumns = (props: any) => {
   const [feedback, setFeedback] = useState("");
   const [comments, setComments] = useState([])
   const [onHoldPanel, setOnHoldPanel] = useState(false)
+  const [DesignStatus, setDesignStatus] = useState(false);
   const StatusArray = [
     { value: 0, status: "0% Not Started", taskStatusComment: "Not Started" },
     { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -99,17 +100,17 @@ const inlineEditingcolumns = (props: any) => {
     { value: 90, status: "90% Task completed", taskStatusComment: "Task completed" },
     { value: 100, status: "100% Closed", taskStatusComment: "Closed" },
   ];
+
   React.useEffect(() => {
     updateItemValues();
-
   }, [dueDate.editPopup, UpdateFeatureType ,TaskStatusPopup,remark,teamMembersPopup, UpdateEstimatedTime,TaskPriorityPopup,taskCategoriesPopup,props?.item?.TaskCategories?.results]);
   
   React.useEffect(() => {
     updateTaskComments();
   }, [])
-  
-  const updateItemValues=()=>{
-    selectedCatTitleVal=[];
+
+  const updateItemValues = () => {
+    selectedCatTitleVal = [];
     try {
       setpriorityRank(JSON.parse(localStorage.getItem("Priority")));
       setImpTaskCategoryType(JSON.parse(
@@ -118,8 +119,17 @@ const inlineEditingcolumns = (props: any) => {
     } catch (e) {
       console.error("Priority and impTaskCategoryType")
     }
+    try{
+      let a :any = localStorage.getItem('taskCategoryType')
+      a = JSON.parse(a)
+      a = a.filter((item: any) => item.Title != 'Bottleneck')
+      localStorage.setItem('taskCategoryType', JSON.stringify(a))
+    }
+    catch(e){
+      console.error("JSON cannot be parsed")
+    }
     try {
-     
+
       if (props?.pageName === "portfolioprofile" || props?.pageName === 'ProjectManagmentMaster') {
         setShowEditPencil(true)
       }
@@ -142,6 +152,7 @@ const inlineEditingcolumns = (props: any) => {
           props?.item?.TaskCategories?.map((cat: any) => {
             cat.ActiveTile = true;
           });
+          setDesignStatus(props?.item?.TaskCategories?.some((category: any) => category.Title === "Design"));
         }
         setCategoriesData(props?.item?.TaskCategories);
       } else if (props?.item?.TaskCategories?.results?.length > 0) {
@@ -187,11 +198,11 @@ const inlineEditingcolumns = (props: any) => {
   }
 
   const updateTaskComments = () => {
-    try{
-    let allComments: any = JSON.parse(props?.item?.Comments)
-    setComments(allComments)
+    try {
+      let allComments: any = JSON.parse(props?.item?.Comments)
+      setComments(allComments)
     }
-    catch{
+    catch {
       console.log('JSON cannot be parsed')
     }
   }
@@ -222,36 +233,37 @@ const inlineEditingcolumns = (props: any) => {
     }
   };
   const GetSmartMetadata = async () => {
-    let impSharewebCategories: any = [];
-    let SharewebtaskCategories: any = [];
+    let impTaskCategories: any = [];
+    let CMSTaskCategories: any = [];
     let instantCat: any = [];
     var Priority: any = [];
     let cateFromTitle: any[] = [];
     try {
-      impSharewebCategories = JSON.parse(
+      impTaskCategories = JSON.parse(
         localStorage.getItem("impTaskCategoryType")
       );
       // instantCat = JSON.parse(localStorage.getItem("instantCategories"));
-      SharewebtaskCategories = JSON.parse(
+      CMSTaskCategories = JSON.parse(
         localStorage.getItem("taskCategoryType")
       );
-      SharewebtaskCategories = SharewebtaskCategories.filter((item: any)=> item.Title != "Bottleneck")
-      let stringifiedCategories = JSON.stringify(SharewebtaskCategories)
+
+      CMSTaskCategories = CMSTaskCategories.filter((item: any)=> item.Title != "Bottleneck")
+      let stringifiedCategories = JSON.stringify(CMSTaskCategories)
       localStorage.setItem("taskCategoryType", stringifiedCategories);
       Priority = JSON.parse(localStorage.getItem("Priority"));
       let site = JSON.parse(localStorage.getItem("siteUrl"));
       let DataLoaded = JSON.parse(localStorage.getItem("inlineMetaDataLoaded"));
       if (
-        (impSharewebCategories == null ||
-          SharewebtaskCategories == null ||
+        (impTaskCategories == null ||
+          CMSTaskCategories == null ||
           Priority == null ||
           site == null ||
           instantCat == null ||
           site != siteUrl) &&
         !DataLoaded
       ) {
-        impSharewebCategories = [];
-        SharewebtaskCategories = [];
+        impTaskCategories = [];
+        CMSTaskCategories = [];
         Priority = [];
 
         var TaskTypes: any = [];
@@ -294,18 +306,19 @@ const inlineEditingcolumns = (props: any) => {
           }
           if (
             metadata.Title == "Immediate" ||
-            metadata.Title == "Bottleneck" ||
             metadata.Title == "Favorite"
+            // metadata.Title == "Bottleneck" ||
+
           ) {
-            impSharewebCategories.push(metadata);
+            impTaskCategories.push(metadata);
           }
 
           if (metadata.TaxType == "Categories") {
-            SharewebtaskCategories.push(metadata);
+            CMSTaskCategories.push(metadata);
           }
         })
 
-        SharewebtaskCategories?.map((cat: any) => {
+        CMSTaskCategories?.map((cat: any) => {
           getChilds(cat, TaskTypes);
         });
         let uniqueArray: any = [];
@@ -316,7 +329,7 @@ const inlineEditingcolumns = (props: any) => {
         });
         localStorage.setItem(
           "taskCategoryType",
-          JSON.stringify(SharewebtaskCategories)
+          JSON.stringify(CMSTaskCategories)
         );
         localStorage.setItem(
           "Priority",
@@ -326,13 +339,13 @@ const inlineEditingcolumns = (props: any) => {
         );
         localStorage.setItem(
           "impTaskCategoryType",
-          JSON.stringify(impSharewebCategories)
+          JSON.stringify(impTaskCategories)
         );
         localStorage.setItem("siteUrl", JSON.stringify(siteUrl));
         localStorage.setItem("instantCategories", JSON.stringify(instantCat));
         Priority = getSmartMetadataItemsByTaxType(AllMetadata, "Priority Rank");
-        setTaskCategoryType(SharewebtaskCategories);
-        setImpTaskCategoryType(impSharewebCategories);
+        setTaskCategoryType(CMSTaskCategories);
+        setImpTaskCategoryType(impTaskCategories)
         setpriorityRank(Priority);
         setInstantCategories(instantCat);
         if (cateFromTitle?.length > 0) {
@@ -346,7 +359,7 @@ const inlineEditingcolumns = (props: any) => {
         cateFromTitle = CategoriesData;
       }
 
-      SharewebtaskCategories?.map((cat: any) => {
+      CMSTaskCategories?.map((cat: any) => {
         selectedCatTitleVal?.map((catTitle: any) => {
           if (catTitle == cat?.Title) {
             cateFromTitle.push(cat)
@@ -376,8 +389,8 @@ const inlineEditingcolumns = (props: any) => {
         }
       });
       AutoCompleteItemsArray = uniqueArray;
-      setTaskCategoryType(SharewebtaskCategories);
-      setImpTaskCategoryType(impSharewebCategories);
+      setTaskCategoryType(CMSTaskCategories);
+      setImpTaskCategoryType(impTaskCategories);
       setpriorityRank(Priority);
       setInstantCategories(instantCat);
       if (cateFromTitle?.length > 0) {
@@ -495,7 +508,7 @@ const inlineEditingcolumns = (props: any) => {
         });
       });
     }
-    
+
     if (CategoriesData != undefined) {
       CategoriesData?.map((item: any) => {
         if (!selectedCategoriesId?.some((cat: any) => cat == item?.Id)) {
@@ -556,8 +569,9 @@ const inlineEditingcolumns = (props: any) => {
         postData.AssignedToId = { results: AssignedToIds ?? [] };
         postData.StartDate = EditData?.StartDate
         postData.CompletedDate = EditData?.CompletedDate
+        postData.Status = taskStatus
         break;
-
+        
       case 'DueDate':
         postData.DueDate = newDueDate;
         break;
@@ -623,6 +637,7 @@ const inlineEditingcolumns = (props: any) => {
         setTaskStatusPopup(false);
         setTaskPriorityPopup(false);
         setTeamMembersPopup(false);
+        setTaskStatus("")
         clearEstimations();
         setRemark(false);
         closeTaskDueDate();
@@ -645,7 +660,7 @@ const inlineEditingcolumns = (props: any) => {
       }
     });
   };
-  
+
   const CategoryCallBack = React.useCallback((item1: any, type: any) => {
     setIsComponentPicker(false)
     setTaskCategoriesPopup(true)
@@ -655,7 +670,7 @@ const inlineEditingcolumns = (props: any) => {
       if (item1?.length > 0) {
         item1?.map((cat: any) => {
           cat.ActiveTile = true;
-          if(cat.Title == "On-Hold") {
+          if (cat.Title == "On-Hold") {
             onHoldCategory.push(cat)
             setOnHoldPanel(true)
           }
@@ -667,13 +682,13 @@ const inlineEditingcolumns = (props: any) => {
     }
     const result: any = TempArrya.filter((item: any) => {
       if (!uniqueIds[item.Id]) {
-          uniqueIds[item.Id] = true;
-          return true;
+        uniqueIds[item.Id] = true;
+        return true;
       }
       return false;
-  });
-  TempArrya = result;
-  setCategoriesData(result) 
+    });
+    TempArrya = result;
+    setCategoriesData(result)
   }, [])
 
   const smartCategoryPopup = React.useCallback(() => {
@@ -685,20 +700,20 @@ const inlineEditingcolumns = (props: any) => {
     setOnHoldPanel(false);
     setTaskCategoriesPopup(true);
     if (usedFor == "Save") {
-        let uniqueIds: any =  {}
-        TempArrya.push(onHoldCategory[0]);
-        const result: any = TempArrya.filter((item: any) => {
-            if (!uniqueIds[item.Id]) {
-                uniqueIds[item.Id] = true;
-                return true;
-            }
-            return false;
-        });
-        setCategoriesData(result);
+      let uniqueIds: any = {}
+      TempArrya.push(onHoldCategory[0]);
+      const result: any = TempArrya.filter((item: any) => {
+        if (!uniqueIds[item.Id]) {
+          uniqueIds[item.Id] = true;
+          return true;
+        }
+        return false;
+      });
+      setCategoriesData(result);
     }
     onHoldCategory = [];
-}, []);
-  const DDComponentCallBack = (dt: any) => {
+  }, []);
+ const DDComponentCallBack = React.useCallback((dt: any) => {
     setTeamConfig(dt);
 
     if (dt?.AssignedTo?.length > 0) {
@@ -712,6 +727,9 @@ const inlineEditingcolumns = (props: any) => {
       });
       setTaskAssignedTo(tempAssigned);
     }
+    else{
+      setTaskAssignedTo([])
+    }
     if (dt?.TeamMemberUsers?.length > 0) {
       let tempTeam: any = [];
       dt.TeamMemberUsers?.map((arrayData: any) => {
@@ -722,6 +740,9 @@ const inlineEditingcolumns = (props: any) => {
         }
       });
       setTaskTeamMembers(tempTeam);
+    }
+    else{
+      setTaskTeamMembers([])
     }
     if (dt?.ResponsibleTeam?.length > 0) {
       let tempResponsible: any = [];
@@ -734,11 +755,14 @@ const inlineEditingcolumns = (props: any) => {
       });
       setTaskResponsibleTeam(tempResponsible);
     }
-  };
+    else{
+      setTaskResponsibleTeam([])
+    }
+  },[]);
 
   const EditComponentPicker = (item: any) => {
     setIsComponentPicker(true);
-    setSharewebCategory(item);
+    setTaskCat(item);
     setTaskCategoriesPopup(true)
   };
 
@@ -756,13 +780,13 @@ const inlineEditingcolumns = (props: any) => {
       setSelectedCatId(IdsCat);
     } else if (!item.ActiveTile) {
       item.ActiveTile = !item.ActiveTile;
-      if(item.Title == "On-Hold") {
+      if (item.Title == "On-Hold") {
         setOnHoldPanel(true)
         onHoldCategory.push(item)
       }
-      else{
+      else {
         TaskCategories.push(item)
-      } 
+      }
     }
     setInstantCategories((CategoriesData: any) =>
       CategoriesData?.map((selectCAT: any) => {
@@ -852,99 +876,117 @@ const inlineEditingcolumns = (props: any) => {
       ...UpdateTaskInfo,
       PercentCompleteStatus: StatusData.value,
   });
-  setPercentCompleteStatus(StatusData.status);
-  setTaskStatus(StatusData.taskStatusComment);
   setPercentCompleteCheck(false);
   StatusValue = StatusData.value
   if (StatusData.value == 1) {
       let tempArray: any = [];
       if (
-          TaskApproverBackupArray != undefined &&
-          TaskApproverBackupArray.length > 0
+        TaskApproverBackupArray != undefined &&
+        TaskApproverBackupArray.length > 0
       ) {
-          TaskApproverBackupArray.map((dataItem: any) => {
-              tempArray.push(dataItem);
-          });
+        TaskApproverBackupArray.map((dataItem: any) => {
+          tempArray.push(dataItem);
+        });
       } else if (
-          TaskCreatorApproverBackupArray != undefined &&
-          TaskCreatorApproverBackupArray.length > 0
+        TaskCreatorApproverBackupArray != undefined &&
+        TaskCreatorApproverBackupArray.length > 0
       ) {
-          TaskCreatorApproverBackupArray.map((dataItem: any) => {
-              tempArray.push(dataItem);
-          });
+        TaskCreatorApproverBackupArray.map((dataItem: any) => {
+          tempArray.push(dataItem);
+        });
       }
       const finalData = tempArray.filter((val: any, id: any, array: any) => {
-          return array.indexOf(val) == id;
+        return array.indexOf(val) == id;
       });
       setTaskAssignedTo(finalData);
       setTaskTeamMembers(finalData);
       setApproverData(finalData);
       var e: any = "false";
       props.item.TaskApprovers = finalData;
-  }
-  if (StatusData.value == 2) {
+    }
+    if (StatusData.value == 2) {
       setInputFieldDisable(true);
-  }
-  if (StatusData.value != 2) {
+    }
+    if (StatusData.value != 2) {
       setInputFieldDisable(false);
-  }
+    }
 
-  if (StatusData.value == 80) {
+    if (StatusData.value == 80) {
       setEditData((prevState: any) => ({
         ...prevState,
         IsTodaysTask: false,
-        workingThisWeek: false
-      }));
-      if (
-          EditData.TeamMembers != undefined &&
-          EditData.TeamMembers?.length > 0
-      ) {
-          setWorkingMemberFromTeam(EditData.TeamMembers, "QA", 143);
-      } else {
-          setWorkingMember(143);
-      }
-      setEditData((prevState: any) => ({
-        ...prevState,
-        IsTodaysTask: false,
+        workingThisWeek: false,
         CompletedDate: undefined
       }));
+      if (
+        EditData.TeamMembers != undefined &&
+        EditData.TeamMembers?.length > 0
+      ) {
+        setWorkingMemberFromTeam(EditData.TeamMembers, "QA", 143);
+      } else {
+        setWorkingMember(143);
+      }
+      StatusArray?.map((item: any) => {
+        if (StatusData.value == item.value) {
+            setPercentCompleteStatus(item.status);
+            setTaskStatus(item.taskStatusComment);
+        }
+    });
   }
   if (StatusData.value == 70) {
       if (
-          EditData.TeamMembers != undefined &&
-          EditData.TeamMembers?.length > 0
+        EditData.TeamMembers != undefined &&
+        EditData.TeamMembers?.length > 0
       ) {
-          setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
+        setWorkingMemberFromTeam(EditData.TeamMembers, "Development", 0);
       } else {
-          setWorkingMember(0);
+        setWorkingMember(0);
       }
+      StatusArray?.map((item: any) => {
+        if (StatusData.value == item.value) {
+            setPercentCompleteStatus(item.status);
+            setTaskStatus(item.taskStatusComment);
+        }
+    });
   }
 
-  if (StatusData.value == 5) {
+    if (StatusData.value == 5) {
       EditData.CompletedDate = undefined;
       EditData.IsTodaysTask = false;
+      StatusArray?.map((item: any) => {
+        if (StatusData.value == item.value) {
+            setPercentCompleteStatus(item.status);
+            setTaskStatus(item.taskStatusComment);
+        }
+    });
   }
 
-  if (StatusData.value == 10) {
+    if (StatusData.value == 10) {
       EditData.CompletedDate = undefined;
       if (EditData.StartDate == undefined) {
-          EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY");
+        EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY");
       }
       setEditData((prevState: any) => ({
         ...prevState,
         IsTodaysTask: true
       }));
+      StatusArray?.map((item: any) => {
+        if (StatusData.value == item.value) {
+            setPercentCompleteStatus(item.status);
+            setTaskStatus(item.taskStatusComment);
+        }
+    });
   }
   if (
       StatusData.value == 93 ||
       StatusData.value == 96 ||
       StatusData.value == 99
-  ) {
-    setEditData((prevState: any) => ({
-      ...prevState,
-      IsTodaysTask: false,
-      workingThisWeek: false
-    }));
+    ) {
+      setEditData((prevState: any) => ({
+        ...prevState,
+        IsTodaysTask: false,
+        workingThisWeek: false
+      }));
       setWorkingMember(32);
       StatusArray?.map((item: any) => {
           if (StatusData.value == item.value) {
@@ -959,10 +1001,12 @@ const inlineEditingcolumns = (props: any) => {
       IsTodaysTask: false,
       workingThisWeek: false
     }));
-      if (EditData.siteType == "Offshore Tasks") {
+      if (EditData.siteType == "Offshore%20Tasks") {
           setWorkingMember(36);
+      } else if (DesignStatus) {
+        setWorkingMember(301);
       } else {
-          setWorkingMember(42);
+        setWorkingMember(42);
       }
       setEditData((prevState: any) => ({
         ...prevState,
@@ -981,11 +1025,11 @@ const inlineEditingcolumns = (props: any) => {
   };
   const handleCategoryChange = (event: any, CategoryId: any, Category: any) => {
     if (event.target.checked) {
-        setSelectedCatId((prevSelectedCatId: any) => [...prevSelectedCatId, CategoryId]);
-        setCategoriesData((prevCategoriesData: any) => [...prevCategoriesData, Category]);
+      setSelectedCatId((prevSelectedCatId: any) => [...prevSelectedCatId, CategoryId]);
+      setCategoriesData((prevCategoriesData: any) => [...prevCategoriesData, Category]);
     } else {
-        setSelectedCatId((prevSelectedCatId: any) => prevSelectedCatId.filter((val: any) => val !== CategoryId));
-        setCategoriesData((prevCategoriesData: any) => prevCategoriesData.filter((itm: any) => itm?.Id !== CategoryId));
+      setSelectedCatId((prevSelectedCatId: any) => prevSelectedCatId.filter((val: any) => val !== CategoryId));
+      setCategoriesData((prevCategoriesData: any) => prevCategoriesData.filter((itm: any) => itm?.Id !== CategoryId));
     }
   };
   const closeTaskDueDate = () => {
@@ -1156,7 +1200,7 @@ const inlineEditingcolumns = (props: any) => {
             className="hreflink"
           >
             {" "}
-            <span>
+            <span className="alignCenter">
               <ShowTaskTeamMembers
                 props={props?.item}
                 TaskUsers={props?.TaskUsers}
@@ -1198,25 +1242,24 @@ const inlineEditingcolumns = (props: any) => {
                     onMouseEnter={showOnHoldComment}
                     onMouseLeave={hideOnHoldComment}
                   />
-                  <span className="tooltip-text pop-right">
-                    {onHoldComment &&
-                      comments?.map((commentItem: any, index: any) =>
-                        commentItem?.CommentFor !== undefined &&
-                          commentItem?.CommentFor === "On-Hold" ? (
-                          <div key={index}>
-                            <span className="siteColor p-1 border-bottom">
-                              Task On-Hold by{" "}
-                              <span>{commentItem?.AuthorName}</span>{" "}
-                              <span>{Moment(commentItem?.Created).format('DD/MM/YY')}</span>
-                            </span>
-                            {commentItem?.CommentFor !== undefined &&
-                              commentItem?.CommentFor === "On-Hold" ? (
-                              <div key={index}>{commentItem?.Description}</div>
-                            ) : null}
-                          </div>
-                        ) : null
-                      )}
-                  </span>
+                  {onHoldComment && <span className="tooltip-text pop-right">
+                    {comments?.map((commentItem: any, index: any) =>
+                      commentItem?.CommentFor !== undefined &&
+                        commentItem?.CommentFor === "On-Hold" ? (
+                        <div key={index}>
+                          <span className="siteColor p-1 border-bottom">
+                            Task On-Hold by{" "}
+                            <span>{commentItem?.AuthorName}</span>{" "}
+                            <span>{Moment(commentItem?.Created).format('DD/MM/YY')}</span>
+                          </span>
+                          {commentItem?.CommentFor !== undefined &&
+                            commentItem?.CommentFor === "On-Hold" ? (
+                            <div key={index}>{commentItem?.Description}</div>
+                          ) : null}
+                        </div>
+                      ) : null
+                    )}
+                  </span>}
                 </div>
               ) : null
             )}
@@ -1229,14 +1272,14 @@ const inlineEditingcolumns = (props: any) => {
                   </a>
                 );
               }
-              if (category?.Title == "Bottleneck") {
-                return (
-                  <a title="Bottleneck">
-                    {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/bottleneck.svg")} />  */}
-                    <span className=" svg__iconbox svg__icon--bottleneck alignIcon "></span>
-                  </a>
-                );
-              }
+              // if (category?.Title == "Bottleneck") {
+              //   return (
+              //     <a title="Bottleneck">
+              //       {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/bottleneck.svg")} />  */}
+              //       <span className=" svg__iconbox svg__icon--bottleneck alignIcon "></span>
+              //     </a>
+              //   );
+              // }
               if (category?.Title == "Favorite") {
                 return (
                   <a title="Favorite">
@@ -1306,14 +1349,14 @@ const inlineEditingcolumns = (props: any) => {
               gap: "1px"
             }}
           >
-            
-            {UpdateFeatureType != true ? <span style={{overflow:'hidden',display:'inline-block', width:`${selectedFeatureTypeData?.Title != undefined ? '168px':'185px'}`,textOverflow:'ellipsis',whiteSpace:"nowrap"}} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span> : <span style={{overflow:'hidden',display:'inline-block', width:`${selectedFeatureTypeData?.Title != undefined ? '168px':'185px'}`,textOverflow:'ellipsis',whiteSpace:"nowrap"}} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span> }&nbsp;
+
+            {UpdateFeatureType != true ? <span style={{ overflow: 'hidden', display: 'inline-block', width: `${selectedFeatureTypeData?.Title != undefined ? '168px' : '185px'}`, textOverflow: 'ellipsis', whiteSpace: "nowrap" }} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span> : <span style={{ overflow: 'hidden', display: 'inline-block', width: `${selectedFeatureTypeData?.Title != undefined ? '168px' : '185px'}`, textOverflow: 'ellipsis', whiteSpace: "nowrap" }} title={selectedFeatureTypeData?.Title} >{selectedFeatureTypeData?.Title}</span>}&nbsp;
             {selectedFeatureTypeData?.Title != undefined ? <a className="pancil-icons hreflink" onClick={() => removeFeatureType()}>
               <span className="alignIcon svg__iconbox svg__icon--cross"></span>
-            </a> : '' }
+            </a> : ''}
 
             <a className="pancil-icons hreflink" onClick={() => setUpdateFeatureType(true)}>
-               <span className="alignIcon  svg__iconbox svg__icon--editBox"></span>
+              <span className="alignIcon  svg__iconbox svg__icon--editBox"></span>
             </a>
           </span>
         </>
@@ -1399,7 +1442,7 @@ const inlineEditingcolumns = (props: any) => {
             );
           }}
         >
-        {props?.item?.DisplayDueDate!=undefined ?props?.item?.DisplayDueDate: <>&nbsp;</>}
+          {props?.item?.DisplayDueDate != undefined ? props?.item?.DisplayDueDate : <>&nbsp;</>}
           {showEditPencil && (
             <a className="pancil-icons">
               <span className="alignIcon  svg__iconbox svg__icon--editBox"></span>
@@ -1668,41 +1711,42 @@ const inlineEditingcolumns = (props: any) => {
           {props?.mypriority != true &&
             <>
               {impTaskCategoryType?.map((option) => (
-                <div
-                  className={
-                    ServicesTaskCheck ? "serviepannelgreena d-flex" : "d-flex"
-                  }
-                  key={option.Id}
-                >
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id={option.Id}
-                    value={option.Id}
-                    checked={selectedCatId?.includes(option.Id)}
-                    onChange={(event) => handleCategoryChange(event, option.Id, option)}
-                  />
-                  <a className="alignCenter" title={option.Title}>
-                    {option.Title == "Immediate" ? (
-                      <span className="workmember svg__iconbox svg__icon--alert "></span>
-                    ) : (
-                      ""
-                    )}
-                    {option.Title == "Bottleneck" ? (
+                option.Title !== 'Bottleneck' && (
+                  <div
+                    className={
+                      ServicesTaskCheck ? "serviepannelgreena d-flex" : "d-flex"
+                    }
+                    key={option.Id}
+                  >
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id={option.Id}
+                      value={option.Id}
+                      checked={selectedCatId?.includes(option.Id)}
+                      onChange={(event) => handleCategoryChange(event, option.Id, option)}
+                    />
+                    <a className="alignCenter" title={option.Title}>
+                      {option.Title == "Immediate" ? (
+                        <span className="workmember svg__iconbox svg__icon--alert "></span>
+                      ) : (
+                        ""
+                      )}
+                      {/* {option.Title == "Bottleneck" ? (
                       <span className="workmember svg__iconbox svg__icon--bottleneck "></span>
                     ) : (
                       ""
-                    )}
-                    {option.Title == "Favorite" ? (
-                      <span className="workmember svg__iconbox svg__icon--Star "></span>
-                    ) : (
-                      ""
-                    )}
-                  </a>
-                  <label htmlFor={option.Id} className="ms-2">
-                    {option.Title}
-                  </label>
-                </div>
+                    )} */}
+                      {option.Title == "Favorite" ? (
+                        <span className="workmember svg__iconbox svg__icon--Star "></span>
+                      ) : (
+                        ""
+                      )}
+                    </a>
+                    <label htmlFor={option.Id} className="ms-2">
+                      {option.Title}
+                    </label>
+                  </div>)
               ))}
             </>
           }
@@ -1818,30 +1862,30 @@ const inlineEditingcolumns = (props: any) => {
                 ></span>
               </span>
               <div className="col-sm-12 p-0">
-              {SearchedCategoryData?.length > 0 ? (
-                <div className="SmartTableOnTaskPopup p-0 position-static">
-                  <ul className="list-group">
-                    {SearchedCategoryData.map((item: any) => {
-                      return (
-                        <li
-                          className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
-                          key={item.id}
-                          onClick={
-                            () =>
-                              selectSubTaskCategory(item?.Title, item?.Id, item)
-                            // setSelectedCategoryData([item], "For-Auto-Search")
-                          }
-                        >
-                          <a>{item.Newlabel}</a>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ) : null}
+                {SearchedCategoryData?.length > 0 ? (
+                  <div className="SmartTableOnTaskPopup p-0 position-static">
+                    <ul className="list-group">
+                      {SearchedCategoryData.map((item: any) => {
+                        return (
+                          <li
+                            className="hreflink list-group-item p-1 rounded-0 list-group-item-action"
+                            key={item.id}
+                            onClick={
+                              () =>
+                                selectSubTaskCategory(item?.Title, item?.Id, item)
+                              // setSelectedCategoryData([item], "For-Auto-Search")
+                            }
+                          >
+                            <a>{item.Newlabel}</a>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ) : null}
+              </div>
             </div>
-            </div>
-            
+
 
             {instantCategories?.map((item: any) => {
               return (
@@ -1876,7 +1920,7 @@ const inlineEditingcolumns = (props: any) => {
                             target="_blank"
                             data-interception="off"
                           >
-                            {type?.Title}
+                            {type.Title}
                           </a>
                           <span
                             className="bg-light ml-auto svg__iconbox svg__icon--cross"
@@ -1905,7 +1949,7 @@ const inlineEditingcolumns = (props: any) => {
       </Panel>
       {IsComponentPicker && (
         <Picker
-          props={SharewebCategory}
+          props={TaskCat}
           selectedCategoryData={CategoriesData}
           usedFor="Task-Profile"
           AllListId={props?.AllListId}
@@ -1924,13 +1968,13 @@ const inlineEditingcolumns = (props: any) => {
       )}
       {onHoldPanel && (
         <OnHoldCommentCard
-        siteUrl={props?.item?.siteUrl}
-        ItemId={props?.item?.Id}
-        AllListIds={props?.AllListId}
-        Context={props?.Context}
-        callback={inlineCategoryCallBack}
-        usedFor="Task-Profile"
-        CommentFor={"On-Hold"}
+          siteUrl={props?.item?.siteUrl}
+          ItemId={props?.item?.Id}
+          AllListIds={props?.AllListId}
+          Context={props?.Context}
+          callback={inlineCategoryCallBack}
+          usedFor="Task-Profile"
+          CommentFor={"On-Hold"}
         />
       )}
     </>

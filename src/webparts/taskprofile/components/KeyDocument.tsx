@@ -4,6 +4,7 @@ import moment from 'moment';
 import EditDocument from './EditDocunentPanel'
 import { useState, useEffect, forwardRef, useImperativeHandle, createContext, useMemo, useCallback } from 'react';
 import { myContextValue } from '../../../globalComponents/globalCommon'
+import * as globalCommon from '../../../globalComponents/globalCommon'
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import { ColumnDef } from '@tanstack/react-table';
 import Tooltip from '../../../globalComponents/Tooltip';
@@ -117,7 +118,7 @@ const RelevantDocuments = (props: any, ref: any) => {
                 hasCustomExpanded: false,
                 hasExpanded: false,
                 isHeaderNotAvlable: true,
-                size: 20,
+                size: 10,
                 id: 'Id',
             },
             {
@@ -141,9 +142,9 @@ const RelevantDocuments = (props: any, ref: any) => {
                 cell: ({ row }: any) => (
                     <div> {row?.original.Modified !== null ? moment(row?.original.Modified).format("DD/MM/YYYY") : ""}
                         <>
-                            <a href={`${myContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}
+                            <a onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl, row?.original?.Editor?.Id)}
                                 target="_blank" data-interception="off">
-                                <img title={row?.original?.Author?.Title} className="workmember ms-1" src={(row?.original?.EditorImage)} />
+                                <img title={row?.original?.Editor?.Title} className="workmember ms-1" src={(row?.original?.EditorImage)} />
                             </a>
 
                         </>
@@ -162,8 +163,7 @@ const RelevantDocuments = (props: any, ref: any) => {
 
 
                         <>
-                            <a href={`${myContextValue?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
-                                target="_blank" data-interception="off">
+                            <a onClick={() => globalCommon?.openUsersDashboard(props?.AllListId?.siteUrl,row?.original?.Author?.Id)} target="_blank" data-interception="off">
                                 <img title={row?.original?.Author?.Title} className="workmember ms-1" src={(row?.original?.UserImage)} />
                             </a>
 

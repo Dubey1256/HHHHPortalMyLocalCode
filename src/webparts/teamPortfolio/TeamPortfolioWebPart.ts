@@ -17,11 +17,13 @@ import pnp from 'sp-pnp-js';
 export interface ITeamPortfolioWebPartProps {
   description: string;
   MasterTaskListID: "ec34b38f-0669-480a-910c-f84e92e58adf";
-  TaskUsertListID: "b318ba84-e21d-4876-8851-88b94b9dc300";
+  TaskUserListID: "b318ba84-e21d-4876-8851-88b94b9dc300";
   TaskTypeID: "21b55c7b-5748-483a-905a-62ef663972dc";
   SmartMetadataListID: "01a34938-8c7e-4ea6-a003-cee649e8c67a";
   SmartHelpListID: '9CF872FC-AFCD-42A5-87C0-AAB0C80C5457';
   PortFolioTypeID: "c21ab0e4-4984-4ef7-81b5-805efaa3752e";
+  AdminconfigrationID: 'e968902a-3021-4af2-a30a-174ea95cf8fa';
+  DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08';
   // dropdownvalue: string;
   TimeEntry: any;
   SiteCompostion: any;
@@ -44,10 +46,12 @@ export default class TeamPortfolioWebPart extends BaseClientSideWebPart<ITeamPor
         siteUrl: this.context.pageContext.web.absoluteUrl,
         MasterTaskListID: this.properties.MasterTaskListID,
         TaskTypeID: this.properties.TaskTypeID,
-        TaskUsertListID: this.properties.TaskUsertListID,
+        TaskUserListID: this.properties.TaskUserListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
         SmartHelpListID: this.properties.SmartHelpListID,
-        PortFolioTypeID:this.properties.PortFolioTypeID,
+        PortFolioTypeID: this.properties.PortFolioTypeID,
+        AdminconfigrationID: this.properties.AdminconfigrationID,
+        DocumentsListID: this.properties.DocumentsListID,
         Context: this.context,
         // dropdownvalue: this.properties.dropdownvalue,
         TimeEntry: this.properties.TimeEntry,
@@ -124,7 +128,7 @@ export default class TeamPortfolioWebPart extends BaseClientSideWebPart<ITeamPor
                 //     { key: "Component Portfolio", text: "Component Portfolio" },
                 //   ],
                 // }),
-                PropertyPaneTextField("TaskUsertListID", {
+                PropertyPaneTextField("TaskUserListID", {
                   label: "Task User List",
                 }),
                 PropertyPaneTextField("SmartMetadataListID", {
@@ -142,13 +146,18 @@ export default class TeamPortfolioWebPart extends BaseClientSideWebPart<ITeamPor
                 PropertyPaneTextField("PortFolioTypeID", {
                   label: "Portfolio Type List",
                 }),
+                PropertyPaneTextField("AdminconfigrationID", {
+                  label: "AdminconfigrationID",
+                }),
+                PropertyPaneTextField('DocumentsListID', {
+                  label: "DocumentsListID"
+                }),
                 PropertyPaneTextField("TimeEntry", {
                   label: "TimeEntry",
                 }),
-
                 PropertyPaneTextField("SiteCompostion", {
                   label: "SiteCompostion",
-                }),
+                })
               ],
             },
           ],

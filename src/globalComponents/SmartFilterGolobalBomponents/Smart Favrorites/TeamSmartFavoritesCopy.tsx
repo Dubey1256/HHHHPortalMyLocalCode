@@ -16,7 +16,10 @@ import PreSetDatePikerPannel from '../PreSetDatePiker';
 import { GlobalConstants } from '../../LocalCommon';
 import { Web } from 'sp-pnp-js';
 import Tooltip from '../../Tooltip';
+import { myContextValue } from '../../globalCommon';
+import ServiceComponentPortfolioPopup from '../../EditTaskPopup/ServiceComponentPortfolioPopup';
 const TeamSmartFavoritesCopy = (item: any) => {
+    let MyContextdata: any = React.useContext(myContextValue);
     let ContextValue = item?.ContextValue;
     let portfolioColor: any = item?.portfolioColor
     let AllProjectBackupArray: any = []
@@ -72,8 +75,8 @@ const TeamSmartFavoritesCopy = (item: any) => {
     ///// Year Range Using Piker ////////
     const [years, setYear] = React.useState([])
     const [months, setMonths] = React.useState(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December",])
-    const [selectedValue, setSelectedValue] = React.useState("Modified");
-    const [tablePageSize, setTablePageSize] = React.useState(null);
+    // const [selectedValue, setSelectedValue] = React.useState("Modified");
+    // const [tablePageSize, setTablePageSize] = React.useState(null);
     const [count, setCount] = React.useState(true);
     React.useEffect(() => {
         const currentYear = new Date().getFullYear();
@@ -123,8 +126,8 @@ const TeamSmartFavoritesCopy = (item: any) => {
             setIsModifiedDateSelected((prev: any) => item?.updatedEditData?.isModifiedDateSelected);
             setIsDueDateSelected((prev: any) => item?.updatedEditData?.isDueDateSelected);
             setTaskUsersData((prev: any) => item?.updatedEditData?.TaskUsersData);
-            setSelectedValue((prev: any) => item?.updatedEditData?.showPageSizeSetting?.selectedTopValue);
-            setTablePageSize((prev: any) => item?.updatedEditData?.showPageSizeSetting?.tablePageSize);
+            // setSelectedValue((prev: any) => item?.updatedEditData?.showPageSizeSetting?.selectedTopValue);
+            // setTablePageSize((prev: any) => item?.updatedEditData?.showPageSizeSetting?.tablePageSize);
             setCount(false);
         }
     }, [item])
@@ -263,21 +266,23 @@ const TeamSmartFavoritesCopy = (item: any) => {
             rerender()
         } else if (event == "FilterCategoriesAndStatus") {
             let filterGroups = [...filterGroupsData];
-            filterGroups[index].selectAllChecked = selectAllChecked;
-            let selectedId: any = [];
-            filterGroups[index].values.forEach((item: any) => {
+            const selectedIds: any[] = [];
+
+            const processItem = (item: any) => {
                 item.checked = selectAllChecked;
                 if (selectAllChecked) {
-                    selectedId.push(item?.Id)
+                    selectedIds.push(item?.Id);
                 }
                 item?.children?.forEach((chElement: any) => {
-                    if (selectAllChecked) {
-                        selectedId.push(chElement?.Id)
-                    }
+                    processItem(chElement);
                 });
+            };
+            filterGroups[index].selectAllChecked = selectAllChecked;
+            filterGroups[index]?.values?.forEach((item: any) => {
+                processItem(item);
             });
-            filterGroups[index].checked = selectedId;
-            filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
+            filterGroups[index].checked = selectedIds;
+            filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedIds);
             setFilterGroups((prev: any) => filterGroups);
             rerender()
         } else if (event == "FilterTeamMembers") {
@@ -299,25 +304,29 @@ const TeamSmartFavoritesCopy = (item: any) => {
             filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
             setTaskUsersData((prev: any) => filterGroups);
             rerender()
-        } else if (event == "ClintCatogry") {
-            let filterGroups = [...allFilterClintCatogryData];
-            filterGroups[index].selectAllChecked = selectAllChecked;
-            let selectedId: any = [];
-            filterGroups[index].values.forEach((item: any) => {
+        } 
+        else if (event == "ClintCatogry") {
+            const filterGroups = [...allFilterClintCatogryData];
+            const selectedIds: any[] = [];
+
+            const processItem = (item: any) => {
                 item.checked = selectAllChecked;
                 if (selectAllChecked) {
-                    selectedId.push(item?.Id)
+                    selectedIds.push(item?.Id);
                 }
                 item?.children?.forEach((chElement: any) => {
-                    if (selectAllChecked) {
-                        selectedId.push(chElement?.Id)
-                    }
+                    processItem(chElement);
                 });
+            };
+
+            filterGroups[index].selectAllChecked = selectAllChecked;
+            filterGroups[index]?.values?.forEach((item: any) => {
+                processItem(item);
             });
-            filterGroups[index].checked = selectedId;
-            filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index].values, selectedId);
-            setFilterClintCatogryData((prev: any) => filterGroups);
-            rerender()
+            filterGroups[index].checked = selectedIds;
+            filterGroups[index].checkedObj = GetCheckedObject(filterGroups[index]?.values, selectedIds);
+            setFilterClintCatogryData(filterGroups);
+            rerender();
         }
     }
     //*************************************************************Date Sections*********************************************************************/
@@ -366,7 +375,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 setStartDate(last30DaysStartDate);
                 setEndDate(last30DaysEndDate);
                 break;
-                case "last3months":
+            case "last3months":
                     const lastMonthEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
                     const last3MonthsStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 3, 1); 
                     setStartDate(last3MonthsStartDate);
@@ -480,24 +489,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
             </div>
         )
     }
-    const customFooterForProjectManagement = () => {
-        return (
-            <footer className="text-end me-4">
-                <button type="button" className="btn btn-primary">
-                    <a target="_blank" className="text-light" data-interception="off"
-                        href={`${ContextValue?.siteUrl}/SitePages/PX-Overview.aspx`}>
-                        <span className="text-light">Create New One</span>
-                    </a>
-                </button>
-                <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedProject} >
-                    Save
-                </button>
-                <button type="button" className="btn btn-default px-3" onClick={closeProjectManagementPopup}>
-                    Cancel
-                </button>
-            </footer>
-        )
-    }
+    
     // ************** this is for Project Management Section Functions ************
     const SelectProjectFunction = (selectedData: any) => {
         let selectedTempArray: any = [];
@@ -534,15 +526,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
         }
 
     }
-    const closeProjectManagementPopup = () => {
-        let TempArray: any = [];
-        setProjectManagementPopup(false);
-        AllProjectBackupArray?.map((ProjectData: any) => {
-            ProjectData.Checked = false;
-            TempArray.push(ProjectData);
-        })
-        SetAllProjectData(TempArray);
-    }
+    
     const SelectProjectFromAutoSuggestion = (data: any) => {
         setProjectSearchKey('');
         setSearchedProjectData([]);
@@ -559,98 +543,16 @@ const TeamSmartFavoritesCopy = (item: any) => {
         })
         setSelectedProject(tempArray)
     }
-    const columns: any = React.useMemo<ColumnDef<any, unknown>[]>(
-        () => [
-            {
-                accessorKey: "",
-                placeholder: "",
-                hasCheckbox: true,
-                hasCustomExpanded: false,
-                hasExpanded: false,
-                isHeaderNotAvlable: true,
-                size: 45,
-                id: 'Id',
-            },
-            {
-                accessorFn: (row) => row?.Title,
-                cell: ({ row }) => (
-                    <span>
-                        <a style={{ textDecoration: "none", color: "#000066" }} href={`${ContextValue?.siteUrl}/SitePages/PX-Profile.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
-                    </span>
-                ),
-                placeholder: "Title",
-                header: "",
-                resetColumnFilters: false,
-                id: "Title",
-            },
-            {
-                accessorFn: (row) => row?.PercentComplete,
-                cell: ({ row }) => (
-                    <div className="text-center">{row?.original?.PercentComplete}</div>
-                ),
-                id: "PercentComplete",
-                placeholder: "Status",
-                resetColumnFilters: false,
-                header: "",
-                size: 42,
-            },
-            {
-                accessorFn: (row) => row?.ItemRank,
-                cell: ({ row }) => (
-                    <div className="text-center">{row?.original?.ItemRank}</div>
-                ),
-                id: "ItemRank",
-                placeholder: "Item Rank",
-                resetColumnFilters: false,
-                header: "",
-                size: 42,
-            },
-            {
-                accessorFn: (row) => row?.AllTeamName,
-                cell: ({ row }) => (
-                    <div className="alignCenter">
-                        <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} Context={ContextValue} />
-                    </div>
-                ),
-                id: "AllTeamName",
-                placeholder: "Team",
-                resetColumnFilters: false,
-                header: "",
-                size: 100,
-            },
-            {
-                accessorFn: (row) => row?.DueDate,
-                cell: ({ row }) => (
-                    <span className='ms-1'>{row?.original?.DisplayDueDate} </span>
 
-                ),
-                filterFn: (row: any, columnName: any, filterValue: any) => {
-                    if (row?.original?.DisplayDueDate?.includes(filterValue)) {
-                        return true
-                    } else {
-                        return false
-                    }
-                },
-                id: 'DueDate',
-                resetColumnFilters: false,
-                resetSorting: false,
-                placeholder: "DueDate",
-                header: "",
-                size: 91,
-            },
-        ],
-        [item?.ProjectData]
-    );
-
-    const callBackData = React.useCallback((checkData: any) => {
+    const callBackData = React.useCallback((checkData: any,Type:any, functionType:any) => {
         let MultiSelectedData: any = [];
-        if (checkData != undefined) {
-            checkData.map((item: any) => MultiSelectedData?.push(item?.original))
-            setAllProjectSelectedData(MultiSelectedData);
-            // SelectProjectFunction(MultiSelectedData);
-        } else {
-            setAllProjectSelectedData([]);
-            MultiSelectedData = [];
+        if (checkData?.length>0 && functionType=="Save") {
+            checkData.map((item: any) => MultiSelectedData?.push(item))
+            SelectProjectFunction(MultiSelectedData);
+            setProjectManagementPopup(false);  
+                    } else {
+           
+            setProjectManagementPopup(false);
         }
     }, []);
 
@@ -731,16 +633,18 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 isModifiedDateSelected: isModifiedDateSelected,
                 isDueDateSelected: isDueDateSelected,
                 TaskUsersData: TaskUsersData,
+                smartFabBasedColumnsSetting: MyContextdata?.allContextValueData?.smartFabBasedColumnsSetting ? MyContextdata?.allContextValueData?.smartFabBasedColumnsSetting : {},
                 // Createmodified: props?.Createmodified
             }
         }
-        if (tablePageSize > 0) {
-            Favorite.showPageSizeSetting = {
-                tablePageSize: parseInt(tablePageSize),
-                showPagination: true,
-                selectedTopValue: selectedValue
-            };
-        }
+        // if (tablePageSize > 0) {
+        //     Favorite.showPageSizeSetting = {
+        //         tablePageSize: parseInt(tablePageSize),
+        //         showPagination: true,
+        //         selectedTopValue: selectedValue
+        //     };
+        // }
+        console.log("++++++++++++fab col setting val", MyContextdata?.allContextValueData?.smartFabBasedColumnsSetting);
         // else {
         //     var SmartFavorites = (SmartFavoriteUrl.split('SitePages/')[1]).split('.aspx')[0];
         //     SelectedFavorites.push({
@@ -761,6 +665,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
             await web.lists.getByTitle("AdminConfigurations").items.add(postData).then((result: any) => {
                 console.log("Successfully Added SmartFavorite");
                 setModalIsOpenToFalse("", "");
+                MyContextdata.allContextValueData.smartFabBasedColumnsSetting = {}
             })
         }
         else if (item?.updatedSmartFilter === true) {
@@ -795,9 +700,9 @@ const TeamSmartFavoritesCopy = (item: any) => {
         const Url = event.target.value;
         setSmartFavoriteUrl(Url);
     }
-    const handleChange = (event: any) => {
-        setSelectedValue(event.target.value);
-    };
+    // const handleChange = (event: any) => {
+    //     setSelectedValue(event.target.value);
+    // };
     return (
         <>
             <Panel
@@ -808,7 +713,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                 onRenderHeader={onRenderCustomHeader}
                 isBlocking={false}
             >
-                <div className="modal-body p-0 mt-2 mb-3">
+                <div className="modal-body p-0 mb-3">
                     <section className='smartFilter bg-light border mb-2 col'>
                         <section className='mt-2 px-2'>
                             <div className='justify-content-between'>
@@ -816,16 +721,17 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                     <input className='radio' type='radio' value="SmartFilterBased" checked={FavoriteFieldvalue === "SmartFilterBased"} onChange={(event) => FavoriteField(event)} /> SmartFilter Based
                                 </label>
                                 <label className='SpfxCheckRadio'><input className='radio' type='radio' value="UrlBased" checked={FavoriteFieldvalue === "UrlBased"} onChange={(event) => FavoriteField(event)} /> Url Based</label>
+                                <label className='SpfxCheckRadio hreflink siteColor' onClick={() => item?.openTableSettingPopup("favBased")}>Table Confrigrations</label>
                             </div>
                             {FavoriteFieldvalue === "SmartFilterBased" &&
                                 <div className='row'>
-                                    <div className='mb-2 col-7'>
+                                    <div className='mb-2 col-7 pe-0'>
                                         <div className='input-group mt-3'>
                                             <label className='d-flex form-label full-width justify-content-between'>Title <span><input type="checkbox" className='form-check-input' checked={isShowEveryone} onChange={(e) => isShowEveryOneCheck(e)} /> For EveryOne</span></label>
                                             <input type="text" className='form-control' value={smartTitle} onChange={(e) => ChangeTitle(e)} />
                                         </div>
                                     </div>
-                                    <div className='mb-2 col-3'>
+                                    {/* <div className='mb-2 col-3'>
                                         <div className='input-group mt-3'>
                                             <label className='d-flex form-label full-width justify-content-between'>Table Page Size
                                                 <span>
@@ -836,7 +742,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                             </label>
                                             <input type="number" className='form-control' value={tablePageSize} onChange={(e) => setTablePageSize(e.target.value)} />
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </div>
 
                             }
@@ -859,13 +765,13 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                 <div className="px-2">
                                     <div className="togglebox">
                                         <label className="toggler full_width active">
-                                            <span className='full-width' style={{ color: `${portfolioColor}` }}>
+                                            <span className='full-width'>
                                                 <div className='alignCenter'>
-                                                    <span className='f-16'>Project</span>
+                                                    <span className='f-15 fw-semibold'>Project</span>
                                                 </div>
                                             </span>
                                         </label>
-                                        <div className='mb-3 mt-1 pt-1' style={{ borderTop: "1.5px solid" + portfolioColor }}>
+                                        <div className='mb-3 mt-2 pt-2' style={{ borderTop: "1.5px solid #bdbdbd" }}>
                                             <div className='d-flex justify-content-between'>
                                                 <div className="col-12">
                                                     <div className='d-flex'>
@@ -925,13 +831,13 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                     <div className="togglebox">
                                         <span>
                                             <label className="toggler full_width active">
-                                                <span className='full-width' style={{ color: `${portfolioColor}` }}>
+                                                <span className='full-width'>
                                                     <div className='alignCenter'>
-                                                        <span className='f-16'>Sites</span>
+                                                        <span className='f-15 fw-semibold'>Sites</span>
                                                     </div>
                                                 </span>
                                             </label>
-                                            <div className="togglecontent mb-3 mt-1 pt-1" style={{ display: "block", borderTop: "1.5px solid" + portfolioColor }}>
+                                            <div className="togglecontent mb-3 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #bdbdbd"}}>
                                                 <div className="col-sm-12 pad0">
                                                     <div className="togglecontent">
                                                         <table width="100%" className="indicator_search">
@@ -942,7 +848,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                                                             <td valign="top" style={{ width: '33.3%' }}>
                                                                                 <fieldset className='pe-3 smartFilterStyle'>
                                                                                     <legend className='SmartFilterHead'>
-                                                                                        <span className="mparent d-flex" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
+                                                                                        <span className="mparent d-flex pb-1" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
                                                                                             <input className={"form-check-input cursor-pointer"}
                                                                                                 style={Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
                                                                                                 type="checkbox"
@@ -1000,13 +906,13 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                 <div className="px-2">
                                     <div className="togglebox">
                                         <label className="toggler full_width active">
-                                            <span className='full-width' style={{ color: `${portfolioColor}` }}>
+                                            <span className='full-width'>
                                                 <div className='alignCenter'>
-                                                    <span className='f-16'>Categories and Status</span>
+                                                    <span className='f-15 fw-semibold'>Categories and Status</span>
                                                 </div>
                                             </span>
                                         </label>
-                                        <div className="togglecontent mb-3" style={{ display: "block", borderTop: "1.5px solid #D9D9D9" }}>
+                                        <div className="togglecontent mb-3 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #D9D9D9" }}>
                                             <div className="col-sm-12 pad0">
                                                 <div className="togglecontent">
                                                     <table width="100%" className="indicator_search">
@@ -1017,7 +923,7 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                                                         <td valign="top" style={{ width: '14.2%' }}>
                                                                             <fieldset className='smartFilterStyle pe-3'>
                                                                                 <legend className='SmartFilterHead'>
-                                                                                    <span className="mparent d-flex" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
+                                                                                    <span className="mparent d-flex pb-1" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
                                                                                         <input className={"form-check-input cursor-pointer"}
                                                                                             style={(Group.selectAllChecked == undefined || Group.selectAllChecked === false) && Group?.ValueLength === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
                                                                                             type="checkbox"
@@ -1079,13 +985,13 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                 <div className="px-2">
                                     <div className="togglebox">
                                         <label className="toggler full_width active">
-                                            <span className='full-width' style={{ color: `${portfolioColor}` }}>
+                                            <span className='full-width'>
                                                 <div className='alignCenter'>
-                                                    <span className='f-16'>Client Category</span>
+                                                    <span className='f-15 fw-semibold'>Client Category</span>
                                                 </div>
                                             </span>
                                         </label>
-                                        <div className="togglecontent mb-3 pt-1 mt-1" style={{ display: "block", borderTop: "1.5px solid" + portfolioColor }}>
+                                        <div className="togglecontent mb-3 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #bdbdbd" }}>
                                             <div className="col-sm-12">
                                                 <div className="togglecontent">
                                                     <table width="100%" className="indicator_search">
@@ -1094,10 +1000,10 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                                                 {allFilterClintCatogryData != null && allFilterClintCatogryData.length > 0 &&
                                                                     allFilterClintCatogryData?.map((Group: any, index: any) => {
                                                                         return (
-                                                                            <div className='col-sm-4 mb-3 ps-0'>
-                                                                                <fieldset className='smartFilterStyle ps-2'>
+                                                                            <div className='col-sm-4 mb-3 ps-2'>
+                                                                                <fieldset className='ps-lg-1 smartFilterStyle'>
                                                                                     <legend className='SmartFilterHead'>
-                                                                                        <span className="mparent d-flex" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
+                                                                                        <span className="mparent d-flex pb-1" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
                                                                                             <input className={"form-check-input cursor-pointer"}
                                                                                                 style={(Group.selectAllChecked == undefined || Group.selectAllChecked === false) && Group?.ValueLength === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
                                                                                                 type="checkbox"
@@ -1156,13 +1062,13 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                 <div className="px-2">
                                     <div className="togglebox">
                                         <label className="toggler full_width active">
-                                            <span className='full_width' style={{ color: `${portfolioColor}` }}>
+                                            <span className='full_width'>
                                                 <div className='alignCenter'>
-                                                    <span className='f-16'>Team Members</span>
+                                                    <span className='f-15 fw-semibold'>Team Members</span>
                                                 </div>
                                             </span>
                                         </label>
-                                        <div className="togglecontent mb-3 mt-1 pt-1" style={{ display: "block", borderTop: "1.5px solid" + portfolioColor }}>
+                                        <div className="togglecontent mb-3 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #bdbdbd" }}>
                                             <Col className='mb-2 '>
                                                 <label className='me-3'>
                                                     <input className='form-check-input' type="checkbox" value="isSelectAll" checked={isSelectAll} onChange={handleSelectAllChangeTeamSection} /> Select All
@@ -1194,10 +1100,10 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                                                 {TaskUsersData != null && TaskUsersData.length > 0 &&
                                                                     TaskUsersData?.map((Group: any, index: any) => {
                                                                         return (
-                                                                            <div className='col-sm-3 mb-3 ps-0'>
-                                                                                <fieldset className='smartFilterStyle ps-2'>
+                                                                            <div className='col-sm-3 mb-3 ps-2'>
+                                                                                <fieldset className='ps-lg-1 smartFilterStyle'>
                                                                                     <legend className='SmartFilterHead'>
-                                                                                        <span className="mparent d-flex" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
+                                                                                        <span className="mparent d-flex pb-1" style={{ borderBottom: "1.5px solid #D9D9D9", color: portfolioColor }}>
                                                                                             <input className={"form-check-input cursor-pointer"}
                                                                                                 style={Group.selectAllChecked == undefined && Group?.values?.length === Group?.checked?.length ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : Group?.selectAllChecked === true ? { backgroundColor: portfolioColor, borderColor: portfolioColor } : { backgroundColor: '', borderColor: '' }}
                                                                                                 type="checkbox"
@@ -1255,13 +1161,13 @@ const TeamSmartFavoritesCopy = (item: any) => {
                                 <div className="px-2">
                                     <div className="togglebox">
                                         <label className="toggler full_width active">
-                                            <span className="full-width" style={{ color: `${portfolioColor}` }}>
+                                            <span className="full-width">
                                                 <div className='alignCenter'>
-                                                    <span className='f-16'>Date</span>
+                                                    <span className='f-15 fw-semibold'>Date</span>
                                                 </div>
                                             </span>
                                         </label>
-                                        <div className="togglecontent mb-3 pt-1 mt-1" style={{ display: "block", borderTop: "1.5px solid" + portfolioColor }}>
+                                        <div className="togglecontent mb-3 mt-2 pt-2" style={{ display: "block", borderTop: "1.5px solid #bdbdbd" }}>
                                             <div className="col-sm-12">
                                                 <Col className='mb-2 mt-2'>
                                                     <label className="me-3">
@@ -1374,23 +1280,14 @@ const TeamSmartFavoritesCopy = (item: any) => {
                             </section>
                         </>}
                     </section>
-                    {item?.ProjectData != undefined && item?.ProjectData?.length > 0 ?
-                        <Panel
-                            onRenderHeader={onRenderCustomProjectManagementHeader}
-                            isOpen={ProjectManagementPopup}
-                            onDismiss={closeProjectManagementPopup}
-                            isBlocking={true}
-                            type={PanelType.custom}
-                            customWidth="1100px"
-                            onRenderFooter={customFooterForProjectManagement}
-                        >
-                            <div className="SelectProjectTable">
-                                <div className="modal-body wrapper p-0 mt-2">
-                                    <GlobalCommanTable SmartTimeIconShow={true} columns={columns} data={item?.ProjectData} callBackData={callBackData} multiSelect={true} />
-                                </div>
-
-                            </div>
-                        </Panel>
+                    {item?.ProjectData != undefined && item?.ProjectData?.length > 0 && ProjectManagementPopup ?
+                    <ServiceComponentPortfolioPopup
+                    Dynamic={item?.ContextValue}
+                    Call={(DataItem: any, Type: any, functionType: any) => {callBackData(DataItem, Type, functionType) }}  
+                    showProject={ProjectManagementPopup}
+                    selectionType = 'Multi'
+                  />
+                   
                         : null
                     }
                     <>{PreSetPanelIsOpen && <PreSetDatePikerPannel isOpen={PreSetPanelIsOpen} PreSetPikerCallBack={PreSetPikerCallBack} portfolioColor={portfolioColor} />}</>
@@ -1423,6 +1320,5 @@ const TeamSmartFavoritesCopy = (item: any) => {
             </Panel>
         </>
     )
-
 }
 export default TeamSmartFavoritesCopy;

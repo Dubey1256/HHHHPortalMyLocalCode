@@ -8,7 +8,7 @@ function ComponentProfile(props: IComponentProfileProps) {
     Context,
     dropdownvalue,
     MasterTaskListID,
-    TaskUsertListID,
+    TaskUserListID,
     SmartMetadataListID,
   } = props;
 
@@ -19,7 +19,7 @@ function ComponentProfile(props: IComponentProfileProps) {
       try {
         let web = new Web(props.siteUrl);
         let taskUsers = await web.lists
-          .getById(props.TaskUsertListID)
+          .getById(props.TaskUserListID)
           .items.select(
             "Id",
             "Email",
@@ -41,7 +41,7 @@ function ComponentProfile(props: IComponentProfileProps) {
     };
 
     getTaskUsers();
-  }, [props.siteUrl, props.TaskUsertListID]);
+  }, [props.siteUrl, props.TaskUserListID]);
 
   return (
     <div>

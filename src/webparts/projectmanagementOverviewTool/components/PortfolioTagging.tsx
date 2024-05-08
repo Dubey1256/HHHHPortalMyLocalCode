@@ -240,7 +240,6 @@ const PortfolioTagging = (item: any) => {
             //  ungetFilterLength();
             // setData(data => ([...maidataBackup]));
             setComponentsData(maidataBackup);
-            //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
         }
         }
     const handleOpen = (item: any) => {
@@ -251,11 +250,11 @@ const PortfolioTagging = (item: any) => {
     };
     var Response: [] = [];
     const GetTaskUsers = async () => {
-        if(item?.AllListId?.TaskUsertListID!=undefined){
+        if(item?.AllListId?.TaskUserListID!=undefined){
             let web = new Web(item?.AllListId?.siteUrl);
             let taskUsers = [];
             taskUsers = await web.lists
-                .getById(item?.AllListId?.TaskUsertListID)
+                .getById(item?.AllListId?.TaskUserListID)
                 .items
                 .get();
             Response = taskUsers;

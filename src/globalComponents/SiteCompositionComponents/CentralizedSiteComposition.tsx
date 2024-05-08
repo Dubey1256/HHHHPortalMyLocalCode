@@ -356,7 +356,7 @@ const CentralizedSiteComposition = (Props: any) => {
                 setSiteCompositionSettings([...SiteSettingTemp]);
                 SelectedItemDetails.SiteSettingBackup = SiteSettingTemp;
             } else {
-                let tempSiteSetting: any = [{ Proportional: false, Manual: true, Protected: false, Deluxe: false, Standard: false }]
+                let tempSiteSetting: any = [{ Proportional: false, Manual: false, Protected: false, Deluxe: false, Standard: true }]
                 setSiteCompositionSettings(tempSiteSetting);
                 setIsSCManual(true);
                 setSiteSettingJSON([...SiteSettingJSON])
@@ -465,7 +465,7 @@ const CentralizedSiteComposition = (Props: any) => {
         let PropsObject: any = {
             MasterTaskListID: RequiredListIds?.MasterTaskListID,
             siteUrl: RequiredListIds?.siteUrl,
-            TaskUserListId: RequiredListIds?.TaskUsertListID,
+            TaskUserListId: RequiredListIds?.TaskUserListID,
             usedFor: "Site-Composition"
         }
         let componentDetails: any = [];

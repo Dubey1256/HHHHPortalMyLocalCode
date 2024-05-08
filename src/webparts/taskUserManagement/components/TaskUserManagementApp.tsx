@@ -11,7 +11,7 @@ const TaskUserManagementApp = (props: any) => {
     const [headerChange, setHeaderChange]: any = useState('');
     const baseUrl = props.props.context.pageContext._web.absoluteUrl
     let AllListid: any = {
-        TaskUsertListID: props.props.TaskUserListId,
+        TaskUserListID: props.props.TaskUserListId,
         SmartMetadataListID: props.props.SmartMetaDataId,
         siteUrl: props.props.context.pageContext._web.absoluteUrl,
     }
@@ -25,6 +25,9 @@ const TaskUserManagementApp = (props: any) => {
         const taskGroupsListData = fetchedData.filter((item: any) => item.ItemType === "Group");
 
         const updatedTaskUsersListData = taskUsersListData.map((item: any) => {
+            if (item.Item_x0020_Cover != undefined && item.Item_x0020_Cover != null){
+                item.Item_x002d_Image = item?.Item_x0020_Cover
+            }
             const approverTitles = item.Approver ? item.Approver.map((approver: any) => approver.Title).join(', ') : '';
             const roleTitles = item.Role ? item.Role.map((role: any) => role).join(', ') : '';
             if (item?.CategoriesItemsJson != null && item?.CategoriesItemsJson.includes("</div>")) {
@@ -52,7 +55,7 @@ const TaskUserManagementApp = (props: any) => {
       }
 
     let context = props.props.context
-    context.siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+    context.siteUrl = context.pageContext.web.absoluteUrl;
     context.SitePagesList = props.props.SitePagesList;
 
     return (

@@ -4,7 +4,7 @@ export interface IParentPortfolioViewProps {
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
-  TaskUsertListID:string;
+  TaskUserListID:string;
   SmartMetadataListID:string;
   MasterTaskListID :string;
   TaskTimeSheetListID:string;

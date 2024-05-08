@@ -14,7 +14,7 @@ import { IMyPendingTasksAppProps } from './components/IMyPendingTasksAppProps';
 import { getSP } from '../../spservices/pnpjsConfig';
 
 export interface IMyPendingTasksWebPartProps {
-  TaskUsertListID: string;
+  TaskUserListID: string;
   SmartMetadataListID: string;
 }
 
@@ -25,7 +25,7 @@ export default class MyPendingTasksWebPart extends BaseClientSideWebPart<IMyPend
       MyPendingTasksApp,
       {
         userEMail: this.context.pageContext.user.loginName,
-        taskUsersListId: this.properties.TaskUsertListID,
+        taskUsersListId: this.properties.TaskUserListID,
         smartMetadataListId: this.properties.SmartMetadataListID
       }
     );
@@ -57,7 +57,7 @@ export default class MyPendingTasksWebPart extends BaseClientSideWebPart<IMyPend
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('TaskUsertListID', {
+                PropertyPaneTextField('TaskUserListID', {
                   label: "Task User List"
                 }),
                 PropertyPaneTextField('SmartMetadataListID', {

@@ -87,7 +87,7 @@ export interface ITaskprofileState {
   maincollection: any;
   TotalTimeEntry: any;
   breadCrumData: any;
-  SharewebTimeComponent: any;
+  cmsTimeComponent: any;
   isopenversionHistory: boolean;
   smarttimefunction: boolean;
   ApprovalStatus: boolean;
@@ -191,7 +191,7 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
       showPopup: 'none',
       maincollection: [],
       breadCrumData: [],
-      SharewebTimeComponent: [],
+      cmsTimeComponent: [],
       smarttimefunction: false,
       ApprovalStatus: false,
       EditSiteCompositionStatus: false,
@@ -206,7 +206,7 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
       MasterTaskListID: this.props?.MasterTaskListID,
       siteUrl: this.props?.siteUrl,
       ComponentType: ComponentType,
-      TaskUserListId: this.props?.TaskUsertListID,
+      TaskUserListId: this.props?.TaskUserListID,
     };
     let CallBackData = await globalCommon.GetServiceAndComponentAllData(PropsObject)
     if (CallBackData?.AllData != undefined && CallBackData?.AllData?.length > 0) {
@@ -266,7 +266,7 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
       .get()
     AllListId = {
       MasterTaskListID: this.props.MasterTaskListID,
-      TaskUsertListID: this.props.TaskUsertListID,
+      TaskUserListID: this.props.TaskUserListID,
       SmartMetadataListID: this.props.SmartMetadataListID,
       //SiteTaskListID:this.props.SiteTaskListID,
       TaskTimeSheetListID: this.props.TaskTimeSheetListID,
@@ -529,7 +529,7 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
     var taskDeatails = this.state.Result;
     taskUsers = await web.lists
       // .getByTitle("Task Users")
-      .getById(this.props.TaskUsertListID)
+      .getById(this.props.TaskUserListID)
       .items
       .select('Id', 'Email', 'Approver/Id', 'Approver/Title', 'Approver/Name', 'Suffix', 'UserGroup/Id', 'UserGroup/Title', 'Team', 'Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
       .filter("ItemType eq 'User'")
@@ -1955,11 +1955,11 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
                   <div className="team_member row">
                     <div className='col-md-8 '>
                       <div className='bg-Ff p-2 boxshadow  rounded-1 row'>
-                        <div className='col-md-6 p-0'>
-                          <dl>
-                            <dt className='bg-Fa'>Task Id</dt>
-                            <dd className='bg-Ff position-relative'>
-                              <ReactPopperTooltipSingleLevel ShareWebId={this.state.Result['TaskId']} row={this.state.Result} singleLevel={true} masterTaskData={this.masterForHierarchy} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} />
+                      <div className='col-md-6 p-0'>
+                        <dl>
+                          <dt className='bg-Fa'>Task Id</dt>
+                          <dd className='bg-Ff position-relative'>
+                            <ReactPopperTooltipSingleLevel CMSToolId={this.state.Result['TaskId']} row={this.state.Result} singleLevel={true} masterTaskData={this.masterForHierarchy} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} />
 
                             </dd>
                           </dl>
@@ -2193,31 +2193,35 @@ class TaskProfileTemplate extends React.Component<ITaskProfileTemplateProps, ITa
 
                                 {this.state?.Result["Portfolio"]?.Title}
 
-                              </a>
-                            } <span className="pull-right svg__icon--editBox svg__iconbox " onClick={() => this?.openPortfolioPopupFunction("Portfolio")}></span>
-                          </dd>
-                        </dl>
-                        <dl>
-                          <dt className='bg-Fa'>Project</dt>
-                          <dd className='bg-Ff full-width columnFixedTitle'>
-                    
-                              {ProjectData?.Title != undefined ? <a className="hreflink text-content w-100" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
-                                <ReactPopperTooltipSingleLevel ShareWebId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
-                              <span className="pull-right svg__icon--editBox svg__iconbox " onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
-                         
-                          </dd>
-                        </dl>
-                        {isShowSiteCompostion && <dl className="Sitecomposition">
-                          {ClientTimeArray != null && ClientTimeArray?.length > 0 &&
-                            <div className='dropdown'>
-                              <a className="sitebutton bg-fxdark d-flex">
-                                <span className="arrowicons" onClick={() => this.showhideComposition()}>{this.state.showComposition ? <SlArrowDown /> : <SlArrowRight />}</span>
-                                <div className="d-flex justify-content-between full-width">
-                                  <p className="pb-0 mb-0">Site Composition</p>
-                                  <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => this.setState({ EditSiteCompositionStatus: true })}>
-                                    <span className="svg__iconbox svg__icon--editBox"></span>
-                                  </p>
-                                </div>
+    </a>
+
+
+
+  } <span className="pull-right svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Portfolio")}></span>
+
+</dd>
+</dl>
+<dl>
+<dt className='bg-Fa'>Project</dt>
+<dd className='bg-Ff full-width'>
+  <div>
+    {ProjectData?.Title != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
+      <ReactPopperTooltipSingleLevel CMSToolId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
+    <span className="pull-right svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
+  </div>
+</dd>
+</dl>
+{isShowSiteCompostion && <dl className="Sitecomposition">
+{ClientTimeArray != null && ClientTimeArray?.length > 0 &&
+  <div className='dropdown'>
+    <a className="sitebutton bg-fxdark d-flex">
+      <span className="arrowicons" onClick={() => this.showhideComposition()}>{this.state.showComposition ? <SlArrowDown /> : <SlArrowRight />}</span>
+      <div className="d-flex justify-content-between full-width">
+        <p className="pb-0 mb-0">Site Composition</p>
+        <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => this.setState({ EditSiteCompositionStatus: true })}>
+          <span className="svg__iconbox svg__icon--editBox"></span>
+        </p>
+      </div>
 
                               </a>
                               <div className="spxdropdown-menu" style={{ display: this.state.showComposition ? 'block' : 'none' }}>

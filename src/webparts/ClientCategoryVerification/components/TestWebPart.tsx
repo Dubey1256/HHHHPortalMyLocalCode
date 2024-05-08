@@ -15,7 +15,7 @@ export default class TestWebPart extends React.Component<ITestWebPartProps, {}> 
       userDisplayName,
       siteUrl,
       MasterTaskListID,
-      TaskUsertListID,
+      TaskUserListID,
       SmartMetadataListID,
       SmartInformationListID,
       DocumentsListID,

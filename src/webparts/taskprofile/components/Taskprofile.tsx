@@ -23,7 +23,6 @@ import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import RelevantDocuments from './RelevantDocuments';
 import SmartInformation from './SmartInformation';
 import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/VersionHistory';
-import TasksTable from './TaskfooterTable';
 import RadimadeTable from '../../../globalComponents/RadimadeTable'
 import EmailComponenet from './emailComponent';
 import AncTool from '../../../globalComponents/AncTool/AncTool'
@@ -90,7 +89,7 @@ export interface ITaskprofileState {
   maincollection: any;
   TotalTimeEntry: any;
   breadCrumData: any;
-  SharewebTimeComponent: any;
+  cmsTimeComponent: any;
   isopenversionHistory: boolean;
   smarttimefunction: boolean;
   ApprovalStatus: boolean;
@@ -140,11 +139,10 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     const params = new URLSearchParams(window.location.search);
     console.log(params.get('taskId'));
     console.log(params.get('Site'));
-  //  this.site = params.get('Site');
     function capitalizeFLetter(site:String) {
       return site[0].toUpperCase() + site.slice(1);
   }
-    this.site = capitalizeFLetter(params.get('Site'))
+    this.site =  capitalizeFLetter(params.get('Site'))
 
     this.oldTaskLink = `${props.siteUrl}/SitePages/Task-Profile-Old.aspx?taskId=` + params.get('taskId') + "&Site=" + params.get('Site');
     this.state = {
@@ -198,7 +196,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       showPopup: 'none',
       maincollection: [],
       breadCrumData: [],
-      SharewebTimeComponent: [],
+      cmsTimeComponent: [],
       smarttimefunction: false,
       ApprovalStatus: false,
       EditSiteCompositionStatus: false,
@@ -213,7 +211,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       MasterTaskListID: this.props?.MasterTaskListID,
       siteUrl: this.props?.siteUrl,
       ComponentType: ComponentType,
-      TaskUserListId: this.props?.TaskUsertListID,
+      TaskUserListId: this.props?.TaskUserListID,
     };
     let CallBackData = await globalCommon.GetServiceAndComponentAllData(PropsObject)
     if (CallBackData?.AllData != undefined && CallBackData?.AllData?.length > 0) {
@@ -273,7 +271,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .get()
     AllListId = {
       MasterTaskListID: this.props.MasterTaskListID,
-      TaskUsertListID: this.props.TaskUsertListID,
+      TaskUserListID: this.props.TaskUserListID,
       SmartMetadataListID: this.props.SmartMetadataListID,
       //SiteTaskListID:this.props.SiteTaskListID,
       TaskTimeSheetListID: this.props.TaskTimeSheetListID,
@@ -545,7 +543,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     var taskDeatails = this.state.Result;
     taskUsers = await web.lists
       // .getByTitle("Task Users")
-      .getById(this.props.TaskUsertListID)
+      .getById(this.props.TaskUserListID)
       .items
       .select('Id', 'Email', 'Approver/Id', 'Approver/Title', 'Approver/Name', 'Suffix', 'UserGroup/Id', 'UserGroup/Title', 'Team', 'Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
       .filter("ItemType eq 'User'")
@@ -755,7 +753,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       .getById(this.state?.itemID)
       .update({
         FeedBack: JSON.stringify(this.state?.Result?.FeedBack),
-        Status: this?.state?.Result?.Status
+      
       });
 
     this.setState({
@@ -1171,25 +1169,18 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       if (tempData?.ApproverData != undefined && tempData?.ApproverData?.length > 0) {
         tempData?.ApproverData?.forEach((ba: any) => {
           if (ba.isShowLight == 'Reject') {
-
-            data.Status = "Follow Up",
               ba.Status = 'Rejected by'
           }
           if (ba.isShowLight == 'Approve') {
             ba.Status = 'Approved by'
-            data.Status = "Approved"
+            
           }
           if (ba.isShowLight == 'Maybe') {
-            data.Status = "Follow Up",
               ba.Status = 'For discussion with'
           }
-
-
         })
       }
-      this.setState({
-        Result: data,
-      }),
+    
         console.log(tempData);
       console.log(this.state.Result["FeedBack"][0]?.FeedBackDescriptions);
       await this.onPost();
@@ -1226,24 +1217,18 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       if (tempData?.Subtext[subchileindex] != undefined && tempData?.Subtext[subchileindex]?.ApproverData != undefined) {
         tempData?.Subtext[subchileindex]?.ApproverData?.forEach((ba: any) => {
           if (ba.isShowLight == 'Reject') {
-            data.Status = "Follow Up",
               ba.Status = 'Rejected by'
           }
           if (ba.isShowLight == 'Approve') {
-            data.Status = "Approved"
             ba.Status = 'Approved by '
           }
           if (ba.isShowLight == 'Maybe') {
-            data.Status = "Follow Up",
               ba.Status = 'For discussion with'
           }
 
-
         })
       }
-      this.setState({
-        Result: data,
-      }),
+    
         console.log(tempData);
       console.log(this.state.Result["FeedBack"][0]?.FeedBackDescriptions);
       console.log(this.state?.emailcomponentopen)
@@ -1408,7 +1393,9 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
     if ((countApprove == 0 && percentageStatus == "Approve" && (pervious.isShowLight == "Reject" || pervious.isShowLight == "Maybe") && pervious.isShowLight != undefined)) {
       changespercentage = true;
     }
-
+    if ((countApprove == 0 && percentageStatus == "Maybe" && (pervious?.isShowLight == "Reject" || pervious?.isShowLight == "Maybe") && pervious.isShowLight != undefined)) {
+      changespercentage =false;
+    }
 
     let taskStatus = "";
     if (changespercentage == true) {
@@ -1423,6 +1410,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
       taskStatus = "Follow Up"
     }
     this.state.Result.PercentComplete = changespercentage1
+    this.state.Result.Status = taskStatus
     const web = new Web(this.props.siteUrl);
     await web.lists.getByTitle(this.state.Result.listName)
 
@@ -2016,7 +2004,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       <dl>
                         <dt className='bg-Fa'>Task Id</dt>
                         <dd className='bg-Ff position-relative'>
-                          <ReactPopperTooltipSingleLevel ShareWebId={this.state.Result['TaskId']} row={this.state.Result} singleLevel={true} masterTaskData={this.masterForHierarchy} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} />
+                          <ReactPopperTooltipSingleLevel CMSToolId={this.state.Result['TaskId']} row={this.state.Result} singleLevel={true} masterTaskData={this.masterForHierarchy} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} />
 
                         </dd>
                       </dl>
@@ -2103,7 +2091,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                         BottleneckData.TaggedUsers.userImage.length >
                                         0
                                         ? BottleneckData.TaggedUsers.userImage
-                                        : ""
+                                        : <span title="Default user icons" className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
                                     }
                                   />
                                   <span className="ms-1">{BottleneckData?.TaggedUsers?.Title}</span>
@@ -2272,7 +2260,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                               {this.state.Result["Author"][0].userImage !== "" && <img className="workmember hreflink " src={this.state.Result["Author"][0].userImage} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, this.state.Result["Author"][0]?.Id)} ></img>
 
                               }
-                              {this.state.Result["Author"][0].userImage === "" && <span title="Default user icons" className="alignIcon svg__iconbox svg__icon--defaultUser "></span>}
+                              {this.state.Result["Author"][0].userImage === "" && <span title={`${this.state.Result["Author"] != undefined ?this.state.Result["Author"][0].Title : "Default user icons "}`} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"  onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, this.state.Result["Author"][0]?.Id)}></span>}
                             </a>
 
                           }
@@ -2295,7 +2283,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                         AttentionData.TaggedUsers.userImage.length >
                                         0
                                         ? AttentionData.TaggedUsers.userImage
-                                        : ""
+                                        : <span title="Default user icons" className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
                                     }
                                   />
                                   <span className="ms-1">{AttentionData?.TaggedUsers?.Title}</span>
@@ -2337,7 +2325,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                       <dl>
 
                         <dt className='bg-Fa'>Portfolio Item</dt>
-                        <dd className='bg-Ff full-width'>
+                        <dd className='bg-Ff full-width columnFixedTitle'>
                           {this.state?.TagConceptPaper?.length > 0 &&
                             <a href={this.state?.TagConceptPaper[0].EncodedAbsUrl}>
                               <span className={`alignIcon svg__iconbox svg__icon--${this.state?.TagConceptPaper[0]?.File_x0020_Type}`} title={this.state?.TagConceptPaper[0]?.File_x0020_Type}></span>
@@ -2345,7 +2333,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                           }
                           {this.state?.Result["Portfolio"] != null &&
 
-                            <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state?.Result["Portfolio"].Id}`}>
+                            <a className="hreflink text-content w-100" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state?.Result["Portfolio"].Id}`}>
 
                               {this.state?.Result["Portfolio"]?.Title}
 
@@ -2353,18 +2341,20 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
 
 
 
-                          } <span className="pull-right svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Portfolio")}></span>
+                          } 
+                          <span className="ml-auto pull-right svg__icon--editBox svg__iconbox w-25" onClick={() => this?.openPortfolioPopupFunction("Portfolio")}></span>
 
                         </dd>
                       </dl>
                       <dl>
                         <dt className='bg-Fa'>Project</dt>
-                        <dd className='bg-Ff full-width'>
-                          <div>
-                            {ProjectData?.Title != undefined ? <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData?.Id}`}><span className='d-flex'>
-                              <ReactPopperTooltipSingleLevel ShareWebId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></span></a> : null}
-                            <span className="pull-right svg__icon--editBox svg__iconbox" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
-                          </div>
+                        <dd className='bg-Ff full-width '>
+                          
+                            {ProjectData?.Title != undefined ? <a className="hreflink text-content w-100" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/PX-Profile.aspx?ProjectId=${ProjectData?.Id}`}>
+                              
+                              <ReactPopperTooltipSingleLevel CMSToolId={`${ProjectData?.PortfolioStructureID} - ${ProjectData?.Title}`} row={ProjectData} singleLevel={true} masterTaskData={this.masterTaskData} AllSitesTaskData={this.allDataOfTask} AllListId={AllListId} /></a> : null}
+                            <span className="text-end svg__icon--editBox svg__iconbox w-25" onClick={() => this?.openPortfolioPopupFunction("Project")}></span>
+                          
                         </dd>
                       </dl>
                       {isShowSiteCompostion && <dl className="Sitecomposition">
@@ -2483,7 +2473,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                       <span className='round px-1'>
                                         {imgData?.UserImage != null && imgData?.UserImage != "" ?
                                           <img className='align-self-start hreflink ' title={imgData?.UserName} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)} src={imgData?.UserImage} />
-                                          : <span title="Default user icons" onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
+                                          : <span title="Default user icons" onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
                                         }
                                       </span>
                                       {imgData?.Description != undefined && imgData?.Description != "" && <span title={imgData?.Description} className="mx-1" >
@@ -2615,7 +2605,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                           <div className="col-1 p-0 wid30">
                                                             {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)}
                                                               src={fbComment.AuthorImage} /> :
-                                                              <span onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)} title="Default user icons" className="alignIcon svg__iconbox svg__icon--defaultUser "></span>}
+                                                              <span onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)} title="Default user icons" className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>}
                                                           </div>
                                                           <div className="col-11 pe-0" >
                                                             <div className='d-flex justify-content-between align-items-center'>
@@ -2649,7 +2639,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                               <div className="d-flex border ms-3 p-2  mb-1">
                                                                 <div className="col-1 p-0 wid30">
                                                                   {replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, replymessage?.AuthorName, this?.taskUsers)}
-                                                                    src={replymessage?.AuthorImage} /> : <span title="Default user icons" className="alignIcon svg__iconbox svg__icon--defaultUser "></span>}
+                                                                    src={replymessage?.AuthorImage} /> : <span title="Default user icons" className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser" ></span>}
                                                                 </div>
                                                                 <div className="col-11 pe-0" >
                                                                   <div className='d-flex justify-content-between align-items-center'>
@@ -2778,7 +2768,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                           <div className="d-flex p-0">
                                                             <div className="col-1 p-0 wid30">
                                                               {fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, fbComment?.AuthorName, this?.taskUsers)}
-                                                                src={fbComment.AuthorImage} /> : <span title="Default user icons" className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
+                                                                src={fbComment.AuthorImage} /> : <span title="Default user icons" className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
                                                               }
                                                             </div>
                                                             <div className="col-11 pad0" key={k}>
@@ -2813,7 +2803,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                                                 <div className="d-flex border ms-3 p-2  mb-1">
                                                                   <div className="col-1 p-0 wid30">
                                                                     {replymessage?.AuthorImage != undefined && replymessage?.AuthorImage != '' ? <img className="workmember hreflink " onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, replymessage?.AuthorName, this?.taskUsers)}
-                                                                      src={replymessage.AuthorImage} /> : <span title="Default user icons" className="alignIcon svg__iconbox svg__icon--defaultUser "></span>}
+                                                                      src={replymessage.AuthorImage} /> : <span title="Default user icons" className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>}
                                                                   </div>
                                                                   <div className="col-11 pe-0" >
                                                                     <div className='d-flex justify-content-between align-items-center'>
@@ -2909,7 +2899,7 @@ class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> 
                                     <span className='round px-1'>
                                       {imgData?.UserImage !== null && imgData?.UserImage != "" ?
                                         <img className='align-self-start hreflink ' title={imgData?.UserName} onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)} src={imgData?.UserImage} />
-                                        : <span title="Default user icons" onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)} className="alignIcon svg__iconbox svg__icon--defaultUser "></span>
+                                        : <span title="Default user icons" onClick={() => globalCommon?.openUsersDashboard(AllListId?.siteUrl, undefined, imgData?.UserName, this?.taskUsers)} className="alignIcon hreflink  svg__iconbox svg__icon--defaultUser"></span>
                                       }
                                     </span>
                                   </div>

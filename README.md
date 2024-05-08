@@ -6,7 +6,7 @@ Here is a list of required information for the application:
 
 - `siteUrl`: `this.context.pageContext.web.absoluteUrl`
 - `MasterTaskListID`: `this.properties.MasterTaskListID`
-- `TaskUsertListID`: `this.properties.TaskUsertListID`
+- `TaskUserListID`: `this.properties.TaskUserListID`
 - `TaskTypeID`: `this.properties.TaskTypeID`
 - `DocumentsListID`: `this.properties.DocumentsListID`
 - `SmartHelptListID`: `this.properties.SmartHelptListID`
