@@ -1216,7 +1216,7 @@ function TeamPortlioTable(SelectedProp: any) {
             temp.ClientCategorySearch = '';
             temp.Created = null;
             temp.Author = "";
-            temp.subRows = allLoadeDataMasterTaskAndTask?.filter((elem1: any) => elem1?.TaskType?.Id != undefined && elem1?.ParentTask?.Id === undefined && elem1?.Portfolio?.Title === undefined);
+            temp.subRows = allLoadeDataMasterTaskAndTask?.filter((elem1: any) => elem1?.TaskType?.Id != undefined && elem1?.ParentTask?.Id === undefined &&  (elem1?.Portfolio?.Title === undefined || elem1?.Portfolio?.Title === null));
             countAllTasksData = countAllTasksData.concat(temp.subRows);
             temp.subRows.forEach((task: any) => {
                 if (task.TaskID === undefined || task.TaskID === '')
@@ -1410,7 +1410,7 @@ function TeamPortlioTable(SelectedProp: any) {
             temp.ClientCategorySearch = '';
             temp.Created = null;
             temp.Author = "";
-            temp.subRows = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != undefined && elem1?.ParentTask?.Id === undefined && elem1?.Portfolio?.Title === undefined);
+            temp.subRows = smartAllFilterData?.filter((elem1: any) => elem1?.TaskType?.Id != undefined && elem1?.ParentTask?.Id === undefined && (elem1?.Portfolio?.Title === undefined || elem1?.Portfolio?.Title === null));
             AfterFilterTaskCount = AfterFilterTaskCount.concat(temp.subRows);
             temp.subRows.forEach((task: any) => {
                 if (task.TaskID === undefined || task.TaskID === '')
@@ -1603,6 +1603,10 @@ function TeamPortlioTable(SelectedProp: any) {
                         })
                     })
                 })
+                if(comp.Title === "Others"){
+                   const othersAllTask = smartAllFilterData?.filter((elem1) => elem1?.TaskType?.Id != undefined && elem1?.ParentTask?.Id === undefined && (elem1?.Portfolio?.Title === undefined || elem1?.Portfolio?.Title === null));
+                   comp.subRows = othersAllTask;
+                }
             })
             setLoaded(true);
             setData(finalDataCopyArray);
