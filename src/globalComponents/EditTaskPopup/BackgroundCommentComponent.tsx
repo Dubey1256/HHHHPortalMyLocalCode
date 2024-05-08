@@ -259,7 +259,7 @@ const BackgroundCommentComponent = (Props: any) => {
                                     src={dataItem.AuthorImage != undefined && dataItem.AuthorImage != '' ?
                                         dataItem.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                             </div>
-                            <div className="col-11 pe-0 ms-3" >
+                            <div className="col-11 ms-3 pe-0 text-break" >
                                 <div className='d-flex justify-content-between align-items-center'>
                                     <span className="siteColor font-weight-normal">
                                         {dataItem.AuthorName} - {dataItem.Created}
